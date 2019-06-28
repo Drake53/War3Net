@@ -1,8 +1,15 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="StormBuffer.cs" company="Foole (fooleau@gmail.com)">
+// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 
 internal class StormBuffer
 {
-    private static uint[] _stormBuffer;
+    private static readonly uint[] _stormBuffer;
 
     static StormBuffer()
     {
@@ -10,13 +17,13 @@ internal class StormBuffer
 
         _stormBuffer = new uint[0x500];
 
-        for ( uint index1 = 0; index1 < 0x100; index1++ )
+        for (uint index1 = 0; index1 < 0x100; index1++)
         {
-            uint index2 = index1;
-            for ( int i = 0; i < 5; i++, index2 += 0x100 )
+            var index2 = index1;
+            for (var i = 0; i < 5; i++, index2 += 0x100)
             {
                 seed = ( seed * 125 + 3 ) % 0x2aaaab;
-                uint temp = ( seed & 0xffff ) << 16;
+                var temp = ( seed & 0xffff ) << 16;
                 seed = ( seed * 125 + 3 ) % 0x2aaaab;
 
                 _stormBuffer[index2] = temp | ( seed & 0xffff );
@@ -24,32 +31,33 @@ internal class StormBuffer
         }
     }
 
-    internal static uint HashString( string input, int offset )
+    internal static uint HashString(string input, int offset)
     {
         uint seed1 = 0x7fed7fed;
-        uint seed2 = 0xeeeeeeee;
+        var seed2 = 0xeeeeeeee;
 
-        foreach ( char c in input )
+        foreach (var c in input)
         {
-            int val = (int)char.ToUpper( c );
+            var val = (int)char.ToUpper( c );
             seed1 = _stormBuffer[offset + val] ^ ( seed1 + seed2 );
             seed2 = (uint)val + seed1 + seed2 + ( seed2 << 5 ) + 3;
         }
+
         return seed1;
     }
 
-    internal static void EncryptBlock( byte[] data, uint seed1 )
+    internal static void EncryptBlock(byte[] data, uint seed1)
     {
-        uint seed2 = 0xeeeeeeee;
+        var seed2 = 0xeeeeeeee;
 
         // NB: If the block is not an even multiple of 4,
         // the remainder is not encrypted
-        for ( int i = 0; i < data.Length - 3; i += 4 )
+        for (var i = 0; i < data.Length - 3; i += 4)
         {
             seed2 += _stormBuffer[0x400 + ( seed1 & 0xff )];
 
-            uint unencrypted = BitConverter.ToUInt32( data, i );
-            uint result = unencrypted ^ ( seed1 + seed2 );
+            var unencrypted = BitConverter.ToUInt32( data, i );
+            var result = unencrypted ^ ( seed1 + seed2 );
 
             seed1 = ( ( ~seed1 << 21 ) + 0x11111111 ) | ( seed1 >> 11 );
             seed2 = unencrypted + seed2 + ( seed2 << 5 ) + 3;
@@ -61,16 +69,16 @@ internal class StormBuffer
         }
     }
 
-    internal static void EncryptBlock( uint[] data, uint seed1 )
+    internal static void EncryptBlock(uint[] data, uint seed1)
     {
-        uint seed2 = 0xeeeeeeee;
+        var seed2 = 0xeeeeeeee;
 
-        for ( int i = 0; i < data.Length; i++ )
+        for (var i = 0; i < data.Length; i++)
         {
             seed2 += _stormBuffer[0x400 + ( seed1 & 0xff )];
 
-            uint unencrypted = data[i];
-            uint result = unencrypted ^ ( seed1 + seed2 );
+            var unencrypted = data[i];
+            var result = unencrypted ^ ( seed1 + seed2 );
 
             seed1 = ( ( ~seed1 << 21 ) + 0x11111111 ) | ( seed1 >> 11 );
             seed2 = unencrypted + seed2 + ( seed2 << 5 ) + 3;
@@ -79,17 +87,17 @@ internal class StormBuffer
         }
     }
 
-    internal static void DecryptBlock( byte[] data, uint seed1 )
+    internal static void DecryptBlock(byte[] data, uint seed1)
     {
-        uint seed2 = 0xeeeeeeee;
+        var seed2 = 0xeeeeeeee;
 
         // NB: If the block is not an even multiple of 4,
         // the remainder is not encrypted
-        for ( int i = 0; i < data.Length - 3; i += 4 )
+        for (var i = 0; i < data.Length - 3; i += 4)
         {
             seed2 += _stormBuffer[0x400 + ( seed1 & 0xff )];
 
-            uint result = BitConverter.ToUInt32( data, i );
+            var result = BitConverter.ToUInt32( data, i );
             result ^= ( seed1 + seed2 );
 
             seed1 = ( ( ~seed1 << 21 ) + 0x11111111 ) | ( seed1 >> 11 );
@@ -102,14 +110,14 @@ internal class StormBuffer
         }
     }
 
-    internal static void DecryptBlock( uint[] data, uint seed1 )
+    internal static void DecryptBlock(uint[] data, uint seed1)
     {
-        uint seed2 = 0xeeeeeeee;
+        var seed2 = 0xeeeeeeee;
 
-        for ( int i = 0; i < data.Length; i++ )
+        for (var i = 0; i < data.Length; i++)
         {
             seed2 += _stormBuffer[0x400 + ( seed1 & 0xff )];
-            uint result = data[i];
+            var result = data[i];
             result ^= seed1 + seed2;
 
             seed1 = ( ( ~seed1 << 21 ) + 0x11111111 ) | ( seed1 >> 11 );
@@ -120,20 +128,22 @@ internal class StormBuffer
 
     // This function calculates the encryption key based on
     // some assumptions we can make about the headers for encrypted files
-    internal static uint DetectFileSeed( uint value0, uint value1, uint decrypted )
+    internal static uint DetectFileSeed(uint value0, uint value1, uint decrypted)
     {
-        uint temp = ( value0 ^ decrypted ) - 0xeeeeeeee;
+        var temp = ( value0 ^ decrypted ) - 0xeeeeeeee;
 
-        for ( int i = 0; i < 0x100; i++ )
+        for (var i = 0; i < 0x100; i++)
         {
-            uint seed1 = temp - _stormBuffer[0x400 + i];
-            uint seed2 = 0xeeeeeeee + _stormBuffer[0x400 + ( seed1 & 0xff )];
-            uint result = value0 ^ ( seed1 + seed2 );
+            var seed1 = temp - _stormBuffer[0x400 + i];
+            var seed2 = 0xeeeeeeee + _stormBuffer[0x400 + ( seed1 & 0xff )];
+            var result = value0 ^ ( seed1 + seed2 );
 
-            if ( result != decrypted )
+            if (result != decrypted)
+            {
                 continue;
+            }
 
-            uint saveseed1 = seed1;
+            var saveseed1 = seed1;
 
             // Test this result against the 2nd value
             seed1 = ( ( ~seed1 << 21 ) + 0x11111111 ) | ( seed1 >> 11 );
@@ -142,9 +152,12 @@ internal class StormBuffer
             seed2 += _stormBuffer[0x400 + ( seed1 & 0xff )];
             result = value1 ^ ( seed1 + seed2 );
 
-            if ( ( result & 0xfffc0000 ) == 0 )
+            if (( result & 0xfffc0000 ) == 0)
+            {
                 return saveseed1;
+            }
         }
+
         return 0;
     }
 }
