@@ -1,35 +1,30 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="MpqEntry.cs" company="Foole (fooleau@gmail.com)">
+// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
 
 namespace Foole.Mpq
 {
-    [Flags]
-    public enum MpqFileFlags : uint
-    {
-        CompressedPK = 0x100, // AKA Imploded
-        CompressedMulti = 0x200,
-        Compressed = 0xff00,
-        Encrypted = 0x10000,
-        BlockOffsetAdjustedKey = 0x020000, // AKA FixSeed
-        SingleUnit = 0x1000000,
-        FileHasMetadata = 0x04000000, // Appears in WoW 1.10 or newer.  Indicates the file has associated metadata.
-        Exists = 0x80000000,
-    }
-
     public class MpqEntry
     {
-        public uint CompressedSize { get; private set; }
-        public uint FileSize { get; private set; }
-        public MpqFileFlags Flags { get; internal set; }
-        public uint EncryptionSeed { get; internal set; }
+        /// <summary>
+        ///
+        /// </summary>
+        public const uint Size = 16;
 
         private uint _fileOffset; // Relative to the header offset
-        internal uint FilePos { get; private set; } // Absolute position in the file
-        internal bool IsAdded { get; private set; }
         private string _filename;
 
-        public static readonly uint Size = 16;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
+        /// </summary>
+        /// <param name="br"></param>
+        /// <param name="headerOffset"></param>
         public MpqEntry(BinaryReader br, uint headerOffset)
         {
             _fileOffset = br.ReadUInt32();
@@ -41,7 +36,15 @@ namespace Foole.Mpq
             IsAdded = true;
         }
 
-        internal MpqEntry( uint filePos, uint headerOffset, uint compressedSize, uint fileSize, MpqFileFlags flags )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
+        /// </summary>
+        /// <param name="filePos"></param>
+        /// <param name="headerOffset"></param>
+        /// <param name="compressedSize"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="flags"></param>
+        internal MpqEntry(uint filePos, uint headerOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
         {
             _fileOffset = filePos - headerOffset;
             FilePos = filePos;
@@ -53,7 +56,14 @@ namespace Foole.Mpq
             IsAdded = true;
         }
 
-        internal MpqEntry( uint filePos, uint compressedSize, uint fileSize, MpqFileFlags flags )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
+        /// </summary>
+        /// <param name="filePos"></param>
+        /// <param name="compressedSize"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="flags"></param>
+        internal MpqEntry(uint filePos, uint compressedSize, uint fileSize, MpqFileFlags flags)
         {
             FilePos = filePos;
             CompressedSize = compressedSize;
@@ -63,7 +73,14 @@ namespace Foole.Mpq
             IsAdded = true;
         }
 
-        internal MpqEntry( string filename, uint compressedSize, uint fileSize, MpqFileFlags flags )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="compressedSize"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="flags"></param>
+        internal MpqEntry(string filename, uint compressedSize, uint fileSize, MpqFileFlags flags)
         {
             CompressedSize = compressedSize;
             FileSize = fileSize;
@@ -72,8 +89,34 @@ namespace Foole.Mpq
             _filename = filename;
         }
 
-        public static MpqEntry Dummy => new MpqEntry( null, 0, 0, MpqFileFlags.Exists ); //remove exists flag??
+        /// <summary>
+        /// 
+        /// </summary>
+        public static MpqEntry Dummy => new MpqEntry(null, 0, 0, MpqFileFlags.Exists); //remove exists flag??
 
+        /// <summary>
+        /// Gets the compressed file size of this <see cref="MpqEntry"/>.
+        /// </summary>
+        public uint CompressedSize { get; private set; }
+
+        /// <summary>
+        /// Gets the uncompressed file size of this <see cref="MpqEntry"/>.
+        /// </summary>
+        public uint FileSize { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public MpqFileFlags Flags { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint EncryptionSeed { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Filename
         {
             get => _filename;
@@ -84,22 +127,47 @@ namespace Foole.Mpq
             }
         }
 
-        public bool IsEncrypted => ( Flags & MpqFileFlags.Encrypted ) != 0;
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.Encrypted"/>.
+        /// </summary>
+        public bool IsEncrypted => Flags.HasFlag(MpqFileFlags.Encrypted);
 
-        public bool IsCompressed => ( Flags & MpqFileFlags.Compressed ) != 0;
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.Compressed"/>.
+        /// </summary>
+        public bool IsCompressed => Flags.HasFlag(MpqFileFlags.Compressed);
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Exists => Flags != 0;
 
-        public bool IsSingleUnit => ( Flags & MpqFileFlags.SingleUnit ) != 0;
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.SingleUnit"/>.
+        /// </summary>
+        public bool IsSingleUnit => Flags.HasFlag(MpqFileFlags.SingleUnit);
 
-        // For debugging
-        public int FlagsAsInt => (int)Flags;
+        /// <summary>
+        /// Gets the absolute position of this <see cref="MpqEntry"/>'s file in the <see cref="MpqArchive"/>.
+        /// </summary>
+        internal uint FilePos { get; private set; }
 
-        public void SetPos( uint headerOffset, uint fileOffset )
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="MpqEntry"/> has been added to an <see cref="MpqArchive"/>.
+        /// </summary>
+        internal bool IsAdded { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="headerOffset"></param>
+        /// <param name="fileOffset"></param>
+        /// <exception cref="InvalidOperationException">Thrown when the <see cref="IsAdded"/> property is true.</exception>
+        public void SetPos(uint headerOffset, uint fileOffset)
         {
-            if ( IsAdded )
+            if (IsAdded)
             {
-                throw new InvalidOperationException( "Cannot change the FilePos for an MpqEntry after it's been set." );
+                throw new InvalidOperationException("Cannot change the FilePos for an MpqEntry after it's been set.");
             }
 
             _fileOffset = fileOffset;
@@ -108,33 +176,37 @@ namespace Foole.Mpq
             IsAdded = true;
         }
 
-        public void WriteEntry( BinaryWriter writer )
-        {
-            writer.Write( _fileOffset );
-            writer.Write( CompressedSize );
-            writer.Write( FileSize );
-            writer.Write( (uint)Flags );
-        }
-
+        /// <inheritdoc/>
         public override string ToString()
         {
-            if (Filename == null)
-            {
-                if (!Exists)
-                    return "(Deleted file)";
-                return string.Format("Unknown file @ {0}", FilePos);
-            }
-            return Filename;
+            return Filename ?? (!Exists ? "(Deleted file)" : $"Unknown file @ {FilePos}");
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="writer"></param>
+        internal void WriteEntry(BinaryWriter writer)
+        {
+            writer.Write(_fileOffset);
+            writer.Write(CompressedSize);
+            writer.Write(FileSize);
+            writer.Write((uint)Flags);
         }
 
         private uint CalculateEncryptionSeed()
         {
-            if ( Filename == null )
+            if (Filename == null)
+            {
                 return 0;
+            }
 
-            uint seed = StormBuffer.HashString( Path.GetFileName( Filename ), 0x300 );
-            if ( ( Flags & MpqFileFlags.BlockOffsetAdjustedKey ) == MpqFileFlags.BlockOffsetAdjustedKey )
-                seed = ( seed + _fileOffset ) ^ FileSize;
+            var seed = StormBuffer.HashString(Path.GetFileName(Filename), 0x300);
+            if ((Flags & MpqFileFlags.BlockOffsetAdjustedKey) == MpqFileFlags.BlockOffsetAdjustedKey)
+            {
+                seed = (seed + _fileOffset) ^ FileSize;
+            }
+
             return seed;
         }
     }
