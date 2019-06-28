@@ -1,8 +1,17 @@
+// ------------------------------------------------------------------------------
+// <copyright file="MpqStream.cs" company="Foole (fooleau@gmail.com)">
+// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
 #define WITH_ZLIB
 #define WITH_BZIP
 
 using System;
 using System.IO;
+using System.Text;
+
 #if WITH_ZLIB
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 #endif
@@ -13,20 +22,25 @@ using ICSharpCode.SharpZipLib.BZip2;
 namespace Foole.Mpq
 {
     /// <summary>
-    /// A Stream based class for reading a file from an MPQ file
+    /// A Stream based class for reading a file from an <see cref="MpqArchive"/>.
     /// </summary>
     public class MpqStream : Stream
     {
-        private Stream _stream;
-        private int _blockSize;
+        private readonly Stream _stream;
+        private readonly int _blockSize;
 
-        private MpqEntry _entry;
+        private readonly MpqEntry _entry;
         private uint[] _blockPositions;
 
         private long _position;
         private byte[] _currentData;
         private int _currentBlockIndex = -1;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqStream"/> class.
+        /// </summary>
+        /// <param name="archive"></param>
+        /// <param name="entry"></param>
         internal MpqStream(MpqArchive archive, MpqEntry entry)
         {
             _entry = entry;
@@ -35,39 +49,56 @@ namespace Foole.Mpq
             _blockSize = archive.BlockSize;
 
             if (_entry.IsCompressed && !_entry.IsSingleUnit)
+            {
                 LoadBlockPositions();
+            }
         }
 
-        internal MpqStream( MpqEntry entry, Stream baseStream, int blockSize )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqStream"/> class.
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <param name="baseStream"></param>
+        /// <param name="blockSize"></param>
+        internal MpqStream(MpqEntry entry, Stream baseStream, int blockSize)
         {
             _entry = entry;
 
             _stream = baseStream;
             _blockSize = blockSize;
 
-            if ( _entry.IsCompressed && !_entry.IsSingleUnit )
+            if (_entry.IsCompressed && !_entry.IsSingleUnit)
+            {
                 LoadBlockPositions();
+            }
         }
 
         // Compressed files start with an array of offsets to make seeking possible
         private void LoadBlockPositions()
         {
-            int blockposcount = (int)((_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
+            var blockposcount = (int)((_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
+
             // Files with metadata have an extra block containing block checksums
             if ((_entry.Flags & MpqFileFlags.FileHasMetadata) != 0)
+            {
                 blockposcount++;
+            }
 
             _blockPositions = new uint[blockposcount];
 
-            lock(_stream)
+            lock (_stream)
             {
                 _stream.Seek(_entry.FilePos, SeekOrigin.Begin);
-                BinaryReader br = new BinaryReader(_stream);
-                for(int i = 0; i < blockposcount; i++)
-                    _blockPositions[i] = br.ReadUInt32();
+                using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
+                {
+                    for (var i = 0; i < blockposcount; i++)
+                    {
+                        _blockPositions[i] = br.ReadUInt32();
+                    }
+                }
             }
 
-            uint blockpossize = (uint) blockposcount * 4;
+            var blockpossize = (uint)blockposcount * 4;
 
             /*
             if(_blockPositions[0] != blockpossize)
@@ -76,19 +107,27 @@ namespace Foole.Mpq
 
             if (_entry.IsEncrypted)
             {
-                if (_entry.EncryptionSeed == 0)  // This should only happen when the file name is not known
+                if (_entry.EncryptionSeed == 0)
                 {
+                    // This should only happen when the file name is not known.
                     _entry.EncryptionSeed = StormBuffer.DetectFileSeed(_blockPositions[0], _blockPositions[1], blockpossize) + 1;
                     if (_entry.EncryptionSeed == 1)
+                    {
                         throw new MpqParserException("Unable to determine encyption seed");
+                    }
                 }
 
                 StormBuffer.DecryptBlock(_blockPositions, _entry.EncryptionSeed - 1);
 
                 if (_blockPositions[0] != blockpossize)
+                {
                     throw new MpqParserException("Decryption failed");
+                }
+
                 if (_blockPositions[1] > _blockSize + blockpossize)
+                {
                     throw new MpqParserException("Decryption failed");
+                }
             }
         }
 
@@ -108,21 +147,26 @@ namespace Foole.Mpq
                 offset = (uint)(blockIndex * _blockSize);
                 toread = expectedLength;
             }
+
             offset += _entry.FilePos;
 
-            byte[] data = new byte[toread];
+            var data = new byte[toread];
             lock (_stream)
             {
                 _stream.Seek(offset, SeekOrigin.Begin);
-                int read = _stream.Read(data, 0, toread);
+                var read = _stream.Read(data, 0, toread);
                 if (read != toread)
+                {
                     throw new MpqParserException("Insufficient data or invalid data length");
+                }
             }
 
             if (_entry.IsEncrypted && _entry.FileSize > 3)
             {
                 if (_entry.EncryptionSeed == 0)
+                {
                     throw new MpqParserException("Unable to determine encryption key");
+                }
 
                 encryptionseed = (uint)(blockIndex + _entry.EncryptionSeed);
                 StormBuffer.DecryptBlock(data, encryptionseed);
@@ -130,45 +174,41 @@ namespace Foole.Mpq
 
             if (_entry.IsCompressed && (toread != expectedLength))
             {
-                if ((_entry.Flags & MpqFileFlags.CompressedMulti) != 0)
-                    data = DecompressMulti(data, expectedLength);
-                else
-                    data = PKDecompress(new MemoryStream(data), expectedLength);
+                data = (_entry.Flags & MpqFileFlags.CompressedMulti) != 0
+                    ? DecompressMulti(data, expectedLength)
+                    : PKDecompress(new MemoryStream(data), expectedLength);
             }
 
             return data;
         }
 
         #region Stream overrides
-        public override bool CanRead
-        { get { return true; } }
+        /// <inheritdoc/>
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        { get { return true; } }
+        /// <inheritdoc/>
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        { get { return false; } }
+        /// <inheritdoc/>
+        public override bool CanWrite => false;
 
-        public override long Length
-        { get { return _entry.FileSize; } }
+        /// <inheritdoc/>
+        public override long Length => _entry.FileSize;
 
+        /// <inheritdoc/>
         public override long Position
         {
-            get
-            {
-                return _position;
-            }
-            set
-            {
-                Seek(value, SeekOrigin.Begin);
-            }
+            get => _position;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
+        /// <inheritdoc/>
         public override void Flush()
         {
             // NOP
         }
 
+        /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
             long target;
@@ -189,36 +229,50 @@ namespace Foole.Mpq
             }
 
             if (target < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek before the beginning of the stream");
+            }
+
             if (target >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek beyond the end of the stream");
+            }
 
             _position = target;
 
             return _position;
         }
 
+        /// <inheritdoc/>
         public override void SetLength(long value)
         {
             throw new NotSupportedException("SetLength is not supported");
         }
 
+        /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (_entry.IsSingleUnit)
+            {
                 return ReadInternalSingleUnit(buffer, offset, count);
+            }
 
-            int toread = count;
-            int readtotal = 0;
+            var toread = count;
+            var readtotal = 0;
 
             while (toread > 0)
             {
-                int read = ReadInternal(buffer, offset, toread);
-                if (read == 0) break;
+                var read = ReadInternal(buffer, offset, toread);
+                if (read == 0)
+                {
+                    break;
+                }
+
                 readtotal += read;
                 offset += read;
                 toread -= read;
             }
+
             return readtotal;
         }
 
@@ -226,12 +280,16 @@ namespace Foole.Mpq
         private int ReadInternalSingleUnit(byte[] buffer, int offset, int count)
         {
             if (_position >= Length)
+            {
                 return 0;
+            }
 
             if (_currentData == null)
+            {
                 LoadSingleUnit();
+            }
 
-            int bytestocopy = Math.Min((int)(_currentData.Length - _position), count);
+            var bytestocopy = Math.Min((int)(_currentData.Length - _position), count);
 
             Array.Copy(_currentData, _position, buffer, offset, bytestocopy);
 
@@ -242,32 +300,43 @@ namespace Foole.Mpq
         private void LoadSingleUnit()
         {
             // Read the entire file into memory
-            byte[] filedata = new byte[_entry.CompressedSize];
+            var filedata = new byte[_entry.CompressedSize];
             lock (_stream)
             {
                 _stream.Seek(_entry.FilePos, SeekOrigin.Begin);
-                int read = _stream.Read(filedata, 0, filedata.Length);
+                var read = _stream.Read(filedata, 0, filedata.Length);
                 if (read != filedata.Length)
+                {
                     throw new MpqParserException("Insufficient data or invalid data length");
+                }
             }
 
             if (_entry.CompressedSize == _entry.FileSize)
+            {
                 _currentData = filedata;
+            }
             else
+            {
                 _currentData = DecompressMulti(filedata, (int)_entry.FileSize);
+            }
         }
 
         private int ReadInternal(byte[] buffer, int offset, int count)
         {
             // OW: avoid reading past the contents of the file
             if (_position >= Length)
+            {
                 return 0;
-            
+            }
+
             BufferData();
 
-            int localposition = (int)(_position % _blockSize);
-            int bytestocopy = Math.Min(_currentData.Length - localposition, count);
-            if (bytestocopy <= 0) return 0;
+            var localposition = (int)(_position % _blockSize);
+            var bytestocopy = Math.Min(_currentData.Length - localposition, count);
+            if (bytestocopy <= 0)
+            {
+                return 0;
+            }
 
             Array.Copy(_currentData, localposition, buffer, offset, bytestocopy);
 
@@ -277,14 +346,19 @@ namespace Foole.Mpq
 
         public override int ReadByte()
         {
-            if (_position >= Length) return -1;
+            if (_position >= Length)
+            {
+                return -1;
+            }
 
             if (_entry.IsSingleUnit)
+            {
                 return ReadByteSingleUnit();
+            }
 
             BufferData();
 
-            int localposition = (int)(_position % _blockSize);
+            var localposition = (int)(_position % _blockSize);
             _position++;
             return _currentData[localposition];
         }
@@ -292,17 +366,19 @@ namespace Foole.Mpq
         private int ReadByteSingleUnit()
         {
             if (_currentData == null)
+            {
                 LoadSingleUnit();
+            }
 
             return _currentData[_position++];
         }
 
         private void BufferData()
         {
-            int requiredblock = (int)(_position / _blockSize);
+            var requiredblock = (int)(_position / _blockSize);
             if (requiredblock != _currentBlockIndex)
             {
-                int expectedlength = (int)Math.Min(Length - (requiredblock * _blockSize), _blockSize);
+                var expectedlength = (int)Math.Min(Length - (requiredblock * _blockSize), _blockSize);
                 _currentData = LoadBlock(requiredblock, expectedlength);
                 _currentBlockIndex = requiredblock;
             }
@@ -315,18 +391,18 @@ namespace Foole.Mpq
         #endregion Strem overrides
 
         /* Compression types in order:
-		 *  10 = BZip2
-		 *   8 = PKLib
-		 *   2 = ZLib
-		 *   1 = Huffman
-		 *  80 = IMA ADPCM Stereo
-		 *  40 = IMA ADPCM Mono
-		 */
+         *  10 = BZip2
+         *   8 = PKLib
+         *   2 = ZLib
+         *   1 = Huffman
+         *  80 = IMA ADPCM Stereo
+         *  40 = IMA ADPCM Mono
+         */
         private static byte[] DecompressMulti(byte[] input, int outputLength)
         {
             Stream sinput = new MemoryStream(input);
 
-            byte comptype = (byte)sinput.ReadByte();
+            var comptype = (byte)sinput.ReadByte();
 
             // WC3 onward mosly use Zlib
             // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
@@ -365,17 +441,19 @@ namespace Foole.Mpq
                     return MpqWavCompression.Decompress(sinput, 1);
                 case 0x48:
                     {
-                        byte[] result = PKDecompress(sinput, outputLength);
+                        var result = PKDecompress(sinput, outputLength);
                         return MpqWavCompression.Decompress(new MemoryStream(result), 1);
                     }
+
                 case 0x81:
                     sinput = MpqHuffman.Decompress(sinput);
                     return MpqWavCompression.Decompress(sinput, 2);
                 case 0x88:
                     {
-                        byte[] result = PKDecompress(sinput, outputLength);
+                        var result = PKDecompress(sinput, outputLength);
                         return MpqWavCompression.Decompress(new MemoryStream(result), 2);
                     }
+
                 default:
                     throw new MpqParserException("Compression is not yet supported: 0x" + comptype.ToString("X"));
             }
@@ -394,7 +472,7 @@ namespace Foole.Mpq
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
         {
-            PKLibDecompress pk = new PKLibDecompress(data);
+            var pk = new PKLibDecompress(data);
             return pk.Explode(expectedLength);
         }
 
@@ -402,17 +480,22 @@ namespace Foole.Mpq
         private static byte[] ZlibDecompress(Stream data, int expectedLength)
         {
             // This assumes that Zlib won't be used in combination with another compression type
-            byte[] Output = new byte[expectedLength];
+            var output = new byte[expectedLength];
             Stream s = new InflaterInputStream(data);
-            int Offset = 0;
+            var offset = 0;
             while (expectedLength > 0)
             {
-                int size = s.Read(Output, Offset, expectedLength);
-                if (size == 0) break;
-                Offset += size;
+                var size = s.Read(output, offset, expectedLength);
+                if (size == 0)
+                {
+                    break;
+                }
+
+                offset += size;
                 expectedLength -= size;
             }
-            return Output;
+
+            return output;
         }
 #endif
     }
