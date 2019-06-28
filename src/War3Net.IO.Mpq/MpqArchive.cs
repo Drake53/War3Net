@@ -137,7 +137,7 @@ namespace Foole.Mpq
                 // TODO: add support for encryption of the archive files
                 foreach ( var mpqFile in mpqFiles )
                 {
-                    uint locale = 0;
+                    var locale = MpqLocale.Neutral;
                     mpqFile.AddToArchive( (uint)_headerOffset, fileIndex, filePos, locale, _hashTable.Mask );
 
                     if ( archiveBeforeTables )

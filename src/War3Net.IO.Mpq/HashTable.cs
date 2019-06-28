@@ -174,7 +174,7 @@ namespace Foole.Mpq
             // TODO: make method in MpqHash for this?
             writer.Write(hash.Name1);
             writer.Write(hash.Name2);
-            writer.Write(hash.Locale);
+            writer.Write((uint)hash.Locale);
             writer.Write(hash.BlockIndex);
         }
 
@@ -182,12 +182,12 @@ namespace Foole.Mpq
         {
             for (var i = hashIndex; i <= _mask; i += step)
             {
-                if (_hashes[i].IsEmpty())
+                if (_hashes[i].IsEmpty)
                 {
                     Console.WriteLine("Marked index {0} as deleted.", i);
                     _hashes[i] = MpqHash.DELETED;
                 }
-                else if (_hashes[i].IsDeleted())
+                else if (_hashes[i].IsDeleted)
                 {
                     Console.WriteLine("Index {0} was already marked as deleted.", i);
                 }
@@ -215,7 +215,7 @@ namespace Foole.Mpq
 
         private void TryAdd(MpqHash hash, uint index)
         {
-            while (_hashes[index].IsOccupied())
+            while (!_hashes[index].IsEmpty)
             {
                 // Deal with collisions
                 index = (index + 1) & _mask;

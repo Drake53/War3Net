@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="MpqFile.cs" company="Foole (fooleau@gmail.com)">
+// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
 
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
@@ -7,22 +14,27 @@ namespace Foole.Mpq
 {
     public class MpqFile : IEquatable<MpqFile>
     {
-        //private MpqArchive _archive;
+        private readonly Stream _baseStream;
+        private readonly MpqEntry _entry;
+        private readonly uint _hashCollisions; // possible amount of collisions this unknown file had in old archive
+        private readonly int _blockSize; // used for compression
+        private readonly string _fileName;
 
-        private MpqEntry _entry;
+        private MemoryStream _compressedStream;
         private MpqHash? _hash;
         private uint _hashIndex; // position in hashtable
-        private uint _hashCollisions; // possible amount of collisions this unknown file had in old archive
 
-        private Stream _baseStream;
-        private MemoryStream _compressedStream;
-        private int _blockSize; // used for compression
-
-        private string _fileName;
-
-        public MpqFile( Stream sourceStream, string fileName, MpqFileFlags flags, ushort blockSize )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqFile"/> class.
+        /// </summary>
+        /// <param name="sourceStream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="flags"></param>
+        /// <param name="blockSize"></param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
+        public MpqFile(Stream sourceStream, string fileName, MpqFileFlags flags, ushort blockSize)
         {
-            _baseStream = sourceStream;
+            _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
             _fileName = fileName;
 
             _blockSize = 0x200 << blockSize;
@@ -30,16 +42,26 @@ namespace Foole.Mpq
             var fileSize = (uint)_baseStream.Length;
             var compressedSize = ( ( flags & MpqFileFlags.Compressed ) != 0 ) ? Compress() : fileSize;
 
-            _entry = new MpqEntry( fileName, compressedSize, fileSize, flags );
+            _entry = new MpqEntry(fileName, compressedSize, fileSize, flags);
         }
 
-        // Use this contructor for files that came from another archive, and for which the filename is unknown.
-        public MpqFile( Stream sourceStream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, MpqFileFlags flags, ushort blockSize )
-            : this( sourceStream, null, flags, blockSize )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqFile"/> class, for which the filename is unknown.
+        /// </summary>
+        /// <param name="sourceStream"></param>
+        /// <param name="mpqHash"></param>
+        /// <param name="hashIndex"></param>
+        /// <param name="hashCollisions"></param>
+        /// <param name="flags"></param>
+        /// <param name="blockSize"></param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
+        public MpqFile(Stream sourceStream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, MpqFileFlags flags, ushort blockSize)
+            : this(sourceStream, null, flags, blockSize)
         {
-            if ( mpqHash.Mask == 0 )
+            if (mpqHash.Mask == 0)
             {
-                throw new ArgumentException( "Expected the Mask value of mpqHash argument to be set to a non-zero value.", nameof(mpqHash) );
+                throw new ArgumentException("Expected the Mask value of mpqHash argument to be set to a non-zero value.", nameof(mpqHash));
             }
 
             _hash = mpqHash;
@@ -47,21 +69,42 @@ namespace Foole.Mpq
             _hashCollisions = hashCollisions;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MpqEntry MpqEntry => _entry;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MpqHash MpqHash => _hash.Value;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public uint HashIndex => _hashIndex;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public uint HashCollisions => _hashCollisions;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Stream BaseStream => _baseStream;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MemoryStream MemoryStream => _compressedStream;
 
+        /// <summary>
+        /// Gets the filename of this <see cref="MpqFile"/>.
+        /// </summary>
         public string Name => _fileName;
 
-        //public MpqArchive Archive => _archive;
+        // public MpqArchive Archive => _archive;
 
         /*public void AddToArchive( MpqArchive archive )
         {
@@ -74,21 +117,21 @@ namespace Foole.Mpq
             _entry.SetPos( 0 );
         }*/
 
-        public void AddToArchive( uint headerOffset, uint index, uint filePos, uint locale, uint mask )
+        public void AddToArchive(uint headerOffset, uint index, uint filePos, MpqLocale locale, uint mask)
         {
-            _entry.SetPos( headerOffset, filePos );
+            _entry.SetPos(headerOffset, filePos);
 
             // This file came from another archive, and has an unknown filename.
-            if ( _hash.HasValue )
+            if (_hash.HasValue)
             {
                 // Overwrite blockIndex from old archive.
                 var hash = _hash.Value;
-                _hash = new MpqHash( hash.Name1, hash.Name2, hash.Locale, index, hash.Mask );
+                _hash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, index, hash.Mask);
             }
             else
             {
-                _hash = new MpqHash( _fileName, mask, locale, index );
-                _hashIndex = MpqHash.GetIndex( _fileName, mask );
+                _hash = new MpqHash(_fileName, mask, locale, index);
+                _hashIndex = MpqHash.GetIndex(_fileName, mask);
             }
         }
 
@@ -98,20 +141,25 @@ namespace Foole.Mpq
             //WriteToStream( new StreamWriter( stream ) );
         }*/
 
-        public void WriteToStream( BinaryWriter writer )
+        public void WriteToStream(BinaryWriter writer)
         {
             var stream = _entry.IsCompressed ? _compressedStream : _baseStream;
-            while ( true )
+            while (true)
             {
                 var i = stream.ReadByte();
-                if ( i == -1 )
+                if (i == -1)
                 {
                     break;
                 }
-                writer.Write( (byte)i );
+                writer.Write((byte)i);
             }
 
             stream.Dispose();
+        }
+
+        bool IEquatable<MpqFile>.Equals(MpqFile other)
+        {
+            return StringComparer.OrdinalIgnoreCase.Compare(_fileName, other._fileName) == 0;
         }
 
         private uint Compress()
@@ -126,20 +174,20 @@ namespace Foole.Mpq
 
             _compressedStream.Position = blockOffsets[0];
 
-            for ( var blockIndex = 1; blockIndex < blockCount; blockIndex++ )
+            for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
             {
-                using ( var stream = new MemoryStream() )
+                using (var stream = new MemoryStream())
                 {
-                    using ( var deflater = new DeflaterOutputStream( stream ) )
+                    using (var deflater = new DeflaterOutputStream(stream))
                     {
-                        for ( var i = 0; i < _blockSize; i++ )
+                        for (var i = 0; i < _blockSize; i++)
                         {
                             var r = _baseStream.ReadByte();
-                            if ( r == -1 )
+                            if (r == -1)
                             {
                                 break;
                             }
-                            deflater.WriteByte( (byte)r );
+                            deflater.WriteByte((byte)r);
                         }
 
                         deflater.Finish();
@@ -148,16 +196,16 @@ namespace Foole.Mpq
 
                         // First byte in the block indicates the compression algorithm used.
                         // TODO: add enum for compression modes
-                        _compressedStream.WriteByte( 2 );
+                        _compressedStream.WriteByte(2);
 
-                        while ( true )
+                        while (true)
                         {
                             var read = stream.ReadByte();
-                            if ( read == -1 )
+                            if (read == -1)
                             {
                                 break;
                             }
-                            _compressedStream.WriteByte( (byte)read );
+                            _compressedStream.WriteByte((byte)read);
                         }
                     }
 
@@ -169,22 +217,17 @@ namespace Foole.Mpq
 
             _compressedStream.Position = 0;
 
-            using ( var writer = new BinaryWriter( _compressedStream, new System.Text.UTF8Encoding( false, true ), true ) )
+            using (var writer = new BinaryWriter(_compressedStream, new System.Text.UTF8Encoding(false, true), true))
             {
-                for ( var blockIndex = 0; blockIndex < blockCount; blockIndex++ )
+                for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
                 {
-                    writer.Write( blockOffsets[blockIndex] );
+                    writer.Write(blockOffsets[blockIndex]);
                 }
             }
 
             _compressedStream.Position = 0;
 
             return (uint)_compressedStream.Length;
-        }
-
-        bool IEquatable<MpqFile>.Equals( MpqFile other )
-        {
-            return StringComparer.OrdinalIgnoreCase.Compare( _fileName, other._fileName ) == 0;
         }
     }
 }
