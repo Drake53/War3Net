@@ -5,19 +5,21 @@ VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Mpq", "War3Net.IO.Mpq\War3Net.IO.Mpq.csproj", "{BB33E313-B458-45AE-A18E-C0978C14CC43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.Drawing.Blp", "War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj", "{75A5929C-4828-4C97-858C-0893840C27C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp", "War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj", "{75A5929C-4828-4C97-858C-0893840C27C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.Drawing.Blp.Tests", "War3Net.Drawing.Blp.Tests\War3Net.Drawing.Blp.Tests.csproj", "{F5FBAAFE-0010-4333-8D34-39ACF94B6D52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp.Tests", "War3Net.Drawing.Blp.Tests\War3Net.Drawing.Blp.Tests.csproj", "{F5FBAAFE-0010-4333-8D34-39ACF94B6D52}"
 	ProjectSection(ProjectDependencies) = postProject
 		{75A5929C-4828-4C97-858C-0893840C27C8} = {75A5929C-4828-4C97-858C-0893840C27C8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.Drawing.Tga", "War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj", "{FC21AC42-5F24-4CE5-9046-027DF1693FFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga", "War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj", "{FC21AC42-5F24-4CE5-9046-027DF1693FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.Drawing.Tga.Tests", "War3Net.Drawing.Tga.Tests\War3Net.Drawing.Tga.Tests.csproj", "{22285811-FF4E-49DA-89BC-84B8CAAA03C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga.Tests", "War3Net.Drawing.Tga.Tests\War3Net.Drawing.Tga.Tests.csproj", "{22285811-FF4E-49DA-89BC-84B8CAAA03C1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FC21AC42-5F24-4CE5-9046-027DF1693FFA} = {FC21AC42-5F24-4CE5-9046-027DF1693FFA}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.IO.Mpq.Tests", "War3Net.IO.Mpq.Tests\War3Net.IO.Mpq.Tests.csproj", "{09C7D345-4AD5-431B-8D2D-E0F766C89196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{22285811-FF4E-49DA-89BC-84B8CAAA03C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22285811-FF4E-49DA-89BC-84B8CAAA03C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22285811-FF4E-49DA-89BC-84B8CAAA03C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09C7D345-4AD5-431B-8D2D-E0F766C89196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09C7D345-4AD5-431B-8D2D-E0F766C89196}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09C7D345-4AD5-431B-8D2D-E0F766C89196}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09C7D345-4AD5-431B-8D2D-E0F766C89196}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
