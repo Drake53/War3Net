@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="TgaImageTest.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -37,7 +44,7 @@ namespace TgaLib.Test
             }
         }
 
-        public static IEnumerable<object[]> GetTgaImageData()
+        private static IEnumerable<object[]> GetTgaImageData()
         {
             yield return new object[] { "TestData/UBW8.tga", "TestData/grayscale.png", false };
             yield return new object[] { "TestData/UCM8.tga", "TestData/color.png", false };
