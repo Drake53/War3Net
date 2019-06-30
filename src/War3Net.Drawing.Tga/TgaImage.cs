@@ -159,15 +159,25 @@ namespace TgaLib
             int height = Header.Height;
             var pixelFormat = GetPixelFormat();
             var bytesPerPixel = GetBytesPerPixel();
-            var stride = bytesPerPixel * width;
+            // var stride = bytesPerPixel * width;
+            var offset = 0;
+
+            var leftToRight = Header.ImageOrigin == ImageOriginTypes.TopLeft || Header.ImageOrigin == ImageOriginTypes.BottomLeft;
+            var topToBottom = Header.ImageOrigin == ImageOriginTypes.TopLeft || Header.ImageOrigin == ImageOriginTypes.TopRight;
+
+            var xinc = leftToRight ? 1 : -1;
+            var yinc = topToBottom ? 1 : -1;
+            var xstart = leftToRight ? 0 : width - 1;
+            var ystart = topToBottom ? 0 : height - 1;
 
             var bitmap = new Bitmap(width, height);
-            for (var y = 0; y < height; y++)
+            for (var y = ystart; y >= 0 && y < height; y += yinc)
             {
-                for ( var x = 0; x < width; x++)
+                for (var x = xstart; x >= 0 && x < width; x += xinc)
                 {
-                    var offset = (x * bytesPerPixel) + (y * stride);
+                    // var offset = (x * bytesPerPixel) + (y * stride);
                     bitmap.SetPixel(x, y, GetColor(pixelFormat, offset, bytesPerPixel));
+                    offset += bytesPerPixel;
                 }
             }
 
