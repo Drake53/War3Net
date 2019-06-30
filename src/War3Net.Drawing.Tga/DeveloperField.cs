@@ -1,8 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="DeveloperField.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace TgaLib
 {
@@ -11,25 +15,8 @@ namespace TgaLib
     /// </summary>
     public class DeveloperField
     {
-        #region properties
-
         /// <summary>
-        /// Gets or sets a tag.
-        /// </summary>
-        public ushort Tag { get; set; }
-
-        /// <summary>
-        /// Gets or sets developer field.
-        /// </summary>
-        public byte[] Data { get; set; }
-
-        #endregion  // properties
-
-
-        #region constructors
-
-        /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="DeveloperField"/> class.
         /// </summary>
         /// <param name="reader">
         /// A binary reader that contains TGA file. Caller must dipose the binary reader.
@@ -71,6 +58,14 @@ namespace TgaLib
             }
         }
 
-        #endregion  // constructors
+        /// <summary>
+        /// Gets or sets a tag.
+        /// </summary>
+        public ushort Tag { get; set; }
+
+        /// <summary>
+        /// Gets or sets developer field.
+        /// </summary>
+        public byte[] Data { get; set; }
     }
 }

@@ -1,7 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="Footer.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace TgaLib
@@ -12,64 +17,11 @@ namespace TgaLib
     /// </summary>
     public class Footer
     {
-        #region constants
-
-        /// <summary>
-        /// Field length.
-        /// </summary>
-        private static class FieldLength
-        {
-            /// <summary>Extension area offset.</summary>
-            public const int ExtensionAreaOffset = 4;
-
-            /// <summary>Developer directory offset.</summary>
-            public const int DeveloperDirectoryOffset = 4;
-
-            /// <summary>Signature.</summary>
-            public const int Signature = 16;
-
-            /// <summary>Reserved character.</summary>
-            public const int ReservedCharacter = 1;
-
-            /// <summary>Binary zero string terminator.</summary>
-            public const int BinaryZeroStringTerminator = 1;
-
-            /// <summary>Footer total length.</summary>
-            public const int FooterLength = ExtensionAreaOffset + DeveloperDirectoryOffset + Signature + ReservedCharacter + BinaryZeroStringTerminator;
-        }
-
         /// <summary>Signature of TGA file.</summary>
         private const string TgaSignature = "TRUEVISION-XFILE.\0";
 
-        #endregion  // constants
-
-
-        #region properties
-
         /// <summary>
-        /// Gets or sets an extension area offset.
-        /// </summary>
-        public uint ExtensionAreaOffset { get; set; }
-
-        /// <summary>
-        /// Gets or sets a developer directory offset.
-        /// </summary>
-        public uint DeveloperDirectoryOffset { get; set; }
-
-        /// <summary>
-        /// Gets or sets a signature.
-        /// (Treats together with "Signature", "Reserved Character" and "Binary Zero String Terminator"
-        /// in the specification as a signature.)
-        /// </summary>
-        public string Signature { get; set; }
-
-        #endregion  // properties
-
-
-        #region constructors
-
-        /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="Footer"/> class.
         /// </summary>
         /// <param name="reader">
         /// A binary reader that contains TGA file. Caller must dipose the binary reader.
@@ -101,10 +53,22 @@ namespace TgaLib
             }
         }
 
-        #endregion  // constructors
+        /// <summary>
+        /// Gets or sets an extension area offset.
+        /// </summary>
+        public uint ExtensionAreaOffset { get; set; }
 
+        /// <summary>
+        /// Gets or sets a developer directory offset.
+        /// </summary>
+        public uint DeveloperDirectoryOffset { get; set; }
 
-        #region public methods
+        /// <summary>
+        /// Gets or sets a signature.
+        /// (Treats together with "Signature", "Reserved Character" and "Binary Zero String Terminator"
+        /// in the specification as a signature.)
+        /// </summary>
+        public string Signature { get; set; }
 
         /// <summary>
         /// Gets whether has a footer or not.
@@ -132,7 +96,7 @@ namespace TgaLib
             try
             {
                 var signature = ReadSignature(reader);
-                return (signature == TgaSignature);
+                return signature == TgaSignature;
             }
             finally
             {
@@ -154,11 +118,6 @@ namespace TgaLib
             return sb.ToString();
         }
 
-        #endregion  // public methods
-
-
-        #region private methods
-
         /// <summary>
         /// Reads a signature.
         /// </summary>
@@ -167,13 +126,35 @@ namespace TgaLib
         private static string ReadSignature(BinaryReader reader)
         {
             // Seek to the position of signature
-            var signatureSize = (FieldLength.Signature + FieldLength.ReservedCharacter + FieldLength.BinaryZeroStringTerminator);
+            var signatureSize = FieldLength.Signature + FieldLength.ReservedCharacter + FieldLength.BinaryZeroStringTerminator;
             reader.BaseStream.Seek(-signatureSize, SeekOrigin.End);
 
             // Read the signature
             return reader.ReadString(signatureSize, Encoding.ASCII);
         }
 
-        #endregion  // private methods
+        /// <summary>
+        /// Field length.
+        /// </summary>
+        private static class FieldLength
+        {
+            /// <summary>Extension area offset.</summary>
+            public const int ExtensionAreaOffset = 4;
+
+            /// <summary>Developer directory offset.</summary>
+            public const int DeveloperDirectoryOffset = 4;
+
+            /// <summary>Signature.</summary>
+            public const int Signature = 16;
+
+            /// <summary>Reserved character.</summary>
+            public const int ReservedCharacter = 1;
+
+            /// <summary>Binary zero string terminator.</summary>
+            public const int BinaryZeroStringTerminator = 1;
+
+            /// <summary>Footer total length.</summary>
+            public const int FooterLength = ExtensionAreaOffset + DeveloperDirectoryOffset + Signature + ReservedCharacter + BinaryZeroStringTerminator;
+        }
     }
 }

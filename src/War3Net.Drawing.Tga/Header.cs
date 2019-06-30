@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="Header.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TgaLib
 {
@@ -13,7 +15,25 @@ namespace TgaLib
     /// </summary>
     public class Header
     {
-        #region properties
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Header"/> class.
+        /// </summary>
+        /// <param name="reader">A binary reader that contains TGA file. Caller must dipose the binary reader.</param>
+        public Header(BinaryReader reader)
+        {
+            IDLength = reader.ReadByte();
+            ColorMapType = reader.ReadByte();
+            ImageType = reader.ReadByte();
+            ColorMapStart = reader.ReadUInt16();
+            ColorMapLength = reader.ReadUInt16();
+            ColorMapDepth = reader.ReadByte();
+            XOffset = reader.ReadUInt16();
+            YOffset = reader.ReadUInt16();
+            Width = reader.ReadUInt16();
+            Height = reader.ReadUInt16();
+            PixelDepth = reader.ReadByte();
+            ImageDescriptor = reader.ReadByte();
+        }
 
         /// <summary>
         /// Gets or sets a length of Image ID field.
@@ -78,42 +98,12 @@ namespace TgaLib
         /// <summary>
         /// Gets a number of bits of attributes per pixel.
         /// </summary>
-        public byte AttributeBits { get { return BitsExtractor.Extract(ImageDescriptor, 0, 4); } }
+        public byte AttributeBits => BitsExtractor.Extract(ImageDescriptor, 0, 4);
 
         /// <summary>
         /// Gets an image origin.
         /// </summary>
-        public byte ImageOrigin { get { return BitsExtractor.Extract(ImageDescriptor, 4, 2); } }
-
-        #endregion  // properties
-
-
-        #region constructors
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="reader">A binary reader that contains TGA file. Caller must dipose the binary reader.</param>
-        public Header(BinaryReader reader)
-        {
-            IDLength = reader.ReadByte();
-            ColorMapType = reader.ReadByte();
-            ImageType = reader.ReadByte();
-            ColorMapStart = reader.ReadUInt16();
-            ColorMapLength = reader.ReadUInt16();
-            ColorMapDepth = reader.ReadByte();
-            XOffset = reader.ReadUInt16();
-            YOffset = reader.ReadUInt16();
-            Width = reader.ReadUInt16();
-            Height = reader.ReadUInt16();
-            PixelDepth = reader.ReadByte();
-            ImageDescriptor = reader.ReadByte();
-        }
-
-        #endregion  // constructors
-
-
-        #region public methods
+        public byte ImageOrigin => BitsExtractor.Extract(ImageDescriptor, 4, 2);
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -133,13 +123,12 @@ namespace TgaLib
             sb.AppendFormat("Width          : {0}\r\n", Width);
             sb.AppendFormat("Height         : {0}\r\n", Height);
             sb.AppendFormat("PixelDepth     : {0}\r\n", PixelDepth);
-            sb.AppendFormat("ImageDescriptor: 0x{0:X02}(attribute bits: {1}, image origin: {2})\r\n",
+            sb.AppendFormat(
+                            "ImageDescriptor: 0x{0:X02}(attribute bits: {1}, image origin: {2})\r\n",
                             ImageDescriptor,
                             AttributeBits,
                             ImageOriginTypes.ToFormattedText(ImageOrigin));
             return sb.ToString();
         }
-
-        #endregion  // public methods
     }
 }

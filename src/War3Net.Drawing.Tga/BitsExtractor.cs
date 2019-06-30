@@ -1,8 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="BitsExtractor.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 
 namespace TgaLib
 {
@@ -11,8 +14,6 @@ namespace TgaLib
     /// </summary>
     internal static class BitsExtractor
     {
-        #region public methods
-
         /// <summary>
         /// Extract bits from byte.
         /// </summary>
@@ -27,20 +28,9 @@ namespace TgaLib
         {
             const byte BitCount = 8;
 
-            if (bitOffset + extractBitCount > BitCount)
-            {
-                throw new ArgumentOutOfRangeException(
-                    string.Format("The sum of {0}({1}) and {2}({3}) is larger than the {4} bit.",
-                                  nameof(bitOffset),
-                                  bitOffset,
-                                  nameof(extractBitCount),
-                                  extractBitCount,
-                                  BitCount));
-            }
-
-            return (byte)(((uint)value >> bitOffset) & ((uint)byte.MaxValue >> (BitCount - extractBitCount)));
+            return bitOffset + extractBitCount > BitCount
+                ? throw new ArgumentOutOfRangeException($"The sum of {nameof(bitOffset)}({bitOffset}) and {nameof(extractBitCount)}({extractBitCount}) is larger than the {BitCount} bit.")
+                : (byte)(((uint)value >> bitOffset) & ((uint)byte.MaxValue >> (BitCount - extractBitCount)));
         }
-
-        #endregion  // public methods
     }
 }

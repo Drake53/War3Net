@@ -1,8 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="DeveloperArea.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace TgaLib
 {
@@ -11,20 +15,8 @@ namespace TgaLib
     /// </summary>
     public class DeveloperArea
     {
-        #region properties
-
         /// <summary>
-        /// Gets or sets developer fields.
-        /// </summary>
-        public DeveloperField[] Fields { get; set; }
-
-        #endregion  // properties
-
-
-        #region constructors
-
-        /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="DeveloperArea"/> class.
         /// </summary>
         /// <param name="reader">
         /// A binary reader that contains TGA file. Caller must dipose the binary reader.
@@ -37,19 +29,20 @@ namespace TgaLib
         /// </exception>
         public DeveloperArea(BinaryReader reader, uint developerAreaOffset)
         {
+            var originalPosition = reader?.BaseStream.Position ?? throw new ArgumentNullException(nameof(reader));
+
             if (!reader.BaseStream.CanSeek)
             {
                 throw new InvalidOperationException("Can't search developer area, because a base stream doesn't support Seek.");
             }
 
-            var originalPosition = reader.BaseStream.Position;
             try
             {
                 reader.BaseStream.Seek(developerAreaOffset, SeekOrigin.Begin);
 
                 var tagCount = reader.ReadUInt16();
                 Fields = new DeveloperField[tagCount];
-                for (int i = 0; i < tagCount; ++i)
+                for (var i = 0; i < tagCount; ++i)
                 {
                     var tag = reader.ReadUInt16();
                     var offset = reader.ReadUInt32();
@@ -64,6 +57,9 @@ namespace TgaLib
             }
         }
 
-        #endregion  // constructors
+        /// <summary>
+        /// Gets or sets developer fields.
+        /// </summary>
+        public DeveloperField[] Fields { get; set; }
     }
 }

@@ -1,7 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="ExtensionArea.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace TgaLib
@@ -11,33 +16,53 @@ namespace TgaLib
     /// </summary>
     public class ExtensionArea
     {
-        #region constants
-
         /// <summary>
-        /// Field length.
+        /// Initializes a new instance of the <see cref="ExtensionArea"/> class.
         /// </summary>
-        private static class FieldLength
+        /// <param name="reader">
+        /// A binary reader that contains TGA file. Caller must dipose the binary reader.
+        /// A position of base stream of binary reader roll back in the constructor.
+        /// </param>
+        /// <param name="extensionAreaOffset">An extension area offset.</param>
+        /// <exception cref="InvalidOperationException">
+        /// Throws if a base stream of <paramref name="reader"/> doesn't support Seek,
+        /// because extension area exists in the position specified an extension area offset in the footer.
+        /// </exception>
+        public ExtensionArea(BinaryReader reader, uint extensionAreaOffset)
         {
-            /// <summary>Author name.</summary>
-            public const int AuthorName = 41;
+            if (!reader.BaseStream.CanSeek)
+            {
+                throw new InvalidOperationException("Can't search extension area, because a base stream doesn't support Seek.");
+            }
 
-            /// <summary>Author comments.</summary>
-            public const int AuthorComments = 324;
+            var originalPosition = reader.BaseStream.Position;
+            try
+            {
+                reader.BaseStream.Seek(extensionAreaOffset, SeekOrigin.Begin);
 
-            /// <summary>Job name/ID.</summary>
-            public const int JobNameID = 41;
-
-            /// <summary>Software ID.</summary>
-            public const int SoftwareID = 41;
-
-            /// <summary>Software version letter.</summary>
-            public const int SoftwareVersionLetter = 1;
+                ExtensionSize = reader.ReadUInt16();
+                AuthorName = reader.ReadString(FieldLength.AuthorName, Encoding.ASCII);
+                AuthorComments = reader.ReadString(FieldLength.AuthorComments, Encoding.ASCII);
+                TimeStamp = ReadTimeStamp(reader);
+                JobNameID = reader.ReadString(FieldLength.JobNameID, Encoding.ASCII);
+                JobTime = ReadJobTime(reader);
+                SoftwareID = reader.ReadString(FieldLength.SoftwareID, Encoding.ASCII);
+                SoftwareVersion = ReadSoftwareVersion(reader);
+                KeyColor = reader.ReadUInt32();
+                PixelAspectRatioWidth = reader.ReadUInt16();
+                PixelAspectRatioHeight = reader.ReadUInt16();
+                GammaNumerator = reader.ReadUInt16();
+                GammaDenominator = reader.ReadUInt16();
+                ColorCorrectionOffset = reader.ReadUInt32();
+                PostageStampOffset = reader.ReadUInt32();
+                ScanLineOffset = reader.ReadUInt32();
+                AttributesType = reader.ReadByte();
+            }
+            finally
+            {
+                reader.BaseStream.Position = originalPosition;
+            }
         }
-
-        #endregion  // constants
-
-
-        #region properties
 
         /// <summary>
         /// Gets or sets a size of extension area.
@@ -124,64 +149,6 @@ namespace TgaLib
         /// </summary>
         public byte AttributesType { get; set; }
 
-        #endregion  // properties
-
-
-        #region constructors
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="reader">
-        /// A binary reader that contains TGA file. Caller must dipose the binary reader.
-        /// A position of base stream of binary reader roll back in the constructor.
-        /// </param>
-        /// <param name="extensionAreaOffset">An extension area offset.</param>
-        /// <exception cref="InvalidOperationException">
-        /// Throws if a base stream of <paramref name="reader"/> doesn't support Seek,
-        /// because extension area exists in the position specified an extension area offset in the footer.
-        /// </exception>
-        public ExtensionArea(BinaryReader reader, uint extensionAreaOffset)
-        {
-            if (!reader.BaseStream.CanSeek)
-            {
-                throw new InvalidOperationException("Can't search extension area, because a base stream doesn't support Seek.");
-            }
-
-            var originalPosition = reader.BaseStream.Position;
-            try
-            {
-                reader.BaseStream.Seek(extensionAreaOffset, SeekOrigin.Begin);
-
-                ExtensionSize = reader.ReadUInt16();
-                AuthorName = reader.ReadString(FieldLength.AuthorName, Encoding.ASCII);
-                AuthorComments = reader.ReadString(FieldLength.AuthorComments, Encoding.ASCII);
-                TimeStamp = ReadTimeStamp(reader);
-                JobNameID = reader.ReadString(FieldLength.JobNameID, Encoding.ASCII);
-                JobTime = ReadJobTime(reader);
-                SoftwareID = reader.ReadString(FieldLength.SoftwareID, Encoding.ASCII);
-                SoftwareVersion = ReadSoftwareVersion(reader);
-                KeyColor = reader.ReadUInt32();
-                PixelAspectRatioWidth = reader.ReadUInt16();
-                PixelAspectRatioHeight = reader.ReadUInt16();
-                GammaNumerator = reader.ReadUInt16();
-                GammaDenominator = reader.ReadUInt16();
-                ColorCorrectionOffset = reader.ReadUInt32();
-                PostageStampOffset = reader.ReadUInt32();
-                ScanLineOffset = reader.ReadUInt32();
-                AttributesType = reader.ReadByte();
-            }
-            finally
-            {
-                reader.BaseStream.Position = originalPosition;
-            }
-        }
-
-        #endregion  // constructors
-
-
-        #region public methods
-
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
@@ -200,6 +167,7 @@ namespace TgaLib
             {
                 sb.AppendLine("TimeStamp            : not specified");
             }
+
             sb.AppendFormat("Job Name/ID          : {0}\r\n", JobNameID.TrimEnd('\0'));
             sb.AppendFormat("JobTime              : {0:hh\\:mm\\:ss}\r\n", JobTime);
             sb.AppendFormat("SoftwareID           : {0}\r\n", SoftwareID);
@@ -213,25 +181,22 @@ namespace TgaLib
             {
                 sb.AppendLine("PixelAspectRatio     : not specified");
             }
+
             if (GammaDenominator != 0)
             {
-                sb.AppendFormat("GammaValue           : {0:0.0}\r\n", ((double)GammaNumerator) / ((double)GammaDenominator));
+                sb.AppendFormat("GammaValue           : {0:0.0}\r\n", GammaNumerator / ((double)GammaDenominator));
             }
             else
             {
                 sb.AppendLine("GammaValue           : not specified");
             }
+
             sb.AppendFormat("ColorCorrectionOffset: {0}\r\n", ColorCorrectionOffset);
             sb.AppendFormat("PostageStampOffset   : {0}\r\n", PostageStampOffset);
             sb.AppendFormat("ScanLineOffset       : {0}\r\n", ScanLineOffset);
             sb.AppendFormat("AttributesType       : {0}\r\n", AttributesType);
             return sb.ToString();
         }
-
-        #endregion  // public methods
-
-
-        #region private methods
 
         /// <summary>
         /// Reads a time-stamp.
@@ -247,11 +212,9 @@ namespace TgaLib
             var minute = reader.ReadUInt16();
             var second = reader.ReadUInt16();
 
-            if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
-            {
-                return null;
-            }
-            return new DateTime(year, month, day, hour, minute, second);
+            return (year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0)
+                ? null
+                : (DateTime?)new DateTime(year, month, day, hour, minute, second);
         }
 
         /// <summary>
@@ -276,9 +239,28 @@ namespace TgaLib
         {
             var versionNumber = reader.ReadUInt16();
             var versionLetter = reader.ReadString(FieldLength.SoftwareVersionLetter, Encoding.ASCII);
-            return string.Format("{0:0.00}{1}", ((double)versionNumber) / 100.0, versionLetter.TrimEnd('\0').TrimEnd(' '));
+            return string.Format("{0:0.00}{1}", versionNumber / 100.0, versionLetter.TrimEnd('\0').TrimEnd(' '));
         }
 
-        #endregion  // private methods
+        /// <summary>
+        /// Field length.
+        /// </summary>
+        private static class FieldLength
+        {
+            /// <summary>Author name.</summary>
+            public const int AuthorName = 41;
+
+            /// <summary>Author comments.</summary>
+            public const int AuthorComments = 324;
+
+            /// <summary>Job name/ID.</summary>
+            public const int JobNameID = 41;
+
+            /// <summary>Software ID.</summary>
+            public const int SoftwareID = 41;
+
+            /// <summary>Software version letter.</summary>
+            public const int SoftwareVersionLetter = 1;
+        }
     }
 }
