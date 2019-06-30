@@ -9,7 +9,7 @@ namespace TgaLib
     /// <summary>
     /// Bits extraction utility.
     /// </summary>
-    public /*internal*/ static class BitsExtractor
+    internal static class BitsExtractor
     {
         #region public methods
 
