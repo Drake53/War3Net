@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="TgaImage.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -14,61 +21,16 @@ namespace TgaLib
         /// <summary>
         /// Use the alpha channel forcefully, if true.
         /// </summary>
-        private bool useAlphaChannelForcefully_;
-
-
-        /// <summary>
-        /// Gets or sets a header.
-        /// </summary>
-        public Header Header { get; set; }
+        private readonly bool _useAlphaChannelForcefully;
 
         /// <summary>
-        /// Gets or sets an image ID.
-        /// </summary>
-        public byte[] ImageID { get; set; }
-
-        /// <summary>
-        /// Gets or sets a color map(palette).
-        /// </summary>
-        public byte[] ColorMap { get; set; }
-
-        /// <summary>
-        /// Gets or sets an image bytes array.
-        /// </summary>
-        public byte[] ImageBytes { get; set; }
-
-        /// <summary>
-        /// Gets or sets a developer area.
-        /// </summary>
-        public DeveloperArea DeveloperArea { get; set; }
-
-        /// <summary>
-        /// Gets or sets an extension area.
-        /// </summary>
-        public ExtensionArea ExtensionArea { get; set; }
-
-        /// <summary>
-        /// Gets or sets a footer.
-        /// </summary>
-        public Footer Footer { get; set; }
-
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="reader">A binary reader that contains TGA file. Caller must dipose the binary reader.</param>
-        public TgaImage(BinaryReader reader) : this(reader, false)
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="TgaImage"/> class.
         /// </summary>
         /// <param name="reader">A binary reader that contains TGA file. Caller must dipose the binary reader.</param>
         /// <param name="useAlphaChannelForcefully">Use the alpha channel forcefully, if true.</param>
-        public TgaImage(BinaryReader reader, bool useAlphaChannelForcefully)
+        public TgaImage(BinaryReader reader, bool useAlphaChannelForcefully = false)
         {
-            useAlphaChannelForcefully_ = useAlphaChannelForcefully;
+            _useAlphaChannelForcefully = useAlphaChannelForcefully;
 
             Header = new Header(reader);
 
@@ -118,6 +80,40 @@ namespace TgaLib
             ReadImageBytes(reader);
         }
 
+        /// <summary>
+        /// Gets or sets a header.
+        /// </summary>
+        public Header Header { get; set; }
+
+        /// <summary>
+        /// Gets or sets an image ID.
+        /// </summary>
+        public byte[] ImageID { get; set; }
+
+        /// <summary>
+        /// Gets or sets a color map(palette).
+        /// </summary>
+        public byte[] ColorMap { get; set; }
+
+        /// <summary>
+        /// Gets or sets an image bytes array.
+        /// </summary>
+        public byte[] ImageBytes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a developer area.
+        /// </summary>
+        public DeveloperArea DeveloperArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets an extension area.
+        /// </summary>
+        public ExtensionArea ExtensionArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets a footer.
+        /// </summary>
+        public Footer Footer { get; set; }
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -139,6 +135,7 @@ namespace TgaLib
             {
                 sb.AppendLine("No extension area");
             }
+
             sb.AppendLine();
 
             sb.AppendLine("[Footer]");
@@ -150,6 +147,7 @@ namespace TgaLib
             {
                 sb.AppendLine("No footer");
             }
+
             return sb.ToString();
         }
 
@@ -159,7 +157,6 @@ namespace TgaLib
             int height = Header.Height;
             var pixelFormat = GetPixelFormat();
             var bytesPerPixel = GetBytesPerPixel();
-            // var stride = bytesPerPixel * width;
             var offset = 0;
 
             var leftToRight = Header.ImageOrigin == ImageOriginTypes.TopLeft || Header.ImageOrigin == ImageOriginTypes.BottomLeft;
@@ -175,13 +172,72 @@ namespace TgaLib
             {
                 for (var x = xstart; x >= 0 && x < width; x += xinc)
                 {
-                    // var offset = (x * bytesPerPixel) + (y * stride);
                     bitmap.SetPixel(x, y, GetColor(pixelFormat, offset, bytesPerPixel));
                     offset += bytesPerPixel;
                 }
             }
 
             return bitmap;
+        }
+
+        private static int StretchColorChannel(int value, int from, int to)
+        {
+            if (from != 5 || to != 8)
+            {
+                throw new NotImplementedException();
+            }
+
+            return value | (value >> from);
+        }
+
+        private static int GetBytesPerPixel(PixelFormat pixelFormat)
+        {
+            return (GetBitsPerPixel(pixelFormat) + 7) / 8;
+        }
+
+        private static int GetBitsPerPixel(PixelFormat pixelFormat)
+        {
+            switch (pixelFormat)
+            {
+                case PixelFormat.Format8bppIndexed:
+                    return 8;
+                case PixelFormat.Format16bppArgb1555:
+                case PixelFormat.Format16bppGrayScale:
+                case PixelFormat.Format16bppRgb555:
+                case PixelFormat.Format16bppRgb565:
+                    return 16;
+                case PixelFormat.Format24bppRgb:
+                    return 24;
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppPArgb:
+                case PixelFormat.Format32bppRgb:
+                    return 32;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Gets a palette index.
+        /// </summary>
+        /// <param name="indexData">An index data.</param>
+        /// <returns>Returns a palette index.</returns>
+        private static long GetPaletteIndex(byte[] indexData)
+        {
+            switch (indexData.Length)
+            {
+                case 1:
+                    return indexData[0];
+
+                case 2:
+                    return BitConverter.ToUInt16(indexData, 0);
+
+                case 4:
+                    return BitConverter.ToUInt32(indexData, 0);
+
+                default:
+                    throw new NotSupportedException(string.Format("A byte length of index data is not supported({0}bytes).", indexData.Length));
+            }
         }
 
         private Color GetColor(PixelFormat pixelFormat, int offset, int bytesPerPixel)
@@ -197,8 +253,10 @@ namespace TgaLib
                     // Assumes that the image is greyscale.
                     return Color.FromArgb(byte1, byte1, byte1);
                 case PixelFormat.Format16bppRgb555:
-                    //return Color.FromArgb(( byte2 & 0x7c ) << 1, ( ( byte2 & 0x03 ) >> 5 ) | ( byte1 & 0xe0 ), ( byte1 & 0x1f ) >> 3);
-                    return Color.FromArgb(StretchColorChannel(( byte2 & 0x7c ) << 1, 5, 8), StretchColorChannel(( ( byte2 & 0x03 ) << 6 ) | (( byte1 & 0xe0 ) >> 2), 5, 8), StretchColorChannel(( byte1 & 0x1f ) << 3, 5, 8));
+                    return Color.FromArgb(
+                        StretchColorChannel((byte2 & 0x7c) << 1, 5, 8),
+                        StretchColorChannel(((byte2 & 0x03) << 6) | ((byte1 & 0xe0) >> 2), 5, 8),
+                        StretchColorChannel((byte1 & 0x1f) << 3, 5, 8));
                 case PixelFormat.Format16bppRgb565:
                     throw new NotSupportedException();
                 case PixelFormat.Format24bppRgb:
@@ -211,33 +269,6 @@ namespace TgaLib
                     throw new NotImplementedException();
             }
         }
-
-        private static int StretchColorChannel(int value, int from, int to)
-        {
-            if (from != 5 || to != 8)
-                throw new NotImplementedException();
-
-            return value | ( value >> from );
-        }
-
-        /// <summary>
-        /// Gets a bitmap image.
-        /// </summary>
-        /// <returns>Returns a bitmap image.</returns>
-        /*public BitmapSource GetBitmapSource()
-        {
-            int width = Header.Width;
-            int height = Header.Height;
-            var dpi = 96d;
-            var pixelFormat = GetPixelFormat();
-            var stride = GetBytesPerPixel() * width;
-            var source = BitmapSource.Create(width, height, dpi, dpi, pixelFormat, null, ImageBytes, stride);
-            source.Freeze();
-
-            var transformedSource = Transform(source);
-
-            return transformedSource;
-        }*/
 
         /// <summary>
         /// Gets a pixel format of TGA image.
@@ -257,8 +288,8 @@ namespace TgaLib
                                 return PixelFormat.Format16bppRgb555;
                             case ColorDepth.Bpp16:
                                 // return PixelFormats.Bgr555;
-                                return PixelFormat.Format16bppRgb555;
                                 // return PixelFormat.Format16bppRgb565;
+                                return PixelFormat.Format16bppRgb555;
 
                             case ColorDepth.Bpp24:
                                 // return PixelFormats.Bgr24;
@@ -283,8 +314,8 @@ namespace TgaLib
                                 return PixelFormat.Format16bppRgb555;
                             case ColorDepth.Bpp16:
                                 // return PixelFormats.Bgr555;
-                                return PixelFormat.Format16bppRgb555;
                                 // return PixelFormat.Format16bppRgb565;
+                                return PixelFormat.Format16bppRgb555;
 
                             case ColorDepth.Bpp24:
                                 // return PixelFormats.Bgr24;
@@ -307,7 +338,6 @@ namespace TgaLib
                         {
                             case ColorDepth.Bpp8:
                                 // return PixelFormats.Gray8;
-                                // throw new NotSupportedException();
                                 return PixelFormat.Format8bppIndexed;
 
                             default:
@@ -328,35 +358,7 @@ namespace TgaLib
         private int GetBytesPerPixel()
         {
             var pixelFormat = GetPixelFormat();
-            //return ( pixelFormat.BitsPerPixel + 7 ) / 8;
             return GetBytesPerPixel(pixelFormat);
-        }
-
-        private static int GetBytesPerPixel(PixelFormat pixelFormat)
-        {
-            return ( GetBitsPerPixel(pixelFormat) + 7 ) / 8;
-        }
-
-        private static int GetBitsPerPixel(PixelFormat pixelFormat)
-        {
-            switch (pixelFormat)
-            {
-                case PixelFormat.Format8bppIndexed:
-                    return 8;
-                case PixelFormat.Format16bppArgb1555:
-                case PixelFormat.Format16bppGrayScale:
-                case PixelFormat.Format16bppRgb555:
-                case PixelFormat.Format16bppRgb565:
-                    return 16;
-                case PixelFormat.Format24bppRgb:
-                    return 24;
-                case PixelFormat.Format32bppArgb:
-                case PixelFormat.Format32bppPArgb:
-                case PixelFormat.Format32bppRgb:
-                    return 32;
-                default:
-                    throw new NotSupportedException();
-            }
         }
 
         /// <summary>
@@ -395,9 +397,9 @@ namespace TgaLib
             // (Pixel data is an index data, if an image type is color-mapped.)
             var bytesPerPixel = (Header.PixelDepth + 7) / 8;
 
-            int numberOfPixels = Header.Width * Header.Height;
+            var numberOfPixels = Header.Width * Header.Height;
 
-            for (int i = 0; i < numberOfPixels; ++i)
+            for (var i = 0; i < numberOfPixels; ++i)
             {
                 var pixelData = ExtractPixelData(reader.ReadBytes(bytesPerPixel));
                 Array.Copy(pixelData, 0, ImageBytes, i * pixelData.Length, pixelData.Length);
@@ -412,6 +414,7 @@ namespace TgaLib
         {
             // most significant bit of repetitionCountField deetermins whether run-length packet or raw packet.
             const byte RunLengthPacketMask = 0x80;
+
             // rest of repetitionCountField represents number of pixels encoded by the packet - 1
             // (actual nmber of pixels encoded by the packet is repetitionCountField + 1)
             const byte RepetitionCountMask = 0x7F;
@@ -421,19 +424,20 @@ namespace TgaLib
             var bytesPerPixel = (Header.PixelDepth + 7) / 8;
 
             var numberOfPixels = Header.Width * Header.Height;
-            int repetitionCount = 0;
-            for (int processedPixels = 0; processedPixels < numberOfPixels; processedPixels += repetitionCount)
+            int repetitionCount;
+            for (var processedPixels = 0; processedPixels < numberOfPixels; processedPixels += repetitionCount)
             {
                 var repetitionCountField = reader.ReadByte();
-                bool isRunLengthPacket = ((repetitionCountField & RunLengthPacketMask) != 0x00);
+                var isRunLengthPacket = (repetitionCountField & RunLengthPacketMask) != 0x00;
                 repetitionCount = (repetitionCountField & RepetitionCountMask) + 1;
 
                 if (isRunLengthPacket)
                 {
                     // Run-length packet
                     var pixelData = ExtractPixelData(reader.ReadBytes(bytesPerPixel));
+
                     // Repeats same pixel data
-                    for (int i = 0; i < repetitionCount; ++i)
+                    for (var i = 0; i < repetitionCount; ++i)
                     {
                         Array.Copy(pixelData, 0, ImageBytes, (processedPixels + i) * pixelData.Length, pixelData.Length);
                     }
@@ -442,7 +446,7 @@ namespace TgaLib
                 {
                     // Raw packet
                     // Repeats different pixel data
-                    for (int i = 0; i < repetitionCount; ++i)
+                    for (var i = 0; i < repetitionCount; ++i)
                     {
                         var pixelData = ExtractPixelData(reader.ReadBytes(bytesPerPixel));
                         Array.Copy(pixelData, 0, ImageBytes, (processedPixels + i) * pixelData.Length, pixelData.Length);
@@ -461,7 +465,7 @@ namespace TgaLib
         /// </returns>
         private byte[] ExtractPixelData(byte[] rawPixelData)
         {
-            byte[] pixelData = null;
+            byte[] pixelData;
 
             switch (Header.ImageType)
             {
@@ -472,13 +476,15 @@ namespace TgaLib
                         var paletteIndex = GetPaletteIndex(rawPixelData);
                         var bytesPerPixel = GetBytesPerPixel();
                         var realPixelData = new byte[bytesPerPixel];
-                        Array.Copy(ColorMap,
+                        Array.Copy(
+                                   ColorMap,
                                    (Header.ColorMapStart + paletteIndex) * bytesPerPixel,
                                    realPixelData,
                                    0,
                                    realPixelData.Length);
                         pixelData = realPixelData;
                     }
+
                     break;
 
                 case ImageTypes.TrueColor:
@@ -494,36 +500,12 @@ namespace TgaLib
                         string.Format("Image type \"{0}({1})\" isn't supported.", Header.ImageType, ImageTypes.ToFormattedText(Header.ImageType)));
             }
 
-            //if (!HasAlpha() && !useAlphaChannelForcefully_ && (GetPixelFormat() == PixelFormats.Bgra32))
-            if (!HasAlpha() && !useAlphaChannelForcefully_ && ( GetBytesPerPixel(GetPixelFormat()) >= 4 ))
+            if (!HasAlpha() && !_useAlphaChannelForcefully && (GetBytesPerPixel(GetPixelFormat()) >= 4))
             {
                 pixelData[ArgbOffset.Alpha] = 0xFF;
             }
 
             return pixelData;
-        }
-
-        /// <summary>
-        /// Gets a palette index.
-        /// </summary>
-        /// <param name="indexData">An index data.</param>
-        /// <returns>Returns a palette index.</returns>
-        private long GetPaletteIndex(byte[] indexData)
-        {
-            switch (indexData.Length)
-            {
-                case 1:
-                    return indexData[0];
-
-                case 2:
-                    return BitConverter.ToUInt16(indexData, 0);
-
-                case 4:
-                    return BitConverter.ToUInt32(indexData, 0);
-
-                default:
-                    throw new NotSupportedException(string.Format("A byte length of index data is not supported({0}bytes).", indexData.Length));
-            }
         }
 
         /// <summary>
@@ -535,7 +517,7 @@ namespace TgaLib
         /// </returns>
         private bool HasAlpha()
         {
-            bool hasAlpha = (Header.AttributeBits == 8) || (GetBytesPerPixel(GetPixelFormat()) >= 4 );
+            var hasAlpha = (Header.AttributeBits == 8) || (GetBytesPerPixel(GetPixelFormat()) >= 4);
 
             if (ExtensionArea != null)
             {
@@ -545,45 +527,5 @@ namespace TgaLib
 
             return hasAlpha;
         }
-
-        /// <summary>
-        /// Transforms an image according to <see cref="Header.ImageOrigin"/>.
-        /// </summary>
-        /// <param name="source">A source image.</param>
-        /// <returns>Returns a transformed image.</returns>
-        /*private BitmapSource Transform(BitmapSource source)
-        {
-            double scaleX = 1.0;
-            double scaleY = 1.0;
-
-            switch (Header.ImageOrigin)
-            {
-                case ImageOriginTypes.BottomLeft:
-                    scaleX = 1.0;
-                    scaleY = -1.0;
-                    break;
-
-                case ImageOriginTypes.BottomRight:
-                    scaleX = -1.0;
-                    scaleY = -1.0;
-                    break;
-
-                case ImageOriginTypes.TopLeft:
-                    scaleX = 1.0;
-                    scaleY = 1.0;
-                    break;
-
-                case ImageOriginTypes.TopRight:
-                    scaleX = -1.0;
-                    scaleY = 1.0;
-                    break;
-
-                default:
-                    throw new NotSupportedException(string.Format("Image origin \"{0}\" isn't supported.", Header.ImageOrigin));
-            }
-
-            var transform = new ScaleTransform(scaleX, scaleY, 0.5, 0.5);
-            return new TransformedBitmap(source, transform);
-        }*/
     }
 }
