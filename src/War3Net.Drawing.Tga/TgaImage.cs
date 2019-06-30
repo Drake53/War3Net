@@ -77,8 +77,25 @@ namespace TgaLib
 
             var bytesPerPixel = GetBytesPerPixel();
 
-            ColorMap = new byte[Header.ColorMapLength * bytesPerPixel];
-            reader.Read(ColorMap, 0, ColorMap.Length);
+            if (GetPixelFormat() == PixelFormat.Format8bppIndexed)
+            {
+                if (Header.ColorMapLength != 0)
+                {
+                    throw new NotSupportedException("Potentially non-greyscale 8bpp images are not supported.");
+                }
+
+                // Fill colormap with all shades of grey.
+                ColorMap = new byte[256 * bytesPerPixel];
+                for (var i = 0; i < 256; i++)
+                {
+                    ColorMap[i] = (byte)i;
+                }
+            }
+            else
+            {
+                ColorMap = new byte[Header.ColorMapLength * bytesPerPixel];
+                reader.Read(ColorMap, 0, ColorMap.Length);
+            }
 
             var position = reader.BaseStream.Position;
             if (Footer.HasFooter(reader))
@@ -166,6 +183,9 @@ namespace TgaLib
 
             switch (pixelFormat)
             {
+                case PixelFormat.Format8bppIndexed:
+                    // Assumes that the image is greyscale.
+                    return Color.FromArgb(byte1, byte1, byte1);
                 case PixelFormat.Format16bppRgb555:
                     //return Color.FromArgb(( byte2 & 0x7c ) << 1, ( ( byte2 & 0x03 ) >> 5 ) | ( byte1 & 0xe0 ), ( byte1 & 0x1f ) >> 3);
                     return Color.FromArgb(StretchColorChannel(( byte2 & 0x7c ) << 1, 5, 8), StretchColorChannel(( ( byte2 & 0x03 ) << 6 ) | (( byte1 & 0xe0 ) >> 2), 5, 8), StretchColorChannel(( byte1 & 0x1f ) << 3, 5, 8));
@@ -277,7 +297,8 @@ namespace TgaLib
                         {
                             case ColorDepth.Bpp8:
                                 // return PixelFormats.Gray8;
-                                throw new NotSupportedException();
+                                // throw new NotSupportedException();
+                                return PixelFormat.Format8bppIndexed;
 
                             default:
                                 throw new NotSupportedException(string.Format("Color depth isn't supported({0}bpp).", Header.PixelDepth));
@@ -310,6 +331,8 @@ namespace TgaLib
         {
             switch (pixelFormat)
             {
+                case PixelFormat.Format8bppIndexed:
+                    return 8;
                 case PixelFormat.Format16bppArgb1555:
                 case PixelFormat.Format16bppGrayScale:
                 case PixelFormat.Format16bppRgb555:
