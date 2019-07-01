@@ -1,8 +1,11 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="Constants.cs" company="shns">
+// Copyright (c) 2016 shns. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace War3Net.Drawing.Tga
 {

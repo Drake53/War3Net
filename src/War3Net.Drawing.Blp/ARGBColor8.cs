@@ -1,4 +1,11 @@
-﻿namespace War3Net.Drawing.Blp
+﻿// ------------------------------------------------------------------------------
+// <copyright file="ARGBColor8.cs" company="Xalcon @ mmowned.com-Forum">
+// Copyright (c) 2011 Xalcon @ mmowned.com-Forum. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+namespace War3Net.Drawing.Blp
 {
     // Some Helper Struct to store Color-Data
     public struct ARGBColor8

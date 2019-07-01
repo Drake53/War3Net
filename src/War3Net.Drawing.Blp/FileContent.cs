@@ -1,6 +1,13 @@
-﻿namespace War3Net.Drawing.Blp
+﻿// ------------------------------------------------------------------------------
+// <copyright file="FileContent.cs" company="Xalcon @ mmowned.com-Forum">
+// Copyright (c) 2011 Xalcon @ mmowned.com-Forum. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+namespace War3Net.Drawing.Blp
 {
-    enum FileContent : uint
+    internal enum FileContent : uint
     {
         /// <summary>
         /// JPEG Compression (JFIF formatted).
