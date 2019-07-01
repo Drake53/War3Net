@@ -11,7 +11,7 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TgaLib.Test
+namespace War3Net.Drawing.Tga.Tests
 {
     [TestClass]
     public class TgaImageTest

@@ -19,7 +19,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using ICSharpCode.SharpZipLib.BZip2;
 #endif
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// A Stream based class for reading a file from an <see cref="MpqArchive"/>.

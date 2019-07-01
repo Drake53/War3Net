@@ -21,7 +21,7 @@
 // most of the algorithms and data used in this Class-file has been ported from LibSquish!
 // http://code.google.com/p/libsquish/
 
-namespace SereniaBLPLib
+namespace War3Net.Drawing.Blp
 {
     public static class DXTDecompression
     {

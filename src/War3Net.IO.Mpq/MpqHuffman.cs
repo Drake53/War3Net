@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     // A node which is both hierachcical (parent/child) and doubly linked (next/prev)
     internal class LinkedNode

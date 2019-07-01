@@ -7,7 +7,7 @@
 
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// An IMA ADPCM decompress for Mpq files.

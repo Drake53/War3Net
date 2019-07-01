@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// The <see cref="HashTable"/> of an <see cref="MpqArchive"/> contains the list of <see cref="MpqHash"/> objects.

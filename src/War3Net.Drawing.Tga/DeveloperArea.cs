@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace TgaLib
+namespace War3Net.Drawing.Tga
 {
     /// <summary>
     /// Represents TGA developer area.

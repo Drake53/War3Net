@@ -7,7 +7,7 @@
 
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     public struct MpqHash
     {

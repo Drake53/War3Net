@@ -11,7 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 
-namespace TgaLib
+namespace War3Net.Drawing.Tga
 {
     /// <summary>
     /// Represents TGA image.

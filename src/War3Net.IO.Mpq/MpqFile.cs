@@ -10,7 +10,7 @@ using System.IO;
 
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     public class MpqFile : IEquatable<MpqFile>
     {

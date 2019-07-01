@@ -5,7 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     ///

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     public class MpqArchive : IDisposable, IEnumerable<MpqEntry>
     {

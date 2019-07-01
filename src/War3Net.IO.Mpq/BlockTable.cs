@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// The <see cref="BlockTable"/> of an <see cref="MpqArchive"/> contains the list of <see cref="MpqEntry"/> objects.

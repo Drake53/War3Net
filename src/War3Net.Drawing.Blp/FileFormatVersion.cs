@@ -1,4 +1,4 @@
-﻿namespace SereniaBLPLib
+﻿namespace War3Net.Drawing.Blp
 {
     enum FileFormatVersion : uint
     {

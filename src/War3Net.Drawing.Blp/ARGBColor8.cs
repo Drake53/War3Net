@@ -1,4 +1,4 @@
-﻿namespace SereniaBLPLib
+﻿namespace War3Net.Drawing.Blp
 {
     // Some Helper Struct to store Color-Data
     public struct ARGBColor8

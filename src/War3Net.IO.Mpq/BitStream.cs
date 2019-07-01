@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// A utility class for reading groups of bits from a stream.

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// The <see cref="ListFile"/> lists all files that are contained in the <see cref="MpqArchive"/>.

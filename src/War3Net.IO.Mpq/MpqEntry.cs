@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace Foole.Mpq
+namespace War3Net.IO.Mpq
 {
     public class MpqEntry
     {

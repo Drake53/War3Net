@@ -25,7 +25,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SereniaBLPLib
+namespace War3Net.Drawing.Blp
 {
     public sealed class BlpFile : IDisposable
     {

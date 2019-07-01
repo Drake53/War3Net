@@ -7,7 +7,7 @@
 
 using System;
 
-namespace TgaLib
+namespace War3Net.Drawing.Tga
 {
     /// <summary>
     /// Bits extraction utility.

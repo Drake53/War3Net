@@ -8,7 +8,7 @@
 using System.IO;
 using System.Text;
 
-namespace TgaLib
+namespace War3Net.Drawing.Tga
 {
     /// <summary>
     /// Extends <see cref="BinaryReader"/>.
