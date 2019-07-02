@@ -76,6 +76,18 @@ namespace War3Net.Drawing.Blp
                 {
                     // Should be 0, 1, 4, or 8, and default to 0 if invalid.
                     alphaDepth = reader.ReadUInt32();
+
+                    if (_formatVersion == FileContent.JPG)
+                    {
+                        if (alphaDepth != 0 && alphaDepth != 8)
+                        {
+                            throw new NotSupportedException();
+                        }
+                    }
+                    else
+                    {
+                        colorEncoding = 1;
+                    }
                 }
 
                 // Reading width and height
@@ -106,8 +118,7 @@ namespace War3Net.Drawing.Blp
 
                 // When encoding is 1, there is no image compression and we have to read a color palette
                 // This palette always exists when the formatVersion is set to FileContent.Direct, even when it's not used.
-                if (( _fileFormatVersion == FileFormatVersion.BLP2 && colorEncoding == 1 )
-                    || ( _fileFormatVersion != FileFormatVersion.BLP2 && _formatVersion == FileContent.Direct ))
+                if ( colorEncoding == 1 )
                 {
                     // Reading palette
                     for (var i = 0; i < 256; i++)
@@ -132,7 +143,7 @@ namespace War3Net.Drawing.Blp
         }
 
         /// <summary>
-        /// Converts the BLP to a System.Drawing.Bitmap
+        /// Converts the BLP to a System.Drawing.Bitmap.
         /// </summary>
         /// <param name="mipmapLevel">The desired Mipmap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>The Bitmap</returns>
@@ -145,22 +156,19 @@ namespace War3Net.Drawing.Blp
                     var jpgData = new byte[jpgHeaderData.Length + data.Length];
                     Array.Copy(jpgHeaderData, 0, jpgData, 0, jpgHeaderData.Length);
                     Array.Copy(data, 0, jpgData, jpgHeaderData.Length, data.Length);
-                    var stream = new MemoryStream( jpgData );
-                    //return Image.FromStream( stream, false, true ) as Bitmap;
 
-                    /*var decoder = new System.Windows.Media.Imaging.JpegBitmapDecoder( stream, System.Windows.Media.Imaging.BitmapCreateOptions.PreservePixelFormat, System.Windows.Media.Imaging.BitmapCacheOption.Default );
-                    var bitmapSource = decoder.Frames[0];
-                    var bitmap = bitmapSource.ToBitmap( PixelFormat.Format32bppRgb );*/
+                    var skBitmap = SkiaSharp.SKBitmap.Decode(jpgData);
+                    var bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
 
-                    var bitmap = new Bitmap(Image.FromStream(stream));
-
-                    // Colors are inverted for some reason, so fix that.
-                    for (var y = 0; y < bitmap.Height; y++)
+                    for (var y = 0; y < skBitmap.Height; y++)
                     {
-                        for (var x = 0; x < bitmap.Width; x++)
+                        for (var x = 0; x < skBitmap.Width; x++)
                         {
-                            var col = bitmap.GetPixel( x, y );
-                            bitmap.SetPixel(x, y, Color.FromArgb(255 - col.R, 255 - col.G, 255 - col.B));
+                            var col = skBitmap.GetPixel(x, y);
+
+                            // Incorrect rgb vs bgr, at least it's not reading it as cmyk like retarded BitMiracle and GDI+ libs...
+                            var gdicol = Color.FromArgb(col.Alpha, col.Blue, col.Green, col.Red);
+                            bitmap.SetPixel(x, y, gdicol);
                         }
                     }
 
