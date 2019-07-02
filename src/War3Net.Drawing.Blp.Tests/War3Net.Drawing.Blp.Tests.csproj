@@ -16,4 +16,11 @@
     <ProjectReference Include="..\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="TestData\*" />
+    <Content Include="TestData\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
