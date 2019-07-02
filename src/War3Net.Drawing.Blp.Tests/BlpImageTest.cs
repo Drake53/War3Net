@@ -44,7 +44,11 @@ namespace War3Net.Drawing.Blp.Tests
 
         private static IEnumerable<object[]> GetBlpImageData()
         {
-            yield break;
+            yield return new object[] { "TestData/colorJpg75Mip8Blp1.blp", "TestData/color.png", 0 };
+            yield return new object[] { "TestData/colorPalettedMip8Blp1.blp", "TestData/color.png", 0 };
+
+            yield return new object[] { "TestData/colorDxtMip8Blp2.blp", "TestData/color.png", 0 };
+            yield return new object[] { "TestData/colorPalettedMip8Blp2.blp", "TestData/color.png", 0 };
         }
     }
 }
