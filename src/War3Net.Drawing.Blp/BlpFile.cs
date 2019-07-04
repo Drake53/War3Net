@@ -158,19 +158,27 @@ namespace War3Net.Drawing.Blp
                     Array.Copy(data, 0, jpgData, jpgHeaderData.Length, data.Length);
 
                     var skBitmap = SkiaSharp.SKBitmap.Decode(jpgData);
-                    var bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
+                    var skPixels = skBitmap.GetPixels();
 
-                    for (var y = 0; y < skBitmap.Height; y++)
+                    var pixelData = new byte[skBitmap.ByteCount];
+                    Marshal.Copy(skPixels, pixelData, 0, pixelData.Length);
+
+                    // Swap red and blue colour channels.
+                    var bytesPerPixel = skBitmap.BytesPerPixel;
+                    for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
                     {
-                        for (var x = 0; x < skBitmap.Width; x++)
-                        {
-                            var col = skBitmap.GetPixel(x, y);
-
-                            // Incorrect rgb vs bgr, at least it's not reading it as cmyk like retarded BitMiracle and GDI+ libs...
-                            var gdicol = Color.FromArgb(col.Alpha, col.Blue, col.Green, col.Red);
-                            bitmap.SetPixel(x, y, gdicol);
-                        }
+                        var tmp = pixelData[i];
+                        pixelData[i] = pixelData[i + 2];
+                        pixelData[i + 2] = tmp;
                     }
+
+                    // Marshal.Copy(pixelData, 0, skPixels, pixelData.Length);
+                    // return skBitmap;
+
+                    var bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
+                    var bitmapData = bitmap.LockBits(new Rectangle(0, 0, skBitmap.Width, skBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+                    Marshal.Copy(pixelData, 0, bitmapData.Scan0, pixelData.Length);
+                    bitmap.UnlockBits(bitmapData);
 
                     return bitmap;
 
