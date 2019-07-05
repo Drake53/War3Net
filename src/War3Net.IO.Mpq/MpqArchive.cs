@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable CA1710 // Identifiers should have correct suffix
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,26 +15,52 @@ using System.Text;
 
 namespace War3Net.IO.Mpq
 {
-    public class MpqArchive : IDisposable, IEnumerable<MpqEntry>
+    /// <summary>
+    /// Represents a MoPaQ file, that is used to archive files.
+    /// </summary>
+    public sealed class MpqArchive : IDisposable, IEnumerable<MpqEntry>
     {
+        // The MPQ header will always start at an offset aligned to 512 bytes.
+        private const int PreArchiveAlignBytes = 0x200;
+        private const int BlockSizeModifier = 0x200;
+
         private readonly Stream _baseStream;
-        private MpqHeader _mpqHeader;
-        private HashTable _hashTable;
-        private BlockTable _blockTable;
-        private long _headerOffset;
-        private int _blockSize;
+        private readonly long _headerOffset;
+        private readonly int _blockSize;
 
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="MpqParserException"></exception>
-        public MpqArchive(string filename, bool loadListfile = false)
-            : this(File.Open(filename, FileMode.Open, FileAccess.Read), loadListfile)
-        { }
+        private readonly MpqHeader _mpqHeader;
+        private readonly HashTable _hashTable;
+        private readonly BlockTable _blockTable;
 
-        /// <exception cref="MpqParserException"></exception>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqArchive"/> class.
+        /// </summary>
+        /// <param name="sourceStream">The <see cref="Stream"/> from which to load an <see cref="MpqArchive"/>.</param>
+        /// <param name="loadListfile">If true, automatically execute <see cref="AddListfileFilenames()"/> after the <see cref="MpqArchive"/> is initialized.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> is null.</exception>
+        /// <exception cref="MpqParserException">Thrown when the <see cref="MpqHeader"/> could not be found, or when the MPQ format version is not 0.</exception>
         public MpqArchive(Stream sourceStream, bool loadListfile = false)
         {
-            _baseStream = sourceStream;
-            Init();
+            _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
+
+            _headerOffset = LocateMpqHeader(_baseStream, out _mpqHeader);
+            _blockSize = BlockSizeModifier << _mpqHeader?.BlockSize ?? throw new MpqParserException("Unable to find MPQ header");
+
+            if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
+            {
+                throw new MpqParserException("MPQ format version 1 features are not supported");
+            }
+
+            using (var reader = new BinaryReader(_baseStream, new UTF8Encoding(), true))
+            {
+                // Load hash table
+                _baseStream.Seek(_mpqHeader.HashTablePos, SeekOrigin.Begin);
+                _hashTable = new HashTable(reader, _mpqHeader.HashTableSize);
+
+                // Load entry table
+                _baseStream.Seek(_mpqHeader.BlockTablePos, SeekOrigin.Begin);
+                _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
+            }
 
             if (loadListfile)
             {
@@ -40,99 +68,28 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        /// <exception cref="IOException"></exception>
-        public MpqArchive(string filename, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
-            : this(File.Open(filename, FileMode.CreateNew, FileAccess.ReadWrite), mpqFiles, hashTableSize, blockSize)
-        { }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqArchive"/> class.
+        /// </summary>
+        /// <param name="sourceStream">The <see cref="Stream"/> containing pre-archive data. Can be null.</param>
+        /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
+        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
+        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
         public MpqArchive(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
         {
-            _baseStream = sourceStream;
+            // TODO: copy sourceStream contents to a new stream if CanWrite property is false
+            _baseStream = AlignStream(sourceStream ?? new MemoryStream());
 
-            // The MPQ header will always start at an offset aligned to 512 bytes.
-            var i = (uint)BaseStream.Position & ( 0x200 - 1 );
-            if (i > 0)
-            {
-                Console.WriteLine("Warning: Pre-Archive Data was not aligned to 512 bytes.");
-                for (; i < 0x200; i++)
-                {
-                    BaseStream.WriteByte(0);
-                }
-            }
+            _headerOffset = _baseStream.Position;
+            _blockSize = BlockSizeModifier << blockSize;
 
-            _headerOffset = BaseStream.Position;
+            var fileCount = (uint)(mpqFiles ?? throw new ArgumentNullException(nameof(mpqFiles))).Count;
 
-            Build(mpqFiles, hashTableSize, blockSize);
-        }
-
-        public MpqHeader Header => _mpqHeader;
-
-        public int Count => (int)_blockTable.Size;
-
-        internal Stream BaseStream => _baseStream;
-
-        internal int BlockSize => _blockSize;
-
-        public MpqEntry this[int index] => _blockTable[index];
-
-        public MpqEntry this[string filename] => TryGetHashEntry(filename, out var hash)
-                    ? _blockTable[hash.BlockIndex]
-                    : null;
-
-        public static MpqArchive Open(string filename, bool loadListfile = false)
-        {
-            return new MpqArchive(filename, loadListfile);
-        }
-
-        public static MpqArchive Open(Stream sourceStream, bool loadListfile = false)
-        {
-            return new MpqArchive(sourceStream, loadListfile);
-        }
-
-        public static MpqArchive Create(string filename, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
-        {
-            return new MpqArchive(filename, mpqFiles, hashTableSize, blockSize);
-        }
-
-        public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
-        {
-            return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
-        }
-
-        private void Init()
-        {
-            if (LocateMpqHeader() == false)
-            {
-                throw new MpqParserException("Unable to find MPQ header");
-            }
-
-            if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
-            {
-                throw new MpqParserException("MPQ format version 1 features are not supported");
-            }
-
-            var reader = new BinaryReader(BaseStream);
-
-            _blockSize = 0x200 << _mpqHeader.BlockSize;
-
-            // Load hash table
-            BaseStream.Seek(_mpqHeader.HashTablePos, SeekOrigin.Begin);
-            _hashTable = new HashTable(reader, _mpqHeader.HashTableSize);
-
-            // Load entry table
-            BaseStream.Seek(_mpqHeader.BlockTablePos, SeekOrigin.Begin);
-            _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
-        }
-
-        private void Build(ICollection<MpqFile> mpqFiles, ushort? hashTableSize, ushort blockSize)
-        {
-            _blockSize = 0x200 << blockSize;
-
-            var fileCount = (uint)mpqFiles.Count;
             _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
             _blockTable = new BlockTable(fileCount);
 
-            using (var writer = new BinaryWriter(BaseStream, new UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(_baseStream, new UTF8Encoding(false, true), true))
             {
                 // Skip the MPQ header, since its contents will be calculated afterwards.
                 writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
@@ -141,9 +98,10 @@ namespace War3Net.IO.Mpq
                 uint hashTableEntries = 0;
 
                 // Write Archive
-                var fileIndex = (uint)0;
+                var fileIndex = 0U;
                 var fileOffset = archiveBeforeTables ? MpqHeader.Size : throw new NotImplementedException();
                 var filePos = fileOffset;
+
                 // TODO: add support for encryption of the archive files
                 foreach (var mpqFile in mpqFiles)
                 {
@@ -191,68 +149,144 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private bool LocateMpqHeader()
-        {
-            var br = new BinaryReader( BaseStream );
+        /// <summary>
+        /// Gets the <see cref="MpqHeader"/> of this <see cref="MpqArchive"/>.
+        /// </summary>
+        public MpqHeader Header => _mpqHeader;
 
-            // In .mpq files the header will be at the start of the file
-            // In .exe files, it will be at a multiple of 0x200
-            for (long i = 0; i < BaseStream.Length - MpqHeader.Size; i += 0x200)
+        /// <summary>
+        /// Gets the size of the <see cref="BlockTable"/>.
+        /// </summary>
+        public int Count => (int)_blockTable.Size;
+
+        /// <summary>
+        /// Gets the stream that represents this <see cref="MpqArchive"/>.
+        /// </summary>
+        internal Stream BaseStream => _baseStream;
+
+        /// <summary>
+        /// Gets the length (in bytes) of blocks in compressed files.
+        /// </summary>
+        internal int BlockSize => _blockSize;
+
+        /// <summary>
+        /// Retrieves the <see cref="MpqEntry"/> at the given <paramref name="index"/> of the archive's <see cref="BlockTable"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use the <see cref="FileExists(string, out int)"/> method to get the index of a certain <see cref="MpqEntry"/>.
+        /// </remarks>
+        /// <param name="index">The <paramref name="index"/> of the <see cref="MpqEntry"/> in the <see cref="BlockTable"/>.</param>
+        /// <returns>The <see cref="MpqEntry"/> at the given <paramref name="index"/> of the <see cref="BlockTable"/>.</returns>
+        public MpqEntry this[int index] => _blockTable[index];
+
+        /// <summary>
+        /// Opens an existing <see cref="MpqArchive"/> for reading.
+        /// </summary>
+        /// <param name="path">The <see cref="MpqArchive"/> to open.</param>
+        /// <param name="loadListfile">If true, automatically execute <see cref="AddListfileFilenames()"/> after the <see cref="MpqArchive"/> is initialized.</param>
+        /// <returns>An <see cref="MpqArchive"/> opened from the specified <paramref name="path"/>.</returns>
+        /// <exception cref="IOException">Thrown when unable to create a <see cref="FileStream"/> from the given <paramref name="path"/>.</exception>
+        /// <exception cref="MpqParserException">Thrown when the <see cref="MpqHeader"/> could not be found, or when the MPQ format version is not 0.</exception>
+        public static MpqArchive Open(string path, bool loadListfile = false)
+        {
+            FileStream fileStream;
+
+            try
             {
-                BaseStream.Seek(i, SeekOrigin.Begin);
-                _mpqHeader = MpqHeader.FromReader(br);
-                if (_mpqHeader != null)
-                {
-                    _headerOffset = i;
-                    _mpqHeader.SetHeaderOffset(_headerOffset);
-                    return true;
-                }
+                fileStream = File.OpenRead(path);
             }
-            return false;
+            catch (Exception exception)
+            {
+                throw new IOException($"Failed to open the {nameof(MpqArchive)}", exception);
+            }
+
+            return Open(fileStream, loadListfile);
         }
 
-        private bool VerifyHeader()
+        /// <summary>
+        /// Opens an existing <see cref="MpqArchive"/> for reading.
+        /// </summary>
+        /// <param name="sourceStream">The <see cref="Stream"/> from which to load an <see cref="MpqArchive"/>.</param>
+        /// <param name="loadListfile">If true, automatically execute <see cref="AddListfileFilenames()"/> after the <see cref="MpqArchive"/> is initialized.</param>
+        /// <returns>An <see cref="MpqArchive"/> opened from the specified <paramref name="sourceStream"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> is null.</exception>
+        /// <exception cref="MpqParserException">Thrown when the <see cref="MpqHeader"/> could not be found, or when the MPQ format version is not 0.</exception>
+        public static MpqArchive Open(Stream sourceStream, bool loadListfile = false)
         {
-            if (_mpqHeader.HashTableSize != _hashTable.Size)
-            { return false; }
-
-            if (_mpqHeader.BlockTableSize != _blockTable.Size)
-            { return false; }
-
-            if (_mpqHeader.BlockSize != BlockSize >> 0x200)
-            { return false; }
-
-            return true;
+            return new MpqArchive(sourceStream, loadListfile);
         }
 
+        /// <summary>
+        /// Creates a new <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="path">The path and name of the <see cref="MpqArchive"/> to create.</param>
+        /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
+        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
+        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <returns>An <see cref="MpqArchive"/> created as a new file at the specified <paramref name="path"/>.</returns>
+        /// <exception cref="IOException">Thrown when unable to create a <see cref="FileStream"/> from the given <paramref name="path"/>.</exception>
+        public static MpqArchive Create(string path, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
+        {
+            FileStream fileStream;
+
+            try
+            {
+                fileStream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite);
+            }
+            catch (Exception exception)
+            {
+                throw new IOException($"Failed to create a {nameof(FileStream)}", exception);
+            }
+
+            return Create(fileStream, mpqFiles, hashTableSize, blockSize);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="sourceStream">The <see cref="Stream"/> containing pre-archive data. Can be null.</param>
+        /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
+        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
+        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <returns>An <see cref="MpqArchive"/> that is created.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
+        public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
+        {
+            return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
+        }
+
+        /// <summary>
+        /// Opens an <see cref="MpqEntry"/> in the <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="filename">The name of the <see cref="MpqEntry"/> to open.</param>
+        /// <returns>An <see cref="MpqStream"/> that provides access to the <see cref="MpqEntry"/> corresponding to the given <paramref name="filename"/>.</returns>
+        /// <exception cref="FileNotFoundException">Thrown when no <see cref="MpqEntry"/> corresponding to the given <paramref name="filename"/> exists.</exception>
         public MpqStream OpenFile(string filename)
         {
-            MpqEntry entry;
+            var entry = FileExists(filename, out var index)
+                ? this[index]
+                : throw new FileNotFoundException($"File not found: {filename}");
 
-            if (!TryGetHashEntry(filename, out var hash))
-            {
-                throw new FileNotFoundException("File not found: " + filename);
-            }
-
-            entry = _blockTable[hash.BlockIndex];
-            if (entry.Filename == null)
-            {
-                entry.Filename = filename;
-            }
+            entry.Filename = filename;
 
             return new MpqStream(this, entry);
         }
 
+        /// <summary>
+        /// Opens an <see cref="MpqEntry"/> in the <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="entry">The <see cref="MpqEntry"/> to open.</param>
+        /// <returns>An <see cref="MpqStream"/> that provides access to the <see cref="MpqEntry"/> <paramref name="entry"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the given <paramref name="entry"/> is null.</exception>
         public MpqStream OpenFile(MpqEntry entry)
         {
-            return new MpqStream(this, entry);
+            return new MpqStream(this, entry ?? throw new ArgumentNullException(nameof(entry)));
         }
 
-        public bool FileExists(string filename)
-        {
-            return TryGetHashEntry(filename, out _);
-        }
-
+        /// <summary>
+        /// Executes <see cref="AddFilenames(Stream, bool)"/> using the <see cref="ListFile"/> in this <see cref="MpqArchive"/>, if it exists.
+        /// </summary>
+        /// <returns>True if a <see cref="ListFile"/> exists, false otherwise.</returns>
         public bool AddListfileFilenames()
         {
             if (!AddFilename(ListFile.Key))
@@ -268,6 +302,12 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
+        /// <summary>
+        /// Executes <see cref="AddFilename(string)"/> for every string in the given <paramref name="stream"/>.
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream"/> from which to read filenames.</param>
+        /// <param name="leaveOpen">True to leave the <paramref name="stream"/> open after executing this method, false otherwise.</param>
+        /// <returns>The amount of strings (including duplicates) from the given <paramref name="stream"/> for which an <see cref="MpqEntry"/> exists in the archive.</returns>
         public int AddFilenames(Stream stream, bool leaveOpen = false)
         {
             var filesFound = 0;
@@ -281,9 +321,15 @@ namespace War3Net.IO.Mpq
                     }
                 }
             }
+
             return filesFound;
         }
 
+        /// <summary>
+        /// Tries to find the <see cref="MpqEntry"/> corresponding to the given <paramref name="filename"/>, and update its <see cref="MpqEntry.Filename"/> if it exists.
+        /// </summary>
+        /// <param name="filename">The name for which the corresponding <see cref="MpqEntry"/>'s <see cref="MpqEntry.Filename"/> must be updated.</param>
+        /// <returns>True if an <see cref="MpqEntry"/> with the given <paramref name="filename"/> exists in this <see cref="MpqArchive"/>, false otherwise.</returns>
         public bool AddFilename(string filename)
         {
             if (!TryGetHashEntry(filename, out var hash))
@@ -295,10 +341,94 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
+        /// <summary>
+        /// Tries to find the <see cref="MpqEntry"/> corresponding to the given <paramref name="filename"/>.
+        /// </summary>
+        /// <param name="filename">The name for which to check if a corresponding <see cref="MpqEntry"/> exists.</param>
+        /// <returns>True if an <see cref="MpqEntry"/> with the given <paramref name="filename"/> exists in this <see cref="MpqArchive"/>, false otherwise.</returns>
+        public bool FileExists(string filename)
+        {
+            return TryGetHashEntry(filename, out _);
+        }
+
+        /// <summary>
+        /// Tries to find the <see cref="MpqEntry"/> corresponding to the given <paramref name="filename"/>.
+        /// </summary>
+        /// <param name="filename">The name for which to check if a corresponding <see cref="MpqEntry"/> exists.</param>
+        /// <param name="entryIndex">The index of the found <see cref="MpqEntry"/>, or -1 if there is no entry corresponding to the given <paramref name="filename"/>.</param>
+        /// <returns>True if an <see cref="MpqEntry"/> with the given <paramref name="filename"/> exists in this <see cref="MpqArchive"/>, false otherwise.</returns>
+        public bool FileExists(string filename, out int entryIndex)
+        {
+            var exists = TryGetHashEntry(filename, out var hash);
+
+            entryIndex = exists
+                ? (int)hash.BlockIndex
+                : -1;
+
+            return exists;
+        }
+
+        /// <summary>
+        /// Closes the <see cref="BaseStream"/>.
+        /// </summary>
+        public void Dispose()
+        {
+            _baseStream?.Close();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (_blockTable as IEnumerable).GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator<MpqEntry> IEnumerable<MpqEntry>.GetEnumerator()
+        {
+            foreach (var entry in _blockTable)
+            {
+                yield return entry;
+            }
+        }
+
+        private static long LocateMpqHeader(Stream sourceStream, out MpqHeader mpqHeader)
+        {
+            using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
+            {
+                for (long i = 0; i < sourceStream.Length - MpqHeader.Size; i += PreArchiveAlignBytes)
+                {
+                    sourceStream.Seek(i, SeekOrigin.Begin);
+                    mpqHeader = MpqHeader.FromReader(reader);
+
+                    if (mpqHeader?.SetHeaderOffset(i) ?? false)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            mpqHeader = null;
+            return -1;
+        }
+
+        private static Stream AlignStream(Stream stream)
+        {
+            var i = (uint)stream.Position & (PreArchiveAlignBytes - 1);
+            if (i > 0)
+            {
+                for (; i < PreArchiveAlignBytes; i++)
+                {
+                    stream.WriteByte(0);
+                }
+            }
+
+            return stream;
+        }
+
         private bool TryGetHashEntry(string filename, out MpqHash hash)
         {
             var index = StormBuffer.HashString(filename, 0);
-            index  &= _mpqHeader.HashTableSize - 1;
+            index &= _mpqHeader.HashTableSize - 1;
             var name1 = StormBuffer.HashString(filename, 0x100);
             var name2 = StormBuffer.HashString(filename, 0x200);
 
@@ -310,6 +440,7 @@ namespace War3Net.IO.Mpq
                     return true;
                 }
             }
+
             for (uint i = 0; i < index; i++)
             {
                 hash = _hashTable[i];
@@ -319,7 +450,7 @@ namespace War3Net.IO.Mpq
                 }
             }
 
-            hash = new MpqHash();
+            hash = default;
             return false;
         }
 
@@ -336,6 +467,13 @@ namespace War3Net.IO.Mpq
 
             hash = MpqHash.NULL;
             return -1;
+        }
+
+        private bool VerifyHeader()
+        {
+            return _mpqHeader.HashTableSize == _hashTable.Size
+                && _mpqHeader.BlockTableSize == _blockTable.Size
+                && _mpqHeader.BlockSize == _blockSize >> BlockSizeModifier;
         }
 
         /*private uint FindCollidingHashEntries( uint hashIndex, bool returnOnUnknown )
@@ -367,26 +505,5 @@ namespace War3Net.IO.Mpq
             }
             return count;
         }*/
-
-        public void Dispose()
-        {
-            if (BaseStream != null)
-            {
-                BaseStream.Close();
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ( _blockTable as IEnumerable ).GetEnumerator();
-        }
-
-        IEnumerator<MpqEntry> IEnumerable<MpqEntry>.GetEnumerator()
-        {
-            foreach (var entry in _blockTable)
-            {
-                yield return entry;
-            }
-        }
     }
 }
