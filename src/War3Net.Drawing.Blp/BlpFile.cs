@@ -283,8 +283,8 @@ namespace War3Net.Drawing.Blp
                 case 1:
                     return GetPictureUncompressedByteArray(w, h, data);
                 case 2:
-                    DXTDecompression.DXTFlags flag = ( alphaDepth > 1 ) ? ( ( alphaEncoding == 7 ) ? DXTDecompression.DXTFlags.DXT5 : DXTDecompression.DXTFlags.DXT3 ) : DXTDecompression.DXTFlags.DXT1;
-                    return DXTDecompression.DecompressImage(w, h, data, flag);
+                    DxtDecompression.DXTFlags flag = ( alphaDepth > 1 ) ? ( ( alphaEncoding == 7 ) ? DxtDecompression.DXTFlags.DXT5 : DxtDecompression.DXTFlags.DXT3 ) : DxtDecompression.DXTFlags.DXT1;
+                    return DxtDecompression.DecompressImage(w, h, data, flag);
                 case 3:
                     return data;
                 default:

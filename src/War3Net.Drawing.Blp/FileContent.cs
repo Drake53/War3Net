@@ -7,6 +7,9 @@
 
 namespace War3Net.Drawing.Blp
 {
+    /// <summary>
+    /// Indicates the file format of the image(s) embedded in the <see cref="BlpFile"/>.
+    /// </summary>
     internal enum FileContent : uint
     {
         /// <summary>
@@ -15,7 +18,7 @@ namespace War3Net.Drawing.Blp
         JPG = 0,
 
         /// <summary>
-        /// DirectX Compression or Uncompressed.
+        /// DirectX Compression or Uncompressed (Palettized).
         /// </summary>
         Direct = 1,
     }

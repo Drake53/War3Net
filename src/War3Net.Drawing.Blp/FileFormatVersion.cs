@@ -7,6 +7,9 @@
 
 namespace War3Net.Drawing.Blp
 {
+    /// <summary>
+    /// Indicates the version of the <see cref="BlpFile"/> image format.
+    /// </summary>
     internal enum FileFormatVersion : uint
     {
         /// <summary>
