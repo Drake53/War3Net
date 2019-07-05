@@ -26,58 +26,63 @@ namespace War3Net.Drawing.Tga
         /// <summary>
         /// Initializes a new instance of the <see cref="TgaImage"/> class.
         /// </summary>
-        /// <param name="reader">A binary reader that contains TGA file. Caller must dipose the binary reader.</param>
+        /// <param name="baseStream">A <see cref="Stream"/> that contains TGA file.</param>
         /// <param name="useAlphaChannelForcefully">Use the alpha channel forcefully, if true.</param>
-        public TgaImage(BinaryReader reader, bool useAlphaChannelForcefully = false)
+        public TgaImage(Stream baseStream, bool useAlphaChannelForcefully = false)
         {
-            _useAlphaChannelForcefully = useAlphaChannelForcefully;
+            _ = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
 
-            Header = new Header(reader);
-
-            ImageID = new byte[Header.IDLength];
-            reader.Read(ImageID, 0, ImageID.Length);
-
-            var bytesPerPixel = GetBytesPerPixel();
-
-            if (GetPixelFormat() == PixelFormat.Format8bppIndexed)
+            using (var reader = new BinaryReader(baseStream))
             {
-                if (Header.ColorMapLength != 0)
+                _useAlphaChannelForcefully = useAlphaChannelForcefully;
+
+                Header = new Header(reader);
+
+                ImageID = new byte[Header.IDLength];
+                reader.Read(ImageID, 0, ImageID.Length);
+
+                var bytesPerPixel = GetBytesPerPixel();
+
+                if (GetPixelFormat() == PixelFormat.Format8bppIndexed)
                 {
-                    throw new NotSupportedException("Potentially non-greyscale 8bpp images are not supported.");
+                    if (Header.ColorMapLength != 0)
+                    {
+                        throw new NotSupportedException("Potentially non-greyscale 8bpp images are not supported.");
+                    }
+
+                    // Fill colormap with all shades of grey.
+                    ColorMap = new byte[256 * bytesPerPixel];
+                    for (var i = 0; i < 256; i++)
+                    {
+                        ColorMap[i] = (byte)i;
+                    }
+                }
+                else
+                {
+                    ColorMap = new byte[Header.ColorMapLength * bytesPerPixel];
+                    reader.Read(ColorMap, 0, ColorMap.Length);
                 }
 
-                // Fill colormap with all shades of grey.
-                ColorMap = new byte[256 * bytesPerPixel];
-                for (var i = 0; i < 256; i++)
+                var position = reader.BaseStream.Position;
+                if (Footer.HasFooter(reader))
                 {
-                    ColorMap[i] = (byte)i;
+                    Footer = new Footer(reader);
+
+                    if (Footer.ExtensionAreaOffset != 0)
+                    {
+                        ExtensionArea = new ExtensionArea(reader, Footer.ExtensionAreaOffset);
+                    }
+
+                    if (Footer.DeveloperDirectoryOffset != 0)
+                    {
+                        DeveloperArea = new DeveloperArea(reader, Footer.DeveloperDirectoryOffset);
+                    }
                 }
+
+                reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                ImageBytes = new byte[Header.Width * Header.Height * bytesPerPixel];
+                ReadImageBytes(reader);
             }
-            else
-            {
-                ColorMap = new byte[Header.ColorMapLength * bytesPerPixel];
-                reader.Read(ColorMap, 0, ColorMap.Length);
-            }
-
-            var position = reader.BaseStream.Position;
-            if (Footer.HasFooter(reader))
-            {
-                Footer = new Footer(reader);
-
-                if (Footer.ExtensionAreaOffset != 0)
-                {
-                    ExtensionArea = new ExtensionArea(reader, Footer.ExtensionAreaOffset);
-                }
-
-                if (Footer.DeveloperDirectoryOffset != 0)
-                {
-                    DeveloperArea = new DeveloperArea(reader, Footer.DeveloperDirectoryOffset);
-                }
-            }
-
-            reader.BaseStream.Seek(position, SeekOrigin.Begin);
-            ImageBytes = new byte[Header.Width * Header.Height * bytesPerPixel];
-            ReadImageBytes(reader);
         }
 
         /// <summary>

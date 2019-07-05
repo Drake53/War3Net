@@ -22,25 +22,22 @@ namespace War3Net.Drawing.Tga.Tests
         {
             using (var fileStream = File.OpenRead(inputImagePath))
             {
-                using (var binaryReader = new BinaryReader(fileStream))
+                var expectedImage = new Bitmap(expectedImagePath);
+                var actualImage = new TgaImage(fileStream, forceAlpha).GetBitmap();
+
+                Assert.AreEqual(expectedImage.Width, actualImage.Width);
+                Assert.AreEqual(expectedImage.Height, actualImage.Height);
+
+                for (var y = 0; y < expectedImage.Height; y++)
                 {
-                    var expectedImage = new Bitmap(expectedImagePath);
-                    var actualImage = new TgaImage(binaryReader, forceAlpha).GetBitmap();
-
-                    Assert.AreEqual(expectedImage.Width, actualImage.Width);
-                    Assert.AreEqual(expectedImage.Height, actualImage.Height);
-
-                    for (var y = 0; y < expectedImage.Height; y++)
+                    for (var x = 0; x < expectedImage.Width; x++)
                     {
-                        for (var x = 0; x < expectedImage.Width; x++)
-                        {
-                            Assert.AreEqual(expectedImage.GetPixel(x, y), actualImage.GetPixel(x, y));
-                        }
+                        Assert.AreEqual(expectedImage.GetPixel(x, y), actualImage.GetPixel(x, y));
                     }
-
-                    expectedImage.Dispose();
-                    actualImage.Dispose();
                 }
+
+                expectedImage.Dispose();
+                actualImage.Dispose();
             }
         }
 
