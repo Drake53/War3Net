@@ -90,42 +90,42 @@ namespace War3Net.Drawing.Tga
         }
 
         /// <summary>
-        /// Use the alpha channel forcefully, if true.
+        /// Gets a value indicating whether the alpha channel is forcefully used.
         /// </summary>
         public bool UseAlphaChannelForcefully => _useAlphaChannelForcefully;
 
         /// <summary>
-        /// Gets or sets a header.
+        /// Gets a <see cref="Tga.Header"/>.
         /// </summary>
         public Header Header => _header;
 
         /// <summary>
-        /// Gets or sets an image ID.
+        /// Gets an image ID.
         /// </summary>
         public byte[] ImageID => _imageID;
 
         /// <summary>
-        /// Gets or sets a color map(palette).
+        /// Gets a color map (palette).
         /// </summary>
         public byte[] ColorMap => _colorMap;
 
         /// <summary>
-        /// Gets or sets an image bytes array.
+        /// Gets an image bytes array.
         /// </summary>
         public byte[] ImageBytes => _imageBytes;
 
         /// <summary>
-        /// Gets or sets a developer area.
+        /// Gets a developer area.
         /// </summary>
         public DeveloperArea DeveloperArea => _developerArea;
 
         /// <summary>
-        /// Gets or sets an extension area.
+        /// Gets an <see cref="Tga.ExtensionArea"/>.
         /// </summary>
         public ExtensionArea ExtensionArea => _extensionArea;
 
         /// <summary>
-        /// Gets or sets a footer.
+        /// Gets a <see cref="Tga.Footer"/>.
         /// </summary>
         public Footer Footer => _footer;
 
