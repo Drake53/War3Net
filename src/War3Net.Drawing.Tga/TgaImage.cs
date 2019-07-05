@@ -18,10 +18,14 @@ namespace War3Net.Drawing.Tga
     /// </summary>
     public class TgaImage
     {
-        /// <summary>
-        /// Use the alpha channel forcefully, if true.
-        /// </summary>
         private readonly bool _useAlphaChannelForcefully;
+        private readonly Header _header;
+        private readonly byte[] _imageID;
+        private readonly byte[] _colorMap;
+        private readonly byte[] _imageBytes;
+        private readonly DeveloperArea _developerArea;
+        private readonly ExtensionArea _extensionArea;
+        private readonly Footer _footer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TgaImage"/> class.
@@ -36,9 +40,9 @@ namespace War3Net.Drawing.Tga
             {
                 _useAlphaChannelForcefully = useAlphaChannelForcefully;
 
-                Header = new Header(reader);
+                _header = new Header(reader);
 
-                ImageID = new byte[Header.IDLength];
+                _imageID = new byte[Header.IDLength];
                 reader.Read(ImageID, 0, ImageID.Length);
 
                 var bytesPerPixel = GetBytesPerPixel();
@@ -51,7 +55,7 @@ namespace War3Net.Drawing.Tga
                     }
 
                     // Fill colormap with all shades of grey.
-                    ColorMap = new byte[256 * bytesPerPixel];
+                    _colorMap = new byte[256 * bytesPerPixel];
                     for (var i = 0; i < 256; i++)
                     {
                         ColorMap[i] = (byte)i;
@@ -59,66 +63,71 @@ namespace War3Net.Drawing.Tga
                 }
                 else
                 {
-                    ColorMap = new byte[Header.ColorMapLength * bytesPerPixel];
+                    _colorMap = new byte[Header.ColorMapLength * bytesPerPixel];
                     reader.Read(ColorMap, 0, ColorMap.Length);
                 }
 
                 var position = reader.BaseStream.Position;
                 if (Footer.HasFooter(reader))
                 {
-                    Footer = new Footer(reader);
+                    _footer = new Footer(reader);
 
                     if (Footer.ExtensionAreaOffset != 0)
                     {
-                        ExtensionArea = new ExtensionArea(reader, Footer.ExtensionAreaOffset);
+                        _extensionArea = new ExtensionArea(reader, Footer.ExtensionAreaOffset);
                     }
 
                     if (Footer.DeveloperDirectoryOffset != 0)
                     {
-                        DeveloperArea = new DeveloperArea(reader, Footer.DeveloperDirectoryOffset);
+                        _developerArea = new DeveloperArea(reader, Footer.DeveloperDirectoryOffset);
                     }
                 }
 
                 reader.BaseStream.Seek(position, SeekOrigin.Begin);
-                ImageBytes = new byte[Header.Width * Header.Height * bytesPerPixel];
+                _imageBytes = new byte[Header.Width * Header.Height * bytesPerPixel];
                 ReadImageBytes(reader);
             }
         }
 
         /// <summary>
+        /// Use the alpha channel forcefully, if true.
+        /// </summary>
+        public bool UseAlphaChannelForcefully => _useAlphaChannelForcefully;
+
+        /// <summary>
         /// Gets or sets a header.
         /// </summary>
-        public Header Header { get; set; }
+        public Header Header => _header;
 
         /// <summary>
         /// Gets or sets an image ID.
         /// </summary>
-        public byte[] ImageID { get; set; }
+        public byte[] ImageID => _imageID;
 
         /// <summary>
         /// Gets or sets a color map(palette).
         /// </summary>
-        public byte[] ColorMap { get; set; }
+        public byte[] ColorMap => _colorMap;
 
         /// <summary>
         /// Gets or sets an image bytes array.
         /// </summary>
-        public byte[] ImageBytes { get; set; }
+        public byte[] ImageBytes => _imageBytes;
 
         /// <summary>
         /// Gets or sets a developer area.
         /// </summary>
-        public DeveloperArea DeveloperArea { get; set; }
+        public DeveloperArea DeveloperArea => _developerArea;
 
         /// <summary>
         /// Gets or sets an extension area.
         /// </summary>
-        public ExtensionArea ExtensionArea { get; set; }
+        public ExtensionArea ExtensionArea => _extensionArea;
 
         /// <summary>
         /// Gets or sets a footer.
         /// </summary>
-        public Footer Footer { get; set; }
+        public Footer Footer => _footer;
 
         /// <summary>
         /// Returns a string that represents the current object.
