@@ -5,12 +5,19 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+// Test .NET standard 2.0 code with this (check that there are no errors in project netstandard2.0, errors for netstandard1.3 can be ignored).
+//#undef NETSTANDARD1_3
+//#define NETSTANDARD2_0
+
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+
+#if !NETSTANDARD1_3
+using System.Drawing;
+using System.Drawing.Imaging;
+#endif
 
 namespace War3Net.Drawing.Blp
 {
@@ -38,7 +45,7 @@ namespace War3Net.Drawing.Blp
         private readonly int _mipMapCount;
         private readonly ARGBColor8[] _paletteBGRA = new ARGBColor8[256]; // The color-palette for non-compressed pictures
 
-        private readonly byte[] _jpgHeaderData; // shared header when using mipmaps
+        private readonly byte[] _jpgHeaderData; // shared header when using mipMaps
 
         private Stream _baseStream;
 
@@ -103,12 +110,12 @@ namespace War3Net.Drawing.Blp
                     _hasMipMaps = reader.ReadUInt32();
                 }
 
-                const int mipmaps = 16;
+                const int mipMaps = 16;
                 _mipMapCount = 0;
 
                 // Reading MipMapOffset Array
-                _mipMapOffsets = new uint[mipmaps];
-                for (var i = 0; i < mipmaps; i++)
+                _mipMapOffsets = new uint[mipMaps];
+                for (var i = 0; i < mipMaps; i++)
                 {
                     _mipMapOffsets[i] = reader.ReadUInt32();
 
@@ -119,8 +126,8 @@ namespace War3Net.Drawing.Blp
                 }
 
                 // Reading MipMapSize Array
-                _mipMapSizes = new uint[mipmaps];
-                for (var i = 0; i < mipmaps; i++)
+                _mipMapSizes = new uint[mipMaps];
+                for (var i = 0; i < mipMaps; i++)
                 {
                     _mipMapSizes[i] = reader.ReadUInt32();
                 }
@@ -157,47 +164,51 @@ namespace War3Net.Drawing.Blp
         public int MipMapCount => _mipMapCount;
 
         /// <summary>
-        /// Converts the BLP to a System.Drawing.Bitmap.
+        /// Converts the BLP to a <see cref="SkiaSharp.SKBitmap"/>.
         /// </summary>
-        /// <param name="mipmapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
+        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns></returns>
-        public Bitmap GetBitmap(int mipmapLevel)
+        public SkiaSharp.SKBitmap GetSKBitmap(int mipMapLevel)
         {
             switch (_formatVersion)
             {
                 case FileContent.JPG:
-                    var data = GetPixelsPictureData(mipmapLevel);
-                    var jpgData = new byte[_jpgHeaderData.Length + data.Length];
-                    Array.Copy(_jpgHeaderData, 0, jpgData, 0, _jpgHeaderData.Length);
-                    Array.Copy(data, 0, jpgData, _jpgHeaderData.Length, data.Length);
+                    var pixelData = GetJpgBitmapBytes(mipMapLevel, out var bitmap);
+                    Marshal.Copy(pixelData, 0, bitmap.GetPixels(), pixelData.Length);
+                    return bitmap;
 
-                    var skBitmap = SkiaSharp.SKBitmap.Decode(jpgData);
-                    var skPixels = skBitmap.GetPixels();
+                case FileContent.Direct:
+                    throw new NotImplementedException();
 
-                    var pixelData = new byte[skBitmap.ByteCount];
-                    Marshal.Copy(skPixels, pixelData, 0, pixelData.Length);
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+        }
 
-                    // Swap red and blue colour channels.
-                    var bytesPerPixel = skBitmap.BytesPerPixel;
-                    for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
-                    {
-                        var tmp = pixelData[i];
-                        pixelData[i] = pixelData[i + 2];
-                        pixelData[i + 2] = tmp;
-                    }
-
-                    // Marshal.Copy(pixelData, 0, skPixels, pixelData.Length);
-                    // return skBitmap;
-
+#if !NETSTANDARD1_3
+        /// <summary>
+        /// Converts the BLP to a System.Drawing.Bitmap.
+        /// </summary>
+        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
+        /// <returns></returns>
+        public Bitmap GetBitmap(int mipMapLevel)
+        {
+            switch (_formatVersion)
+            {
+                case FileContent.JPG:
+                    var pixelData = GetJpgBitmapBytes(mipMapLevel, out var skBitmap);
                     var bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
+
                     var bitmapData = bitmap.LockBits(new Rectangle(0, 0, skBitmap.Width, skBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
                     Marshal.Copy(pixelData, 0, bitmapData.Scan0, pixelData.Length);
                     bitmap.UnlockBits(bitmapData);
 
+                    skBitmap.Dispose();
+
                     return bitmap;
 
                 case FileContent.Direct:
-                    var pic = GetPixels(mipmapLevel, out var w, out var h, _colorEncoding == 3 ? false : true);
+                    var pic = GetPixels(mipMapLevel, out var w, out var h, _colorEncoding == 3 ? false : true);
 
                     var bmp = new Bitmap(w, h);
 
@@ -212,29 +223,30 @@ namespace War3Net.Drawing.Blp
                     throw new IndexOutOfRangeException();
             }
         }
+#endif
 
         /// <summary>
         /// Returns array of pixels in BGRA or RGBA order.
         /// </summary>
-        /// <param name="mipmapLevel"></param>
+        /// <param name="mipMapLevel"></param>
         /// <returns></returns>
-        public byte[] GetPixels(int mipmapLevel, out int w, out int h, bool bgra = true)
+        public byte[] GetPixels(int mipMapLevel, out int w, out int h, bool bgra = true)
         {
-            if (mipmapLevel >= MipMapCount)
+            if (mipMapLevel >= MipMapCount)
             {
-                mipmapLevel = MipMapCount - 1;
+                mipMapLevel = MipMapCount - 1;
             }
 
-            if (mipmapLevel < 0)
+            if (mipMapLevel < 0)
             {
-                mipmapLevel = 0;
+                mipMapLevel = 0;
             }
 
-            var scale = (int)Math.Pow(2, mipmapLevel);
+            var scale = (int)Math.Pow(2, mipMapLevel);
             w = _width / scale;
             h = _height / scale;
 
-            var data = GetPictureData(mipmapLevel);
+            var data = GetPictureData(mipMapLevel);
             var pic = GetImageBytes(w, h, data); // This bytearray stores the Pixel-Data
 
             if (bgra)
@@ -261,9 +273,37 @@ namespace War3Net.Drawing.Blp
         {
             if (_baseStream != null)
             {
+#if NETSTANDARD1_3
+                _baseStream.Dispose();
+#else
                 _baseStream.Close();
+#endif
                 _baseStream = null;
             }
+        }
+
+        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SkiaSharp.SKBitmap bitmap)
+        {
+            var data = GetPixelsPictureData(mipMapLevel);
+            var jpgData = new byte[_jpgHeaderData.Length + data.Length];
+
+            Array.Copy(_jpgHeaderData, 0, jpgData, 0, _jpgHeaderData.Length);
+            Array.Copy(data, 0, jpgData, _jpgHeaderData.Length, data.Length);
+
+            bitmap = SkiaSharp.SKBitmap.Decode(jpgData);
+            var pixelData = new byte[bitmap.ByteCount];
+            Marshal.Copy(bitmap.GetPixels(), pixelData, 0, pixelData.Length);
+
+            // Swap red and blue colour channels.
+            var bytesPerPixel = bitmap.BytesPerPixel;
+            for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
+            {
+                var tmp = pixelData[i];
+                pixelData[i] = pixelData[i + 2];
+                pixelData[i + 2] = tmp;
+            }
+
+            return pixelData;
         }
 
         /// <summary>
@@ -314,14 +354,14 @@ namespace War3Net.Drawing.Blp
         /// <summary>
         /// Returns the raw MipMap-Image Data. This data can either be compressed or uncompressed, depending on the Header-Data
         /// </summary>
-        /// <param name="mipmapLevel"></param>
+        /// <param name="mipMapLevel"></param>
         /// <returns></returns>
-        private byte[] GetPictureData(int mipmapLevel)
+        private byte[] GetPictureData(int mipMapLevel)
         {
             if (_baseStream != null)
             {
-                var data = new byte[_mipMapSizes[mipmapLevel]];
-                _baseStream.Position = _mipMapOffsets[mipmapLevel];
+                var data = new byte[_mipMapSizes[mipMapLevel]];
+                _baseStream.Position = _mipMapOffsets[mipMapLevel];
                 _baseStream.Read(data, 0, data.Length);
                 return data;
             }
@@ -348,19 +388,19 @@ namespace War3Net.Drawing.Blp
             }
         }
 
-        private byte[] GetPixelsPictureData(int mipmapLevel)
+        private byte[] GetPixelsPictureData(int mipMapLevel)
         {
-            if (mipmapLevel >= MipMapCount)
+            if (mipMapLevel >= MipMapCount)
             {
-                mipmapLevel = MipMapCount - 1;
+                mipMapLevel = MipMapCount - 1;
             }
 
-            if (mipmapLevel < 0)
+            if (mipMapLevel < 0)
             {
-                mipmapLevel = 0;
+                mipMapLevel = 0;
             }
 
-            return GetPictureData(mipmapLevel);
+            return GetPictureData(mipMapLevel);
         }
     }
 }
