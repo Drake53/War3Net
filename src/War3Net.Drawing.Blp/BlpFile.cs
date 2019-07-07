@@ -5,10 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-// Test .NET standard 2.0 code with this (check that there are no errors in project netstandard2.0, errors for netstandard1.3 can be ignored).
-//#undef NETSTANDARD1_3
-//#define NETSTANDARD2_0
-
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -17,6 +13,10 @@ using System.Text;
 #if !NETSTANDARD1_3
 using System.Drawing;
 using System.Drawing.Imaging;
+#endif
+
+#if !NETSTANDARD
+using System.Windows.Media.Imaging;
 #endif
 
 namespace War3Net.Drawing.Blp
@@ -225,6 +225,26 @@ namespace War3Net.Drawing.Blp
         }
 #endif
 
+#if !NETSTANDARD
+        public BitmapSource GetBitmapSource(int mipMapLevel)
+        {
+            switch (_formatVersion)
+            {
+                case FileContent.JPG:
+                    var jpgData = GetJpegFileBytes(mipMapLevel);
+                    var decoder = new JpegBitmapDecoder(new MemoryStream(jpgData), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+
+                    return decoder.Frames[0];
+
+                case FileContent.Direct:
+                    throw new NotImplementedException();
+
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+        }
+#endif
+
         /// <summary>
         /// Returns array of pixels in BGRA or RGBA order.
         /// </summary>
@@ -282,7 +302,7 @@ namespace War3Net.Drawing.Blp
             }
         }
 
-        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SkiaSharp.SKBitmap bitmap)
+        private byte[] GetJpegFileBytes(int mipMapLevel)
         {
             var data = GetPixelsPictureData(mipMapLevel);
             var jpgData = new byte[_jpgHeaderData.Length + data.Length];
@@ -290,7 +310,15 @@ namespace War3Net.Drawing.Blp
             Array.Copy(_jpgHeaderData, 0, jpgData, 0, _jpgHeaderData.Length);
             Array.Copy(data, 0, jpgData, _jpgHeaderData.Length, data.Length);
 
+            return jpgData;
+        }
+
+        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SkiaSharp.SKBitmap bitmap)
+        {
+            var jpgData = GetJpegFileBytes(mipMapLevel);
+
             bitmap = SkiaSharp.SKBitmap.Decode(jpgData);
+
             var pixelData = new byte[bitmap.ByteCount];
             Marshal.Copy(bitmap.GetPixels(), pixelData, 0, pixelData.Length);
 
