@@ -18,13 +18,42 @@ namespace War3Net.Drawing.Blp.Tests
     {
         [DataTestMethod]
         [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
-        public void TestGetBlpBitmap(string inputImagePath, string expectedImagePath, int mipmapLevel)
+        public void TestGetBlpSKBitmap(string inputImagePath, string expectedImagePath, int mipMapLevel)
         {
             using (var fileStream = File.OpenRead(inputImagePath))
             {
                 var expectedImage = new Bitmap(expectedImagePath);
                 var blpFile = new BlpFile(fileStream);
-                var actualImage = blpFile.GetBitmap(mipmapLevel);
+                var actualImage = blpFile.GetSKBitmap(mipMapLevel);
+
+                Assert.AreEqual(expectedImage.Width, actualImage.Width);
+                Assert.AreEqual(expectedImage.Height, actualImage.Height);
+
+                for (var y = 0; y < expectedImage.Height; y++)
+                {
+                    for (var x = 0; x < expectedImage.Width; x++)
+                    {
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).A, actualImage.GetPixel(x, y).Alpha);
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).R, actualImage.GetPixel(x, y).Red);
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).G, actualImage.GetPixel(x, y).Green);
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).B, actualImage.GetPixel(x, y).Blue);
+                    }
+                }
+
+                expectedImage.Dispose();
+                blpFile.Dispose();
+            }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
+        public void TestGetBlpBitmap(string inputImagePath, string expectedImagePath, int mipMapLevel)
+        {
+            using (var fileStream = File.OpenRead(inputImagePath))
+            {
+                var expectedImage = new Bitmap(expectedImagePath);
+                var blpFile = new BlpFile(fileStream);
+                var actualImage = blpFile.GetBitmap(mipMapLevel);
 
                 Assert.AreEqual(expectedImage.Width, actualImage.Width);
                 Assert.AreEqual(expectedImage.Height, actualImage.Height);
@@ -41,6 +70,49 @@ namespace War3Net.Drawing.Blp.Tests
                 blpFile.Dispose();
             }
         }
+
+#if NETFRAMEWORK || NETCOREAPP3_0
+        [DataTestMethod]
+        [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
+        public void TestGetBlpBitmapSource(string inputImagePath, string expectedImagePath, int mipMapLevel)
+        {
+            using (var fileStream = File.OpenRead(inputImagePath))
+            {
+                var expectedImage = new Bitmap(expectedImagePath);
+                var blpFile = new BlpFile(fileStream);
+                var actualImage = blpFile.GetBitmapSource(mipMapLevel);
+
+                Assert.AreEqual(expectedImage.Width, actualImage.PixelWidth);
+                Assert.AreEqual(expectedImage.Height, actualImage.PixelHeight);
+
+                var bytesPerPixel = (actualImage.Format.BitsPerPixel + 7) / 8;
+                var stride = bytesPerPixel * actualImage.PixelWidth;
+                var bytes = new byte[stride * actualImage.PixelHeight];
+                actualImage.CopyPixels(bytes, stride, 0);
+
+                for (var y = 0; y < expectedImage.Height; y++)
+                {
+                    for (var x = 0; x < expectedImage.Width; x++)
+                    {
+                        var offset = (y * stride) + (x * bytesPerPixel);
+
+                        // Assumes actualImage.Format is either PixelFormats.Bgr32 or PixelFormats.Bgra32
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).B, bytes[offset + 0]);
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).G, bytes[offset + 1]);
+                        Assert.AreEqual(expectedImage.GetPixel(x, y).R, bytes[offset + 2]);
+
+                        if (bytesPerPixel > 3)
+                        {
+                            Assert.AreEqual(expectedImage.GetPixel(x, y).A, bytes[offset + 3]);
+                        }
+                    }
+                }
+
+                expectedImage.Dispose();
+                blpFile.Dispose();
+            }
+        }
+#endif
 
         private static IEnumerable<object[]> GetBlpImageData()
         {
