@@ -10,6 +10,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using SkiaSharp;
+
 #if !NETSTANDARD1_3
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -43,9 +45,9 @@ namespace War3Net.Drawing.Blp
         private readonly uint[] _mipMapOffsets; // Offset for every MipMap level. If 0 = no more mitmap level
         private readonly uint[] _mipMapSizes; // Size for every level
         private readonly int _mipMapCount;
-        private readonly ARGBColor8[] _paletteBGRA = new ARGBColor8[256]; // The color-palette for non-compressed pictures
+        private readonly SKColor[] _colorPalette; // The color-palette for non-compressed pictures
 
-        private readonly byte[] _jpgHeaderData; // shared header when using mipMaps
+        private readonly byte[] _jpgHeaderData; // Shared header when using mipMaps (usually contains markers SOI, DHT, DQT, and a part of SOF0)
 
         private Stream _baseStream;
 
@@ -136,14 +138,13 @@ namespace War3Net.Drawing.Blp
                 // This palette always exists when the formatVersion is set to FileContent.Direct, even when it's not used.
                 if (_colorEncoding == 1)
                 {
+                    const int paletteSize = 256;
+                    _colorPalette = new SKColor[paletteSize];
+
                     // Reading palette
-                    for (var i = 0; i < 256; i++)
+                    for (var i = 0; i < paletteSize; i++)
                     {
-                        var color = reader.ReadInt32();
-                        _paletteBGRA[i].blue = (byte)((color >> 0) & 0xFF);
-                        _paletteBGRA[i].green = (byte)((color >> 8) & 0xFF);
-                        _paletteBGRA[i].red = (byte)((color >> 16) & 0xFF);
-                        _paletteBGRA[i].alpha = (byte)((color >> 24) & 0xFF);
+                        _colorPalette[i] = new SKColor(reader.ReadUInt32());
                     }
                 }
                 else if (_fileFormatVersion == FileFormatVersion.BLP1 && _formatVersion == FileContent.JPG)
@@ -164,11 +165,11 @@ namespace War3Net.Drawing.Blp
         public int MipMapCount => _mipMapCount;
 
         /// <summary>
-        /// Converts the BLP to a <see cref="SkiaSharp.SKBitmap"/>.
+        /// Converts the BLP to a <see cref="SKBitmap"/>.
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns></returns>
-        public SkiaSharp.SKBitmap GetSKBitmap(int mipMapLevel)
+        public SKBitmap GetSKBitmap(int mipMapLevel)
         {
             switch (_formatVersion)
             {
@@ -271,8 +272,7 @@ namespace War3Net.Drawing.Blp
 
             if (bgra)
             {
-                // when we want to copy the pixeldata directly into the bitmap, we have to convert them into BGRA before doing so
-                ARGBColor8.ConvertToBGRA(pic);
+                ConvertBetweenRgbAndBgr(pic, 4);
             }
 
             return pic;
@@ -302,6 +302,17 @@ namespace War3Net.Drawing.Blp
             }
         }
 
+        private static void ConvertBetweenRgbAndBgr(byte[] pixelData, int bytesPerPixel)
+        {
+            // Swap red and blue colour channels.
+            for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
+            {
+                var tmp = pixelData[i];
+                pixelData[i] = pixelData[i + 2];
+                pixelData[i + 2] = tmp;
+            }
+        }
+
         private byte[] GetJpegFileBytes(int mipMapLevel)
         {
             var data = GetPixelsPictureData(mipMapLevel);
@@ -313,23 +324,16 @@ namespace War3Net.Drawing.Blp
             return jpgData;
         }
 
-        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SkiaSharp.SKBitmap bitmap)
+        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SKBitmap bitmap)
         {
             var jpgData = GetJpegFileBytes(mipMapLevel);
 
-            bitmap = SkiaSharp.SKBitmap.Decode(jpgData);
+            bitmap = SKBitmap.Decode(jpgData);
 
             var pixelData = new byte[bitmap.ByteCount];
             Marshal.Copy(bitmap.GetPixels(), pixelData, 0, pixelData.Length);
 
-            // Swap red and blue colour channels.
-            var bytesPerPixel = bitmap.BytesPerPixel;
-            for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
-            {
-                var tmp = pixelData[i];
-                pixelData[i] = pixelData[i + 2];
-                pixelData[i + 2] = tmp;
-            }
+            ConvertBetweenRgbAndBgr(pixelData, bitmap.BytesPerPixel);
 
             return pixelData;
         }
@@ -347,9 +351,9 @@ namespace War3Net.Drawing.Blp
             var pic = new byte[length * 4];
             for (var i = 0; i < length; i++)
             {
-                pic[i * 4] = _paletteBGRA[data[i]].red;
-                pic[(i * 4) + 1] = _paletteBGRA[data[i]].green;
-                pic[(i * 4) + 2] = _paletteBGRA[data[i]].blue;
+                pic[(i * 4) + 0] = _colorPalette[data[i]].Red;
+                pic[(i * 4) + 1] = _colorPalette[data[i]].Green;
+                pic[(i * 4) + 2] = _colorPalette[data[i]].Blue;
                 pic[(i * 4) + 3] = GetAlpha(data, i, length);
             }
 
