@@ -9,29 +9,55 @@ using System;
 
 namespace War3Net.Drawing.Blp
 {
+    /// <summary>
+    ///
+    /// </summary>
     /// <remarks>
     /// Most of the algorithms and data used in this class has been ported from LibSquish!
     /// http://code.google.com/p/libsquish/.
+    /// Another .NET (framework 4.6) implementation can be found at: https://github.com/MaxxWyndham/LibSquishNet (only useful if ported to .NET standard v1.3).
     /// </remarks>
-    public static class DxtDecompression
+    internal static class DxtDecompression
     {
+        /// <summary>
+        ///
+        /// </summary>
         [Flags]
-        public enum DXTFlags
+        public enum DxtFlags
         {
+            /// <summary>
+            ///
+            /// </summary>
             DXT1 = 1 << 0,
+
+            /// <summary>
+            ///
+            /// </summary>
             DXT3 = 1 << 1,
+
+            /// <summary>
+            ///
+            /// </summary>
             DXT5 = 1 << 2,
 
             // Additional Enums not implemented :o
         }
 
-        public static byte[] DecompressImage(int width, int height, byte[] data, DXTFlags flags)
+        /// <summary>
+        /// Decompresses an image.
+        /// </summary>
+        /// <param name="width">The width of the image to decompress.</param>
+        /// <param name="height">The height of the image to decompress.</param>
+        /// <param name="data">The compressed image data.</param>
+        /// <param name="flags">The compression flags.</param>
+        /// <returns>Returns the decompressed image as a byte array in the 32Bit RGBA-Format.</returns>
+        internal static byte[] DecompressImage(int width, int height, byte[] data, DxtFlags flags)
         {
             var rgba = new byte[width * height * 4];
 
             // initialise the block input
             var sourceBlock_pos = 0;
-            var bytesPerBlock = (flags & DXTFlags.DXT1) != 0 ? 8 : 16;
+            var bytesPerBlock = (flags & DxtFlags.DXT1) != 0 ? 8 : 16;
             var targetRGBA = new byte[4 * 16];
 
             // loop over blocks
@@ -82,25 +108,25 @@ namespace War3Net.Drawing.Blp
             return rgba;
         }
 
-        private static void Decompress(byte[] rgba, byte[] block, int blockIndex, DXTFlags flags)
+        private static void Decompress(byte[] rgba, byte[] block, int blockIndex, DxtFlags flags)
         {
             // get the block locations
             var colorBlockIndex = blockIndex;
 
-            if ((flags & (DXTFlags.DXT3 | DXTFlags.DXT5)) != 0)
+            if ((flags & (DxtFlags.DXT3 | DxtFlags.DXT5)) != 0)
             {
                 colorBlockIndex += 8;
             }
 
             // decompress color
-            DecompressColor(rgba, block, colorBlockIndex, (flags & DXTFlags.DXT1) != 0);
+            DecompressColor(rgba, block, colorBlockIndex, (flags & DxtFlags.DXT1) != 0);
 
             // decompress alpha separately if necessary
-            if ((flags & DXTFlags.DXT3) != 0)
+            if ((flags & DxtFlags.DXT3) != 0)
             {
                 DecompressAlphaDxt3(rgba, block, blockIndex);
             }
-            else if ((flags & DXTFlags.DXT5) != 0)
+            else if ((flags & DxtFlags.DXT5) != 0)
             {
                 DecompressAlphaDxt5(rgba, block, blockIndex);
             }

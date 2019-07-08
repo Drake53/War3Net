@@ -419,7 +419,7 @@ namespace War3Net.Drawing.Blp
                 case 1:
                     return GetPictureUncompressedByteArray(w, h, data);
                 case 2:
-                    var flag = (_alphaDepth > 1) ? ((_alphaEncoding == 7) ? DxtDecompression.DXTFlags.DXT5 : DxtDecompression.DXTFlags.DXT3) : DxtDecompression.DXTFlags.DXT1;
+                    var flag = (_alphaDepth > 1) ? ((_alphaEncoding == 7) ? DxtDecompression.DxtFlags.DXT5 : DxtDecompression.DxtFlags.DXT3) : DxtDecompression.DxtFlags.DXT1;
                     return DxtDecompression.DecompressImage(w, h, data, flag);
                 case 3:
                     return data;
