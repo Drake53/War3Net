@@ -32,11 +32,11 @@ Depending on the target framework, additional methods are available to get the i
 
 - ![dotnet standard 1.3](https://img.shields.io/badge/.NET%20standard-v1.3-brightgreen.svg)
     - *Dependencies:*
-    ![https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg](https://www.nuget.org/packages/SkiaSharp)
+    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
 - ![dotnet standard 2.0](https://img.shields.io/badge/.NET%20standard-v2.0-brightgreen.svg)
     - *Dependencies:*
-    ![https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg]
-    ![https://img.shields.io/badge/System.Drawing.Common-v4.5.1-blue.svg](https://www.nuget.org/packages/System.Drawing.Common)
+    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
+    [![System.Drawing.Common](https://img.shields.io/badge/System.Drawing.Common-v4.5.1-blue.svg)](https://www.nuget.org/packages/System.Drawing.Common)
 - ![dotnet framework 4.6](https://img.shields.io/badge/.NET%20framework-v4.6-brightgreen.svg)
     - *Dependencies:*
-    ![https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg]
+    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
