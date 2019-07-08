@@ -23,6 +23,9 @@ using System.Windows.Media.Imaging;
 
 namespace War3Net.Drawing.Blp
 {
+    /// <summary>
+    /// Represents a BLP image file.
+    /// </summary>
     /// <remarks>
     /// Documentation used for <see cref="FileFormatVersion.BLP1"/>:
     /// https://www.hiveworkshop.com/threads/blp-specifications-wc3.279306/
@@ -51,6 +54,10 @@ namespace War3Net.Drawing.Blp
 
         private Stream _baseStream;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlpFile"/> class.
+        /// </summary>
+        /// <param name="stream">A <see cref="Stream"/> that contains the BLP file.</param>
         public BlpFile(Stream stream)
         {
             _baseStream = stream;
@@ -168,7 +175,7 @@ namespace War3Net.Drawing.Blp
         /// Converts the BLP to a <see cref="SKBitmap"/>.
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
-        /// <returns></returns>
+        /// <returns>A new <see cref="SKBitmap"/> instance representing the BLP image.</returns>
         public SKBitmap GetSKBitmap(int mipMapLevel)
         {
             switch (_formatVersion)
@@ -188,10 +195,10 @@ namespace War3Net.Drawing.Blp
 
 #if !NETSTANDARD1_3
         /// <summary>
-        /// Converts the BLP to a System.Drawing.Bitmap.
+        /// Converts the BLP to a <see cref="Bitmap"/>.
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
-        /// <returns></returns>
+        /// <returns>A new <see cref="Bitmap"/> instance representing the BLP image.</returns>
         public Bitmap GetBitmap(int mipMapLevel)
         {
             switch (_formatVersion)
@@ -227,6 +234,11 @@ namespace War3Net.Drawing.Blp
 #endif
 
 #if !NETSTANDARD
+        /// <summary>
+        /// Converts the BLP to a <see cref="BitmapSource"/>.
+        /// </summary>
+        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
+        /// <returns>A new <see cref="BitmapSource"/> instance representing the BLP image.</returns>
         public BitmapSource GetBitmapSource(int mipMapLevel)
         {
             switch (_formatVersion)
@@ -249,8 +261,14 @@ namespace War3Net.Drawing.Blp
         /// <summary>
         /// Returns array of pixels in BGRA or RGBA order.
         /// </summary>
-        /// <param name="mipMapLevel"></param>
-        /// <returns></returns>
+        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
+        /// <param name="w">Contains the width of the image at the chosen <paramref name="mipMapLevel"/>.</param>
+        /// <param name="h">Contains the height of the image at the chosen <paramref name="mipMapLevel"/>.</param>
+        /// <param name="bgra">If true, the returned byte array is in BGRA order. Otherwise, it's in RGBA order.</param>
+        /// <returns>A byte array representing the BLP image.</returns>
+        /// <remarks>
+        /// This method should not be used if the BLP's content type is <see cref="FileContent.JPG"/>.
+        /// </remarks>
         public byte[] GetPixels(int mipMapLevel, out int w, out int h, bool bgra = true)
         {
             if (mipMapLevel >= MipMapCount)
@@ -268,7 +286,7 @@ namespace War3Net.Drawing.Blp
             h = _height / scale;
 
             var data = GetPictureData(mipMapLevel);
-            var pic = GetImageBytes(w, h, data); // This bytearray stores the Pixel-Data
+            var pic = GetImageBytes(w, h, data); // This byte array stores the Pixel-Data
 
             if (bgra)
             {
@@ -302,9 +320,9 @@ namespace War3Net.Drawing.Blp
             }
         }
 
+        // Swap red and blue colour channels in a byte array.
         private static void ConvertBetweenRgbAndBgr(byte[] pixelData, int bytesPerPixel)
         {
-            // Swap red and blue colour channels.
             for (var i = 0; i < pixelData.Length; i += bytesPerPixel)
             {
                 var tmp = pixelData[i];
@@ -313,6 +331,7 @@ namespace War3Net.Drawing.Blp
             }
         }
 
+        // Gets the entire jpg file contents (which should start with a marker of type SOI, and end with a marker of type EOI).
         private byte[] GetJpegFileBytes(int mipMapLevel)
         {
             var data = GetPixelsPictureData(mipMapLevel);
@@ -324,6 +343,7 @@ namespace War3Net.Drawing.Blp
             return jpgData;
         }
 
+        // Decodes a jpg file.
         private byte[] GetJpgBitmapBytes(int mipMapLevel, out SKBitmap bitmap)
         {
             var jpgData = GetJpegFileBytes(mipMapLevel);
@@ -338,13 +358,7 @@ namespace War3Net.Drawing.Blp
             return pixelData;
         }
 
-        /// <summary>
-        /// Extracts the palettized Image-Data from the given MipMap and returns a byte-Array in the 32Bit RGBA-Format
-        /// </summary>
-        /// <param name="w"></param>
-        /// <param name="h"></param>
-        /// <param name="data"></param>
-        /// <returns>Pixel-data</returns>
+        // Extracts the palettized Image Data from the given MipMap, and returns a byte array in the 32Bit RGBA-Format.
         private byte[] GetPictureUncompressedByteArray(int w, int h, byte[] data)
         {
             var length = w * h;
@@ -383,11 +397,7 @@ namespace War3Net.Drawing.Blp
             }
         }
 
-        /// <summary>
-        /// Returns the raw MipMap-Image Data. This data can either be compressed or uncompressed, depending on the Header-Data
-        /// </summary>
-        /// <param name="mipMapLevel"></param>
-        /// <returns></returns>
+        // Returns the raw MipMap Image Data. This data can either be compressed or uncompressed, depending on the Header Data.
         private byte[] GetPictureData(int mipMapLevel)
         {
             if (_baseStream != null)
@@ -401,9 +411,7 @@ namespace War3Net.Drawing.Blp
             return null;
         }
 
-        /// <summary>
-        /// Returns the uncompressed image as a byte array in Format32bppRGBA.
-        /// </summary>
+        // Returns the uncompressed image as a byte array in the 32Bit RGBA-Format.
         private byte[] GetImageBytes(int w, int h, byte[] data)
         {
             switch (_colorEncoding)
