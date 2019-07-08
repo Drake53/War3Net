@@ -10,11 +10,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>© Xalcon @ mmowned.com-Forum. All rights reserved.</Copyright>
-    <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
     <Authors>Xalcon, Drake53</Authors>
     <Owners>Drake53</Owners>
-    <Summary>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Summary>
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
+    <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
