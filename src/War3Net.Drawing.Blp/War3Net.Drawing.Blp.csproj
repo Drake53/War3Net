@@ -36,6 +36,7 @@
   <ItemGroup>
     <None Include="LICENSE">
       <Pack>true</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
