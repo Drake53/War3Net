@@ -25,18 +25,18 @@ using (var fileStream = File.OpenRead(inputImagePath))
 }
 ```
 
-## Supported Frameworks
+## Dependencies
 
 War3Net.Drawing.Blp depends on [SkiaSharp](https://github.com/mono/SkiaSharp) to decode images.
-Depending on the target framework, additional methods are available to get the image in a different bitmap type.
+Depending on the target framework, additional methods are available to get the image in a different bitmap type (SKBitmap, Bitmap, BitmapSource).
 
-- ![dotnet standard 1.3](https://img.shields.io/badge/.NET%20standard-v1.3-brightgreen.svg)
-    - *Dependencies:*
+- [![dotnet framework 4.6](https://img.shields.io/badge/.NET%20framework-v4.6-brightgreen.svg)](https://github.com/microsoft/dotnet/blob/master/Documentation/compatibility/README.md#net-framework-46)
     [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
-- ![dotnet standard 2.0](https://img.shields.io/badge/.NET%20standard-v2.0-brightgreen.svg)
-    - *Dependencies:*
+
+- [![dotnet standard 1.3](https://img.shields.io/badge/.NET%20standard-v1.3-brightgreen.svg)](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard1.3.md)
+    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
+    [![NETStandard.Library](https://img.shields.io/badge/NETStandard.Library-v1.6.1-blue.svg)](https://www.nuget.org/packages/NETStandard.Library/)
+
+- [![dotnet standard 2.0](https://img.shields.io/badge/.NET%20standard-v2.0-brightgreen.svg)](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)
     [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
     [![System.Drawing.Common](https://img.shields.io/badge/System.Drawing.Common-v4.5.1-blue.svg)](https://www.nuget.org/packages/System.Drawing.Common)
-- ![dotnet framework 4.6](https://img.shields.io/badge/.NET%20framework-v4.6-brightgreen.svg)
-    - *Dependencies:*
-    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
