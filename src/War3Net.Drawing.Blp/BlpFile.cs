@@ -18,6 +18,7 @@ using System.Drawing.Imaging;
 #endif
 
 #if !NETSTANDARD
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #endif
 
@@ -251,7 +252,9 @@ namespace War3Net.Drawing.Blp
                     return decoder.Frames[0];
 
                 case FileContent.Direct:
-                    throw new NotImplementedException();
+                    var pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
+
+                    return BitmapSource.Create(width, height, 96d, 96d, GetFormat(), null, pixelData, width * 4);
 
                 default:
                     throw new IndexOutOfRangeException();
@@ -316,7 +319,7 @@ namespace War3Net.Drawing.Blp
 #if !NETSTANDARD1_3
         private static Bitmap CopyBitmapBits(Bitmap bitmap, int width, int height, byte[] source)
         {
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
             Marshal.Copy(source, 0, bitmapData.Scan0, source.Length);
             bitmap.UnlockBits(bitmapData);
 
@@ -334,6 +337,14 @@ namespace War3Net.Drawing.Blp
                 pixelData[i + 2] = tmp;
             }
         }
+
+#if !NETSTANDARD
+        private System.Windows.Media.PixelFormat GetFormat()
+        {
+            // where's rgba32...
+            return _colorEncoding == 3 ? PixelFormats.Rgb24 : PixelFormats.Bgra32;
+        }
+#endif
 
         // Gets the entire jpg file contents (which should start with a marker of type SOI, and end with a marker of type EOI).
         private byte[] GetJpegFileBytes(int mipMapLevel)
