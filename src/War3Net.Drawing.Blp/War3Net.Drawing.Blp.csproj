@@ -16,6 +16,7 @@
     <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
     <AssemblyVersion>1.1.0</AssemblyVersion>
     <FileVersion>1.1.0</FileVersion>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
   </PropertyGroup>
