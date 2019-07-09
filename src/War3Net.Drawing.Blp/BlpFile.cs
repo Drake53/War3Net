@@ -243,16 +243,30 @@ namespace War3Net.Drawing.Blp
         /// <returns>A new <see cref="BitmapSource"/> instance representing the BLP image.</returns>
         public BitmapSource GetBitmapSource(int mipMapLevel = 0)
         {
+            byte[] pixelData;
+
             switch (_formatVersion)
             {
                 case FileContent.JPG:
+                    // TODO: test whether or not using SkiaSharp to decode is faster
                     var jpgData = GetJpegFileBytes(mipMapLevel);
                     var decoder = new JpegBitmapDecoder(new MemoryStream(jpgData), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
 
-                    return decoder.Frames[0];
+                    // return decoder.Frames[0];
+
+                    var bitmap = decoder.Frames[0];
+                    var bytesPerPixel = (bitmap.Format.BitsPerPixel + 7) / 8;
+                    var stride = bitmap.PixelWidth * bytesPerPixel;
+
+                    pixelData = new byte[stride * bitmap.PixelHeight];
+                    bitmap.CopyPixels(pixelData, stride, 0);
+
+                    InvertChannelValues(pixelData);
+
+                    return BitmapSource.Create(bitmap.PixelWidth, bitmap.PixelHeight, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null, pixelData, stride);
 
                 case FileContent.Direct:
-                    var pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
+                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
 
                     return BitmapSource.Create(width, height, 96d, 96d, GetFormat(), null, pixelData, width * 4);
 
@@ -335,6 +349,15 @@ namespace War3Net.Drawing.Blp
                 var tmp = pixelData[i];
                 pixelData[i] = pixelData[i + 2];
                 pixelData[i + 2] = tmp;
+            }
+        }
+
+        // Assumes colour and alpha channels are all 8bpp.
+        private static void InvertChannelValues(byte[] pixelData)
+        {
+            for (var i = 0; i < pixelData.Length; i++)
+            {
+                pixelData[i] = (byte)(255 - pixelData[i]);
             }
         }
 
