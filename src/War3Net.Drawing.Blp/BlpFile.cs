@@ -176,17 +176,26 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>A new <see cref="SKBitmap"/> instance representing the BLP image.</returns>
-        public SKBitmap GetSKBitmap(int mipMapLevel)
+        public SKBitmap GetSKBitmap(int mipMapLevel = 0)
         {
+            SKBitmap bitmap;
+            byte[] pixelData;
+
             switch (_formatVersion)
             {
                 case FileContent.JPG:
-                    var pixelData = GetJpgBitmapBytes(mipMapLevel, out var bitmap);
+                    bitmap = GetJpgBitmapBytes(mipMapLevel, out pixelData);
                     Marshal.Copy(pixelData, 0, bitmap.GetPixels(), pixelData.Length);
+
                     return bitmap;
 
                 case FileContent.Direct:
-                    throw new NotImplementedException();
+                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
+
+                    bitmap = new SKBitmap(width, height);
+                    Marshal.Copy(pixelData, 0, bitmap.GetPixels(), pixelData.Length);
+
+                    return bitmap;
 
                 default:
                     throw new IndexOutOfRangeException();
@@ -199,33 +208,25 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>A new <see cref="Bitmap"/> instance representing the BLP image.</returns>
-        public Bitmap GetBitmap(int mipMapLevel)
+        public Bitmap GetBitmap(int mipMapLevel = 0)
         {
+            Bitmap bitmap;
+            byte[] pixelData;
+
             switch (_formatVersion)
             {
                 case FileContent.JPG:
-                    var pixelData = GetJpgBitmapBytes(mipMapLevel, out var skBitmap);
-                    var bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
-
-                    var bitmapData = bitmap.LockBits(new Rectangle(0, 0, skBitmap.Width, skBitmap.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-                    Marshal.Copy(pixelData, 0, bitmapData.Scan0, pixelData.Length);
-                    bitmap.UnlockBits(bitmapData);
-
-                    skBitmap.Dispose();
-
-                    return bitmap;
+                    using (var skBitmap = GetJpgBitmapBytes(mipMapLevel, out pixelData))
+                    {
+                        bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
+                        return CopyBitmapBits(bitmap, skBitmap.Width, skBitmap.Height, pixelData);
+                    }
 
                 case FileContent.Direct:
-                    var pic = GetPixels(mipMapLevel, out var w, out var h, _colorEncoding == 3 ? false : true);
+                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
 
-                    var bmp = new Bitmap(w, h);
-
-                    // Faster bitmap Data copy
-                    var bmpdata = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-                    Marshal.Copy(pic, 0, bmpdata.Scan0, pic.Length); // copy! :D
-                    bmp.UnlockBits(bmpdata);
-
-                    return bmp;
+                    bitmap = new Bitmap(width, height);
+                    return CopyBitmapBits(bitmap, width, height, pixelData);
 
                 default:
                     throw new IndexOutOfRangeException();
@@ -239,7 +240,7 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>A new <see cref="BitmapSource"/> instance representing the BLP image.</returns>
-        public BitmapSource GetBitmapSource(int mipMapLevel)
+        public BitmapSource GetBitmapSource(int mipMapLevel = 0)
         {
             switch (_formatVersion)
             {
@@ -271,22 +272,14 @@ namespace War3Net.Drawing.Blp
         /// </remarks>
         public byte[] GetPixels(int mipMapLevel, out int w, out int h, bool bgra = true)
         {
-            if (mipMapLevel >= MipMapCount)
-            {
-                mipMapLevel = MipMapCount - 1;
-            }
-
-            if (mipMapLevel < 0)
-            {
-                mipMapLevel = 0;
-            }
+            var data = GetPixelsPictureData(mipMapLevel);
 
             var scale = (int)Math.Pow(2, mipMapLevel);
             w = _width / scale;
             h = _height / scale;
 
-            var data = GetPictureData(mipMapLevel);
-            var pic = GetImageBytes(w, h, data); // This byte array stores the Pixel-Data
+            // This byte array stores the Pixel-Data
+            var pic = GetImageBytes(w, h, data);
 
             if (bgra)
             {
@@ -320,6 +313,17 @@ namespace War3Net.Drawing.Blp
             }
         }
 
+#if !NETSTANDARD1_3
+        private static Bitmap CopyBitmapBits(Bitmap bitmap, int width, int height, byte[] source)
+        {
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+            Marshal.Copy(source, 0, bitmapData.Scan0, source.Length);
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
+        }
+#endif
+
         // Swap red and blue colour channels in a byte array.
         private static void ConvertBetweenRgbAndBgr(byte[] pixelData, int bytesPerPixel)
         {
@@ -344,18 +348,17 @@ namespace War3Net.Drawing.Blp
         }
 
         // Decodes a jpg file.
-        private byte[] GetJpgBitmapBytes(int mipMapLevel, out SKBitmap bitmap)
+        private SKBitmap GetJpgBitmapBytes(int mipMapLevel, out byte[] pixelData)
         {
             var jpgData = GetJpegFileBytes(mipMapLevel);
+            var bitmap = SKBitmap.Decode(jpgData);
 
-            bitmap = SKBitmap.Decode(jpgData);
-
-            var pixelData = new byte[bitmap.ByteCount];
+            pixelData = new byte[bitmap.ByteCount];
             Marshal.Copy(bitmap.GetPixels(), pixelData, 0, pixelData.Length);
 
             ConvertBetweenRgbAndBgr(pixelData, bitmap.BytesPerPixel);
 
-            return pixelData;
+            return bitmap;
         }
 
         // Extracts the palettized Image Data from the given MipMap, and returns a byte array in the 32Bit RGBA-Format.
