@@ -19,7 +19,7 @@ The BLP file format is used to store images/textures. There exist three formats 
 using (var fileStream = File.OpenRead(inputImagePath))
 {
     var blpFile = new BlpFile(fileStream);
-    var bitmap = blpFile.GetSKBitmap(0);
+    var bitmap = blpFile.GetSKBitmap();
 
     return bitmap;
 }

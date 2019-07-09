@@ -14,8 +14,8 @@
     <Owners>Drake53</Owners>
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
     <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
     <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
   </PropertyGroup>
