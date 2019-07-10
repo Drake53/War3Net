@@ -27,7 +27,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockTable"/> class.
         /// </summary>
-        /// <param name="size"></param>
+        /// <param name="size">The maximum amount of entries that can be contained in this table.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MpqTable.MaxSize"/>.</exception>
         internal BlockTable(uint size)
             : base(size)
@@ -38,9 +38,9 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockTable"/> class.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="size"></param>
-        /// <param name="headerOffset"></param>
+        /// <param name="reader">The <see cref="BinaryReader"/> from which to read the contents of the <see cref="BlockTable"/>.</param>
+        /// <param name="size">The amount of <see cref="MpqEntry"/> objects to be added to the <see cref="BlockTable"/>.</param>
+        /// <param name="headerOffset">The length (in bytes) of data before the <see cref="MpqHeader"/>.</param>
         internal BlockTable(BinaryReader reader, uint size, uint headerOffset)
             : base(size)
         {
@@ -66,19 +66,31 @@ namespace War3Net.IO.Mpq
         /// </summary>
         protected override string Key => TableKey;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the length (in bytes) of a single <see cref="MpqEntry"/> in the <see cref="BlockTable"/>.
+        /// </summary>
         protected override int EntrySize => (int)MpqEntry.Size;
 
-        public MpqEntry this[int index] => _entries[index];
-
-        public MpqEntry this[uint index] => _entries[(int)index];
+        /// <summary>
+        /// Gets the <see cref="MpqEntry"/> at specified index.
+        /// </summary>
+        /// <param name="i">The zero-based index of the <see cref="MpqEntry"/> to get.</param>
+        /// <returns>The <see cref="MpqEntry"/> at index <paramref name="i"/> of the <see cref="BlockTable"/>.</returns>
+        public MpqEntry this[int i] => _entries[i];
 
         /// <summary>
-        ///
+        /// Gets the <see cref="MpqEntry"/> at specified index.
         /// </summary>
-        /// <param name="entry"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <param name="i">The zero-based index of the <see cref="MpqEntry"/> to get.</param>
+        /// <returns>The <see cref="MpqEntry"/> at index <paramref name="i"/> of the <see cref="BlockTable"/>.</returns>
+        public MpqEntry this[uint i] => _entries[(int)i];
+
+        /// <summary>
+        /// Adds an <see cref="MpqEntry"/> to the <see cref="BlockTable"/>.
+        /// </summary>
+        /// <param name="entry">The <see cref="MpqEntry"/> to be added to the <see cref="BlockTable"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="entry"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <see cref="MpqEntry.FilePos"/> property has not been set yet.</exception>
         public void Add(MpqEntry entry)
         {
             if (!(entry?.IsAdded ?? throw new ArgumentNullException(nameof(entry))))
@@ -104,7 +116,11 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Writes the <see cref="MpqEntry"/> at index <paramref name="i"/>.
+        /// </summary>
+        /// <param name="writer">The <see cref="BinaryWriter"/> to write the content to.</param>
+        /// <param name="i">The index of the <see cref="MpqEntry"/> to write.</param>
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
             _entries[i].WriteEntry(writer);
