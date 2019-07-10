@@ -26,7 +26,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="HashTable"/> class.
         /// </summary>
-        /// <param name="size"></param>
+        /// <param name="size">The maximum amount of entries that can be contained in this table. This value is automatically rounded up to the nearest power of two.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MpqTable.MaxSize"/>.</exception>
         public HashTable(uint size)
             : base(GenerateMask(size) + 1)
@@ -43,11 +43,10 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="HashTable"/> class.
         /// </summary>
-        /// <param name="minimumSize"></param>
+        /// <param name="minimumSize">The minimum capacity that this <see cref="HashTable"/> should have.</param>
         /// <param name="freeSpace">Determines how much space is available for files with known filenames. Use 1 if no files with an unknown filename will be added.</param>
         /// <param name="multiplier">Multiplier for the size of the hashtable. By increasing the size beyond the minimum, the amount of collisions with StringHash will be reduced.</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="DivideByZeroException"></exception>
+        /// <exception cref="DivideByZeroException">Thrown when <paramref name="freeSpace"/> is zero.</exception>
         public HashTable(uint minimumSize, float freeSpace, float multiplier)
             : this(Math.Min(MaxSize, Math.Max(minimumSize, (uint)(multiplier * minimumSize / freeSpace))))
         {
@@ -56,20 +55,24 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="HashTable"/> class.
         /// </summary>
-        /// <param name="knownFiles"></param>
-        /// <param name="unknownFiles"></param>
-        /// <param name="oldHeaderSize"></param>
-        /// <param name="multiplier"></param>
-        public HashTable(uint knownFiles, uint unknownFiles, uint oldHeaderSize, float multiplier)
-            : this(knownFiles, 1 - ((float)unknownFiles / oldHeaderSize), multiplier)
+        /// <param name="knownFiles">The amount of files with a known filename that will be added to the <see cref="HashTable"/>.</param>
+        /// <param name="unknownFiles">The amount of files with an unknown filename that will be added to the <see cref="HashTable"/>.</param>
+        /// <param name="oldTableSize">The size of the smallest <see cref="HashTable"/> from which the unknown files came.</param>
+        /// <param name="multiplier">Multiplier for the size of the hashtable. By increasing the size beyond the minimum, the amount of collisions with StringHash will be reduced.</param>
+        /// <exception cref="DivideByZeroException">Thrown when <paramref name="unknownFiles"/> is equal to <paramref name="oldTableSize"/>.</exception>
+        /// <remarks>
+        /// If the unknown files are sourced from multiple <see cref="HashTable"/>s with different sizes, it's recommended to use a different constructor.
+        /// </remarks>
+        public HashTable(uint knownFiles, uint unknownFiles, uint oldTableSize, float multiplier)
+            : this(knownFiles, 1 - ((float)unknownFiles / oldTableSize), multiplier)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HashTable"/> class.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="size"></param>
+        /// <param name="reader">The <see cref="BinaryReader"/> from which to read the contents of the <see cref="HashTable"/>.</param>
+        /// <param name="size">The amount of <see cref="MpqHash"/> objects to be added to the <see cref="HashTable"/>.</param>
         internal HashTable(BinaryReader reader, uint size)
             : base(size)
         {
@@ -101,18 +104,30 @@ namespace War3Net.IO.Mpq
         /// </summary>
         protected override string Key => TableKey;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the length (in bytes) of a single <see cref="MpqHash"/> in the <see cref="HashTable"/>.
+        /// </summary>
         protected override int EntrySize => (int)MpqHash.Size;
 
-        internal MpqHash this[int index] => _hashes[index];
+        /// <summary>
+        /// Gets the <see cref="MpqHash"/> at specified index.
+        /// </summary>
+        /// <param name="i">The zero-based index of the <see cref="MpqHash"/> to get.</param>
+        /// <returns>The <see cref="MpqHash"/> at index <paramref name="i"/> of the <see cref="HashTable"/>.</returns>
+        internal MpqHash this[int i] => _hashes[i];
 
-        internal MpqHash this[uint index] => _hashes[index];
+        /// <summary>
+        /// Gets the <see cref="MpqHash"/> at specified index.
+        /// </summary>
+        /// <param name="i">The zero-based index of the <see cref="MpqHash"/> to get.</param>
+        /// <returns>The <see cref="MpqHash"/> at index <paramref name="i"/> of the <see cref="HashTable"/>.</returns>
+        internal MpqHash this[uint i] => _hashes[i];
 
         /// <summary>
         /// Generates a bit mask for the given <paramref name="size"/>.
         /// </summary>
-        /// <param name="size"></param>
-        /// <returns></returns>
+        /// <param name="size">The size for which to generate a bit mask.</param>
+        /// <returns>Returns the bit mask for the given <paramref name="size"/>.</returns>
         public static uint GenerateMask(uint size)
         {
             size--;
@@ -125,12 +140,16 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        ///
+        /// Adds an <see cref="MpqHash"/> to the <see cref="HashTable"/>.
         /// </summary>
-        /// <param name="hash"></param>
-        /// <param name="hashIndex"></param>
-        /// <param name="hashCollisions"></param>
-        /// <returns></returns>
+        /// <param name="hash">The <see cref="MpqHash"/> to be added to the <see cref="HashTable"/>.</param>
+        /// <param name="hashIndex">The index at which to add the <see cref="MpqHash"/>.</param>
+        /// <param name="hashCollisions">The maximum amount of collisions, if the <see cref="MpqFile"/> came from another <see cref="MpqArchive"/> and has an unknown filename.</param>
+        /// <returns>
+        /// Returns the amount of <see cref="MpqHash"/> objects that have been added.
+        /// This is usually 1, but can be more if the <see cref="MpqFile"/> came from another <see cref="MpqArchive"/>, has an unknown filename,
+        /// and the <see cref="HashTable"/> of the <see cref="MpqArchive"/> it came from has a smaller size than this one.
+        /// </returns>
         public uint Add(MpqHash hash, uint hashIndex, uint hashCollisions)
         {
             var step = hash.Mask + 1;
@@ -166,12 +185,17 @@ namespace War3Net.IO.Mpq
             return Size / step;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Writes the <see cref="MpqHash"/> at index <paramref name="i"/>.
+        /// </summary>
+        /// <param name="writer">The <see cref="BinaryWriter"/> to write the content to.</param>
+        /// <param name="i">The index of the <see cref="MpqHash"/> to write.</param>
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
+            // TODO: make method in MpqHash for this?
+            // _hashes[i].WriteEntry(writer);
             var hash = _hashes[i];
 
-            // TODO: make method in MpqHash for this?
             writer.Write(hash.Name1);
             writer.Write(hash.Name2);
             writer.Write((uint)hash.Locale);
