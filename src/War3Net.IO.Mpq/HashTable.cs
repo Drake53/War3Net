@@ -32,9 +32,9 @@ namespace War3Net.IO.Mpq
             : base(GenerateMask(size) + 1)
         {
             // The size of the hashtable must always be a power of two.
-            _mask = _size - 1;
-            _hashes = new MpqHash[_size];
-            for (var i = 0; i < _size; i++)
+            _mask = Size - 1;
+            _hashes = new MpqHash[Size];
+            for (var i = 0; i < Size; i++)
             {
                 _hashes[i] = MpqHash.NULL;
             }
@@ -73,11 +73,11 @@ namespace War3Net.IO.Mpq
         internal HashTable(BinaryReader reader, uint size)
             : base(size)
         {
-            _mask = _size - 1;
-            _hashes = new MpqHash[_size];
+            _mask = Size - 1;
+            _hashes = new MpqHash[Size];
 
             var hashdata = reader.ReadBytes((int)(size * MpqHash.Size));
-            Decrypt(hashdata, TableKey);
+            Decrypt(hashdata);
 
             using (var stream = new MemoryStream(hashdata))
             {
@@ -99,10 +99,10 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="HashTable"/>.
         /// </summary>
-        public override string Key => TableKey;
+        protected override string Key => TableKey;
 
         /// <inheritdoc/>
-        protected internal override int EntrySize => (int)MpqHash.Size;
+        protected override int EntrySize => (int)MpqHash.Size;
 
         internal MpqHash this[int index] => _hashes[index];
 
@@ -163,7 +163,7 @@ namespace War3Net.IO.Mpq
                 hashCollisions--;
             }
 
-            return _size / step;
+            return Size / step;
         }
 
         /// <inheritdoc/>

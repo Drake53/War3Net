@@ -47,7 +47,7 @@ namespace War3Net.IO.Mpq
             _entries = new List<MpqEntry>((int)size);
 
             var entrydata = reader.ReadBytes((int)(size * MpqEntry.Size));
-            Decrypt(entrydata, TableKey);
+            Decrypt(entrydata);
 
             using (var stream = new MemoryStream(entrydata))
             {
@@ -64,10 +64,10 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="BlockTable"/>.
         /// </summary>
-        public override string Key => TableKey;
+        protected override string Key => TableKey;
 
         /// <inheritdoc/>
-        protected internal override int EntrySize => (int)MpqEntry.Size;
+        protected override int EntrySize => (int)MpqEntry.Size;
 
         public MpqEntry this[int index] => _entries[index];
 
