@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="MpqArchiveTest.cs" company="Foole (fooleau@gmail.com)">
+// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,14 +13,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
-    public class BlpImageTest
+    public class MpqArchiveTest
     {
+        private const ushort BlockSize = 8;
+
         [DataTestMethod]
-        [DataRow("TestData/Lorem Ipsum.txt", (ushort)8)]
-        public void TestStoreThenRetrieveFile(string filename, ushort blockSize)
+        [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
+        public void TestStoreThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists, blockSize);
+            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists, BlockSize);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -34,11 +43,11 @@ namespace War3Net.IO.Mpq.Tests
         }
 
         [DataTestMethod]
-        [DataRow("TestData/Lorem Ipsum.txt", (ushort)8)]
-        public void TestStoreCompressedThenRetrieveFile(string filename, ushort blockSize)
+        [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
+        public void TestStoreCompressedThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists | MpqFileFlags.Compressed, blockSize);
+            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists | MpqFileFlags.Compressed, BlockSize);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -55,6 +64,14 @@ namespace War3Net.IO.Mpq.Tests
                 {
                     StringAssert.Equals(fileStreamReader.ReadToEnd(), openedStreamReader.ReadToEnd());
                 }
+            }
+        }
+
+        private static IEnumerable<object[]> GetTestFiles()
+        {
+            foreach (var file in Directory.EnumerateFiles("TestData", "*", SearchOption.TopDirectoryOnly))
+            {
+                yield return new object[] { file };
             }
         }
     }
