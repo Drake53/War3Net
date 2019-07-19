@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -13,6 +14,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace War3Net.Drawing.Blp.Tests
 {
+    public static class SKColorFormatter
+    {
+        /// <summary>
+        /// Displays the <see cref="SkiaSharp.SKColor"/> in the style of <see cref="Color.ToString()"/>.
+        /// </summary>
+        public static string ToColorString(this SkiaSharp.SKColor color)
+        {
+            return $"Color [A={color.Alpha}, R={color.Red}, G={color.Green}, B={color.Blue}]";
+        }
+    }
+
     [TestClass]
     public class BlpImageTest
     {
@@ -33,10 +45,18 @@ namespace War3Net.Drawing.Blp.Tests
                 {
                     for (var x = 0; x < expectedImage.Width; x++)
                     {
-                        Assert.AreEqual(expectedImage.GetPixel(x, y).A, actualImage.GetPixel(x, y).Alpha);
-                        Assert.AreEqual(expectedImage.GetPixel(x, y).R, actualImage.GetPixel(x, y).Red);
-                        Assert.AreEqual(expectedImage.GetPixel(x, y).G, actualImage.GetPixel(x, y).Green);
-                        Assert.AreEqual(expectedImage.GetPixel(x, y).B, actualImage.GetPixel(x, y).Blue);
+                        // Allow pixel values to be slightly different, since some testcases were decoded with WPF (BitmapSource), not SkiaSharp.
+                        const int delta = 1;
+
+                        var expectedPixel = expectedImage.GetPixel(x, y);
+                        var actualPixel = actualImage.GetPixel(x, y);
+
+                        var message = $"Expected:<{expectedPixel}>. Actual:<{actualPixel.ToColorString()}>";
+
+                        Assert.IsTrue(Math.Abs(expectedPixel.A - actualPixel.Alpha) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.R - actualPixel.Red) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.G - actualPixel.Green) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.B - actualPixel.Blue) <= delta, message);
                     }
                 }
 
@@ -62,7 +82,18 @@ namespace War3Net.Drawing.Blp.Tests
                 {
                     for (var x = 0; x < expectedImage.Width; x++)
                     {
-                        Assert.AreEqual(expectedImage.GetPixel(x, y), actualImage.GetPixel(x, y));
+                        // Allow pixel values to be slightly different, since some testcases were decoded with WPF (BitmapSource), not SkiaSharp.
+                        const int delta = 1;
+
+                        var expectedPixel = expectedImage.GetPixel(x, y);
+                        var actualPixel = actualImage.GetPixel(x, y);
+
+                        var message = $"Expected:<{expectedPixel}>. Actual:<{actualPixel}>";
+
+                        Assert.IsTrue(Math.Abs(expectedPixel.A - actualPixel.A) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.R - actualPixel.R) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.G - actualPixel.G) <= delta, message);
+                        Assert.IsTrue(Math.Abs(expectedPixel.B - actualPixel.B) <= delta, message);
                     }
                 }
 
@@ -121,6 +152,8 @@ namespace War3Net.Drawing.Blp.Tests
 
             yield return new object[] { "TestData/colorDxtMip8Blp2.blp", "TestData/color.png", 0 };
             yield return new object[] { "TestData/colorPalettedMip8Blp2.blp", "TestData/color.png", 0 };
+
+            yield return new object[] { "TestData/map101.blp", "TestData/map101.png", 0 };
         }
     }
 }
