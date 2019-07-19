@@ -177,6 +177,11 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>A new <see cref="SKBitmap"/> instance representing the BLP image.</returns>
+        /// <exception cref="BadImageFormatException">
+        /// Can be thrown when a project targets .NET framework. A possible fix is to add a reference to the <see cref="SkiaSharp"/> package,
+        /// and to add <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp> to a PropertyGroup in the project's .csproj file.
+        /// Note that you may have to clean and rebuild the project for this to work.
+        /// </exception>
         public SKBitmap GetSKBitmap(int mipMapLevel = 0)
         {
             SKBitmap bitmap;
@@ -209,6 +214,12 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <returns>A new <see cref="Bitmap"/> instance representing the BLP image.</returns>
+        /// <exception cref="BadImageFormatException">
+        /// Can be thrown when a project targets .NET framework. A possible fix is to add a reference to the <see cref="SkiaSharp"/> package,
+        /// and to add <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp> to a PropertyGroup in the project's .csproj file.
+        /// Note that you may have to clean and rebuild the project for this to work.
+        /// Another solution is to load the image as <see cref="BitmapSource"/> and convert it to a <see cref="Bitmap"/>.
+        /// </exception>
         public Bitmap GetBitmap(int mipMapLevel = 0)
         {
             Bitmap bitmap;

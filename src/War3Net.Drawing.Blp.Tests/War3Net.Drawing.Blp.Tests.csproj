@@ -16,7 +16,7 @@
     <ProjectReference Include="..\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'net472'">
     <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp>
   </PropertyGroup>
 
