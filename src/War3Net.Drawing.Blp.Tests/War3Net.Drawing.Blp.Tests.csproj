@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;netcoreapp2.2</TargetFrameworks>
+    <TargetFrameworks>net472;net46;netcoreapp2.2</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'net472'">
     <PackageReference Include="SkiaSharp" Version="1.68.0" />
     <Reference Include="PresentationCore" />
     <Reference Include="WindowsBase" />
