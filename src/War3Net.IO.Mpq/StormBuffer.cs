@@ -30,13 +30,19 @@ namespace War3Net.IO.Mpq
                     var temp = (seed & 0xffff) << 16;
                     seed = ((seed * 125) + 3) % 0x2aaaab;
 
-                    Buffer[index2] = temp | (seed & 0xffff);
+                    _buffer[index2] = temp | (seed & 0xffff);
                 }
             }
         }
 
         private static uint[] Buffer => _stormBuffer.Value._buffer;
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="input">The input string for which a hash value should be generated.</param>
+        /// <param name="offset">A key to generate different values for the same string. Values commonly used are 0, 0x100, 0x200, and 0x300.</param>
+        /// <returns>A hashed value for the given <paramref name="input"/>.</returns>
         internal static uint HashString(string input, int offset)
         {
             uint seed1 = 0x7fed7fed;
