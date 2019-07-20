@@ -13,7 +13,7 @@ namespace War3Net.IO.Mpq
     public class MpqEntry
     {
         /// <summary>
-        ///
+        /// The length (in bytes) of an <see cref="MpqEntry"/>.
         /// </summary>
         public const uint Size = 16;
 
@@ -135,7 +135,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.Compressed"/>.
         /// </summary>
-        public bool IsCompressed => Flags.HasFlag(MpqFileFlags.Compressed);
+        public bool IsCompressed => (Flags & MpqFileFlags.Compressed) != 0;
 
         /// <summary>
         /// 
