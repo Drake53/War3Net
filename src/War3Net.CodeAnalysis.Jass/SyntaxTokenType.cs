@@ -67,6 +67,7 @@ namespace War3Net.CodeAnalysis.Jass
         ParenthesisCloseSymbol,
         SquareBracketOpenSymbol,
         SquareBracketCloseSymbol,
+        Assignment,
         NewlineSymbol,
         SingleQuote,
         DoubleQuotes,

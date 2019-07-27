@@ -161,6 +161,7 @@ namespace War3Net.CodeAnalysis.Jass
             result.Add(SyntaxTokenType.ParenthesisCloseSymbol, ")");
             result.Add(SyntaxTokenType.SquareBracketOpenSymbol, "[");
             result.Add(SyntaxTokenType.SquareBracketCloseSymbol, "]");
+            result.Add(SyntaxTokenType.Assignment, "=");
             result.Add(SyntaxTokenType.NewlineSymbol, NewlineSymbol);
             result.Add(SyntaxTokenType.SingleQuote, "'");
             result.Add(SyntaxTokenType.DoubleQuotes, "\"");
