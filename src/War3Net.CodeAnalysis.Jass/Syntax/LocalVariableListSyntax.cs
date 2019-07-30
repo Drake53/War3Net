@@ -1,0 +1,58 @@
+﻿// ------------------------------------------------------------------------------
+// <copyright file="LocalVariableListSyntax.cs" company="Drake53">
+// Copyright (c) 2019 Drake53. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace War3Net.CodeAnalysis.Jass.Syntax
+{
+    public sealed class LocalVariableListSyntax : SyntaxNode
+    {
+        private readonly List<LocalVariableDeclarationSyntax> _locals;
+        private readonly EmptyNode _empty;
+
+        public LocalVariableListSyntax(params LocalVariableDeclarationSyntax[] localDeclarationNodes)
+            : base(localDeclarationNodes)
+        {
+            // TODO: check not null
+            _locals = new List<LocalVariableDeclarationSyntax>(localDeclarationNodes);
+        }
+
+        public LocalVariableListSyntax(EmptyNode emptyNode)
+            : base(emptyNode)
+        {
+            _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
+        }
+
+        internal sealed class Parser : ManyParser
+        {
+            private static Parser _parser;
+
+            internal static Parser Get => _parser ?? (_parser = new Parser()).Init();
+
+            protected override SyntaxNode CreateNode(SyntaxNode node)
+            {
+                if (node is EmptyNode emptyNode)
+                {
+                    return new LocalVariableListSyntax(emptyNode);
+                }
+                else
+                {
+                    return new LocalVariableListSyntax(node.GetChildren().Select(n => n as LocalVariableDeclarationSyntax).ToArray());
+                }
+            }
+
+            private Parser Init()
+            {
+                SetParser(LocalVariableDeclarationSyntax.Parser.Get);
+
+                return this;
+            }
+        }
+    }
+}

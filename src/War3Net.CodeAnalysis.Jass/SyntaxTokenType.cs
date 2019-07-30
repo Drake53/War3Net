@@ -10,6 +10,7 @@ namespace War3Net.CodeAnalysis.Jass
     public enum SyntaxTokenType
     {
         Undefined,
+        EndOfFile,
 
         // Keywords
         TypeKeyword,

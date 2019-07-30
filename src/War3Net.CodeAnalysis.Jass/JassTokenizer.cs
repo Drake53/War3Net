@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         private readonly string _text;
 
-        private TokenizerMode mode;
+        private TokenizerMode _mode;
 
         public JassTokenizer(string text/*, JassParseOptions options*/)
         {
@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public IEnumerable<SyntaxToken> Tokenize()
         {
-            mode = TokenizerMode.Content;
+            _mode = TokenizerMode.Content;
 
             var buffer = new StringBuilder(BufferCapacity);
 
@@ -74,6 +74,20 @@ namespace War3Net.CodeAnalysis.Jass
                                 reader.Read();
                                 continue;
                             }
+                            else
+                            {
+                                // Handle 2-char symbols for which the first symbol on its own is not a token.
+                                reader.Read();
+                                peek = reader.Read();
+
+                                if (SyntaxToken.TryTokenizeKeyword($"{peekChar}{(char)peek}", out var token2))
+                                {
+                                    yield return TryUpdateMode(token2);
+                                    continue;
+                                }
+
+                                throw new Exception($"Invalid sequence of symbols: {peekChar}{(char)peek}");
+                            }
                         }
                         else
                         {
@@ -86,7 +100,7 @@ namespace War3Net.CodeAnalysis.Jass
                             }
                             else
                             {
-                                yield return TryUpdateMode(new SyntaxToken(SyntaxToken.GetAlphanumericalTokenType(tokenText, mode), tokenText));
+                                yield return TryUpdateMode(new SyntaxToken(SyntaxToken.GetAlphanumericalTokenType(tokenText, _mode), tokenText));
                             }
 
                             continue;
@@ -95,6 +109,8 @@ namespace War3Net.CodeAnalysis.Jass
 
                     buffer.Append((char)reader.Read());
                 }
+
+                yield return new SyntaxToken(SyntaxTokenType.EndOfFile);
             }
         }
 
@@ -112,7 +128,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             var character = (char)c;
 
-            switch (mode)
+            switch (_mode)
             {
                 // TODO: add constants for these characters
                 case TokenizerMode.Content: return !char.IsLetterOrDigit(character) && character != '_' && character != '.' && character != '$';
@@ -126,29 +142,29 @@ namespace War3Net.CodeAnalysis.Jass
 
         private SyntaxToken TryUpdateMode(SyntaxToken lastToken)
         {
-            if (mode == TokenizerMode.SingleLineComment && lastToken.TokenType == SyntaxTokenType.NewlineSymbol)
+            if (_mode == TokenizerMode.SingleLineComment && lastToken.TokenType == SyntaxTokenType.NewlineSymbol)
             {
-                mode = TokenizerMode.Content;
+                _mode = TokenizerMode.Content;
             }
-            else if (mode == TokenizerMode.FourCC && lastToken.TokenType == SyntaxTokenType.SingleQuote)
+            else if (_mode == TokenizerMode.FourCC && lastToken.TokenType == SyntaxTokenType.SingleQuote)
             {
-                mode = TokenizerMode.Content;
+                _mode = TokenizerMode.Content;
             }
-            else if (mode == TokenizerMode.String && lastToken.TokenType == SyntaxTokenType.DoubleQuotes)
+            else if (_mode == TokenizerMode.String && lastToken.TokenType == SyntaxTokenType.DoubleQuotes)
             {
-                mode = TokenizerMode.Content;
+                _mode = TokenizerMode.Content;
             }
             else if (lastToken.TokenType == SyntaxTokenType.DoubleQuotes)
             {
-                mode = TokenizerMode.String;
+                _mode = TokenizerMode.String;
             }
             else if (lastToken.TokenType == SyntaxTokenType.SingleQuote)
             {
-                mode = TokenizerMode.FourCC;
+                _mode = TokenizerMode.FourCC;
             }
             else if (lastToken.TokenType == SyntaxTokenType.DoubleForwardSlash)
             {
-                mode = TokenizerMode.SingleLineComment;
+                _mode = TokenizerMode.SingleLineComment;
             }
 
             return lastToken;

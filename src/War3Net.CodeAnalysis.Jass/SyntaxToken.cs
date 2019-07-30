@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    struct SyntaxToken
+    public struct SyntaxToken
     {
         // TODO: add constants for all keywords
         public const string TypeKeyword = "type";
@@ -34,13 +34,6 @@ namespace War3Net.CodeAnalysis.Jass
         {
             TokenType = tokenType;
             TokenValue = tokenValue;
-        }
-
-        public override string ToString()
-        {
-            return TokenValue == GetDefaultTokenValue(TokenType)
-                ? $"[{TokenType}]"
-                : $"[{TokenType}] {new string(TokenValue.Where(c => c != '\r').ToArray())}";
         }
 
         public static bool TryTokenizeSingleSymbol(char symbol, out SyntaxToken token)
@@ -72,7 +65,7 @@ namespace War3Net.CodeAnalysis.Jass
             return _defaultTokenValues.Value.TryGetValue(tokenType, out var value) ? value : null;
         }
 
-        public static SyntaxTokenType GetAlphanumericalTokenType(string token, TokenizerMode mode)
+        internal static SyntaxTokenType GetAlphanumericalTokenType(string token, TokenizerMode mode)
         {
             if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
 
@@ -103,7 +96,9 @@ namespace War3Net.CodeAnalysis.Jass
         private static Dictionary<SyntaxTokenType, string> InitializeDefaultTokenValues()
         {
             var result = new Dictionary<SyntaxTokenType, string>();
+
             result.Add(SyntaxTokenType.Undefined, null);
+            result.Add(SyntaxTokenType.EndOfFile, string.Empty);
 
             // Keywords
             result.Add(SyntaxTokenType.TypeKeyword, TypeKeyword);
@@ -209,6 +204,13 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             return result;
+        }
+
+        public override string ToString()
+        {
+            return TokenValue == GetDefaultTokenValue(TokenType)
+                ? $"[{TokenType}]"
+                : $"[{TokenType}] {new string(TokenValue.Where(c => c != '\r').ToArray())}";
         }
     }
 }
