@@ -17,15 +17,29 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _then;
         private readonly LineDelimiterSyntax _eol;
         private readonly StatementListSyntax _statements;
+        private readonly ElseClauseSyntax _elseClause;
+        private readonly EmptyNode _emptyElseClause;
 
-        public ElseifSyntax(TokenNode elseifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementsNode)
-            : base(elseifNode, expressionNode, thenNode, eolNode, statementsNode)
+        public ElseifSyntax(TokenNode elseifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementsNode, ElseClauseSyntax elseClauseNode)
+            : base(elseifNode, expressionNode, thenNode, eolNode, statementsNode, elseClauseNode)
         {
             _elseif = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
             _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
             _then = thenNode ?? throw new ArgumentNullException(nameof(thenNode));
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
             _statements = statementsNode ?? throw new ArgumentNullException(nameof(statementsNode));
+            _elseClause = elseClauseNode ?? throw new ArgumentNullException(nameof(elseClauseNode));
+        }
+
+        public ElseifSyntax(TokenNode elseifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementsNode, EmptyNode emptyElseClauseNode)
+            : base(elseifNode, expressionNode, thenNode, eolNode, statementsNode, emptyElseClauseNode)
+        {
+            _elseif = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
+            _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
+            _then = thenNode ?? throw new ArgumentNullException(nameof(thenNode));
+            _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
+            _statements = statementsNode ?? throw new ArgumentNullException(nameof(statementsNode));
+            _emptyElseClause = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
         }
 
         internal sealed class Parser : SequenceParser
@@ -36,7 +50,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             protected override SyntaxNode CreateNode(List<SyntaxNode> nodes)
             {
-                return new ElseifSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax);
+                if (nodes[5] is EmptyNode emptyNode)
+                {
+                    return new ElseifSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax, emptyNode);
+                }
+                else
+                {
+                    return new ElseifSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax, nodes[5] as ElseClauseSyntax);
+                }
             }
 
             private Parser Init()
@@ -46,6 +67,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 AddParser(TokenParser.Get(SyntaxTokenType.ThenKeyword));
                 AddParser(LineDelimiterSyntax.Parser.Get);
                 AddParser(StatementListSyntax.Parser.Get);
+                AddParser(new OptionalParser(ElseClauseSyntax.Parser.Get));
 
                 return this;
             }

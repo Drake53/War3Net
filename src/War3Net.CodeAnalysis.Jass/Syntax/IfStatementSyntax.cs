@@ -18,6 +18,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly LineDelimiterSyntax _eol;
         private readonly StatementListSyntax _statements;
         private readonly ElseClauseSyntax _else;
+        private readonly EmptyNode _emptyElse;
         private readonly TokenNode _endif;
 
         public IfStatementSyntax(TokenNode ifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementListNode, ElseClauseSyntax elseClauseNode, TokenNode endifNode)
@@ -32,6 +33,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _endif = endifNode ?? throw new ArgumentNullException(nameof(endifNode));
         }
 
+        public IfStatementSyntax(TokenNode ifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementListNode, EmptyNode emptyElseClauseNode, TokenNode endifNode)
+            : base(ifNode, expressionNode, thenNode, eolNode, statementListNode, emptyElseClauseNode, endifNode)
+        {
+            _if = ifNode ?? throw new ArgumentNullException(nameof(ifNode));
+            _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
+            _then = thenNode ?? throw new ArgumentNullException(nameof(thenNode));
+            _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
+            _statements = statementListNode ?? throw new ArgumentNullException(nameof(statementListNode));
+            _emptyElse = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
+            _endif = endifNode ?? throw new ArgumentNullException(nameof(endifNode));
+        }
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;
@@ -40,7 +53,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             protected override SyntaxNode CreateNode(List<SyntaxNode> nodes)
             {
-                return new IfStatementSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax, nodes[5] as ElseClauseSyntax, nodes[6] as TokenNode);
+                if (nodes[5] is EmptyNode emptyNode)
+                {
+                    return new IfStatementSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax, emptyNode, nodes[6] as TokenNode);
+                }
+                else
+                {
+                    return new IfStatementSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax, nodes[2] as TokenNode, nodes[3] as LineDelimiterSyntax, nodes[4] as StatementListSyntax, nodes[5] as ElseClauseSyntax, nodes[6] as TokenNode);
+                }
             }
 
             private Parser Init()
@@ -50,7 +70,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 AddParser(TokenParser.Get(SyntaxTokenType.ThenKeyword));
                 AddParser(LineDelimiterSyntax.Parser.Get);
                 AddParser(StatementListSyntax.Parser.Get);
-                AddParser(ElseClauseSyntax.Parser.Get);
+                AddParser(new OptionalParser(ElseClauseSyntax.Parser.Get));
                 AddParser(TokenParser.Get(SyntaxTokenType.EndifKeyword));
 
                 return this;
