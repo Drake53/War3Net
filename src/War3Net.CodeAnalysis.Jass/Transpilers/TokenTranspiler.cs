@@ -139,10 +139,12 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 case SyntaxTokenType.OctalNumber: return SyntaxFactory.ParseExpression("0"); // TODO: implement octal numbers
                 case SyntaxTokenType.HexadecimalNumber: return SyntaxFactory.ParseExpression($"0x{tokenNode.ValueText.Substring(tokenNode.ValueText[0] == '$' ? 1 : 2)}");
                 case SyntaxTokenType.FourCCNumber: return SyntaxFactory.ParseExpression(
-                    ((int)tokenNode.ValueText[0] << 24 |
-                    (int)tokenNode.ValueText[1] << 16 |
-                    (int)tokenNode.ValueText[2] << 8 |
-                    (int)tokenNode.ValueText[3]).ToString());
+                    tokenNode.ValueText.Length == 4
+                    ? ((int)tokenNode.ValueText[0] << 24 |
+                       (int)tokenNode.ValueText[1] << 16 |
+                       (int)tokenNode.ValueText[2] << 8 |
+                       (int)tokenNode.ValueText[3]).ToString()
+                    : ((int)tokenNode.ValueText[0]).ToString());
                 case SyntaxTokenType.RealNumber: return SyntaxFactory.ParseExpression($"{tokenNode.ValueText}f");
                 case SyntaxTokenType.TrueKeyword: return SyntaxFactory.LiteralExpression(Microsoft.CodeAnalysis.CSharp.SyntaxKind.TrueLiteralExpression);
                 case SyntaxTokenType.FalseKeyword: return SyntaxFactory.LiteralExpression(Microsoft.CodeAnalysis.CSharp.SyntaxKind.FalseLiteralExpression);
