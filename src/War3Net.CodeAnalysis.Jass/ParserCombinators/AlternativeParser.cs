@@ -33,11 +33,24 @@ namespace War3Net.CodeAnalysis.Jass
 
         public IEnumerable<ParseResult> Parse(ParseState state)
         {
+            // Search pattern is DFS because parsers are implemented as IEnumerable.
+            // If a new value in the enumerator is requested, the previously returned value(s) must have failed at some point.
+            var consumedTokensResults = new HashSet<int>();
+
             foreach (var baseParser in _baseParsers)
             {
                 foreach (var result in baseParser.Parse(state))
                 {
+                    // For all ParseResults that consume the same amount of tokens: if one of them fails in the future, all of them will.
+                    if (consumedTokensResults.Contains(result.ConsumedTokens))
+                    {
+                        // Since a ParseResult with this amount of consumed tokens has been returned before, skip it to save time.
+                        continue;
+                    }
+
                     yield return new ParseResult(CreateNode(result.Node), result.ConsumedTokens);
+
+                    consumedTokensResults.Add(result.ConsumedTokens);
                 }
             }
         }
