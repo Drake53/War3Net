@@ -6,12 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class LocalVariableListSyntax : SyntaxNode
+    public sealed class LocalVariableListSyntax : SyntaxNode, IEnumerable<LocalVariableDeclarationSyntax>
     {
         private readonly List<LocalVariableDeclarationSyntax> _locals;
         private readonly EmptyNode _empty;
@@ -27,6 +28,22 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             : base(emptyNode)
         {
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
+        }
+
+        public IEnumerator<LocalVariableDeclarationSyntax> GetEnumerator()
+        {
+            return (_empty is null
+                ? _locals
+                : Enumerable.Empty<LocalVariableDeclarationSyntax>())
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (_empty is null
+                ? _locals
+                : Enumerable.Empty<LocalVariableDeclarationSyntax>())
+                .GetEnumerator();
         }
 
         internal sealed class Parser : ManyParser

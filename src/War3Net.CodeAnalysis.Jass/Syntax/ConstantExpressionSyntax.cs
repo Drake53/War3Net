@@ -48,6 +48,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
+        public IntegerSyntax IntegerExpressionNode => _integer;
+
+        public TokenNode RealExpressionNode => _real;
+
+        public BooleanSyntax BooleanExpressionNode => _boolean;
+
+        public StringSyntax StringExpressionNode => _string;
+
+        public TokenNode NullExpressionNode => _null;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

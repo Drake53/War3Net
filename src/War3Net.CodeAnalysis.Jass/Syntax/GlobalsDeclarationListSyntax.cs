@@ -6,12 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class GlobalsDeclarationListSyntax : SyntaxNode
+    public sealed class GlobalsDeclarationListSyntax : SyntaxNode, IEnumerable<GlobalDeclarationSyntax>
     {
         private readonly List<GlobalDeclarationSyntax> _globals;
         private readonly EmptyNode _empty;
@@ -27,6 +28,23 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             : base(emptyNode)
         {
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
+        }
+
+        public IEnumerator<GlobalDeclarationSyntax> GetEnumerator()
+        {
+            // TODO: use this format for all ienum syntax classes?
+            return (_empty is null
+                ? _globals
+                : Enumerable.Empty<GlobalDeclarationSyntax>())
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (_empty is null
+                ? _globals
+                : Enumerable.Empty<GlobalDeclarationSyntax>())
+                .GetEnumerator();
         }
 
         internal sealed class Parser : ManyParser

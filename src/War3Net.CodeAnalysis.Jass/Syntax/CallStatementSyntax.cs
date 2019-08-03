@@ -39,6 +39,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _close = closeParensNode ?? throw new ArgumentNullException(nameof(closeParensNode));
         }
 
+        public TokenNode CallKeywordToken => _call;
+
+        public TokenNode IdentifierNameNode => _id;
+
+        public ArgumentListSyntax ArgumentListNode => _args;
+
+        public EmptyNode EmptyArgumentListNode => _emptyArgs;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

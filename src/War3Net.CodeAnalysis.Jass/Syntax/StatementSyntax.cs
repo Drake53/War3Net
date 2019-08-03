@@ -61,6 +61,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _debug = debugStatementNode ?? throw new ArgumentNullException(nameof(debugStatementNode));
         }
 
+        public SetStatementSyntax SetStatementNode => _set;
+
+        public CallStatementSyntax CallStatementNode => _call;
+
+        public IfStatementSyntax IfStatementNode => _if;
+
+        public LoopStatementSyntax LoopStatementNode => _loop;
+
+        public ExitStatementSyntax ExitStatementNode => _exit;
+
+        public ReturnStatementSyntax ReturnStatementNode => _return;
+
+        public DebugStatementSyntax DebugStatementNode => _debug;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

@@ -6,11 +6,12 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class ParameterListSyntax : SyntaxNode
+    public sealed class ParameterListSyntax : SyntaxNode, IEnumerable<TypeReferenceSyntax>
     {
         private readonly TypeReferenceSyntax _head;
         private readonly ParameterListTailSyntax _tail;
@@ -20,6 +21,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             _head = headNode ?? throw new ArgumentNullException(nameof(headNode));
             _tail = tailNode ?? throw new ArgumentNullException(nameof(tailNode));
+        }
+
+        public IEnumerator<TypeReferenceSyntax> GetEnumerator()
+        {
+            yield return _head;
+
+            foreach (var node in _tail)
+            {
+                yield return node;
+            }
+
+            // return ((IEnumerable<TypeReferenceSyntax>)_tail).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            yield return _head;
+
+            foreach (var node in _tail)
+            {
+                yield return node;
+            }
+
+            // return ((IEnumerable<TypeReferenceSyntax>)_tail).GetEnumerator();
         }
 
         internal sealed class Parser : SequenceParser

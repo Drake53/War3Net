@@ -32,5 +32,10 @@ namespace War3Net.CodeAnalysis.Jass
             if (!ValueText.EndsWith("\n"))
                 streamWriter.Write(" ");
         }
+
+        public override string ToString()
+        {
+            return ValueText;
+        }
     }
 }

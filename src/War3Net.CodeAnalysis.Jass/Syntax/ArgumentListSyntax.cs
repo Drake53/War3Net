@@ -6,11 +6,12 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class ArgumentListSyntax : SyntaxNode
+    public sealed class ArgumentListSyntax : SyntaxNode, IEnumerable<NewExpressionSyntax>
     {
         private readonly NewExpressionSyntax _head;
         private readonly ArgumentListTailSyntax _tail;
@@ -20,6 +21,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             _head = headNode ?? throw new ArgumentNullException(nameof(headNode));
             _tail = tailNode ?? throw new ArgumentNullException(nameof(tailNode));
+        }
+
+        public NewExpressionSyntax FirstArgument => _head;
+
+        public ArgumentListTailSyntax RemainingArguments => _tail;
+
+        public IEnumerator<NewExpressionSyntax> GetEnumerator()
+        {
+            yield return _head;
+
+            foreach (var argument in _tail)
+            {
+                yield return argument;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            yield return _head;
+
+            foreach (var argument in _tail)
+            {
+                yield return argument;
+            }
         }
 
         internal sealed class Parser : SequenceParser

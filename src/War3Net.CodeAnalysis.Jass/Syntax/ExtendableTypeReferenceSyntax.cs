@@ -19,6 +19,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _handleId = handleIdNode ?? throw new ArgumentNullException(nameof(handleIdNode));
         }
 
+        public TokenNode HandleIdentifierNode => _handleId;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

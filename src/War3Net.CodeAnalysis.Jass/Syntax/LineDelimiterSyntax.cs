@@ -5,12 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class LineDelimiterSyntax : SyntaxNode
+    public sealed class LineDelimiterSyntax : SyntaxNode, IEnumerable<EndOfLineSyntax>
     {
         private readonly List<EndOfLineSyntax> _lines;
 
@@ -19,6 +20,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             // TODO: check not null
             _lines = new List<EndOfLineSyntax>(nodes);
+        }
+
+        public IEnumerator<EndOfLineSyntax> GetEnumerator()
+        {
+            return ((IEnumerable<EndOfLineSyntax>)_lines).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<EndOfLineSyntax>)_lines).GetEnumerator();
         }
 
         internal sealed class Parser : Many1Parser

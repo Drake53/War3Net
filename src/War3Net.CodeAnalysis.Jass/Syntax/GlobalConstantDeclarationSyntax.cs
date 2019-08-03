@@ -15,20 +15,28 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _constant;
         private readonly TypeSyntax _type;
         private readonly TokenNode _id;
-        private readonly TokenNode _ass;
-        private readonly NewExpressionSyntax _expression;
+        private readonly EqualsValueClauseSyntax _assExpr;
         private readonly LineDelimiterSyntax _eol;
 
-        public GlobalConstantDeclarationSyntax(TokenNode constantNode, TypeSyntax typeNode, TokenNode idNode, TokenNode assignmentNode, NewExpressionSyntax expressionNode, LineDelimiterSyntax eolNode)
-            : base(constantNode, typeNode, idNode, assignmentNode, expressionNode, eolNode)
+        public GlobalConstantDeclarationSyntax(TokenNode constantNode, TypeSyntax typeNode, TokenNode idNode, EqualsValueClauseSyntax assignmentExpressionNode, LineDelimiterSyntax eolNode)
+            : base(constantNode, typeNode, idNode, assignmentExpressionNode, eolNode)
         {
             _constant = constantNode ?? throw new ArgumentNullException(nameof(constantNode));
             _type = typeNode ?? throw new ArgumentNullException(nameof(typeNode));
             _id = idNode ?? throw new ArgumentNullException(nameof(idNode));
-            _ass = assignmentNode ?? throw new ArgumentNullException(nameof(assignmentNode));
-            _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
+            _assExpr = assignmentExpressionNode ?? throw new ArgumentNullException(nameof(assignmentExpressionNode));
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
         }
+
+        public TokenNode ConstantKeywordToken => _constant;
+
+        public TypeSyntax TypeNameNode => _type;
+
+        public TokenNode IdentifierNameNode => _id;
+
+        public EqualsValueClauseSyntax EqualsValueClause => _assExpr;
+
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
 
         internal sealed class Parser : SequenceParser
         {
@@ -38,7 +46,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             protected override SyntaxNode CreateNode(List<SyntaxNode> nodes)
             {
-                return new GlobalConstantDeclarationSyntax(nodes[0] as TokenNode, nodes[1] as TypeSyntax, nodes[2] as TokenNode, nodes[3] as TokenNode, nodes[4] as NewExpressionSyntax, nodes[5] as LineDelimiterSyntax);
+                return new GlobalConstantDeclarationSyntax(nodes[0] as TokenNode, nodes[1] as TypeSyntax, nodes[2] as TokenNode, nodes[3] as EqualsValueClauseSyntax, nodes[4] as LineDelimiterSyntax);
             }
 
             private Parser Init()
@@ -46,8 +54,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 AddParser(TokenParser.Get(SyntaxTokenType.ConstantKeyword));
                 AddParser(TypeSyntax.Parser.Get);
                 AddParser(TokenParser.Get(SyntaxTokenType.AlphanumericIdentifier));
-                AddParser(TokenParser.Get(SyntaxTokenType.Assignment));
-                AddParser(NewExpressionSyntax.Parser.Get);
+                AddParser(EqualsValueClauseSyntax.Parser.Get);
                 AddParser(LineDelimiterSyntax.Parser.Get);
 
                 return this;

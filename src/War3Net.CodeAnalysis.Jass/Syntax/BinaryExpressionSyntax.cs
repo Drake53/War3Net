@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete()]
     public sealed class BinaryExpressionSyntax : SyntaxNode
     {
         private readonly BinaryOperatorSyntax _operator;

@@ -26,6 +26,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _newline = newlineNode ?? throw new ArgumentNullException(nameof(newlineNode));
         }
 
+        public CommentSyntax Comment => _comment;
+
+        public TokenNode NewlineToken => _newline;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

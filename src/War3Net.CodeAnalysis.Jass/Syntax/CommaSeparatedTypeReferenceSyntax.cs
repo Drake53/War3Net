@@ -22,6 +22,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _type = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
         }
 
+        public TokenNode CommaToken => _comma;
+
+        public TypeReferenceSyntax TypeReferenceNode => _type;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

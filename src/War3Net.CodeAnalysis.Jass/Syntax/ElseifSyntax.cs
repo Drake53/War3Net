@@ -12,6 +12,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ElseifSyntax : SyntaxNode
     {
+        // TODO: make baseclass for if/elseif, since only difference is keywords (if/elseif, endif/-), and their transpiler classes are exactly the same as well
         private readonly TokenNode _elseif;
         private readonly NewExpressionSyntax _expression;
         private readonly TokenNode _then;
@@ -41,6 +42,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _statements = statementsNode ?? throw new ArgumentNullException(nameof(statementsNode));
             _emptyElseClause = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
         }
+
+        public TokenNode IfKeywordToken => _elseif;
+
+        public NewExpressionSyntax ConditionExpressionNode => _expression;
+
+        public TokenNode ThenKeywordToken => _then;
+
+        public StatementListSyntax StatementListNode => _statements;
+
+        public ElseClauseSyntax ElseClauseNode => _elseClause;
+
+        public EmptyNode EmptyElseClauseNode => _emptyElseClause;
 
         internal sealed class Parser : SequenceParser
         {

@@ -24,6 +24,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _close = closeNode ?? throw new ArgumentNullException(nameof(closeNode));
         }
 
+        public NewExpressionSyntax ExpressionNode => _expression;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

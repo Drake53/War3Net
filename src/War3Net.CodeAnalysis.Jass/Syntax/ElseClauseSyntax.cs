@@ -26,6 +26,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _else = elseNode ?? throw new ArgumentNullException(nameof(elseNode));
         }
 
+        public ElseifSyntax ElseifNode => _elseif;
+
+        public ElseSyntax ElseNode => _else;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

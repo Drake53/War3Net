@@ -22,6 +22,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
         }
 
+        public VariableDeclarationSyntax DeclarationNode => _declr;
+
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

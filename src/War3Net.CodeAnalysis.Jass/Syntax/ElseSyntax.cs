@@ -24,6 +24,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _statements = statementsNode ?? throw new ArgumentNullException(nameof(statementsNode));
         }
 
+        public TokenNode ElseKeywordToken => _else;
+
+        public StatementListSyntax StatementListNode => _statements;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

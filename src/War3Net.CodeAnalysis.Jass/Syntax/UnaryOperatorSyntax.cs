@@ -19,6 +19,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _operator = operatorNode ?? throw new ArgumentNullException(nameof(operatorNode));
         }
 
+        public TokenNode UnaryOperatorToken => _operator;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

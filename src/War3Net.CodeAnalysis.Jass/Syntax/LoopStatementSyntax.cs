@@ -26,6 +26,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _endloop = endloopNode ?? throw new ArgumentNullException(nameof(endloopNode));
         }
 
+        public TokenNode LoopKeywordToken => _loop;
+
+        public StatementListSyntax StatementListNode => _statements;
+
+        public TokenNode EndloopKeywordToken => _endloop;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

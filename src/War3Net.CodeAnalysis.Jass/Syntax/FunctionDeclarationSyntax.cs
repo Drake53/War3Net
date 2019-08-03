@@ -28,6 +28,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _returnType = returnTypeNode ?? throw new ArgumentNullException(nameof(returnTypeNode));
         }
 
+        public TokenNode IdentifierNode => _id;
+
+        public TokenNode TakesKeywordNode => _takes;
+
+        public ParameterListReferenceSyntax ParameterListReferenceNode => _params;
+
+        public TokenNode ReturnsKeywordNode => _returns;
+
+        public TypeIdentifierSyntax ReturnTypeNode => _returnType;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

@@ -33,6 +33,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _declr = functionDeclarationNode ?? throw new ArgumentNullException(nameof(functionDeclarationNode));
         }
 
+        public TokenNode ConstantToken => _constant;
+
+        public EmptyNode NonConstantNode => _empty;
+
+        public TokenNode NativeKeywordToken => _native;
+
+        public FunctionDeclarationSyntax FunctionDeclarationNode => _declr;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

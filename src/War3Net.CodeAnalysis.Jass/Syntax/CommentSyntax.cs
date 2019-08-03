@@ -24,6 +24,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _newline = newlineNode ?? throw new ArgumentNullException(nameof(newlineNode));
         }
 
+        public TokenNode DoubleForwardSlashToken => _slashes;
+
+        public TokenNode CommentToken => _comment;
+
+        public TokenNode NewlineToken => _newline;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

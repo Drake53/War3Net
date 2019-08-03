@@ -26,6 +26,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _type = typeNode ?? throw new ArgumentNullException(nameof(typeNode));
         }
 
+        public TokenNode NothingKeywordToken => _nothing;
+
+        public TypeSyntax TypeNameNode => _type;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

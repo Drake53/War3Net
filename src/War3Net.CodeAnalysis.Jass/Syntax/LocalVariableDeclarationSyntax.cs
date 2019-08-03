@@ -24,6 +24,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
         }
 
+        public TokenNode LocalKeywordToken => _local;
+
+        public VariableDeclarationSyntax VariableDeclarationNode => _declr;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

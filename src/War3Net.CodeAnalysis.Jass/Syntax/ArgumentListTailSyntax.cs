@@ -6,12 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class ArgumentListTailSyntax : SyntaxNode
+    public sealed class ArgumentListTailSyntax : SyntaxNode, IEnumerable<NewExpressionSyntax>
     {
         private readonly List<CommaSeparatedExpressionSyntax> _exprs;
         private readonly EmptyNode _empty;
@@ -27,6 +28,22 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             : base(emptyNode)
         {
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
+        }
+
+        public IEnumerator<NewExpressionSyntax> GetEnumerator()
+        {
+            return (_empty is null
+                ? _exprs.Select(node => node.ExpressionNode)
+                : Enumerable.Empty<NewExpressionSyntax>())
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (_empty is null
+                ? _exprs.Select(node => node.ExpressionNode)
+                : Enumerable.Empty<NewExpressionSyntax>())
+                .GetEnumerator();
         }
 
         internal sealed class Parser : ManyParser

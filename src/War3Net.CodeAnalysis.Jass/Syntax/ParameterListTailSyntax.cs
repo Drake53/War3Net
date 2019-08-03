@@ -6,12 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class ParameterListTailSyntax : SyntaxNode
+    public sealed class ParameterListTailSyntax : SyntaxNode, IEnumerable<TypeReferenceSyntax>
     {
         private readonly List<CommaSeparatedTypeReferenceSyntax> _types;
         private readonly EmptyNode _empty;
@@ -27,6 +28,26 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             : base(emptyNode)
         {
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
+        }
+
+        public IEnumerator<TypeReferenceSyntax> GetEnumerator()
+        {
+            if (_empty is null)
+            {
+                return _types.Select(node => node.TypeReferenceNode).GetEnumerator();
+            }
+
+            return Enumerable.Empty<TypeReferenceSyntax>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            if (_empty is null)
+            {
+                return _types.Select(node => node.TypeReferenceNode).GetEnumerator();
+            }
+
+            return Enumerable.Empty<TypeReferenceSyntax>().GetEnumerator();
         }
 
         internal sealed class Parser : ManyParser

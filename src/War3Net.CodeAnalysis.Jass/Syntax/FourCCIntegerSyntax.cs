@@ -24,6 +24,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _close = closeNode ?? throw new ArgumentNullException(nameof(closeNode));
         }
 
+        public TokenNode FourCCNode => _fourcc;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

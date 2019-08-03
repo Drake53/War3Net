@@ -22,6 +22,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
         }
 
+        public StatementSyntax StatementNode => _statement;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

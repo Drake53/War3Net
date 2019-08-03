@@ -16,28 +16,35 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _id;
         private readonly BracketedExpressionSyntax _indexer;
         private readonly EmptyNode _empty;
-        private readonly TokenNode _ass;
-        private readonly NewExpressionSyntax _expression;
+        private readonly EqualsValueClauseSyntax _assExpr;
 
-        public SetStatementSyntax(TokenNode setNode, TokenNode idNode, BracketedExpressionSyntax arrayIndexerNode, TokenNode assignmentNode, NewExpressionSyntax expressionNode)
-            : base(setNode, idNode, arrayIndexerNode, assignmentNode, expressionNode)
+        public SetStatementSyntax(TokenNode setNode, TokenNode idNode, BracketedExpressionSyntax arrayIndexerNode, EqualsValueClauseSyntax equalsValueClauseNode)
+            : base(setNode, idNode, arrayIndexerNode, equalsValueClauseNode)
         {
             _set = setNode ?? throw new ArgumentNullException(nameof(setNode));
             _id = idNode ?? throw new ArgumentNullException(nameof(idNode));
             _indexer = arrayIndexerNode ?? throw new ArgumentNullException(nameof(arrayIndexerNode));
-            _ass = assignmentNode ?? throw new ArgumentNullException(nameof(assignmentNode));
-            _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
+            _assExpr = equalsValueClauseNode ?? throw new ArgumentNullException(nameof(equalsValueClauseNode));
         }
 
-        public SetStatementSyntax(TokenNode setNode, TokenNode idNode, EmptyNode emptyArrayIndexerNode, TokenNode assignmentNode, NewExpressionSyntax expressionNode)
-            : base(setNode, idNode, emptyArrayIndexerNode, assignmentNode, expressionNode)
+        public SetStatementSyntax(TokenNode setNode, TokenNode idNode, EmptyNode emptyArrayIndexerNode, EqualsValueClauseSyntax equalsValueClauseNode)
+            : base(setNode, idNode, emptyArrayIndexerNode, equalsValueClauseNode)
         {
             _set = setNode ?? throw new ArgumentNullException(nameof(setNode));
             _id = idNode ?? throw new ArgumentNullException(nameof(idNode));
             _empty = emptyArrayIndexerNode ?? throw new ArgumentNullException(nameof(emptyArrayIndexerNode));
-            _ass = assignmentNode ?? throw new ArgumentNullException(nameof(assignmentNode));
-            _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
+            _assExpr = equalsValueClauseNode ?? throw new ArgumentNullException(nameof(equalsValueClauseNode));
         }
+
+        public TokenNode SetKeywordToken => _set;
+
+        public TokenNode IdentifierNameNode => _id;
+
+        public BracketedExpressionSyntax ArrayIndexerNode => _indexer;
+
+        public EmptyNode EmptyArrayIndexerNode => _empty;
+
+        public EqualsValueClauseSyntax EqualsValueClauseNode => _assExpr;
 
         internal sealed class Parser : SequenceParser
         {
@@ -49,11 +56,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             {
                 if (nodes[2] is BracketedExpressionSyntax arrayIndexerNode)
                 {
-                    return new SetStatementSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, arrayIndexerNode, nodes[3] as TokenNode, nodes[4] as NewExpressionSyntax);
+                    return new SetStatementSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, arrayIndexerNode, nodes[3] as EqualsValueClauseSyntax);
                 }
                 else
                 {
-                    return new SetStatementSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, nodes[2] as EmptyNode, nodes[3] as TokenNode, nodes[4] as NewExpressionSyntax);
+                    return new SetStatementSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, nodes[2] as EmptyNode, nodes[3] as EqualsValueClauseSyntax);
                 }
             }
 
@@ -62,8 +69,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 AddParser(TokenParser.Get(SyntaxTokenType.SetKeyword));
                 AddParser(TokenParser.Get(SyntaxTokenType.AlphanumericIdentifier));
                 AddParser(new OptionalParser(BracketedExpressionSyntax.Parser.Get));
-                AddParser(TokenParser.Get(SyntaxTokenType.Assignment));
-                AddParser(NewExpressionSyntax.Parser.Get);
+                AddParser(EqualsValueClauseSyntax.Parser.Get);
 
                 return this;
             }

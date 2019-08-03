@@ -14,10 +14,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         private readonly TypeSyntax _type;
         private readonly TokenNode _id;
-        private readonly AssignmentExpressionSyntax _assExpr;
+        private readonly EqualsValueClauseSyntax _assExpr;
         private readonly EmptyNode _empty;
 
-        public VariableDefinitionSyntax(TypeSyntax typeNode, TokenNode idNode, AssignmentExpressionSyntax assignmentExpressionNode)
+        public VariableDefinitionSyntax(TypeSyntax typeNode, TokenNode idNode, EqualsValueClauseSyntax assignmentExpressionNode)
             : base(typeNode, idNode, assignmentExpressionNode)
         {
             _type = typeNode ?? throw new ArgumentNullException(nameof(typeNode));
@@ -33,6 +33,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
         }
 
+        public TypeSyntax TypeNameNode => _type;
+
+        public TokenNode IdentifierNameNode => _id;
+
+        public EqualsValueClauseSyntax EqualsValueClause => _assExpr;
+
+        public EmptyNode EmptyEqualsValueClause => _empty;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;
@@ -47,7 +55,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 }
                 else
                 {
-                    return new VariableDefinitionSyntax(nodes[0] as TypeSyntax, nodes[1] as TokenNode, nodes[2] as AssignmentExpressionSyntax);
+                    return new VariableDefinitionSyntax(nodes[0] as TypeSyntax, nodes[1] as TokenNode, nodes[2] as EqualsValueClauseSyntax);
                 }
             }
 
@@ -55,7 +63,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             {
                 AddParser(TypeSyntax.Parser.Get);
                 AddParser(TokenParser.Get(SyntaxTokenType.AlphanumericIdentifier));
-                AddParser(new OptionalParser(AssignmentExpressionSyntax.Parser.Get));
+                AddParser(new OptionalParser(EqualsValueClauseSyntax.Parser.Get));
 
                 return this;
             }

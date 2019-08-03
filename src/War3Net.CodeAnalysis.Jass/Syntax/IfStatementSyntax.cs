@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _then;
         private readonly LineDelimiterSyntax _eol;
         private readonly StatementListSyntax _statements;
-        private readonly ElseClauseSyntax _else;
-        private readonly EmptyNode _emptyElse;
+        private readonly ElseClauseSyntax _elseClause;
+        private readonly EmptyNode _emptyElseClause;
         private readonly TokenNode _endif;
 
         public IfStatementSyntax(TokenNode ifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementListNode, ElseClauseSyntax elseClauseNode, TokenNode endifNode)
@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _then = thenNode ?? throw new ArgumentNullException(nameof(thenNode));
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
             _statements = statementListNode ?? throw new ArgumentNullException(nameof(statementListNode));
-            _else = elseClauseNode ?? throw new ArgumentNullException(nameof(elseClauseNode));
+            _elseClause = elseClauseNode ?? throw new ArgumentNullException(nameof(elseClauseNode));
             _endif = endifNode ?? throw new ArgumentNullException(nameof(endifNode));
         }
 
@@ -41,9 +41,23 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _then = thenNode ?? throw new ArgumentNullException(nameof(thenNode));
             _eol = eolNode ?? throw new ArgumentNullException(nameof(eolNode));
             _statements = statementListNode ?? throw new ArgumentNullException(nameof(statementListNode));
-            _emptyElse = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
+            _emptyElseClause = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
             _endif = endifNode ?? throw new ArgumentNullException(nameof(endifNode));
         }
+
+        public TokenNode IfKeywordToken => _if;
+
+        public NewExpressionSyntax ConditionExpressionNode => _expression;
+
+        public TokenNode ThenKeywordToken => _then;
+
+        public StatementListSyntax StatementListNode => _statements;
+
+        public ElseClauseSyntax ElseClauseNode => _elseClause;
+
+        public EmptyNode EmptyElseClauseNode => _emptyElseClause;
+
+        public TokenNode EndifKeywordToken => _endif;
 
         internal sealed class Parser : SequenceParser
         {

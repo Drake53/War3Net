@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="AssignmentExpressionSyntax.cs" company="Drake53">
+// <copyright file="EqualsValueClauseSyntax.cs" company="Drake53">
 // Copyright (c) 2019 Drake53. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -10,17 +10,21 @@ using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public sealed class AssignmentExpressionSyntax : SyntaxNode
+    public sealed class EqualsValueClauseSyntax : SyntaxNode
     {
         private readonly TokenNode _ass;
         private readonly NewExpressionSyntax _expression;
 
-        public AssignmentExpressionSyntax(TokenNode assignmentNode, NewExpressionSyntax expressionNode)
+        public EqualsValueClauseSyntax(TokenNode assignmentNode, NewExpressionSyntax expressionNode)
             : base(assignmentNode, expressionNode)
         {
             _ass = assignmentNode ?? throw new ArgumentNullException(nameof(assignmentNode));
             _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
         }
+
+        public TokenNode AssignmentSymbolToken => _ass;
+
+        public NewExpressionSyntax ValueNode => _expression;
 
         internal sealed class Parser : SequenceParser
         {
@@ -30,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             protected override SyntaxNode CreateNode(List<SyntaxNode> nodes)
             {
-                return new AssignmentExpressionSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax);
+                return new EqualsValueClauseSyntax(nodes[0] as TokenNode, nodes[1] as NewExpressionSyntax);
             }
 
             private Parser Init()

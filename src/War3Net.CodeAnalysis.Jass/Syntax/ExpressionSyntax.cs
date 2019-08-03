@@ -61,6 +61,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _parensExpr = parenthesizedExpressionNode ?? throw new ArgumentNullException(nameof(parenthesizedExpressionNode));
         }
 
+        public UnaryExpressionSyntax UnaryExpression => _unaryExpr;
+
+        public FunctionCallSyntax FunctionCall => _funcCall;
+
+        public ArrayReferenceSyntax ArrayReference => _array;
+
+        public FunctionReferenceSyntax FunctionReference => _funcRef;
+
+        public TokenNode Identifier => _id;
+
+        public ConstantExpressionSyntax ConstantExpression => _constant;
+
+        public ParenthesizedExpressionSyntax ParenthesizedExpressionSyntax => _parensExpr;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

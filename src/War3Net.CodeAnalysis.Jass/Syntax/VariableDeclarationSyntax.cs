@@ -26,6 +26,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _array = arrayNode ?? throw new ArgumentNullException(nameof(arrayNode));
         }
 
+        public VariableDefinitionSyntax VariableDefinitionNode => _var;
+
+        public ArrayDefinitionSyntax ArrayDefinitionNode => _array;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

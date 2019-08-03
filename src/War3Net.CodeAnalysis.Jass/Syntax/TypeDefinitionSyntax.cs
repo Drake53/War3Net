@@ -26,6 +26,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _base = baseTypeNode ?? throw new ArgumentNullException(nameof(baseTypeNode));
         }
 
+        public TokenNode TypeKeywordNode => _type;
+
+        public TokenNode NewTypeNameNode => _sub;
+
+        public TokenNode ExtendsKeywordNode => _extends;
+
+        public ExtendableTypeReferenceSyntax BaseTypeNode => _base;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

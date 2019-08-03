@@ -26,6 +26,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _endglobals = endglobalsNode ?? throw new ArgumentNullException(nameof(endglobalsNode));
         }
 
+        public GlobalsDeclarationListSyntax GlobalDeclarationListNode => _globalsList;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

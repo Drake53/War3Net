@@ -30,6 +30,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
         }
 
+        public TokenNode ReturnKeywordToken => _return;
+
+        public NewExpressionSyntax ExpressionNode => _expression;
+
+        public EmptyNode EmptyExpressionNode => _empty;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

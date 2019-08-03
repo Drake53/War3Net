@@ -22,6 +22,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _expression = expressionNode ?? throw new ArgumentNullException(nameof(exitNode));
         }
 
+        public TokenNode ExitwhenKeywordToken => _exit;
+
+        public NewExpressionSyntax ConditionExpressionNode => _expression;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    enum TokenizerMode
+    internal enum TokenizerMode
     {
         Content,
         String,

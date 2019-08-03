@@ -33,6 +33,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _native = nativeFunctionNode ?? throw new ArgumentNullException(nameof(nativeFunctionNode));
         }
 
+        public TypeDefinitionSyntax TypeDefinition => _type;
+
+        public GlobalsBlockSyntax GlobalsBlock => _globals;
+
+        public NativeFunctionDeclarationSyntax NativeFunctionDeclaration => _native;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

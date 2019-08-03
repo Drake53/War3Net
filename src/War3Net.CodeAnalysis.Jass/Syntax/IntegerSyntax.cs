@@ -26,6 +26,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _fourCC = fourCCIntegerNode ?? throw new ArgumentNullException(nameof(fourCCIntegerNode));
         }
 
+        public TokenNode IntegerToken => _token;
+
+        public FourCCIntegerSyntax FourCCIntegerNode => _fourCC;
+
         internal sealed class Parser : AlternativeParser
         {
             private static Parser _parser;

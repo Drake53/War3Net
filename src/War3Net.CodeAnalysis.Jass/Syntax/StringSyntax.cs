@@ -33,6 +33,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _close = closeNode ?? throw new ArgumentNullException(nameof(closeNode));
         }
 
+        public TokenNode StringNode => _string;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;

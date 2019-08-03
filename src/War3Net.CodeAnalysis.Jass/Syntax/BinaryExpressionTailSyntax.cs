@@ -22,6 +22,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _expr = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
         }
 
+        public BinaryOperatorSyntax BinaryOperatorNode => _operator;
+
+        public NewExpressionSyntax ExpressionNode => _expr;
+
         internal sealed class Parser : SequenceParser
         {
             private static Parser _parser;
