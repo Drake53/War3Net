@@ -12,7 +12,6 @@ using System.Text;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    // TODO: handle escape character '\'
     internal class JassTokenizer : IDisposable
     {
         private const int BufferCapacity = 120;
@@ -32,14 +31,35 @@ namespace War3Net.CodeAnalysis.Jass
 
             var buffer = new StringBuilder(BufferCapacity);
 
+            const char EscapeCharacter = '\\';
+            var encounteredEscapeCharacter = false;
+
             using (var reader = new StringReader(_text))
             {
                 while (true)
                 {
                     var peek = reader.Peek();
 
+                    if (peek == EscapeCharacter)
+                    {
+                        if (_mode == TokenizerMode.Content)
+                        {
+                            throw new Exception($"Unexpectedly encountered escape character '{EscapeCharacter}'");
+                        }
+
+                        if (!encounteredEscapeCharacter)
+                        {
+                            encounteredEscapeCharacter = true;
+                            buffer.Append((char)reader.Read());
+                            continue;
+                        }
+                    }
+
+                    var ignoreDelimiter = encounteredEscapeCharacter;
+                    encounteredEscapeCharacter = false;
+
                     // TODO: support multiCharacter delimiters (eg /* */ in vJASS)
-                    if (IsCharacterDelimiter(peek))
+                    if (!ignoreDelimiter && IsCharacterDelimiter(peek))
                     {
                         if (buffer.Length == 0)
                         {
@@ -94,7 +114,7 @@ namespace War3Net.CodeAnalysis.Jass
                             var tokenText = buffer.ToString();
                             buffer.Length = 0;
 
-                            if (SyntaxToken.TryTokenizeKeyword(tokenText, out var token))
+                            if (_mode == TokenizerMode.Content && SyntaxToken.TryTokenizeKeyword(tokenText, out var token))
                             {
                                 yield return TryUpdateMode(token);
                             }
@@ -134,7 +154,7 @@ namespace War3Net.CodeAnalysis.Jass
                 case TokenizerMode.Content: return !char.IsLetterOrDigit(character) && character != '_' && character != '.' && character != '$';
                 case TokenizerMode.String: return character == '"';
                 case TokenizerMode.FourCC: return character == '\'';
-                case TokenizerMode.SingleLineComment: return character == '\n';
+                case TokenizerMode.SingleLineComment: return character == '\n' || character == '\r';
 
                 default: throw new InvalidOperationException();
             }

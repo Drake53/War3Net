@@ -14,6 +14,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         private readonly TokenNode _slashes;
         private readonly TokenNode _comment;
+        private readonly EmptyNode _emptyComment;
         private readonly TokenNode _newline;
 
         public CommentSyntax(TokenNode slashesNode, TokenNode commentNode, TokenNode newlineNode)
@@ -21,6 +22,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             _slashes = slashesNode ?? throw new ArgumentNullException(nameof(slashesNode));
             _comment = commentNode ?? throw new ArgumentNullException(nameof(commentNode));
+            _newline = newlineNode ?? throw new ArgumentNullException(nameof(newlineNode));
+        }
+
+        public CommentSyntax(TokenNode slashesNode, EmptyNode emptyCommentNode, TokenNode newlineNode)
+            : base(slashesNode, emptyCommentNode, newlineNode)
+        {
+            _slashes = slashesNode ?? throw new ArgumentNullException(nameof(slashesNode));
+            _emptyComment = emptyCommentNode ?? throw new ArgumentNullException(nameof(emptyCommentNode));
             _newline = newlineNode ?? throw new ArgumentNullException(nameof(newlineNode));
         }
 
@@ -38,13 +47,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             protected override SyntaxNode CreateNode(List<SyntaxNode> nodes)
             {
-                return new CommentSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, nodes[2] as TokenNode);
+                if (nodes[1] is EmptyNode emptyNode)
+                {
+                    return new CommentSyntax(nodes[0] as TokenNode, emptyNode, nodes[2] as TokenNode);
+                }
+                else
+                {
+                    return new CommentSyntax(nodes[0] as TokenNode, nodes[1] as TokenNode, nodes[2] as TokenNode);
+                }
             }
 
             private Parser Init()
             {
                 AddParser(TokenParser.Get(SyntaxTokenType.DoubleForwardSlash));
-                AddParser(TokenParser.Get(SyntaxTokenType.Comment));
+                AddParser(new OptionalParser(TokenParser.Get(SyntaxTokenType.Comment)));
                 AddParser(TokenParser.Get(SyntaxTokenType.NewlineSymbol));
 
                 return this;

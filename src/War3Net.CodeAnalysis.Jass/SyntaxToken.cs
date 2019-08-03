@@ -188,6 +188,8 @@ namespace War3Net.CodeAnalysis.Jass
                 }
             }
 
+            result.Add('\r', SyntaxTokenType.NewlineSymbol);
+
             return result;
         }
 
@@ -202,6 +204,8 @@ namespace War3Net.CodeAnalysis.Jass
                     result.Add(pair.Value, pair.Key);
                 }
             }
+
+            result.Add("\r\n", SyntaxTokenType.NewlineSymbol);
 
             return result;
         }
