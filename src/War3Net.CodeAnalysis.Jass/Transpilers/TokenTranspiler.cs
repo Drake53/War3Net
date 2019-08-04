@@ -133,22 +133,20 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
         private static ExpressionSyntax TranspileConstantExpression(this TokenNode tokenNode)
         {
+            var text = tokenNode.ValueText;
             switch (tokenNode.TokenType)
             {
-                case SyntaxTokenType.DecimalNumber: return SyntaxFactory.ParseExpression(tokenNode.ValueText);
+                case SyntaxTokenType.DecimalNumber: return SyntaxFactory.ParseExpression(text);
                 case SyntaxTokenType.OctalNumber: return SyntaxFactory.ParseExpression("0"); // TODO: implement octal numbers
-                case SyntaxTokenType.HexadecimalNumber: return SyntaxFactory.ParseExpression($"0x{tokenNode.ValueText.Substring(tokenNode.ValueText[0] == '$' ? 1 : 2)}");
+                case SyntaxTokenType.HexadecimalNumber: return SyntaxFactory.ParseExpression($"0x{text.Substring(text[0] == '$' ? 1 : 2)}");
                 case SyntaxTokenType.FourCCNumber: return SyntaxFactory.ParseExpression(
-                    tokenNode.ValueText.Length == 4
-                    ? ((int)tokenNode.ValueText[0] << 24 |
-                       (int)tokenNode.ValueText[1] << 16 |
-                       (int)tokenNode.ValueText[2] << 8 |
-                       (int)tokenNode.ValueText[3]).ToString()
-                    : ((int)tokenNode.ValueText[0]).ToString());
-                case SyntaxTokenType.RealNumber: return SyntaxFactory.ParseExpression($"{tokenNode.ValueText}f");
+                    text.Length == 4
+                    ? ((int)text[0] << 24 | (int)text[1] << 16 | (int)text[2] << 8 | (int)text[3]).ToString()
+                    : ((int)text[0]).ToString());
+                case SyntaxTokenType.RealNumber: return SyntaxFactory.ParseExpression($"{(text[text.Length - 1] == '.' ? text.Substring(0, text.Length - 1) : text)}f");
                 case SyntaxTokenType.TrueKeyword: return SyntaxFactory.LiteralExpression(Microsoft.CodeAnalysis.CSharp.SyntaxKind.TrueLiteralExpression);
                 case SyntaxTokenType.FalseKeyword: return SyntaxFactory.LiteralExpression(Microsoft.CodeAnalysis.CSharp.SyntaxKind.FalseLiteralExpression);
-                case SyntaxTokenType.String: return SyntaxFactory.ParseExpression($"\"{tokenNode.ValueText}\"");
+                case SyntaxTokenType.String: return SyntaxFactory.ParseExpression($"\"{text}\"");
                 case SyntaxTokenType.NullKeyword: return SyntaxFactory.LiteralExpression(Microsoft.CodeAnalysis.CSharp.SyntaxKind.NullLiteralExpression);
 
                 default:
