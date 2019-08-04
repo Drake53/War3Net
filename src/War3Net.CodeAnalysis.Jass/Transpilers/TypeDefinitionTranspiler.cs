@@ -21,20 +21,35 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = typeDefinitionNode ?? throw new ArgumentNullException(nameof(typeDefinitionNode));
 
-            return SyntaxFactory.ClassDeclaration(
+            var identifier = SyntaxFactory.Identifier(
+                SyntaxTriviaList.Empty,
+                Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
+                typeDefinitionNode.NewTypeNameNode.TranspileIdentifier(),
+                typeDefinitionNode.NewTypeNameNode.ValueText,
+                SyntaxTriviaList.Empty); // todo: comment?
+
+            var declr = SyntaxFactory.ClassDeclaration(
                 default(SyntaxList<AttributeListSyntax>),
                 new SyntaxTokenList(SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword)),
-                SyntaxFactory.Identifier(
-                    SyntaxTriviaList.Empty,
-                    Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
-                    typeDefinitionNode.NewTypeNameNode.TranspileIdentifier(),
-                    string.Empty,
-                    SyntaxTriviaList.Empty), // todo: comment?
+                identifier,
                 null,
                 null,
                 default(SyntaxList<TypeParameterConstraintClauseSyntax>),
                 default(SyntaxList<MemberDeclarationSyntax>))
-                .AddBaseListTypes(SyntaxFactory.SimpleBaseType(typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TranspileType(false)));
+                .AddMembers(SyntaxFactory.ConstructorDeclaration(
+                    default,
+                    new SyntaxTokenList(SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword)),
+                    identifier,
+                    SyntaxFactory.ParameterList(),
+                    null,
+                    SyntaxFactory.Block()));
+
+            if (typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                return declr.AddBaseListTypes(SyntaxFactory.SimpleBaseType(typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TranspileType(false)));
+            }
+
+            return declr;
         }
     }
 }

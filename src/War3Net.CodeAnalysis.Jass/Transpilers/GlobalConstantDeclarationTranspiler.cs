@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                             SyntaxTriviaList.Empty,
                             Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
                             globalConstantDeclarationNode.IdentifierNameNode.TranspileIdentifier(),
-                            string.Empty,
+                            globalConstantDeclarationNode.IdentifierNameNode.ValueText,
                             SyntaxTriviaList.Empty),
                         null,
                         globalConstantDeclarationNode.EqualsValueClause.Transpile(out var isConstantExpression))));

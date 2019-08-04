@@ -17,6 +17,8 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
+        private const string AntiReservedKeywordConflictPrefix = "@";
+
         // TODO: use SyntaxFacts.IsValidIdentifier for alphanumeric tokens
         private static Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
 
@@ -41,7 +43,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 case SyntaxTokenType.RealKeyword: return "float";
                 case SyntaxTokenType.StringKeyword: return "string";
                 case SyntaxTokenType.BooleanKeyword: return "bool";
-                case SyntaxTokenType.CodeKeyword: return "System.Action"; // note: this type should be "System.Func<bool>" for the native function 'Filter'
+                case SyntaxTokenType.CodeKeyword: return "System.Action"; // note: this type should be "System.Func<bool>" for the native functions 'Filter' and 'Condition'
                 case SyntaxTokenType.AlphanumericIdentifier: return tokenNode.TranspileIdentifier();
 
                 default:
@@ -54,7 +56,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
             {
                 return _reservedKeywords.Value.Contains(tokenNode.ValueText)
-                    ? $"@{tokenNode.ValueText}"
+                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
                     : tokenNode.ValueText;
             }
 
@@ -106,7 +108,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             {
                 return SyntaxFactory.ParseExpression(
                     _reservedKeywords.Value.Contains(tokenNode.ValueText)
-                        ? $"@{tokenNode.ValueText}"
+                        ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
                         : tokenNode.ValueText);
             }
 
@@ -122,7 +124,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
                 return SyntaxFactory.ParseExpression(
                     _reservedKeywords.Value.Contains(tokenNode.ValueText)
-                        ? $"@{tokenNode.ValueText}"
+                        ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
                         : tokenNode.ValueText);
             }
 

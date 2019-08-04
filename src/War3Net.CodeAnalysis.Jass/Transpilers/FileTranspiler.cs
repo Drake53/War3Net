@@ -22,9 +22,9 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
 
-            var comment = fileNode.StartFileEmpty is null
+            /*var comment = fileNode.StartFileEmpty is null
                 ? fileNode.StartFileLineDelimiter.Transpile()
-                : default;
+                : default;*/
 
             var @class = SyntaxFactory.ClassDeclaration(
                 default,
@@ -37,7 +37,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     SyntaxTriviaList.Empty,
                     Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
                     className,
-                    string.Empty,
+                    className,
                     SyntaxTriviaList.Empty),
                 null,
                 null,
@@ -54,7 +54,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                         SyntaxTriviaList.Empty,
                         Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
                         "JassTranspiledCode",
-                        string.Empty,
+                        "JassTranspiledCode",
                         SyntaxTriviaList.Empty)),
                 default(SyntaxList<ExternAliasDirectiveSyntax>),
                 default(SyntaxList<UsingDirectiveSyntax>),

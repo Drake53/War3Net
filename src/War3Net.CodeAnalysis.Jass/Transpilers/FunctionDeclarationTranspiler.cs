@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     SyntaxTriviaList.Empty,
                     Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
                     functionDeclarationNode.IdentifierNode.TranspileIdentifier(),
-                    string.Empty,
+                    functionDeclarationNode.IdentifierNode.ValueText,
                     SyntaxTriviaList.Empty),
                 null,
                 SyntaxFactory.ParameterList(default),

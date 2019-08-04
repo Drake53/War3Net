@@ -54,7 +54,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                         SyntaxTriviaList.Empty,
                         Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
                         arrayDefinitionNode.IdentifierNameNode.TranspileIdentifier(),
-                        string.Empty,
+                        arrayDefinitionNode.IdentifierNameNode.ValueText,
                         SyntaxTriviaList.Empty),
                     null,
                     SyntaxFactory.EqualsValueClause(
