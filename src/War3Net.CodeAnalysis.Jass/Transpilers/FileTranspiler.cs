@@ -8,71 +8,27 @@
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
-        public static CompilationUnitSyntax Transpile(this Syntax.FileSyntax fileNode, string className, params (string Directive, bool Static)[] usingDirectives)
+        public static IEnumerable<MemberDeclarationSyntax> Transpile(this Syntax.FileSyntax fileNode)
         {
             _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
 
-            /*var comment = fileNode.StartFileEmpty is null
-                ? fileNode.StartFileLineDelimiter.Transpile()
-                : default;*/
+            foreach (var declaration in fileNode.DeclarationList.Transpile())
+            {
+                yield return declaration;
+            }
 
-            var @class = SyntaxFactory.ClassDeclaration(
-                default,
-                new SyntaxTokenList(
-                    SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword)),
-                // SyntaxFactory.Token(
-                SyntaxFactory.Identifier(
-                    // SyntaxTriviaList.Create(comment),
-                    SyntaxTriviaList.Empty,
-                    Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
-                    className,
-                    className,
-                    SyntaxTriviaList.Empty),
-                null,
-                null,
-                default,
-                new SyntaxList<MemberDeclarationSyntax>(
-                    fileNode.DeclarationList.Transpile().Concat(
-                        fileNode.FunctionList.Select(function => function.Transpile()))));
-
-            var @namespace = SyntaxFactory.NamespaceDeclaration(
-                SyntaxFactory.IdentifierName(
-                    // SyntaxFactory.Token(
-                    SyntaxFactory.Identifier(
-                        // SyntaxTriviaList.Create(SyntaxFactory.Comment("//Transpiled from JASS code")),
-                        SyntaxTriviaList.Empty,
-                        Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
-                        "JassTranspiledCode",
-                        "JassTranspiledCode",
-                        SyntaxTriviaList.Empty)),
-                default(SyntaxList<ExternAliasDirectiveSyntax>),
-                default(SyntaxList<UsingDirectiveSyntax>),
-                new SyntaxList<MemberDeclarationSyntax>(@class));
-
-            var compilationUnit = SyntaxFactory.CompilationUnit(
-                default,
-                new SyntaxList<UsingDirectiveSyntax>(usingDirectives.Select(directive
-                => directive.Static
-                ? SyntaxFactory.UsingDirective(
-                    SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword),
-                    null,
-                    SyntaxFactory.ParseName(directive.Directive))
-                : SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(directive.Directive)))),
-                default,
-                new SyntaxList<MemberDeclarationSyntax>(@namespace));
-
-            return compilationUnit;
+            foreach (var function in fileNode.FunctionList)
+            {
+                yield return function.Transpile();
+            }
         }
     }
 }
