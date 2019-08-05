@@ -17,11 +17,15 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
-        public static IEnumerable<ParameterSyntax> Transpile(this Syntax.ParameterListReferenceSyntax parameterListReferenceNode)
+        public static IEnumerable<ParameterSyntax> Transpile(this Syntax.ParameterListReferenceSyntax parameterListReferenceNode, params TokenTranspileFlags[] flags)
         {
             _ = parameterListReferenceNode ?? throw new ArgumentNullException(nameof(parameterListReferenceNode));
 
-            return parameterListReferenceNode.Select(node => node.Transpile());
+            return parameterListReferenceNode.Select((node, index)
+                => node.Transpile(
+                    index + 1 > flags.Length
+                    ? (TokenTranspileFlags)0
+                    : flags[index]));
         }
     }
 }

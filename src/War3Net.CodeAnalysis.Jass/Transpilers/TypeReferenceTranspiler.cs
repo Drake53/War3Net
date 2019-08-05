@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
-        public static ParameterSyntax Transpile(this Syntax.TypeReferenceSyntax typeReferenceNode)
+        public static ParameterSyntax Transpile(this Syntax.TypeReferenceSyntax typeReferenceNode, TokenTranspileFlags flags)
         {
             _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
 
@@ -29,11 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     typeReferenceNode.TypeReferenceNameToken.ValueText,
                     SyntaxTriviaList.Empty))
             .WithType(
-                typeReferenceNode.TypeNameNode.Transpile(
-                    // TODO: better solution for this hacky piece of shit
-                    typeReferenceNode.TypeReferenceNameToken.ValueText == "func"
-                    ? TokenTranspileFlags.ReturnBoolFunc
-                    : (TokenTranspileFlags)0));
+                typeReferenceNode.TypeNameNode.Transpile(flags));
         }
     }
 }
