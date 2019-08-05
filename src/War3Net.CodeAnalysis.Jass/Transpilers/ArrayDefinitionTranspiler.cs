@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 new SyntaxTokenList(
                     SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword)),
-                SyntaxFactory.VariableDeclaration(arrayDefinitionNode.TypeNameNode.Transpile(true))
+                SyntaxFactory.VariableDeclaration(arrayDefinitionNode.TypeNameNode.Transpile(TokenTranspileFlags.ReturnArray))
                 .AddVariable(arrayDefinitionNode));
 
             return arrayDefinition;
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
 
             var declaration = SyntaxFactory.VariableDeclaration(
-                arrayDefinitionNode.TypeNameNode.Transpile(true))
+                arrayDefinitionNode.TypeNameNode.Transpile(TokenTranspileFlags.ReturnArray))
                 .AddVariable(arrayDefinitionNode);
 
             return SyntaxFactory.LocalDeclarationStatement(declaration);

@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             var globalConstantDeclaration = SyntaxFactory.FieldDeclaration(
                 // default,
                 // default,
-                SyntaxFactory.VariableDeclaration(globalConstantDeclarationNode.TypeNameNode.Transpile(false))
+                SyntaxFactory.VariableDeclaration(globalConstantDeclarationNode.TypeNameNode.Transpile())
                 .AddVariables(
                     SyntaxFactory.VariableDeclarator(
                         SyntaxFactory.Identifier(

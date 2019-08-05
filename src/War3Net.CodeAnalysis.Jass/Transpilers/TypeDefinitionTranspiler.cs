@@ -46,7 +46,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             if (typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
             {
-                return declr.AddBaseListTypes(SyntaxFactory.SimpleBaseType(typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TranspileType(false)));
+                return declr.AddBaseListTypes(SyntaxFactory.SimpleBaseType(typeDefinitionNode.BaseTypeNode.HandleIdentifierNode.TranspileType()));
             }
 
             return declr;

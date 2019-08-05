@@ -9,6 +9,7 @@
 
 using System;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,8 +23,17 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             return SyntaxFactory.Parameter(
                 SyntaxFactory.Identifier(
-                    typeReferenceNode.TypeReferenceNameToken.TranspileIdentifier()))
-            .WithType(typeReferenceNode.TypeNameNode.Transpile(false));
+                    SyntaxTriviaList.Empty,
+                    Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
+                    typeReferenceNode.TypeReferenceNameToken.TranspileIdentifier(),
+                    typeReferenceNode.TypeReferenceNameToken.ValueText,
+                    SyntaxTriviaList.Empty))
+            .WithType(
+                typeReferenceNode.TypeNameNode.Transpile(
+                    // TODO: better solution for this hacky piece of shit
+                    typeReferenceNode.TypeReferenceNameToken.ValueText == "func"
+                    ? TokenTranspileFlags.ReturnBoolFunc
+                    : (TokenTranspileFlags)0));
         }
     }
 }

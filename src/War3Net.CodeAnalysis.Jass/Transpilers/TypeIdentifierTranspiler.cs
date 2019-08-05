@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = typeIdentifierNode ?? throw new ArgumentNullException(nameof(typeIdentifierNode));
 
             return typeIdentifierNode.NothingKeywordToken is null
-                ? typeIdentifierNode.TypeNameNode.Transpile(false)
+                ? typeIdentifierNode.TypeNameNode.Transpile()
                 : SyntaxFactory.PredefinedType(SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.VoidKeyword));
         }
     }

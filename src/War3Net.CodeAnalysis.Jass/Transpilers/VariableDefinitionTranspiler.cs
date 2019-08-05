@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 new SyntaxTokenList(
                     SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword)),
-                SyntaxFactory.VariableDeclaration(variableDefinitionNode.TypeNameNode.Transpile(false))
+                SyntaxFactory.VariableDeclaration(variableDefinitionNode.TypeNameNode.Transpile())
                 .AddVariable(variableDefinitionNode));
 
             return variableDefinition;
@@ -36,7 +36,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
 
-            var declaration = SyntaxFactory.VariableDeclaration(variableDefinitionNode.TypeNameNode.Transpile(false))
+            var declaration = SyntaxFactory.VariableDeclaration(variableDefinitionNode.TypeNameNode.Transpile())
                 .AddVariable(variableDefinitionNode);
 
             return SyntaxFactory.LocalDeclarationStatement(declaration);
@@ -53,7 +53,10 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                         variableDefinitionNode.IdentifierNameNode.ValueText,
                         SyntaxTriviaList.Empty),
                     null,
-                    variableDefinitionNode.EqualsValueClause?.Transpile()));
+                    variableDefinitionNode.EqualsValueClause?.Transpile()
+                    ?? SyntaxFactory.EqualsValueClause(
+                        SyntaxFactory.LiteralExpression(
+                            Microsoft.CodeAnalysis.CSharp.SyntaxKind.DefaultLiteralExpression))));
         }
     }
 }

@@ -15,6 +15,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
+    [Flags]
+    public enum TokenTranspileFlags
+    {
+        ReturnArray = 1 << 0,
+        ReturnBoolFunc = 1 << 1,
+    }
+
     public static partial class JassToCSharpTranspiler
     {
         private const string AntiReservedKeywordConflictPrefix = "@";
@@ -22,16 +29,16 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         // TODO: use SyntaxFacts.IsValidIdentifier for alphanumeric tokens
         private static Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
 
-        public static TypeSyntax TranspileType(this TokenNode tokenNode, bool array)
+        public static TypeSyntax TranspileType(this TokenNode tokenNode, TokenTranspileFlags flags = (TokenTranspileFlags)0)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
 
-            return SyntaxFactory.ParseTypeName(array
-                ? $"{tokenNode.TranspileTypeString()}[]"
-                : tokenNode.TranspileTypeString());
+            return SyntaxFactory.ParseTypeName(flags.HasFlag(TokenTranspileFlags.ReturnArray)
+                ? $"{tokenNode.TranspileTypeString(flags)}[]"
+                : tokenNode.TranspileTypeString(flags));
         }
 
-        public static string TranspileTypeString(this TokenNode tokenNode)
+        public static string TranspileTypeString(this TokenNode tokenNode, TokenTranspileFlags flags = (TokenTranspileFlags)0)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
 
@@ -43,7 +50,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 case SyntaxTokenType.RealKeyword: return "float";
                 case SyntaxTokenType.StringKeyword: return "string";
                 case SyntaxTokenType.BooleanKeyword: return "bool";
-                case SyntaxTokenType.CodeKeyword: return "System.Action"; // note: this type should be "System.Func<bool>" for the native functions 'Filter' and 'Condition'
+                case SyntaxTokenType.CodeKeyword: return flags.HasFlag(TokenTranspileFlags.ReturnBoolFunc) ? "System.Func<bool>" : "System.Action";
                 case SyntaxTokenType.AlphanumericIdentifier: return tokenNode.TranspileIdentifier();
 
                 default:

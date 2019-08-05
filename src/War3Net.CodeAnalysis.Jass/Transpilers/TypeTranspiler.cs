@@ -15,11 +15,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
-        public static TypeSyntax Transpile(this Syntax.TypeSyntax typeNode, bool array)
+        public static TypeSyntax Transpile(this Syntax.TypeSyntax typeNode, TokenTranspileFlags flags = (TokenTranspileFlags)0)
         {
             _ = typeNode ?? throw new ArgumentNullException(nameof(typeNode));
 
-            return typeNode.TypeNameToken.TranspileType(array);
+            return typeNode.TypeNameToken.TranspileType(flags);
         }
     }
 }
