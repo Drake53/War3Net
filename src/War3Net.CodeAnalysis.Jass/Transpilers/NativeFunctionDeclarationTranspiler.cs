@@ -24,10 +24,12 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             return nativeFunctionDeclarationNode.FunctionDeclarationNode.Transpile()
                 .WithModifiers(
                     new SyntaxTokenList(
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword),
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ExternKeyword)))
-                .WithSemicolonToken(SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.SemicolonToken));
+                        SyntaxFactory.Token(TranspileToEnumHandler.IsFunctionEnumConverter(nativeFunctionDeclarationNode.FunctionDeclarationNode.IdentifierNode.ValueText, out _)
+                            ? TranspileToEnumHandler.EnumCastFunctionAccessModifier
+                            : SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                        SyntaxFactory.Token(SyntaxKind.ExternKeyword)))
+                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
         }
     }
 }

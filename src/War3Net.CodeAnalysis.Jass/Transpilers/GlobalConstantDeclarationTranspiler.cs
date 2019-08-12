@@ -13,6 +13,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.CodeAnalysis.CSharp.Attributes;
+
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
@@ -21,31 +23,54 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = globalConstantDeclarationNode ?? throw new ArgumentNullException(nameof(globalConstantDeclarationNode));
 
+            var identifier = SyntaxFactory.Identifier(
+                SyntaxTriviaList.Empty,
+                SyntaxKind.IdentifierToken,
+                globalConstantDeclarationNode.IdentifierNameNode.TranspileIdentifier(),
+                globalConstantDeclarationNode.IdentifierNameNode.ValueText,
+                SyntaxTriviaList.Empty);
+
             var globalConstantDeclaration = SyntaxFactory.FieldDeclaration(
-                // default,
-                // default,
                 SyntaxFactory.VariableDeclaration(globalConstantDeclarationNode.TypeNameNode.Transpile())
                 .AddVariables(
                     SyntaxFactory.VariableDeclarator(
-                        SyntaxFactory.Identifier(
-                            SyntaxTriviaList.Empty,
-                            Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken,
-                            globalConstantDeclarationNode.IdentifierNameNode.TranspileIdentifier(),
-                            globalConstantDeclarationNode.IdentifierNameNode.ValueText,
-                            SyntaxTriviaList.Empty),
+                        identifier,
                         null,
                         globalConstantDeclarationNode.EqualsValueClause.Transpile(out var isConstantExpression))));
+
+            var isAddedToEnum = false;
+            var expr = globalConstantDeclarationNode.EqualsValueClause.ValueNode.Expression;
+            if (expr.FunctionCall != null)
+            {
+                var convertFunctionName = expr.FunctionCall.IdentifierNameNode.ValueText;
+                if (TranspileToEnumHandler.IsFunctionEnumConverter(convertFunctionName, out var enumTypeName))
+                {
+                    var enumMember = SyntaxFactory.EnumMemberDeclaration(
+                        new SyntaxList<AttributeListSyntax>(
+                            SyntaxFactory.AttributeList(
+                                default(SeparatedSyntaxList<AttributeSyntax>).Add(SyntaxFactory.Attribute(
+                                    SyntaxFactory.ParseName(nameof(EnumMemberConstantDeclarationAttribute)),
+                                    SyntaxFactory.ParseAttributeArgumentList($"(nameof({identifier.Text}))"))))),
+                        identifier,
+                        SyntaxFactory.EqualsValueClause(expr.FunctionCall.ArgumentListNode.FirstArgument.Transpile()));
+
+                    TranspileToEnumHandler.AddEnumMember(enumMember, convertFunctionName);
+                    isAddedToEnum = true;
+                }
+            }
 
             return isConstantExpression
                 ? globalConstantDeclaration.WithModifiers(
                     new SyntaxTokenList(
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ConstKeyword)))
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.ConstKeyword)))
                 : globalConstantDeclaration.WithModifiers(
                     new SyntaxTokenList(
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword),
-                        SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ReadOnlyKeyword)));
+                        SyntaxFactory.Token(isAddedToEnum
+                            ? TranspileToEnumHandler.EnumMemberDeclarationAccessModifier
+                            : SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
         }
     }
 }

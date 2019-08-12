@@ -5,24 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Jass.Transpilers;
+using War3Net.CodeAnalysis.CSharp.Attributes;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassTranspilerHelper
     {
-        public static CompilationUnitSyntax GetCompilationUnit(SyntaxList<UsingDirectiveSyntax> usingDirectives, MemberDeclarationSyntax namespaceOrClassDeclaration)
+        public static CompilationUnitSyntax GetCompilationUnit(SyntaxList<UsingDirectiveSyntax> usingDirectives, params MemberDeclarationSyntax[] namespaceOrClassDeclarations)
         {
             return SyntaxFactory.CompilationUnit(
                 default,
                 usingDirectives,
                 default,
-                new SyntaxList<MemberDeclarationSyntax>(namespaceOrClassDeclaration));
+                new SyntaxList<MemberDeclarationSyntax>(namespaceOrClassDeclarations));
         }
 
         public static MemberDeclarationSyntax GetNamespaceDeclaration(string identifier, ClassDeclarationSyntax classDeclaration)
@@ -36,18 +38,36 @@ namespace War3Net.CodeAnalysis.Jass
                     new SyntaxList<MemberDeclarationSyntax>(classDeclaration));
         }
 
-        public static ClassDeclarationSyntax GetClassDeclaration(string identifier, FileSyntax fileNode)
+        public static ClassDeclarationSyntax GetClassDeclaration(string identifier, IEnumerable<MemberDeclarationSyntax> members, bool applyNativeMemberAttributes)
         {
-            return SyntaxFactory.ClassDeclaration(
+            var declarations = applyNativeMemberAttributes
+                ? members.Select(declr => declr.AddAttributeByName(nameof(NativeLuaMemberAttribute)))
+                : members;
+
+            var classDeclaration = SyntaxFactory.ClassDeclaration(
                 default,
                 new SyntaxTokenList(
-                    SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword)),
+                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
                 SyntaxFactory.Identifier(identifier),
                 null,
                 null,
                 default,
-                new SyntaxList<MemberDeclarationSyntax>(fileNode.Transpile()));
+                new SyntaxList<MemberDeclarationSyntax>(declarations));
+
+            return applyNativeMemberAttributes
+                ? classDeclaration.AddAttributeByName(nameof(NativeLuaMemberContainerAttribute))
+                : classDeclaration;
+        }
+
+        private static T AddAttributeByName<T>(this T memberDeclaration, string attributeName)
+            where T : MemberDeclarationSyntax
+        {
+            return (T)memberDeclaration.AddAttributeLists(
+                SyntaxFactory.AttributeList(
+                    default(SeparatedSyntaxList<AttributeSyntax>).Add(
+                        SyntaxFactory.Attribute(
+                            SyntaxFactory.ParseName(attributeName)))));
         }
     }
 }

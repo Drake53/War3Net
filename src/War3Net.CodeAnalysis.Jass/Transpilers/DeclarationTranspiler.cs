@@ -27,11 +27,16 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     yield return globalDeclaration;
                 }
             }
+            else if (declarationNode.TypeDefinition != null)
+            {
+                foreach (var globalDeclaration in declarationNode.TypeDefinition.Transpile())
+                {
+                    yield return globalDeclaration;
+                }
+            }
             else
             {
-                yield
-                    return declarationNode.TypeDefinition?.Transpile()
-                        ?? declarationNode.NativeFunctionDeclaration.Transpile();
+                yield return declarationNode.NativeFunctionDeclaration.Transpile();
             }
         }
     }

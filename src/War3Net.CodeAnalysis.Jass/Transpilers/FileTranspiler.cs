@@ -29,6 +29,13 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             {
                 yield return function.Transpile();
             }
+
+            foreach (var enumDeclaration in TranspileToEnumHandler.GetEnums())
+            {
+                yield return enumDeclaration;
+            }
+
+            TranspileToEnumHandler.Reset();
         }
     }
 }
