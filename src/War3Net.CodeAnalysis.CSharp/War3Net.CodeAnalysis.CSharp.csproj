@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="LICENSE">
       <PackagePath></PackagePath>
       <Pack>true</Pack>
