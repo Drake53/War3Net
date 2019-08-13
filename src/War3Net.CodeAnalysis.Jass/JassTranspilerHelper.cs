@@ -27,24 +27,24 @@ namespace War3Net.CodeAnalysis.Jass
                 new SyntaxList<MemberDeclarationSyntax>(namespaceOrClassDeclarations));
         }
 
-        public static MemberDeclarationSyntax GetNamespaceDeclaration(string identifier, ClassDeclarationSyntax classDeclaration)
+        public static MemberDeclarationSyntax GetNamespaceDeclaration(string identifier, params ClassDeclarationSyntax[] classDeclarations)
         {
             return identifier is null
-                ? (MemberDeclarationSyntax)classDeclaration
+                ? (MemberDeclarationSyntax)(classDeclarations.Length == 1 ? classDeclarations[0] : throw new System.Exception())
                 : SyntaxFactory.NamespaceDeclaration(
                     SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(identifier)),
                     default,
-                    default,
-                    new SyntaxList<MemberDeclarationSyntax>(classDeclaration));
+                    new SyntaxList<UsingDirectiveSyntax>(classDeclarations.Select(@class => GetUsingStaticClassDirective(identifier, @class.Identifier.ValueText))),
+                    new SyntaxList<MemberDeclarationSyntax>(classDeclarations));
         }
 
-        public static ClassDeclarationSyntax GetClassDeclaration(string identifier, IEnumerable<MemberDeclarationSyntax> members, bool applyNativeMemberAttributes)
+        public static ClassDeclarationSyntax[] GetClassDeclaration(string identifier, IEnumerable<MemberDeclarationSyntax> members, bool applyNativeMemberAttributes)
         {
-            var declarations = applyNativeMemberAttributes
-                ? members.Select(declr => declr.AddAttributeByName(nameof(NativeLuaMemberAttribute)))
-                : members;
-
-            var classDeclaration = SyntaxFactory.ClassDeclaration(
+            if (applyNativeMemberAttributes)
+            {
+                return new[]
+                {
+                SyntaxFactory.ClassDeclaration(
                 default,
                 new SyntaxTokenList(
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
@@ -53,11 +53,46 @@ namespace War3Net.CodeAnalysis.Jass
                 null,
                 null,
                 default,
-                new SyntaxList<MemberDeclarationSyntax>(declarations));
+                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(NativeLuaMemberAttribute)))))
+                .AddAttributeByName(nameof(NativeLuaMemberContainerAttribute)),
+                };
+            }
+            else
+            {
+                // If native attributes not applied, assume the C# code will get transpiled to lua.
+                // In lua, there is a limitation of around 200 local declarations in a scope.
+                // In order to not reach this limit, the members will get spread out over multiple classes if needed.
+                const int DeclarationLimit = 150;
 
-            return applyNativeMemberAttributes
-                ? classDeclaration.AddAttributeByName(nameof(NativeLuaMemberContainerAttribute))
-                : classDeclaration;
+                var classList = new List<ClassDeclarationSyntax>();
+                var memberList = members.ToArray();
+                var enumerator = members.GetEnumerator();
+                for (var i = 0; i * DeclarationLimit <= memberList.Length; i++)
+                {
+                    var remaining = memberList.Length - (i * DeclarationLimit);
+                    var size = remaining > DeclarationLimit ? DeclarationLimit : remaining;
+                    var membersSubset = new MemberDeclarationSyntax[size];
+                    for (var j = 0; j < size; j++)
+                    {
+                        enumerator.MoveNext();
+                        membersSubset[j] = enumerator.Current;
+                    }
+
+                    classList.Add(
+                        SyntaxFactory.ClassDeclaration(
+                        default,
+                        new SyntaxTokenList(
+                            SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
+                        SyntaxFactory.Identifier($"{identifier}{i}"),
+                        null,
+                        null,
+                        default,
+                        new SyntaxList<MemberDeclarationSyntax>(membersSubset)));
+                }
+
+                return classList.ToArray();
+            }
         }
 
         private static T AddAttributeByName<T>(this T memberDeclaration, string attributeName)
@@ -68,6 +103,11 @@ namespace War3Net.CodeAnalysis.Jass
                     default(SeparatedSyntaxList<AttributeSyntax>).Add(
                         SyntaxFactory.Attribute(
                             SyntaxFactory.ParseName(attributeName)))));
+        }
+
+        private static UsingDirectiveSyntax GetUsingStaticClassDirective(string namespaceName, string className)
+        {
+            return SyntaxFactory.UsingDirective(SyntaxFactory.Token(SyntaxKind.StaticKeyword), null, SyntaxFactory.ParseName($"{namespaceName}.{className}"));
         }
     }
 }
