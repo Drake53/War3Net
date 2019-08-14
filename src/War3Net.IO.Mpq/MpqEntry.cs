@@ -39,43 +39,6 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqEntry"/> class.
         /// </summary>
-        /// <param name="filePos"></param>
-        /// <param name="headerOffset"></param>
-        /// <param name="compressedSize"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="flags"></param>
-        internal MpqEntry(uint filePos, uint headerOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
-        {
-            _fileOffset = filePos - headerOffset;
-            FilePos = filePos;
-            CompressedSize = compressedSize;
-            FileSize = fileSize;
-            Flags = flags;
-            EncryptionSeed = 0;
-
-            IsAdded = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
-        /// </summary>
-        /// <param name="filePos"></param>
-        /// <param name="compressedSize"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="flags"></param>
-        internal MpqEntry(uint filePos, uint compressedSize, uint fileSize, MpqFileFlags flags)
-        {
-            FilePos = filePos;
-            CompressedSize = compressedSize;
-            FileSize = fileSize;
-            Flags = flags;
-
-            IsAdded = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
-        /// </summary>
         /// <param name="filename"></param>
         /// <param name="compressedSize"></param>
         /// <param name="fileSize"></param>
@@ -86,7 +49,7 @@ namespace War3Net.IO.Mpq
             FileSize = fileSize;
             Flags = flags;
 
-            _filename = filename;
+            Filename = filename;
         }
 
         /// <summary>
@@ -174,6 +137,10 @@ namespace War3Net.IO.Mpq
             FilePos = headerOffset + fileOffset;
 
             IsAdded = true;
+            if (EncryptionSeed == 0)
+            {
+                EncryptionSeed = CalculateEncryptionSeed();
+            }
         }
 
         /// <inheritdoc/>
@@ -196,7 +163,7 @@ namespace War3Net.IO.Mpq
 
         private uint CalculateEncryptionSeed()
         {
-            if (Filename == null)
+            if (Filename == null || (!IsAdded && (Flags & MpqFileFlags.BlockOffsetAdjustedKey) == MpqFileFlags.BlockOffsetAdjustedKey))
             {
                 return 0;
             }
