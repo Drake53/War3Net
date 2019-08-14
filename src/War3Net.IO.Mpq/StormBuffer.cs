@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 
 namespace War3Net.IO.Mpq
 {
@@ -56,6 +57,19 @@ namespace War3Net.IO.Mpq
             }
 
             return seed1;
+        }
+
+        internal static byte[] EncryptStream(Stream stream, uint seed1, int offset, int length)
+        {
+            var data = new byte[length];
+            stream.Seek(offset, SeekOrigin.Begin);
+            if (stream.Read(data, 0, length) != length)
+            {
+                throw new Exception("Insufficient data or invalid data length");
+            }
+
+            EncryptBlock(data, seed1);
+            return data;
         }
 
         internal static void EncryptBlock(byte[] data, uint seed1)
