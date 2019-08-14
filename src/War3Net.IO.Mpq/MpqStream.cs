@@ -388,74 +388,70 @@ namespace War3Net.IO.Mpq
         {
             throw new NotSupportedException("Writing is not supported");
         }
-        #endregion Strem overrides
+        #endregion Stream overrides
 
-        /* Compression types in order:
-         *  10 = BZip2
-         *   8 = PKLib
-         *   2 = ZLib
-         *   1 = Huffman
-         *  80 = IMA ADPCM Stereo
-         *  40 = IMA ADPCM Mono
-         */
         private static byte[] DecompressMulti(byte[] input, int outputLength)
         {
-            Stream sinput = new MemoryStream(input);
-
-            var comptype = (byte)sinput.ReadByte();
-
-            // WC3 onward mosly use Zlib
-            // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
-            switch (comptype)
+            using (Stream sinput = new MemoryStream(input))
             {
-                case 1: // Huffman
-                    return MpqHuffman.Decompress(sinput).ToArray();
-                case 2: // ZLib/Deflate
+                var comptype = (MpqCompressionType)sinput.ReadByte();
+
+                // WC3 onward mosly use Zlib
+                // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
+                switch (comptype)
+                {
+                    case MpqCompressionType.Huffman:
+                        using (var huffman = MpqHuffman.Decompress(sinput))
+                        {
+                            return huffman.ToArray();
+                        }
+
+                    case MpqCompressionType.ZLib:
 #if WITH_ZLIB
-                    return ZlibDecompress(sinput, outputLength);
+                        return ZlibDecompress(sinput, outputLength);
 #endif
-                case 8: // PKLib/Impode
-                    return PKDecompress(sinput, outputLength);
-                case 0x10: // BZip2
+
+                    case MpqCompressionType.PKLib:
+                        return PKDecompress(sinput, outputLength);
+
+                    case MpqCompressionType.BZip2:
 #if WITH_BZIP
-                    return BZip2Decompress(sinput, outputLength);
+                        return BZip2Decompress(sinput, outputLength);
 #endif
-                case 0x80: // IMA ADPCM Stereo
-                    return MpqWavCompression.Decompress(sinput, 2);
-                case 0x40: // IMA ADPCM Mono
-                    return MpqWavCompression.Decompress(sinput, 1);
 
-                case 0x12:
-                    // TODO: LZMA
-                    throw new MpqParserException("LZMA compression is not yet supported");
+                    case MpqCompressionType.ImaAdpcmStereo:
+                        return MpqWavCompression.Decompress(sinput, 2);
 
-                // Combos
-                case 0x22:
-                    // TODO: sparse then zlib
-                    throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
-                case 0x30:
-                    // TODO: sparse then bzip2
-                    throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
-                case 0x41:
-                    sinput = MpqHuffman.Decompress(sinput);
-                    return MpqWavCompression.Decompress(sinput, 1);
-                case 0x48:
-                    {
-                        var result = PKDecompress(sinput, outputLength);
-                        return MpqWavCompression.Decompress(new MemoryStream(result), 1);
-                    }
+                    case MpqCompressionType.ImaAdpcmMono:
+                        return MpqWavCompression.Decompress(sinput, 1);
 
-                case 0x81:
-                    sinput = MpqHuffman.Decompress(sinput);
-                    return MpqWavCompression.Decompress(sinput, 2);
-                case 0x88:
-                    {
-                        var result = PKDecompress(sinput, outputLength);
-                        return MpqWavCompression.Decompress(new MemoryStream(result), 2);
-                    }
+                    case MpqCompressionType.Lzma:
+                        // TODO: LZMA
+                        throw new MpqParserException("LZMA compression is not yet supported");
 
-                default:
-                    throw new MpqParserException("Compression is not yet supported: 0x" + comptype.ToString("X"));
+                    case MpqCompressionType.Sparse | MpqCompressionType.ZLib:
+                        // TODO: sparse then zlib
+                        throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
+
+                    case MpqCompressionType.Sparse | MpqCompressionType.BZip2:
+                        // TODO: sparse then bzip2
+                        throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
+
+                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman:
+                        return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 1);
+
+                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib:
+                        return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 1);
+
+                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman:
+                        return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 2);
+
+                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib:
+                        return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 2);
+
+                    default:
+                        throw new MpqParserException("Compression is not yet supported: 0x" + comptype.ToString("X"));
+                }
             }
         }
 
