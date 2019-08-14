@@ -82,12 +82,9 @@ namespace War3Net.IO.Mpq
 
         private StreamWriter GetWriter()
         {
-            if (_readOnly)
-            {
-                throw new InvalidOperationException($"Cannot obtain a {nameof(StreamWriter)} for this {nameof(ListFile)}, because it's read-only.");
-            }
-
-            return new StreamWriter(_baseStream, new UTF8Encoding(false, true), 1024, true);
+            return _readOnly
+                ? throw new InvalidOperationException($"Cannot obtain a {nameof(StreamWriter)} for this {nameof(ListFile)}, because it's read-only.")
+                : new StreamWriter(_baseStream, new UTF8Encoding(false, true), 1024, true);
         }
     }
 }

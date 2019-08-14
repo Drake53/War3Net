@@ -10,17 +10,17 @@ using System.IO;
 
 namespace War3Net.IO.Mpq
 {
-    internal enum CompressionType
-    {
-        Binary = 0,
-        Ascii = 1,
-    }
-
     /// <summary>
     /// A decompressor for PKLib implode/explode.
     /// </summary>
     public class PKLibDecompress
     {
+        private enum CompressionType
+        {
+            Binary = 0,
+            Ascii = 1,
+        }
+
         private static readonly byte[] sPosition1;
         private static readonly byte[] sPosition2;
 

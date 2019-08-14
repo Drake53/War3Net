@@ -12,7 +12,7 @@ namespace War3Net.IO.Mpq
     public struct MpqHash
     {
         /// <summary>
-        ///
+        /// The length (in bytes) of an <see cref="MpqHash"/>.
         /// </summary>
         public const uint Size = 16;
 

@@ -10,6 +10,9 @@ using System.IO;
 
 namespace War3Net.IO.Mpq
 {
+    /// <summary>
+    /// The header of an <see cref="MpqArchive"/>.
+    /// </summary>
     public class MpqHeader
     {
         /// <summary>
@@ -18,24 +21,16 @@ namespace War3Net.IO.Mpq
         public const uint MpqId = 0x1a51504d;
 
         /// <summary>
-        /// 
+        /// The length (in bytes) of an <see cref="MpqHeader"/>.
         /// </summary>
         public const uint Size = 32;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHeader"/> class.
         /// </summary>
-        public MpqHeader()
-        {
-            ID = MpqId;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqHeader"/> class.
-        /// </summary>
-        /// <param name="fileArchiveSize"></param>
-        /// <param name="hashTableEntries"></param>
-        /// <param name="blockTableEntries"></param>
+        /// <param name="fileArchiveSize">The length (in bytes) of the file archive.</param>
+        /// <param name="hashTableEntries">The amount of <see cref="MpqHash"/> objects in the <see cref="HashTable"/>.</param>
+        /// <param name="blockTableEntries">The amount of <see cref="MpqEntry"/> objects in the <see cref="BlockTable"/>.</param>
         /// <param name="blockSize"></param>
         /// <param name="archiveBeforeTables"></param>
         public MpqHeader(uint fileArchiveSize, uint hashTableEntries, uint blockTableEntries, ushort blockSize, bool archiveBeforeTables = true)
@@ -61,6 +56,14 @@ namespace War3Net.IO.Mpq
                 // MPQ contents are in order: header, HT, BT, archive
                 throw new NotImplementedException();
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqHeader"/> class.
+        /// </summary>
+        private MpqHeader()
+        {
+            ID = MpqId;
         }
 
         /// <summary>
@@ -152,9 +155,10 @@ namespace War3Net.IO.Mpq
             if (header.MpqVersion == 0)
             {
                 // Check validity
+                // TODO: deal with protected archive DataOffset value.
                 if (header.DataOffset != Size)
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: DataOffset. Expected {0}, was {1}", Size, header.DataOffset));
+                    throw new MpqParserException(string.Format("Invalid MPQ header field: DataOffset. Was {0}, expected {1}", header.DataOffset, Size));
                 }
 
                 if (header.ArchiveSize != header.BlockTablePos + (MpqEntry.Size * header.BlockTableSize))
@@ -205,7 +209,7 @@ namespace War3Net.IO.Mpq
         /// 
         /// </summary>
         /// <param name="headerOffset"></param>
-        public void SetHeaderOffset(long headerOffset)
+        public bool SetHeaderOffset(long headerOffset)
         {
             // A protected archive. Seen in some custom wc3 maps.
             const uint ProtectedOffset = 0x6d9e4b86;
@@ -216,6 +220,8 @@ namespace War3Net.IO.Mpq
             {
                 DataOffset = (uint)(Size + headerOffset);
             }
+
+            return true;
         }
     }
 }

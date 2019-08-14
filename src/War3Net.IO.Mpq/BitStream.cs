@@ -19,6 +19,9 @@ namespace War3Net.IO.Mpq
         private int _current;
         private int _bitCount;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitStream"/> class.
+        /// </summary>
         public BitStream(Stream sourceStream)
         {
             _baseStream = sourceStream;
@@ -43,12 +46,9 @@ namespace War3Net.IO.Mpq
 
         public int PeekByte()
         {
-            if (!EnsureBits(8))
-            {
-                return -1;
-            }
-
-            return _current & 0xff;
+            return EnsureBits(8)
+                ? _current & 0xff
+                : -1;
         }
 
         public bool EnsureBits(int bitCount)
@@ -69,11 +69,10 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
-        private bool WasteBits(int bitCount)
+        private void WasteBits(int bitCount)
         {
             _current >>= bitCount;
             _bitCount -= bitCount;
-            return true;
         }
     }
 }
