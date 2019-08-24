@@ -95,9 +95,7 @@ namespace War3Net.CodeAnalysis.Jass
                 TranspileToEnumHandler.Reset();
             }
 
-            var tokenizer = new JassTokenizer(File.ReadAllText(filePath));
-            var parser = new JassParser(tokenizer);
-            var fileSyntax = parser.Parse();
+            var fileSyntax = JassParser.ParseFile(filePath);
 
             if (outputLuaTypes != null)
             {

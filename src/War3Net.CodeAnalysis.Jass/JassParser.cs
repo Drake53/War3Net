@@ -5,19 +5,27 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.IO;
 using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    internal class JassParser //: IDisposable
+    public class JassParser //: IDisposable
     {
         private readonly JassTokenizer _tokenizer;
 
-        public JassParser(JassTokenizer tokenizer/*, CancellationToken cancellationToken = default*/)
+        internal JassParser(JassTokenizer tokenizer/*, CancellationToken cancellationToken = default*/)
         {
             _tokenizer = tokenizer;
+        }
+
+        public static FileSyntax ParseFile(string filePath)
+        {
+            var tokenizer = new JassTokenizer(File.ReadAllText(filePath));
+            var parser = new JassParser(tokenizer);
+            return parser.Parse();
         }
 
         public FileSyntax Parse()
