@@ -30,6 +30,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
         }
 
+        public CommaSeparatedTypeReferenceSyntax[] Parameters => _types?.ToArray() ?? Array.Empty<CommaSeparatedTypeReferenceSyntax>();
+
         public IEnumerator<TypeReferenceSyntax> GetEnumerator()
         {
             if (_empty is null)

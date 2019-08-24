@@ -23,6 +23,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _tail = tailNode ?? throw new ArgumentNullException(nameof(tailNode));
         }
 
+        public TypeReferenceSyntax FirstParameter => _head;
+
+        public ParameterListTailSyntax RemainingParameters => _tail;
+
         public IEnumerator<TypeReferenceSyntax> GetEnumerator()
         {
             yield return _head;

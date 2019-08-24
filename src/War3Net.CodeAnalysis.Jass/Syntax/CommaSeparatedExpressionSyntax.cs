@@ -22,6 +22,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _expression = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
         }
 
+        public TokenNode CommaToken => _comma;
+
         public NewExpressionSyntax ExpressionNode => _expression;
 
         internal sealed class Parser : SequenceParser

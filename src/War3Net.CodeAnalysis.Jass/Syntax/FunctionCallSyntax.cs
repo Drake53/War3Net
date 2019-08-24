@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    // TODO: rename FunctionInvocationSyntax
     public sealed class FunctionCallSyntax : SyntaxNode
     {
         private readonly TokenNode _id;
@@ -38,9 +39,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode IdentifierNameNode => _id;
 
+        public TokenNode OpenParenthesisSymbol => _open;
+
         public ArgumentListSyntax ArgumentListNode => _args;
 
         public EmptyNode EmptyArgumentListNode => _emptyArgs;
+
+        public TokenNode CloseParenthesisSymbol => _close;
 
         internal sealed class Parser : SequenceParser
         {

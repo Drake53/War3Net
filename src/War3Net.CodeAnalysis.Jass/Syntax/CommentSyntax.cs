@@ -35,7 +35,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode DoubleForwardSlashToken => _slashes;
 
-        public TokenNode CommentToken => _comment;
+        public TokenNode CommentNode => _comment;
+
+        public EmptyNode EmptyCommentNode => _emptyComment;
 
         public TokenNode NewlineToken => _newline;
 

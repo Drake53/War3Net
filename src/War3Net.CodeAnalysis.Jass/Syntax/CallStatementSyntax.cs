@@ -13,6 +13,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public sealed class CallStatementSyntax : SyntaxNode
     {
         private readonly TokenNode _call;
+        // TODO: use FunctionCallSyntax
         private readonly TokenNode _id;
         private readonly TokenNode _open;
         private readonly ArgumentListSyntax _args;
@@ -43,9 +44,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode IdentifierNameNode => _id;
 
+        public TokenNode OpenParenthesisSymbol => _open;
+
         public ArgumentListSyntax ArgumentListNode => _args;
 
         public EmptyNode EmptyArgumentListNode => _emptyArgs;
+
+        public TokenNode CloseParenthesisSymbol => _close;
 
         internal sealed class Parser : SequenceParser
         {

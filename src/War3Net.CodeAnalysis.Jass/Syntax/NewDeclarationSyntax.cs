@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public DeclarationSyntax Declaration => _declr;
 
-        public LineDelimiterSyntax LineDelimiter => _eol;
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
 
         internal sealed class Parser : SequenceParser
         {

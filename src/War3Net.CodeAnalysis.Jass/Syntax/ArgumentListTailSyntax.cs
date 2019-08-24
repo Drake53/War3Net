@@ -30,6 +30,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _empty = emptyNode ?? throw new ArgumentNullException(nameof(emptyNode));
         }
 
+        public CommaSeparatedExpressionSyntax[] Arguments => _exprs?.ToArray() ?? Array.Empty<CommaSeparatedExpressionSyntax>();
+
         public IEnumerator<NewExpressionSyntax> GetEnumerator()
         {
             return (_empty is null

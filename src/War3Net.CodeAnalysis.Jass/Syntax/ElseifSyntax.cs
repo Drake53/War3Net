@@ -43,11 +43,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _emptyElseClause = emptyElseClauseNode ?? throw new ArgumentNullException(nameof(emptyElseClauseNode));
         }
 
-        public TokenNode IfKeywordToken => _elseif;
+        public TokenNode ElseifKeywordToken => _elseif;
 
         public NewExpressionSyntax ConditionExpressionNode => _expression;
 
         public TokenNode ThenKeywordToken => _then;
+
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
 
         public StatementListSyntax StatementListNode => _statements;
 

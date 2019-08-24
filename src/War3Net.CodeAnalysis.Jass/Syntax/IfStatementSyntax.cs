@@ -51,6 +51,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode ThenKeywordToken => _then;
 
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
+
         public StatementListSyntax StatementListNode => _statements;
 
         public ElseClauseSyntax ElseClauseNode => _elseClause;

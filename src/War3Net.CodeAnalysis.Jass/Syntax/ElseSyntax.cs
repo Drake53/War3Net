@@ -26,6 +26,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode ElseKeywordToken => _else;
 
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
+
         public StatementListSyntax StatementListNode => _statements;
 
         internal sealed class Parser : SequenceParser

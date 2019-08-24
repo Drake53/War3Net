@@ -28,6 +28,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode LoopKeywordToken => _loop;
 
+        public LineDelimiterSyntax LineDelimiterNode => _eol;
+
         public StatementListSyntax StatementListNode => _statements;
 
         public TokenNode EndloopKeywordToken => _endloop;

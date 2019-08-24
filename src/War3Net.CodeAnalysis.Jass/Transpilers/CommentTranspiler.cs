@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = commentNode ?? throw new ArgumentNullException(nameof(commentNode));
 
-            return $"{commentNode.DoubleForwardSlashToken}{commentNode.CommentToken}{commentNode.NewlineToken}";
+            return $"{commentNode.DoubleForwardSlashToken}{commentNode.CommentNode}{commentNode.NewlineToken}";
         }
     }
 }

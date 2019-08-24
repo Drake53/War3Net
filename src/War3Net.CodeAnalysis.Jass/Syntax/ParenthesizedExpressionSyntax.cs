@@ -24,7 +24,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _close = closeNode ?? throw new ArgumentNullException(nameof(closeNode));
         }
 
+        public TokenNode OpenParenthesisSymbol => _open;
+
         public NewExpressionSyntax ExpressionNode => _expression;
+
+        public TokenNode CloseParenthesisSymbol => _close;
 
         internal sealed class Parser : SequenceParser
         {

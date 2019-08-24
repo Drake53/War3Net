@@ -22,6 +22,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _id = idNode ?? throw new ArgumentNullException(nameof(idNode));
         }
 
+        public TokenNode FunctionKeywordToken => _function;
+
         public TokenNode IdentifierNameNode => _id;
 
         internal sealed class Parser : SequenceParser

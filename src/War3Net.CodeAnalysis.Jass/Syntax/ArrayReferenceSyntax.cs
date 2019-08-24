@@ -28,7 +28,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode IdentifierNameNode => _id;
 
+        public TokenNode OpenBracketSymbol => _open;
+
         public NewExpressionSyntax IndexExpressionNode => _expression;
+
+        public TokenNode CloseBracketSymbol => _close;
 
         internal sealed class Parser : SequenceParser
         {
@@ -43,6 +47,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
             private Parser Init()
             {
+                // TODO: use BracketedExpressionSyntax?
                 AddParser(TokenParser.Get(SyntaxTokenType.AlphanumericIdentifier));
                 AddParser(TokenParser.Get(SyntaxTokenType.SquareBracketOpenSymbol));
                 AddParser(NewExpressionSyntax.Parser.Get);

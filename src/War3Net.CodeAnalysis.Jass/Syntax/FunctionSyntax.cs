@@ -54,11 +54,15 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public FunctionDeclarationSyntax FunctionDeclarationNode => _declr;
 
+        public LineDelimiterSyntax DeclarationLineDelimiterNode => _eol1;
+
         public LocalVariableListSyntax LocalVariableListNode => _locals;
 
         public StatementListSyntax StatementListNode => _statements;
 
         public TokenNode EndfunctionKeywordToken => _endfunction;
+
+        public LineDelimiterSyntax LastLineDelimiterNode => _eol2;
 
         internal sealed class Parser : SequenceParser
         {
