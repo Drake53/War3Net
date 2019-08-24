@@ -78,7 +78,7 @@ namespace War3Net.IO.Mpq
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
         public MpqArchive(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
         {
-            // TODO: copy sourceStream contents to a new stream if CanWrite property is false
+            // TODO: copy sourceStream contents to a new stream if CanWrite property is false (can do this in alignStream method)
             _baseStream = AlignStream(sourceStream ?? new MemoryStream());
 
             _headerOffset = _baseStream.Position;
@@ -110,7 +110,7 @@ namespace War3Net.IO.Mpq
 
                     if (archiveBeforeTables)
                     {
-                        mpqFile.WriteToStream(writer);
+                        mpqFile.SerializeTo(writer, true);
                     }
 
                     hashTableEntries += _hashTable.Add(mpqFile.MpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
@@ -131,14 +131,14 @@ namespace War3Net.IO.Mpq
                 blockTable.UpdateSize();
                 */
 
-                _hashTable.WriteToStream(writer);
-                _blockTable.WriteToStream(writer);
+                _hashTable.SerializeTo(writer);
+                _blockTable.SerializeTo(writer);
 
                 if (!archiveBeforeTables)
                 {
                     foreach (var mpqFile in mpqFiles)
                     {
-                        mpqFile.WriteToStream(writer);
+                        mpqFile.SerializeTo(writer, true);
                     }
                 }
 
@@ -168,6 +168,10 @@ namespace War3Net.IO.Mpq
         /// Gets the length (in bytes) of blocks in compressed files.
         /// </summary>
         internal int BlockSize => _blockSize;
+
+        internal uint HashTableSize => _hashTable.Size;
+
+        internal long HeaderOffset => _headerOffset;
 
         /// <summary>
         /// Retrieves the <see cref="MpqEntry"/> at the given <paramref name="index"/> of the archive's <see cref="BlockTable"/>.

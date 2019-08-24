@@ -78,7 +78,7 @@ namespace War3Net.IO.Mpq
         {
             using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
             {
-                WriteTable(writer);
+                SerializeTo(writer);
             }
         }
 
@@ -86,7 +86,7 @@ namespace War3Net.IO.Mpq
         /// Write the entire <see cref="MpqTable"/>'s encrypted contents to the <paramref name="writer"/>.
         /// </summary>
         /// <param name="writer">The <see cref="BinaryWriter"/> to write the contents to.</param>
-        public void WriteTable(BinaryWriter writer)
+        public void SerializeTo(BinaryWriter writer)
         {
             using (var memoryStream = new MemoryStream(GetEncryptedData()))
             {
