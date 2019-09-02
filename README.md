@@ -18,8 +18,10 @@
 
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
+- [War3Net.Build](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build)
+    - Class library for building a warcraft III map file, including generation of the main and config functions.
 - [War3Net.CodeAnalysis.Jass](https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass)
-    - Class library for parsing and transpiling (to C#) JASS source files.
+    - Class library for parsing, transpiling (to C#), and rendering JASS source files.
 - [War3Net.Drawing.Blp](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp)
     - Class library for opening BLP files.
     - *Previously forked from:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
