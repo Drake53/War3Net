@@ -12,8 +12,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.CSharp.Attributes;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassTranspilerHelper
@@ -53,8 +51,8 @@ namespace War3Net.CodeAnalysis.Jass
                 null,
                 null,
                 default,
-                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(NativeLuaMemberAttribute)))))
-                .AddAttributeByName(nameof(NativeLuaMemberContainerAttribute)),
+                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(CSharpLua.NativeLuaMemberAttribute)))))
+                //.AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
                 };
             }
             else

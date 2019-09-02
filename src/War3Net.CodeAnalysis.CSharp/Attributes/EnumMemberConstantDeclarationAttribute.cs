@@ -14,6 +14,7 @@ namespace War3Net.CodeAnalysis.CSharp.Attributes
     /// This attribute points to the constant declaration that precomputes the explicit cast from integer to this enum member.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [Obsolete("Use attribute defined in CSharp.lua instead", true)]
     public class EnumMemberConstantDeclarationAttribute : Attribute
     {
         public EnumMemberConstantDeclarationAttribute(string constantDeclarationName)

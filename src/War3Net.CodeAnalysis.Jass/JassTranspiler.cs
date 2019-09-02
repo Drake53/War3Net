@@ -247,7 +247,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             yield return MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             yield return MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51").Location);
-            yield return MetadataReference.CreateFromFile(typeof(CSharp.Attributes.NativeLuaMemberAttribute).Assembly.Location);
+            yield return MetadataReference.CreateFromFile(typeof(CSharpLua.NativeLuaMemberAttribute).Assembly.Location);
         }
 
         private static UsingDirectiveSyntax GetCSharpDirective()

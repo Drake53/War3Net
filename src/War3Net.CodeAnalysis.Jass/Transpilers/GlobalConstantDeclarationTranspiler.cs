@@ -13,8 +13,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.CSharp.Attributes;
-
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
@@ -49,7 +47,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                         new SyntaxList<AttributeListSyntax>(
                             SyntaxFactory.AttributeList(
                                 default(SeparatedSyntaxList<AttributeSyntax>).Add(SyntaxFactory.Attribute(
-                                    SyntaxFactory.ParseName(nameof(EnumMemberConstantDeclarationAttribute)),
+                                    SyntaxFactory.ParseName(nameof(CSharpLua.EnumMemberIdentifierExpressionAttribute)),
                                     SyntaxFactory.ParseAttributeArgumentList($"(nameof({identifier.Text}))"))))),
                         identifier,
                         SyntaxFactory.EqualsValueClause(expr.FunctionCall.ArgumentListNode.FirstArgument.Transpile()));

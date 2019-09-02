@@ -13,6 +13,7 @@ namespace War3Net.CodeAnalysis.CSharp.Attributes
     /// Indicates that the member is natively available in lua, and therefore its namespace and class prefix should be omitted.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Method | AttributeTargets.Field, AllowMultiple = false)]
+    [Obsolete("Use attribute defined in CSharp.lua instead", true)]
     public class NativeLuaMemberAttribute : Attribute
     {
     }

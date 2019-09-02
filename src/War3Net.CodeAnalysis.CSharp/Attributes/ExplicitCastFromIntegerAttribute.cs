@@ -13,6 +13,7 @@ namespace War3Net.CodeAnalysis.CSharp.Attributes
     /// Indicates that this enum type can not be cast to from an integer directly, and instead requires the invocation of a certain method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
+    [Obsolete("Use attribute defined in CSharp.lua instead", true)]
     public class ExplicitCastFromIntegerAttribute : Attribute
     {
         public ExplicitCastFromIntegerAttribute(string castMethodName)
