@@ -10,6 +10,10 @@
 [![GitHub stars](https://img.shields.io/github/stars/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network)
 
+## Dependencies
+
+- [CSharp.lua](https://github.com/Drake53/CSharp.lua)
+
 ## Projects
 
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)

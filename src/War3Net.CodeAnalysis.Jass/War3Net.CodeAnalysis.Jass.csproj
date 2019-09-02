@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua\CSharp.lua.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.CSharp\War3Net.CodeAnalysis.CSharp.csproj" />
   </ItemGroup>
 

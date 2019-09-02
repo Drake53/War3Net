@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua\CSharp.lua.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
     <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
   </ItemGroup>
