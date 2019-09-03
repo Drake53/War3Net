@@ -17,6 +17,8 @@ namespace War3Net.Build.Script
 {
     public sealed class JassScriptBuilder : ScriptBuilder
     {
+        public override string Extension => ".j";
+
         public override void BuildMainFunction(string path, float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
         {
             var fileSyntax = JassSyntaxFactory.File(GetMainFunctionSyntax(left, right, top, bottom, light, sound, initFunctions));
@@ -31,7 +33,7 @@ namespace War3Net.Build.Script
 
         private static void RenderFunctionToFile(string path, FileSyntax fileSyntax)
         {
-            using (var fileStream = File.OpenWrite(path))
+            using (var fileStream = FileProvider.OpenNewWrite(path))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {
@@ -125,7 +127,7 @@ namespace War3Net.Build.Script
                             JassSyntaxFactory.InvocationExpression(
                                 "GetCameraMargin",
                                 JassSyntaxFactory.ArgumentList(JassSyntaxFactory.VariableExpression("CAMERA_MARGIN_BOTTOM")))))),
-                statements);
+                statements.ToArray());
         }
 
         private FunctionSyntax GetConfigFunctionSyntax(string mapName, string mapDescription, string lobbyMusic, params PlayerSlot[] playerSlots)

@@ -18,6 +18,8 @@ namespace War3Net.Build.Script
 {
     public sealed class LuaScriptBuilder : ScriptBuilder
     {
+        public override string Extension => ".lua";
+
         public override void BuildMainFunction(string path, float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
         {
             var fileSyntax = new LuaCompilationUnitSyntax();
