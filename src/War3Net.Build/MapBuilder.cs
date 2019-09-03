@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.IO;
 
+using War3Net.Build.Providers;
 using War3Net.Build.Script;
 using War3Net.IO.Mpq;
 
@@ -85,13 +86,15 @@ namespace War3Net.Build
             // Load assets
             foreach (var assetsDirectory in assetsDirectories)
             {
-                var pathPrefixLength = assetsDirectory.Length + 1;
-                foreach (var asset in Directory.EnumerateFiles(assetsDirectory, "*", SearchOption.AllDirectories))
+                foreach (var (key, value) in FileProvider.EnumerateFiles(assetsDirectory))
                 {
-                    var key = new FileInfo(asset).ToString().Substring(pathPrefixLength);
                     if (!files.ContainsKey(key))
                     {
-                        files.Add(key, File.OpenRead(asset));
+                        files.Add(key, value);
+                    }
+                    else
+                    {
+                        value.Dispose();
                     }
                 }
             }
