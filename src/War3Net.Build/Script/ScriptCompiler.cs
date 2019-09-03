@@ -33,8 +33,16 @@ namespace War3Net.Build.Script
             var countLuaFiles = 0;
             var countCSharpFiles = 0;
 
+            var sourceDirectoryPathLength = sourceDirectory.Length + (sourceDirectory.EndsWith("\\") ? 0 : 1);
             foreach (var file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
             {
+                var relativePath = file.Substring(sourceDirectoryPathLength);
+
+                if (relativePath.StartsWith(@"bin\") || relativePath.StartsWith(@"obj\"))
+                {
+                    continue;
+                }
+
                 switch (new FileInfo(file).Extension.ToLower())
                 {
                     case ".j": countJassFiles++; break;

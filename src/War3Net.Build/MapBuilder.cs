@@ -68,6 +68,8 @@ namespace War3Net.Build
 
         public bool Build(ScriptCompilerOptions compilerOptions, params string[] assetsDirectories)
         {
+            Directory.CreateDirectory(compilerOptions.OutputDirectory);
+
             var files = new Dictionary<string, Stream>();
 
             // Generate script file
