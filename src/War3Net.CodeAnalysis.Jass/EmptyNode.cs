@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     /// <summary>
@@ -19,10 +17,6 @@ namespace War3Net.CodeAnalysis.Jass
         /// </summary>
         public EmptyNode(int position)
             : base(position, true)
-        {
-        }
-
-        public override void WriteTo(StreamWriter streamWriter)
         {
         }
     }

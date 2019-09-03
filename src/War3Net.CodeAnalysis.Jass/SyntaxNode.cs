@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass
 {
@@ -81,24 +80,6 @@ namespace War3Net.CodeAnalysis.Jass
         public SyntaxNode[] GetChildren()
         {
             return _children.ToArray();
-        }
-
-        // protected abstract string KindText { get; }
-
-        public void SerializeTo(Stream stream/*, CancellationToken cancellationToken = null*/)
-        {
-            using (var streamWriter = new StreamWriter(stream))
-            {
-                WriteTo(streamWriter);
-            }
-        }
-
-        public/* abstract*/ virtual void WriteTo(StreamWriter streamWriter/*, CancellationToken cancellationToken = null*/)
-        {
-            foreach (var child in _children)
-            {
-                child.WriteTo(streamWriter);
-            }
         }
 
         public override string ToString()

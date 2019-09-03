@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public sealed class TokenNode : SyntaxNode
@@ -22,16 +20,6 @@ namespace War3Net.CodeAnalysis.Jass
         public SyntaxTokenType TokenType => _token.TokenType;
 
         public string ValueText => _token.TokenValue;
-
-        // TODO: cast SyntaxTokenType to SyntaxKind
-        // public override SyntaxKind Kind => throw new NotImplementedException();
-
-        public override void WriteTo(StreamWriter streamWriter)
-        {
-            streamWriter.Write(ValueText);
-            if (!ValueText.EndsWith("\n"))
-                streamWriter.Write(" ");
-        }
 
         public override string ToString()
         {
