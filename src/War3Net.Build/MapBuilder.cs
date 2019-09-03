@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
@@ -107,14 +108,11 @@ namespace War3Net.Build
                 var listfilePath = Path.Combine(compilerOptions.OutputDirectory, ListFile.Key);
                 using (var listfileStream = File.Create(listfilePath))
                 {
-                    using (var streamWriter = new StreamWriter(listfileStream))
+                    using (var streamWriter = new StreamWriter(listfileStream, new UTF8Encoding(false)))
                     {
                         foreach (var file in files)
                         {
-                            foreach (var path in file.Key)
-                            {
-                                streamWriter.WriteLine(path);
-                            }
+                            streamWriter.WriteLine(file.Key);
                         }
                     }
                 }
