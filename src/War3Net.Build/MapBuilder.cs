@@ -140,6 +140,8 @@ namespace War3Net.Build
             var outputMap = Path.Combine(compilerOptions.OutputDirectory, _outputMapName);
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
+            // TODO: dispose assetsDirectories that were mpq archives
+
             return true;
         }
 

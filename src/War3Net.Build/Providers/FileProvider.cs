@@ -45,7 +45,8 @@ namespace War3Net.Build.Providers
                     }
                 }
 
-                archive.Dispose();
+                // TODO: dispose archives
+                // archive.Dispose();
             }
             else if (Directory.Exists(path))
             {
