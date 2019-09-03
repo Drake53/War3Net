@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="LICENSE">
       <PackagePath></PackagePath>
       <Pack>true</Pack>
