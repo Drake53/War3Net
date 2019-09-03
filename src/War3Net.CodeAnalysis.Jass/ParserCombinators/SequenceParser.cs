@@ -70,7 +70,7 @@ namespace War3Net.CodeAnalysis.Jass
                         yield return (new List<SyntaxNode>(nodes), head.consumedTokens + result.ConsumedTokens);
                     }
 
-                    if (test == 0 && head.consumedTokens > 0)
+                    /*if (test == 0 && head.consumedTokens > 0)
                     {
                         var self = GetType().DeclaringType.Name;
                         var subParser = _baseParsers[offset];
@@ -78,11 +78,11 @@ namespace War3Net.CodeAnalysis.Jass
                             ? tokenParser.TokenType.ToString()
                             : subParser.GetType().DeclaringType.Name;
 
-                        if (newState.Position == 7232)
+                        // if (newState.Position == 13413)
                         {
                             Console.WriteLine($"[Token {newState.Position}]: Sequence parser {self} broke sequence at {sub} ({offset + 1}/{_baseParsers.Count})");
                         }
-                    }
+                    }*/
                 }
             }
         }

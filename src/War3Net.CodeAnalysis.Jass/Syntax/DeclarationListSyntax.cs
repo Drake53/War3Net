@@ -32,8 +32,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<NewDeclarationSyntax> GetEnumerator()
         {
-            // return ((IEnumerable<NewDeclarationSyntax>)_declrs).GetEnumerator();
-
             return (_empty is null
                 ? _declrs
                 : Enumerable.Empty<NewDeclarationSyntax>())
@@ -42,8 +40,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            // return ((IEnumerable<NewDeclarationSyntax>)_declrs).GetEnumerator();
-
             return (_empty is null
                 ? _declrs
                 : Enumerable.Empty<NewDeclarationSyntax>())
