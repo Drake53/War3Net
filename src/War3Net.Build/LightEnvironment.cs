@@ -7,7 +7,7 @@
 
 namespace War3Net.Build
 {
-    public enum LightEnvironment
+    public enum Tileset
     {
         Ashenvale,
         Barrens,

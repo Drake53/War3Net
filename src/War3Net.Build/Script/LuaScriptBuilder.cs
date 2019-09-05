@@ -20,7 +20,7 @@ namespace War3Net.Build.Script
     {
         public override string Extension => ".lua";
 
-        public override void BuildMainFunction(string path, float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
+        public override void BuildMainFunction(string path, float left, float right, float top, float bottom, Tileset light, SoundEnvironment sound, params string[] initFunctions)
         {
             var fileSyntax = new LuaCompilationUnitSyntax();
             fileSyntax.AddStatement(GetMainFunctionSyntax(left, right, top, bottom, light, sound, initFunctions));
@@ -49,7 +49,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private LuaVariableListDeclarationSyntax GetMainFunctionSyntax(float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
+        private LuaVariableListDeclarationSyntax GetMainFunctionSyntax(float left, float right, float top, float bottom, Tileset tileset, SoundEnvironment sound, params string[] initFunctions)
         {
             var localLeft = new LuaBinaryExpressionSyntax(
                 new LuaFloatLiteralExpressionSyntax(left),
@@ -99,11 +99,11 @@ namespace War3Net.Build.Script
                         "bottom")),
                 new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(
                     "SetDayNightModels",
-                    new LuaStringLiteralExpressionSyntax(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(light)),
-                    new LuaStringLiteralExpressionSyntax(LightEnvironmentProvider.GetUnitLightEnvironmentModel(light)))),
-                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("NewSoundEnvironment", new LuaStringLiteralExpressionSyntax("Default"))),
-                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("SetAmbientDaySound", new LuaStringLiteralExpressionSyntax(SoundEnvironmentProvider.GetAmbientDaySound(sound)))),
-                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("SetAmbientNightSound", new LuaStringLiteralExpressionSyntax(SoundEnvironmentProvider.GetAmbientNightSound(sound)))),
+                    new LuaStringLiteralExpressionSyntax(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(tileset)),
+                    new LuaStringLiteralExpressionSyntax(LightEnvironmentProvider.GetUnitLightEnvironmentModel(tileset)))),
+                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("NewSoundEnvironment", new LuaStringLiteralExpressionSyntax(SoundEnvironmentProvider.GetSoundEnvironment(sound)))),
+                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("SetAmbientDaySound", new LuaStringLiteralExpressionSyntax(SoundEnvironmentProvider.GetAmbientDaySound(tileset)))),
+                new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax("SetAmbientNightSound", new LuaStringLiteralExpressionSyntax(SoundEnvironmentProvider.GetAmbientNightSound(tileset)))),
                 new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(
                     "SetMapMusic",
                     new LuaStringLiteralExpressionSyntax("Music"),

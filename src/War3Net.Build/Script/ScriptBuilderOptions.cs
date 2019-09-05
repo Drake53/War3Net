@@ -19,7 +19,7 @@ namespace War3Net.Build.Script
 
         public float CameraBoundsBottom { get; set; }
 
-        public LightEnvironment LightEnvironment { get; set; }
+        public Tileset Tileset { get; set; }
 
         public SoundEnvironment SoundEnvironment { get; set; }
 
@@ -40,8 +40,8 @@ namespace War3Net.Build.Script
             CameraBoundsTop = 999999f;
             CameraBoundsBottom = -999999f;
 
-            LightEnvironment = LightEnvironment.LordaeronSummer;
-            SoundEnvironment = SoundEnvironment.Cityscape;
+            Tileset = Tileset.LordaeronSummer;
+            SoundEnvironment = SoundEnvironment.Mountains;
 
             MapName = "Just Another Warcraft III Map";
             MapDescription = "Generated with War3Net.Build";

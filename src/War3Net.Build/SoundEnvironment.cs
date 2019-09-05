@@ -9,7 +9,9 @@ namespace War3Net.Build
 {
     public enum SoundEnvironment
     {
-        // TODO: add sound environments
-        Cityscape,
+        Mountains,
+        Lake,
+        Psychotic,
+        Dungeon,
     }
 }

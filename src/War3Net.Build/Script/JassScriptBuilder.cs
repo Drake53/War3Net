@@ -19,7 +19,7 @@ namespace War3Net.Build.Script
     {
         public override string Extension => ".j";
 
-        public override void BuildMainFunction(string path, float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
+        public override void BuildMainFunction(string path, float left, float right, float top, float bottom, Tileset light, SoundEnvironment sound, params string[] initFunctions)
         {
             var fileSyntax = JassSyntaxFactory.File(GetMainFunctionSyntax(left, right, top, bottom, light, sound, initFunctions));
             RenderFunctionToFile(path, fileSyntax);
@@ -50,7 +50,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private FunctionSyntax GetMainFunctionSyntax(float left, float right, float top, float bottom, LightEnvironment light, SoundEnvironment sound, params string[] initFunctions)
+        private FunctionSyntax GetMainFunctionSyntax(float left, float right, float top, float bottom, Tileset tileset, SoundEnvironment sound, params string[] initFunctions)
         {
             var statements = new List<NewStatementSyntax>()
             {
@@ -68,17 +68,17 @@ namespace War3Net.Build.Script
                 JassSyntaxFactory.CallStatement(
                     "SetDayNightModels",
                     JassSyntaxFactory.ArgumentList(
-                        JassSyntaxFactory.ConstantExpression(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(light)),
-                        JassSyntaxFactory.ConstantExpression(LightEnvironmentProvider.GetUnitLightEnvironmentModel(light)))),
+                        JassSyntaxFactory.ConstantExpression(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(tileset)),
+                        JassSyntaxFactory.ConstantExpression(LightEnvironmentProvider.GetUnitLightEnvironmentModel(tileset)))),
                 JassSyntaxFactory.CallStatement(
                     "NewSoundEnvironment",
-                    JassSyntaxFactory.ConstantExpression("Default")),
+                    JassSyntaxFactory.ConstantExpression(SoundEnvironmentProvider.GetSoundEnvironment(sound))),
                 JassSyntaxFactory.CallStatement(
                     "SetAmbientDaySound",
-                    JassSyntaxFactory.ConstantExpression(SoundEnvironmentProvider.GetAmbientDaySound(sound))),
+                    JassSyntaxFactory.ConstantExpression(SoundEnvironmentProvider.GetAmbientDaySound(tileset))),
                 JassSyntaxFactory.CallStatement(
                     "SetAmbientNightSound",
-                    JassSyntaxFactory.ConstantExpression(SoundEnvironmentProvider.GetAmbientNightSound(sound))),
+                    JassSyntaxFactory.ConstantExpression(SoundEnvironmentProvider.GetAmbientNightSound(tileset))),
                 JassSyntaxFactory.CallStatement(
                     "SetMapMusic",
                     JassSyntaxFactory.ArgumentList(
