@@ -41,19 +41,25 @@ namespace War3Net.Build.Providers
                     while (!reader.EndOfStream)
                     {
                         var fileName = reader.ReadLine();
-                        yield return (fileName, archive.OpenFile(fileName));
+                        var memoryStream = new MemoryStream();
+                        archive.OpenFile(fileName).CopyTo(memoryStream);
+
+                        yield return (fileName, memoryStream);
                     }
                 }
 
-                // TODO: dispose archives
-                // archive.Dispose();
+                archive.Dispose();
             }
             else if (Directory.Exists(path))
             {
                 var pathPrefixLength = path.Length + (path.EndsWith("\\") ? 0 : 1);
                 foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                 {
-                    yield return (new FileInfo(file).ToString().Substring(pathPrefixLength), File.OpenRead(file));
+                    var fileName = new FileInfo(file).ToString().Substring(pathPrefixLength);
+                    // var memoryStream = new MemoryStream();
+                    // File.OpenRead(file).CopyTo(memoryStream);
+
+                    yield return (fileName, File.OpenRead(file));
                 }
             }
         }
