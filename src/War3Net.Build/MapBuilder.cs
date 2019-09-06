@@ -91,19 +91,23 @@ namespace War3Net.Build
             {
                 foreach (var (key, value) in FileProvider.EnumerateFiles(assetsDirectory))
                 {
-                    if (!files.ContainsKey(key))
+                    if (files.ContainsKey(key))
                     {
-                        files.Add(key, value);
+                        value.Dispose();
                     }
                     else
                     {
-                        value.Dispose();
+                        files.Add(key, value);
                     }
                 }
             }
 
             // Generate (listfile)
-            if (_generateListfile)
+            var generateListfile = compilerOptions.FileFlags.TryGetValue(ListFile.Key, out var listfileFlags)
+                ? listfileFlags.HasFlag(MpqFileFlags.Exists)
+                : _generateListfile; // compilerOptions.DefaultFileFlags.HasFlag(MpqFileFlags.Exists);
+
+            if (generateListfile)
             {
                 var listfilePath = Path.Combine(compilerOptions.OutputDirectory, ListFile.Key);
                 using (var listfileStream = File.Create(listfilePath))
@@ -130,15 +134,16 @@ namespace War3Net.Build
             var mpqFiles = new List<MpqFile>(files.Count);
             foreach (var file in files)
             {
-                // TODO: allow compression/encryption/etc
-                mpqFiles.Add(new MpqFile(file.Value, file.Key, MpqFileFlags.Exists, _blockSize));
+                mpqFiles.Add(new MpqFile(
+                    file.Value,
+                    file.Key,
+                    compilerOptions.FileFlags.TryGetValue(file.Key, out var flags) ? flags : compilerOptions.DefaultFileFlags,
+                    _blockSize));
             }
 
             // Generate .mpq file
             var outputMap = Path.Combine(compilerOptions.OutputDirectory, _outputMapName);
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
-
-            // TODO: dispose assetsDirectories that were mpq archives
 
             return true;
         }

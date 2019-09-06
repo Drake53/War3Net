@@ -5,6 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
+using War3Net.IO.Mpq;
+
 namespace War3Net.Build.Script
 {
     public sealed class ScriptCompilerOptions
@@ -19,6 +23,16 @@ namespace War3Net.Build.Script
 
         public bool Obfuscate { get; set; }
 
+        public Dictionary<string, MpqFileFlags> FileFlags { get; private set; }
+
+        public MpqFileFlags DefaultFileFlags { get; set; }
+
         public ScriptBuilderOptions BuilderOptions { get; set; }
+
+        public ScriptCompilerOptions()
+        {
+            FileFlags = new Dictionary<string, MpqFileFlags>();
+            DefaultFileFlags = MpqFileFlags.Exists;
+        }
     }
 }
