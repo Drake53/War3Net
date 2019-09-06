@@ -42,7 +42,9 @@ namespace War3Net.Build.Providers
                     {
                         var fileName = reader.ReadLine();
                         var memoryStream = new MemoryStream();
+
                         archive.OpenFile(fileName).CopyTo(memoryStream);
+                        memoryStream.Position = 0;
 
                         yield return (fileName, memoryStream);
                     }
