@@ -134,11 +134,15 @@ namespace War3Net.Build
             var mpqFiles = new List<MpqFile>(files.Count);
             foreach (var file in files)
             {
-                mpqFiles.Add(new MpqFile(
-                    file.Value,
-                    file.Key,
-                    compilerOptions.FileFlags.TryGetValue(file.Key, out var flags) ? flags : compilerOptions.DefaultFileFlags,
-                    _blockSize));
+                var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key, out var flags) ? flags : compilerOptions.DefaultFileFlags;
+                if (fileflags.HasFlag(MpqFileFlags.Exists))
+                {
+                    mpqFiles.Add(new MpqFile(file.Value, file.Key, flags, _blockSize));
+                }
+                else
+                {
+                    file.Value.Dispose();
+                }
             }
 
             // Generate .mpq file
