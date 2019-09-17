@@ -7,8 +7,8 @@
 
 #pragma warning disable SA1649 // File name should match first type name
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -42,12 +42,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, IEnumerable<NewStatementSyntax> statements)
         {
-            throw new NotImplementedException();
+            return Function(functionDeclaration, statements.ToArray());
         }
 
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, IEnumerable<LocalVariableDeclarationSyntax> localDeclarations, IEnumerable<NewStatementSyntax> statements)
         {
-            throw new NotImplementedException();
+            return Function(functionDeclaration, LocalVariableList(localDeclarations.ToArray()), statements.ToArray());
         }
     }
 }

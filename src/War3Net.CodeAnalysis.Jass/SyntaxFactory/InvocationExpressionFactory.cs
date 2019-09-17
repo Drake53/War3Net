@@ -48,5 +48,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                         new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
                 new EmptyNode(0));
         }
+
+        public static NewExpressionSyntax InvocationExpression(string identifier, params NewExpressionSyntax[] arguments)
+        {
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new FunctionCallSyntax(
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, identifier), 0),
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisOpenSymbol), 0),
+                        ArgumentList(arguments),
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
+                new EmptyNode(0));
+        }
     }
 }
