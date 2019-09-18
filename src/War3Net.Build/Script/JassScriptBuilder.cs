@@ -15,6 +15,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
+    [System.Obsolete()]
     public sealed class JassScriptBuilder : ScriptBuilder
     {
         public override string Extension => ".j";

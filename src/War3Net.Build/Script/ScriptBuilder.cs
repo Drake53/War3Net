@@ -7,6 +7,7 @@
 
 namespace War3Net.Build.Script
 {
+    [System.Obsolete()]
     public abstract class ScriptBuilder
     {
         public abstract string Extension { get; }
