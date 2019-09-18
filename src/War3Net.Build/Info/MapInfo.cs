@@ -565,6 +565,12 @@ namespace War3Net.Build
             return _playerData[index];
         }
 
+        public void SetPlayerData(params PlayerData[] data)
+        {
+            _playerData.Clear();
+            _playerData.AddRange(data);
+        }
+
         public bool PlayerExists(int playerIndex)
         {
             foreach (var playerData in _playerData)
@@ -581,6 +587,12 @@ namespace War3Net.Build
         public ForceData GetForceData(int index)
         {
             return _forceData[index];
+        }
+
+        public void SetForceData(params ForceData[] data)
+        {
+            _forceData.Clear();
+            _forceData.AddRange(data);
         }
 
         public ForceData GetForceData(PlayerData player, out int teamIndex)

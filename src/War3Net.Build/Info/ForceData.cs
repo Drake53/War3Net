@@ -67,5 +67,14 @@ namespace War3Net.Build
                 }
             }
         }
+
+        public void SetPlayers(params PlayerData[] players)
+        {
+            _playersMask = 0;
+            foreach (var player in players)
+            {
+                _playersMask |= (1 << player.PlayerNumber);
+            }
+        }
     }
 }
