@@ -258,6 +258,104 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
+        /// Recreate an <see cref="MpqArchive"/> with a single file in its archive replaced.
+        /// </summary>
+        /// <param name="inputArchivePath">Path to the input Mpq Archive file.</param>
+        /// <param name="outputArchivePath">Path to the output Mpq Archive file.</param>
+        /// <param name="filename">The internal filename of the file that will be replaced.</param>
+        /// <param name="fileStream">The content which will replace the original file content.</param>
+        public static void ReplaceFile(string inputArchivePath, string outputArchivePath, string filename, Stream fileStream)
+        {
+            var archive = Open(inputArchivePath);
+
+            if (!archive.TryGetHashEntry(filename, out var hash))
+            {
+                throw new FileNotFoundException($"File not found: {filename}");
+            }
+
+            var entry = archive[(int)hash.BlockIndex];
+            var fileLength = fileStream.Length;
+            var sizeDifference = fileLength - entry.CompressedSize;
+
+            Directory.CreateDirectory(new FileInfo(outputArchivePath).DirectoryName);
+            using (var archiveStream = File.OpenRead(inputArchivePath))
+            {
+                var headerOffset = LocateMpqHeader(archiveStream, out var header);
+                archiveStream.Position = 0;
+
+                using (var outputStream = File.Create(outputArchivePath))
+                {
+                    using (var binaryWriter = new BinaryWriter(outputStream, new UTF8Encoding(false, true)))
+                    {
+                        using (var binaryReader = new BinaryReader(archiveStream, new UTF8Encoding()))
+                        {
+                            binaryWriter.Write(binaryReader.ReadBytes((int)headerOffset));
+                            binaryReader.ReadBytes((int)MpqHeader.Size);
+
+                            var archiveBeforeTables = header.DataOffset == 32 || header.BlockTablePos != 32;
+
+                            binaryWriter.Write(header.ID);
+                            binaryWriter.Write(header.DataOffset);
+                            binaryWriter.Write((uint)(header.ArchiveSize + sizeDifference));
+                            binaryWriter.Write(header.MpqVersion);
+                            binaryWriter.Write(header.BlockSize);
+                            binaryWriter.Write((uint)((header.HashTablePos - headerOffset) + (archiveBeforeTables ? sizeDifference : 0)));
+                            binaryWriter.Write((uint)((header.BlockTablePos - headerOffset) + (archiveBeforeTables ? sizeDifference : 0)));
+                            binaryWriter.Write(header.HashTableSize);
+                            binaryWriter.Write(header.BlockTableSize);
+
+                            if (archiveBeforeTables)
+                            {
+                                var bytesReadSoFar = (uint)outputStream.Length;
+                                var bytesToRead = (int)(entry.FilePos - bytesReadSoFar);
+                                binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
+                                bytesReadSoFar += (uint)bytesToRead;
+
+                                using (var fileReader = new BinaryReader(fileStream))
+                                {
+                                    binaryWriter.Write(fileReader.ReadBytes((int)fileLength));
+                                }
+
+                                binaryReader.ReadBytes((int)entry.CompressedSize);
+                                bytesReadSoFar += entry.CompressedSize;
+
+                                bytesToRead = (int)(header.HashTablePos - bytesReadSoFar);
+                                binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
+                            }
+
+                            binaryWriter.Write(binaryReader.ReadBytes((int)(archive._hashTable.Size * MpqHash.Size)));
+                            binaryReader.ReadBytes((int)(archive._blockTable.Size * MpqEntry.Size));
+
+                            var blockTable = new BlockTable(archive._blockTable.Size);
+                            foreach (var mpqEntry in archive)
+                            {
+                                var isReplacedEntry = mpqEntry.FileOffset == entry.FileOffset;
+                                var fileOffset = mpqEntry.FileOffset + (mpqEntry.FileOffset > entry.FileOffset ? (uint)sizeDifference : 0);
+                                var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
+                                var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
+                                var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
+
+                                blockTable.Add(new MpqEntry(fileOffset, compressedSize, fileSize, flags, (uint)headerOffset));
+                            }
+
+                            archive.Dispose();
+                            blockTable.SerializeTo(binaryWriter);
+
+                            if (!archiveBeforeTables)
+                            {
+                                throw new NotImplementedException();
+                            }
+                            else if (archiveStream.Position != archiveStream.Length)
+                            {
+                                throw new Exception();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Opens an <see cref="MpqEntry"/> in the <see cref="MpqArchive"/>.
         /// </summary>
         /// <param name="filename">The name of the <see cref="MpqEntry"/> to open.</param>
@@ -443,7 +541,7 @@ namespace War3Net.IO.Mpq
                 }
             }
 
-            for (uint i = 0; i < index; i++)
+            for (uint i = 0; i < index; ++i)
             {
                 hash = _hashTable[i];
                 if (hash.Name1 == name1 && hash.Name2 == name2)

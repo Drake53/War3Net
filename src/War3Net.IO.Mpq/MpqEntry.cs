@@ -52,6 +52,17 @@ namespace War3Net.IO.Mpq
             Filename = filename;
         }
 
+        internal MpqEntry(uint fileOffset, uint compressedSize, uint fileSize, MpqFileFlags flags, uint headerOffset)
+        {
+            _fileOffset = fileOffset;
+            FilePos = headerOffset + _fileOffset;
+            CompressedSize = compressedSize;
+            FileSize = fileSize;
+            Flags = flags;
+
+            IsAdded = true;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -114,6 +125,9 @@ namespace War3Net.IO.Mpq
         /// Gets the absolute position of this <see cref="MpqEntry"/>'s file in the <see cref="MpqArchive"/>.
         /// </summary>
         internal uint FilePos { get; private set; }
+
+        // Relative to the header offset
+        internal uint FileOffset => _fileOffset;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="MpqEntry"/> has been added to an <see cref="MpqArchive"/>.
