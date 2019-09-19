@@ -12,7 +12,7 @@ using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Providers
 {
-    internal static class FileProvider
+    public static class FileProvider
     {
         public static FileStream OpenNewWrite(string path)
         {
@@ -26,6 +26,35 @@ namespace War3Net.Build.Providers
             }
 
             return File.Create(path);
+        }
+
+        public static Stream GetFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                return File.OpenRead(path);
+            }
+            else
+            {
+                // Assume file is contained in an mpq archive.
+                var subPath = path;
+                var fullPath = new FileInfo(path).FullName;
+                while (!File.Exists(subPath))
+                {
+                    subPath = new FileInfo(subPath).DirectoryName;
+                }
+
+                var relativePath = fullPath.Substring(subPath.Length);
+
+                var memoryStream = new MemoryStream();
+                using (var archive = MpqArchive.Open(subPath))
+                {
+                    archive.OpenFile(relativePath).CopyTo(memoryStream);
+                }
+
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
         }
 
         public static IEnumerable<(string key, Stream value)> EnumerateFiles(string path)
