@@ -160,10 +160,9 @@ namespace War3Net.IO.Mpq
                 }
                 else
                 {
-                    // untested: encryption for uncompressed files
                     for (var blockIndex = 1; blockIndex < blockPosCount; blockIndex++)
                     {
-                        blockPositions[blockIndex - 1] = _blockSize * blockIndex;
+                        blockPositions[blockIndex - 1] = _blockSize * (blockIndex - 1);
                     }
 
                     blockPositions[blockPosCount - 1] = (int)_baseStream.Length;
