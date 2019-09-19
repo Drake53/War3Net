@@ -15,6 +15,8 @@ namespace War3Net.Build
 {
     public sealed class MapInfo
     {
+        public const string FileName = "war3map.w3i";
+
         private readonly List<PlayerData> _playerData;
         private readonly List<ForceData> _forceData;
         private readonly List<UpgradeData> _upgradeData;

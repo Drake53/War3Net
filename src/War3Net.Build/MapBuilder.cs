@@ -78,7 +78,7 @@ namespace War3Net.Build
             // Generate mapInfo file
             if (compilerOptions.MapInfo != null)
             {
-                var path = Path.Combine(compilerOptions.OutputDirectory, "war3map.w3i");
+                var path = Path.Combine(compilerOptions.OutputDirectory, MapInfo.FileName);
                 using (var fileStream = File.Create(path))
                 {
                     compilerOptions.MapInfo.SerializeTo(fileStream);
@@ -109,6 +109,11 @@ namespace War3Net.Build
             // Load assets
             foreach (var assetsDirectory in assetsDirectories)
             {
+                if (string.IsNullOrWhiteSpace(assetsDirectory))
+                {
+                    continue;
+                }
+
                 foreach (var (key, value) in FileProvider.EnumerateFiles(assetsDirectory))
                 {
                     if (files.ContainsKey(key))
