@@ -27,7 +27,12 @@ namespace War3Net.Build.Script
 
         public MpqFileFlags DefaultFileFlags { get; set; }
 
+        [System.Obsolete]
         public ScriptBuilderOptions BuilderOptions { get; set; }
+
+        public MapInfo MapInfo { get; set; }
+
+        public string LobbyMusic { get; set; }
 
         public ScriptCompilerOptions()
         {

@@ -5,12 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Renderer;
 using War3Net.IO.Mpq;
 
 namespace War3Net.Build
@@ -73,8 +75,26 @@ namespace War3Net.Build
 
             var files = new Dictionary<string, Stream>();
 
+            // Generate mapInfo file
+            if (compilerOptions.MapInfo != null)
+            {
+                var path = Path.Combine(compilerOptions.OutputDirectory, "war3map.w3i");
+                using (var fileStream = File.Create(path))
+                {
+                    compilerOptions.MapInfo.SerializeTo(fileStream);
+                }
+
+                files.Add(new FileInfo(path).Name, File.OpenRead(path));
+            }
+            else
+            {
+                // TODO: set MapInfo by parsing war3map.w3i from assetsDirectories, because it's needed for compilation.
+                // compilerOptions.MapInfo = ...;
+                throw new NotImplementedException();
+            }
+
             // Generate script file
-            if (compilerOptions != null)
+            if (compilerOptions.SourceDirectory != null)
             {
                 if (Compile(compilerOptions, out var path))
                 {
@@ -145,14 +165,14 @@ namespace War3Net.Build
                 }
             }
 
-            // Generate .mpq file
+            // Generate .mpq archive file
             var outputMap = Path.Combine(compilerOptions.OutputDirectory, _outputMapName);
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
             return true;
         }
 
-        public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
+        /*public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
         {
             var compiler = ScriptCompiler.GetUnknownLanguageCompiler(options);
             if (compiler is null)
@@ -171,6 +191,32 @@ namespace War3Net.Build
             scriptBuilder.BuildConfigFunction(configFunctionFile, options.BuilderOptions);
 
             return compiler.Compile(mainFunctionFile, configFunctionFile);
+        }*/
+
+        public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
+        {
+            var compiler = GetCompiler(options);
+            compiler.BuildMainAndConfig(out var mainFunctionFilePath, out var configFunctionFilePath);
+            return compiler.Compile(out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
+        }
+
+        private ScriptCompiler GetCompiler(ScriptCompilerOptions options)
+        {
+            switch (options.MapInfo.ScriptLanguage)
+            {
+                case ScriptLanguage.Jass:
+                    return new JassScriptCompiler(options, JassRendererOptions.Default);
+
+                case ScriptLanguage.Lua:
+                    // TODO: distinguish C# and lua
+                    var rendererOptions = new CSharpLua.LuaSyntaxGenerator.SettingInfo();
+                    rendererOptions.Indent = 4;
+
+                    return new CSharpScriptCompiler(options, rendererOptions);
+
+                default:
+                    throw new Exception();
+            }
         }
     }
 }

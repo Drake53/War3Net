@@ -8,18 +8,24 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
+using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Renderer;
+using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
-    public sealed class JassScriptCompiler : ScriptCompiler
+    internal sealed class JassScriptCompiler : ScriptCompiler
     {
         private readonly string _jasshelperPath;
         private readonly string _commonPath;
         private readonly string _blizzardPath;
 
-        public JassScriptCompiler(ScriptCompilerOptions options)
+        private readonly JassRendererOptions _rendererOptions;
+
+        public JassScriptCompiler(ScriptCompilerOptions options, JassRendererOptions rendererOptions)
             : base(options)
         {
             // todo: retrieve these vals from somewhere
@@ -34,17 +40,33 @@ namespace War3Net.Build.Script
                 "Jasshelper");
             _commonPath = Path.Combine(jasshelperDocuments, "common.j");
             _blizzardPath = Path.Combine(jasshelperDocuments, "Blizzard.j");
+
+            _rendererOptions = rendererOptions;
         }
 
+        [Obsolete]
         public override ScriptBuilder GetScriptBuilder()
         {
             return new JassScriptBuilder();
         }
 
-        public override bool Compile(params string[] additionalSourceFiles)
+        public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
+        {
+            var mainFunctionBuilder = new JassMainFunctionBuilder(Options.MapInfo);
+            mainFunctionBuilder.EnableCSharp = false;
+            mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
+            RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
+
+            var configFunctionBuilder = new JassConfigFunctionBuilder(Options.MapInfo);
+            configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
+            configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
+            RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
+        }
+
+        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
-            using (var inputScriptStream = Providers.FileProvider.OpenNewWrite(inputScript))
+            using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
             {
                 using (var streamWriter = new StreamWriter(inputScriptStream))
                 {
@@ -61,6 +83,7 @@ namespace War3Net.Build.Script
             }
 
             var outputScript = "war3map.j";
+            scriptFilePath = Path.Combine(Options.OutputDirectory, outputScript);
             var jasshelperOutputScript = Path.Combine(Options.OutputDirectory, Options.Obfuscate ? "war3map.original.j" : outputScript);
             var jasshelperOptions = Options.Debug ? "--debug" : Options.Optimize ? string.Empty : "--nooptimize";
             var jasshelper = Process.Start(_jasshelperPath, $"{jasshelperOptions} --scriptonly \"{_commonPath}\" \"{_blizzardPath}\" \"{inputScript}\" \"{jasshelperOutputScript}\"");
@@ -69,10 +92,23 @@ namespace War3Net.Build.Script
             var success = jasshelper.ExitCode == 0;
             if (success && Options.Obfuscate)
             {
-                JassObfuscator.Obfuscate(jasshelperOutputScript, Path.Combine(Options.OutputDirectory, outputScript), _commonPath, _blizzardPath);
+                JassObfuscator.Obfuscate(jasshelperOutputScript, scriptFilePath, _commonPath, _blizzardPath);
             }
 
             return success;
+        }
+
+        private void RenderFunctionSyntaxToFile(FunctionSyntax function, string path)
+        {
+            using (var fileStream = FileProvider.OpenNewWrite(path))
+            {
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
+                {
+                    var renderer = new JassRenderer(writer);
+                    renderer.Options = _rendererOptions;
+                    renderer.Render(JassSyntaxFactory.File(function));
+                }
+            }
         }
     }
 }

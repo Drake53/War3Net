@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.Build.Script
 {
-    public sealed class LuaScriptCompiler : ScriptCompiler
+    internal sealed class LuaScriptCompiler : ScriptCompiler
     {
         public LuaScriptCompiler(ScriptCompilerOptions options)
             : base(options)
@@ -17,12 +17,18 @@ namespace War3Net.Build.Script
             throw new NotImplementedException();
         }
 
+        [Obsolete]
         public override ScriptBuilder GetScriptBuilder()
         {
             return new LuaScriptBuilder();
         }
 
-        public override bool Compile(params string[] additionalSourceFiles)
+        public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             throw new NotImplementedException();
         }

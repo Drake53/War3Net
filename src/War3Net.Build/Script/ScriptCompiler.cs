@@ -6,11 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 
 namespace War3Net.Build.Script
 {
-    public abstract class ScriptCompiler
+    internal abstract class ScriptCompiler
     {
         private readonly ScriptCompilerOptions _options;
 
@@ -21,10 +20,14 @@ namespace War3Net.Build.Script
 
         protected ScriptCompilerOptions Options => _options;
 
+        [Obsolete]
         public abstract ScriptBuilder GetScriptBuilder();
 
-        public abstract bool Compile(params string[] additionalSourceFiles);
+        public abstract void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath);
 
+        public abstract bool Compile(out string scriptFilePath, params string[] additionalSourceFiles);
+
+        [Obsolete("Script language should be obtained from MapInfo.ScriptLanguage property.", true)]
         public static ScriptCompiler GetUnknownLanguageCompiler(ScriptCompilerOptions options)
         {
             var sourceDirectory = options.SourceDirectory;
@@ -34,7 +37,7 @@ namespace War3Net.Build.Script
             var countCSharpFiles = 0;
 
             var sourceDirectoryPathLength = sourceDirectory.Length + (sourceDirectory.EndsWith("\\") ? 0 : 1);
-            foreach (var file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+            foreach (var file in System.IO.Directory.EnumerateFiles(sourceDirectory, "*", System.IO.SearchOption.AllDirectories))
             {
                 var relativePath = file.Substring(sourceDirectoryPathLength);
 
@@ -43,7 +46,7 @@ namespace War3Net.Build.Script
                     continue;
                 }
 
-                switch (new FileInfo(file).Extension.ToLower())
+                switch (new System.IO.FileInfo(file).Extension.ToLower())
                 {
                     case ".j": countJassFiles++; break;
                     case ".lua": countLuaFiles++; break;
@@ -60,8 +63,8 @@ namespace War3Net.Build.Script
 
             if (countScriptLanguages == 1)
             {
-                if (countJassFiles > 0) { return new JassScriptCompiler(options); }
-                if (countCSharpFiles > 0) { return new CSharpScriptCompiler(options); }
+                if (countJassFiles > 0) { return new JassScriptCompiler(options, null); }
+                if (countCSharpFiles > 0) { return new CSharpScriptCompiler(options, null); }
                 if (countLuaFiles > 0) { return new LuaScriptCompiler(options); }
             }
 

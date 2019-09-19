@@ -10,26 +10,47 @@ using System.IO;
 using System.Text;
 
 using CSharpLua;
+using CSharpLua.LuaAst;
+
+using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script
 {
-    public sealed class CSharpScriptCompiler : ScriptCompiler
+    internal sealed class CSharpScriptCompiler : ScriptCompiler
     {
-        public CSharpScriptCompiler(ScriptCompilerOptions options)
+        private readonly LuaSyntaxGenerator.SettingInfo _rendererOptions;
+
+        public CSharpScriptCompiler(ScriptCompilerOptions options, LuaSyntaxGenerator.SettingInfo rendererOptions)
             : base(options)
         {
-            options.BuilderOptions.InitializationFunctions.Add("InitCSharp");
+            // options.BuilderOptions.InitializationFunctions.Add("InitCSharp");
+
+            _rendererOptions = rendererOptions;
         }
 
+        [Obsolete]
         public override ScriptBuilder GetScriptBuilder()
         {
             return new LuaScriptBuilder();
         }
 
-        // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
-        public override bool Compile(params string[] additionalSourceFiles)
+        public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
-            var scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
+            var mainFunctionBuilder = new LuaMainFunctionBuilder(Options.MapInfo);
+            mainFunctionBuilder.EnableCSharp = true;
+            mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
+            RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
+
+            var configFunctionBuilder = new LuaConfigFunctionBuilder(Options.MapInfo);
+            configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
+            configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
+            RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
+        }
+
+        // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
+        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
+        {
+            scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
 
             if (Options.Obfuscate)
             {
@@ -79,6 +100,21 @@ namespace War3Net.Build.Script
             }
 
             return true;
+        }
+
+        private void RenderFunctionSyntaxToFile(LuaVariableListDeclarationSyntax function, string path)
+        {
+            using (var fileStream = FileProvider.OpenNewWrite(path))
+            {
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
+                {
+                    var renderer = new LuaRenderer(_rendererOptions, writer);
+
+                    var compilationUnitSyntax = new LuaCompilationUnitSyntax();
+                    compilationUnitSyntax.AddStatement(function);
+                    renderer.RenderCompilationUnit(compilationUnitSyntax);
+                }
+            }
         }
     }
 }
