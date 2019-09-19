@@ -90,7 +90,9 @@ namespace War3Net.Build.Providers
                     // var memoryStream = new MemoryStream();
                     // File.OpenRead(file).CopyTo(memoryStream);
 
-                    yield return (fileName, MpqLocale.Neutral, File.OpenRead(file));
+                    var locale = MpqLocaleProvider.GetPathLocale(fileName, out var filePath);
+
+                    yield return (filePath, locale, File.OpenRead(file));
                 }
             }
         }
