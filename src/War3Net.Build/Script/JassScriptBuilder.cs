@@ -38,14 +38,11 @@ namespace War3Net.Build.Script
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {
-                    var mainAndConfigRenderer = new JassRenderer(writer);
-                    mainAndConfigRenderer.SetNewlineString(true, true);
-                    mainAndConfigRenderer.Comments = false;
-                    mainAndConfigRenderer.Indentation = 4;
-                    mainAndConfigRenderer.OptionalWhitespace = true;
-                    mainAndConfigRenderer.OmitEmptyLines = false;
-                    mainAndConfigRenderer.InlineConstants = false;
+                    var opt = JassRendererOptions.Default;
+                    opt.Comments = false;
 
+                    var mainAndConfigRenderer = new JassRenderer(writer);
+                    mainAndConfigRenderer.Options = opt;
                     mainAndConfigRenderer.Render(fileSyntax);
                 }
             }

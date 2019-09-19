@@ -17,90 +17,24 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         private readonly TextWriter _writer;
 
-        private Func<string, string> _identifierOptimizer;
+        private JassRendererOptions _options;
+
         private Dictionary<string, NewExpressionSyntax> _constants;
 
-        private string _indentation;
         private int _currentIndentationLevel;
         private bool _currentLineIndented;
-
-        private string _newlineString;
-        private bool _comments;
-        private bool _optionalWhitespace;
-        private bool _omitEmptyLines;
-        private bool _inlineConstants;
 
         public JassRenderer(TextWriter textWriter)
         {
             _writer = textWriter;
 
-            _newlineString = "\r\n";
-
-            _identifierOptimizer = (s) => { return s; };
             _constants = new Dictionary<string, NewExpressionSyntax>();
         }
 
-        /// <summary>
-        /// Gets or sets the amount of spaces used for indentation. Use -1 to indent with tabs.
-        /// </summary>
-        public int Indentation
+        public JassRendererOptions Options
         {
-            get => _indentation == "\t" ? -1 : _indentation.Length;
-            set => _indentation = value == -1 ? "\t" : new string(' ', value);
-        }
-
-        public string NewlineString
-        {
-            get => _newlineString;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether comments should be rendered.
-        /// </summary>
-        public bool Comments
-        {
-            get => _comments;
-            set => _comments = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether optional spacebars should be inserted to improve readability.
-        /// </summary>
-        public bool OptionalWhitespace
-        {
-            get => _optionalWhitespace;
-            set => _optionalWhitespace = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether empty lines should be rendered or not.
-        /// </summary>
-        public bool OmitEmptyLines
-        {
-            get => _omitEmptyLines;
-            set => _omitEmptyLines = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether global constants should be inlined.
-        /// </summary>
-        public bool InlineConstants
-        {
-            get => _inlineConstants;
-            set => _inlineConstants = value;
-        }
-
-        public void SetNewlineString(bool controlReturn, bool lineFeed)
-        {
-            _newlineString = $"{(controlReturn ? "\r" : string.Empty)}{(lineFeed || !controlReturn ? "\n" : string.Empty)}";
-        }
-
-        /// <summary>
-        /// Define a custom function that renames identifier names that are declared in the script.
-        /// </summary>
-        public void SetIdentifierOptimizerMethod(Func<string, string> func)
-        {
-            _identifierOptimizer = func;
+            get => _options;
+            set => _options = value;
         }
 
         private void Indent()
@@ -120,7 +54,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
 
         private void WriteNewline()
         {
-            _writer.Write(_newlineString);
+            _writer.Write(_options.NewlineString);
             _currentLineIndented = false;
         }
 
@@ -136,7 +70,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
                 _currentLineIndented = true;
                 for (var i = 0; i < _currentIndentationLevel; i++)
                 {
-                    _writer.Write(_indentation);
+                    _writer.Write(_options.IndentationString);
                 }
             }
 

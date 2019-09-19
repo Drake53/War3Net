@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         public void Render(GlobalConstantDeclarationSyntax globalConstantDeclaration)
         {
-            if (_inlineConstants) // TODO: don't inline if the expression is relatively large? (compared to its entire declaration)
+            if (_options.InlineConstants) // TODO: don't inline if the expression is relatively large? (compared to its entire declaration)
             {
                 _constants.Add(globalConstantDeclaration.IdentifierNameNode.ValueText, globalConstantDeclaration.EqualsValueClause.ValueNode);
             }

@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             }
             else if (expression.Identifier != null)
             {
-                if (_inlineConstants && _constants.ContainsKey(expression.Identifier.ValueText))
+                if (_options.InlineConstants && _constants.ContainsKey(expression.Identifier.ValueText))
                 {
                     Render(_constants[expression.Identifier.ValueText]);
                 }

@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         public void Render(CommaSeparatedTypeReferenceSyntax commaSeparatedTypeReference)
         {
             Render(commaSeparatedTypeReference.CommaToken);
-            if (_optionalWhitespace)
+            if (_options.OptionalWhitespace)
             {
                 WriteSpace();
             }

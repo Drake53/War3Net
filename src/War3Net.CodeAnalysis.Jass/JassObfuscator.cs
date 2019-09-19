@@ -19,51 +19,57 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var fileSyntax = JassParser.ParseFile(inputFile);
 
-            File.Delete(outputFile);
-            using (var fileStream = File.OpenWrite(outputFile))
+            if (!Directory.Exists(new FileInfo(outputFile).DirectoryName))
+            {
+                Directory.CreateDirectory(new FileInfo(outputFile).DirectoryName);
+            }
+
+            var renderOptions = new JassRendererOptions();
+            renderOptions.SetNewlineString(true, false);
+            renderOptions.Comments = false;
+            renderOptions.Indentation = 0;
+            renderOptions.OptionalWhitespace = false;
+            renderOptions.OmitEmptyLines = true;
+            renderOptions.InlineConstants = true;
+
+            var renameDictionary = new Dictionary<string, string>();
+            var exceptions = new HashSet<string>();
+            exceptions.Add("main");
+            exceptions.Add("config");
+
+            foreach (var referenceFile in referenceFiles)
+            {
+                foreach (var identifier in IdentifiersProvider.GetIdentifiers(referenceFile))
+                {
+                    exceptions.Add(identifier);
+                }
+            }
+
+            renderOptions.SetIdentifierOptimizerMethod(
+            (s) =>
+            {
+                // Make exceptions for init stuff, since these are called using ExecuteFunc
+                if (exceptions.Contains(s) || s.StartsWith("jasshelper__initstructs") || s.EndsWith("__onInit"))
+                {
+                    return s;
+                }
+
+                if (!renameDictionary.ContainsKey(s))
+                {
+                    var renamed = $"j_{renameDictionary.Count}";
+                    renameDictionary.Add(s, renamed);
+                    return renamed;
+                }
+
+                return renameDictionary[s];
+            });
+
+            using (var fileStream = File.Create(outputFile))
             {
                 using (var streamWriter = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {
                     var renderer = new JassRenderer(streamWriter);
-                    renderer.SetNewlineString(true, false);
-                    renderer.Comments = false;
-                    renderer.Indentation = 0;
-                    renderer.OptionalWhitespace = false;
-                    renderer.OmitEmptyLines = true;
-                    renderer.InlineConstants = true;
-
-                    var renameDictionary = new Dictionary<string, string>();
-                    var exceptions = new HashSet<string>();
-                    exceptions.Add("main");
-                    exceptions.Add("config");
-
-                    foreach (var referenceFile in referenceFiles)
-                    {
-                        foreach (var identifier in IdentifiersProvider.GetIdentifiers(referenceFile))
-                        {
-                            exceptions.Add(identifier);
-                        }
-                    }
-
-                    renderer.SetIdentifierOptimizerMethod(
-                        (s) =>
-                        {
-                            // Make exceptions for init stuff, since these are called using ExecuteFunc
-                            if (exceptions.Contains(s) || s.StartsWith("jasshelper__initstructs") || s.EndsWith("__onInit"))
-                            {
-                                return s;
-                            }
-
-                            if (!renameDictionary.ContainsKey(s))
-                            {
-                                var renamed = $"j_{renameDictionary.Count}";
-                                renameDictionary.Add(s, renamed);
-                                return renamed;
-                            }
-
-                            return renameDictionary[s];
-                        });
-
+                    renderer.Options = renderOptions;
                     renderer.Render(fileSyntax);
                 }
             }

@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         public void Render(EndOfLineSyntax endOfLine, bool canBeOmitted)
         {
-            if (_comments && endOfLine.Comment != null)
+            if (_options.Comments && endOfLine.Comment != null)
             {
                 Render(endOfLine.Comment);
             }

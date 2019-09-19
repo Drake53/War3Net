@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         {
             if (token.TokenType == SyntaxTokenType.AlphanumericIdentifier)
             {
-                Write(_identifierOptimizer.Invoke(token.ValueText));
+                Write(_options.InvokeOptimizer(token.ValueText));
             }
             else
             {

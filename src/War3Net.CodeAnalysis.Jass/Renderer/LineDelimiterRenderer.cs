@@ -25,7 +25,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
 
             while (enumerator.MoveNext())
             {
-                Render(enumerator.Current, _omitEmptyLines);
+                Render(enumerator.Current, _options.OmitEmptyLines);
             }
         }
     }

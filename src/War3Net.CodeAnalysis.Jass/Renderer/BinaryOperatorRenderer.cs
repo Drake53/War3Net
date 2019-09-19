@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         public void Render(BinaryOperatorSyntax binaryOperator)
         {
             var tokenType = binaryOperator.BinaryOperatorToken.TokenType;
-            var spaces = tokenType == SyntaxTokenType.AndOperator || tokenType == SyntaxTokenType.OrOperator || _optionalWhitespace;
+            var spaces = tokenType == SyntaxTokenType.AndOperator || tokenType == SyntaxTokenType.OrOperator || _options.OptionalWhitespace;
             if (spaces)
             {
                 WriteSpace();

@@ -15,13 +15,13 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         public void Render(EqualsValueClauseSyntax equalsValueClause)
         {
-            if (_optionalWhitespace)
+            if (_options.OptionalWhitespace)
             {
                 WriteSpace();
             }
 
             Render(equalsValueClause.AssignmentSymbolToken);
-            if (_optionalWhitespace)
+            if (_options.OptionalWhitespace)
             {
                 WriteSpace();
             }
