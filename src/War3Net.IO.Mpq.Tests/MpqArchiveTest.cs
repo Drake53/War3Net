@@ -22,7 +22,7 @@ namespace War3Net.IO.Mpq.Tests
         public void TestStoreThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists, BlockSize);
+            var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, MpqFileFlags.Exists, BlockSize);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -47,7 +47,7 @@ namespace War3Net.IO.Mpq.Tests
         public void TestStoreCompressedThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            var mpqFile = new MpqFile(fileStream, filename, MpqFileFlags.Exists | MpqFileFlags.Compressed, BlockSize);
+            var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, MpqFileFlags.Exists | MpqFileFlags.Compressed, BlockSize);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);

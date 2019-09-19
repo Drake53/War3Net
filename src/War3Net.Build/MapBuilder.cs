@@ -73,7 +73,7 @@ namespace War3Net.Build
         {
             Directory.CreateDirectory(compilerOptions.OutputDirectory);
 
-            var files = new Dictionary<string, Stream>();
+            var files = new Dictionary<(string fileName, MpqLocale locale), Stream>();
 
             // Generate mapInfo file
             if (compilerOptions.MapInfo != null)
@@ -84,7 +84,7 @@ namespace War3Net.Build
                     compilerOptions.MapInfo.SerializeTo(fileStream);
                 }
 
-                files.Add(new FileInfo(path).Name, File.OpenRead(path));
+                files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
             }
             else
             {
@@ -98,7 +98,7 @@ namespace War3Net.Build
             {
                 if (Compile(compilerOptions, out var path))
                 {
-                    files.Add(new FileInfo(path).Name, File.OpenRead(path));
+                    files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
                 }
                 else
                 {
@@ -114,15 +114,15 @@ namespace War3Net.Build
                     continue;
                 }
 
-                foreach (var (key, value) in FileProvider.EnumerateFiles(assetsDirectory))
+                foreach (var (fileName, locale, stream) in FileProvider.EnumerateFiles(assetsDirectory))
                 {
-                    if (files.ContainsKey(key))
+                    if (files.ContainsKey((fileName, locale)))
                     {
-                        value.Dispose();
+                        stream.Dispose();
                     }
                     else
                     {
-                        files.Add(key, value);
+                        files.Add((fileName, locale), stream);
                     }
                 }
             }
@@ -146,23 +146,23 @@ namespace War3Net.Build
                     }
                 }
 
-                if (files.ContainsKey(ListFile.Key))
+                if (files.ContainsKey((ListFile.Key, MpqLocale.Neutral)))
                 {
-                    files[ListFile.Key].Dispose();
-                    files.Remove(ListFile.Key);
+                    files[(ListFile.Key, MpqLocale.Neutral)].Dispose();
+                    files.Remove((ListFile.Key, MpqLocale.Neutral));
                 }
 
-                files.Add(ListFile.Key, File.OpenRead(listfilePath));
+                files.Add((ListFile.Key, MpqLocale.Neutral), File.OpenRead(listfilePath));
             }
 
             // Generate mpq files
             var mpqFiles = new List<MpqFile>(files.Count);
             foreach (var file in files)
             {
-                var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key, out var flags) ? flags : compilerOptions.DefaultFileFlags;
+                var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key.fileName, out var flags) ? flags : compilerOptions.DefaultFileFlags;
                 if (fileflags.HasFlag(MpqFileFlags.Exists))
                 {
-                    mpqFiles.Add(new MpqFile(file.Value, file.Key, fileflags, _blockSize));
+                    mpqFiles.Add(new MpqFile(file.Value, file.Key.fileName, file.Key.locale, fileflags, _blockSize));
                 }
                 else
                 {

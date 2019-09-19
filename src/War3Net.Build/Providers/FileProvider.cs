@@ -57,7 +57,7 @@ namespace War3Net.Build.Providers
             }
         }
 
-        public static IEnumerable<(string key, Stream value)> EnumerateFiles(string path)
+        public static IEnumerable<(string fileName, MpqLocale locale, Stream stream)> EnumerateFiles(string path)
         {
             if (File.Exists(path))
             {
@@ -75,7 +75,7 @@ namespace War3Net.Build.Providers
                         archive.OpenFile(fileName).CopyTo(memoryStream);
                         memoryStream.Position = 0;
 
-                        yield return (fileName, memoryStream);
+                        yield return (fileName, MpqLocale.Neutral, memoryStream);
                     }
                 }
 
@@ -90,7 +90,7 @@ namespace War3Net.Build.Providers
                     // var memoryStream = new MemoryStream();
                     // File.OpenRead(file).CopyTo(memoryStream);
 
-                    yield return (fileName, File.OpenRead(file));
+                    yield return (fileName, MpqLocale.Neutral, File.OpenRead(file));
                 }
             }
         }

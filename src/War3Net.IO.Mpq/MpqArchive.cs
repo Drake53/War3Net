@@ -102,11 +102,9 @@ namespace War3Net.IO.Mpq
                 var fileOffset = archiveBeforeTables ? MpqHeader.Size : throw new NotImplementedException();
                 var filePos = fileOffset;
 
-                // TODO: add support for encryption of the archive files
                 foreach (var mpqFile in mpqFiles)
                 {
-                    var locale = MpqLocale.Neutral;
-                    mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, locale, _hashTable.Mask);
+                    mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, _hashTable.Mask);
 
                     if (archiveBeforeTables)
                     {

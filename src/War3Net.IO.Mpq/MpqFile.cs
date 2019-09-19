@@ -25,6 +25,8 @@ namespace War3Net.IO.Mpq
         private MpqHash? _hash;
         private uint _hashIndex; // position in hashtable
 
+        private MpqLocale _locale;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqFile"/> class.
         /// </summary>
@@ -34,7 +36,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockSize"></param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="blockSize"/> is invalid.</exception>
-        public MpqFile(Stream sourceStream, string fileName, MpqFileFlags flags, ushort blockSize)
+        public MpqFile(Stream sourceStream, string fileName, MpqLocale locale, MpqFileFlags flags, ushort blockSize)
         {
             // TODO: copy stream?
             _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
@@ -48,6 +50,7 @@ namespace War3Net.IO.Mpq
                 : fileSize;
 
             _entry = new MpqEntry(fileName, compressedSize, fileSize, flags);
+            _locale = locale;
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace War3Net.IO.Mpq
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
         public MpqFile(Stream sourceStream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, MpqFileFlags flags, ushort blockSize)
-            : this(sourceStream, null, flags, blockSize)
+            : this(sourceStream, null, mpqHash.Locale, flags, blockSize)
         {
             if (mpqHash.Mask == 0)
             {
@@ -109,7 +112,7 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public string Name => _fileName;
 
-        public void AddToArchive(uint headerOffset, uint index, uint filePos, MpqLocale locale, uint mask)
+        public void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
         {
             // TODO: verify that blocksize of mpqfile and mpqarchive to which it gets added are the same, otherwise throw an exception
 
@@ -124,7 +127,7 @@ namespace War3Net.IO.Mpq
             }
             else
             {
-                _hash = new MpqHash(_fileName, mask, locale, index);
+                _hash = new MpqHash(_fileName, mask, _locale, index);
                 _hashIndex = MpqHash.GetIndex(_fileName, mask);
             }
         }
