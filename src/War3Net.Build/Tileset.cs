@@ -9,6 +9,7 @@ namespace War3Net.Build
 {
     public enum Tileset
     {
+        Unspecified = 0,
         Ashenvale = 'A',
         Barrens = 'B',
         BlackCitadel = 'K',

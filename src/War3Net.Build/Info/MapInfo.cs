@@ -277,12 +277,12 @@ namespace War3Net.Build
 
         public string SoundEnvironment
         {
-            get => _soundEnvironment;
+            get => string.IsNullOrEmpty(_soundEnvironment) ? "Default" : _soundEnvironment;
         }
 
         public Tileset LightEnvironment
         {
-            get => _lightEnvironment;
+            get => _lightEnvironment == Tileset.Unspecified ? _tileset : _lightEnvironment;
             set => _lightEnvironment = value;
         }
 
