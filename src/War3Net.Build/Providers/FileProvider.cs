@@ -44,7 +44,7 @@ namespace War3Net.Build.Providers
                     subPath = new FileInfo(subPath).DirectoryName;
                 }
 
-                var relativePath = fullPath.Substring(subPath.Length);
+                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith("\\") ? 0 : 1));
 
                 var memoryStream = new MemoryStream();
                 using (var archive = MpqArchive.Open(subPath))
