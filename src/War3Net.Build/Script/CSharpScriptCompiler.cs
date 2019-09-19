@@ -38,12 +38,12 @@ namespace War3Net.Build.Script
         {
             var mainFunctionBuilder = new LuaMainFunctionBuilder(Options.MapInfo);
             mainFunctionBuilder.EnableCSharp = true;
-            mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
+            mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
             RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
 
             var configFunctionBuilder = new LuaConfigFunctionBuilder(Options.MapInfo);
             configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
-            configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
+            configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
         }
 
