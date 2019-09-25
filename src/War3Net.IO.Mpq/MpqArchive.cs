@@ -328,7 +328,7 @@ namespace War3Net.IO.Mpq
                             if (archiveBeforeTables)
                             {
                                 var bytesReadSoFar = (uint)outputStream.Length;
-                                var bytesToRead = (int)(entry.FilePos - bytesReadSoFar);
+                                var bytesToRead = (int)(entry.FilePosition - bytesReadSoFar);
                                 binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
                                 bytesReadSoFar += (uint)bytesToRead;
 
@@ -353,13 +353,14 @@ namespace War3Net.IO.Mpq
                             var blockTable = new BlockTable(archive._blockTable.Size);
                             foreach (var mpqEntry in archive)
                             {
-                                var isReplacedEntry = mpqEntry.FileOffset == entry.FileOffset;
-                                var fileOffset = mpqEntry.FileOffset + (mpqEntry.FileOffset > entry.FileOffset ? (uint)sizeDifference : 0);
+                                var offset = (uint)mpqEntry.FileOffset;
+                                var isReplacedEntry = offset == entry.FileOffset;
+                                var fileOffset = offset + (offset > (uint)entry.FileOffset ? (uint)sizeDifference : 0);
                                 var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
                                 var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
                                 var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
 
-                                blockTable.Add(new MpqEntry(fileOffset, compressedSize, fileSize, flags, (uint)headerOffset));
+                                blockTable.Add(new MpqEntry((uint)headerOffset, fileOffset, compressedSize, fileSize, flags));
                             }
 
                             // archive.Dispose();

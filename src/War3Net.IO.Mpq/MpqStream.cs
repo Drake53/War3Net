@@ -88,7 +88,7 @@ namespace War3Net.IO.Mpq
 
             lock (_stream)
             {
-                _stream.Seek(_entry.FilePos, SeekOrigin.Begin);
+                _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
                 using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
                 {
                     for (var i = 0; i < blockposcount; i++)
@@ -110,8 +110,7 @@ namespace War3Net.IO.Mpq
                 if (_entry.EncryptionSeed == 0)
                 {
                     // This should only happen when the file name is not known.
-                    _entry.EncryptionSeed = StormBuffer.DetectFileSeed(_blockPositions[0], _blockPositions[1], blockpossize) + 1;
-                    if (_entry.EncryptionSeed == 1)
+                    if (!_entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize))
                     {
                         throw new MpqParserException("Unable to determine encyption seed");
                     }
@@ -148,7 +147,7 @@ namespace War3Net.IO.Mpq
                 toread = expectedLength;
             }
 
-            offset += _entry.FilePos;
+            offset += (uint)_entry.FilePosition;
 
             var data = new byte[toread];
             lock (_stream)
@@ -303,7 +302,7 @@ namespace War3Net.IO.Mpq
             var filedata = new byte[_entry.CompressedSize];
             lock (_stream)
             {
-                _stream.Seek(_entry.FilePos, SeekOrigin.Begin);
+                _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
                 var read = _stream.Read(filedata, 0, filedata.Length);
                 if (read != filedata.Length)
                 {

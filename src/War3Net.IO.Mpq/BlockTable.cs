@@ -90,12 +90,17 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="entry">The <see cref="MpqEntry"/> to be added to the <see cref="BlockTable"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="entry"/> is null.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the <see cref="MpqEntry.FilePos"/> property has not been set yet.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <see cref="MpqEntry.FilePosition"/> property has not been set yet.</exception>
         public void Add(MpqEntry entry)
         {
-            if (!(entry?.IsAdded ?? throw new ArgumentNullException(nameof(entry))))
+            if (entry is null)
             {
-                throw new InvalidOperationException("Cannot add an MpqEntry to the BlockTable before its FilePos is known.");
+                throw new ArgumentNullException(nameof(entry));
+            }
+
+            if (entry.FilePosition is null)
+            {
+                throw new InvalidOperationException($"Cannot add an {nameof(MpqEntry)} to the {nameof(BlockTable)} before its {nameof(MpqEntry.FilePosition)} is known.");
             }
 
             _entries.Add(entry);
