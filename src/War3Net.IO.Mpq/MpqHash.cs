@@ -9,6 +9,9 @@ using System.IO;
 
 namespace War3Net.IO.Mpq
 {
+    /// <summary>
+    /// An entry in a <see cref="HashTable"/>.
+    /// </summary>
     public struct MpqHash
     {
         /// <summary>

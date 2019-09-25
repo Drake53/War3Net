@@ -14,6 +14,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace War3Net.IO.Mpq
 {
+    /// <summary>
+    /// An entry in a <see cref="BlockTable"/>, which corresponds to a single file in the <see cref="MpqArchive"/>.
+    /// </summary>
     public class MpqEntry
     {
         /// <summary>
@@ -23,8 +26,8 @@ namespace War3Net.IO.Mpq
 
         private readonly uint _compressedSize;
         private readonly uint _fileSize;
+        private readonly MpqFileFlags _flags;
 
-        private MpqFileFlags _flags;
         private uint _encryptionSeed;
 
         private string? _filename;

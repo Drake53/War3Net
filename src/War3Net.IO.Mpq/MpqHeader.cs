@@ -25,14 +25,17 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public const uint Size = 32;
 
+        // A protected archive. Seen in some custom wc3 maps.
+        private const uint ProtectedOffset = 0x6d9e4b86;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHeader"/> class.
         /// </summary>
         /// <param name="fileArchiveSize">The length (in bytes) of the file archive.</param>
         /// <param name="hashTableEntries">The amount of <see cref="MpqHash"/> objects in the <see cref="HashTable"/>.</param>
         /// <param name="blockTableEntries">The amount of <see cref="MpqEntry"/> objects in the <see cref="BlockTable"/>.</param>
-        /// <param name="blockSize"></param>
-        /// <param name="archiveBeforeTables"></param>
+        /// <param name="blockSize">The blocksize that the corresponding <see cref="MpqArchive"/> has.</param>
+        /// <param name="archiveBeforeTables">If true, the archive and table offsets are set so that the archive directly follows the header.</param>
         public MpqHeader(uint fileArchiveSize, uint hashTableEntries, uint blockTableEntries, ushort blockSize, bool archiveBeforeTables = true)
             : this()
         {
@@ -46,15 +49,22 @@ namespace War3Net.IO.Mpq
                 ArchiveSize = Size + fileArchiveSize + hashTableSize + blockTableSize;
                 MpqVersion = 0;
                 BlockSize = blockSize;
-                HashTablePos = Size + fileArchiveSize;
-                BlockTablePos = Size + fileArchiveSize + hashTableSize;
+                HashTableOffset = Size + fileArchiveSize;
+                BlockTableOffset = Size + fileArchiveSize + hashTableSize;
                 HashTableSize = hashTableEntries;
                 BlockTableSize = blockTableEntries;
             }
             else
             {
                 // MPQ contents are in order: header, HT, BT, archive
-                throw new NotImplementedException();
+                DataOffset = Size + hashTableSize + blockTableSize;
+                ArchiveSize = Size + fileArchiveSize + hashTableSize + blockTableSize;
+                MpqVersion = 0;
+                BlockSize = blockSize;
+                HashTableOffset = Size;
+                BlockTableOffset = Size + hashTableSize;
+                HashTableSize = hashTableEntries;
+                BlockTableSize = blockTableEntries;
             }
         }
 
@@ -72,42 +82,42 @@ namespace War3Net.IO.Mpq
         public uint ID { get; private set; }
 
         /// <summary>
-        /// Gets size of the <see cref="MpqHeader"/>, indicating the offset of the first file.
+        /// Gets the offset of the files in the archive, relative to the <see cref="MpqHeader"/>.
         /// </summary>
         public uint DataOffset { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the size of the entire <see cref="MpqArchive"/>. This includes the header, archive files, hashtable, and blocktable sizes.
         /// </summary>
         public uint ArchiveSize { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the format version of the .mpq file. Currently, only version 0 is supported.
         /// </summary>
         public ushort MpqVersion { get; private set; } // Most are 0.  Burning Crusade = 1
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="MpqArchive"/>'s block size.
         /// </summary>
         public ushort BlockSize { get; private set; } // Size of file block is 0x200 << BlockSize
 
         /// <summary>
-        /// 
+        /// Gets the offset of the <see cref="HashTable"/>, relative to the <see cref="MpqHeader"/>.
         /// </summary>
-        public uint HashTablePos { get; private set; }
+        public uint HashTableOffset { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the offset of the <see cref="BlockTable"/>, relative to the <see cref="MpqHeader"/>.
         /// </summary>
-        public uint BlockTablePos { get; private set; }
+        public uint BlockTableOffset { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the amount of <see cref="MpqHash"/> entries in the <see cref="HashTable"/>.
         /// </summary>
         public uint HashTableSize { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the amount of <see cref="MpqEntry"/> entries in the <see cref="BlockTable"/>.
         /// </summary>
         public uint BlockTableSize { get; private set; }
 
@@ -115,18 +125,32 @@ namespace War3Net.IO.Mpq
         // The extended block table is an array of Int16 - higher bits of the offests in the block table.
         public long ExtendedBlockTableOffset { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public short HashTableOffsetHigh { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public short BlockTableOffsetHigh { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the offset of this <see cref="MpqHeader"/>, relative to the start of the base stream.
+        /// </summary>
+        public uint HeaderOffset { get; internal set; }
+
+        /// <summary>
+        /// Gets the absolute offset of the files in the <see cref="MpqArchive"/>'s base stream.
+        /// </summary>
+        public uint DataPosition => DataOffset == ProtectedOffset ? Size : DataOffset + HeaderOffset;
+
+        /// <summary>
+        /// Gets the absolute offset of the <see cref="HashTable"/> in the <see cref="MpqArchive"/>'s base stream.
+        /// </summary>
+        public uint HashTablePosition => HashTableOffset + HeaderOffset;
+
+        /// <summary>
+        /// Gets the absolute offset of the <see cref="BlockTable"/> in the <see cref="MpqArchive"/>'s base stream.
+        /// </summary>
+        public uint BlockTablePosition => BlockTableOffset + HeaderOffset;
+
+        /// <summary>
+        /// Reads from the given reader to create a new MPQ header.
         /// </summary>
         /// <param name="br"></param>
         /// <returns></returns>
@@ -135,7 +159,7 @@ namespace War3Net.IO.Mpq
             var id = br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br));
             if (id != MpqId)
             {
-                return null;
+                throw new MpqParserException("");
             }
 
             var header = new MpqHeader
@@ -145,8 +169,8 @@ namespace War3Net.IO.Mpq
                 ArchiveSize = br.ReadUInt32(),
                 MpqVersion = br.ReadUInt16(),
                 BlockSize = br.ReadUInt16(),
-                HashTablePos = br.ReadUInt32(),
-                BlockTablePos = br.ReadUInt32(),
+                HashTableOffset = br.ReadUInt32(),
+                BlockTableOffset = br.ReadUInt32(),
                 HashTableSize = br.ReadUInt32(),
                 BlockTableSize = br.ReadUInt32(),
             };
@@ -161,19 +185,19 @@ namespace War3Net.IO.Mpq
                     throw new MpqParserException(string.Format("Invalid MPQ header field: DataOffset. Was {0}, expected {1}", header.DataOffset, Size));
                 }
 
-                if (header.ArchiveSize != header.BlockTablePos + (MpqEntry.Size * header.BlockTableSize))
+                if (header.ArchiveSize != header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: ArchiveSize. Was {0}, expected {1}", header.ArchiveSize, header.BlockTablePos + (MpqEntry.Size * header.BlockTableSize)));
+                    throw new MpqParserException(string.Format("Invalid MPQ header field: ArchiveSize. Was {0}, expected {1}", header.ArchiveSize, header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize)));
                 }
 
-                if (header.HashTablePos != header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize))
+                if (header.HashTableOffset != header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: HashTablePos. Was {0}, expected {1}", header.HashTablePos, header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)));
+                    throw new MpqParserException(string.Format("Invalid MPQ header field: HashTablePos. Was {0}, expected {1}", header.HashTableOffset, header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)));
                 }
 
-                if (header.BlockTablePos != header.HashTablePos + (MpqHash.Size * header.HashTableSize))
+                if (header.BlockTableOffset != header.HashTableOffset + (MpqHash.Size * header.HashTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: BlockTablePos. Was {0}, expected {1}", header.BlockTablePos, header.HashTablePos + (MpqHash.Size * header.HashTableSize)));
+                    throw new MpqParserException(string.Format("Invalid MPQ header field: BlockTablePos. Was {0}, expected {1}", header.BlockTableOffset, header.HashTableOffset + (MpqHash.Size * header.HashTableSize)));
                 }
             }
 #endif
@@ -189,39 +213,26 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        /// 
+        /// Writes the header to the writer.
         /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToStream(BinaryWriter writer)
+        /// <param name="writer">The writer to which the header will be written.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="writer"/> is null.</exception>
+        public void WriteTo(BinaryWriter writer)
         {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             writer.Write(MpqId);
             writer.Write(DataOffset);
             writer.Write(ArchiveSize);
             writer.Write(MpqVersion);
             writer.Write(BlockSize);
-            writer.Write(HashTablePos);
-            writer.Write(BlockTablePos);
+            writer.Write(HashTableOffset);
+            writer.Write(BlockTableOffset);
             writer.Write(HashTableSize);
             writer.Write(BlockTableSize);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="headerOffset"></param>
-        public bool SetHeaderOffset(long headerOffset)
-        {
-            // A protected archive. Seen in some custom wc3 maps.
-            const uint ProtectedOffset = 0x6d9e4b86;
-
-            HashTablePos += (uint)headerOffset;
-            BlockTablePos += (uint)headerOffset;
-            if (DataOffset == ProtectedOffset)
-            {
-                DataOffset = (uint)(Size + headerOffset);
-            }
-
-            return true;
         }
     }
 }
