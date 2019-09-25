@@ -72,18 +72,26 @@ namespace War3Net.IO.Mpq
         protected override int EntrySize => (int)MpqEntry.Size;
 
         /// <summary>
-        /// Gets the <see cref="MpqEntry"/> at specified index.
+        /// Gets or sets the <see cref="MpqEntry"/> at specified index.
         /// </summary>
         /// <param name="i">The zero-based index of the <see cref="MpqEntry"/> to get.</param>
         /// <returns>The <see cref="MpqEntry"/> at index <paramref name="i"/> of the <see cref="BlockTable"/>.</returns>
-        public MpqEntry this[int i] => _entries[i];
+        public MpqEntry this[int i]
+        {
+            get => _entries[i];
+            set => _entries[i] = value;
+        }
 
         /// <summary>
-        /// Gets the <see cref="MpqEntry"/> at specified index.
+        /// Gets or sets the <see cref="MpqEntry"/> at specified index.
         /// </summary>
         /// <param name="i">The zero-based index of the <see cref="MpqEntry"/> to get.</param>
         /// <returns>The <see cref="MpqEntry"/> at index <paramref name="i"/> of the <see cref="BlockTable"/>.</returns>
-        public MpqEntry this[uint i] => _entries[(int)i];
+        public MpqEntry this[uint i]
+        {
+            get => _entries[(int)i];
+            set => _entries[(int)i] = value;
+        }
 
         /// <summary>
         /// Adds an <see cref="MpqEntry"/> to the <see cref="BlockTable"/>.

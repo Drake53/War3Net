@@ -110,18 +110,26 @@ namespace War3Net.IO.Mpq
         protected override int EntrySize => (int)MpqHash.Size;
 
         /// <summary>
-        /// Gets the <see cref="MpqHash"/> at specified index.
+        /// Gets or sets the <see cref="MpqHash"/> at specified index.
         /// </summary>
         /// <param name="i">The zero-based index of the <see cref="MpqHash"/> to get.</param>
         /// <returns>The <see cref="MpqHash"/> at index <paramref name="i"/> of the <see cref="HashTable"/>.</returns>
-        internal MpqHash this[int i] => _hashes[i];
+        internal MpqHash this[int i]
+        {
+            get => _hashes[i];
+            set => _hashes[i] = value;
+        }
 
         /// <summary>
-        /// Gets the <see cref="MpqHash"/> at specified index.
+        /// Gets or sets the <see cref="MpqHash"/> at specified index.
         /// </summary>
         /// <param name="i">The zero-based index of the <see cref="MpqHash"/> to get.</param>
         /// <returns>The <see cref="MpqHash"/> at index <paramref name="i"/> of the <see cref="HashTable"/>.</returns>
-        internal MpqHash this[uint i] => _hashes[i];
+        internal MpqHash this[uint i]
+        {
+            get => _hashes[i];
+            set => _hashes[i] = value;
+        }
 
         /// <summary>
         /// Generates a bit mask for the given <paramref name="size"/>.
