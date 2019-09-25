@@ -18,32 +18,32 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// AKA Imploded
         /// </summary>
-        CompressedPK = 0x100,
+        CompressedPK = 0x00000100,
 
         /// <summary>
         ///
         /// </summary>
-        CompressedMulti = 0x200,
+        CompressedMulti = 0x00000200,
 
         /// <summary>
         ///
         /// </summary>
-        Compressed = 0xff00,
+        Compressed = 0x0000ff00,
 
         /// <summary>
         ///
         /// </summary>
-        Encrypted = 0x10000,
+        Encrypted = 0x00010000,
 
         /// <summary>
         /// AKA FixSeed
         /// </summary>
-        BlockOffsetAdjustedKey = 0x020000,
+        BlockOffsetAdjustedKey = 0x00020000,
 
         /// <summary>
         ///
         /// </summary>
-        SingleUnit = 0x1000000,
+        SingleUnit = 0x01000000,
 
         /// <summary>
         /// Appears in WoW 1.10 or newer. Indicates the file has associated metadata.
@@ -54,5 +54,10 @@ namespace War3Net.IO.Mpq
         ///
         /// </summary>
         Exists = 0x80000000,
+
+        /// <summary>
+        /// Invalid flags.
+        /// </summary>
+        Garbage = 0x7AFC00FF,
     }
 }

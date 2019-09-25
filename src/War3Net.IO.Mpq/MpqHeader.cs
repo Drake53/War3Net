@@ -234,5 +234,10 @@ namespace War3Net.IO.Mpq
             writer.Write(HashTableSize);
             writer.Write(BlockTableSize);
         }
+
+        internal bool IsArchiveAfterHeader()
+        {
+            return DataOffset == MpqHeader.Size || HashTableOffset != MpqHeader.Size;
+        }
     }
 }

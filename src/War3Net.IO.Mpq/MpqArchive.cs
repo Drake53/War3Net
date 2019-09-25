@@ -75,14 +75,7 @@ namespace War3Net.IO.Mpq
 
                 // Load entry table
                 _baseStream.Seek(_mpqHeader.BlockTablePosition, SeekOrigin.Begin);
-                var size = _mpqHeader.BlockTableSize > MpqTable.MaxSize
-                    ? _archiveFollowsHeader
-                        ? _mpqHeader.BlockTablePosition < _mpqHeader.HeaderOffset
-                            ? (_mpqHeader.HeaderOffset - _mpqHeader.BlockTablePosition) / MpqEntry.Size
-                            : (uint)(_baseStream.Length - _baseStream.Position) / MpqEntry.Size
-                        : throw new MpqParserException("Unable to determine true BlockTable size.")
-                    : _mpqHeader.BlockTableSize;
-                _blockTable = new BlockTable(reader, size, (uint)_headerOffset);
+                _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
             }
 
             if (loadListfile)
@@ -278,6 +271,110 @@ namespace War3Net.IO.Mpq
         public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
         {
             return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
+        }
+
+        /// <summary>
+        /// Repairs corrupted values in an <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="path">Path to the archive file.</param>
+        /// <returns>A stream containing the repaired archive.</returns>
+        public static MemoryStream Restore(string path)
+        {
+            using var sourceStream = File.OpenRead(path);
+            return Restore(sourceStream);
+        }
+
+        /// <summary>
+        /// Repairs corrupted values in an <see cref="MpqArchive"/>.
+        /// </summary>
+        /// <param name="sourceStream">The stream containing the archive that needs to be repaired.</param>
+        /// <param name="leaveOpen">If false, the given <paramref name="sourceStream"/> will be disposed at the end of this method.</param>
+        /// <returns>A stream containing the repaired archive.</returns>
+        public static MemoryStream Restore(Stream sourceStream, bool leaveOpen = false)
+        {
+            if (!TryLocateMpqHeader(sourceStream, out var mpqHeader, out var headerOffset))
+            {
+                throw new MpqParserException("Unable to locate MPQ header.");
+            }
+
+            if (mpqHeader.HashTableOffsetHigh != 0 || mpqHeader.ExtendedBlockTableOffset != 0 || mpqHeader.BlockTableOffsetHigh != 0)
+            {
+                throw new MpqParserException("MPQ format version 1 features are not supported");
+            }
+
+            var memoryStream = new MemoryStream();
+            using (var writer = new BinaryWriter(memoryStream, new UTF8Encoding(false, true), true))
+            {
+                // Skip the MPQ header, since its contents will be calculated afterwards.
+                writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
+
+                var archiveSize = 0U;
+                var hashTableEntries = mpqHeader.HashTableSize;
+                var blockTableEntries = mpqHeader.BlockTableSize > MpqTable.MaxSize
+                    ? mpqHeader.IsArchiveAfterHeader()
+                        ? mpqHeader.BlockTablePosition < mpqHeader.HeaderOffset
+                            ? (mpqHeader.HeaderOffset - mpqHeader.BlockTablePosition) / MpqEntry.Size
+                            : (uint)(sourceStream.Length - sourceStream.Position) / MpqEntry.Size
+                        : throw new MpqParserException("Unable to determine true BlockTable size.")
+                    : mpqHeader.BlockTableSize;
+
+                var hashTable = (HashTable?)null;
+                var blockTable = (BlockTable?)null;
+
+                using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
+                {
+                    // Load hash table
+                    sourceStream.Seek(mpqHeader.HashTablePosition, SeekOrigin.Begin);
+                    hashTable = new HashTable(reader, hashTableEntries);
+
+                    // Load entry table
+                    sourceStream.Seek(mpqHeader.BlockTablePosition, SeekOrigin.Begin);
+                    blockTable = new BlockTable(reader, blockTableEntries, (uint)headerOffset);
+
+                    // Load archive files
+                    for (var i = 0; i < blockTable.Size; i++)
+                    {
+                        var entry = blockTable[i];
+                        if ((entry.Flags & MpqFileFlags.Garbage) == 0)
+                        {
+                            var size = entry.CompressedSize;
+                            sourceStream.Position = entry.FilePosition!.Value;
+                            writer.Write(reader.ReadBytes((int)size));
+
+                            blockTable[i] = new MpqEntry(0, MpqHeader.Size + archiveSize, entry.CompressedSize, entry.FileSize, entry.Flags);
+                            archiveSize += size;
+                        }
+                        else
+                        {
+                            blockTable[i] = new MpqEntry(0, MpqHeader.Size + archiveSize, 0, 0, 0);
+                        }
+                    }
+                }
+
+                // Fix invalid block indices and locales.
+                for (var i = 0; i < hashTable.Size; i++)
+                {
+                    var hash = hashTable[i];
+                    if (!hash.IsEmpty && !hash.IsDeleted && hash.BlockIndex > BlockTable.MaxSize)
+                    {
+                        // TODO: don't force neutral locale if another MpqHash exists with the same Name1 and Name2, and that has the neutral locale
+                        hashTable[i] = new MpqHash(hash.Name1, hash.Name2, MpqLocale.Neutral /*hash.Locale & (MpqLocale)0x00000FFF*/, hash.BlockIndex & (BlockTable.MaxSize - 1), hash.Mask);
+                    }
+                }
+
+                hashTable.WriteTableToStream(memoryStream);
+                blockTable.WriteTableToStream(memoryStream);
+
+                writer.Seek(0, SeekOrigin.Begin);
+                new MpqHeader(archiveSize, hashTableEntries, blockTableEntries, mpqHeader.BlockSize).WriteTo(writer);
+            }
+
+            if (!leaveOpen)
+            {
+                sourceStream.Dispose();
+            }
+
+            return memoryStream;
         }
 
         /// <summary>
@@ -635,8 +732,7 @@ namespace War3Net.IO.Mpq
 
         private bool IsArchiveAfterHeader()
         {
-            return _mpqHeader.DataOffset == MpqHeader.Size
-                || _mpqHeader.HashTableOffset != MpqHeader.Size;
+            return _mpqHeader.IsArchiveAfterHeader();
         }
 
         /*private uint FindCollidingHashEntries( uint hashIndex, bool returnOnUnknown )
