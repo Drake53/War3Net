@@ -326,7 +326,7 @@ namespace War3Net.IO.Mpq
                             if (archiveBeforeTables)
                             {
                                 var bytesReadSoFar = (uint)outputStream.Length;
-                                var bytesToRead = (int)(entry.FilePosition - bytesReadSoFar);
+                                var bytesToRead = (int)(entry.FilePosition!.Value - bytesReadSoFar);
                                 binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
                                 bytesReadSoFar += (uint)bytesToRead;
 
@@ -351,9 +351,9 @@ namespace War3Net.IO.Mpq
                             var blockTable = new BlockTable(archive._blockTable.Size);
                             foreach (var mpqEntry in archive)
                             {
-                                var offset = (uint)mpqEntry.FileOffset;
+                                var offset = mpqEntry.FileOffset!.Value;
                                 var isReplacedEntry = offset == entry.FileOffset;
-                                var fileOffset = offset + (offset > (uint)entry.FileOffset ? (uint)sizeDifference : 0);
+                                var fileOffset = offset + (offset > entry.FileOffset!.Value ? (uint)sizeDifference : 0);
                                 var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
                                 var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
                                 var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
