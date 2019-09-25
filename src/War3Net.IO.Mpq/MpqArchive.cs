@@ -75,12 +75,10 @@ namespace War3Net.IO.Mpq
 
                 // Load entry table
                 _baseStream.Seek(_mpqHeader.BlockTablePos, SeekOrigin.Begin);
-                /*if (_archiveBeforeTables)
-                {
-                    var expectedBlockTableSize = (_baseStream.Length - _baseStream.Position) / MpqEntry.Size;
-                }*/
-
-                _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
+                var size = _archiveBeforeTables && _mpqHeader.BlockTableSize > MpqTable.MaxSize
+                    ? (uint)(_baseStream.Length - _baseStream.Position) / MpqEntry.Size
+                    : _mpqHeader.BlockTableSize;
+                _blockTable = new BlockTable(reader, size, (uint)_headerOffset);
             }
 
             if (loadListfile)
