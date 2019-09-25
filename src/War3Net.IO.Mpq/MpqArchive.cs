@@ -13,6 +13,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+#if NETCOREAPP3_0
+using System.Diagnostics.CodeAnalysis;
+#endif
+
 namespace War3Net.IO.Mpq
 {
     /// <summary>
@@ -20,6 +24,11 @@ namespace War3Net.IO.Mpq
     /// </summary>
     public sealed class MpqArchive : IDisposable, IEnumerable<MpqEntry>
     {
+        /// <summary>
+        /// Default value for an <see cref="MpqArchive"/>'s blocksize.
+        /// </summary>
+        public const ushort DefaultBlockSize = 3;
+
         // The MPQ header will always start at an offset aligned to 512 bytes.
         private const int PreArchiveAlignBytes = 0x200;
         private const int BlockSizeModifier = 0x200;
@@ -27,6 +36,7 @@ namespace War3Net.IO.Mpq
         private readonly Stream _baseStream;
         private readonly long _headerOffset;
         private readonly int _blockSize;
+        private readonly bool _archiveBeforeTables;
 
         private readonly MpqHeader _mpqHeader;
         private readonly HashTable _hashTable;
@@ -43,8 +53,14 @@ namespace War3Net.IO.Mpq
         {
             _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
 
-            _headerOffset = LocateMpqHeader(_baseStream, out _mpqHeader);
-            _blockSize = BlockSizeModifier << _mpqHeader?.BlockSize ?? throw new MpqParserException("Unable to find MPQ header");
+            if (!TryLocateMpqHeader(_baseStream, out var mpqHeader, out _headerOffset))
+            {
+                throw new MpqParserException("Unable to locate MPQ header.");
+            }
+
+            _mpqHeader = mpqHeader;
+            _blockSize = BlockSizeModifier << _mpqHeader.BlockSize;
+            _archiveBeforeTables = IsArchiveBeforeTables();
 
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
             {
@@ -59,6 +75,11 @@ namespace War3Net.IO.Mpq
 
                 // Load entry table
                 _baseStream.Seek(_mpqHeader.BlockTablePos, SeekOrigin.Begin);
+                /*if (_archiveBeforeTables)
+                {
+                    var expectedBlockTableSize = (_baseStream.Length - _baseStream.Position) / MpqEntry.Size;
+                }*/
+
                 _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
             }
 
@@ -75,14 +96,15 @@ namespace War3Net.IO.Mpq
         /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
         /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <param name="writeArchiveFirst">If true, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public MpqArchive(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
+        public MpqArchive(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true)
         {
-            // TODO: copy sourceStream contents to a new stream if CanWrite property is false (can do this in alignStream method)
-            _baseStream = AlignStream(sourceStream ?? new MemoryStream());
+            _baseStream = AlignStream(sourceStream);
 
             _headerOffset = _baseStream.Position;
             _blockSize = BlockSizeModifier << blockSize;
+            _archiveBeforeTables = writeArchiveFirst;
 
             var fileCount = (uint)(mpqFiles ?? throw new ArgumentNullException(nameof(mpqFiles))).Count;
 
@@ -94,19 +116,18 @@ namespace War3Net.IO.Mpq
                 // Skip the MPQ header, since its contents will be calculated afterwards.
                 writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
 
-                const bool archiveBeforeTables = true;
                 uint hashTableEntries = 0;
 
                 // Write Archive
                 var fileIndex = 0U;
-                var fileOffset = archiveBeforeTables ? MpqHeader.Size : throw new NotImplementedException();
+                var fileOffset = _archiveBeforeTables ? MpqHeader.Size : throw new NotImplementedException();
                 var filePos = fileOffset;
 
                 foreach (var mpqFile in mpqFiles)
                 {
                     mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, _hashTable.Mask);
 
-                    if (archiveBeforeTables)
+                    if (_archiveBeforeTables)
                     {
                         mpqFile.SerializeTo(writer, true);
                     }
@@ -132,7 +153,7 @@ namespace War3Net.IO.Mpq
                 _hashTable.SerializeTo(writer);
                 _blockTable.SerializeTo(writer);
 
-                if (!archiveBeforeTables)
+                if (!_archiveBeforeTables)
                 {
                     foreach (var mpqFile in mpqFiles)
                     {
@@ -142,7 +163,7 @@ namespace War3Net.IO.Mpq
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader(filePos - fileOffset, _hashTable.Size, _blockTable.Size, blockSize, archiveBeforeTables);
+                _mpqHeader = new MpqHeader(filePos - fileOffset, _hashTable.Size, _blockTable.Size, blockSize, _archiveBeforeTables);
                 _mpqHeader.WriteToStream(writer);
             }
         }
@@ -167,9 +188,9 @@ namespace War3Net.IO.Mpq
         /// </summary>
         internal int BlockSize => _blockSize;
 
-        internal uint HashTableSize => _hashTable.Size;
+        // internal uint HashTableSize => _hashTable.Size;
 
-        internal long HeaderOffset => _headerOffset;
+        // internal long HeaderOffset => _headerOffset;
 
         /// <summary>
         /// Retrieves the <see cref="MpqEntry"/> at the given <paramref name="index"/> of the archive's <see cref="BlockTable"/>.
@@ -227,7 +248,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <returns>An <see cref="MpqArchive"/> created as a new file at the specified <paramref name="path"/>.</returns>
         /// <exception cref="IOException">Thrown when unable to create a <see cref="FileStream"/> from the given <paramref name="path"/>.</exception>
-        public static MpqArchive Create(string path, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
+        public static MpqArchive Create(string path, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
         {
             FileStream fileStream;
 
@@ -252,7 +273,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <returns>An <see cref="MpqArchive"/> that is created.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = 8)
+        public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
         {
             return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
         }
@@ -266,21 +287,19 @@ namespace War3Net.IO.Mpq
         /// <param name="fileStream">The content which will replace the original file content.</param>
         public static void ReplaceFile(string inputArchivePath, string outputArchivePath, string filename, Stream fileStream)
         {
-            var archive = Open(inputArchivePath);
-
-            if (!archive.TryGetHashEntry(filename, out var hash))
+            using (var archive = Open(inputArchivePath))
             {
-                throw new FileNotFoundException($"File not found: {filename}");
-            }
+                if (!archive.TryGetHashEntry(filename, out var hash))
+                {
+                    throw new FileNotFoundException($"File not found: {filename}");
+                }
 
-            var entry = archive[(int)hash.BlockIndex];
-            var fileLength = fileStream.Length;
-            var sizeDifference = fileLength - entry.CompressedSize;
+                var entry = archive[(int)hash.BlockIndex];
+                var fileLength = fileStream?.Length ?? 0;
+                var sizeDifference = fileLength - entry.CompressedSize;
 
-            Directory.CreateDirectory(new FileInfo(outputArchivePath).DirectoryName);
-            using (var archiveStream = File.OpenRead(inputArchivePath))
-            {
-                var headerOffset = LocateMpqHeader(archiveStream, out var header);
+                Directory.CreateDirectory(new FileInfo(outputArchivePath).DirectoryName);
+                var archiveStream = archive._baseStream;
                 archiveStream.Position = 0;
 
                 using (var outputStream = File.Create(outputArchivePath))
@@ -289,9 +308,11 @@ namespace War3Net.IO.Mpq
                     {
                         using (var binaryReader = new BinaryReader(archiveStream, new UTF8Encoding()))
                         {
+                            var headerOffset = archive._headerOffset;
                             binaryWriter.Write(binaryReader.ReadBytes((int)headerOffset));
                             binaryReader.ReadBytes((int)MpqHeader.Size);
 
+                            var header = archive._mpqHeader;
                             var archiveBeforeTables = header.DataOffset == 32 || header.BlockTablePos != 32;
 
                             binaryWriter.Write(header.ID);
@@ -311,9 +332,12 @@ namespace War3Net.IO.Mpq
                                 binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
                                 bytesReadSoFar += (uint)bytesToRead;
 
-                                using (var fileReader = new BinaryReader(fileStream))
+                                if (fileStream != null)
                                 {
-                                    binaryWriter.Write(fileReader.ReadBytes((int)fileLength));
+                                    using (var fileReader = new BinaryReader(fileStream))
+                                    {
+                                        binaryWriter.Write(fileReader.ReadBytes((int)fileLength));
+                                    }
                                 }
 
                                 binaryReader.ReadBytes((int)entry.CompressedSize);
@@ -338,7 +362,7 @@ namespace War3Net.IO.Mpq
                                 blockTable.Add(new MpqEntry(fileOffset, compressedSize, fileSize, flags, (uint)headerOffset));
                             }
 
-                            archive.Dispose();
+                            // archive.Dispose();
                             blockTable.SerializeTo(binaryWriter);
 
                             if (!archiveBeforeTables)
@@ -415,7 +439,7 @@ namespace War3Net.IO.Mpq
             {
                 while (!sr.EndOfStream)
                 {
-                    if (AddFilename(sr.ReadLine()))
+                    if (AddFilename(sr.ReadLine() ?? string.Empty))
                     {
                         filesFound++;
                     }
@@ -491,28 +515,58 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private static long LocateMpqHeader(Stream sourceStream, out MpqHeader mpqHeader)
+        private static bool TryLocateMpqHeader(
+            Stream sourceStream,
+#if NETCOREAPP3_0
+            [NotNullWhen(true)]
+#endif
+            out MpqHeader? mpqHeader,
+            out long headerOffset)
         {
+            sourceStream.Seek(0, SeekOrigin.Begin);
             using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
             {
-                for (long i = 0; i < sourceStream.Length - MpqHeader.Size; i += PreArchiveAlignBytes)
+                for (headerOffset = 0; headerOffset < sourceStream.Length - MpqHeader.Size; headerOffset += PreArchiveAlignBytes)
                 {
-                    sourceStream.Seek(i, SeekOrigin.Begin);
-                    mpqHeader = MpqHeader.FromReader(reader);
-
-                    if (mpqHeader?.SetHeaderOffset(i) ?? false)
+                    if (reader.ReadUInt32() == MpqHeader.MpqId)
                     {
-                        return i;
+                        sourceStream.Seek(-4, SeekOrigin.Current);
+                        mpqHeader = MpqHeader.FromReader(reader);
+                        mpqHeader.SetHeaderOffset(headerOffset);
+                        return true;
                     }
+
+                    sourceStream.Seek(PreArchiveAlignBytes - 4, SeekOrigin.Current);
                 }
             }
 
             mpqHeader = null;
-            return -1;
+            headerOffset = -1;
+            return false;
         }
 
-        private static Stream AlignStream(Stream stream)
+        private static Stream AlignStream(Stream? stream, bool leaveOpen = false)
         {
+            if (stream is null)
+            {
+                return new MemoryStream();
+            }
+
+            if (!stream.CanWrite)
+            {
+                var memoryStream = new MemoryStream();
+
+                stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(memoryStream);
+                if (!leaveOpen)
+                {
+                    stream.Dispose();
+                }
+
+                return memoryStream;
+            }
+
+            stream.Seek(0, SeekOrigin.End);
             var i = (uint)stream.Position & (PreArchiveAlignBytes - 1);
             if (i > 0)
             {
@@ -554,7 +608,7 @@ namespace War3Net.IO.Mpq
             return false;
         }
 
-        private int TryGetHashEntry(int entryIndex, out MpqHash hash)
+        /*private int TryGetHashEntry(int entryIndex, out MpqHash hash)
         {
             for (var i = 0; i < _hashTable.Size; i++)
             {
@@ -567,13 +621,19 @@ namespace War3Net.IO.Mpq
 
             hash = MpqHash.NULL;
             return -1;
-        }
+        }*/
 
-        private bool VerifyHeader()
+        /*private bool VerifyHeader()
         {
             return _mpqHeader.HashTableSize == _hashTable.Size
                 && _mpqHeader.BlockTableSize == _blockTable.Size
                 && _mpqHeader.BlockSize == _blockSize >> BlockSizeModifier;
+        }*/
+
+        private bool IsArchiveBeforeTables()
+        {
+            return _mpqHeader.DataOffset == MpqHeader.Size
+                || _mpqHeader.HashTablePos != MpqHeader.Size;
         }
 
         /*private uint FindCollidingHashEntries( uint hashIndex, bool returnOnUnknown )
