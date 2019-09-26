@@ -89,7 +89,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the size of the entire <see cref="MpqArchive"/>. This includes the header, archive files, hashtable, and blocktable sizes.
         /// </summary>
-        public uint ArchiveSize { get; private set; }
+        public uint ArchiveSize { get; internal set; }
 
         /// <summary>
         /// Gets the format version of the .mpq file. Currently, only version 0 is supported.
@@ -104,12 +104,12 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the offset of the <see cref="HashTable"/>, relative to the <see cref="MpqHeader"/>.
         /// </summary>
-        public uint HashTableOffset { get; private set; }
+        public uint HashTableOffset { get; internal set; }
 
         /// <summary>
         /// Gets the offset of the <see cref="BlockTable"/>, relative to the <see cref="MpqHeader"/>.
         /// </summary>
-        public uint BlockTableOffset { get; private set; }
+        public uint BlockTableOffset { get; internal set; }
 
         /// <summary>
         /// Gets the amount of <see cref="MpqHash"/> entries in the <see cref="HashTable"/>.

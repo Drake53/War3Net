@@ -390,6 +390,7 @@ namespace War3Net.IO.Mpq
         /// <param name="outputArchivePath">Path to the output Mpq Archive file.</param>
         /// <param name="filename">The internal filename of the file that will be replaced.</param>
         /// <param name="fileStream">The content which will replace the original file content.</param>
+        [Obsolete]
         public static void ReplaceFile(string inputArchivePath, string outputArchivePath, string filename, Stream fileStream)
         {
             using (var archive = Open(inputArchivePath))
@@ -483,6 +484,93 @@ namespace War3Net.IO.Mpq
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Rebuild this <see cref="MpqArchive"/>'s stream with a single file in its archive replaced.
+        /// </summary>
+        /// <param name="filename">The internal filename of the file that will be replaced.</param>
+        /// <param name="fileStream">The content which will replace the original file content.</param>
+        /// <returns>A stream containing the edited archive.</returns>
+        public MemoryStream ReplaceFile(string filename, Stream? fileStream)
+        {
+            if (!TryGetHashEntry(filename, out var hash))
+            {
+                throw new FileNotFoundException($"File not found: {filename}");
+            }
+
+            var resultStream = new MemoryStream();
+            using (var binaryWriter = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
+            {
+                _baseStream.Position = 0;
+                using (var binaryReader = new BinaryReader(_baseStream, new UTF8Encoding(), true))
+                {
+                    binaryWriter.Write(binaryReader.ReadBytes((int)_headerOffset));
+                    binaryReader.ReadBytes((int)MpqHeader.Size);
+
+                    var archiveBeforeTables = IsArchiveAfterHeader();
+                    var hashtableOffset = _mpqHeader.HashTableOffset;
+
+                    var entry = this[(int)hash.BlockIndex];
+                    var fileLength = fileStream?.Length ?? 0;
+                    var sizeDifference = (int)(fileLength - entry.CompressedSize);
+
+                    _mpqHeader.ArchiveSize = (uint)(_mpqHeader.ArchiveSize + sizeDifference);
+                    if (archiveBeforeTables)
+                    {
+                        _mpqHeader.HashTableOffset = (uint)(_mpqHeader.HashTableOffset + sizeDifference);
+                        _mpqHeader.BlockTableOffset = (uint)(_mpqHeader.BlockTableOffset + sizeDifference);
+                    }
+
+                    _mpqHeader.WriteTo(binaryWriter);
+
+                    if (archiveBeforeTables)
+                    {
+                        var bytesReadSoFar = (uint)resultStream.Length;
+                        var bytesToRead = (int)(entry.FilePosition!.Value - bytesReadSoFar);
+                        binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
+                        bytesReadSoFar += (uint)bytesToRead;
+
+                        if (fileStream != null)
+                        {
+                            using var fileReader = new BinaryReader(fileStream);
+                            binaryWriter.Write(fileReader.ReadBytes((int)fileLength));
+                        }
+
+                        binaryReader.ReadBytes((int)entry.CompressedSize);
+                        bytesReadSoFar += entry.CompressedSize;
+
+                        bytesToRead = (int)(hashtableOffset - bytesReadSoFar);
+                        binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
+                    }
+
+                    binaryWriter.Write(binaryReader.ReadBytes((int)(_hashTable.Size * MpqHash.Size)));
+                    binaryReader.ReadBytes((int)(_blockTable.Size * MpqEntry.Size));
+
+                    var blockTable = new BlockTable(_blockTable.Size);
+                    foreach (var mpqEntry in this)
+                    {
+                        var offset = mpqEntry.FileOffset!.Value;
+                        var isReplacedEntry = offset == entry.FileOffset;
+                        var fileOffset = offset + (offset > entry.FileOffset!.Value ? (uint)sizeDifference : 0);
+                        var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
+                        var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
+                        var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
+
+                        blockTable.Add(new MpqEntry((uint)_headerOffset, fileOffset, compressedSize, fileSize, flags));
+                    }
+
+                    blockTable.WriteTo(binaryWriter);
+
+                    if (!archiveBeforeTables)
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+
+            resultStream.Position = 0;
+            return resultStream;
         }
 
         /// <summary>
