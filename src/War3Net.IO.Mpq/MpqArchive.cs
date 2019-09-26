@@ -292,6 +292,11 @@ namespace War3Net.IO.Mpq
         /// <returns>A stream containing the repaired archive.</returns>
         public static MemoryStream Restore(Stream sourceStream, bool leaveOpen = false)
         {
+            if (sourceStream is null)
+            {
+                throw new ArgumentNullException(nameof(sourceStream));
+            }
+
             if (!TryLocateMpqHeader(sourceStream, out var mpqHeader, out var headerOffset))
             {
                 throw new MpqParserException("Unable to locate MPQ header.");
@@ -374,6 +379,7 @@ namespace War3Net.IO.Mpq
                 sourceStream.Dispose();
             }
 
+            memoryStream.Position = 0;
             return memoryStream;
         }
 
