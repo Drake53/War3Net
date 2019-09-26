@@ -101,8 +101,11 @@ namespace War3Net.IO.Mpq
             var blockpossize = (uint)blockposcount * 4;
 
             /*
-            if(_blockPositions[0] != blockpossize)
-                _entry.Flags |= MpqFileFlags.Encrypted;
+            if (_blockPositions[0] != blockpossize)
+            {
+                // _entry.Flags |= MpqFileFlags.Encrypted;
+                throw new MpqParserException();
+            }
              */
 
             if (_entry.IsEncrypted)
@@ -467,8 +470,39 @@ namespace War3Net.IO.Mpq
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
         {
-            var pk = new PKLibDecompress(data);
-            return pk.Explode(expectedLength);
+            var position = data.Position;
+            try
+            {
+                var pk = new PKLibDecompress(data);
+                return pk.Explode(expectedLength);
+            }
+            catch (InvalidDataException previousException)
+            {
+                data.Position = position + 3;
+
+                using (var reader = new BinaryReader(data))
+                {
+                    var expectedStreamLength = reader.ReadUInt32();
+                    if (expectedStreamLength != data.Length)
+                    {
+                        throw new InvalidDataException("Unexpected stream length value", previousException);
+                    }
+
+                    if (expectedLength + 8 == expectedStreamLength)
+                    {
+                        // Assume data is not compressed.
+                        return reader.ReadBytes(expectedLength);
+                    }
+
+                    var comptype = (MpqCompressionType)reader.ReadByte();
+                    if (comptype != MpqCompressionType.ZLib)
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                    return ZlibDecompress(data, expectedLength);
+                }
+            }
         }
 
 #if WITH_ZLIB
