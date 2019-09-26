@@ -74,11 +74,11 @@ namespace War3Net.IO.Mpq
         /// Write the entire <see cref="MpqTable"/>'s encrypted contents to the <paramref name="stream"/>.
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to write the contents to.</param>
-        public void WriteTableToStream(Stream stream)
+        public void SerializeTo(Stream stream)
         {
             using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
             {
-                SerializeTo(writer);
+                WriteTo(writer);
             }
         }
 
@@ -86,7 +86,7 @@ namespace War3Net.IO.Mpq
         /// Write the entire <see cref="MpqTable"/>'s encrypted contents to the <paramref name="writer"/>.
         /// </summary>
         /// <param name="writer">The <see cref="BinaryWriter"/> to write the contents to.</param>
-        public void SerializeTo(BinaryWriter writer)
+        public void WriteTo(BinaryWriter writer)
         {
             using (var memoryStream = new MemoryStream(GetEncryptedData()))
             {

@@ -145,8 +145,8 @@ namespace War3Net.IO.Mpq
                 blockTable.UpdateSize();
                 */
 
-                _hashTable.SerializeTo(writer);
-                _blockTable.SerializeTo(writer);
+                _hashTable.WriteTo(writer);
+                _blockTable.WriteTo(writer);
 
                 if (!_archiveFollowsHeader)
                 {
@@ -362,8 +362,8 @@ namespace War3Net.IO.Mpq
                     }
                 }
 
-                hashTable.WriteTableToStream(memoryStream);
-                blockTable.WriteTableToStream(memoryStream);
+                hashTable.SerializeTo(memoryStream);
+                blockTable.SerializeTo(memoryStream);
 
                 writer.Seek(0, SeekOrigin.Begin);
                 new MpqHeader(archiveSize, hashTableEntries, blockTableEntries, mpqHeader.BlockSize).WriteTo(writer);
@@ -463,7 +463,7 @@ namespace War3Net.IO.Mpq
                             }
 
                             // archive.Dispose();
-                            blockTable.SerializeTo(binaryWriter);
+                            blockTable.WriteTo(binaryWriter);
 
                             if (!archiveBeforeTables)
                             {
