@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net46;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net45;netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Version>1.1.0</Version>
     <Nullable>enable</Nullable>
@@ -21,6 +21,10 @@
       <Pack>true</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
 </Project>

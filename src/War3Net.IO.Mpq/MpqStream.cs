@@ -5,19 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#define WITH_ZLIB
-#define WITH_BZIP
-
 using System;
 using System.IO;
 using System.Text;
 
-#if WITH_ZLIB
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-#endif
-#if WITH_BZIP
 using ICSharpCode.SharpZipLib.BZip2;
-#endif
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+
+using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq
 {
@@ -71,6 +66,114 @@ namespace War3Net.IO.Mpq
             {
                 LoadBlockPositions();
             }
+        }
+
+        /// <inheritdoc/>
+        public override bool CanRead => true;
+
+        /// <inheritdoc/>
+        public override bool CanSeek => true;
+
+        /// <inheritdoc/>
+        public override bool CanWrite => false;
+
+        /// <inheritdoc/>
+        public override long Length => _entry.FileSize;
+
+        /// <inheritdoc/>
+        public override long Position
+        {
+            get => _position;
+            set => Seek(value, SeekOrigin.Begin);
+        }
+
+        /// <inheritdoc/>
+        public override void Flush()
+        {
+            // NOP
+        }
+
+        /// <inheritdoc/>
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            var target = origin switch
+            {
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => Position + offset,
+                SeekOrigin.End => Length + offset,
+                _ => throw new ArgumentException("Invalid SeekOrigin", nameof(origin)),
+            };
+
+            if (target < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek before the beginning of the stream");
+            }
+
+            if (target >= Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek beyond the end of the stream");
+            }
+
+            return _position = target;
+        }
+
+        /// <inheritdoc/>
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException("SetLength is not supported");
+        }
+
+        /// <inheritdoc/>
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            if (_entry.IsSingleUnit)
+            {
+                return ReadInternalSingleUnit(buffer, offset, count);
+            }
+
+            var toread = count;
+            var readtotal = 0;
+
+            while (toread > 0)
+            {
+                var read = ReadInternal(buffer, offset, toread);
+                if (read == 0)
+                {
+                    break;
+                }
+
+                readtotal += read;
+                offset += read;
+                toread -= read;
+            }
+
+            return readtotal;
+        }
+
+        /// <inheritdoc/>
+        public override int ReadByte()
+        {
+            if (_position >= Length)
+            {
+                return -1;
+            }
+
+            if (_entry.IsSingleUnit)
+            {
+                return ReadByteSingleUnit();
+            }
+
+            BufferData();
+
+            var localposition = (int)(_position % _blockSize);
+            _position++;
+            return _currentData[localposition];
+        }
+
+        /// <inheritdoc/>
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException("Writing is not supported");
         }
 
         // Compressed files start with an array of offsets to make seeking possible
@@ -184,100 +287,6 @@ namespace War3Net.IO.Mpq
             return data;
         }
 
-        #region Stream overrides
-        /// <inheritdoc/>
-        public override bool CanRead => true;
-
-        /// <inheritdoc/>
-        public override bool CanSeek => true;
-
-        /// <inheritdoc/>
-        public override bool CanWrite => false;
-
-        /// <inheritdoc/>
-        public override long Length => _entry.FileSize;
-
-        /// <inheritdoc/>
-        public override long Position
-        {
-            get => _position;
-            set => Seek(value, SeekOrigin.Begin);
-        }
-
-        /// <inheritdoc/>
-        public override void Flush()
-        {
-            // NOP
-        }
-
-        /// <inheritdoc/>
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            long target;
-
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    target = offset;
-                    break;
-                case SeekOrigin.Current:
-                    target = Position + offset;
-                    break;
-                case SeekOrigin.End:
-                    target = Length + offset;
-                    break;
-                default:
-                    throw new ArgumentException("Invalid SeekOrigin", nameof(origin));
-            }
-
-            if (target < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek before the beginning of the stream");
-            }
-
-            if (target >= Length)
-            {
-                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek beyond the end of the stream");
-            }
-
-            _position = target;
-
-            return _position;
-        }
-
-        /// <inheritdoc/>
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException("SetLength is not supported");
-        }
-
-        /// <inheritdoc/>
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (_entry.IsSingleUnit)
-            {
-                return ReadInternalSingleUnit(buffer, offset, count);
-            }
-
-            var toread = count;
-            var readtotal = 0;
-
-            while (toread > 0)
-            {
-                var read = ReadInternal(buffer, offset, toread);
-                if (read == 0)
-                {
-                    break;
-                }
-
-                readtotal += read;
-                offset += read;
-                toread -= read;
-            }
-
-            return readtotal;
-        }
-
         // SingleUnit entries can be compressed but are never encrypted
         private int ReadInternalSingleUnit(byte[] buffer, int offset, int count)
         {
@@ -346,25 +355,6 @@ namespace War3Net.IO.Mpq
             return bytestocopy;
         }
 
-        public override int ReadByte()
-        {
-            if (_position >= Length)
-            {
-                return -1;
-            }
-
-            if (_entry.IsSingleUnit)
-            {
-                return ReadByteSingleUnit();
-            }
-
-            BufferData();
-
-            var localposition = (int)(_position % _blockSize);
-            _position++;
-            return _currentData[localposition];
-        }
-
         private int ReadByteSingleUnit()
         {
             if (_currentData == null)
@@ -386,69 +376,59 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw new NotSupportedException("Writing is not supported");
-        }
-        #endregion Stream overrides
-
         private static byte[] DecompressMulti(byte[] input, int outputLength)
         {
             using (Stream sinput = new MemoryStream(input))
             {
-                var comptype = (MpqCompressionType)sinput.ReadByte();
+                var comptype = (CompressionType)sinput.ReadByte();
 
                 // WC3 onward mosly use Zlib
                 // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
                 switch (comptype)
                 {
-                    case MpqCompressionType.Huffman:
+                    case CompressionType.Huffman:
                         using (var huffman = MpqHuffman.Decompress(sinput))
                         {
                             return huffman.ToArray();
                         }
 
-                    case MpqCompressionType.ZLib:
-#if WITH_ZLIB
+                    case CompressionType.ZLib:
                         return ZlibDecompress(sinput, outputLength);
-#endif
 
-                    case MpqCompressionType.PKLib:
+                    case CompressionType.PKLib:
                         return PKDecompress(sinput, outputLength);
 
-                    case MpqCompressionType.BZip2:
-#if WITH_BZIP
+                    case CompressionType.BZip2:
                         return BZip2Decompress(sinput, outputLength);
-#endif
 
-                    case MpqCompressionType.ImaAdpcmStereo:
+                    case CompressionType.ImaAdpcmStereo:
                         return MpqWavCompression.Decompress(sinput, 2);
 
-                    case MpqCompressionType.ImaAdpcmMono:
+                    case CompressionType.ImaAdpcmMono:
                         return MpqWavCompression.Decompress(sinput, 1);
 
-                    case MpqCompressionType.Lzma:
+                    case CompressionType.Lzma:
                         // TODO: LZMA
                         throw new MpqParserException("LZMA compression is not yet supported");
 
-                    case MpqCompressionType.Sparse | MpqCompressionType.ZLib:
+                    case CompressionType.Sparse | CompressionType.ZLib:
                         // TODO: sparse then zlib
                         throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
 
-                    case MpqCompressionType.Sparse | MpqCompressionType.BZip2:
+                    case CompressionType.Sparse | CompressionType.BZip2:
                         // TODO: sparse then bzip2
                         throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
 
-                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman:
+                    case CompressionType.ImaAdpcmMono | CompressionType.Huffman:
                         return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 1);
 
-                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib:
+                    case CompressionType.ImaAdpcmMono | CompressionType.PKLib:
                         return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 1);
 
-                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman:
+                    case CompressionType.ImaAdpcmStereo | CompressionType.Huffman:
                         return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 2);
 
-                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib:
+                    case CompressionType.ImaAdpcmStereo | CompressionType.PKLib:
                         return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 2);
 
                     default:
@@ -457,7 +437,6 @@ namespace War3Net.IO.Mpq
             }
         }
 
-#if WITH_BZIP
         private static byte[] BZip2Decompress(Stream data, int expectedLength)
         {
             using (var output = new MemoryStream(expectedLength))
@@ -466,7 +445,6 @@ namespace War3Net.IO.Mpq
                 return output.ToArray();
             }
         }
-#endif
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
         {
@@ -494,8 +472,8 @@ namespace War3Net.IO.Mpq
                         return reader.ReadBytes(expectedLength);
                     }
 
-                    var comptype = (MpqCompressionType)reader.ReadByte();
-                    if (comptype != MpqCompressionType.ZLib)
+                    var comptype = (CompressionType)reader.ReadByte();
+                    if (comptype != CompressionType.ZLib)
                     {
                         throw new NotImplementedException();
                     }
@@ -505,7 +483,6 @@ namespace War3Net.IO.Mpq
             }
         }
 
-#if WITH_ZLIB
         private static byte[] ZlibDecompress(Stream data, int expectedLength)
         {
             // This assumes that Zlib won't be used in combination with another compression type
@@ -526,6 +503,5 @@ namespace War3Net.IO.Mpq
 
             return output;
         }
-#endif
     }
 }
