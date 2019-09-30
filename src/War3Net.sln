@@ -31,13 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.CSharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Tests", "War3Net.CodeAnalysis.Tests\War3Net.CodeAnalysis.Tests.csproj", "{06DFEA66-553A-4C27-B992-AED8D6F33AD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Api", "..\..\CSharp.lua\War3Api\War3Api.csproj", "{66600945-2252-419D-85A7-4E653C11D9F7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "..\..\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Build.Tests", "War3Net.Build.Tests\War3Net.Build.Tests.csproj", "{BC48D49B-4C20-4122-BD31-D88B2421DAD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "War3Net.IO.Compression", "War3Net.IO.Compression\War3Net.IO.Compression.csproj", "{E7055A8C-A27B-4AC4-91EB-70DA65D4C385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression", "War3Net.IO.Compression\War3Net.IO.Compression.csproj", "{E7055A8C-A27B-4AC4-91EB-70DA65D4C385}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,10 +87,6 @@ Global
 		{06DFEA66-553A-4C27-B992-AED8D6F33AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06DFEA66-553A-4C27-B992-AED8D6F33AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06DFEA66-553A-4C27-B992-AED8D6F33AD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66600945-2252-419D-85A7-4E653C11D9F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66600945-2252-419D-85A7-4E653C11D9F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66600945-2252-419D-85A7-4E653C11D9F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66600945-2252-419D-85A7-4E653C11D9F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}.Release|Any CPU.ActiveCfg = Release|Any CPU

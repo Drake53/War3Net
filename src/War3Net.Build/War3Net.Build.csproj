@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua\CSharp.lua.csproj" />
-    <ProjectReference Include="..\..\..\CSharp.lua\War3Api\War3Api.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
     <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0" />
+    <PackageReference Include="War3Api.Common" Version="1.31.1" />
+    <PackageReference Include="War3Api.Blizzard" Version="1.31.1" />
   </ItemGroup>
 
   <ItemGroup>
