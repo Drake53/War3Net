@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.CSharp.Attributes
     /// Indicates that the class is a container for members with the <see cref="NativeLuaMemberAttribute"/>.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    [Obsolete("Use attribute defined in CSharp.lua instead", true)]
+    [Obsolete("This attribute is not used during transpilation")]
     public class NativeLuaMemberContainerAttribute : Attribute
     {
     }

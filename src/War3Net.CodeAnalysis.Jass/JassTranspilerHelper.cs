@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Jass
                 null,
                 null,
                 default,
-                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(CSharpLua.NativeLuaMemberAttribute)))))
+                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(CSharp.Attributes.NativeLuaMemberAttribute)))))
                 //.AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
                 };
             }

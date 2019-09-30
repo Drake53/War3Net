@@ -6,16 +6,41 @@
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+    <Owners>Drake53</Owners>
+    <Authors>Drake53</Authors>
+    <Copyright>© Drake53. All rights reserved.</Copyright>
+
+    <Description>War3Net.CodeAnalysis.JASS is a library for parsing, transpiling (to C#), and rendering JASS source files.</Description>
+    <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
+
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.0</Version>
+
+    <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.2.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua\CSharp.lua.csproj" />
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.CodeAnalysis.CSharp\War3Net.CodeAnalysis.CSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
