@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <!-- TODO: PackageReference instead of ProjectReference -->
+    <ProjectReference Include="..\..\src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="TestArchives\**" />
+    <Content Include="TestArchives\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

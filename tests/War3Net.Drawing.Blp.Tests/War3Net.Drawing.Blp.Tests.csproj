@@ -2,18 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;net472;netcoreapp2.2</TargetFrameworks>
-
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.Drawing.Blp" Version="1.1.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'net472'">
@@ -24,13 +20,6 @@
     <PackageReference Include="SkiaSharp" Version="1.68.0" />
     <Reference Include="PresentationCore" />
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="TestData\*" />
-    <Content Include="TestData\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
