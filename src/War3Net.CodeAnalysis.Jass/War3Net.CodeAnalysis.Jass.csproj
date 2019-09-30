@@ -4,19 +4,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
   <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-
-    <Owners>Drake53</Owners>
     <Authors>Drake53</Authors>
     <Copyright>© Drake53. All rights reserved.</Copyright>
 
@@ -27,7 +15,6 @@
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
 
-    <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
   </PropertyGroup>
 
@@ -44,17 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="JassApi\*" />
-    <Content Include="JassApi\*">
+    <None Remove="JassApi\**" />
+    <Content Include="JassApi\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

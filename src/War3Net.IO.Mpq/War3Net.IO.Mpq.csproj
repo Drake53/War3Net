@@ -2,28 +2,33 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;net45;netstandard2.0;netstandard2.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <LangVersion>8.0</LangVersion>
-    <Version>1.1.0</Version>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <Authors></Authors>
+    <Copyright></Copyright>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description></Description>
+    <PackageTags></PackageTags>
+
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
+    <Version>1.1.0</Version>
+
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq</PackageProjectUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 

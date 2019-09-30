@@ -3,25 +3,19 @@
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.3;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
   
   <PropertyGroup>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Copyright>© Xalcon @ mmowned.com-Forum. All rights reserved.</Copyright>
     <Authors>Xalcon, Drake53</Authors>
-    <Owners>Drake53</Owners>
+    <Copyright>© Xalcon @ mmowned.com-Forum. All rights reserved.</Copyright>
+    
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
     <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
+    
     <AssemblyVersion>1.1.0</AssemblyVersion>
     <FileVersion>1.1.0</FileVersion>
     <Version>1.1.0</Version>
-    <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
+    
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,13 +29,6 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="PresentationCore" />
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

@@ -4,19 +4,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
   <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-
-    <Owners>Drake53</Owners>
     <Authors>Drake53</Authors>
     <Copyright>© Drake53. All rights reserved.</Copyright>
 
@@ -27,19 +15,11 @@
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
 
-    <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.CSharp</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE">
-      <PackagePath></PackagePath>
-      <Pack>true</Pack>
-    </None>
   </ItemGroup>
 
 </Project>
