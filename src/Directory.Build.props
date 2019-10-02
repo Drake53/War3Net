@@ -9,20 +9,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Owners>Drake53</Owners>
+    <Copyright>Copyright (c) Drake53 and Contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-
-    <Owners>Drake53</Owners>
+    
     <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE">
-      <PackagePath></PackagePath>
-      <Pack>true</Pack>
-    </None>
-  </ItemGroup>
 </Project>

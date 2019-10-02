@@ -6,16 +6,14 @@
 
   <PropertyGroup>
     <Authors>Drake53</Authors>
-    <Copyright>© Drake53. All rights reserved.</Copyright>
 
     <Description>War3Net.Build allows building a warcraft III map file, including generation of the main and config functions.</Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build</PackageProjectUrl>
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
 
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Version>1.0.0</Version>
-
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

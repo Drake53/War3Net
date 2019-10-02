@@ -4,6 +4,18 @@
     <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Drake53, Foole</Authors>
+
+    <Description></Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Compression</PackageProjectUrl>
+    <PackageTags>compression huffman adpcm warcraft3 warcraft-iii</PackageTags>
+
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
   </ItemGroup>

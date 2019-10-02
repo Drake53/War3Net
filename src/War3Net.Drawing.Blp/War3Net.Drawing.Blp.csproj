@@ -3,19 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.3;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-  
+
   <PropertyGroup>
-    <Authors>Xalcon, Drake53</Authors>
-    <Copyright>© Xalcon @ mmowned.com-Forum. All rights reserved.</Copyright>
-    
+    <Authors>Drake53, Xalcon</Authors>
+
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp</PackageProjectUrl>
     <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
-    
+
     <AssemblyVersion>1.1.0</AssemblyVersion>
     <FileVersion>1.1.0</FileVersion>
     <Version>1.1.0</Version>
-    
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

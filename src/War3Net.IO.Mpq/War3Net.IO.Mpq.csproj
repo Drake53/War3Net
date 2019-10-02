@@ -3,24 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;net45;netstandard2.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
   
   <PropertyGroup>
-    <Authors></Authors>
-    <Copyright></Copyright>
+    <Authors>Drake53, Foole, Ladislav Zezula</Authors>
 
-    <Description></Description>
-    <PackageTags></PackageTags>
+    <Description>Library for opening and creating files in MPQ format.</Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq</PackageProjectUrl>
+    <PackageTags>mpq mopaq warcraft3 warcraft-iii</PackageTags>
 
     <AssemblyVersion>1.1.0</AssemblyVersion>
     <FileVersion>1.1.0</FileVersion>
     <Version>1.1.0</Version>
-
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
