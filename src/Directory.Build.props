@@ -1,4 +1,8 @@
 <Project>
+  <ImportGroup>
+    <Import Project="../Directory.Build.props" />
+  </ImportGroup>
+  
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
