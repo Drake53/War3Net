@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Registry" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
     <PackageReference Include="War3Api.Common" Version="1.31.1" />
     <PackageReference Include="War3Api.Blizzard" Version="1.31.1" />
   </ItemGroup>
