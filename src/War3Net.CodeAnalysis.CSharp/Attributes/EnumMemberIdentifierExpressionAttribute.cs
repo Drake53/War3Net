@@ -7,7 +7,7 @@
 
 using System;
 
-namespace CSharpLua
+namespace War3Net.CodeAnalysis.CSharp.Attributes
 {
     /// <summary>
     /// For use with enum members, where the enum type has <see cref="EnumCastMethodAttribute"/>.

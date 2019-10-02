@@ -7,7 +7,7 @@
 
 using System;
 
-namespace CSharpLua
+namespace War3Net.CodeAnalysis.CSharp.Attributes
 {
     /// <summary>
     /// Indicates that this enum type cannot be cast to or from an integer, neither implicitly nor explicitly.
