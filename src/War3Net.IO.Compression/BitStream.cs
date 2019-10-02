@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace War3Net.IO.Mpq
+namespace War3Net.IO.Compression
 {
     /// <summary>
     /// A utility class for reading groups of bits from a stream.

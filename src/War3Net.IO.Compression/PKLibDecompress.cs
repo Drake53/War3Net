@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace War3Net.IO.Mpq
+namespace War3Net.IO.Compression
 {
     /// <summary>
     /// A decompressor for PKLib implode/explode.

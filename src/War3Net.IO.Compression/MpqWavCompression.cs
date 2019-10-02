@@ -7,12 +7,12 @@
 
 using System.IO;
 
-namespace War3Net.IO.Mpq
+namespace War3Net.IO.Compression
 {
     /// <summary>
     /// An IMA ADPCM decompress for Mpq files.
     /// </summary>
-    internal static class MpqWavCompression
+    public static class MpqWavCompression
     {
         private static readonly int[] sLookup =
         {
