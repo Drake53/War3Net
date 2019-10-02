@@ -11,13 +11,13 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Remove="LICENSE" />
     <None Remove="README.md" />
-    <None Remove="stylecop.json" />
-    <AdditionalFiles Include="stylecop.json" />
+    <None Remove="../../LICENSE" />
+    <None Remove="../../stylecop.json" />
+    <Content Include="../../LICENSE" />
+    <AdditionalFiles Include="../../stylecop.json" />
   </ItemGroup>
   <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);LICENSE</DefaultItemExcludes>
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup>

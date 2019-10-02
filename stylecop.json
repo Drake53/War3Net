@@ -18,14 +18,13 @@
     "documentationRules":
     {
       "xmlHeader": true,
-      "companyName": "Foole (fooleau@gmail.com)",
+      "companyName": "Drake53",
       "headerDecoration": "------------------------------------------------------------------------------",
-      "copyrightText": "Copyright (c) {licenseYear} {companyName}. All rights reserved.\nLicensed under the {licenseName} license. See {licenseFile} file in the project root for full license information.",
+      "copyrightText": "Licensed under the {licenseName} license.\nSee the {licenseFile} file in the project root for more information.",
       "variables":
       {
         "licenseName": "MIT",
-        "licenseFile": "LICENSE",
-        "licenseYear": "2006"
+        "licenseFile": "LICENSE"
       }
     },
 
