@@ -6,7 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using CSharpLua;
@@ -67,7 +69,8 @@ namespace War3Net.Build.Script
             var preventDebug = true;
             // ---
 
-            var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, "War3Api.dll", null, null, false, null, exportEnums ? string.Empty : null)
+            var libs = DiscoverWar3ApiPackageLibs().Aggregate((accum, next) => $"{accum};{next}");
+            var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, libs, null, null, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
@@ -100,6 +103,21 @@ namespace War3Net.Build.Script
             }
 
             return true;
+        }
+
+        private static IEnumerable<string> DiscoverWar3ApiPackageLibs(bool referenceBlizzardLib = true)
+        {
+            // TODO: use 'dotnet nuget locals global-packages --list' to find global package locations, instead of hardcoded default path
+            // TODO: don't hardcode 1.31.1 and netstandard2.0 values in path
+
+            var globalPackageDirectory = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), @".nuget\packages");
+
+            yield return Path.Combine(globalPackageDirectory, @"war3api.common\1.31.1\lib\netstandard2.0\War3Api.Common.dll");
+
+            if (referenceBlizzardLib)
+            {
+                yield return Path.Combine(globalPackageDirectory, @"war3api.blizzard\1.31.1\lib\netstandard2.0\War3Api.Blizzard.dll");
+            }
         }
 
         private void RenderFunctionSyntaxToFile(LuaVariableListDeclarationSyntax function, string path)
