@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using War3Net.CodeAnalysis.CSharp.Attributes;
 
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
@@ -35,7 +36,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     new SyntaxList<AttributeListSyntax>(
                         SyntaxFactory.AttributeList(
                             default(SeparatedSyntaxList<AttributeSyntax>).Add(SyntaxFactory.Attribute(
-                                SyntaxFactory.ParseName(nameof(CSharpLua.EnumCastMethodAttribute)),
+                                SyntaxFactory.ParseName(nameof(EnumCastMethodAttribute)),
                                 SyntaxFactory.ParseAttributeArgumentList($"(nameof({convertFunction}))"))))),
                     new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
                     identifier,
