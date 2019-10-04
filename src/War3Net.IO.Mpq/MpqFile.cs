@@ -8,9 +8,6 @@
 using System;
 using System.IO;
 
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-
 namespace War3Net.IO.Mpq
 {
     public class MpqFile : IEquatable<MpqFile>, IDisposable
@@ -212,7 +209,6 @@ namespace War3Net.IO.Mpq
             return StringComparer.OrdinalIgnoreCase.Compare(_fileName, other._fileName) == 0;
         }
 
-        // TODO: support other compression algorithms
         private uint Compress()
         {
             _compressedStream = new MemoryStream();
@@ -223,51 +219,18 @@ namespace War3Net.IO.Mpq
 
             blockOffsets[0] = 4 * blockCount;
 
+            _baseStream.Position = 0;
             _compressedStream.Position = blockOffsets[0];
 
             for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
             {
-                using (var stream = new MemoryStream())
-                {
-                    using (var deflater = new DeflaterOutputStream(stream))
-                    {
-                        for (var i = 0; i < _blockSize; i++)
-                        {
-                            var r = _baseStream.ReadByte();
-                            if (r == -1)
-                            {
-                                break;
-                            }
-                            deflater.WriteByte((byte)r);
-                        }
-
-                        deflater.Finish();
-                        deflater.Flush();
-                        stream.Position = 0;
-
-                        // First byte in the block indicates the compression algorithm used.
-                        // TODO: add enum for compression modes
-                        _compressedStream.WriteByte(2);
-
-                        while (true)
-                        {
-                            var read = stream.ReadByte();
-                            if (read == -1)
-                            {
-                                break;
-                            }
-                            _compressedStream.WriteByte((byte)read);
-                        }
-                    }
-
-                    blockOffsets[blockIndex] = (uint)_compressedStream.Position;
-                }
+                // TODO: support other compression algorithms
+                blockOffsets[blockIndex] = Compression.Deflate.CompressTo(_baseStream, _compressedStream, _blockSize);
             }
 
             _baseStream.Dispose();
 
             _compressedStream.Position = 0;
-
             using (var writer = new BinaryWriter(_compressedStream, new System.Text.UTF8Encoding(false, true), true))
             {
                 for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
@@ -277,7 +240,6 @@ namespace War3Net.IO.Mpq
             }
 
             _compressedStream.Position = 0;
-
             return (uint)_compressedStream.Length;
         }
 
