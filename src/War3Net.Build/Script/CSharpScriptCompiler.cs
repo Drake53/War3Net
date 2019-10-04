@@ -77,6 +77,7 @@ namespace War3Net.Build.Script
                 IsInlineSimpleProperty = false,
                 IsPreventDebugObject = preventDebug,
                 IsOutputSingleFile = true,
+                RetrieveSourceFilesFromCsProj = true,
             };
 
             try
