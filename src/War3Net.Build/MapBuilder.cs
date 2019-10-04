@@ -23,6 +23,9 @@ namespace War3Net.Build
         private ushort _blockSize;
         private bool _generateListfile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapBuilder"/> class.
+        /// </summary>
         public MapBuilder()
         {
             _outputMapName = "TestMap.w3x";
@@ -30,6 +33,10 @@ namespace War3Net.Build
             _generateListfile = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapBuilder"/> class.
+        /// </summary>
+        /// <param name="mapName"></param>
         public MapBuilder(string mapName)
         {
             _outputMapName = mapName;
@@ -37,6 +44,11 @@ namespace War3Net.Build
             _generateListfile = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapBuilder"/> class.
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <param name="blockSize"></param>
         public MapBuilder(string mapName, ushort blockSize)
         {
             _outputMapName = mapName;
@@ -44,6 +56,12 @@ namespace War3Net.Build
             _generateListfile = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapBuilder"/> class.
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="generateListfile"></param>
         public MapBuilder(string mapName, ushort blockSize, bool generateListfile)
         {
             _outputMapName = mapName;
@@ -141,7 +159,7 @@ namespace War3Net.Build
                     {
                         foreach (var file in files)
                         {
-                            streamWriter.WriteLine(file.Key);
+                            streamWriter.WriteLine(file.Key.fileName);
                         }
                     }
                 }
