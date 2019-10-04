@@ -607,7 +607,7 @@ namespace War3Net.IO.Mpq
         /// <returns>True if a <see cref="ListFile"/> exists, false otherwise.</returns>
         public bool AddListfileFilenames()
         {
-            if (!AddFilename(ListFile.Key))
+            if (!TryAddFilename(ListFile.Key))
             {
                 return false;
             }
@@ -633,10 +633,7 @@ namespace War3Net.IO.Mpq
             {
                 while (!sr.EndOfStream)
                 {
-                    if (AddFilename(sr.ReadLine() ?? string.Empty))
-                    {
-                        filesFound++;
-                    }
+                    filesFound += AddFilename(sr.ReadLine() ?? string.Empty);
                 }
             }
 
@@ -648,15 +645,30 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="filename">The name for which the corresponding <see cref="MpqEntry"/>'s <see cref="MpqEntry.Filename"/> must be updated.</param>
         /// <returns>True if an <see cref="MpqEntry"/> with the given <paramref name="filename"/> exists in this <see cref="MpqArchive"/>, false otherwise.</returns>
-        public bool AddFilename(string filename)
+        public bool TryAddFilename(string filename)
         {
-            if (!TryGetHashEntry(filename, out var hash))
+            var hashes = GetHashEntries(filename);
+            var anyHash = false;
+            foreach (var hash in hashes)
             {
-                return false;
+                anyHash = true;
+                _blockTable[hash.BlockIndex].Filename = filename;
             }
 
-            _blockTable[hash.BlockIndex].Filename = filename;
-            return true;
+            return anyHash;
+        }
+
+        public int AddFilename(string filename)
+        {
+            var hashes = GetHashEntries(filename);
+            var hashCount = 0;
+            foreach (var hash in hashes)
+            {
+                hashCount++;
+                _blockTable[hash.BlockIndex].Filename = filename;
+            }
+
+            return hashCount;
         }
 
         /// <summary>
@@ -800,6 +812,44 @@ namespace War3Net.IO.Mpq
 
             hash = default;
             return false;
+        }
+
+        private IEnumerable<MpqHash> GetHashEntries(string filename)
+        {
+            var index = StormBuffer.HashString(filename, 0);
+            index &= _mpqHeader.HashTableSize - 1;
+            var name1 = StormBuffer.HashString(filename, 0x100);
+            var name2 = StormBuffer.HashString(filename, 0x200);
+
+            var foundAnyHash = false;
+
+            for (var i = index; i < _hashTable.Size; ++i)
+            {
+                var hash = _hashTable[i];
+                if (hash.Name1 == name1 && hash.Name2 == name2)
+                {
+                    yield return hash;
+                    foundAnyHash = true;
+                }
+                else if (hash.IsEmpty && foundAnyHash)
+                {
+                    yield break;
+                }
+            }
+
+            for (uint i = 0; i < index; ++i)
+            {
+                var hash = _hashTable[i];
+                if (hash.Name1 == name1 && hash.Name2 == name2)
+                {
+                    yield return hash;
+                    foundAnyHash = true;
+                }
+                else if (hash.IsEmpty && foundAnyHash)
+                {
+                    yield break;
+                }
+            }
         }
 
         /*private int TryGetHashEntry(int entryIndex, out MpqHash hash)
