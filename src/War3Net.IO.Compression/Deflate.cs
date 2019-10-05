@@ -1,4 +1,4 @@
-﻿// #define SYSTEM_DEFLATE
+﻿#define SYSTEM_DEFLATE
 
 using System;
 using System.IO;
@@ -21,7 +21,13 @@ namespace War3Net.IO.Compression
             outputStream.WriteByte((byte)CompressionType.ZLib);
 
 #if SYSTEM_DEFLATE
-            using (var deflater = new DeflateStream(outputStream, CompressionMode.Compress, true))
+            const CompressionLevel compressionLevel = CompressionLevel.Optimal;
+
+            // TODO: don't hardcode header bytes
+            outputStream.WriteByte(0x78);
+            outputStream.WriteByte(compressionLevel == CompressionLevel.Optimal ? (byte)0xDA : throw new NotSupportedException());
+
+            using (var deflater = new DeflateStream(outputStream, compressionLevel, true))
             {
                 for (var i = 0; i < bytes; i++)
                 {
