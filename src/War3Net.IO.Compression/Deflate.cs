@@ -1,11 +1,16 @@
-﻿#define SYSTEM_DEFLATE
+﻿// #define SYSTEM_DEFLATE
 #define SYSTEM_INFLATE
+
+#define USING_DOTNETZIP
 
 using System;
 using System.IO;
 
 #if SYSTEM_DEFLATE || SYSTEM_INFLATE
 using System.IO.Compression;
+#endif
+
+#if USING_DOTNETZIP
 #endif
 
 #if !SYSTEM_DEFLATE || !SYSTEM_INFLATE
@@ -54,6 +59,11 @@ namespace War3Net.IO.Compression
                 compressed.Dispose();
             }
 
+            if (!leaveOpen)
+            {
+                inputStream.Dispose();
+            }
+
             var result = (uint)outputStream.Position;
             var compressedSize = result - (uint)position;
 
@@ -78,6 +88,24 @@ namespace War3Net.IO.Compression
 
             outputStream.WriteByte((byte)CompressionType.ZLib);
 
+#if USING_DOTNETZIP
+            using (var deflater = new Ionic.Zlib.DeflateStream(outputStream, Ionic.Zlib.CompressionMode.Compress, Ionic.Zlib.CompressionLevel.BestCompression, true))
+            {
+                // deflater.Strategy
+                for (var i = 0; i < bytes; i++)
+                {
+                    var r = inputStream.ReadByte();
+                    if (r == -1)
+                    {
+                        break;
+                    }
+
+                    deflater.WriteByte((byte)r);
+                }
+
+                deflater.Flush();
+            }
+#else
 #if SYSTEM_DEFLATE
             const CompressionLevel compressionLevel = CompressionLevel.Optimal;
 
@@ -149,6 +177,7 @@ namespace War3Net.IO.Compression
                     stream.CopyTo(outputStream);
                 }
             }
+#endif
 #endif
 
             if (!leaveOpen)
