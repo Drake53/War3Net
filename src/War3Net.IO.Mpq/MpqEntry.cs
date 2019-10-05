@@ -170,7 +170,7 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Filename ?? (!(_flags != 0) ? "(Deleted file)" : $"Unknown file @ {FilePosition}");
+            return Filename ?? (_flags == 0 ? "(Deleted file)" : $"Unknown file @ {FilePosition}");
         }
 
         /// <summary>

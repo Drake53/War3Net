@@ -109,7 +109,7 @@ namespace War3Net.IO.Mpq
                 throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek before the beginning of the stream");
             }
 
-            if (target >= Length)
+            if (target > Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek beyond the end of the stream");
             }
