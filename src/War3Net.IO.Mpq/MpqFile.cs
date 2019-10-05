@@ -37,13 +37,14 @@ namespace War3Net.IO.Mpq
         {
             // TODO: copy stream?
             _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
+            _baseStream.Position = 0;
             _fileName = fileName;
 
             _blockSize = 0x200 << ((blockSize < 0 || blockSize > 22) ? throw new ArgumentOutOfRangeException(nameof(blockSize)) : blockSize);
 
             var fileSize = (uint)_baseStream.Length;
             var compressedSize = ((flags & MpqFileFlags.Compressed) != 0)
-                ? Compress()
+                ? Compress(flags.HasFlag(MpqFileFlags.SingleUnit))
                 : fileSize;
 
             _entry = new MpqEntry(fileName, compressedSize, fileSize, flags);
@@ -209,33 +210,39 @@ namespace War3Net.IO.Mpq
             return StringComparer.OrdinalIgnoreCase.Compare(_fileName, other._fileName) == 0;
         }
 
-        private uint Compress()
+        private uint Compress(bool singleUnit)
         {
             _compressedStream = new MemoryStream();
 
-            //var blockSize = _archive?.BlockSize ?? _blockSize;
-            var blockCount = (uint)( ( (int)_baseStream.Length + _blockSize - 1 ) / _blockSize ) + 1;
-            var blockOffsets = new uint[blockCount];
-
-            blockOffsets[0] = 4 * blockCount;
-
-            _baseStream.Position = 0;
-            _compressedStream.Position = blockOffsets[0];
-
-            for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
+            if (singleUnit)
             {
                 // TODO: support other compression algorithms
-                blockOffsets[blockIndex] = Compression.Deflate.CompressTo(_baseStream, _compressedStream, _blockSize);
+                Compression.Deflate.CompressTo(_baseStream, _compressedStream, (int)_baseStream.Length, false);
             }
-
-            _baseStream.Dispose();
-
-            _compressedStream.Position = 0;
-            using (var writer = new BinaryWriter(_compressedStream, new System.Text.UTF8Encoding(false, true), true))
+            else
             {
-                for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                //var blockSize = _archive?.BlockSize ?? _blockSize;
+                var blockCount = (uint)( ( (int)_baseStream.Length + _blockSize - 1 ) / _blockSize ) + 1;
+                var blockOffsets = new uint[blockCount];
+
+                blockOffsets[0] = 4 * blockCount;
+                _compressedStream.Position = blockOffsets[0];
+
+                for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
                 {
-                    writer.Write(blockOffsets[blockIndex]);
+                    // TODO: support other compression algorithms
+                    blockOffsets[blockIndex] = Compression.Deflate.CompressTo(_baseStream, _compressedStream, _blockSize, true);
+                }
+
+                _baseStream.Dispose();
+
+                _compressedStream.Position = 0;
+                using (var writer = new BinaryWriter(_compressedStream, new System.Text.UTF8Encoding(false, true), true))
+                {
+                    for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                    {
+                        writer.Write(blockOffsets[blockIndex]);
+                    }
                 }
             }
 
