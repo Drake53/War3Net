@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#define PK_COMPRESS
-
 using System;
 using System.IO;
 
@@ -219,11 +217,7 @@ namespace War3Net.IO.Mpq
             if (singleUnit)
             {
                 // TODO: support other compression algorithms
-#if PK_COMPRESS
                 Compression.Deflate.TryCompress(_baseStream, _compressedStream, (uint)_baseStream.Length, false);
-#else
-                Compression.Deflate.CompressTo(_baseStream, _compressedStream, (int)_baseStream.Length, false);
-#endif
             }
             else
             {
@@ -237,11 +231,8 @@ namespace War3Net.IO.Mpq
                 for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
                 {
                     // TODO: support other compression algorithms
-#if PK_COMPRESS
-                    blockOffsets[blockIndex] = Compression.Deflate.TryCompress(_baseStream, _compressedStream, (uint)_blockSize, true);
-#else
-                    blockOffsets[blockIndex] = Compression.Deflate.CompressTo(_baseStream, _compressedStream, _blockSize, true);
-#endif
+                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(_baseStream.Length - _baseStream.Position) : (uint)_blockSize;
+                    blockOffsets[blockIndex] = Compression.Deflate.TryCompress(_baseStream, _compressedStream, bytesToCompress, true);
                 }
 
                 _baseStream.Dispose();

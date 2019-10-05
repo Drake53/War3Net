@@ -8,7 +8,7 @@
 
 #if USING_DOTNETZIP
 #undef WITH_PKLIB_HEADER
-#undef LEAVE_UNCOMPRESSED_IF_LARGER
+// #undef LEAVE_UNCOMPRESSED_IF_LARGER
 #endif
 
 using System;
@@ -21,7 +21,7 @@ using System.IO.Compression;
 #if USING_DOTNETZIP
 #endif
 
-#if (!SYSTEM_DEFLATE || !SYSTEM_INFLATE) && !USING_DOTNETZIP
+#if (!SYSTEM_DEFLATE || !SYSTEM_INFLATE) //&& !USING_DOTNETZIP
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 #endif
 
@@ -47,7 +47,12 @@ namespace War3Net.IO.Compression
             CompressTo(inputStream, compressed, (int)bytes, true);
 
 #if LEAVE_UNCOMPRESSED_IF_LARGER
+#if USING_DOTNETZIP
+            // Add one because CompressionType byte not written yet.
+            if ((compressed.Length + 1) >= bytes)
+#else
             if (compressed.Length >= bytes)
+#endif
             {
                 compressed.Dispose();
 
@@ -66,6 +71,9 @@ namespace War3Net.IO.Compression
             else
 #endif
             {
+#if USING_DOTNETZIP
+                outputStream.WriteByte((byte)CompressionType.ZLib);
+#endif
                 compressed.Position = 0;
                 compressed.CopyTo(outputStream);
                 compressed.Dispose();
@@ -95,17 +103,14 @@ namespace War3Net.IO.Compression
             return result;
         }
 
-        public static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
+        private static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
         {
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
             _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
 
-            outputStream.WriteByte((byte)CompressionType.ZLib);
-
 #if USING_DOTNETZIP
-            using (var deflater = new Ionic.Zlib.DeflateStream(outputStream, Ionic.Zlib.CompressionMode.Compress, Ionic.Zlib.CompressionLevel.BestCompression, true))
+            using (var deflater = new Ionic.Zlib.ZlibStream(outputStream, Ionic.Zlib.CompressionMode.Compress, true))
             {
-                // deflater.Strategy
                 for (var i = 0; i < bytes; i++)
                 {
                     var r = inputStream.ReadByte();
@@ -117,9 +122,11 @@ namespace War3Net.IO.Compression
                     deflater.WriteByte((byte)r);
                 }
 
-                deflater.Flush();
+                // deflater.FlushMode = Ionic.Zlib.FlushType.Finish;
+                // deflater.Flush();
             }
 #else
+            outputStream.WriteByte((byte)CompressionType.ZLib);
 #if SYSTEM_DEFLATE
             const CompressionLevel compressionLevel = CompressionLevel.Optimal;
 
@@ -206,7 +213,7 @@ namespace War3Net.IO.Compression
         {
             var output = new byte[expectedLength];
 #if USING_DOTNETZIP
-            using var inflater = new Ionic.Zlib.DeflateStream(compressedData, Ionic.Zlib.CompressionMode.Decompress, true);
+            using var inflater = new Ionic.Zlib.ZlibStream(compressedData, Ionic.Zlib.CompressionMode.Decompress, true);
 #elif SYSTEM_INFLATE
             _ = compressedData.ReadByte() == 0x78 ? (object?)null : throw new InvalidDataException();
             var b2 = compressedData.ReadByte();
