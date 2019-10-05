@@ -1,7 +1,15 @@
 ﻿// #define SYSTEM_DEFLATE
-#define SYSTEM_INFLATE
+// #define SYSTEM_INFLATE
+
+#define WITH_PKLIB_HEADER
+#define LEAVE_UNCOMPRESSED_IF_LARGER
 
 #define USING_DOTNETZIP
+
+#if USING_DOTNETZIP
+#undef WITH_PKLIB_HEADER
+#undef LEAVE_UNCOMPRESSED_IF_LARGER
+#endif
 
 using System;
 using System.IO;
@@ -13,7 +21,7 @@ using System.IO.Compression;
 #if USING_DOTNETZIP
 #endif
 
-#if !SYSTEM_DEFLATE || !SYSTEM_INFLATE
+#if (!SYSTEM_DEFLATE || !SYSTEM_INFLATE) && !USING_DOTNETZIP
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 #endif
 
@@ -26,16 +34,19 @@ namespace War3Net.IO.Compression
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
             _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
 
+#if WITH_PKLIB_HEADER
             var position = outputStream.Position;
             for (var i = 0; i < 8; i++)
             {
                 outputStream.WriteByte(0);
             }
+#endif
 
             var offset = inputStream.Position;
             var compressed = new MemoryStream();
             CompressTo(inputStream, compressed, (int)bytes, true);
 
+#if LEAVE_UNCOMPRESSED_IF_LARGER
             if (compressed.Length >= bytes)
             {
                 compressed.Dispose();
@@ -53,6 +64,7 @@ namespace War3Net.IO.Compression
                 }
             }
             else
+#endif
             {
                 compressed.Position = 0;
                 compressed.CopyTo(outputStream);
@@ -65,6 +77,7 @@ namespace War3Net.IO.Compression
             }
 
             var result = (uint)outputStream.Position;
+#if WITH_PKLIB_HEADER
             var compressedSize = result - (uint)position;
 
             outputStream.Position = position;
@@ -78,6 +91,7 @@ namespace War3Net.IO.Compression
             outputStream.WriteByte((byte)((compressedSize >> 24) & 0xff));
 
             outputStream.Position = result;
+#endif
             return result;
         }
 
@@ -191,7 +205,9 @@ namespace War3Net.IO.Compression
         public static byte[] Decompress(Stream compressedData, int expectedLength)
         {
             var output = new byte[expectedLength];
-#if SYSTEM_INFLATE
+#if USING_DOTNETZIP
+            using var inflater = new Ionic.Zlib.DeflateStream(compressedData, Ionic.Zlib.CompressionMode.Decompress, true);
+#elif SYSTEM_INFLATE
             _ = compressedData.ReadByte() == 0x78 ? (object?)null : throw new InvalidDataException();
             var b2 = compressedData.ReadByte();
             _ = b2 == 0xDA || b2 == 0x9C ? (object?)null : throw new InvalidDataException();
