@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 #if NETCOREAPP3_0
@@ -268,7 +269,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <returns>An <see cref="MpqArchive"/> that is created.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public static MpqArchive Create(Stream sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
+        public static MpqArchive Create(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
         {
             return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
         }
@@ -697,6 +698,48 @@ namespace War3Net.IO.Mpq
 
             return exists;
         }
+
+#if !NET45
+        public IEnumerable<MpqFile> GetMpqFiles()
+        {
+            var pairs = new Dictionary<MpqEntry, (uint, MpqFile)>();
+            var deletedIndices = new Queue<int>();
+
+            for (var hashIndex = 0; hashIndex < _hashTable.Size; hashIndex++)
+            {
+                var mpqHash = _hashTable[hashIndex];
+                if (!mpqHash.IsEmpty)
+                {
+                    var entry = mpqHash.IsDeleted ? null : _blockTable[mpqHash.BlockIndex];
+                    // yield return new MpqFile(mpqHash.IsDeleted ? (Stream)new MemoryStream() : OpenFile(entry), mpqHash, (uint)hashIndex, 0, entry?.Flags ?? 0, _mpqHeader.BlockSize);
+
+                    if (entry != null)
+                    {
+                        pairs.Add(entry, (mpqHash.BlockIndex, new MpqFile(mpqHash.IsDeleted ? (Stream)new MemoryStream() : OpenFile(entry), mpqHash, (uint)hashIndex, 0, entry?.Flags ?? 0, _mpqHeader.BlockSize)));
+                    }
+                    else
+                    {
+                        deletedIndices.Enqueue(hashIndex);
+                    }
+                }
+            }
+
+            var blockIndex = (uint)0;
+            foreach (var mpqEntry in this)
+            {
+                if (!pairs.ContainsKey(mpqEntry))
+                {
+                    var hashIndex = deletedIndices.Dequeue();
+                    var mpqHash = _hashTable[hashIndex];
+                    pairs.Add(mpqEntry, (blockIndex, new MpqFile(new MemoryStream(), mpqHash, (uint)hashIndex, 0, 0, _mpqHeader.BlockSize)));
+                }
+
+                blockIndex++;
+            }
+
+            return pairs.OrderBy(pair => pair.Value.Item1).Select(pair => pair.Value.Item2);
+        }
+#endif
 
         /// <summary>
         /// Closes the <see cref="BaseStream"/>.
