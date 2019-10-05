@@ -16,6 +16,61 @@ namespace War3Net.IO.Compression
 {
     public static class Deflate
     {
+        public static uint TryCompress(Stream inputStream, Stream outputStream, uint bytes, bool leaveOpen)
+        {
+            _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
+            _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
+
+            var position = outputStream.Position;
+            for (var i = 0; i < 8; i++)
+            {
+                outputStream.WriteByte(0);
+            }
+
+            var offset = inputStream.Position;
+            var compressed = new MemoryStream();
+            CompressTo(inputStream, compressed, (int)bytes, true);
+
+            if (compressed.Length >= bytes)
+            {
+                compressed.Dispose();
+
+                inputStream.Position = offset;
+                for (var i = 0; i < bytes; i++)
+                {
+                    var r = inputStream.ReadByte();
+                    if (r == -1)
+                    {
+                        break;
+                    }
+
+                    outputStream.WriteByte((byte)r);
+                }
+            }
+            else
+            {
+                compressed.Position = 0;
+                compressed.CopyTo(outputStream);
+                compressed.Dispose();
+            }
+
+            var result = (uint)outputStream.Position;
+            var compressedSize = result - (uint)position;
+
+            outputStream.Position = position;
+            outputStream.WriteByte((byte)CompressionType.PKLib);
+            outputStream.WriteByte(0);
+            outputStream.WriteByte(0);
+            outputStream.WriteByte(0);
+            outputStream.WriteByte((byte)(compressedSize & 0xff));
+            outputStream.WriteByte((byte)((compressedSize >> 8) & 0xff));
+            outputStream.WriteByte((byte)((compressedSize >> 16) & 0xff));
+            outputStream.WriteByte((byte)((compressedSize >> 24) & 0xff));
+
+            outputStream.Position = result;
+            return result;
+        }
+
         public static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
         {
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
