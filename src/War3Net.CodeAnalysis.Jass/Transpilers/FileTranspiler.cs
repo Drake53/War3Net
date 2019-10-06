@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
     {
-        public static IEnumerable<MemberDeclarationSyntax> Transpile(this Syntax.FileSyntax fileNode)
+        public static IEnumerable<MemberDeclarationSyntax> Transpile(this Syntax.FileSyntax fileNode, bool apiOnly = false)
         {
             _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
 
@@ -27,7 +27,15 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             foreach (var function in fileNode.FunctionList)
             {
-                yield return function.Transpile();
+                if (apiOnly)
+                {
+                    // Transform function into native function to remove function body.
+                    yield return function.AsNativeFunction().Transpile();
+                }
+                else
+                {
+                    yield return function.Transpile();
+                }
             }
 
             foreach (var enumDeclaration in TranspileToEnumHandler.GetEnums())

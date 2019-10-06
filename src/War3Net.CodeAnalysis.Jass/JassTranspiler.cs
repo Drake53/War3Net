@@ -24,12 +24,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassTranspiler
     {
+        // If bool nativeAttributes is true, assume only the API is needed, so in that case transform FunctionSyntax into NativeFunctionDeclarationSyntax.
         public static CompilationUnitSyntax Transpile(FileSyntax file, string namespaceName, string className, bool nativeAttributes, params UsingDirectiveSyntax[] usingDirectives)
         {
 #pragma warning disable SA1116 // Split parameters should start on line after declaration
             return JassTranspilerHelper.GetCompilationUnit(new SyntaxList<UsingDirectiveSyntax>(usingDirectives),
                    JassTranspilerHelper.GetNamespaceDeclaration(namespaceName,
-                   JassTranspilerHelper.GetClassDeclaration(className, file.Transpile(), nativeAttributes)));
+                   JassTranspilerHelper.GetClassDeclaration(className, file.Transpile(nativeAttributes), nativeAttributes)));
 #pragma warning restore SA1116 // Split parameters should start on line after declaration
         }
 
@@ -82,6 +83,7 @@ namespace War3Net.CodeAnalysis.Jass
             out EmitResult emitResult,
             OutputKind outputKind,
             bool applyNativeMemberAttributes = false,
+            // TODO: create object that can retrieve these instead of forcing the output to be written to a file
             string outputSource = null,
             string outputEmit = null,
             string outputLuaTypes = null)
@@ -116,6 +118,7 @@ namespace War3Net.CodeAnalysis.Jass
 
                 // Output C# source code.
 #pragma warning disable CA2000 // Dispose objects before losing scope
+                // TODO: fix existing file not overwritten properly (if new length shorter than old length)
                 CompilationHelper.SerializeTo(compilationUnit, File.OpenWrite(outputSource), false);
 #pragma warning restore CA2000 // Dispose objects before losing scope
             }
