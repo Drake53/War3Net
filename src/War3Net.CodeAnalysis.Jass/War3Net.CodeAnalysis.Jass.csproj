@@ -11,9 +11,9 @@
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
     <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
 
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="War3Net.CodeAnalysis.Common" Version="1.0.0" />
-    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.1" />
+    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
