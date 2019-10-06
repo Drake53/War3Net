@@ -1,13 +1,13 @@
 // ------------------------------------------------------------------------------
 // <copyright file="EnumCastMethodAttribute.cs" company="Drake53">
-// Copyright (c) 2019 Drake53. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
 using System;
 
-namespace War3Net.CodeAnalysis.CSharp.Attributes
+namespace War3Net.CodeAnalysis.Common
 {
     /// <summary>
     /// Indicates that this enum type cannot be cast to or from an integer, neither implicitly nor explicitly.

@@ -21,18 +21,13 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\War3Net.CodeAnalysis.Common\War3Net.CodeAnalysis.Common.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.CSharp\War3Net.CodeAnalysis.CSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="JassApi\**" />
-    <Content Include="JassApi\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="War3Net.CodeAnalysis.Common" Version="1.0.0" />
+    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

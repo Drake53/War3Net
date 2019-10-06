@@ -11,9 +11,9 @@
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.CSharp</PackageProjectUrl>
     <PackageTags>csharp lua warcraft3 warcraft-iii</PackageTags>
 
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

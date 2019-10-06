@@ -12,7 +12,8 @@ using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using War3Net.CodeAnalysis.CSharp.Attributes;
+
+using War3Net.CodeAnalysis.Common;
 
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {

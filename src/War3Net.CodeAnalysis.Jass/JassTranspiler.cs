@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 
+using War3Net.CodeAnalysis.Common;
 using War3Net.CodeAnalysis.CSharp;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.CodeAnalysis.Jass.Transpilers;
@@ -161,6 +162,7 @@ namespace War3Net.CodeAnalysis.Jass
             return false;
         }
 
+        [Obsolete("Can no longer run this method, because the .j files are no longer part of the project, and the path to them is hardcoded", true)]
         public static bool GetReferencesAndUsingDirectives(
             out MetadataReference[] metadataReferences,
             out UsingDirectiveSyntax[] usingDirectives,
@@ -190,7 +192,7 @@ namespace War3Net.CodeAnalysis.Jass
                 }
 
                 if (!CompileCSharpFromJass(
-                    @"JassApi\common.j",
+                    @"JassApi\common.j", // TODO: replace with method argument
                     null,
                     ApiNamespaceName,
                     CommonClassName,
@@ -213,7 +215,7 @@ namespace War3Net.CodeAnalysis.Jass
                 if (referenceBlizzard)
                 {
                     if (!CompileCSharpFromJass(
-                        @"JassApi\Blizzard.j",
+                        @"JassApi\Blizzard.j", // TODO: replace with method argument
                         null,
                         ApiNamespaceName,
                         BlizzardClassName,
@@ -250,7 +252,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             yield return MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             yield return MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51").Location);
-            yield return MetadataReference.CreateFromFile(typeof(CSharp.Attributes.NativeLuaMemberAttribute).Assembly.Location);
+            yield return MetadataReference.CreateFromFile(typeof(NativeLuaMemberAttribute).Assembly.Location);
         }
 
         private static UsingDirectiveSyntax GetCSharpDirective()
