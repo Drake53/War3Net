@@ -114,7 +114,36 @@ namespace War3Net.Build
                 throw new NotImplementedException();
             }
 
-            var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
+            // TODO: check if a .csproj file exists first, and return a FolderRerefence if not.
+            // var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
+            var references = new List<ContentReference>();
+            RecursiveAddReferences(new ProjectReference(compilerOptions.SourceDirectory));
+
+            void RecursiveAddReferences(ContentReference contentReference)
+            {
+                if (references.Contains(contentReference))
+                {
+                    return;
+                }
+
+                references.Add(contentReference);
+                foreach (var reference in contentReference.GetReferences(false))
+                {
+                    if (reference is ProjectReference)
+                    {
+                        RecursiveAddReferences(reference);
+                    }
+
+                    if (reference is PackageReference packageReference)
+                    {
+                        // TODO: replace with better condition
+                        if (packageReference.Name.StartsWith("War3Api") || packageReference.Name.StartsWith("War3Lib"))
+                        {
+                            RecursiveAddReferences(reference);
+                        }
+                    }
+                }
+            }
 
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
