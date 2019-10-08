@@ -69,8 +69,7 @@ namespace War3Net.Build.Script
             var preventDebug = true;
             // ---
 
-            var libs = DiscoverWar3ApiPackageLibs().Aggregate((accum, next) => $"{accum};{next}");
-            var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, libs, null, null, false, null, exportEnums ? string.Empty : null)
+            var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
@@ -105,6 +104,7 @@ namespace War3Net.Build.Script
             return true;
         }
 
+        [Obsolete("These .dll's are now automatically added through PackageReference.EnumerateLibraries()", true)]
         private static IEnumerable<string> DiscoverWar3ApiPackageLibs(bool referenceBlizzardLib = true)
         {
             // TODO: use 'dotnet nuget locals global-packages --list' to find global package locations, instead of hardcoded default path
