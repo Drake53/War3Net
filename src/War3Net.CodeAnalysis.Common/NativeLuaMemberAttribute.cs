@@ -15,5 +15,12 @@ namespace War3Net.CodeAnalysis.Common
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Method | AttributeTargets.Field, AllowMultiple = false)]
     public class NativeLuaMemberAttribute : Attribute
     {
+        public NativeLuaMemberAttribute()
+        {
+        }
+
+        public NativeLuaMemberAttribute(string nativeFunctionName)
+        {
+        }
     }
 }
