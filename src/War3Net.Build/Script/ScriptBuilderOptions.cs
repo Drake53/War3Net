@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace War3Net.Build.Script
 {
+    [System.Obsolete]
     public sealed class ScriptBuilderOptions
     {
         public float CameraBoundsLeft { get; set; }

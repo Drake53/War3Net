@@ -8,7 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+
+using CSharpLua;
 
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
@@ -111,16 +114,33 @@ namespace War3Net.Build
                 throw new NotImplementedException();
             }
 
+            var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
+
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
             {
-                if (Compile(compilerOptions, out var path))
+                if (Compile(compilerOptions, references, out var path))
                 {
                     files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
                 }
                 else
                 {
                     return false;
+                }
+            }
+
+            void EnumerateFiles(string directory)
+            {
+                foreach (var (fileName, locale, stream) in FileProvider.EnumerateFiles(directory))
+                {
+                    if (files.ContainsKey((fileName, locale)))
+                    {
+                        stream.Dispose();
+                    }
+                    else
+                    {
+                        files.Add((fileName, locale), stream);
+                    }
                 }
             }
 
@@ -132,17 +152,24 @@ namespace War3Net.Build
                     continue;
                 }
 
-                foreach (var (fileName, locale, stream) in FileProvider.EnumerateFiles(assetsDirectory))
-                {
-                    if (files.ContainsKey((fileName, locale)))
-                    {
-                        stream.Dispose();
-                    }
-                    else
-                    {
-                        files.Add((fileName, locale), stream);
-                    }
-                }
+                EnumerateFiles(assetsDirectory);
+            }
+
+            // Load assets from projects
+            foreach (var contentReference in references
+                .Where(reference => reference is ProjectReference)
+                .Select(reference => reference.Folder))
+            {
+                // TODO: use ProjectReference._project.Files? (since this would pre-enumerate over the files instead of returning a folder, will still need to deal with locale folders)
+                // EnumerateFiles(contentReference);
+            }
+
+            // Load assets from packages
+            foreach (var contentReference in references
+                .Where(reference => reference is PackageReference)
+                .Select(reference => Path.Combine(reference.Folder, ContentReference.ContentFolder)))
+            {
+                EnumerateFiles(contentReference);
             }
 
             // Generate (listfile)
@@ -216,11 +243,11 @@ namespace War3Net.Build
             return compiler.Compile(mainFunctionFile, configFunctionFile);
         }*/
 
-        public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
+        public bool Compile(ScriptCompilerOptions options, IEnumerable<ContentReference> references, out string scriptFilePath)
         {
             var compiler = GetCompiler(options);
             compiler.BuildMainAndConfig(out var mainFunctionFilePath, out var configFunctionFilePath);
-            return compiler.Compile(out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
+            return compiler.Compile(references, out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
         }
 
         private ScriptCompiler GetCompiler(ScriptCompilerOptions options)

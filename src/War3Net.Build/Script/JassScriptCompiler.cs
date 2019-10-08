@@ -6,9 +6,12 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
+using CSharpLua;
 
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass;
@@ -32,10 +35,10 @@ namespace War3Net.Build.Script
             var x86 = true;
             var ptr = false;
 
-            _jasshelperPath = Path.Combine(new FileInfo(Providers.WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
+            _jasshelperPath = Path.Combine(new FileInfo(WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
 
             var jasshelperDocuments = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
                 ptr ? "Warcraft III Public Test" : "Warcraft III",
                 "Jasshelper");
             _commonPath = Path.Combine(jasshelperDocuments, "common.j");
@@ -63,16 +66,24 @@ namespace War3Net.Build.Script
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
         }
 
-        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
+        public override bool Compile(IEnumerable<ContentReference> references, out string scriptFilePath, params string[] additionalSourceFiles)
         {
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
             using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
             {
                 using (var streamWriter = new StreamWriter(inputScriptStream))
                 {
-                    foreach (var file in Directory.EnumerateFiles(Options.SourceDirectory, "*.j", SearchOption.AllDirectories))
+                    /*foreach (var file in Directory.EnumerateFiles(Options.SourceDirectory, "*.j", SearchOption.AllDirectories))
                     {
                         streamWriter.WriteLine($"//! import \"{file}\"");
+                    }*/
+
+                    foreach (var reference in references)
+                    {
+                        foreach (var file in reference.EnumerateFiles("*.j", SearchOption.AllDirectories, null))
+                        {
+                            streamWriter.WriteLine($"//! import \"{file}\"");
+                        }
                     }
 
                     foreach (var file in additionalSourceFiles)

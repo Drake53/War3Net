@@ -6,6 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+
+using CSharpLua;
 
 namespace War3Net.Build.Script
 {
@@ -25,7 +28,7 @@ namespace War3Net.Build.Script
 
         public abstract void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath);
 
-        public abstract bool Compile(out string scriptFilePath, params string[] additionalSourceFiles);
+        public abstract bool Compile(IEnumerable<ContentReference> references, out string scriptFilePath, params string[] additionalSourceFiles);
 
         [Obsolete("Script language should be obtained from MapInfo.ScriptLanguage property.", true)]
         public static ScriptCompiler GetUnknownLanguageCompiler(ScriptCompilerOptions options)
