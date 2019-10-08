@@ -137,7 +137,7 @@ namespace War3Net.Build
                     if (reference is PackageReference packageReference)
                     {
                         // TODO: replace with better condition
-                        if (packageReference.Name.StartsWith("War3Api") || packageReference.Name.StartsWith("War3Lib"))
+                        if (packageReference.Name.StartsWith("War3Api") || packageReference.Name.StartsWith("War3Lib") || packageReference.Name == "War3Net.CodeAnalysis.Common")
                         {
                             RecursiveAddReferences(reference);
                         }
