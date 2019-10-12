@@ -69,18 +69,20 @@ namespace War3Net.Build.Script
             var preventDebug = true;
             // ---
 
-            var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
+            // var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
+            var compiler = new Compiler(Options.SourceDirectory, Options.OutputDirectory, null, null, null, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
                 IsInlineSimpleProperty = false,
                 IsPreventDebugObject = preventDebug,
-                IsOutputSingleFile = true,
+                // IsOutputSingleFile = true,
             };
 
             try
             {
-                compiler.Compile(references);
+                // compiler.Compile(references);
+                compiler.CompileSingleFile("war3map", CoreSystemProvider.GetCoreSystemFiles());
             }
             catch (CompilationErrorException e)
             {
