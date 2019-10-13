@@ -50,7 +50,7 @@ namespace War3Net.Build.Script
         }
 
         // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
-        public override bool Compile(IEnumerable<ContentReference> references, out string scriptFilePath, params string[] additionalSourceFiles)
+        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
 
@@ -69,19 +69,18 @@ namespace War3Net.Build.Script
             var preventDebug = true;
             // ---
 
+            var input = Directory.EnumerateFiles(Options.SourceDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? Options.SourceDirectory;
             // var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
-            var compiler = new Compiler(Options.SourceDirectory, Options.OutputDirectory, null, null, null, false, null, exportEnums ? string.Empty : null)
+            var compiler = new Compiler(input, Options.OutputDirectory, null, null, null, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
                 IsInlineSimpleProperty = false,
                 IsPreventDebugObject = preventDebug,
-                // IsOutputSingleFile = true,
             };
 
             try
             {
-                // compiler.Compile(references);
                 compiler.CompileSingleFile("war3map", CoreSystemProvider.GetCoreSystemFiles());
             }
             catch (CompilationErrorException e)

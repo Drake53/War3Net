@@ -114,8 +114,7 @@ namespace War3Net.Build
                 throw new NotImplementedException();
             }
 
-            // TODO: check if a .csproj file exists first, and return a FolderRerefence if not.
-            // var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
+            /*var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
             var references = new List<ContentReference>();
             RecursiveAddReferences(new ProjectReference(compilerOptions.SourceDirectory));
 
@@ -143,12 +142,12 @@ namespace War3Net.Build
                         }
                     }
                 }
-            }
+            }*/
 
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
             {
-                if (Compile(compilerOptions, references, out var path))
+                if (Compile(compilerOptions, out var path))
                 {
                     files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
                 }
@@ -185,7 +184,7 @@ namespace War3Net.Build
             }
 
             // Load assets from projects
-            foreach (var contentReference in references
+            /*foreach (var contentReference in references
                 .Where(reference => reference is ProjectReference)
                 .Select(reference => reference.Folder))
             {
@@ -199,7 +198,7 @@ namespace War3Net.Build
                 .Select(reference => Path.Combine(reference.Folder, ContentReference.ContentFolder)))
             {
                 EnumerateFiles(contentReference);
-            }
+            }*/
 
             // Generate (listfile)
             var generateListfile = compilerOptions.FileFlags.TryGetValue(ListFile.Key, out var listfileFlags)
@@ -272,11 +271,11 @@ namespace War3Net.Build
             return compiler.Compile(mainFunctionFile, configFunctionFile);
         }*/
 
-        public bool Compile(ScriptCompilerOptions options, IEnumerable<ContentReference> references, out string scriptFilePath)
+        public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
         {
             var compiler = GetCompiler(options);
             compiler.BuildMainAndConfig(out var mainFunctionFilePath, out var configFunctionFilePath);
-            return compiler.Compile(references, out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
+            return compiler.Compile(out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
         }
 
         private ScriptCompiler GetCompiler(ScriptCompilerOptions options)

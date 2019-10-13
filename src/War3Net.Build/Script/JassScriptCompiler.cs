@@ -66,25 +66,25 @@ namespace War3Net.Build.Script
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
         }
 
-        public override bool Compile(IEnumerable<ContentReference> references, out string scriptFilePath, params string[] additionalSourceFiles)
+        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
             using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
             {
                 using (var streamWriter = new StreamWriter(inputScriptStream))
                 {
-                    /*foreach (var file in Directory.EnumerateFiles(Options.SourceDirectory, "*.j", SearchOption.AllDirectories))
+                    foreach (var file in Directory.EnumerateFiles(Options.SourceDirectory, "*.j", SearchOption.AllDirectories))
                     {
                         streamWriter.WriteLine($"//! import \"{file}\"");
-                    }*/
+                    }
 
-                    foreach (var reference in references)
+                    /*foreach (var reference in references)
                     {
                         foreach (var file in reference.EnumerateFiles("*.j", SearchOption.AllDirectories, null))
                         {
                             streamWriter.WriteLine($"//! import \"{file}\"");
                         }
-                    }
+                    }*/
 
                     foreach (var file in additionalSourceFiles)
                     {
