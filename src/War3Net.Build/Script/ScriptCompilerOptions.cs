@@ -34,10 +34,13 @@ namespace War3Net.Build.Script
 
         public string LobbyMusic { get; set; }
 
-        public ScriptCompilerOptions()
+        internal List<string> Libraries { get; private set; }
+
+        public ScriptCompilerOptions(params string[] libraries)
         {
             FileFlags = new Dictionary<string, MpqFileFlags>();
             DefaultFileFlags = MpqFileFlags.Exists;
+            Libraries = new List<string>(libraries);
         }
     }
 }

@@ -81,7 +81,7 @@ namespace War3Net.Build.Script
 
             try
             {
-                compiler.CompileSingleFile("war3map", CoreSystemProvider.GetCoreSystemFiles());
+                compiler.CompileSingleFile("war3map", CoreSystemProvider.GetCoreSystemFiles().Concat(Options.Libraries));
             }
             catch (CompilationErrorException e)
             {
