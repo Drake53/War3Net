@@ -279,6 +279,11 @@ namespace War3Net.IO.Mpq
 
             if (_entry.IsCompressed && (toread != expectedLength))
             {
+                if (toread > expectedLength)
+                {
+                    throw new MpqParserException("Block's compressed data is larger than decompressed, so it should have been stored in uncompressed format.");
+                }
+
                 data = (_entry.Flags & MpqFileFlags.CompressedMulti) != 0
                     ? DecompressMulti(data, expectedLength)
                     : PKDecompress(new MemoryStream(data), expectedLength);
