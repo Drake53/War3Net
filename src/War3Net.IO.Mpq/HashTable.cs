@@ -163,11 +163,11 @@ namespace War3Net.IO.Mpq
             var step = hash.Mask + 1;
 
             var known = step > _mask;
-            Console.WriteLine(
+            /*Console.WriteLine(
                 "Adding file #{0} to hashtable, which is {1} file{2}.",
                 hash.BlockIndex,
                 known ? "a known" : "an unknown",
-                known ? string.Empty : $" found at index {hashIndex} with up to {hashCollisions} collisions");
+                known ? string.Empty : $" found at index {hashIndex} with up to {hashCollisions} collisions");*/
 
             // If the hash.Mask is smaller than the hashtable's size, this file came from another archive and has an unknown filename.
             // By passing both the mask and the hashIndex corresponding to that mask, can figure out all hashIndices where this file may belong.
