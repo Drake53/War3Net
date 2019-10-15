@@ -60,7 +60,6 @@ namespace War3Net.Build.Script
                 throw new NotImplementedException();
             }
 
-            // Options.Debug;
             // Options.Optimize;
             // Options.Obfuscate;
 
@@ -69,9 +68,12 @@ namespace War3Net.Build.Script
             var preventDebug = true;
             // ---
 
+            // var csc = Options.Debug ? "-debug:full -define:DEBUG" : null;
+            var csc = Options.Debug ? "-define:DEBUG" : null;
+
             var input = Directory.EnumerateFiles(Options.SourceDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? Options.SourceDirectory;
             // var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
-            var compiler = new Compiler(input, Options.OutputDirectory, null, null, null, false, null, exportEnums ? string.Empty : null)
+            var compiler = new Compiler(input, Options.OutputDirectory, null, null, csc, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
