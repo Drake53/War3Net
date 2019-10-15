@@ -11,9 +11,9 @@
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq</PackageProjectUrl>
     <PackageTags>mpq mopaq warcraft3 warcraft-iii</PackageTags>
 
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <FileVersion>1.1.0</FileVersion>
-    <Version>1.1.0</Version>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
+    <PackageReference Include="War3Net.IO.Compression" Version="0.1.0" />
   </ItemGroup>
 
 </Project>
