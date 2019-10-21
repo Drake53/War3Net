@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.IO.Mpq;
 
@@ -41,6 +42,13 @@ namespace War3Net.Build.Script
             FileFlags = new Dictionary<string, MpqFileFlags>();
             DefaultFileFlags = MpqFileFlags.Exists;
             Libraries = new List<string>(libraries);
+        }
+
+        public ScriptCompilerOptions(IEnumerable<string> libraries)
+        {
+            FileFlags = new Dictionary<string, MpqFileFlags>();
+            DefaultFileFlags = MpqFileFlags.Exists;
+            Libraries = libraries.ToList();
         }
     }
 }

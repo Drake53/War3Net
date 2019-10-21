@@ -10,11 +10,11 @@
     <Description>War3Net.Build allows building a warcraft III map file, including generation of the main and config functions.</Description>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build</PackageProjectUrl>
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes>Removed automatic import of lua system libraries.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix some uncommited changes were not included.</PackageReleaseNotes>
 
-    <AssemblyVersion>0.2.0</AssemblyVersion>
-    <FileVersion>0.2.0</FileVersion>
-    <Version>0.2.0</Version>
+    <AssemblyVersion>0.2.1</AssemblyVersion>
+    <FileVersion>0.2.1</FileVersion>
+    <Version>0.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
