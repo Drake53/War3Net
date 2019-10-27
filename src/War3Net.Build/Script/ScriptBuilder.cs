@@ -9,7 +9,7 @@ using War3Net.Build.Common;
 
 namespace War3Net.Build.Script
 {
-    [System.Obsolete()]
+    [System.Obsolete(null, true)]
     public abstract class ScriptBuilder
     {
         public abstract string Extension { get; }

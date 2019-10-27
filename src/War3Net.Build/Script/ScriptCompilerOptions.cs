@@ -29,7 +29,7 @@ namespace War3Net.Build.Script
 
         public MpqFileFlags DefaultFileFlags { get; set; }
 
-        [System.Obsolete]
+        [System.Obsolete(null, true)]
         public ScriptBuilderOptions BuilderOptions { get; set; }
 
         public MapInfo MapInfo { get; set; }

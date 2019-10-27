@@ -47,7 +47,7 @@ namespace War3Net.Build.Script
             _rendererOptions = rendererOptions;
         }
 
-        [Obsolete]
+        [Obsolete(null, true)]
         public override ScriptBuilder GetScriptBuilder()
         {
             return new JassScriptBuilder();

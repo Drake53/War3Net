@@ -23,7 +23,7 @@ namespace War3Net.Build.Script
 
         protected ScriptCompilerOptions Options => _options;
 
-        [Obsolete]
+        [Obsolete(null, true)]
         public abstract ScriptBuilder GetScriptBuilder();
 
         public abstract void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath);

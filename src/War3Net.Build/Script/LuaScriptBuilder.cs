@@ -17,7 +17,7 @@ using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script
 {
-    [System.Obsolete()]
+    [System.Obsolete(null, true)]
     public sealed class LuaScriptBuilder : ScriptBuilder
     {
         public override string Extension => ".lua";

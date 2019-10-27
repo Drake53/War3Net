@@ -20,7 +20,7 @@ namespace War3Net.Build.Script
             throw new NotImplementedException();
         }
 
-        [Obsolete]
+        [Obsolete(null, true)]
         public override ScriptBuilder GetScriptBuilder()
         {
             return new LuaScriptBuilder();

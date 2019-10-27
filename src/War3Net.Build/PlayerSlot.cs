@@ -7,7 +7,7 @@
 
 namespace War3Net.Build
 {
-    [System.Obsolete()]
+    [System.Obsolete(null, true)]
     public class PlayerSlot
     {
         private readonly float _startX;

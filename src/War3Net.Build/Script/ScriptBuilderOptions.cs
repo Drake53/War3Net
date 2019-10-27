@@ -11,7 +11,7 @@ using War3Net.Build.Common;
 
 namespace War3Net.Build.Script
 {
-    [System.Obsolete]
+    [System.Obsolete(null, true)]
     public sealed class ScriptBuilderOptions
     {
         public float CameraBoundsLeft { get; set; }
