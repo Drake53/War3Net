@@ -1,4 +1,11 @@
-﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
+﻿// ------------------------------------------------------------------------------
+// <copyright file="CliffType.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 namespace War3Net.Build.Environment
 {
