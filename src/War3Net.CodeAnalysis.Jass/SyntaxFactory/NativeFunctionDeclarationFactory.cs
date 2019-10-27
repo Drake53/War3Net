@@ -1,6 +1,11 @@
-﻿#pragma warning disable SA1649 // File name should match first type name
+﻿// ------------------------------------------------------------------------------
+// <copyright file="NativeFunctionDeclarationFactory.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
 
-using System;
+#pragma warning disable SA1649 // File name should match first type name
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
