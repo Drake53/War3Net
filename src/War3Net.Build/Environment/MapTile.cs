@@ -23,12 +23,7 @@ namespace War3Net.Build.Environment
         /// <summary>
         /// Initializes a new instance of the <see cref="MapTile"/> class.
         /// </summary>
-        public MapTile(bool isEdgeTile)
-        {
-            IsEdgeTile = isEdgeTile;
-        }
-
-        private MapTile()
+        public MapTile()
         {
         }
 
