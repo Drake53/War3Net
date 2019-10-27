@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqHeader.cs" company="Foole (fooleau@gmail.com)">
-// Copyright (c) 2006 Foole (fooleau@gmail.com). All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// <copyright file="MpqHeader.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 

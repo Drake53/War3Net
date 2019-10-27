@@ -1,13 +1,10 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="AssemblyInfo.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
 
-// [assembly: AssemblyTitle("War3Net.Drawing.Tga")]
-// [assembly: AssemblyConfiguration("")]
-// [assembly: AssemblyCompany("shns")]
-// [assembly: AssemblyProduct("War3Net.Drawing.Tga")]
-//[assembly: AssemblyDescription("Library to decode TARGA image format.")]
-//[assembly: AssemblyCopyright("Copyright © 2016 shns")]
-//[assembly: AssemblyTrademark("")]
-//[assembly: AssemblyCulture("")]
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("War3Net.IO.Mpq.Tests")]
