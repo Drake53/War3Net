@@ -11,7 +11,10 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-namespace War3Net.Build
+using War3Net.Build.Common;
+using War3Net.Build.Extensions;
+
+namespace War3Net.Build.Info
 {
     public sealed class MapInfo
     {

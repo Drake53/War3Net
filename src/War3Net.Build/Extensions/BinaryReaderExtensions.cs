@@ -8,7 +8,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace War3Net.Build
+namespace War3Net.Build.Extensions
 {
     public static class BinaryReaderExtensions
     {

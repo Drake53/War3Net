@@ -8,7 +8,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace War3Net.Build
+namespace War3Net.Build.Info
 {
     public sealed class RandomItemSet : IEnumerable<(int, char[])>
     {

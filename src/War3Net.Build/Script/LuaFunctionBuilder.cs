@@ -7,6 +7,8 @@
 
 using CSharpLua.LuaAst;
 
+using War3Net.Build.Info;
+
 namespace War3Net.Build.Script
 {
     internal abstract class LuaFunctionBuilder : FunctionBuilder<LuaStatementSyntax, LuaVariableListDeclarationSyntax>

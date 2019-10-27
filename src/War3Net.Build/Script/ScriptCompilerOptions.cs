@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Info;
 using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Script

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
 
 namespace War3Net.Build.Providers

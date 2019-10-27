@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Common;
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Renderer;
 using War3Net.CodeAnalysis.Jass.Syntax;

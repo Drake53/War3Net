@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script

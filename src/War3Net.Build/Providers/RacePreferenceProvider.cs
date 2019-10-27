@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Build.Info;
+
 namespace War3Net.Build.Providers
 {
     internal static class RacePreferenceProvider

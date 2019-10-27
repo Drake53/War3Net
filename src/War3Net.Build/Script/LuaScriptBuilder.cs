@@ -12,6 +12,7 @@ using System.Text;
 using CSharpLua;
 using CSharpLua.LuaAst;
 
+using War3Net.Build.Common;
 using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script

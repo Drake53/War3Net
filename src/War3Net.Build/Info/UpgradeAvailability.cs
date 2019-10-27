@@ -5,7 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-namespace War3Net.Build
+namespace War3Net.Build.Info
 {
     public enum UpgradeAvailability
     {

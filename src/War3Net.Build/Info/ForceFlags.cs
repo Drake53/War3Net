@@ -7,7 +7,7 @@
 
 using System;
 
-namespace War3Net.Build
+namespace War3Net.Build.Info
 {
     [Flags]
     public enum ForceFlags

@@ -9,6 +9,8 @@ using System.Linq;
 
 using CSharpLua.LuaAst;
 
+using War3Net.Build.Info;
+
 using static War3Net.Build.Providers.ConfigFunctionStatementsProvider<
     War3Net.Build.Script.LuaConfigFunctionBuilder,
     CSharpLua.LuaAst.LuaStatementSyntax,

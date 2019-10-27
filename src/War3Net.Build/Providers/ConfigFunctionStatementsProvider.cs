@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 
+using War3Net.Build.Info;
 using War3Net.Build.Script;
 
 namespace War3Net.Build.Providers

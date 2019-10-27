@@ -13,6 +13,7 @@ using System.Text;
 
 using CSharpLua;
 
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Renderer;

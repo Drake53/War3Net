@@ -7,6 +7,7 @@
 
 using System.Linq;
 
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static War3Net.Build.Providers.MainFunctionStatementsProvider<

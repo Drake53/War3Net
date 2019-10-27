@@ -8,7 +8,7 @@
 using System.IO;
 using System.Text;
 
-namespace War3Net.Build
+namespace War3Net.Build.Info
 {
     public sealed class UpgradeData
     {
