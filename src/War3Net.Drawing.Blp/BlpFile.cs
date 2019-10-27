@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="BlpFile.cs" company="Xalcon @ mmowned.com-Forum">
-// Copyright (c) 2011 Xalcon @ mmowned.com-Forum. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// <copyright file="BlpFile.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
@@ -31,8 +31,6 @@ namespace War3Net.Drawing.Blp
     /// Documentation used for <see cref="FileFormatVersion.BLP1"/>:
     /// https://www.hiveworkshop.com/threads/blp-specifications-wc3.279306/
     /// https://github.com/DrSuperGood/blp-iio-plugin/tree/master/BLP%20IIO%20Plugins/src/com/hiveworkshop/blizzard/blp
-    /// https://github.com/DrSuperGood/blp-iio-plugin/blob/master/BLP%20IIO%20Plugins/src/com/hiveworkshop/blizzard/blp/BLPStreamMetadata.java
-    /// https://github.com/DrSuperGood/blp-iio-plugin/blob/master/BLP%20IIO%20Plugins/src/com/hiveworkshop/blizzard/blp/BLPReader.java.
     /// </remarks>
     public sealed class BlpFile : IDisposable
     {

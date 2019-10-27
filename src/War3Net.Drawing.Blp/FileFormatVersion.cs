@@ -1,7 +1,7 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="FileFormatVersion.cs" company="Xalcon @ mmowned.com-Forum">
-// Copyright (c) 2011 Xalcon @ mmowned.com-Forum. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// <copyright file="FileFormatVersion.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
