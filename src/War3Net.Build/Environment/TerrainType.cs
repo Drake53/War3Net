@@ -46,6 +46,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         L_DarkGrass = ('L' << 0) | ('g' << 8) | ('r' << 16) | ('d' << 24),
 
+        /// <summary>
+        /// Lordaeron Summer - Dirt Cliff ('cLc2').
+        /// </summary>
+        L_DirtCliff = ('c' << 0) | ('L' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Summer - Grass Cliff ('cLc1').
+        /// </summary>
+        L_GrassCliff = ('c' << 0) | ('L' << 8) | ('c' << 16) | ('1' << 24),
+
         /// =================================== \\\
         /// <see cref="Tileset.LordaeronFall"/> \\\
         /// =================================== \\\
@@ -80,6 +90,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         F_DarkGrass = ('F' << 0) | ('g' << 8) | ('r' << 16) | ('d' << 24),
 
+        /// <summary>
+        /// Lordaeron Fall - Dirt Cliff ('cFc2').
+        /// </summary>
+        F_DirtCliff = ('c' << 0) | ('F' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Fall - Grass Cliff ('cFc1').
+        /// </summary>
+        F_GrassCliff = ('c' << 0) | ('F' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ===================================== \\\
         /// <see cref="Tileset.LordaeronWinter"/> \\\
         /// ===================================== \\\
@@ -113,6 +133,16 @@ namespace War3Net.Build.Environment
         /// Lordaeron Winter - Snow ('Wsnw').
         /// </summary>
         W_Snow = ('W' << 0) | ('s' << 8) | ('n' << 16) | ('w' << 24),
+
+        /// <summary>
+        /// Lordaeron Winter - Grass Cliff ('cWc2').
+        /// </summary>
+        W_GrassCliff = ('c' << 0) | ('W' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Winter - Snow Cliff ('cWc1').
+        /// </summary>
+        W_SnowCliff = ('c' << 0) | ('W' << 8) | ('c' << 16) | ('1' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Barrens"/> \\\
@@ -158,6 +188,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         B_Grass = ('B' << 0) | ('g' << 8) | ('r' << 16) | ('r' << 24),
 
+        /// <summary>
+        /// Barrens - Desert Cliff ('cBc2').
+        /// </summary>
+        B_DesertCliff = ('c' << 0) | ('B' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Barrens - Grass Cliff ('cBc1').
+        /// </summary>
+        B_GrassCliff = ('c' << 0) | ('B' << 8) | ('c' << 16) | ('1' << 24),
+
         /// =============================== \\\
         /// <see cref="Tileset.Ashenvale"/> \\\
         /// =============================== \\\
@@ -202,6 +242,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         A_Leaves = ('A' << 0) | ('l' << 8) | ('v' << 16) | ('d' << 24),
 
+        /// <summary>
+        /// Ashenvale - Dirt Cliff ('cAc2').
+        /// </summary>
+        A_DirtCliff = ('c' << 0) | ('A' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Ashenvale - Grass Cliff ('cAc1').
+        /// </summary>
+        A_GrassCliff = ('c' << 0) | ('A' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ============================= \\\
         /// <see cref="Tileset.Felwood"/> \\\
         /// ============================= \\\
@@ -241,6 +291,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         C_Leaves = ('C' << 0) | ('l' << 8) | ('v' << 16) | ('g' << 24),
 
+        /// <summary>
+        /// Felwood - Dirt Cliff ('cCc2').
+        /// </summary>
+        C_DirtCliff = ('c' << 0) | ('C' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Felwood - Grass Cliff ('cCc1').
+        /// </summary>
+        C_GrassCliff = ('c' << 0) | ('C' << 8) | ('c' << 16) | ('1' << 24),
+
         /// =============================== \\\
         /// <see cref="Tileset.Northrend"/> \\\
         /// =============================== \\\
@@ -279,6 +339,16 @@ namespace War3Net.Build.Environment
         /// Northrend - Pocky Snow ('Nsnr').
         /// </summary>
         N_PockySnow = ('N' << 0) | ('s' << 8) | ('n' << 16) | ('r' << 24),
+
+        /// <summary>
+        /// Northrend - Dirt Cliff ('cNc2').
+        /// </summary>
+        N_DirtCliff = ('c' << 0) | ('N' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Northrend - Snow Cliff ('cNc1').
+        /// </summary>
+        N_SnowCliff = ('c' << 0) | ('N' << 8) | ('c' << 16) | ('1' << 24),
 
         /// =============================== \\\
         /// <see cref="Tileset.Cityscape"/> \\\
@@ -329,6 +399,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         Y_WhiteMarble = ('Y' << 0) | ('w' << 8) | ('m' << 16) | ('b' << 24),
 
+        /// <summary>
+        /// Cityscape - Dirt Cliff ('cYc2').
+        /// </summary>
+        Y_DirtCliff = ('c' << 0) | ('Y' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Cityscape - Square Tiles Cliff ('cYc1').
+        /// </summary>
+        Y_SquareTilesCliff = ('c' << 0) | ('Y' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ============================= \\\
         /// <see cref="Tileset.Village"/> \\\
         /// ============================= \\\
@@ -373,6 +453,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         V_ThickGrass = ('V' << 0) | ('g' << 8) | ('r' << 16) | ('t' << 24),
 
+        /// <summary>
+        /// Village - Dirt Cliff ('cVc2').
+        /// </summary>
+        V_DirtCliff = ('c' << 0) | ('V' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Village - Grass Dirt Cliff ('cVc1').
+        /// </summary>
+        V_GrassDirtCliff = ('c' << 0) | ('V' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ================================= \\\
         /// <see cref="Tileset.VillageFall"/> \\\
         /// ================================= \\\
@@ -416,6 +506,16 @@ namespace War3Net.Build.Environment
         /// Village Fall - Thick Grass ('Qgrt').
         /// </summary>
         Q_ThickGrass = ('Q' << 0) | ('g' << 8) | ('r' << 16) | ('t' << 24),
+
+        /// <summary>
+        /// Village Fall - Dirt Cliff ('cQc2').
+        /// </summary>
+        Q_DirtCliff = ('c' << 0) | ('Q' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Village Fall - Grass Thick Cliff ('cQc1').
+        /// </summary>
+        Q_GrassThickCliff = ('c' << 0) | ('Q' << 8) | ('c' << 16) | ('1' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Dalaran"/> \\\
@@ -466,6 +566,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         X_WhiteMarble = ('X' << 0) | ('w' << 8) | ('m' << 16) | ('b' << 24),
 
+        /// <summary>
+        /// Dalaran - Dirt Cliff ('cXc2').
+        /// </summary>
+        X_DirtCliff = ('c' << 0) | ('X' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Dalaran - Square Tiles Cliff ('cXc1').
+        /// </summary>
+        X_SquareTilesCliff = ('c' << 0) | ('X' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ============================= \\\
         /// <see cref="Tileset.Dungeon"/> \\\
         /// ============================= \\\
@@ -510,6 +620,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         D_SquareTiles = ('D' << 0) | ('s' << 8) | ('q' << 16) | ('d' << 24),
 
+        /// <summary>
+        /// Dungeon - Dirt Cliff ('cDc2').
+        /// </summary>
+        D_DirtCliff = ('c' << 0) | ('D' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Dungeon - Square Tiles Cliff ('cDc1').
+        /// </summary>
+        D_SquareTilesCliff = ('c' << 0) | ('D' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ================================= \\\
         /// <see cref="Tileset.Underground"/> \\\
         /// ================================= \\\
@@ -553,6 +673,16 @@ namespace War3Net.Build.Environment
         /// Underground - Square Tiles ('Gsqd').
         /// </summary>
         G_SquareTiles = ('G' << 0) | ('s' << 8) | ('q' << 16) | ('d' << 24),
+
+        /// <summary>
+        /// Underground - Dirt Cliff ('cGc2').
+        /// </summary>
+        G_DirtCliff = ('c' << 0) | ('G' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Underground - Square Tiles Cliff ('cGc1').
+        /// </summary>
+        G_SquareTilesCliff = ('c' << 0) | ('G' << 8) | ('c' << 16) | ('1' << 24),
 
         /// ================================= \\\
         /// <see cref="Tileset.SunkenRuins"/> \\\
@@ -603,6 +733,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         Z_DarkGrass = ('Z' << 0) | ('v' << 8) | ('i' << 16) | ('n' << 24),
 
+        /// <summary>
+        /// Sunken Ruins - Dirt Cliff ('cZc2').
+        /// </summary>
+        Z_DirtCliff = ('c' << 0) | ('Z' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Sunken Ruins - Large Bricks Cliff ('cZc1').
+        /// </summary>
+        Z_LargeBricksCliff = ('c' << 0) | ('Z' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ===================================== \\\
         /// <see cref="Tileset.IcecrownGlacier"/> \\\
         /// ===================================== \\\
@@ -652,6 +792,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         I_Snow = ('I' << 0) | ('s' << 8) | ('n' << 16) | ('w' << 24),
 
+        /// <summary>
+        /// Icecrown Glacier - Rune Bricks Cliff ('cIc2').
+        /// </summary>
+        I_RuneBricksCliff = ('c' << 0) | ('I' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Icecrown Glacier - Snow Cliff ('cIc1').
+        /// </summary>
+        I_SnowCliff = ('c' << 0) | ('I' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ============================= \\\
         /// <see cref="Tileset.Outland"/> \\\
         /// ============================= \\\
@@ -696,6 +846,16 @@ namespace War3Net.Build.Environment
         /// </summary>
         O_Abyss = ('O' << 0) | ('a' << 8) | ('b' << 16) | ('y' << 24),
 
+        /// <summary>
+        /// Outland - Rough Dirt Cliff ('cOc2').
+        /// </summary>
+        O_RoughDirtCliff = ('c' << 0) | ('O' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Outland - Abyss Cliff ('cOc1').
+        /// </summary>
+        O_AbyssCliff = ('c' << 0) | ('O' << 8) | ('c' << 16) | ('1' << 24),
+
         /// ================================== \\\
         /// <see cref="Tileset.BlackCitadel"/> \\\
         /// ================================== \\\
@@ -739,6 +899,16 @@ namespace War3Net.Build.Environment
         /// Black Citadel - Dark Tiles ('Kdkt').
         /// </summary>
         K_DarkTiles = ('K' << 0) | ('d' << 8) | ('k' << 16) | ('t' << 24),
+
+        /// <summary>
+        /// Black Citadel - Dark Tiles Cliff ('cKc2').
+        /// </summary>
+        K_DarkTilesCliff = ('c' << 0) | ('K' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Black Citadel - Dirt Cliff ('cKc1').
+        /// </summary>
+        K_DirtCliff = ('c' << 0) | ('K' << 8) | ('c' << 16) | ('1' << 24),
 
         /// ================================== \\\
         /// <see cref="Tileset.DalaranRuins"/> \\\
@@ -788,5 +958,15 @@ namespace War3Net.Build.Environment
         /// Dalaran Ruins - White Marble ('Jwmb').
         /// </summary>
         J_WhiteMarble = ('J' << 0) | ('w' << 8) | ('m' << 16) | ('b' << 24),
+
+        /// <summary>
+        /// Dalaran Ruins - Dirt Cliff ('cJc2').
+        /// </summary>
+        J_DirtCliff = ('c' << 0) | ('J' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Dalaran Ruins - Square Tiles Cliff ('cJc1').
+        /// </summary>
+        J_SquareTilesCliff = ('c' << 0) | ('J' << 8) | ('c' << 16) | ('1' << 24),
     }
 }
