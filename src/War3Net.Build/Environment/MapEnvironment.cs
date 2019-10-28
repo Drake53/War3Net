@@ -169,7 +169,7 @@ namespace War3Net.Build.Environment
                 writer.Write(HeaderSignature);
                 writer.Write(_version);
                 writer.Write((char)_tileset);
-                writer.Write(IsCustomTileset() ? 1 : 0);
+                writer.Write(IsDefaultTileset() ? 0 : 1);
 
                 writer.Write(_terrainTypes.Count);
                 foreach (var terrainType in _terrainTypes)
@@ -195,6 +195,12 @@ namespace War3Net.Build.Environment
             }
         }
 
+        public bool IsDefaultTileset()
+        {
+            return AreListsEqual(_terrainTypes, GetDefaultTerrainTypes().ToArray())
+                && AreListsEqual(_cliffTypes, GetDefaultCliffTypes().ToArray());
+        }
+
         private static bool AreListsEqual(IList list1, IList list2)
         {
             var count = list1.Count;
@@ -205,19 +211,13 @@ namespace War3Net.Build.Environment
 
             for (var i = 0; i < count; i++)
             {
-                if (list1[i] != list2[i])
+                if (!list1[i].Equals(list2[i]))
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        private bool IsCustomTileset()
-        {
-            return AreListsEqual(_terrainTypes, GetDefaultTerrainTypes().ToArray())
-                && AreListsEqual(_cliffTypes, GetDefaultCliffTypes().ToArray());
         }
 
         private IEnumerable<TerrainType> GetDefaultTerrainTypes()
