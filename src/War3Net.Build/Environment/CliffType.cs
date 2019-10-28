@@ -9,7 +9,6 @@
 
 namespace War3Net.Build.Environment
 {
-    // Documentation used: http://max.slid.free.fr/maxEscapeCreation/terrains.php?lang=eng
     public enum CliffType
     {
         /// ===================================== \\\
@@ -17,251 +16,251 @@ namespace War3Net.Build.Environment
         /// ===================================== \\\
 
         /// <summary>
-        /// Lordaeron Summer - Dirt Cliff ('cLc2').
+        /// Lordaeron Summer - Dirt Cliff ('CLdi').
         /// </summary>
-        L_Dirt = ('c' << 0) | ('L' << 8) | ('c' << 16) | ('2' << 24),
+        L_Dirt = ('C' << 0) | ('L' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Lordaeron Summer - Grass Cliff ('cLc1').
+        /// Lordaeron Summer - Grass Cliff ('CLgr').
         /// </summary>
-        L_Grass = ('c' << 0) | ('L' << 8) | ('c' << 16) | ('1' << 24),
+        L_Grass = ('C' << 0) | ('L' << 8) | ('g' << 16) | ('r' << 24),
 
         /// =================================== \\\
         /// <see cref="Tileset.LordaeronFall"/> \\\
         /// =================================== \\\
 
         /// <summary>
-        /// Lordaeron Fall - Dirt Cliff ('cFc2').
+        /// Lordaeron Fall - Dirt Cliff ('CFdi').
         /// </summary>
-        F_Dirt = ('c' << 0) | ('F' << 8) | ('c' << 16) | ('2' << 24),
+        F_Dirt = ('C' << 0) | ('F' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Lordaeron Fall - Grass Cliff ('cFc1').
+        /// Lordaeron Fall - Grass Cliff ('CFgr').
         /// </summary>
-        F_Grass = ('c' << 0) | ('F' << 8) | ('c' << 16) | ('1' << 24),
+        F_Grass = ('C' << 0) | ('F' << 8) | ('g' << 16) | ('r' << 24),
 
         /// ===================================== \\\
         /// <see cref="Tileset.LordaeronWinter"/> \\\
         /// ===================================== \\\
 
         /// <summary>
-        /// Lordaeron Winter - Grass Cliff ('cWc2').
+        /// Lordaeron Winter - Grass Cliff ('CWgr').
         /// </summary>
-        W_Grass = ('c' << 0) | ('W' << 8) | ('c' << 16) | ('2' << 24),
+        W_Grass = ('C' << 0) | ('W' << 8) | ('g' << 16) | ('r' << 24),
 
         /// <summary>
-        /// Lordaeron Winter - Snow Cliff ('cWc1').
+        /// Lordaeron Winter - Snow Cliff ('CWsn').
         /// </summary>
-        W_Snow = ('c' << 0) | ('W' << 8) | ('c' << 16) | ('1' << 24),
+        W_Snow = ('C' << 0) | ('W' << 8) | ('s' << 16) | ('n' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Barrens"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Barrens - Desert Cliff ('cBc2').
+        /// Barrens - Desert Cliff ('CBde').
         /// </summary>
-        B_Desert = ('c' << 0) | ('B' << 8) | ('c' << 16) | ('2' << 24),
+        B_Desert = ('C' << 0) | ('B' << 8) | ('d' << 16) | ('e' << 24),
 
         /// <summary>
-        /// Barrens - Grass Cliff ('cBc1').
+        /// Barrens - Grass Cliff ('CBgr').
         /// </summary>
-        B_Grass = ('c' << 0) | ('B' << 8) | ('c' << 16) | ('1' << 24),
+        B_Grass = ('C' << 0) | ('B' << 8) | ('g' << 16) | ('r' << 24),
 
         /// =============================== \\\
         /// <see cref="Tileset.Ashenvale"/> \\\
         /// =============================== \\\
 
         /// <summary>
-        /// Ashenvale - Dirt Cliff ('cAc2').
+        /// Ashenvale - Dirt Cliff ('CAdi').
         /// </summary>
-        A_Dirt = ('c' << 0) | ('A' << 8) | ('c' << 16) | ('2' << 24),
+        A_Dirt = ('C' << 0) | ('A' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Ashenvale - Grass Cliff ('cAc1').
+        /// Ashenvale - Grass Cliff ('CAgr').
         /// </summary>
-        A_Grass = ('c' << 0) | ('A' << 8) | ('c' << 16) | ('1' << 24),
+        A_Grass = ('C' << 0) | ('A' << 8) | ('g' << 16) | ('r' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Felwood"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Felwood - Dirt Cliff ('cCc2').
+        /// Felwood - Dirt Cliff ('CCdi').
         /// </summary>
-        C_Dirt = ('c' << 0) | ('C' << 8) | ('c' << 16) | ('2' << 24),
+        C_Dirt = ('C' << 0) | ('C' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Felwood - Grass Cliff ('cCc1').
+        /// Felwood - Grass Cliff ('CCgr').
         /// </summary>
-        C_Grass = ('c' << 0) | ('C' << 8) | ('c' << 16) | ('1' << 24),
+        C_Grass = ('C' << 0) | ('C' << 8) | ('g' << 16) | ('r' << 24),
 
         /// =============================== \\\
         /// <see cref="Tileset.Northrend"/> \\\
         /// =============================== \\\
 
         /// <summary>
-        /// Northrend - Dirt Cliff ('cNc2').
+        /// Northrend - Dirt Cliff ('CNdi').
         /// </summary>
-        N_Dirt = ('c' << 0) | ('N' << 8) | ('c' << 16) | ('2' << 24),
+        N_Dirt = ('C' << 0) | ('N' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Northrend - Snow Cliff ('cNc1').
+        /// Northrend - Snow Cliff ('CNsn').
         /// </summary>
-        N_Snow = ('c' << 0) | ('N' << 8) | ('c' << 16) | ('1' << 24),
+        N_Snow = ('C' << 0) | ('N' << 8) | ('s' << 16) | ('n' << 24),
 
         /// =============================== \\\
         /// <see cref="Tileset.Cityscape"/> \\\
         /// =============================== \\\
 
         /// <summary>
-        /// Cityscape - Dirt Cliff ('cYc2').
+        /// Cityscape - Dirt Cliff ('CYdi').
         /// </summary>
-        Y_Dirt = ('c' << 0) | ('Y' << 8) | ('c' << 16) | ('2' << 24),
+        Y_Dirt = ('C' << 0) | ('Y' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Cityscape - Square Tiles Cliff ('cYc1').
+        /// Cityscape - Square Tiles Cliff ('CYsq').
         /// </summary>
-        Y_SquareTiles = ('c' << 0) | ('Y' << 8) | ('c' << 16) | ('1' << 24),
+        Y_SquareTiles = ('C' << 0) | ('Y' << 8) | ('s' << 16) | ('q' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Village"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Village - Dirt Cliff ('cVc2').
+        /// Village - Dirt Cliff ('CVdi').
         /// </summary>
-        V_Dirt = ('c' << 0) | ('V' << 8) | ('c' << 16) | ('2' << 24),
+        V_Dirt = ('C' << 0) | ('V' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Village - Grass Dirt Cliff ('cVc1').
+        /// Village - Grass Dirt Cliff ('CVgr').
         /// </summary>
-        V_GrassDirt = ('c' << 0) | ('V' << 8) | ('c' << 16) | ('1' << 24),
+        V_GrassDirt = ('C' << 0) | ('V' << 8) | ('g' << 16) | ('r' << 24),
 
         /// ================================= \\\
         /// <see cref="Tileset.VillageFall"/> \\\
         /// ================================= \\\
 
         /// <summary>
-        /// Village Fall - Dirt Cliff ('cQc2').
+        /// Village Fall - Dirt Cliff ('CQdi').
         /// </summary>
-        Q_Dirt = ('c' << 0) | ('Q' << 8) | ('c' << 16) | ('2' << 24),
+        Q_Dirt = ('C' << 0) | ('Q' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Village Fall - Grass Thick Cliff ('cQc1').
+        /// Village Fall - Grass Thick Cliff ('CQgr').
         /// </summary>
-        Q_GrassThick = ('c' << 0) | ('Q' << 8) | ('c' << 16) | ('1' << 24),
+        Q_GrassThick = ('C' << 0) | ('Q' << 8) | ('g' << 16) | ('r' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Dalaran"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Dalaran - Dirt Cliff ('cXc2').
+        /// Dalaran - Dirt Cliff ('CXdi').
         /// </summary>
-        X_Dirt = ('c' << 0) | ('X' << 8) | ('c' << 16) | ('2' << 24),
+        X_Dirt = ('C' << 0) | ('X' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Dalaran - Square Tiles Cliff ('cXc1').
+        /// Dalaran - Square Tiles Cliff ('CXsq').
         /// </summary>
-        X_SquareTiles = ('c' << 0) | ('X' << 8) | ('c' << 16) | ('1' << 24),
+        X_SquareTiles = ('C' << 0) | ('X' << 8) | ('s' << 16) | ('q' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Dungeon"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Dungeon - Dirt Cliff ('cDc2').
+        /// Dungeon - Dirt Cliff ('CDdi').
         /// </summary>
-        D_Dirt = ('c' << 0) | ('D' << 8) | ('c' << 16) | ('2' << 24),
+        D_Dirt = ('C' << 0) | ('D' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Dungeon - Square Tiles Cliff ('cDc1').
+        /// Dungeon - Square Tiles Cliff ('CDsq').
         /// </summary>
-        D_SquareTiles = ('c' << 0) | ('D' << 8) | ('c' << 16) | ('1' << 24),
+        D_SquareTiles = ('C' << 0) | ('D' << 8) | ('s' << 16) | ('q' << 24),
 
         /// ================================= \\\
         /// <see cref="Tileset.Underground"/> \\\
         /// ================================= \\\
 
         /// <summary>
-        /// Underground - Dirt Cliff ('cGc2').
+        /// Underground - Dirt Cliff ('CGdi').
         /// </summary>
-        G_Dirt = ('c' << 0) | ('G' << 8) | ('c' << 16) | ('2' << 24),
+        G_Dirt = ('C' << 0) | ('G' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Underground - Square Tiles Cliff ('cGc1').
+        /// Underground - Square Tiles Cliff ('CGsq').
         /// </summary>
-        G_SquareTiles = ('c' << 0) | ('G' << 8) | ('c' << 16) | ('1' << 24),
+        G_SquareTiles = ('C' << 0) | ('G' << 8) | ('s' << 16) | ('q' << 24),
 
         /// ================================= \\\
         /// <see cref="Tileset.SunkenRuins"/> \\\
         /// ================================= \\\
 
         /// <summary>
-        /// Sunken Ruins - Dirt Cliff ('cZc2').
+        /// Sunken Ruins - Dirt Cliff ('CZdi').
         /// </summary>
-        Z_Dirt = ('c' << 0) | ('Z' << 8) | ('c' << 16) | ('2' << 24),
+        Z_Dirt = ('C' << 0) | ('Z' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Sunken Ruins - Large Bricks Cliff ('cZc1').
+        /// Sunken Ruins - Large Bricks Cliff ('CZlb').
         /// </summary>
-        Z_LargeBricks = ('c' << 0) | ('Z' << 8) | ('c' << 16) | ('1' << 24),
+        Z_LargeBricks = ('C' << 0) | ('Z' << 8) | ('l' << 16) | ('b' << 24),
 
         /// ===================================== \\\
         /// <see cref="Tileset.IcecrownGlacier"/> \\\
         /// ===================================== \\\
 
         /// <summary>
-        /// Icecrown Glacier - Rune Bricks Cliff ('cIc2').
+        /// Icecrown Glacier - Rune Bricks Cliff ('CIrb').
         /// </summary>
-        I_RuneBricks = ('c' << 0) | ('I' << 8) | ('c' << 16) | ('2' << 24),
+        I_RuneBricks = ('C' << 0) | ('I' << 8) | ('r' << 16) | ('b' << 24),
 
         /// <summary>
-        /// Icecrown Glacier - Snow Cliff ('cIc1').
+        /// Icecrown Glacier - Snow Cliff ('CIsn').
         /// </summary>
-        I_Snow = ('c' << 0) | ('I' << 8) | ('c' << 16) | ('1' << 24),
+        I_Snow = ('C' << 0) | ('I' << 8) | ('s' << 16) | ('n' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Outland"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Outland - Rough Dirt Cliff ('cOc2').
+        /// Outland - Rough Dirt Cliff ('COrd').
         /// </summary>
-        O_RoughDirt = ('c' << 0) | ('O' << 8) | ('c' << 16) | ('2' << 24),
+        O_RoughDirt = ('C' << 0) | ('O' << 8) | ('r' << 16) | ('d' << 24),
 
         /// <summary>
-        /// Outland - Abyss Cliff ('cOc1').
+        /// Outland - Abyss Cliff ('COdi').
         /// </summary>
-        O_Abyss = ('c' << 0) | ('O' << 8) | ('c' << 16) | ('1' << 24),
+        O_Abyss = ('C' << 0) | ('O' << 8) | ('d' << 16) | ('i' << 24),
 
         /// ================================== \\\
         /// <see cref="Tileset.BlackCitadel"/> \\\
         /// ================================== \\\
 
         /// <summary>
-        /// Black Citadel - Dark Tiles Cliff ('cKc2').
+        /// Black Citadel - Dark Tiles Cliff ('CKdt').
         /// </summary>
-        K_DarkTiles = ('c' << 0) | ('K' << 8) | ('c' << 16) | ('2' << 24),
+        K_DarkTiles = ('C' << 0) | ('K' << 8) | ('d' << 16) | ('t' << 24),
 
         /// <summary>
-        /// Black Citadel - Dirt Cliff ('cKc1').
+        /// Black Citadel - Dirt Cliff ('CKdi').
         /// </summary>
-        K_Dirt = ('c' << 0) | ('K' << 8) | ('c' << 16) | ('1' << 24),
+        K_Dirt = ('C' << 0) | ('K' << 8) | ('d' << 16) | ('i' << 24),
 
         /// ================================== \\\
         /// <see cref="Tileset.DalaranRuins"/> \\\
         /// ================================== \\\
 
         /// <summary>
-        /// Dalaran Ruins - Dirt Cliff ('cJc2').
+        /// Dalaran Ruins - Dirt Cliff ('CJdi').
         /// </summary>
-        J_Dirt = ('c' << 0) | ('J' << 8) | ('c' << 16) | ('2' << 24),
+        J_Dirt = ('C' << 0) | ('J' << 8) | ('d' << 16) | ('i' << 24),
 
         /// <summary>
-        /// Dalaran Ruins - Square Tiles Cliff ('cJc1').
+        /// Dalaran Ruins - Square Tiles Cliff ('CJsq').
         /// </summary>
-        J_SquareTiles = ('c' << 0) | ('J' << 8) | ('c' << 16) | ('1' << 24),
+        J_SquareTiles = ('C' << 0) | ('J' << 8) | ('s' << 16) | ('q' << 24),
     }
 }
