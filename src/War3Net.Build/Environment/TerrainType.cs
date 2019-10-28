@@ -871,9 +871,9 @@ namespace War3Net.Build.Environment
         K_LightDirt = ('K' << 0) | ('f' << 8) | ('s' << 16) | ('l' << 24),
 
         /// <summary>
-        /// Black Citadel - Rough Dirt ('Kdts').
+        /// Black Citadel - Rough Dirt ('Kdtr').
         /// </summary>
-        K_RoughDirt = ('K' << 0) | ('d' << 8) | ('t' << 16) | ('s' << 24),
+        K_RoughDirt = ('K' << 0) | ('d' << 8) | ('t' << 16) | ('r' << 24),
 
         /// <summary>
         /// Black Citadel - Flat Stones ('Kfst').
