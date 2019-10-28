@@ -36,20 +36,8 @@ namespace War3Net.IO.Mpq.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
-        public void TestStoreCompressedThenRetrieveFile(string filename)
-        {
-            TestStoreThenRetrieveFile(filename, MpqFileFlags.Exists | MpqFileFlags.Compressed);
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
-        public void TestStoreCompressedSingleUnitThenRetrieveFile(string filename)
-        {
-            TestStoreThenRetrieveFile(filename, MpqFileFlags.Exists | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit);
-        }
-
-        private void TestStoreThenRetrieveFile(string filename, MpqFileFlags flags)
+        [DynamicData(nameof(GetTestFilesAndFlags), DynamicDataSourceType.Method)]
+        public void TestStoreThenRetrieveFileWithFlags(string filename, MpqFileFlags flags)
         {
             var fileStream = File.OpenRead(filename);
             var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, flags, BlockSize);
@@ -94,6 +82,29 @@ namespace War3Net.IO.Mpq.Tests
             foreach (var file in Directory.EnumerateFiles("TestData", "*", SearchOption.TopDirectoryOnly))
             {
                 yield return new object[] { file };
+            }
+        }
+
+        private static IEnumerable<object[]> GetTestFilesAndFlags()
+        {
+            foreach (var file in Directory.EnumerateFiles("TestData", "*", SearchOption.TopDirectoryOnly))
+            {
+                if (new FileInfo(file).Name == "noise.png")
+                {
+                    continue;
+                }
+
+                yield return new object[] { file, MpqFileFlags.Exists };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Compressed };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
+
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.Compressed };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
+
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Compressed };
+                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
             }
         }
     }
