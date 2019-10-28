@@ -344,10 +344,29 @@ namespace War3Net.IO.Mpq
                         if ((entry.Flags & MpqFileFlags.Garbage) == 0)
                         {
                             var size = entry.CompressedSize;
-                            sourceStream.Position = entry.FilePosition!.Value;
-                            writer.Write(reader.ReadBytes((int)size));
+                            var flags = entry.Flags;
 
-                            blockTable[i] = new MpqEntry(0, MpqHeader.Size + archiveSize, entry.CompressedSize, entry.FileSize, entry.Flags);
+                            if (entry.IsEncrypted && entry.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
+                            {
+                                // To prevent encryption seed becoming incorrect, save file uncompressed and unencrypted.
+                                var pos = sourceStream.Position;
+                                using (var mpqStream = new MpqStream(entry, sourceStream, BlockSizeModifier << mpqHeader.BlockSize))
+                                {
+                                    mpqStream.CopyTo(memoryStream);
+                                }
+
+                                sourceStream.Position = pos + size;
+
+                                size = entry.FileSize;
+                                flags = entry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey);
+                            }
+                            else
+                            {
+                                sourceStream.Position = entry.FilePosition!.Value;
+                                writer.Write(reader.ReadBytes((int)size));
+                            }
+
+                            blockTable[i] = new MpqEntry(0, MpqHeader.Size + archiveSize, size, entry.FileSize, flags);
                             archiveSize += size;
                         }
                         else
