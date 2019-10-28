@@ -12,8 +12,11 @@ namespace War3Net.CodeAnalysis.Common
     /// <summary>
     /// Indicates that the class is a container for members with the <see cref="NativeLuaMemberAttribute"/>.
     /// </summary>
+    /// <remarks>
+    /// This attribute is only useful when it's applied to classes whose .cs source files are passed to the compiler.
+    /// It has no effect on classes that are referenced through a .dll file.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    [Obsolete("This attribute is not used during transpilation")]
     public class NativeLuaMemberContainerAttribute : Attribute
     {
     }
