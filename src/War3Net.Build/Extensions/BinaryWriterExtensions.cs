@@ -13,8 +13,8 @@ namespace War3Net.Build.Extensions
     {
         public static void WriteString(this BinaryWriter writer, string s)
         {
-            bool endsWithNullChar = false;
-            foreach (var c in s)
+            var endsWithNullChar = false;
+            foreach (var c in s ?? string.Empty)
             {
                 writer.Write(c);
                 endsWithNullChar = c == char.MinValue;
