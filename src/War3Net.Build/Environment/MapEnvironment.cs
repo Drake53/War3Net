@@ -125,7 +125,7 @@ namespace War3Net.Build.Environment
 
                 environment._version = reader.ReadUInt32();
 
-                if (environment._version != 11)
+                if (environment._version != LatestVersion)
                 {
                     throw new Exception();
                 }
