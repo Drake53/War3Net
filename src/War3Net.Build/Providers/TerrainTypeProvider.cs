@@ -243,13 +243,13 @@ namespace War3Net.Build.Providers
                     yield break;
 
                 case Tileset.Ashenvale:
-                    yield return CliffType.A_Dirt;
                     yield return CliffType.A_Grass;
+                    yield return CliffType.A_Dirt;
                     yield break;
 
                 case Tileset.Felwood:
-                    yield return CliffType.C_Dirt;
                     yield return CliffType.C_Grass;
+                    yield return CliffType.C_Dirt;
                     yield break;
 
                 case Tileset.Northrend:
@@ -293,18 +293,18 @@ namespace War3Net.Build.Providers
                     yield break;
 
                 case Tileset.IcecrownGlacier:
-                    yield return CliffType.I_RuneBricks;
                     yield return CliffType.I_Snow;
+                    yield return CliffType.I_RuneBricks;
                     yield break;
 
                 case Tileset.Outland:
-                    yield return CliffType.O_RoughDirt;
                     yield return CliffType.O_Abyss;
+                    yield return CliffType.O_RoughDirt;
                     yield break;
 
                 case Tileset.BlackCitadel:
-                    yield return CliffType.K_DarkTiles;
                     yield return CliffType.K_Dirt;
+                    yield return CliffType.K_DarkTiles;
                     yield break;
 
                 case Tileset.DalaranRuins:

@@ -72,28 +72,28 @@ namespace War3Net.Build.Environment
         /// =============================== \\\
 
         /// <summary>
-        /// Ashenvale - Dirt Cliff ('CAdi').
-        /// </summary>
-        A_Dirt = ('C' << 0) | ('A' << 8) | ('d' << 16) | ('i' << 24),
-
-        /// <summary>
         /// Ashenvale - Grass Cliff ('CAgr').
         /// </summary>
         A_Grass = ('C' << 0) | ('A' << 8) | ('g' << 16) | ('r' << 24),
+
+        /// <summary>
+        /// Ashenvale - Dirt Cliff ('CAdi').
+        /// </summary>
+        A_Dirt = ('C' << 0) | ('A' << 8) | ('d' << 16) | ('i' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Felwood"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Felwood - Dirt Cliff ('CCdi').
-        /// </summary>
-        C_Dirt = ('C' << 0) | ('C' << 8) | ('d' << 16) | ('i' << 24),
-
-        /// <summary>
         /// Felwood - Grass Cliff ('CCgr').
         /// </summary>
         C_Grass = ('C' << 0) | ('C' << 8) | ('g' << 16) | ('r' << 24),
+
+        /// <summary>
+        /// Felwood - Dirt Cliff ('CCdi').
+        /// </summary>
+        C_Dirt = ('C' << 0) | ('C' << 8) | ('d' << 16) | ('i' << 24),
 
         /// =============================== \\\
         /// <see cref="Tileset.Northrend"/> \\\
@@ -212,42 +212,42 @@ namespace War3Net.Build.Environment
         /// ===================================== \\\
 
         /// <summary>
-        /// Icecrown Glacier - Rune Bricks Cliff ('CIrb').
-        /// </summary>
-        I_RuneBricks = ('C' << 0) | ('I' << 8) | ('r' << 16) | ('b' << 24),
-
-        /// <summary>
         /// Icecrown Glacier - Snow Cliff ('CIsn').
         /// </summary>
         I_Snow = ('C' << 0) | ('I' << 8) | ('s' << 16) | ('n' << 24),
+
+        /// <summary>
+        /// Icecrown Glacier - Rune Bricks Cliff ('CIrb').
+        /// </summary>
+        I_RuneBricks = ('C' << 0) | ('I' << 8) | ('r' << 16) | ('b' << 24),
 
         /// ============================= \\\
         /// <see cref="Tileset.Outland"/> \\\
         /// ============================= \\\
 
         /// <summary>
-        /// Outland - Rough Dirt Cliff ('COrd').
-        /// </summary>
-        O_RoughDirt = ('C' << 0) | ('O' << 8) | ('r' << 16) | ('d' << 24),
-
-        /// <summary>
         /// Outland - Abyss Cliff ('COdi').
         /// </summary>
         O_Abyss = ('C' << 0) | ('O' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Outland - Rough Dirt Cliff ('COrd').
+        /// </summary>
+        O_RoughDirt = ('C' << 0) | ('O' << 8) | ('r' << 16) | ('d' << 24),
 
         /// ================================== \\\
         /// <see cref="Tileset.BlackCitadel"/> \\\
         /// ================================== \\\
 
         /// <summary>
-        /// Black Citadel - Dark Tiles Cliff ('CKdt').
-        /// </summary>
-        K_DarkTiles = ('C' << 0) | ('K' << 8) | ('d' << 16) | ('t' << 24),
-
-        /// <summary>
         /// Black Citadel - Dirt Cliff ('CKdi').
         /// </summary>
         K_Dirt = ('C' << 0) | ('K' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Black Citadel - Dark Tiles Cliff ('CKdt').
+        /// </summary>
+        K_DarkTiles = ('C' << 0) | ('K' << 8) | ('d' << 16) | ('t' << 24),
 
         /// ================================== \\\
         /// <see cref="Tileset.DalaranRuins"/> \\\
