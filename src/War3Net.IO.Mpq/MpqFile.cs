@@ -119,7 +119,7 @@ namespace War3Net.IO.Mpq
                 throw new InvalidOperationException("Cannot serialize MpqFile twice.");
             }
 
-            using var compressedStream = GetCompressedStream(_baseStream, _entry.Flags, CompressionType.ZLib);
+            using var compressedStream = GetCompressedStream(CompressionType.ZLib);
             _entry.CompressedSize = (uint)compressedStream.Length;
 
             var blockPosCount = (uint)(((int)_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
@@ -182,23 +182,53 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private Stream GetCompressedStream(Stream baseStream, MpqFileFlags flags, CompressionType compressionType)
+        private Stream GetCompressedStream(CompressionType compressionType)
         {
-            var compressedStream = new MemoryStream();
-            var length = (uint)baseStream.Length;
+            var resultStream = new MemoryStream();
+            var singleUnit = _entry.Flags.HasFlag(MpqFileFlags.SingleUnit);
 
-            if ((flags & MpqFileFlags.Compressed) == 0)
+            void TryCompress(uint bytes)
             {
-                baseStream.CopyTo(compressedStream);
-            }
-            else if (flags.HasFlag(MpqFileFlags.SingleUnit))
-            {
+                var offset = _baseStream.Position;
+                var compressedStream = new MemoryStream();
+
                 _ = compressionType switch
                 {
-                    CompressionType.ZLib => ZLibCompression.TryCompress(baseStream, compressedStream, length, true),
+                    CompressionType.ZLib => ZLibCompression.CompressTo(_baseStream, compressedStream, (int)bytes, true),
 
                     _ => throw new NotSupportedException(),
                 };
+
+                // Add one because CompressionType byte not written yet.
+                var length = compressedStream.Length + 1;
+                if (length == bytes || (!singleUnit && length > bytes))
+                {
+                    _baseStream.CopyTo(resultStream, offset, (int)bytes, StreamExtensions.DefaultBufferSize);
+                }
+                else
+                {
+                    resultStream.WriteByte((byte)CompressionType.ZLib);
+                    compressedStream.Position = 0;
+                    compressedStream.CopyTo(resultStream);
+                }
+
+                compressedStream.Dispose();
+
+                if (singleUnit)
+                {
+                    _baseStream.Dispose();
+                }
+            }
+
+            var length = (uint)_baseStream.Length;
+
+            if ((_entry.Flags & MpqFileFlags.Compressed) == 0)
+            {
+                _baseStream.CopyTo(resultStream);
+            }
+            else if (singleUnit)
+            {
+                TryCompress(length);
             }
             else
             {
@@ -206,21 +236,18 @@ namespace War3Net.IO.Mpq
                 var blockOffsets = new uint[blockCount];
 
                 blockOffsets[0] = 4 * blockCount;
-                compressedStream.Position = blockOffsets[0];
+                resultStream.Position = blockOffsets[0];
 
                 for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
                 {
-                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(baseStream.Length - baseStream.Position) : (uint)_blockSize;
-                    blockOffsets[blockIndex] = compressionType switch
-                    {
-                        CompressionType.ZLib => ZLibCompression.TryCompress(baseStream, compressedStream, bytesToCompress, false),
+                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(_baseStream.Length - _baseStream.Position) : (uint)_blockSize;
 
-                        _ => throw new NotSupportedException(),
-                    };
+                    TryCompress(bytesToCompress);
+                    blockOffsets[blockIndex] = (uint)resultStream.Position;
                 }
 
-                compressedStream.Position = 0;
-                using (var writer = new BinaryWriter(compressedStream, new System.Text.UTF8Encoding(false, true), true))
+                resultStream.Position = 0;
+                using (var writer = new BinaryWriter(resultStream, new System.Text.UTF8Encoding(false, true), true))
                 {
                     for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
@@ -229,8 +256,8 @@ namespace War3Net.IO.Mpq
                 }
             }
 
-            compressedStream.Position = 0;
-            return compressedStream;
+            resultStream.Position = 0;
+            return resultStream;
         }
     }
 }

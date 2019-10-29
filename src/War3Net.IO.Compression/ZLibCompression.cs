@@ -20,51 +20,7 @@ namespace War3Net.IO.Compression
 {
     public static class ZLibCompression
     {
-        public static uint TryCompress(Stream inputStream, Stream outputStream, uint bytes, bool singleUnit)
-        {
-            _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
-            _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
-
-            var offset = inputStream.Position;
-            var compressed = new MemoryStream();
-            CompressTo(inputStream, compressed, (int)bytes, true);
-
-            // Add one because CompressionType byte not written yet.
-            var length = compressed.Length + 1;
-            if (length == bytes || (!singleUnit && length > bytes))
-            {
-                compressed.Dispose();
-
-                inputStream.Position = offset;
-                for (var i = 0; i < bytes; i++)
-                {
-                    var r = inputStream.ReadByte();
-                    if (r == -1)
-                    {
-                        break;
-                    }
-
-                    outputStream.WriteByte((byte)r);
-                }
-            }
-            else
-            {
-                outputStream.WriteByte((byte)CompressionType.ZLib);
-                compressed.Position = 0;
-                compressed.CopyTo(outputStream);
-                compressed.Dispose();
-            }
-
-            if (singleUnit)
-            {
-                inputStream.Dispose();
-            }
-
-            var result = (uint)outputStream.Position;
-            return result;
-        }
-
-        private static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
+        public static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
         {
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
             _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
