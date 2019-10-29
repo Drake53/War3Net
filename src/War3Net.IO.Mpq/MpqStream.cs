@@ -341,7 +341,7 @@ namespace War3Net.IO.Mpq
         private void LoadSingleUnit()
         {
             // Read the entire file into memory
-            var filedata = new byte[_entry.CompressedSize];
+            var filedata = new byte[_entry.CompressedSize!.Value];
             lock (_stream)
             {
                 _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);

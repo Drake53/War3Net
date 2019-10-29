@@ -23,6 +23,8 @@ namespace War3Net.IO.Mpq
         private MpqHash? _hash;
         private uint _hashIndex; // position in hashtable
 
+        // TODO: make private ctor to ensure that filename is only null when using the MpqHash ctor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqFile"/> class.
         /// </summary>
@@ -67,20 +69,33 @@ namespace War3Net.IO.Mpq
             _hashCollisions = hashCollisions;
         }
 
-        public MpqEntry MpqEntry => _entry;
+        internal MpqEntry MpqEntry => _entry;
 
-        public MpqHash MpqHash => _hash.Value;
+        internal MpqHash MpqHash => _hash.Value;
 
-        public uint HashIndex => _hashIndex;
+        internal uint HashIndex => _hashIndex;
 
-        public uint HashCollisions => _hashCollisions;
+        internal uint HashCollisions => _hashCollisions;
 
         /// <summary>
         /// Gets the filename of this <see cref="MpqFile"/>.
         /// </summary>
-        public string Name => _entry.Filename;
+        private string Name => _entry.Filename;
 
-        public void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _compressedStream.Dispose();
+        }
+
+        /// <inheritdoc/>
+        bool IEquatable<MpqFile>.Equals(MpqFile other)
+        {
+            // TODO: if Name is null, use other property (MpqHash?) to compare
+            return StringComparer.OrdinalIgnoreCase.Compare(Name, other.Name) == 0;
+        }
+
+        internal void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
         {
             // TODO: verify that blocksize of mpqfile and mpqarchive to which it gets added are the same, otherwise throw an exception
 
@@ -105,8 +120,10 @@ namespace War3Net.IO.Mpq
             WriteTo( new BinaryWriter( stream ) );
         }*/
 
-        public void SerializeTo(BinaryWriter writer, bool dispose = true)
+        internal void WriteTo(BinaryWriter writer, bool dispose = true)
         {
+            // TODO; compress first (if needed) and set entry's compressedSize property. then remove compression from ctor
+
             var blockPosCount = (uint)(((int)_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
             if (_entry.IsEncrypted && blockPosCount > 1)
             {
@@ -165,18 +182,6 @@ namespace War3Net.IO.Mpq
             {
                 Dispose();
             }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            _compressedStream.Dispose();
-        }
-
-        /// <inheritdoc/>
-        bool IEquatable<MpqFile>.Equals(MpqFile other)
-        {
-            return StringComparer.OrdinalIgnoreCase.Compare(Name, other.Name) == 0;
         }
 
         private Stream GetCompressedStream(Stream baseStream, MpqFileFlags flags, CompressionType compressionType, uint length)

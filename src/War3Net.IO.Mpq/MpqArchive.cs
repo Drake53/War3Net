@@ -125,13 +125,19 @@ namespace War3Net.IO.Mpq
 
                     if (_archiveFollowsHeader)
                     {
-                        mpqFile.SerializeTo(writer, true);
+                        mpqFile.WriteTo(writer, true);
+                    }
+                    else
+                    {
+                        // TODO: precompute entry's compressed size, or precompute table sizes to know at what position in stream the mpqFile must be written
+                        // this is required because otherwise the MpqEntry's CompressedSize can be null when it gets added to the blockTable
+                        throw new NotSupportedException();
                     }
 
                     hashTableEntries += _hashTable.Add(mpqFile.MpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
                     _blockTable.Add(mpqFile.MpqEntry);
 
-                    filePos += mpqFile.MpqEntry.CompressedSize;
+                    filePos += mpqFile.MpqEntry.CompressedSize!.Value;
                     fileIndex++;
                 }
 
@@ -153,7 +159,7 @@ namespace War3Net.IO.Mpq
                 {
                     foreach (var mpqFile in mpqFiles)
                     {
-                        mpqFile.SerializeTo(writer, true);
+                        mpqFile.WriteTo(writer, true);
                     }
                 }
 
@@ -343,7 +349,7 @@ namespace War3Net.IO.Mpq
                         var entry = blockTable[i];
                         if ((entry.Flags & MpqFileFlags.Garbage) == 0)
                         {
-                            var size = entry.CompressedSize;
+                            var size = entry.CompressedSize!.Value;
                             var flags = entry.Flags;
 
                             if (entry.IsEncrypted && entry.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
@@ -467,7 +473,7 @@ namespace War3Net.IO.Mpq
                                 }
 
                                 binaryReader.ReadBytes((int)entry.CompressedSize);
-                                bytesReadSoFar += entry.CompressedSize;
+                                bytesReadSoFar += entry.CompressedSize!.Value;
 
                                 bytesToRead = (int)(header.HashTableOffset - bytesReadSoFar);
                                 binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
@@ -482,7 +488,7 @@ namespace War3Net.IO.Mpq
                                 var offset = mpqEntry.FileOffset!.Value;
                                 var isReplacedEntry = offset == entry.FileOffset;
                                 var fileOffset = offset + (offset > entry.FileOffset!.Value ? (uint)sizeDifference : 0);
-                                var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
+                                var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize!.Value;
                                 var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
                                 var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
 
@@ -558,7 +564,7 @@ namespace War3Net.IO.Mpq
                         }
 
                         binaryReader.ReadBytes((int)entry.CompressedSize);
-                        bytesReadSoFar += entry.CompressedSize;
+                        bytesReadSoFar += entry.CompressedSize!.Value;
 
                         bytesToRead = (int)(hashtableOffset - bytesReadSoFar);
                         binaryWriter.Write(binaryReader.ReadBytes(bytesToRead));
@@ -573,7 +579,7 @@ namespace War3Net.IO.Mpq
                         var offset = mpqEntry.FileOffset!.Value;
                         var isReplacedEntry = offset == entry.FileOffset;
                         var fileOffset = offset + (offset > entry.FileOffset!.Value ? (uint)sizeDifference : 0);
-                        var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize;
+                        var compressedSize = isReplacedEntry ? (uint)fileLength : mpqEntry.CompressedSize!.Value;
                         var fileSize = isReplacedEntry ? (uint)fileLength : mpqEntry.FileSize;
                         var flags = isReplacedEntry ? (mpqEntry.Flags & ~(MpqFileFlags.Compressed | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey)) : mpqEntry.Flags;
 

@@ -24,10 +24,10 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public const uint Size = 16;
 
-        private readonly uint _compressedSize;
         private readonly uint _fileSize;
         private readonly MpqFileFlags _flags;
 
+        private uint? _compressedSize;
         private uint _encryptionSeed;
 
         private string? _filename;
@@ -69,7 +69,7 @@ namespace War3Net.IO.Mpq
         /// <param name="compressedSize">The compressed size of the file.</param>
         /// <param name="fileSize">The uncompressed size of the file.</param>
         /// <param name="flags">The file's <see cref="MpqFileFlags"/>.</param>
-        internal MpqEntry(string? filename, uint compressedSize, uint fileSize, MpqFileFlags flags)
+        internal MpqEntry(string? filename, uint? compressedSize, uint fileSize, MpqFileFlags flags)
         {
             _filename = filename;
             _headerOffset = null;
@@ -82,7 +82,19 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the compressed file size of this <see cref="MpqEntry"/>.
         /// </summary>
-        public uint CompressedSize => _compressedSize;
+        public uint? CompressedSize
+        {
+            get => _compressedSize;
+            set
+            {
+                if (_compressedSize != null)
+                {
+                    throw new NotSupportedException("CompressedSize is read-only, because its value is currently not null.");
+                }
+
+                _compressedSize = value ?? throw new ArgumentNullException(nameof(value));
+            }
+        }
 
         /// <summary>
         /// Gets the uncompressed file size of this <see cref="MpqEntry"/>.
@@ -185,7 +197,7 @@ namespace War3Net.IO.Mpq
             }
 
             writer.Write((uint)_fileOffset);
-            writer.Write(_compressedSize);
+            writer.Write(_compressedSize!.Value);
             writer.Write(_fileSize);
             writer.Write((uint)_flags);
         }
