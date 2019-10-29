@@ -30,7 +30,8 @@ namespace War3Net.IO.Compression
             CompressTo(inputStream, compressed, (int)bytes, true);
 
             // Add one because CompressionType byte not written yet.
-            if (!singleUnit && (compressed.Length + 1) >= bytes)
+            var length = compressed.Length + 1;
+            if (length == bytes || (!singleUnit && length > bytes))
             {
                 compressed.Dispose();
 
