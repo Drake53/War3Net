@@ -10,7 +10,6 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.SharpZipLib.BZip2;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 using War3Net.IO.Compression;
 
@@ -21,8 +20,15 @@ namespace War3Net.IO.Mpq
     /// </summary>
     public class MpqStream : Stream
     {
+        private enum MpqStreamMode
+        {
+            Read = 0,
+            Write = 1,
+        }
+
         private readonly Stream _stream;
         private readonly int _blockSize;
+        private readonly MpqStreamMode _mode;
 
         private readonly MpqEntry _entry;
         private uint[] _blockPositions;
@@ -32,31 +38,24 @@ namespace War3Net.IO.Mpq
         private int _currentBlockIndex = -1;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MpqStream"/> class.
+        /// Initializes a new instance of the <see cref="MpqStream"/> class in Read mode.
         /// </summary>
         /// <param name="archive"></param>
         /// <param name="entry"></param>
         internal MpqStream(MpqArchive archive, MpqEntry entry)
+            : this(entry, archive.BaseStream, archive.BlockSize)
         {
-            _entry = entry;
-
-            _stream = archive.BaseStream;
-            _blockSize = archive.BlockSize;
-
-            if (_entry.IsCompressed && !_entry.IsSingleUnit)
-            {
-                LoadBlockPositions();
-            }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MpqStream"/> class.
+        /// Initializes a new instance of the <see cref="MpqStream"/> class in Read mode.
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="baseStream"></param>
         /// <param name="blockSize"></param>
         internal MpqStream(MpqEntry entry, Stream baseStream, int blockSize)
         {
+            _mode = MpqStreamMode.Read;
             _entry = entry;
 
             _stream = baseStream;
@@ -68,14 +67,23 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        /// <inheritdoc/>
-        public override bool CanRead => true;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqStream"/> class in Write mode.
+        /// </summary>
+        /// <param name="file"></param>
+        internal MpqStream(MpqFile file)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <inheritdoc/>
-        public override bool CanSeek => true;
+        public override bool CanRead => _mode == MpqStreamMode.Read;
 
         /// <inheritdoc/>
-        public override bool CanWrite => false;
+        public override bool CanSeek => _mode == MpqStreamMode.Read;
+
+        /// <inheritdoc/>
+        public override bool CanWrite => _mode == MpqStreamMode.Write;
 
         /// <inheritdoc/>
         public override long Length => _entry.FileSize;
@@ -96,6 +104,11 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
+            if (!CanSeek)
+            {
+                throw new NotSupportedException();
+            }
+
             var target = origin switch
             {
                 SeekOrigin.Begin => offset,
@@ -106,12 +119,12 @@ namespace War3Net.IO.Mpq
 
             if (target < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek before the beginning of the stream");
+                throw new ArgumentOutOfRangeException(nameof(offset), "Attempted to Seek before the beginning of the stream");
             }
 
             if (target > Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(offset), "Attmpted to Seek beyond the end of the stream");
+                throw new ArgumentOutOfRangeException(nameof(offset), "Attempted to Seek beyond the end of the stream");
             }
 
             return _position = target;
@@ -126,6 +139,11 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (!CanRead)
+            {
+                throw new NotSupportedException();
+            }
+
             if (_entry.IsSingleUnit)
             {
                 return ReadInternalSingleUnit(buffer, offset, count);
@@ -153,6 +171,11 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override int ReadByte()
         {
+            if (!CanRead)
+            {
+                throw new NotSupportedException();
+            }
+
             if (_position >= Length)
             {
                 return -1;
@@ -173,7 +196,12 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotSupportedException("Writing is not supported");
+            if (!CanWrite)
+            {
+                throw new NotSupportedException();
+            }
+
+            throw new NotImplementedException();
         }
 
         // Compressed files start with an array of offsets to make seeking possible
@@ -211,7 +239,7 @@ namespace War3Net.IO.Mpq
             }
              */
 
-            if (_entry.IsEncrypted)
+            if (_entry.IsEncrypted && blockposcount > 1)
             {
                 if (_entry.EncryptionSeed == 0)
                 {
@@ -240,7 +268,6 @@ namespace War3Net.IO.Mpq
         {
             uint offset;
             int toread;
-            uint encryptionseed;
 
             if (_entry.IsCompressed)
             {
@@ -273,8 +300,7 @@ namespace War3Net.IO.Mpq
                     throw new MpqParserException("Unable to determine encryption key");
                 }
 
-                encryptionseed = (uint)(blockIndex + _entry.EncryptionSeed);
-                StormBuffer.DecryptBlock(data, encryptionseed);
+                StormBuffer.DecryptBlock(data, (uint)(blockIndex + _entry.EncryptionSeed));
             }
 
             if (_entry.IsCompressed && (toread != expectedLength))
@@ -292,7 +318,6 @@ namespace War3Net.IO.Mpq
             return data;
         }
 
-        // SingleUnit entries can be compressed but are never encrypted
         private int ReadInternalSingleUnit(byte[] buffer, int offset, int count)
         {
             if (_position >= Length)
@@ -325,6 +350,16 @@ namespace War3Net.IO.Mpq
                 {
                     throw new MpqParserException("Insufficient data or invalid data length");
                 }
+            }
+
+            if (_entry.IsEncrypted && _entry.FileSize > 3)
+            {
+                if (_entry.EncryptionSeed == 0)
+                {
+                    throw new MpqParserException("Unable to determine encryption key");
+                }
+
+                StormBuffer.DecryptBlock(filedata, _entry.EncryptionSeed);
             }
 
             if (_entry.CompressedSize == _entry.FileSize)

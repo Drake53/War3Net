@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#define LEAVE_UNCOMPRESSED_IF_LARGER // TODO: depends on whether or not file has SingleUnit flag?
 #define USING_DOTNETZIP
 
 using System;
@@ -21,7 +20,7 @@ namespace War3Net.IO.Compression
 {
     public static class Deflate
     {
-        public static uint TryCompress(Stream inputStream, Stream outputStream, uint bytes, bool leaveOpen)
+        public static uint TryCompress(Stream inputStream, Stream outputStream, uint bytes, bool singleUnit)
         {
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
             _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
@@ -30,9 +29,8 @@ namespace War3Net.IO.Compression
             var compressed = new MemoryStream();
             CompressTo(inputStream, compressed, (int)bytes, true);
 
-#if LEAVE_UNCOMPRESSED_IF_LARGER
             // Add one because CompressionType byte not written yet.
-            if ((compressed.Length + 1) >= bytes)
+            if (!singleUnit && (compressed.Length + 1) >= bytes)
             {
                 compressed.Dispose();
 
@@ -49,7 +47,6 @@ namespace War3Net.IO.Compression
                 }
             }
             else
-#endif
             {
                 outputStream.WriteByte((byte)CompressionType.ZLib);
                 compressed.Position = 0;
@@ -57,7 +54,7 @@ namespace War3Net.IO.Compression
                 compressed.Dispose();
             }
 
-            if (!leaveOpen)
+            if (singleUnit)
             {
                 inputStream.Dispose();
             }
