@@ -84,8 +84,8 @@ namespace War3Net.IO.Mpq.Tests
                 inputArchive.BaseStream.Position = inputArchive[i].FilePosition!.Value;
                 recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition!.Value;
 
-                var size1 = inputArchive[i].CompressedSize;
-                var size2 = recreatedArchive[i].CompressedSize;
+                var size1 = inputArchive[i].CompressedSize!.Value;
+                var size2 = recreatedArchive[i].CompressedSize!.Value;
                 StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
             }
 
