@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="Deflate.cs" company="Drake53">
+// <copyright file="ZLibCompression.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,7 +18,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace War3Net.IO.Compression
 {
-    public static class Deflate
+    public static class ZLibCompression
     {
         public static uint TryCompress(Stream inputStream, Stream outputStream, uint bytes, bool singleUnit)
         {

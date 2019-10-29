@@ -526,7 +526,7 @@ namespace War3Net.IO.Mpq
         private static byte[] ZlibDecompress(Stream data, int expectedLength)
         {
             // This assumes that Zlib won't be used in combination with another compression type
-            return Deflate.Decompress(data, expectedLength);
+            return ZLibCompression.Decompress(data, expectedLength);
         }
     }
 }

@@ -195,7 +195,7 @@ namespace War3Net.IO.Mpq
             {
                 _ = compressionType switch
                 {
-                    CompressionType.ZLib => Deflate.TryCompress(baseStream, compressedStream, length, true),
+                    CompressionType.ZLib => ZLibCompression.TryCompress(baseStream, compressedStream, length, true),
 
                     _ => throw new NotSupportedException(),
                 };
@@ -213,7 +213,7 @@ namespace War3Net.IO.Mpq
                     var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(baseStream.Length - baseStream.Position) : (uint)_blockSize;
                     blockOffsets[blockIndex] = compressionType switch
                     {
-                        CompressionType.ZLib => Deflate.TryCompress(baseStream, compressedStream, bytesToCompress, false),
+                        CompressionType.ZLib => ZLibCompression.TryCompress(baseStream, compressedStream, bytesToCompress, false),
 
                         _ => throw new NotSupportedException(),
                     };
