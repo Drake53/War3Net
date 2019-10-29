@@ -52,6 +52,21 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(fileStream, openedStream);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestFlags), DynamicDataSourceType.Method)]
+        public void TestStoreThenRetrieveEmptyFileWithFlags(MpqFileFlags flags)
+        {
+            const string FileName = "someRandomFile.empty";
+
+            var mpqFile = new MpqFile(null, FileName, MpqLocale.Neutral, flags, BlockSize);
+            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
+
+            var openedArchive = MpqArchive.Open(archive.BaseStream);
+            var openedStream = openedArchive.OpenFile(FileName);
+
+            Assert.IsTrue(openedStream.Length == 0);
+        }
+
         [TestMethod]
         public void TestRecreatePKCompressed()
         {
@@ -94,18 +109,39 @@ namespace War3Net.IO.Mpq.Tests
                     continue;
                 }
 
-                yield return new object[] { file, MpqFileFlags.Exists };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Compressed };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
-
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.Compressed };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
-
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Compressed };
-                yield return new object[] { file, MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Compressed | MpqFileFlags.SingleUnit };
+                foreach (var flags in GetFlagCombinations())
+                {
+                    yield return new object[] { file, flags };
+                }
             }
+        }
+
+        private static IEnumerable<object[]> GetTestFlags()
+        {
+            foreach (var flags in GetFlagCombinations())
+            {
+                yield return new object[] { flags };
+            }
+        }
+
+        private static IEnumerable<MpqFileFlags> GetFlagCombinations()
+        {
+            yield return MpqFileFlags.Exists;
+            yield return MpqFileFlags.Exists | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.Encrypted;
+            yield return MpqFileFlags.Exists | MpqFileFlags.Encrypted | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.CompressedMulti;
+            yield return MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted;
+            yield return MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Encrypted;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.Encrypted | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.CompressedMulti;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.CompressedMulti | MpqFileFlags.SingleUnit;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted;
+            yield return MpqFileFlags.Exists | MpqFileFlags.BlockOffsetAdjustedKey | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted | MpqFileFlags.SingleUnit;
         }
     }
 }
