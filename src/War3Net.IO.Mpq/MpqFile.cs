@@ -31,10 +31,26 @@ namespace War3Net.IO.Mpq
             _locale = locale;
         }
 
+        /// <summary>
+        /// Position in the <see cref="HashTable"/>.
+        /// </summary>
         internal abstract uint HashIndex { get; }
 
+        /// <summary>
+        /// Gets a value that, combined with <see cref="HashIndex"/>, represents the range of indices where the file may be placed.
+        /// </summary>
+        /// <remarks>
+        /// This value is always zero for <see cref="MpqKnownFile"/>.
+        /// For <see cref="MpqUnknownFile"/>, it depends on the <see cref="MpqHash"/>es preceding this file's hash in the <see cref="MpqArchive"/> from which the file was retrieved.
+        /// </remarks>
         internal abstract uint HashCollisions { get; }
 
+        /// <summary>
+        /// The base encryption seed used to encrypt this <see cref="MpqFile"/>'s stream.
+        /// </summary>
+        /// <remarks>
+        /// If the <see cref="MpqFile"/> has the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag, this seed must be adjusted based on the file's position and size.
+        /// </remarks>
         protected abstract uint EncryptionSeed { get; }
 
         /// <inheritdoc/>
