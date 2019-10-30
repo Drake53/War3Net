@@ -7,71 +7,35 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq
 {
-    public class MpqFile : IEquatable<MpqFile>, IDisposable
+    public abstract class MpqFile : IEquatable<MpqFile>, IDisposable
     {
         private readonly Stream _baseStream;
-        private readonly MpqEntry _entry;
+        private readonly MpqFileFlags _flags;
         private readonly MpqLocale _locale;
-        private readonly int _blockSize; // used for compression
 
-        private readonly uint _hashCollisions; // possible amount of collisions this unknown file had in old archive
-        private MpqHash? _hash;
-        private uint _hashIndex; // position in hashtable
+        // TODO: move compression and encryption logic to a different file (MpqStream?)
 
-        // TODO: make private ctor to ensure that filename is only null when using the MpqHash ctor
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqFile"/> class.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="blockSize"/> is invalid.</exception>
-        public MpqFile(Stream? sourceStream, string fileName, MpqLocale locale, MpqFileFlags flags, ushort blockSize)
+        internal MpqFile(Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
         {
-            _blockSize = 0x200 << ((blockSize < 0 || blockSize > 22) ? throw new ArgumentOutOfRangeException(nameof(blockSize)) : blockSize);
-
             _baseStream = new MemoryStream();
             sourceStream?.CopyTo(_baseStream);
             _baseStream.Position = 0;
 
-            _entry = new MpqEntry(fileName, null, (uint)_baseStream.Length, flags);
+            _flags = flags;
             _locale = locale;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqFile"/> class, for which the filename is unknown.
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceStream"/> argument is null.</exception>
-        public MpqFile(Stream sourceStream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, MpqFileFlags flags, ushort blockSize)
-            : this(sourceStream, null, mpqHash.Locale, flags, blockSize)
-        {
-            if (mpqHash.Mask == 0)
-            {
-                throw new ArgumentException("Expected the Mask value of mpqHash argument to be set to a non-zero value.", nameof(mpqHash));
-            }
+        internal abstract uint HashIndex { get; }
 
-            _hash = mpqHash;
-            _hashIndex = hashIndex;
-            _hashCollisions = hashCollisions;
-        }
+        internal abstract uint HashCollisions { get; }
 
-        internal MpqEntry MpqEntry => _entry;
-
-        internal MpqHash MpqHash => _hash.Value;
-
-        internal uint HashIndex => _hashIndex;
-
-        internal uint HashCollisions => _hashCollisions;
-
-        /// <summary>
-        /// Gets the filename of this <see cref="MpqFile"/>.
-        /// </summary>
-        private string Name => _entry.Filename;
+        protected abstract uint EncryptionSeed { get; }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -82,58 +46,35 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         bool IEquatable<MpqFile>.Equals(MpqFile other)
         {
-            // TODO: if Name is null, use other property (MpqHash?) to compare
-            return StringComparer.OrdinalIgnoreCase.Compare(Name, other.Name) == 0;
+            return GetType() == other.GetType() ? Equals(other) : false;
         }
 
-        internal void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
+        internal abstract bool Equals(MpqFile other);
+
+        internal void AddToArchive(MpqArchive mpqArchive, uint index, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
-            // TODO: verify that blocksize of mpqfile and mpqarchive to which it gets added are the same, otherwise throw an exception
+            var headerOffset = mpqArchive.HeaderOffset;
+            var absoluteFileOffset = (uint)mpqArchive.BaseStream.Position;
+            var relativeFileOffset = absoluteFileOffset - headerOffset;
 
-            _entry.SetPos(headerOffset, filePos);
+            var fileSize = (uint)_baseStream.Length;
+            var blockSize = mpqArchive.BlockSize;
 
-            // This file came from another archive, and has an unknown filename.
-            if (_hash.HasValue)
-            {
-                // Overwrite blockIndex from old archive.
-                var hash = _hash.Value;
-                _hash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, index, hash.Mask);
-            }
-            else
-            {
-                _hash = new MpqHash(Name, mask, _locale, index);
-                _hashIndex = MpqHash.GetIndex(Name, mask);
-            }
-        }
+            using var compressedStream = GetCompressedStream(CompressionType.ZLib, blockSize);
+            var compressedSize = (uint)compressedStream.Length;
 
-        /*public void SerializeTo( Stream stream )
-        {
-            WriteTo( new BinaryWriter( stream ) );
-        }*/
-
-        // TODO: move compression and encryption logic to a different file (MpqStream?)
-        internal void WriteTo(BinaryWriter writer, bool dispose = true)
-        {
-            if (_entry.CompressedSize.HasValue)
-            {
-                throw new InvalidOperationException("Cannot serialize MpqFile twice.");
-            }
-
-            using var compressedStream = GetCompressedStream(CompressionType.ZLib);
-            _entry.CompressedSize = (uint)compressedStream.Length;
-
-            var blockPosCount = (uint)(((int)_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
-            if (_entry.IsEncrypted && blockPosCount > 1)
+            var blockPosCount = (uint)(((int)fileSize + blockSize - 1) / blockSize) + 1;
+            if (_flags.HasFlag(MpqFileFlags.Encrypted) && blockPosCount > 1)
             {
                 var blockPositions = new int[blockPosCount];
-                var singleUnit = _entry.Flags.HasFlag(MpqFileFlags.SingleUnit);
+                var singleUnit = _flags.HasFlag(MpqFileFlags.SingleUnit);
 
-                var hasBlockPositions = !singleUnit && _entry.IsCompressed;
+                var hasBlockPositions = !singleUnit && ((_flags & MpqFileFlags.Compressed) != 0);
                 if (hasBlockPositions)
                 {
                     for (var blockIndex = 0; blockIndex < blockPosCount; blockIndex++)
                     {
-                        using (var br = new BinaryReader(compressedStream, new System.Text.UTF8Encoding(), true))
+                        using (var br = new BinaryReader(compressedStream, new UTF8Encoding(), true))
                         {
                             for (var i = 0; i < blockPosCount; i++)
                             {
@@ -154,38 +95,87 @@ namespace War3Net.IO.Mpq
                     blockPositions[0] = 0;
                     for (var blockIndex = 2; blockIndex < blockPosCount; blockIndex++)
                     {
-                        blockPositions[blockIndex - 1] = _blockSize * (blockIndex - 1);
+                        blockPositions[blockIndex - 1] = blockSize * (blockIndex - 1);
                     }
 
-                    blockPositions[blockPosCount - 1] = (int)_entry.CompressedSize;
+                    blockPositions[blockPosCount - 1] = (int)compressedSize;
+                }
+
+                var encryptionSeed = EncryptionSeed;
+                if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
+                {
+                    encryptionSeed = MpqEntry.AdjustEncryptionSeed(encryptionSeed, relativeFileOffset, fileSize);
                 }
 
                 var currentOffset = 0;
-                for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
+                using (var writer = new BinaryWriter(mpqArchive.BaseStream, new UTF8Encoding(false, true), true))
                 {
-                    var toWrite = blockPositions[blockIndex] - currentOffset;
+                    for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
+                    {
+                        var toWrite = blockPositions[blockIndex] - currentOffset;
 
-                    var data = StormBuffer.EncryptStream(compressedStream, (uint)(_entry.EncryptionSeed + blockIndex - 1), currentOffset, toWrite);
-                    writer.Write(data);
+                        var data = StormBuffer.EncryptStream(compressedStream, (uint)(encryptionSeed + blockIndex - 1), currentOffset, toWrite);
+                        writer.Write(data);
 
-                    currentOffset += toWrite;
+                        currentOffset += toWrite;
+                    }
                 }
             }
             else
             {
-                compressedStream.CopyTo(writer.BaseStream);
+                compressedStream.CopyTo(mpqArchive.BaseStream);
             }
 
-            if (dispose)
+            if (this is MpqKnownFile mpqKnownFile)
             {
-                Dispose();
+                mpqEntry = new MpqEntry(mpqKnownFile.FileName, compressedSize, fileSize, _flags);
+                mpqHash = new MpqHash(mpqKnownFile.FileName, mpqArchive.HashTableMask, _locale, index);
+                mpqEntry.SetPos(headerOffset, relativeFileOffset);
+            }
+            else if (this is MpqUnknownFile mpqUnknownFile)
+            {
+                mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, compressedSize, fileSize, _flags);
+                mpqHash = new MpqHash(mpqUnknownFile.Name1, mpqUnknownFile.Name2, _locale, index, mpqUnknownFile.Mask);
+            }
+            else
+            {
+                throw new NotImplementedException($"Unknown subclass of {nameof(MpqFile)}.");
             }
         }
 
-        private Stream GetCompressedStream(CompressionType compressionType)
+        /*internal void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
+        {
+            // TODO: verify that blocksize of mpqfile and mpqarchive to which it gets added are the same, otherwise throw an exception
+
+            _entry.SetPos(headerOffset, filePos);
+
+            // This file came from another archive, and has an unknown filename.
+            if (_hash.HasValue)
+            {
+                // Overwrite blockIndex from old archive.
+                var hash = _hash.Value;
+                _hash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, index, hash.Mask);
+            }
+            else
+            {
+                _hash = new MpqHash(Name, mask, _locale, index);
+                _hashIndex = MpqHash.GetIndex(Name, mask);
+            }
+        }*/
+
+        /*public void SerializeTo( Stream stream )
+        {
+            WriteTo( new BinaryWriter( stream ) );
+        }*/
+
+        /*internal void WriteTo(BinaryWriter writer, bool dispose = true)
+        {
+        }*/
+
+        private Stream GetCompressedStream(CompressionType compressionType, int blockSize)
         {
             var resultStream = new MemoryStream();
-            var singleUnit = _entry.Flags.HasFlag(MpqFileFlags.SingleUnit);
+            var singleUnit = _flags.HasFlag(MpqFileFlags.SingleUnit);
 
             void TryCompress(uint bytes)
             {
@@ -222,7 +212,7 @@ namespace War3Net.IO.Mpq
 
             var length = (uint)_baseStream.Length;
 
-            if ((_entry.Flags & MpqFileFlags.Compressed) == 0)
+            if ((_flags & MpqFileFlags.Compressed) == 0)
             {
                 _baseStream.CopyTo(resultStream);
             }
@@ -232,7 +222,7 @@ namespace War3Net.IO.Mpq
             }
             else
             {
-                var blockCount = (uint)((length + _blockSize - 1) / _blockSize) + 1;
+                var blockCount = (uint)((length + blockSize - 1) / blockSize) + 1;
                 var blockOffsets = new uint[blockCount];
 
                 blockOffsets[0] = 4 * blockCount;
@@ -240,7 +230,7 @@ namespace War3Net.IO.Mpq
 
                 for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
                 {
-                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(_baseStream.Length - _baseStream.Position) : (uint)_blockSize;
+                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(_baseStream.Length - _baseStream.Position) : (uint)blockSize;
 
                     TryCompress(bytesToCompress);
                     blockOffsets[blockIndex] = (uint)resultStream.Position;

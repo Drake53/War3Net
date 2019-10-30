@@ -80,8 +80,11 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        /// Gets the compressed file size of this <see cref="MpqEntry"/>.
+        /// Gets or sets the compressed file size of this <see cref="MpqEntry"/>.
         /// </summary>
+#if NETCOREAPP3_0
+        [DisallowNull]
+#endif
         public uint? CompressedSize
         {
             get => _compressedSize;
@@ -221,7 +224,17 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
-        private static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
+        internal static uint CalculateEncryptionSeed(string? filename)
+        {
+            return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+        }
+
+        internal static uint AdjustEncryptionSeed(uint baseSeed, uint fileOffset, uint fileSize)
+        {
+            return (baseSeed + fileOffset) ^ fileSize;
+        }
+
+        internal static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
         {
             if (filename is null)
             {
@@ -231,13 +244,13 @@ namespace War3Net.IO.Mpq
             var blockOffsetAdjusted = flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
             if (fileOffset is null)
             {
-                return blockOffsetAdjusted ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+                return blockOffsetAdjusted ? 0 : CalculateEncryptionSeed(filename);
             }
 
-            var seed = StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+            var seed = CalculateEncryptionSeed(filename);
             if (blockOffsetAdjusted)
             {
-                seed = (seed + (uint)fileOffset) ^ fileSize;
+                seed = AdjustEncryptionSeed(seed, (uint)fileOffset, fileSize);
             }
 
             return seed;

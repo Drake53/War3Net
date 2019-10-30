@@ -121,7 +121,7 @@ namespace War3Net.IO.Mpq
 
                 foreach (var mpqFile in mpqFiles)
                 {
-                    mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, _hashTable.Mask);
+                    /*mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, _hashTable.Mask);
 
                     if (_archiveFollowsHeader)
                     {
@@ -138,6 +138,15 @@ namespace War3Net.IO.Mpq
                     _blockTable.Add(mpqFile.MpqEntry);
 
                     filePos += mpqFile.MpqEntry.CompressedSize!.Value;
+                    fileIndex++;*/
+
+                    mpqFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
+                    hashTableEntries += _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
+                    mpqFile.Dispose();
+
+                    _blockTable.Add(mpqEntry);
+
+                    filePos += mpqEntry.CompressedSize!.Value;
                     fileIndex++;
                 }
 
@@ -155,13 +164,13 @@ namespace War3Net.IO.Mpq
                 _hashTable.WriteTo(writer);
                 _blockTable.WriteTo(writer);
 
-                if (!_archiveFollowsHeader)
+                /*if (!_archiveFollowsHeader)
                 {
                     foreach (var mpqFile in mpqFiles)
                     {
                         mpqFile.WriteTo(writer, true);
                     }
-                }
+                }*/
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
@@ -190,9 +199,11 @@ namespace War3Net.IO.Mpq
         /// </summary>
         internal int BlockSize => _blockSize;
 
-        // internal uint HashTableSize => _hashTable.Size;
+        internal uint HashTableSize => _hashTable.Size;
 
-        // internal long HeaderOffset => _headerOffset;
+        internal uint HashTableMask => _hashTable.Mask;
+
+        internal uint HeaderOffset => (uint)_headerOffset;
 
         /// <summary>
         /// Retrieves the <see cref="MpqEntry"/> at the given <paramref name="index"/> of the archive's <see cref="BlockTable"/>.
@@ -740,7 +751,8 @@ namespace War3Net.IO.Mpq
 
                     if (entry != null)
                     {
-                        pairs.Add(entry, (mpqHash.BlockIndex, new MpqFile(mpqHash.IsDeleted ? (Stream)new MemoryStream() : OpenFile(entry), mpqHash, (uint)hashIndex, 0, entry?.Flags ?? 0, _mpqHeader.BlockSize)));
+                        var mpqFile = new MpqUnknownFile(mpqHash.IsDeleted ? null : OpenFile(entry), entry?.Flags ?? 0, mpqHash, (uint)hashIndex, 0);
+                        pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
                     }
                     else
                     {
@@ -756,7 +768,8 @@ namespace War3Net.IO.Mpq
                 {
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
-                    pairs.Add(mpqEntry, (blockIndex, new MpqFile(new MemoryStream(), mpqHash, (uint)hashIndex, 0, 0, _mpqHeader.BlockSize)));
+                    var mpqFile = new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0);
+                    pairs.Add(mpqEntry, (blockIndex, mpqFile));
                 }
 
                 blockIndex++;

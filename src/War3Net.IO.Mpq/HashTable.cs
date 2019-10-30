@@ -238,7 +238,7 @@ namespace War3Net.IO.Mpq
         {
             // If the old archive had a smaller hashtable, it masked less bits to determine the index for the hash entry, and cannot recover the bits that were masked away.
             // As a result, need to add this hash entry in every index where the bits match with the old archive's mask.
-            for (var i = hashIndex; i <= _mask; i += step)
+            for (var i = hashIndex % _mask; i <= _mask; i += step)
             {
                 // Console.WriteLine( "Try to add file #{0}'s hash at index {1}", hash.BlockIndex, i );
                 TryAdd(hash, i);

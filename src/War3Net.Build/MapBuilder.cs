@@ -236,7 +236,7 @@ namespace War3Net.Build
                 var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key.fileName, out var flags) ? flags : compilerOptions.DefaultFileFlags;
                 if (fileflags.HasFlag(MpqFileFlags.Exists))
                 {
-                    mpqFiles.Add(new MpqFile(file.Value, file.Key.fileName, file.Key.locale, fileflags, _blockSize));
+                    mpqFiles.Add(new MpqKnownFile(file.Key.fileName, file.Value, fileflags, file.Key.locale));
                 }
                 else
                 {

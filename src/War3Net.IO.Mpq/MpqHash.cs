@@ -110,15 +110,14 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public bool IsDeleted => BlockIndex == 0xFFFFFFFE;
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="mask"></param>
-        /// <returns></returns>
+        public static uint GetIndex(string path)
+        {
+            return StormBuffer.HashString(path, 0);
+        }
+
         public static uint GetIndex(string path, uint mask)
         {
-            return StormBuffer.HashString(path, 0) & mask;
+            return GetIndex(path) & mask;
         }
 
         /// <inheritdoc/>
