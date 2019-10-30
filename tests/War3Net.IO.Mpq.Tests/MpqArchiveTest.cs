@@ -84,7 +84,7 @@ namespace War3Net.IO.Mpq.Tests
 
             for (var i = 0; i < inputArchive.Header.BlockTableSize; i++)
             {
-                inputArchive.BaseStream.Position = inputArchive[i].FilePosition!.Value;
+                inputArchive.BaseStream.Position = inputArchive[i].FilePosition!.Value + 8;
                 recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition!.Value;
 
                 var size1 = inputArchive[i].CompressedSize!.Value;
