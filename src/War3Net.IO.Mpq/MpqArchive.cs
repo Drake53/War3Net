@@ -751,7 +751,10 @@ namespace War3Net.IO.Mpq
 
                     if (entry != null)
                     {
-                        var mpqFile = new MpqUnknownFile(mpqHash.IsDeleted ? null : OpenFile(entry), entry?.Flags ?? 0, mpqHash, (uint)hashIndex, 0);
+                        var stream = mpqHash.IsDeleted ? null : OpenFile(entry);
+                        var mpqFile = entry.Filename is null
+                            ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0)
+                            : new MpqKnownFile(entry.Filename, stream, entry.Flags, mpqHash.Locale);
                         pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
                     }
                     else
@@ -768,7 +771,9 @@ namespace War3Net.IO.Mpq
                 {
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
-                    var mpqFile = new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0);
+                    var mpqFile = mpqEntry.Filename is null
+                        ? (MpqFile)new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0)
+                        : new MpqKnownFile(mpqEntry.Filename, null, 0, mpqHash.Locale);
                     pairs.Add(mpqEntry, (blockIndex, mpqFile));
                 }
 
