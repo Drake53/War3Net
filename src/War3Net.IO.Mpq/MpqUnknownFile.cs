@@ -12,11 +12,9 @@ namespace War3Net.IO.Mpq
 {
     public sealed class MpqUnknownFile : MpqFile
     {
-        // TODO: add ctor that takes baseEncryptionSeed, make current ctor throw argumentexception if flags parameter has encryption flag
-
         private readonly MpqHash _hash; // TODO: only store name1, name2, and mask
-        private readonly uint _hashIndex; // position in hashtable
-        private readonly uint _hashCollisions; // possible amount of collisions this unknown file had in old archive
+        private readonly uint _hashIndex;
+        private readonly uint _hashCollisions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqUnknownFile"/> class.
@@ -27,6 +25,12 @@ namespace War3Net.IO.Mpq
             if (mpqHash.Mask == 0)
             {
                 throw new ArgumentException("Expected the Mask value of mpqHash argument to be set to a non-zero value.", nameof(mpqHash));
+            }
+
+            if (flags.HasFlag(MpqFileFlags.Encrypted))
+            {
+                // TODO: add ctor that takes baseEncryptionSeed
+                throw new ArgumentException($"Cannot encrypt an {nameof(MpqUnknownFile)} without an encryption seed.", nameof(flags));
             }
 
             _hash = mpqHash;
