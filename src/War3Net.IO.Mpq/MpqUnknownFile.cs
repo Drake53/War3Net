@@ -15,7 +15,7 @@ namespace War3Net.IO.Mpq
         private readonly MpqHash _hash; // TODO: only store name1, name2, and mask
         private readonly uint _hashIndex;
         private readonly uint _hashCollisions;
-        private readonly uint _encryptionSeed;
+        private readonly uint? _encryptionSeed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqUnknownFile"/> class.
@@ -36,7 +36,7 @@ namespace War3Net.IO.Mpq
             _hash = mpqHash;
             _hashIndex = hashIndex;
             _hashCollisions = hashCollisions;
-            _encryptionSeed = encryptionSeed ?? 0;
+            _encryptionSeed = encryptionSeed;
         }
 
         public uint Name1 => _hash.Name1;
@@ -45,11 +45,19 @@ namespace War3Net.IO.Mpq
 
         public uint Mask => _hash.Mask;
 
+        internal override bool IsOriginalStream => false;
+
         internal override uint HashIndex => _hashIndex;
 
         internal override uint HashCollisions => _hashCollisions;
 
-        protected override uint EncryptionSeed => _encryptionSeed;
+        protected override uint? EncryptionSeed => _encryptionSeed;
+
+        public MpqKnownFile TryAsKnownFile(string filename)
+        {
+            // TODO: if filename matches name1+name2, return MpqKnownFile, otherwise return null
+            throw new NotImplementedException();
+        }
 
         internal override bool Equals(MpqFile other)
         {

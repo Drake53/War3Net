@@ -16,8 +16,8 @@ namespace War3Net.IO.Mpq
     public abstract class MpqFile : IEquatable<MpqFile>, IDisposable
     {
         private readonly Stream _baseStream;
-        private readonly MpqFileFlags _flags;
-        private readonly MpqLocale _locale;
+        private MpqFileFlags _flags;
+        private MpqLocale _locale;
 
         // TODO: move compression and encryption logic to a different file (MpqStream?)
 
@@ -30,6 +30,46 @@ namespace War3Net.IO.Mpq
             _flags = flags;
             _locale = locale;
         }
+
+        public MpqFileFlags Flags
+        {
+            get => _flags;
+            set
+            {
+                if (IsOriginalStream)
+                {
+                    throw new NotSupportedException("Unable to change file flags when the file's stream is potentially pre-compressed and/or -encrypted.");
+                }
+
+                if ((value & MpqFileFlags.Garbage) != 0)
+                {
+                    throw new ArgumentException("Invalid enum.", nameof(value));
+                }
+
+                if (value.HasFlag(MpqFileFlags.Encrypted) && EncryptionSeed is null)
+                {
+                    throw new ArgumentException("Cannot set encrypted flag when there is no encryption seed.", nameof(value));
+                }
+
+                _flags = value;
+            }
+        }
+
+        public MpqLocale Locale
+        {
+            get => _locale;
+            set
+            {
+                if (!Enum.IsDefined(typeof(MpqLocale), value))
+                {
+                    throw new ArgumentException("Invalid enum.", nameof(value));
+                }
+
+                _locale = value;
+            }
+        }
+
+        internal abstract bool IsOriginalStream { get; }
 
         /// <summary>
         /// Position in the <see cref="HashTable"/>.
@@ -51,7 +91,7 @@ namespace War3Net.IO.Mpq
         /// <remarks>
         /// If the <see cref="MpqFile"/> has the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag, this seed must be adjusted based on the file's position and size.
         /// </remarks>
-        protected abstract uint EncryptionSeed { get; }
+        protected abstract uint? EncryptionSeed { get; }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -77,17 +117,25 @@ namespace War3Net.IO.Mpq
             var fileSize = (uint)_baseStream.Length;
             var blockSize = mpqArchive.BlockSize;
 
-            if (this is MpqEncryptedFile encryptedFile)
+            if (IsOriginalStream)
             {
-                if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) && encryptedFile.FilePos != relativeFileOffset)
+                if (this is MpqEncryptedFile encryptedFile)
                 {
-                    // TODO: try seeking correct position in archive's stream
-                    throw new Exception("Cannot copy pre-encrypted stream at the current position of the MpqArchive's stream, because the relative file position is incorrect.");
+                    if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) && encryptedFile.FilePos != relativeFileOffset)
+                    {
+                        // TODO: try seeking correct position in archive's stream
+                        throw new Exception("Cannot copy pre-encrypted stream at the current position of the MpqArchive's stream, because the relative file position is incorrect.");
+                    }
+
+                    _baseStream.CopyTo(mpqArchive.BaseStream);
+                    mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, encryptedFile.FileSize, _flags);
+                    mpqHash = new MpqHash(encryptedFile.Name1, encryptedFile.Name2, _locale, index, encryptedFile.Mask);
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
 
-                _baseStream.CopyTo(mpqArchive.BaseStream);
-                mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, encryptedFile.FileSize, _flags);
-                mpqHash = new MpqHash(encryptedFile.Name1, encryptedFile.Name2, _locale, index, encryptedFile.Mask);
                 return;
             }
 
@@ -132,7 +180,7 @@ namespace War3Net.IO.Mpq
                     blockPositions[blockPosCount - 1] = (int)compressedSize;
                 }
 
-                var encryptionSeed = EncryptionSeed;
+                var encryptionSeed = EncryptionSeed!.Value;
                 if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
                 {
                     encryptionSeed = MpqEntry.AdjustEncryptionSeed(encryptionSeed, relativeFileOffset, fileSize);

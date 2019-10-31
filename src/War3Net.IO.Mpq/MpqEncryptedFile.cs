@@ -24,5 +24,7 @@ namespace War3Net.IO.Mpq
         public long FilePos => _filePos;
 
         public uint FileSize => _fileSize;
+
+        internal override bool IsOriginalStream => true;
     }
 }
