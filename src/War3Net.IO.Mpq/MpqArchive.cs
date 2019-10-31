@@ -116,7 +116,6 @@ namespace War3Net.IO.Mpq
                 // Write Archive
                 var fileIndex = 0U;
                 var fileOffset = _archiveFollowsHeader ? MpqHeader.Size : throw new NotImplementedException();
-                var filePos = fileOffset;
 
                 // var gaps = new List<(long Start, long Length)>();
                 var endOfStream = _baseStream.Position;
@@ -158,7 +157,6 @@ namespace War3Net.IO.Mpq
 
                         mpqEncryptedFile.Dispose();
 
-                        filePos += mpqEntry.CompressedSize!.Value;
                         fileIndex += hashTableEntries;
                         endOfStream = _baseStream.Position;
                     }
@@ -185,7 +183,6 @@ namespace War3Net.IO.Mpq
 
                     mpqFile.Dispose();
 
-                    filePos += mpqEntry.CompressedSize!.Value;
                     fileIndex += hashTableEntries;
                     if (!selectedGap)
                     {
@@ -193,6 +190,7 @@ namespace War3Net.IO.Mpq
                     }
                 }
 
+                _baseStream.Position = endOfStream;
                 _hashTable.WriteTo(writer);
                 _blockTable.WriteTo(writer);
 
@@ -206,7 +204,7 @@ namespace War3Net.IO.Mpq
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader(filePos - fileOffset, _hashTable.Size, _blockTable.Size, blockSize, _archiveFollowsHeader);
+                _mpqHeader = new MpqHeader((uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, blockSize, _archiveFollowsHeader);
                 _mpqHeader.WriteTo(writer);
             }
         }
