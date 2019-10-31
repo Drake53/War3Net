@@ -84,10 +84,15 @@ namespace War3Net.IO.Mpq.Tests
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
             using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
 
+            static bool CheckEncrypted(MpqFile mpqFile)
+            {
+                return mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
+            }
+
             // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
             // TODO: fix assumption of how recreated blocktable's entries are laid out relative to input mpqFiles array? (aka: replace the 'offset' variable)
             var offsetPerUnknownFile = (recreatedArchive.HashTableSize / inputArchive.HashTableSize) - 1;
-            var mpqEncryptedFileCount = mpqFiles.Where(file => file is MpqEncryptedFile && file.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)).Count();
+            var mpqEncryptedFileCount = mpqFiles.Where(CheckEncrypted).Count();
             var offset = mpqEncryptedFileCount * (offsetPerUnknownFile + 1);
             mpqEncryptedFileCount = 0;
             for (var index = 0; index < mpqFiles.Length; index++)
@@ -110,7 +115,7 @@ namespace War3Net.IO.Mpq.Tests
                 }
 
                 var blockIndex = index + (int)offset;
-                if (mpqFile is MpqEncryptedFile)
+                if (CheckEncrypted(mpqFile))
                 {
                     blockIndex = mpqEncryptedFileCount * ((int)offsetPerUnknownFile + 1);
                     mpqEncryptedFileCount++;
@@ -122,7 +127,16 @@ namespace War3Net.IO.Mpq.Tests
                 {
                     if (mpqFile is MpqEncryptedFile encryptedFile)
                     {
-                        // TODO: compare streams
+                        // Check if both files have the same encryption seed.
+                        if (!mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset)
+                        {
+                            inputArchive.BaseStream.Position = inputEntry.FilePosition!.Value;
+                            recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition!.Value;
+
+                            var size1 = inputEntry.CompressedSize!.Value;
+                            var size2 = recreatedEntry.CompressedSize!.Value;
+                            StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
+                        }
                     }
                     else
                     {
@@ -137,7 +151,7 @@ namespace War3Net.IO.Mpq.Tests
                     Assert.IsFalse(recreatedEntry.Flags.HasFlag(MpqFileFlags.Exists));
                 }
 
-                if (mpqFile is MpqUnknownFile && !(mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)))
+                if (mpqFile is MpqUnknownFile && !CheckEncrypted(mpqFile))
                 {
                     offset += offsetPerUnknownFile;
                 }
