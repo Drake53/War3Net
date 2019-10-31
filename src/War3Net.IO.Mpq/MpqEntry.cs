@@ -230,7 +230,10 @@ namespace War3Net.IO.Mpq
             }
 
             _encryptionSeed = result + 1;
-            // TODO: set _baseEncryptionSeed
+            _baseEncryptionSeed = _flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)
+                ? UnadjustEncryptionSeed(_encryptionSeed, _fileOffset!.Value, _fileSize)
+                : _encryptionSeed;
+
             return true;
         }
 
@@ -242,6 +245,11 @@ namespace War3Net.IO.Mpq
         internal static uint AdjustEncryptionSeed(uint baseSeed, uint fileOffset, uint fileSize)
         {
             return (baseSeed + fileOffset) ^ fileSize;
+        }
+
+        internal static uint UnadjustEncryptionSeed(uint adjustedSeed, uint fileOffset, uint fileSize)
+        {
+            return (adjustedSeed ^ fileSize) - fileOffset;
         }
 
         internal static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
