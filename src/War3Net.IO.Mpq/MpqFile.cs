@@ -123,7 +123,6 @@ namespace War3Net.IO.Mpq
                 {
                     if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) && encryptedFile.FilePos != relativeFileOffset)
                     {
-                        // TODO: try seeking correct position in archive's stream
                         throw new Exception("Cannot copy pre-encrypted stream at the current position of the MpqArchive's stream, because the relative file position is incorrect.");
                     }
 

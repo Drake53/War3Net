@@ -94,7 +94,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <param name="writeArchiveFirst">If true, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public MpqArchive(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true)
+        public MpqArchive(Stream? sourceStream, IEnumerable<MpqFile> inputFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true)
         {
             _baseStream = AlignStream(sourceStream);
 
@@ -102,6 +102,7 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << blockSize;
             _archiveFollowsHeader = writeArchiveFirst;
 
+            var mpqFiles = inputFiles.ToList();
             var fileCount = (uint)(mpqFiles ?? throw new ArgumentNullException(nameof(mpqFiles))).Count;
 
             _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
@@ -117,26 +118,63 @@ namespace War3Net.IO.Mpq
                 var fileOffset = _archiveFollowsHeader ? MpqHeader.Size : throw new NotImplementedException();
                 var filePos = fileOffset;
 
+                // var gaps = new List<(long Start, long Length)>();
+                var endOfStream = _baseStream.Position;
+
+                static bool CheckEncrypted(MpqFile mpqFile)
+                {
+                    return mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
+                }
+
+                var mpqEncryptedFiles = mpqFiles.Where(CheckEncrypted).Select(mpqFile => (MpqEncryptedFile)mpqFile).OrderBy(mpqFile => mpqFile.FilePos).ToArray();
+                if (mpqEncryptedFiles.Length > 0)
+                {
+                    if (mpqEncryptedFiles.First()!.FilePos < 0)
+                    {
+                        throw new NotSupportedException("Cannot place files in front of the header.");
+                    }
+
+                    foreach (var mpqEncryptedFile in mpqEncryptedFiles)
+                    {
+                        var position = mpqEncryptedFile.FilePos;
+                        if (position < endOfStream)
+                        {
+                            throw new ArgumentException("Encrypted filestreams overlap with each other and/or the header. Archive cannot be created.", nameof(inputFiles));
+                        }
+
+                        if (position > endOfStream)
+                        {
+                            var gapSize = position - endOfStream;
+                            // gaps.Add((endOfStream, gapSize));
+                            writer.Seek((int)gapSize, SeekOrigin.Current);
+                        }
+
+                        mpqEncryptedFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
+                        var hashTableEntries = _hashTable.Add(mpqHash, mpqEncryptedFile.HashIndex, mpqEncryptedFile.HashCollisions);
+                        for (var i = 0; i < hashTableEntries; i++)
+                        {
+                            _blockTable.Add(mpqEntry);
+                        }
+
+                        mpqEncryptedFile.Dispose();
+
+                        filePos += mpqEntry.CompressedSize!.Value;
+                        fileIndex += hashTableEntries;
+                        endOfStream = _baseStream.Position;
+                    }
+                }
+
+                mpqFiles.RemoveAll(CheckEncrypted);
                 foreach (var mpqFile in mpqFiles)
                 {
-                    /*mpqFile.AddToArchive((uint)_headerOffset, fileIndex, filePos, _hashTable.Mask);
+                    // TODO: insert files into the gaps
+                    // need to know compressed size of file first, and if file is also encrypted with blockoffsetadjustedkey, encryption needs to happen after gap selection
+                    // therefore, can't use current AddToArchive method, which does both compression and encryption at same time
 
-                    if (_archiveFollowsHeader)
-                    {
-                        mpqFile.WriteTo(writer, true);
-                    }
-                    else
-                    {
-                        // TODO: precompute entry's compressed size, or precompute table sizes to know at what position in stream the mpqFile must be written
-                        // this is required because otherwise the MpqEntry's CompressedSize can be null when it gets added to the blockTable
-                        throw new NotSupportedException();
-                    }
-
-                    hashTableEntries += _hashTable.Add(mpqFile.MpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
-                    _blockTable.Add(mpqFile.MpqEntry);
-
-                    filePos += mpqFile.MpqEntry.CompressedSize!.Value;
-                    fileIndex++;*/
+                    // var availableGaps = gaps.Where(gap => gap.Length >= )
+                    var selectedPosition = endOfStream;
+                    var selectedGap = false;
+                    _baseStream.Position = selectedPosition;
 
                     mpqFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
                     var hashTableEntries = _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
@@ -148,7 +186,11 @@ namespace War3Net.IO.Mpq
                     mpqFile.Dispose();
 
                     filePos += mpqEntry.CompressedSize!.Value;
-                    fileIndex+= hashTableEntries;
+                    fileIndex += hashTableEntries;
+                    if (!selectedGap)
+                    {
+                        endOfStream = _baseStream.Position;
+                    }
                 }
 
                 _hashTable.WriteTo(writer);
