@@ -525,7 +525,11 @@ namespace War3Net.IO.Mpq
 
         public MpqEntry GetEntryFromHashTable(uint hashTableIndex)
         {
-            // TODO: check for ArgumentOutOfRangeException
+            if (hashTableIndex >= _hashTable.Size)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hashTableIndex));
+            }
+
             var mpqHash = _hashTable[hashTableIndex];
             if (mpqHash.IsEmpty || mpqHash.IsDeleted)
             {
@@ -542,7 +546,11 @@ namespace War3Net.IO.Mpq
 #endif
             out MpqEntry? mpqEntry)
         {
-            // TODO: check for ArgumentOutOfRangeException
+            if (hashTableIndex >= _hashTable.Size)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hashTableIndex));
+            }
+
             var mpqHash = _hashTable[hashTableIndex];
             if (mpqHash.IsEmpty)
             {
@@ -789,7 +797,7 @@ namespace War3Net.IO.Mpq
                     {
                         var stream = mpqHash.IsDeleted ? null : OpenFile(entry);
                         var mpqFile = entry.Filename is null
-                            ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0)
+                            ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
                             : new MpqKnownFile(entry.Filename, stream, entry.Flags, mpqHash.Locale);
                         pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
                     }
@@ -808,7 +816,7 @@ namespace War3Net.IO.Mpq
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
                     var mpqFile = mpqEntry.Filename is null
-                        ? (MpqFile)new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0)
+                        ? (MpqFile)new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
                         : new MpqKnownFile(mpqEntry.Filename, null, 0, mpqHash.Locale);
                     pairs.Add(mpqEntry, (blockIndex, mpqFile));
                 }

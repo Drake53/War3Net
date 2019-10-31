@@ -29,6 +29,7 @@ namespace War3Net.IO.Mpq
 
         private uint? _compressedSize;
         private uint _encryptionSeed;
+        private uint _baseEncryptionSeed;
 
         private string? _filename;
         private uint? _headerOffset;
@@ -113,6 +114,14 @@ namespace War3Net.IO.Mpq
         /// Gets the encryption seed that is used if the file is encrypted.
         /// </summary>
         public uint EncryptionSeed => _encryptionSeed;
+
+        /// <summary>
+        /// Gets the encryption seed for this entry's filename.
+        /// </summary>
+        /// <remarks>
+        /// The base encryption seed is not adjusted for <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/>.
+        /// </remarks>
+        public uint BaseEncryptionSeed => _baseEncryptionSeed;
 
         /// <summary>
         /// Gets the filename of the file in the archive.
@@ -221,6 +230,7 @@ namespace War3Net.IO.Mpq
             }
 
             _encryptionSeed = result + 1;
+            // TODO: set _baseEncryptionSeed
             return true;
         }
 
@@ -259,6 +269,7 @@ namespace War3Net.IO.Mpq
         private void UpdateEncryptionSeed()
         {
             _encryptionSeed = CalculateEncryptionSeed(_filename, _fileOffset, _fileSize, _flags);
+            _baseEncryptionSeed = CalculateEncryptionSeed(_filename);
         }
     }
 }
