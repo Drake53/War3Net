@@ -523,6 +523,42 @@ namespace War3Net.IO.Mpq
             }
         }
 
+        public MpqEntry GetEntryFromHashTable(uint hashTableIndex)
+        {
+            // TODO: check for ArgumentOutOfRangeException
+            var mpqHash = _hashTable[hashTableIndex];
+            if (mpqHash.IsEmpty || mpqHash.IsDeleted)
+            {
+                throw new ArgumentException($"The {nameof(MpqHash.BlockIndex)} of the {nameof(MpqHash)} at the given index does not point to an {nameof(MpqEntry)}.", nameof(hashTableIndex));
+            }
+
+            return _blockTable[mpqHash.BlockIndex];
+        }
+
+        public bool TryGetEntryFromHashTable(
+            uint hashTableIndex,
+#if NETCOREAPP3_0
+            [NotNullWhen(true)]
+#endif
+            out MpqEntry? mpqEntry)
+        {
+            // TODO: check for ArgumentOutOfRangeException
+            var mpqHash = _hashTable[hashTableIndex];
+            if (mpqHash.IsEmpty)
+            {
+                throw new ArgumentException($"The {nameof(MpqHash)} at the given index is empty.", nameof(hashTableIndex));
+            }
+
+            if (mpqHash.IsDeleted)
+            {
+                mpqEntry = null;
+                return false;
+            }
+
+            mpqEntry = _blockTable[mpqHash.BlockIndex];
+            return true;
+        }
+
         /// <summary>
         /// Rebuild this <see cref="MpqArchive"/>'s stream with a single file in its archive replaced.
         /// </summary>
