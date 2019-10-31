@@ -136,7 +136,7 @@ namespace War3Net.IO.Mpq
         /// <param name="i">The index of the <see cref="MpqEntry"/> to write.</param>
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
-            _entries[i].WriteEntry(writer);
+            _entries[i].WriteTo(writer);
         }
     }
 }

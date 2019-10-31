@@ -197,21 +197,71 @@ namespace War3Net.IO.Mpq
             return Filename ?? (_flags == 0 ? "(Deleted file)" : $"Unknown file @ {FilePosition}");
         }
 
+        public void SerializeTo(Stream stream)
+        {
+            using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
+            {
+                WriteTo(writer);
+            }
+        }
+
         /// <summary>
         /// Writes the entry to a <see cref="BlockTable"/>.
         /// </summary>
         /// <param name="writer">The writer to which the entry is written.</param>
-        internal void WriteEntry(BinaryWriter writer)
+        public void WriteTo(BinaryWriter writer)
         {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             if (_fileOffset is null)
             {
-                throw new Exception();
+                throw new InvalidOperationException();
             }
 
             writer.Write((uint)_fileOffset);
             writer.Write(_compressedSize!.Value);
             writer.Write(_fileSize);
             writer.Write((uint)_flags);
+        }
+
+        internal static uint AdjustEncryptionSeed(uint baseSeed, uint fileOffset, uint fileSize)
+        {
+            return (baseSeed + fileOffset) ^ fileSize;
+        }
+
+        internal static uint UnadjustEncryptionSeed(uint adjustedSeed, uint fileOffset, uint fileSize)
+        {
+            return (adjustedSeed ^ fileSize) - fileOffset;
+        }
+
+        internal static uint CalculateEncryptionSeed(string? filename)
+        {
+            return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+        }
+
+        internal static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
+        {
+            if (filename is null)
+            {
+                return 0;
+            }
+
+            var blockOffsetAdjusted = flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
+            if (fileOffset is null)
+            {
+                return blockOffsetAdjusted ? 0 : CalculateEncryptionSeed(filename);
+            }
+
+            var seed = CalculateEncryptionSeed(filename);
+            if (blockOffsetAdjusted)
+            {
+                seed = AdjustEncryptionSeed(seed, (uint)fileOffset, fileSize);
+            }
+
+            return seed;
         }
 
         /// <summary>
@@ -235,43 +285,6 @@ namespace War3Net.IO.Mpq
                 : _encryptionSeed;
 
             return true;
-        }
-
-        internal static uint CalculateEncryptionSeed(string? filename)
-        {
-            return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
-        }
-
-        internal static uint AdjustEncryptionSeed(uint baseSeed, uint fileOffset, uint fileSize)
-        {
-            return (baseSeed + fileOffset) ^ fileSize;
-        }
-
-        internal static uint UnadjustEncryptionSeed(uint adjustedSeed, uint fileOffset, uint fileSize)
-        {
-            return (adjustedSeed ^ fileSize) - fileOffset;
-        }
-
-        internal static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
-        {
-            if (filename is null)
-            {
-                return 0;
-            }
-
-            var blockOffsetAdjusted = flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
-            if (fileOffset is null)
-            {
-                return blockOffsetAdjusted ? 0 : CalculateEncryptionSeed(filename);
-            }
-
-            var seed = CalculateEncryptionSeed(filename);
-            if (blockOffsetAdjusted)
-            {
-                seed = AdjustEncryptionSeed(seed, (uint)fileOffset, fileSize);
-            }
-
-            return seed;
         }
 
         private void UpdateEncryptionSeed()
