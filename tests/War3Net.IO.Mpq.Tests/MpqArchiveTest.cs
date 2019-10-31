@@ -84,10 +84,12 @@ namespace War3Net.IO.Mpq.Tests
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
             using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
 
-            // TODO: fix assumption that blocktable of recreated archive is same as input mpqFiles
-            var offset = 0U;
             // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
+            // TODO: fix assumption of how recreated blocktable's entries are laid out relative to input mpqFiles array? (aka: replace the 'offset' variable)
             var offsetPerUnknownFile = (recreatedArchive.HashTableSize / inputArchive.HashTableSize) - 1;
+            var mpqEncryptedFileCount = mpqFiles.Where(file => file is MpqEncryptedFile && file.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)).Count();
+            var offset = mpqEncryptedFileCount * (offsetPerUnknownFile + 1);
+            mpqEncryptedFileCount = 0;
             for (var index = 0; index < mpqFiles.Length; index++)
             {
                 var mpqFile = mpqFiles[index];
@@ -107,7 +109,14 @@ namespace War3Net.IO.Mpq.Tests
                     throw new NotImplementedException();
                 }
 
-                var recreatedEntry = recreatedArchive[index + (int)offset];
+                var blockIndex = index + (int)offset;
+                if (mpqFile is MpqEncryptedFile)
+                {
+                    blockIndex = mpqEncryptedFileCount * ((int)offsetPerUnknownFile + 1);
+                    mpqEncryptedFileCount++;
+                }
+
+                var recreatedEntry = recreatedArchive[blockIndex];
 
                 if (exists)
                 {
@@ -128,7 +137,7 @@ namespace War3Net.IO.Mpq.Tests
                     Assert.IsFalse(recreatedEntry.Flags.HasFlag(MpqFileFlags.Exists));
                 }
 
-                if (mpqFile is MpqUnknownFile)
+                if (mpqFile is MpqUnknownFile && !(mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)))
                 {
                     offset += offsetPerUnknownFile;
                 }
