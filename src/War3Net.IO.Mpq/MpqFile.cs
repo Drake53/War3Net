@@ -62,6 +62,7 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         bool IEquatable<MpqFile>.Equals(MpqFile other)
         {
+            // TODO: compare locale?
             return GetType() == other.GetType() ? Equals(other) : false;
         }
 
@@ -75,6 +76,20 @@ namespace War3Net.IO.Mpq
 
             var fileSize = (uint)_baseStream.Length;
             var blockSize = mpqArchive.BlockSize;
+
+            if (this is MpqEncryptedFile encryptedFile)
+            {
+                if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) && encryptedFile.FilePos != relativeFileOffset)
+                {
+                    // TODO: try seeking correct position in archive's stream
+                    throw new Exception("Cannot copy pre-encrypted stream at the current position of the MpqArchive's stream, because the relative file position is incorrect.");
+                }
+
+                _baseStream.CopyTo(mpqArchive.BaseStream);
+                mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, encryptedFile.FileSize, _flags);
+                mpqHash = new MpqHash(encryptedFile.Name1, encryptedFile.Name2, _locale, index, encryptedFile.Mask);
+                return;
+            }
 
             using var compressedStream = GetCompressedStream(CompressionType.ZLib, blockSize);
             var compressedSize = (uint)compressedStream.Length;

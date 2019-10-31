@@ -780,6 +780,7 @@ namespace War3Net.IO.Mpq
         }
 
 #if !NET45
+        // TODO: set hashCollisions values (currently they're always set to 0)
         public IEnumerable<MpqFile> GetMpqFiles()
         {
             var pairs = new Dictionary<MpqEntry, (uint, MpqFile)>();
@@ -796,10 +797,31 @@ namespace War3Net.IO.Mpq
                     if (entry != null)
                     {
                         var stream = mpqHash.IsDeleted ? null : OpenFile(entry);
-                        var mpqFile = entry.Filename is null
-                            ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
-                            : new MpqKnownFile(entry.Filename, stream, entry.Flags, mpqHash.Locale);
-                        pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
+                        if (entry.IsEncrypted && entry.EncryptionSeed == 0 && entry.FileSize > 3)
+                        {
+                            // Copied from MpqStream.LoadSingleUnit() method.
+                            // TODO: make internal static method in MpqStream for this piece of code
+                            var filedata = new byte[entry.CompressedSize!.Value];
+                            lock (_baseStream)
+                            {
+                                _baseStream.Seek(entry.FilePosition!.Value, SeekOrigin.Begin);
+                                var read = _baseStream.Read(filedata, 0, filedata.Length);
+                                if (read != filedata.Length)
+                                {
+                                    throw new MpqParserException("Insufficient data or invalid data length");
+                                }
+                            }
+
+                            var mpqFile = new MpqEncryptedFile(new MemoryStream(filedata), entry.Flags, mpqHash, (uint)hashIndex, 0, entry.FileOffset!.Value, entry.FileSize);
+                            pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
+                        }
+                        else
+                        {
+                            var mpqFile = entry.Filename is null
+                                ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
+                                : new MpqKnownFile(entry.Filename, stream, entry.Flags, mpqHash.Locale);
+                            pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
+                        }
                     }
                     else
                     {
