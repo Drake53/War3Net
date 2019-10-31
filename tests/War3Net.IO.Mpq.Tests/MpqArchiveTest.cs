@@ -85,6 +85,9 @@ namespace War3Net.IO.Mpq.Tests
             using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
 
             // TODO: fix assumption that blocktable of recreated archive is same as input mpqFiles
+            var offset = 0U;
+            // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
+            var offsetPerUnknownFile = (recreatedArchive.HashTableSize / inputArchive.HashTableSize) - 1;
             for (var index = 0; index < mpqFiles.Length; index++)
             {
                 var mpqFile = mpqFiles[index];
@@ -104,10 +107,10 @@ namespace War3Net.IO.Mpq.Tests
                     throw new NotImplementedException();
                 }
 
+                var recreatedEntry = recreatedArchive[index + (int)offset];
+
                 if (exists)
                 {
-                    var recreatedEntry = recreatedArchive[index];
-
                     if (mpqFile is MpqEncryptedFile encryptedFile)
                     {
                         // TODO: compare streams
@@ -122,7 +125,12 @@ namespace War3Net.IO.Mpq.Tests
                 }
                 else
                 {
-                    Assert.IsFalse(recreatedArchive[index].Flags.HasFlag(MpqFileFlags.Exists));
+                    Assert.IsFalse(recreatedEntry.Flags.HasFlag(MpqFileFlags.Exists));
+                }
+
+                if (mpqFile is MpqUnknownFile)
+                {
+                    offset += offsetPerUnknownFile;
                 }
             }
         }
