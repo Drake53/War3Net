@@ -70,6 +70,33 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(openedStream.Length == 0);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestArchivesAndSettings), DynamicDataSourceType.Method)]
+        public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
+        {
+            using var inputArchive = MpqArchive.Open(inputArchivePath, loadListFile);
+            var mpqFiles = inputArchive.GetMpqFiles().ToArray();
+            using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
+
+            var index = 0;
+            foreach (var mpqFile in mpqFiles)
+            {
+                if (inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex, out var inputEntry))
+                {
+                    var recreatedEntry = recreatedArchive[index++];
+
+                    using var inputStream = inputArchive.OpenFile(inputEntry);
+                    using var recreatedStream = recreatedArchive.OpenFile(recreatedEntry);
+
+                    StreamAssert.AreEqual(inputStream, recreatedStream);
+                }
+                else
+                {
+                    Assert.IsFalse(recreatedArchive[index++].Flags.HasFlag(MpqFileFlags.Exists));
+                }
+            }
+        }
+
         [TestMethod]
         public void TestRecreatePKCompressed()
         {
@@ -93,6 +120,23 @@ namespace War3Net.IO.Mpq.Tests
             }
 
             StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream);
+        }
+
+        private static IEnumerable<object[]> GetTestArchives()
+        {
+            foreach (var archive in Directory.EnumerateFiles("TestArchives", "*", SearchOption.TopDirectoryOnly))
+            {
+                yield return new object[] { archive };
+            }
+        }
+
+        private static IEnumerable<object[]> GetTestArchivesAndSettings()
+        {
+            foreach (var archive in GetTestArchives())
+            {
+                yield return new object[] { archive[0], true };
+                yield return new object[] { archive[0], false };
+            }
         }
 
         private static IEnumerable<object[]> GetTestFiles()
