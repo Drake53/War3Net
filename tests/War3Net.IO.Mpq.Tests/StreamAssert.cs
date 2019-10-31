@@ -16,7 +16,9 @@ namespace War3Net.IO.Mpq.Tests
     {
         internal static void AreEqual(Stream s1, Stream s2)
         {
-            Assert.IsTrue(AreStreamsEqual(s1, s2));
+            var size1 = s1.Length;
+            var size2 = s2.Length;
+            AreEqual(s1, s2, size1 > size2 ? size1 : size2);
         }
 
         internal static void AreEqual(Stream s1, Stream s2, long lengthToCheck)
@@ -24,36 +26,10 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(AreStreamsEqual(s1, s2, lengthToCheck, out var message), message);
         }
 
-        private static bool AreStreamsEqual(Stream s1, Stream s2)
-        {
-            if (s1.Length != s2.Length)
-            {
-                return false;
-            }
-
-            s1.Position = 0;
-            s2.Position = 0;
-
-            while (true)
-            {
-                var s1read = s1.ReadByte();
-                var s2read = s2.ReadByte();
-
-                if (s1read != s2read)
-                {
-                    return false;
-                }
-
-                if (s1read == -1)
-                {
-                    return true;
-                }
-            }
-        }
-
         private static bool AreStreamsEqual(Stream s1, Stream s2, long lengthToCheck, out string message)
         {
             var result = true;
+            var incorrectBytes = 0;
             message = "\r\n";
 
             var lengthRemaining1 = s1.Length - s1.Position;
@@ -70,7 +46,7 @@ namespace War3Net.IO.Mpq.Tests
             {
                 if (lengthToCheck - lengthRemaining1 > 0 || lengthToCheck - lengthRemaining2 > 0)
                 {
-                    message += $"[Error]: Streams have different length.\r\n";
+                    message += $"[Error]: Streams have different length: {lengthRemaining1} vs {lengthRemaining2}.\r\n";
                     result = false;
                 }
             }
@@ -82,17 +58,23 @@ namespace War3Net.IO.Mpq.Tests
 
                 if (s1read == s2read)
                 {
-                    Console.WriteLine($"{bytesRead}: {s1read}");
+                    // Console.WriteLine($"{bytesRead}: {s1read}");
                 }
                 else
                 {
-                    Console.WriteLine($"{bytesRead}: {s1read} != {s2read}");
-                    if (result)
+                    // Console.WriteLine($"{bytesRead}: {s1read} != {s2read}");
+                    incorrectBytes++;
+                    if (incorrectBytes == 1)
                     {
-                        result = false;
                         message += $"[Error]: First mismatch at byte {bytesRead}";
                     }
                 }
+            }
+
+            if (incorrectBytes > 0)
+            {
+                result = false;
+                message += $", {incorrectBytes}/{lengthToCheck} bytes were incorrect";
             }
 
             return result;
