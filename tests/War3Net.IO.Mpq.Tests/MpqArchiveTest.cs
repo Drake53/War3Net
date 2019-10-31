@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -75,15 +76,36 @@ namespace War3Net.IO.Mpq.Tests
         public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
         {
             using var inputArchive = MpqArchive.Open(inputArchivePath, loadListFile);
+            if (loadListFile && !inputArchive.FileExists(ListFile.Key))
+            {
+                return;
+            }
+
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
             using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
 
-            var index = 0;
-            foreach (var mpqFile in mpqFiles)
+            for (var index = 0; index < mpqFiles.Length; index++)
             {
-                if (inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex, out var inputEntry))
+                var mpqFile = mpqFiles[index];
+                bool exists;
+                MpqEntry? inputEntry;
+                if (mpqFile is MpqKnownFile knownFile)
                 {
-                    var recreatedEntry = recreatedArchive[index++];
+                    exists = inputArchive.FileExists(knownFile.FileName, out var entryIndex);
+                    inputEntry = exists ? inputArchive[entryIndex] : null;
+                }
+                else if (mpqFile is MpqUnknownFile unknownFile)
+                {
+                    exists = inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex & inputArchive.HashTableMask, out inputEntry);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (exists)
+                {
+                    var recreatedEntry = recreatedArchive[index];
 
                     using var inputStream = inputArchive.OpenFile(inputEntry);
                     using var recreatedStream = recreatedArchive.OpenFile(recreatedEntry);
@@ -92,7 +114,7 @@ namespace War3Net.IO.Mpq.Tests
                 }
                 else
                 {
-                    Assert.IsFalse(recreatedArchive[index++].Flags.HasFlag(MpqFileFlags.Exists));
+                    Assert.IsFalse(recreatedArchive[index].Flags.HasFlag(MpqFileFlags.Exists));
                 }
             }
         }
