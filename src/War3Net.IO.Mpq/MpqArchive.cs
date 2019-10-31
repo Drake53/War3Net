@@ -112,8 +112,6 @@ namespace War3Net.IO.Mpq
                 // Skip the MPQ header, since its contents will be calculated afterwards.
                 writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
 
-                uint hashTableEntries = 0;
-
                 // Write Archive
                 var fileIndex = 0U;
                 var fileOffset = _archiveFollowsHeader ? MpqHeader.Size : throw new NotImplementedException();
@@ -141,25 +139,17 @@ namespace War3Net.IO.Mpq
                     fileIndex++;*/
 
                     mpqFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
-                    hashTableEntries += _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
+                    var hashTableEntries = _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
+                    for (var i = 0; i < hashTableEntries; i++)
+                    {
+                        _blockTable.Add(mpqEntry);
+                    }
+
                     mpqFile.Dispose();
 
-                    _blockTable.Add(mpqEntry);
-
                     filePos += mpqEntry.CompressedSize!.Value;
-                    fileIndex++;
+                    fileIndex+= hashTableEntries;
                 }
-
-                // Match size of blocktable with amount of occupied entries in hashtable
-                /*
-                for ( var i = blockTable.Size; i < hashTableEntries; i++ )
-                {
-                    var entry = MpqEntry.Dummy;
-                    entry.SetPos( filePos );
-                    blockTable.Add( entry );
-                }
-                blockTable.UpdateSize();
-                */
 
                 _hashTable.WriteTo(writer);
                 _blockTable.WriteTo(writer);

@@ -110,6 +110,11 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public bool IsDeleted => BlockIndex == 0xFFFFFFFE;
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="MpqHash"/> can be overwritten by another hash in the <see cref="HashTable"/>.
+        /// </summary>
+        public bool IsAvailable => BlockIndex >= 0xFFFFFFFE;
+
         public static uint GetIndex(string path)
         {
             return StormBuffer.HashString(path, 0);

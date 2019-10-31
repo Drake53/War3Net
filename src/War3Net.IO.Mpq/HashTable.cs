@@ -171,7 +171,7 @@ namespace War3Net.IO.Mpq
 
             // If the hash.Mask is smaller than the hashtable's size, this file came from another archive and has an unknown filename.
             // By passing both the mask and the hashIndex corresponding to that mask, can figure out all hashIndices where this file may belong.
-            AddEntry(hash, hashIndex, step);
+            return AddEntry(hash, hashIndex, hashCollisions, step);
 
             // For files with unknown filename, it's also possible that the index at which they were found in the HashTable is not their true index.
             // This is because there may have been StringHash collisions in the HashTable.
@@ -200,7 +200,7 @@ namespace War3Net.IO.Mpq
         /// <param name="i">The index of the <see cref="MpqHash"/> to write.</param>
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
-            // TODO: make method in MpqHash for this?
+            // TODO: make method MpqHash.WriteTo (and SerializeTo)
             // _hashes[i].WriteEntry(writer);
             var hash = _hashes[i];
 
@@ -210,6 +210,7 @@ namespace War3Net.IO.Mpq
             writer.Write(hash.BlockIndex);
         }
 
+        [Obsolete]
         private void AddDeleted(uint hashIndex, uint step)
         {
             for (var i = hashIndex; i <= _mask; i += step)
@@ -234,22 +235,44 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private void AddEntry(MpqHash hash, uint hashIndex, uint step)
+        private uint AddEntry(MpqHash hash, uint hashIndex, uint hashCollisions, uint step)
         {
             // If the old archive had a smaller hashtable, it masked less bits to determine the index for the hash entry, and cannot recover the bits that were masked away.
             // As a result, need to add this hash entry in every index where the bits match with the old archive's mask.
+            var copy = 0U;
             for (var i = hashIndex & _mask; i <= _mask; i += step)
             {
                 // Console.WriteLine( "Try to add file #{0}'s hash at index {1}", hash.BlockIndex, i );
-                TryAdd(hash, i);
+                var mpqHash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, hash.BlockIndex + copy, hash.Mask);
+                TryAdd(mpqHash, i, hashCollisions);
+                copy++;
             }
+
+            return copy;
         }
 
-        private void TryAdd(MpqHash hash, uint index)
+        private void TryAdd(MpqHash hash, uint index, uint hashCollisions)
         {
-            while (!_hashes[index].IsEmpty)
+            if (hashCollisions > 0)
             {
-                // Deal with collisions
+                var startIndex = (int)index - (int)hashCollisions;
+                if (startIndex < 0)
+                {
+                    startIndex += (int)Size;
+                }
+
+                for (var i = 0; i < hashCollisions; i++)
+                {
+                    var j = (startIndex + 1) & _mask;
+                    if (_hashes[j].IsEmpty)
+                    {
+                        _hashes[j] = MpqHash.DELETED;
+                    }
+                }
+            }
+
+            while (!_hashes[index].IsAvailable)
+            {
                 index = (index + 1) & _mask;
 
                 // or: if (++index)>_mask index=0;

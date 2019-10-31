@@ -84,6 +84,7 @@ namespace War3Net.IO.Mpq.Tests
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
             using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
 
+            // TODO: fix assumption that blocktable of recreated archive is same as input mpqFiles
             for (var index = 0; index < mpqFiles.Length; index++)
             {
                 var mpqFile = mpqFiles[index];
