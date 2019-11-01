@@ -128,7 +128,7 @@ namespace War3Net.IO.Mpq
 
                     _baseStream.CopyTo(mpqArchive.BaseStream);
                     mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, encryptedFile.FileSize, _flags);
-                    mpqHash = new MpqHash(encryptedFile.Name1, encryptedFile.Name2, _locale, index, encryptedFile.Mask);
+                    mpqHash = new MpqHash(encryptedFile.Name, _locale, index, encryptedFile.Mask);
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace War3Net.IO.Mpq
             else if (this is MpqUnknownFile mpqUnknownFile)
             {
                 mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, compressedSize, fileSize, _flags);
-                mpqHash = new MpqHash(mpqUnknownFile.Name1, mpqUnknownFile.Name2, _locale, index, mpqUnknownFile.Mask);
+                mpqHash = new MpqHash(mpqUnknownFile.Name, _locale, index, mpqUnknownFile.Mask);
             }
             else
             {

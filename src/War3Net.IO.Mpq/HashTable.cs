@@ -221,14 +221,7 @@ namespace War3Net.IO.Mpq
         /// <param name="i">The index of the <see cref="MpqHash"/> to write.</param>
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
-            // TODO: make method MpqHash.WriteTo (and SerializeTo)
-            // _hashes[i].WriteEntry(writer);
-            var hash = _hashes[i];
-
-            writer.Write(hash.Name1);
-            writer.Write(hash.Name2);
-            writer.Write((uint)hash.Locale);
-            writer.Write(hash.BlockIndex);
+            _hashes[i].WriteTo(writer);
         }
 
         [Obsolete]
@@ -264,7 +257,7 @@ namespace War3Net.IO.Mpq
             for (var i = hashIndex & _mask; i <= _mask; i += step)
             {
                 // Console.WriteLine( "Try to add file #{0}'s hash at index {1}", hash.BlockIndex, i );
-                var mpqHash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, hash.BlockIndex + copy, hash.Mask);
+                var mpqHash = new MpqHash(hash.Name, hash.Locale, hash.BlockIndex + copy, hash.Mask);
                 TryAdd(mpqHash, i, hashCollisions);
                 copy++;
             }

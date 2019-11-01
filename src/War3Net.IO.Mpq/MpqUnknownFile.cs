@@ -39,9 +39,7 @@ namespace War3Net.IO.Mpq
             _encryptionSeed = encryptionSeed;
         }
 
-        public uint Name1 => _hash.Name1;
-
-        public uint Name2 => _hash.Name2;
+        public ulong Name => _hash.Name;
 
         public uint Mask => _hash.Mask;
 

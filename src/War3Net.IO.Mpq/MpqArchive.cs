@@ -430,7 +430,7 @@ namespace War3Net.IO.Mpq
                     if (!hash.IsEmpty && !hash.IsDeleted && hash.BlockIndex > BlockTable.MaxSize)
                     {
                         // TODO: don't force neutral locale if another MpqHash exists with the same Name1 and Name2, and that has the neutral locale
-                        hashTable[i] = new MpqHash(hash.Name1, hash.Name2, MpqLocale.Neutral /*hash.Locale & (MpqLocale)0x00000FFF*/, hash.BlockIndex & (BlockTable.MaxSize - 1), hash.Mask);
+                        hashTable[i] = new MpqHash(hash.Name, MpqLocale.Neutral /*hash.Locale & (MpqLocale)0x00000FFF*/, hash.BlockIndex & (BlockTable.MaxSize - 1), hash.Mask);
                     }
                 }
 
@@ -973,11 +973,12 @@ namespace War3Net.IO.Mpq
             index &= _mpqHeader.HashTableSize - 1;
             var name1 = StormBuffer.HashString(filename, 0x100);
             var name2 = StormBuffer.HashString(filename, 0x200);
+            var name = MpqHash.CombineNames(name1, name2);
 
             for (var i = index; i < _hashTable.Size; ++i)
             {
                 hash = _hashTable[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
+                if (hash.Name == name)
                 {
                     return true;
                 }
@@ -986,7 +987,7 @@ namespace War3Net.IO.Mpq
             for (uint i = 0; i < index; ++i)
             {
                 hash = _hashTable[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
+                if (hash.Name == name)
                 {
                     return true;
                 }
@@ -1002,13 +1003,14 @@ namespace War3Net.IO.Mpq
             index &= _mpqHeader.HashTableSize - 1;
             var name1 = StormBuffer.HashString(filename, 0x100);
             var name2 = StormBuffer.HashString(filename, 0x200);
+            var name = MpqHash.CombineNames(name1, name2);
 
             var foundAnyHash = false;
 
             for (var i = index; i < _hashTable.Size; ++i)
             {
                 var hash = _hashTable[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
+                if (hash.Name == name)
                 {
                     yield return hash;
                     foundAnyHash = true;
@@ -1022,7 +1024,7 @@ namespace War3Net.IO.Mpq
             for (uint i = 0; i < index; ++i)
             {
                 var hash = _hashTable[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
+                if (hash.Name == name)
                 {
                     yield return hash;
                     foundAnyHash = true;

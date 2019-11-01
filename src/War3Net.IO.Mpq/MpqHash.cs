@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 namespace War3Net.IO.Mpq
@@ -22,13 +23,17 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
-        /// <param name="name1"></param>
-        /// <param name="name2"></param>
-        /// <param name="locale"></param>
-        /// <param name="blockIndex"></param>
-        /// <param name="mask"></param>
+        public MpqHash(ulong name, MpqLocale locale, uint blockIndex, uint mask)
+            : this(name, locale, blockIndex)
+        {
+            Mask = mask;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqHash"/> struct.
+        /// </summary>
         public MpqHash(uint name1, uint name2, MpqLocale locale, uint blockIndex, uint mask)
-            : this(name1, name2, locale, blockIndex)
+            : this(CombineNames(name1, name2), locale, blockIndex)
         {
             Mask = mask;
         }
@@ -36,10 +41,8 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
-        /// <param name="br"></param>
-        /// <param name="mask"></param>
         public MpqHash(BinaryReader br, uint mask)
-            : this(br.ReadUInt32(), br.ReadUInt32(), (MpqLocale)br.ReadUInt32(), br.ReadUInt32())
+            : this(br.ReadUInt64(), (MpqLocale)br.ReadUInt32(), br.ReadUInt32())
         {
             Mask = mask;
         }
@@ -47,57 +50,29 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="mask"></param>
-        /// <param name="locale"></param>
-        /// <param name="blockIndex"></param>
         public MpqHash(string fileName, uint mask, MpqLocale locale, uint blockIndex)
-            : this(StormBuffer.HashString(fileName, 0x100), StormBuffer.HashString(fileName, 0x200), locale, blockIndex, mask)
+            : this(CombineNames(StormBuffer.HashString(fileName, 0x100), StormBuffer.HashString(fileName, 0x200)), locale, blockIndex, mask)
         {
         }
 
-        private MpqHash(uint name1, uint name2, MpqLocale locale, uint blockIndex)
+        private MpqHash(ulong name, MpqLocale locale, uint blockIndex)
             : this()
         {
-            Name1 = name1;
-            Name2 = name2;
+            Name = name;
             Locale = locale;
             BlockIndex = blockIndex;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        public static MpqHash DELETED => new MpqHash(0xFFFFFFFF, 0xFFFFFFFF, (MpqLocale)0xFFFFFFFF, 0xFFFFFFFE);
+        public static MpqHash DELETED => new MpqHash(ulong.MaxValue, (MpqLocale)0xFFFFFFFF, 0xFFFFFFFE);
 
-        /// <summary>
-        ///
-        /// </summary>
-        public static MpqHash NULL => new MpqHash(0xFFFFFFFF, 0xFFFFFFFF, (MpqLocale)0xFFFFFFFF, 0xFFFFFFFF); // todo: rename EMPTY?
+        public static MpqHash NULL => new MpqHash(ulong.MaxValue, (MpqLocale)0xFFFFFFFF, 0xFFFFFFFF); // todo: rename EMPTY?
 
-        /// <summary>
-        ///
-        /// </summary>
-        public uint Name1 { get; private set; }
+        public ulong Name { get; private set; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        public uint Name2 { get; private set; }
-
-        /// <summary>
-        ///
-        /// </summary>
         public MpqLocale Locale { get; private set; }
 
-        /// <summary>
-        ///
-        /// </summary>
         public uint BlockIndex { get; private set; }
 
-        /// <summary>
-        ///
-        /// </summary>
         public uint Mask { get; private set; }
 
         /// <summary>
@@ -129,6 +104,31 @@ namespace War3Net.IO.Mpq
         public override string ToString()
         {
             return IsEmpty ? "EMPTY" : IsDeleted ? "DELETED" : $"Entry #{BlockIndex}";
+        }
+
+        public void SerializeTo(Stream stream)
+        {
+            using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
+            {
+                WriteTo(writer);
+            }
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            writer.Write(Name);
+            writer.Write((uint)Locale);
+            writer.Write(BlockIndex);
+        }
+
+        internal static ulong CombineNames(uint name1, uint name2)
+        {
+            return name1 | ((ulong)name2 << 32);
         }
     }
 }
