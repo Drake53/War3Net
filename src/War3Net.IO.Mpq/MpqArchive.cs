@@ -106,7 +106,7 @@ namespace War3Net.IO.Mpq
             var fileCount = (uint)(mpqFiles ?? throw new ArgumentNullException(nameof(mpqFiles))).Count;
 
             _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
-            _blockTable = new BlockTable(fileCount);
+            _blockTable = new BlockTable();
 
             using (var writer = new BinaryWriter(_baseStream, new UTF8Encoding(false, true), true))
             {
@@ -523,7 +523,7 @@ namespace War3Net.IO.Mpq
                             binaryWriter.Write(binaryReader.ReadBytes((int)(archive._hashTable.Size * MpqHash.Size)));
                             binaryReader.ReadBytes((int)(archive._blockTable.Size * MpqEntry.Size));
 
-                            var blockTable = new BlockTable(archive._blockTable.Size);
+                            var blockTable = new BlockTable();
                             foreach (var mpqEntry in archive)
                             {
                                 var offset = mpqEntry.FileOffset!.Value;
@@ -658,7 +658,7 @@ namespace War3Net.IO.Mpq
                     binaryWriter.Write(binaryReader.ReadBytes((int)(_hashTable.Size * MpqHash.Size)));
                     binaryReader.ReadBytes((int)(_blockTable.Size * MpqEntry.Size));
 
-                    var blockTable = new BlockTable(_blockTable.Size);
+                    var blockTable = new BlockTable();
                     foreach (var mpqEntry in this)
                     {
                         var offset = mpqEntry.FileOffset!.Value;

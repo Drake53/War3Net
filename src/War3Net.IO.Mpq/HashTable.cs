@@ -29,12 +29,17 @@ namespace War3Net.IO.Mpq
         /// <param name="size">The maximum amount of entries that can be contained in this table. This value is automatically rounded up to the nearest power of two.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MpqTable.MaxSize"/>.</exception>
         public HashTable(uint size)
-            : base(GenerateMask(size) + 1)
         {
-            // The size of the hashtable must always be a power of two.
-            _mask = Size - 1;
-            _hashes = new MpqHash[Size];
-            for (var i = 0; i < Size; i++)
+            if (size > MaxSize)
+            {
+                throw new ArgumentOutOfRangeException(nameof(size));
+            }
+
+            _mask = GenerateMask(size);
+            size = Size;
+
+            _hashes = new MpqHash[size];
+            for (var i = 0; i < size; i++)
             {
                 _hashes[i] = MpqHash.NULL;
             }
@@ -73,11 +78,22 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="reader">The <see cref="BinaryReader"/> from which to read the contents of the <see cref="HashTable"/>.</param>
         /// <param name="size">The amount of <see cref="MpqHash"/> objects to be added to the <see cref="HashTable"/>.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> argument is not a power of two.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MpqTable.MaxSize"/>.</exception>
         internal HashTable(BinaryReader reader, uint size)
-            : base(size)
         {
-            _mask = Size - 1;
-            _hashes = new MpqHash[Size];
+            if (size > MaxSize)
+            {
+                throw new ArgumentOutOfRangeException(nameof(size));
+            }
+
+            if (size != GenerateMask(size) + 1)
+            {
+                throw new ArgumentException("Size must be a power of two.", nameof(size));
+            }
+
+            _hashes = new MpqHash[size];
+            _mask = size - 1;
 
             var hashdata = reader.ReadBytes((int)(size * MpqHash.Size));
             Decrypt(hashdata);
@@ -93,6 +109,11 @@ namespace War3Net.IO.Mpq
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the capacity of the <see cref="HashTable"/>.
+        /// </summary>
+        public override uint Size => _mask + 1;
 
         /// <summary>
         /// Gets the mask for this <see cref="HashTable"/>.

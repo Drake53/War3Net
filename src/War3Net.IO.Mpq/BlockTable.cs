@@ -27,12 +27,9 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockTable"/> class.
         /// </summary>
-        /// <param name="size">The maximum amount of entries that can be contained in this table.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MpqTable.MaxSize"/>.</exception>
-        internal BlockTable(uint size)
-            : base(size)
+        internal BlockTable()
         {
-            _entries = new List<MpqEntry>((int)size);
+            _entries = new List<MpqEntry>();
         }
 
         /// <summary>
@@ -42,7 +39,6 @@ namespace War3Net.IO.Mpq
         /// <param name="size">The amount of <see cref="MpqEntry"/> objects to be added to the <see cref="BlockTable"/>.</param>
         /// <param name="headerOffset">The length (in bytes) of data before the <see cref="MpqHeader"/>.</param>
         internal BlockTable(BinaryReader reader, uint size, uint headerOffset)
-            : base(size)
         {
             _entries = new List<MpqEntry>((int)size);
 
@@ -60,6 +56,11 @@ namespace War3Net.IO.Mpq
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the capacity of the <see cref="BlockTable"/>.
+        /// </summary>
+        public override uint Size => (uint)_entries.Count;
 
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="BlockTable"/>.

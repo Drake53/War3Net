@@ -13,34 +13,24 @@ namespace War3Net.IO.Mpq
     /// <summary>
     /// A table in an <see cref="MpqArchive"/>.
     /// </summary>
-    internal abstract class MpqTable
+    public abstract class MpqTable
     {
         /// <summary>
         /// The maximum capacity of an <see cref="MpqTable"/>.
         /// </summary>
         public const int MaxSize = 0x1 << 15;
 
-        private readonly uint _size;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqTable"/> class.
         /// </summary>
-        /// <param name="size">The maximum amount of entries that can be contained in this table.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> argument is larger than <see cref="MaxSize"/>.</exception>
-        public MpqTable(uint size)
+        internal MpqTable()
         {
-            if (size > MaxSize)
-            {
-                throw new ArgumentOutOfRangeException(nameof(size));
-            }
-
-            _size = size;
         }
 
         /// <summary>
         /// Gets the capacity of the <see cref="MpqTable"/>.
         /// </summary>
-        public uint Size => _size;
+        public abstract uint Size { get; }
 
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="MpqTable"/>.
@@ -56,7 +46,7 @@ namespace War3Net.IO.Mpq
         /// Encrypts the contents of the <see cref="MpqTable"/>.
         /// </summary>
         /// <param name="data">The unencrypted entries in the table.</param>
-        public void Encrypt(byte[] data)
+        internal void Encrypt(byte[] data)
         {
             StormBuffer.EncryptBlock(data, StormBuffer.HashString(Key, 0x300));
         }
@@ -65,7 +55,7 @@ namespace War3Net.IO.Mpq
         /// Decrypts the contents of the <see cref="MpqTable"/>.
         /// </summary>
         /// <param name="data">The encrypted entries in the table.</param>
-        public void Decrypt(byte[] data)
+        internal void Decrypt(byte[] data)
         {
             StormBuffer.DecryptBlock(data, StormBuffer.HashString(Key, 0x300));
         }
@@ -74,7 +64,7 @@ namespace War3Net.IO.Mpq
         /// Write the entire <see cref="MpqTable"/>'s encrypted contents to the <paramref name="stream"/>.
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to write the contents to.</param>
-        public void SerializeTo(Stream stream)
+        internal void SerializeTo(Stream stream)
         {
             using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
             {
@@ -86,7 +76,7 @@ namespace War3Net.IO.Mpq
         /// Write the entire <see cref="MpqTable"/>'s encrypted contents to the <paramref name="writer"/>.
         /// </summary>
         /// <param name="writer">The <see cref="BinaryWriter"/> to write the contents to.</param>
-        public void WriteTo(BinaryWriter writer)
+        internal void WriteTo(BinaryWriter writer)
         {
             using (var memoryStream = new MemoryStream(GetEncryptedData()))
             {
@@ -116,7 +106,7 @@ namespace War3Net.IO.Mpq
             {
                 using (var writer = new BinaryWriter(memoryStream, new System.Text.UTF8Encoding(false, true), true))
                 {
-                    for (var i = 0; i < _size; i++)
+                    for (var i = 0; i < Size; i++)
                     {
                         WriteEntry(writer, i);
                     }
@@ -126,7 +116,7 @@ namespace War3Net.IO.Mpq
 
                 using (var reader = new BinaryReader(memoryStream))
                 {
-                    data = reader.ReadBytes((int)_size * EntrySize);
+                    data = reader.ReadBytes((int)Size * EntrySize);
                     Encrypt(data);
                 }
             }
