@@ -128,15 +128,14 @@ namespace War3Net.IO.Mpq.Tests
                     if (mpqFile is MpqEncryptedFile encryptedFile)
                     {
                         // Check if both files have the same encryption seed.
-                        if (!mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset)
-                        {
-                            inputArchive.BaseStream.Position = inputEntry.FilePosition!.Value;
-                            recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition!.Value;
+                        Assert.IsTrue(!mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset);
 
-                            var size1 = inputEntry.CompressedSize!.Value;
-                            var size2 = recreatedEntry.CompressedSize!.Value;
-                            StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
-                        }
+                        inputArchive.BaseStream.Position = inputEntry.FilePosition!.Value;
+                        recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition!.Value;
+
+                        var size1 = inputEntry.CompressedSize!.Value;
+                        var size2 = recreatedEntry.CompressedSize!.Value;
+                        StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
                     }
                     else
                     {
