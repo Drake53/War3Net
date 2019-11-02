@@ -59,5 +59,12 @@ namespace War3Net.IO.Mpq
         internal override uint? FileSize => _fileSize;
 
         protected override uint? EncryptionSeed => MpqEntry.CalculateEncryptionSeed(_fileName);
+
+        protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
+        {
+            mpqEntry = new MpqEntry(_fileName, compressedSize, fileSize, Flags);
+            mpqHash = new MpqHash(_fileName, mpqArchive.HashTableMask, Locale, index);
+            mpqEntry.SetPos(mpqArchive.HeaderOffset, relativeFileOffset);
+        }
     }
 }

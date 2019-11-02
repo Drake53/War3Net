@@ -58,5 +58,11 @@ namespace War3Net.IO.Mpq
             // TODO: if filename matches Name, return MpqKnownFile, otherwise return null
             throw new NotImplementedException();
         }
+
+        protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
+        {
+            mpqEntry = new MpqEntry(mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, Flags);
+            mpqHash = new MpqHash(Name, Locale, index, Mask);
+        }
     }
 }

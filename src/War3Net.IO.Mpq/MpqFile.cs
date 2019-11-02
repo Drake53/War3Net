@@ -156,22 +156,7 @@ namespace War3Net.IO.Mpq
 
                 _baseStream.CopyTo(mpqArchive.BaseStream);
 
-                // TODO: create abstract method: GetTableEntries
-                if (this is MpqKnownFile knownFile)
-                {
-                    mpqEntry = new MpqEntry(knownFile.FileName, fileSize, FileSize!.Value, _flags);
-                    mpqHash = new MpqHash(knownFile.FileName, mpqArchive.HashTableMask, _locale, index);
-                    mpqEntry.SetPos(headerOffset, relativeFileOffset);
-                }
-                else if (this is MpqEncryptedFile encryptedFile)
-                {
-                    mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, FileSize!.Value, _flags);
-                    mpqHash = new MpqHash(Name, _locale, index, encryptedFile.Mask);
-                }
-                else
-                {
-                    throw new NotSupportedException($"Unknown subclass of {nameof(MpqFile)}.");
-                }
+                GetTableEntries(mpqArchive, index, relativeFileOffset, fileSize, FileSize!.Value, out mpqEntry, out mpqHash);
 
                 return;
             }
@@ -242,22 +227,7 @@ namespace War3Net.IO.Mpq
                 compressedStream.CopyTo(mpqArchive.BaseStream);
             }
 
-            // TODO: create abstract method: GetTableEntries
-            if (this is MpqKnownFile mpqKnownFile)
-            {
-                mpqEntry = new MpqEntry(mpqKnownFile.FileName, compressedSize, fileSize, _flags);
-                mpqHash = new MpqHash(mpqKnownFile.FileName, mpqArchive.HashTableMask, _locale, index);
-                mpqEntry.SetPos(headerOffset, relativeFileOffset);
-            }
-            else if (this is MpqUnknownFile mpqUnknownFile)
-            {
-                mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, compressedSize, fileSize, _flags);
-                mpqHash = new MpqHash(Name, _locale, index, mpqUnknownFile.Mask);
-            }
-            else
-            {
-                throw new NotSupportedException($"Unknown subclass of {nameof(MpqFile)}.");
-            }
+            GetTableEntries(mpqArchive, index, relativeFileOffset, compressedSize, fileSize, out mpqEntry, out mpqHash);
         }
 
         /*internal void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
@@ -288,6 +258,8 @@ namespace War3Net.IO.Mpq
         /*internal void WriteTo(BinaryWriter writer, bool dispose = true)
         {
         }*/
+
+        protected abstract void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash);
 
         private Stream GetCompressedStream(int blockSize)
         {
