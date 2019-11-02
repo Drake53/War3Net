@@ -39,6 +39,11 @@ namespace War3Net.IO.Compression
             -1, 2, -1, 4, -1, 6, -1, 8,
         };
 
+        public static byte[] Decompress(byte[] data, int channelCount)
+        {
+            return Decompress(new MemoryStream(data), channelCount);
+        }
+
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>
@@ -50,24 +55,24 @@ namespace War3Net.IO.Compression
             var array1 = new int[] { 0x2c, 0x2c };
             var array2 = new int[channelCount];
 
-            var input = new BinaryReader(data ?? throw new ArgumentNullException(nameof(data)));
-            var outputstream = new MemoryStream();
-            var output = new BinaryWriter(outputstream);
+            var reader = new BinaryReader(data ?? throw new ArgumentNullException(nameof(data)));
+            using var outputstream = new MemoryStream();
+            using var writer = new BinaryWriter(outputstream);
 
-            input.ReadByte();
-            var shift = input.ReadByte();
+            reader.ReadByte();
+            var shift = reader.ReadByte();
 
             for (var i = 0; i < channelCount; i++)
             {
-                var temp = input.ReadInt16();
+                var temp = reader.ReadInt16();
                 array2[i] = temp;
-                output.Write(temp);
+                writer.Write(temp);
             }
 
             var channel = channelCount - 1;
             while (data.Position < data.Length)
             {
-                var value = input.ReadByte();
+                var value = reader.ReadByte();
 
                 if (channelCount == 2)
                 {
@@ -84,7 +89,7 @@ namespace War3Net.IO.Compression
                                 array1[channel]--;
                             }
 
-                            output.Write((short)array2[channel]);
+                            writer.Write((short)array2[channel]);
                             break;
                         case 1:
                             array1[channel] += 8;
@@ -170,7 +175,7 @@ namespace War3Net.IO.Compression
                     }
 
                     array2[channel] = temp3;
-                    output.Write((short)temp3);
+                    writer.Write((short)temp3);
 
                     array1[channel] += _sLookup2[value & 0x1f];
 

@@ -156,7 +156,7 @@ namespace War3Net.IO.Compression
         /// </summary>
         /// <param name="data">Stream containing data compressed with Huffman code.</param>
         /// <returns>Stream containing the decompressed data.</returns>
-        public static MemoryStream Decompress(Stream data)
+        public static byte[] Decompress(Stream data)
         {
             var comptype = data?.ReadByte() ?? throw new ArgumentNullException(nameof(data));
 
@@ -179,7 +179,7 @@ namespace War3Net.IO.Compression
                 {
                     case 256:
                         outputstream.Seek(0, SeekOrigin.Begin);
-                        return outputstream;
+                        return outputstream.ToArray();
                     case 257:
                         var newvalue = bitstream.ReadBits(8);
                         outputstream.WriteByte((byte)newvalue);
