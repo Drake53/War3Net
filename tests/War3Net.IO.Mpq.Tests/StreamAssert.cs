@@ -5,7 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+#define BUFFER_STREAM_DATA
+
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -51,29 +52,41 @@ namespace War3Net.IO.Mpq.Tests
                 }
             }
 
+#if BUFFER_STREAM_DATA
+            var data1 = new byte[lengthRemaining1];
+            if (s1.Read(data1, 0, (int)lengthRemaining1) != lengthRemaining1)
+            {
+                message += $"[Error]: Could not buffer stream 1.\r\n";
+                result = false;
+            }
+
+            var data2 = new byte[lengthRemaining2];
+            if (s2.Read(data2, 0, (int)lengthRemaining2) != lengthRemaining2)
+            {
+                message += $"[Error]: Could not buffer stream 2.\r\n";
+                result = false;
+            }
+#endif
+
             for (var bytesRead = 0; bytesRead < lengthToCheck; bytesRead++)
             {
-                var s1read = s1.ReadByte();
-                var s2read = s2.ReadByte();
-
-                if (s1read == s2read)
+#if BUFFER_STREAM_DATA
+                if (data1[bytesRead] != data2[bytesRead])
+#else
+                if (s1.ReadByte() != s2.ReadByte())
+#endif
                 {
-                    // Console.WriteLine($"{bytesRead}: {s1read}");
-                }
-                else
-                {
-                    // Console.WriteLine($"{bytesRead}: {s1read} != {s2read}");
                     incorrectBytes++;
                     if (incorrectBytes == 1)
                     {
                         message += $"[Error]: First mismatch at byte {bytesRead}";
+                        result = false;
                     }
                 }
             }
 
             if (incorrectBytes > 0)
             {
-                result = false;
                 message += $", {incorrectBytes}/{lengthToCheck} bytes were incorrect";
             }
 
