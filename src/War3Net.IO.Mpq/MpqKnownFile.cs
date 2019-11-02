@@ -20,8 +20,8 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqKnownFile"/> class.
         /// </summary>
-        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
-            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale)
+        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen = false)
+            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale, leaveOpen)
         {
             _isOriginalStream = false;
             _fileName = fileName;
@@ -32,8 +32,8 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqKnownFile"/> class.
         /// </summary>
-        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, long? filePos, uint? fileSize)
-            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale)
+        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, long? filePos, uint? fileSize, bool leaveOpen = false)
+            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale, leaveOpen)
         {
             _isOriginalStream = true;
             _fileName = fileName;

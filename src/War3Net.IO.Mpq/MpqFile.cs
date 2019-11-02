@@ -17,6 +17,7 @@ namespace War3Net.IO.Mpq
     {
         private readonly ulong _name;
         private readonly Stream _baseStream;
+        private readonly bool _isStreamOwner;
 
         private MpqFileFlags _flags;
         private MpqLocale _locale;
@@ -24,12 +25,13 @@ namespace War3Net.IO.Mpq
 
         // TODO: move compression and encryption logic to a different file (MpqStream?)
 
-        internal MpqFile(ulong hashedName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
+        internal MpqFile(ulong hashedName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen)
         {
             _name = hashedName;
             _baseStream = new MemoryStream();
             sourceStream?.CopyTo(_baseStream);
             _baseStream.Position = 0;
+            _isStreamOwner = !leaveOpen;
 
             _flags = flags;
             _locale = locale;
@@ -121,7 +123,10 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public void Dispose()
         {
-            _baseStream.Dispose();
+            if (_isStreamOwner)
+            {
+                _baseStream.Dispose();
+            }
         }
 
         /// <inheritdoc/>
@@ -151,6 +156,7 @@ namespace War3Net.IO.Mpq
 
                 _baseStream.CopyTo(mpqArchive.BaseStream);
 
+                // TODO: create abstract method: GetTableEntries
                 if (this is MpqKnownFile knownFile)
                 {
                     mpqEntry = new MpqEntry(knownFile.FileName, fileSize, FileSize!.Value, _flags);
@@ -236,6 +242,7 @@ namespace War3Net.IO.Mpq
                 compressedStream.CopyTo(mpqArchive.BaseStream);
             }
 
+            // TODO: create abstract method: GetTableEntries
             if (this is MpqKnownFile mpqKnownFile)
             {
                 mpqEntry = new MpqEntry(mpqKnownFile.FileName, compressedSize, fileSize, _flags);

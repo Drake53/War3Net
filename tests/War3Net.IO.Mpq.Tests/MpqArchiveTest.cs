@@ -25,15 +25,13 @@ namespace War3Net.IO.Mpq.Tests
         {
             var fileStream = File.OpenRead(filename);
             // var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, MpqFileFlags.Exists, BlockSize);
-            var mpqFile = new MpqKnownFile(filename, fileStream, MpqFileFlags.Exists, MpqLocale.Neutral);
+            var mpqFile = new MpqKnownFile(filename, fileStream, MpqFileFlags.Exists, MpqLocale.Neutral, true);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
 
-            // Reload file, since the filestream gets disposed when the mpqfile is added to an mpqarchive.
-            fileStream = File.OpenRead(filename);
-
+            fileStream.Position = 0;
             StreamAssert.AreEqual(fileStream, openedStream);
         }
 
@@ -43,15 +41,13 @@ namespace War3Net.IO.Mpq.Tests
         {
             var fileStream = File.OpenRead(filename);
             // var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, flags, BlockSize);
-            var mpqFile = new MpqKnownFile(filename, fileStream, flags, MpqLocale.Neutral);
+            var mpqFile = new MpqKnownFile(filename, fileStream, flags, MpqLocale.Neutral, true);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
 
-            // Reload file, since the filestream gets disposed when the mpqfile is added to an mpqarchive.
-            fileStream = File.OpenRead(filename);
-
+            fileStream.Position = 0;
             StreamAssert.AreEqual(fileStream, openedStream);
         }
 

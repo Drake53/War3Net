@@ -21,7 +21,7 @@ namespace War3Net.IO.Mpq
         /// Initializes a new instance of the <see cref="MpqUnknownFile"/> class.
         /// </summary>
         internal MpqUnknownFile(Stream? sourceStream, MpqFileFlags flags, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
-            : base(mpqHash.Name, sourceStream, flags, mpqHash.Locale)
+            : base(mpqHash.Name, sourceStream, flags, mpqHash.Locale, false)
         {
             if (mpqHash.Mask == 0)
             {
