@@ -9,8 +9,6 @@ using System;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.SharpZipLib.BZip2;
-
 using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq
@@ -20,28 +18,21 @@ namespace War3Net.IO.Mpq
     /// </summary>
     public class MpqStream : Stream
     {
-        private enum MpqStreamMode
-        {
-            Read = 0,
-            Write = 1,
-        }
-
         private readonly Stream _stream;
+        private readonly MpqEntry _entry;
         private readonly int _blockSize;
         private readonly MpqStreamMode _mode;
+        private readonly uint[] _blockPositions;
 
-        private readonly MpqEntry _entry;
-        private uint[] _blockPositions;
-
+        private byte[]? _currentData;
         private long _position;
-        private byte[] _currentData;
-        private int _currentBlockIndex = -1;
+        private int _currentBlockIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class in Read mode.
         /// </summary>
-        /// <param name="archive"></param>
-        /// <param name="entry"></param>
+        /// <param name="archive">The archive from which to load a file.</param>
+        /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
         internal MpqStream(MpqArchive archive, MpqEntry entry)
             : this(entry, archive.BaseStream, archive.BlockSize)
         {
@@ -50,9 +41,9 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class in Read mode.
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="baseStream"></param>
-        /// <param name="blockSize"></param>
+        /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
+        /// <param name="baseStream">The <see cref="MpqArchive"/>'s stream.</param>
+        /// <param name="blockSize">The <see cref="MpqArchive.BlockSize"/>.</param>
         internal MpqStream(MpqEntry entry, Stream baseStream, int blockSize)
         {
             _mode = MpqStreamMode.Read;
@@ -61,19 +52,84 @@ namespace War3Net.IO.Mpq
             _stream = baseStream;
             _blockSize = blockSize;
 
-            if (_entry.IsCompressed && !_entry.IsSingleUnit)
+            if (!_entry.IsSingleUnit)
             {
-                LoadBlockPositions();
+                _currentBlockIndex = -1;
+
+                // Compressed files start with an array of offsets to make seeking possible
+                if (_entry.IsCompressed)
+                {
+                    var blockposcount = (int)((_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
+
+                    // Files with metadata have an extra block containing block checksums
+                    if ((_entry.Flags & MpqFileFlags.FileHasMetadata) != 0)
+                    {
+                        blockposcount++;
+                    }
+
+                    _blockPositions = new uint[blockposcount];
+
+                    lock (_stream)
+                    {
+                        _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
+                        using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
+                        {
+                            for (var i = 0; i < blockposcount; i++)
+                            {
+                                _blockPositions[i] = br.ReadUInt32();
+                            }
+                        }
+                    }
+
+                    var blockpossize = (uint)blockposcount * 4;
+
+                    /*
+                    if (_blockPositions[0] != blockpossize)
+                    {
+                        // _entry.Flags |= MpqFileFlags.Encrypted;
+                        throw new MpqParserException();
+                    }
+                     */
+
+                    if (_entry.IsEncrypted && blockposcount > 1)
+                    {
+                        if (_entry.EncryptionSeed == 0)
+                        {
+                            // This should only happen when the file name is not known.
+                            if (!_entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize))
+                            {
+                                throw new MpqParserException("Unable to determine encyption seed");
+                            }
+                        }
+
+                        StormBuffer.DecryptBlock(_blockPositions, _entry.EncryptionSeed - 1);
+
+                        if (_blockPositions[0] != blockpossize)
+                        {
+                            throw new MpqParserException("Decryption failed");
+                        }
+
+                        if (_blockPositions[1] > _blockSize + blockpossize)
+                        {
+                            throw new MpqParserException("Decryption failed");
+                        }
+                    }
+                }
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class in Write mode.
         /// </summary>
-        /// <param name="file"></param>
         internal MpqStream(MpqFile file)
         {
             throw new NotImplementedException();
+        }
+
+        private enum MpqStreamMode
+        {
+            Read = 0,
+            Write = 1,
         }
 
         /// <inheritdoc/>
@@ -98,7 +154,6 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override void Flush()
         {
-            // NOP
         }
 
         /// <inheritdoc/>
@@ -146,7 +201,7 @@ namespace War3Net.IO.Mpq
 
             if (_entry.IsSingleUnit)
             {
-                return ReadInternalSingleUnit(buffer, offset, count);
+                return ReadInternal(buffer, offset, count);
             }
 
             var toread = count;
@@ -181,16 +236,8 @@ namespace War3Net.IO.Mpq
                 return -1;
             }
 
-            if (_entry.IsSingleUnit)
-            {
-                return ReadByteSingleUnit();
-            }
-
             BufferData();
-
-            var localposition = (int)(_position % _blockSize);
-            _position++;
-            return _currentData[localposition];
+            return _currentData![_entry.IsSingleUnit ? _position++ : (int)(_position++ & (_blockSize - 1))];
         }
 
         /// <inheritdoc/>
@@ -202,218 +249,6 @@ namespace War3Net.IO.Mpq
             }
 
             throw new NotImplementedException();
-        }
-
-        // Compressed files start with an array of offsets to make seeking possible
-        private void LoadBlockPositions()
-        {
-            var blockposcount = (int)((_entry.FileSize + _blockSize - 1) / _blockSize) + 1;
-
-            // Files with metadata have an extra block containing block checksums
-            if ((_entry.Flags & MpqFileFlags.FileHasMetadata) != 0)
-            {
-                blockposcount++;
-            }
-
-            _blockPositions = new uint[blockposcount];
-
-            lock (_stream)
-            {
-                _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
-                using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
-                {
-                    for (var i = 0; i < blockposcount; i++)
-                    {
-                        _blockPositions[i] = br.ReadUInt32();
-                    }
-                }
-            }
-
-            var blockpossize = (uint)blockposcount * 4;
-
-            /*
-            if (_blockPositions[0] != blockpossize)
-            {
-                // _entry.Flags |= MpqFileFlags.Encrypted;
-                throw new MpqParserException();
-            }
-             */
-
-            if (_entry.IsEncrypted && blockposcount > 1)
-            {
-                if (_entry.EncryptionSeed == 0)
-                {
-                    // This should only happen when the file name is not known.
-                    if (!_entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize))
-                    {
-                        throw new MpqParserException("Unable to determine encyption seed");
-                    }
-                }
-
-                StormBuffer.DecryptBlock(_blockPositions, _entry.EncryptionSeed - 1);
-
-                if (_blockPositions[0] != blockpossize)
-                {
-                    throw new MpqParserException("Decryption failed");
-                }
-
-                if (_blockPositions[1] > _blockSize + blockpossize)
-                {
-                    throw new MpqParserException("Decryption failed");
-                }
-            }
-        }
-
-        private byte[] LoadBlock(int blockIndex, int expectedLength)
-        {
-            uint offset;
-            int toread;
-
-            if (_entry.IsCompressed)
-            {
-                offset = _blockPositions[blockIndex];
-                toread = (int)(_blockPositions[blockIndex + 1] - offset);
-            }
-            else
-            {
-                offset = (uint)(blockIndex * _blockSize);
-                toread = expectedLength;
-            }
-
-            offset += (uint)_entry.FilePosition;
-
-            var data = new byte[toread];
-            lock (_stream)
-            {
-                _stream.Seek(offset, SeekOrigin.Begin);
-                var read = _stream.Read(data, 0, toread);
-                if (read != toread)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
-            }
-
-            if (_entry.IsEncrypted && _entry.FileSize > 3)
-            {
-                if (_entry.EncryptionSeed == 0)
-                {
-                    throw new MpqParserException("Unable to determine encryption key");
-                }
-
-                StormBuffer.DecryptBlock(data, (uint)(blockIndex + _entry.EncryptionSeed));
-            }
-
-            if (_entry.IsCompressed && (toread != expectedLength))
-            {
-                if (toread > expectedLength)
-                {
-                    throw new MpqParserException("Block's compressed data is larger than decompressed, so it should have been stored in uncompressed format.");
-                }
-
-                data = (_entry.Flags & MpqFileFlags.CompressedMulti) != 0
-                    ? DecompressMulti(data, expectedLength)
-                    : PKDecompress(new MemoryStream(data), expectedLength);
-            }
-
-            return data;
-        }
-
-        private int ReadInternalSingleUnit(byte[] buffer, int offset, int count)
-        {
-            if (_position >= Length)
-            {
-                return 0;
-            }
-
-            if (_currentData == null)
-            {
-                LoadSingleUnit();
-            }
-
-            var bytestocopy = Math.Min((int)(_currentData.Length - _position), count);
-
-            Array.Copy(_currentData, _position, buffer, offset, bytestocopy);
-
-            _position += bytestocopy;
-            return bytestocopy;
-        }
-
-        private void LoadSingleUnit()
-        {
-            // Read the entire file into memory
-            var filedata = new byte[_entry.CompressedSize!.Value];
-            lock (_stream)
-            {
-                _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
-                var read = _stream.Read(filedata, 0, filedata.Length);
-                if (read != filedata.Length)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
-            }
-
-            if (_entry.IsEncrypted && _entry.FileSize > 3)
-            {
-                if (_entry.EncryptionSeed == 0)
-                {
-                    throw new MpqParserException("Unable to determine encryption key");
-                }
-
-                StormBuffer.DecryptBlock(filedata, _entry.EncryptionSeed);
-            }
-
-            if (_entry.CompressedSize == _entry.FileSize)
-            {
-                _currentData = filedata;
-            }
-            else
-            {
-                _currentData = DecompressMulti(filedata, (int)_entry.FileSize);
-            }
-        }
-
-        private int ReadInternal(byte[] buffer, int offset, int count)
-        {
-            // OW: avoid reading past the contents of the file
-            if (_position >= Length)
-            {
-                return 0;
-            }
-
-            BufferData();
-
-            var localposition = (int)(_position % _blockSize);
-            var bytestocopy = Math.Min(_currentData.Length - localposition, count);
-            if (bytestocopy <= 0)
-            {
-                return 0;
-            }
-
-            Array.Copy(_currentData, localposition, buffer, offset, bytestocopy);
-
-            _position += bytestocopy;
-            return bytestocopy;
-        }
-
-        private int ReadByteSingleUnit()
-        {
-            if (_currentData == null)
-            {
-                LoadSingleUnit();
-            }
-
-            return _currentData[_position++];
-        }
-
-        private void BufferData()
-        {
-            var requiredblock = (int)(_position / _blockSize);
-            if (requiredblock != _currentBlockIndex)
-            {
-                var expectedlength = (int)Math.Min(Length - (requiredblock * _blockSize), _blockSize);
-                _currentData = LoadBlock(requiredblock, expectedlength);
-                _currentBlockIndex = requiredblock;
-            }
         }
 
         private static byte[] DecompressMulti(byte[] input, int outputLength)
@@ -483,6 +318,136 @@ namespace War3Net.IO.Mpq
                 data.Seek(-3, SeekOrigin.Current);
                 return PKLibCompression.Explode(data, expectedLength);
             }
+        }
+
+        private int ReadInternal(byte[] buffer, int offset, int count)
+        {
+            // OW: avoid reading past the contents of the file
+            if (_position >= Length)
+            {
+                return 0;
+            }
+
+            BufferData();
+
+            var localposition = _entry.IsSingleUnit ? _position : (_position & (_blockSize - 1));
+            var canRead = (int)(_currentData!.Length - localposition);
+            var bytestocopy = canRead > count ? count : canRead;
+            if (bytestocopy <= 0)
+            {
+                return 0;
+            }
+
+            Array.Copy(_currentData, localposition, buffer, offset, bytestocopy);
+
+            _position += bytestocopy;
+            return bytestocopy;
+        }
+
+        private void BufferData()
+        {
+            if (_entry.IsSingleUnit)
+            {
+                LoadSingleUnit();
+            }
+            else
+            {
+                var requiredblock = (int)(_position / _blockSize);
+                if (requiredblock != _currentBlockIndex)
+                {
+                    var expectedlength = (int)Math.Min(Length - (requiredblock * _blockSize), _blockSize);
+                    _currentData = LoadBlock(requiredblock, expectedlength);
+                    _currentBlockIndex = requiredblock;
+                }
+            }
+        }
+
+        private byte[] LoadBlock(int blockIndex, int expectedLength)
+        {
+            uint offset;
+            int toread;
+
+            if (_entry.IsCompressed)
+            {
+                offset = _blockPositions[blockIndex];
+                toread = (int)(_blockPositions[blockIndex + 1] - offset);
+            }
+            else
+            {
+                offset = (uint)(blockIndex * _blockSize);
+                toread = expectedLength;
+            }
+
+            offset += _entry.FilePosition!.Value;
+
+            var data = new byte[toread];
+            lock (_stream)
+            {
+                _stream.Seek(offset, SeekOrigin.Begin);
+                var read = _stream.Read(data, 0, toread);
+                if (read != toread)
+                {
+                    throw new MpqParserException("Insufficient data or invalid data length");
+                }
+            }
+
+            if (_entry.IsEncrypted && _entry.FileSize > 3)
+            {
+                if (_entry.EncryptionSeed == 0)
+                {
+                    throw new MpqParserException("Unable to determine encryption key");
+                }
+
+                StormBuffer.DecryptBlock(data, (uint)(blockIndex + _entry.EncryptionSeed));
+            }
+
+            if (_entry.IsCompressed && (toread != expectedLength))
+            {
+                if (toread > expectedLength)
+                {
+                    throw new MpqParserException("Block's compressed data is larger than decompressed, so it should have been stored in uncompressed format.");
+                }
+
+                data = _entry.Flags.HasFlag(MpqFileFlags.CompressedPK)
+                    ? PKLibCompression.Explode(data, expectedLength)
+                    : DecompressMulti(data, expectedLength);
+            }
+
+            return data;
+        }
+
+        private void LoadSingleUnit()
+        {
+            if (_currentData != null)
+            {
+                return;
+            }
+
+            // Read the entire file into memory
+            var filedata = new byte[_entry.CompressedSize!.Value];
+            lock (_stream)
+            {
+                _stream.Seek((uint)_entry.FilePosition, SeekOrigin.Begin);
+                var read = _stream.Read(filedata, 0, filedata.Length);
+                if (read != filedata.Length)
+                {
+                    throw new MpqParserException("Insufficient data or invalid data length");
+                }
+            }
+
+            if (_entry.IsEncrypted && _entry.FileSize > 3)
+            {
+                if (_entry.EncryptionSeed == 0)
+                {
+                    throw new MpqParserException("Unable to determine encryption key");
+                }
+
+                StormBuffer.DecryptBlock(filedata, _entry.EncryptionSeed);
+            }
+
+            _currentData = _entry.CompressedSize == _entry.FileSize
+                ? filedata
+                : DecompressMulti(filedata, (int)_entry.FileSize);
         }
     }
 }
