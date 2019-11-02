@@ -488,22 +488,17 @@ namespace War3Net.IO.Mpq
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
         {
-            var position = data.Position;
-            try
+            var b1 = data.ReadByte();
+            var b2 = data.ReadByte();
+            var b3 = data.ReadByte();
+            if (b1 == 0 && b2 == 0 && b3 == 0)
             {
-                var pk = new PKLibDecompress(data);
-                return pk.Explode(expectedLength);
-            }
-            catch (InvalidDataException previousException)
-            {
-                data.Position = position + 3;
-
                 using (var reader = new BinaryReader(data))
                 {
                     var expectedStreamLength = reader.ReadUInt32();
                     if (expectedStreamLength != data.Length)
                     {
-                        throw new InvalidDataException("Unexpected stream length value", previousException);
+                        throw new InvalidDataException("Unexpected stream length value");
                     }
 
                     if (expectedLength + 8 == expectedStreamLength)
@@ -520,6 +515,12 @@ namespace War3Net.IO.Mpq
 
                     return ZlibDecompress(data, expectedLength);
                 }
+            }
+            else
+            {
+                data.Seek(-3, SeekOrigin.Current);
+                var pk = new PKLibDecompress(data);
+                return pk.Explode(expectedLength);
             }
         }
 
