@@ -316,7 +316,7 @@ namespace War3Net.IO.Mpq
             else
             {
                 data.Seek(-3, SeekOrigin.Current);
-                return PKLibCompression.Explode(data, expectedLength);
+                return PKLibCompression.Decompress(data, expectedLength);
             }
         }
 
@@ -409,7 +409,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 data = _entry.Flags.HasFlag(MpqFileFlags.CompressedPK)
-                    ? PKLibCompression.Explode(data, expectedLength)
+                    ? PKLibCompression.Decompress(data, expectedLength)
                     : DecompressMulti(data, expectedLength);
             }
 

@@ -151,6 +151,11 @@ namespace War3Net.IO.Compression
             },
         };
 
+        /// <summary>
+        /// Decompresses the input data.
+        /// </summary>
+        /// <param name="data">Byte array containing compressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data)
         {
             return Decompress(new MemoryStream(data));
@@ -159,8 +164,8 @@ namespace War3Net.IO.Compression
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>
-        /// <param name="data">Stream containing data compressed with Huffman code.</param>
-        /// <returns>Stream containing the decompressed data.</returns>
+        /// <param name="data">Stream containing compressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(Stream data)
         {
             var comptype = data?.ReadByte() ?? throw new ArgumentNullException(nameof(data));

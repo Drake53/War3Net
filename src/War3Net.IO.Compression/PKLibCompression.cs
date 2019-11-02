@@ -61,28 +61,34 @@ namespace War3Net.IO.Compression
             Ascii = 1,
         }
 
-        public static byte[] Explode(byte[] data, int expectedSize)
+        /// <summary>
+        /// Decompresses the input data.
+        /// </summary>
+        /// <param name="data">Byte array containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
+        public static byte[] Decompress(byte[] data, int expectedLength)
         {
-            return Explode(new MemoryStream(data), expectedSize);
+            return Decompress(new MemoryStream(data), expectedLength);
         }
 
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="expectedSize">The expected length (in bytes) of the decompressed data.</param>
+        /// <param name="data">Stream containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Explode(Stream input, int expectedSize)
+        public static byte[] Decompress(Stream data, int expectedLength)
         {
-            var bitstream = new BitStream(input ?? throw new ArgumentNullException(nameof(input)));
+            var bitstream = new BitStream(data ?? throw new ArgumentNullException(nameof(data)));
 
-            var compressionType = (PKLibCompressionType)input.ReadByte();
+            var compressionType = (PKLibCompressionType)data.ReadByte();
             if (compressionType != PKLibCompressionType.Binary && compressionType != PKLibCompressionType.Ascii)
             {
                 throw new InvalidDataException("Invalid compression type: " + compressionType);
             }
 
-            var dictSizeBits = input.ReadByte();
+            var dictSizeBits = data.ReadByte();
 
             // This is 6 in test cases
             if (dictSizeBits < 4 || dictSizeBits > 6)
@@ -92,7 +98,7 @@ namespace War3Net.IO.Compression
 
 
 
-            var outputbuffer = new byte[expectedSize];
+            var outputbuffer = new byte[expectedLength];
             Stream outputstream = new MemoryStream(outputbuffer);
 
             int instruction;
@@ -123,7 +129,7 @@ namespace War3Net.IO.Compression
                 }
             }
 
-            if (outputstream.Position == expectedSize)
+            if (outputstream.Position == expectedLength)
             {
                 return outputbuffer;
             }

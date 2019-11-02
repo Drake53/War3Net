@@ -13,11 +13,28 @@ namespace War3Net.IO.Compression
 {
     public static class BZip2Compression
     {
-        public static byte[] Decompress(Stream compressedData, int expectedLength)
+        /// <summary>
+        /// Decompresses the input data.
+        /// </summary>
+        /// <param name="data">Byte array containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
+        public static byte[] Decompress(byte[] data, int expectedLength)
+        {
+            return Decompress(new MemoryStream(data), expectedLength);
+        }
+
+        /// <summary>
+        /// Decompresses the input stream.
+        /// </summary>
+        /// <param name="data">Stream containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
+        public static byte[] Decompress(Stream data, int expectedLength)
         {
             using (var output = new MemoryStream(expectedLength))
             {
-                BZip2.Decompress(compressedData, output, false);
+                BZip2.Decompress(data, output, false);
                 return output.ToArray();
             }
         }

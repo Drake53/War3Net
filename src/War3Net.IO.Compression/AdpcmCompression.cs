@@ -39,6 +39,12 @@ namespace War3Net.IO.Compression
             -1, 2, -1, 4, -1, 6, -1, 8,
         };
 
+        /// <summary>
+        /// Decompresses the input data.
+        /// </summary>
+        /// <param name="data">Byte array containing ADPCM data.</param>
+        /// <param name="channelCount">The amount of audio channels. Use 1 for mono, and 2 for stereo.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, int channelCount)
         {
             return Decompress(new MemoryStream(data), channelCount);

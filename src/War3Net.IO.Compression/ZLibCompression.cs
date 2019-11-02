@@ -72,18 +72,30 @@ namespace War3Net.IO.Compression
             return (uint)outputStream.Position;
         }
 
+        /// <summary>
+        /// Decompresses the input data.
+        /// </summary>
+        /// <param name="data">Byte array containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, int expectedLength)
         {
             return Decompress(new MemoryStream(data), expectedLength);
         }
 
-        public static byte[] Decompress(Stream compressedData, int expectedLength)
+        /// <summary>
+        /// Decompresses the input stream.
+        /// </summary>
+        /// <param name="data">Stream containing compressed data.</param>
+        /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
+        public static byte[] Decompress(Stream data, int expectedLength)
         {
             var output = new byte[expectedLength];
 #if USING_DOTNETZIP
-            using var inflater = new ZlibStream(compressedData, CompressionMode.Decompress, true);
+            using var inflater = new ZlibStream(data, CompressionMode.Decompress, true);
 #else
-            var inflater = new InflaterInputStream(compressedData);
+            var inflater = new InflaterInputStream(data);
 #endif
             var offset = 0;
             // expectedLength makes this unable to be combined with other compression algorithms?
