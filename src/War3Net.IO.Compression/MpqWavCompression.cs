@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 namespace War3Net.IO.Compression
@@ -14,7 +15,7 @@ namespace War3Net.IO.Compression
     /// </summary>
     public static class MpqWavCompression
     {
-        private static readonly int[] sLookup =
+        private static readonly int[] _sLookup =
         {
             0x0007, 0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E,
             0x0010, 0x0011, 0x0013, 0x0015, 0x0017, 0x0019, 0x001C, 0x001F,
@@ -30,7 +31,7 @@ namespace War3Net.IO.Compression
             0x7FFF,
         };
 
-        private static readonly int[] sLookup2 =
+        private static readonly int[] _sLookup2 =
         {
             -1, 0, -1, 4, -1, 2, -1, 6,
             -1, 1, -1, 5, -1, 3, -1, 7,
@@ -38,12 +39,18 @@ namespace War3Net.IO.Compression
             -1, 2, -1, 4, -1, 6, -1, 8,
         };
 
+        /// <summary>
+        /// Decompresses the input stream.
+        /// </summary>
+        /// <param name="data">Stream containing ADPCM data.</param>
+        /// <param name="channelCount">The amount of audio channels. Use 1 for mono, and 2 for stereo.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(Stream data, int channelCount)
         {
             var array1 = new int[] { 0x2c, 0x2c };
             var array2 = new int[channelCount];
 
-            var input = new BinaryReader(data);
+            var input = new BinaryReader(data ?? throw new ArgumentNullException(nameof(data)));
             var outputstream = new MemoryStream();
             var output = new BinaryWriter(outputstream);
 
@@ -111,7 +118,7 @@ namespace War3Net.IO.Compression
                 }
                 else
                 {
-                    var temp1 = sLookup[array1[channel]];
+                    var temp1 = _sLookup[array1[channel]];
                     var temp2 = temp1 >> shift;
 
                     if ((value & 1) != 0)
@@ -165,7 +172,7 @@ namespace War3Net.IO.Compression
                     array2[channel] = temp3;
                     output.Write((short)temp3);
 
-                    array1[channel] += sLookup2[value & 0x1f];
+                    array1[channel] += _sLookup2[value & 0x1f];
 
                     if (array1[channel] < 0)
                     {

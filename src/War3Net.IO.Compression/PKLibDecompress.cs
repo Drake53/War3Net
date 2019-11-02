@@ -15,37 +15,31 @@ namespace War3Net.IO.Compression
     /// </summary>
     public class PKLibDecompress
     {
-        private enum CompressionType
-        {
-            Binary = 0,
-            Ascii = 1,
-        }
+        private static readonly byte[] _sPosition1 = GenerateDecodeTable(_sDistBits, _sDistCode);
+        private static readonly byte[] _sPosition2 = GenerateDecodeTable(_sLenBits, _sLenCode);
 
-        private static readonly byte[] sPosition1;
-        private static readonly byte[] sPosition2;
-
-        private static readonly byte[] sLenBits =
+        private static readonly byte[] _sLenBits =
         {
             3, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 7,
         };
 
-        private static readonly byte[] sLenCode =
+        private static readonly byte[] _sLenCode =
         {
             5, 3, 1, 6, 10, 2, 12, 20, 4, 24, 8, 48, 16, 32, 64, 0,
         };
 
-        private static readonly byte[] sExLenBits =
+        private static readonly byte[] _sExLenBits =
         {
             0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
         };
 
-        private static readonly ushort[] sLenBase =
+        private static readonly ushort[] _sLenBase =
         {
             0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
             0x0008, 0x000A, 0x000E, 0x0016, 0x0026, 0x0046, 0x0086, 0x0106,
         };
 
-        private static readonly byte[] sDistBits =
+        private static readonly byte[] _sDistBits =
         {
             2, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6,
             6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
@@ -53,7 +47,7 @@ namespace War3Net.IO.Compression
             8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
         };
 
-        private static readonly byte[] sDistCode =
+        private static readonly byte[] _sDistCode =
         {
             0x03, 0x0D, 0x05, 0x19, 0x09, 0x11, 0x01, 0x3E, 0x1E, 0x2E, 0x0E, 0x36, 0x16, 0x26, 0x06, 0x3A,
             0x1A, 0x2A, 0x0A, 0x32, 0x12, 0x22, 0x42, 0x02, 0x7C, 0x3C, 0x5C, 0x1C, 0x6C, 0x2C, 0x4C, 0x0C,
@@ -62,21 +56,19 @@ namespace War3Net.IO.Compression
         };
 
         private readonly BitStream _bitstream;
-        private readonly CompressionType _compressionType;
+        private readonly PKLibCompressionType _compressionType;
         private readonly int _dictSizeBits; // Dictionary size in bits
 
-        static PKLibDecompress()
-        {
-            sPosition1 = GenerateDecodeTable(sDistBits, sDistCode);
-            sPosition2 = GenerateDecodeTable(sLenBits, sLenCode);
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PKLibDecompress"/> class.
+        /// </summary>
+        /// <param name="input">A stream containing data compressed with PKLib.</param>
         public PKLibDecompress(Stream input)
         {
-            _bitstream = new BitStream(input);
+            _bitstream = new BitStream(input ?? throw new ArgumentNullException(nameof(input)));
 
-            _compressionType = (CompressionType)input.ReadByte();
-            if (_compressionType != CompressionType.Binary && _compressionType != CompressionType.Ascii)
+            _compressionType = (PKLibCompressionType)input.ReadByte();
+            if (_compressionType != PKLibCompressionType.Binary && _compressionType != PKLibCompressionType.Ascii)
             {
                 throw new InvalidDataException("Invalid compression type: " + _compressionType);
             }
@@ -90,6 +82,17 @@ namespace War3Net.IO.Compression
             }
         }
 
+        private enum PKLibCompressionType
+        {
+            Binary = 0,
+            Ascii = 1,
+        }
+
+        /// <summary>
+        /// Decompresses the input stream.
+        /// </summary>
+        /// <param name="expectedSize">The expected length (in bytes) of the decompressed data.</param>
+        /// <returns>Byte array containing the decompressed data.</returns>
         public byte[] Explode(int expectedSize)
         {
             var outputbuffer = new byte[expectedSize];
@@ -169,15 +172,15 @@ namespace War3Net.IO.Compression
 
                 case 1:
                     // The next bits are position in buffers
-                    int pos = sPosition2[_bitstream.PeekByte()];
+                    int pos = _sPosition2[_bitstream.PeekByte()];
 
                     // Skip the bits we just used
-                    if (_bitstream.ReadBits(sLenBits[pos]) == -1)
+                    if (_bitstream.ReadBits(_sLenBits[pos]) == -1)
                     {
                         return -1;
                     }
 
-                    int nbits = sExLenBits[pos];
+                    int nbits = _sExLenBits[pos];
                     if (nbits != 0)
                     {
                         // TODO: Verify this conversion
@@ -187,19 +190,20 @@ namespace War3Net.IO.Compression
                             return -1;
                         }
 
-                        pos = sLenBase[pos] + val2;
+                        pos = _sLenBase[pos] + val2;
                     }
 
                     return pos + 0x100; // Return number of bytes to repeat
 
                 case 0:
-                    if (_compressionType == CompressionType.Binary)
+                    if (_compressionType == PKLibCompressionType.Binary)
                     {
                         return _bitstream.ReadBits(8);
                     }
 
                     // TODO: Text mode
                     throw new NotImplementedException("Text mode is not yet implemented");
+
                 default:
                     return 0;
             }
@@ -212,8 +216,8 @@ namespace War3Net.IO.Compression
                 return 0;
             }
 
-            int pos = sPosition1[_bitstream.PeekByte()];
-            var skip = sDistBits[pos];     // Number of bits to skip
+            int pos = _sPosition1[_bitstream.PeekByte()];
+            var skip = _sDistBits[pos];     // Number of bits to skip
 
             // Skip the appropriate number of bits
             if (_bitstream.ReadBits(skip) == -1)

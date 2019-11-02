@@ -15,7 +15,7 @@ namespace War3Net.IO.Compression
     /// </summary>
     public static class MpqHuffman
     {
-        private static readonly byte[][] sPrime =
+        private static readonly byte[][] _sPrime =
         {
             // Compression type 0
             new byte[]
@@ -151,16 +151,21 @@ namespace War3Net.IO.Compression
             },
         };
 
+        /// <summary>
+        /// Decompresses the input stream.
+        /// </summary>
+        /// <param name="data">Stream containing data compressed with Huffman code.</param>
+        /// <returns>Stream containing the decompressed data.</returns>
         public static MemoryStream Decompress(Stream data)
         {
-            var comptype = data.ReadByte();
+            var comptype = data?.ReadByte() ?? throw new ArgumentNullException(nameof(data));
 
             if (comptype == 0)
             {
                 throw new NotImplementedException("Compression type 0 is not currently supported");
             }
 
-            var tail = BuildList(sPrime[comptype]);
+            var tail = BuildList(_sPrime[comptype]);
             var head = BuildTree(tail);
 
             var outputstream = new MemoryStream();
@@ -183,7 +188,8 @@ namespace War3Net.IO.Compression
                         outputstream.WriteByte((byte)decoded);
                         break;
                 }
-            } while (decoded != 256);
+            }
+            while (decoded != 256);
 
             outputstream.Seek(0, SeekOrigin.Begin);
             return outputstream;
