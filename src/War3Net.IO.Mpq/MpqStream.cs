@@ -427,7 +427,7 @@ namespace War3Net.IO.Mpq
                 switch (comptype)
                 {
                     case MpqCompressionType.Huffman:
-                        using (var huffman = MpqHuffman.Decompress(sinput))
+                        using (var huffman = HuffmanCoding.Decompress(sinput))
                         {
                             return huffman.ToArray();
                         }
@@ -442,10 +442,10 @@ namespace War3Net.IO.Mpq
                         return BZip2Decompress(sinput, outputLength);
 
                     case MpqCompressionType.ImaAdpcmStereo:
-                        return MpqWavCompression.Decompress(sinput, 2);
+                        return AdpcmCompression.Decompress(sinput, 2);
 
                     case MpqCompressionType.ImaAdpcmMono:
-                        return MpqWavCompression.Decompress(sinput, 1);
+                        return AdpcmCompression.Decompress(sinput, 1);
 
                     case MpqCompressionType.Lzma:
                         // TODO: LZMA
@@ -460,16 +460,16 @@ namespace War3Net.IO.Mpq
                         throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
 
                     case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman:
-                        return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 1);
+                        return AdpcmCompression.Decompress(HuffmanCoding.Decompress(sinput), 1);
 
                     case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib:
-                        return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 1);
+                        return AdpcmCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 1);
 
                     case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman:
-                        return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 2);
+                        return AdpcmCompression.Decompress(HuffmanCoding.Decompress(sinput), 2);
 
                     case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib:
-                        return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 2);
+                        return AdpcmCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 2);
 
                     default:
                         throw new MpqParserException("Compression is not yet supported: 0x" + comptype.ToString("X"));
@@ -519,8 +519,7 @@ namespace War3Net.IO.Mpq
             else
             {
                 data.Seek(-3, SeekOrigin.Current);
-                var pk = new PKLibDecompress(data);
-                return pk.Explode(expectedLength);
+                return PKLibCompression.Explode(data, expectedLength);
             }
         }
 

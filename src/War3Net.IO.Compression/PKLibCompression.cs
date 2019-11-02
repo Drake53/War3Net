@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="PKLibDecompress.cs" company="Drake53">
+// <copyright file="PKLibCompression.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,7 +13,7 @@ namespace War3Net.IO.Compression
     /// <summary>
     /// A decompressor for PKLib implode/explode.
     /// </summary>
-    public class PKLibDecompress
+    public static class PKLibCompression
     {
         private static readonly byte[] _sPosition1 = GenerateDecodeTable(_sDistBits, _sDistCode);
         private static readonly byte[] _sPosition2 = GenerateDecodeTable(_sLenBits, _sLenCode);
@@ -55,33 +55,6 @@ namespace War3Net.IO.Compression
             0xF0, 0x70, 0xB0, 0x30, 0xD0, 0x50, 0x90, 0x10, 0xE0, 0x60, 0xA0, 0x20, 0xC0, 0x40, 0x80, 0x00,
         };
 
-        private readonly BitStream _bitstream;
-        private readonly PKLibCompressionType _compressionType;
-        private readonly int _dictSizeBits; // Dictionary size in bits
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PKLibDecompress"/> class.
-        /// </summary>
-        /// <param name="input">A stream containing data compressed with PKLib.</param>
-        public PKLibDecompress(Stream input)
-        {
-            _bitstream = new BitStream(input ?? throw new ArgumentNullException(nameof(input)));
-
-            _compressionType = (PKLibCompressionType)input.ReadByte();
-            if (_compressionType != PKLibCompressionType.Binary && _compressionType != PKLibCompressionType.Ascii)
-            {
-                throw new InvalidDataException("Invalid compression type: " + _compressionType);
-            }
-
-            _dictSizeBits = input.ReadByte();
-
-            // This is 6 in test cases
-            if (_dictSizeBits < 4 || _dictSizeBits > 6)
-            {
-                throw new InvalidDataException("Invalid dictionary size: " + _dictSizeBits);
-            }
-        }
-
         private enum PKLibCompressionType
         {
             Binary = 0,
@@ -91,15 +64,34 @@ namespace War3Net.IO.Compression
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>
+        /// <param name="input"></param>
         /// <param name="expectedSize">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public byte[] Explode(int expectedSize)
+        public static byte[] Explode(Stream input, int expectedSize)
         {
+            var bitstream = new BitStream(input ?? throw new ArgumentNullException(nameof(input)));
+
+            var compressionType = (PKLibCompressionType)input.ReadByte();
+            if (compressionType != PKLibCompressionType.Binary && compressionType != PKLibCompressionType.Ascii)
+            {
+                throw new InvalidDataException("Invalid compression type: " + compressionType);
+            }
+
+            var dictSizeBits = input.ReadByte();
+
+            // This is 6 in test cases
+            if (dictSizeBits < 4 || dictSizeBits > 6)
+            {
+                throw new InvalidDataException("Invalid dictionary size: " + dictSizeBits);
+            }
+
+
+
             var outputbuffer = new byte[expectedSize];
             Stream outputstream = new MemoryStream(outputbuffer);
 
             int instruction;
-            while ((instruction = DecodeLit()) != -1)
+            while ((instruction = DecodeLit(bitstream, compressionType)) != -1)
             {
                 if (instruction < 0x100)
                 {
@@ -109,7 +101,7 @@ namespace War3Net.IO.Compression
                 {
                     // If instruction is greater than 0x100, it means "Repeat n - 0xFE bytes"
                     var copylength = instruction - 0xFE;
-                    var moveback = DecodeDist(copylength);
+                    var moveback = DecodeDist(bitstream, dictSizeBits, copylength);
                     if (moveback == 0)
                     {
                         break;
@@ -163,19 +155,19 @@ namespace War3Net.IO.Compression
         // 0x000 - 0x0FF : One byte from compressed file.
         // 0x100 - 0x305 : Copy previous block (0x100 = 1 byte)
         // -1            : EOF
-        private int DecodeLit()
+        private static int DecodeLit(BitStream input, PKLibCompressionType compressionType)
         {
-            switch (_bitstream.ReadBits(1))
+            switch (input.ReadBits(1))
             {
                 case -1:
                     return -1;
 
                 case 1:
                     // The next bits are position in buffers
-                    int pos = _sPosition2[_bitstream.PeekByte()];
+                    int pos = _sPosition2[input.PeekByte()];
 
                     // Skip the bits we just used
-                    if (_bitstream.ReadBits(_sLenBits[pos]) == -1)
+                    if (input.ReadBits(_sLenBits[pos]) == -1)
                     {
                         return -1;
                     }
@@ -184,7 +176,7 @@ namespace War3Net.IO.Compression
                     if (nbits != 0)
                     {
                         // TODO: Verify this conversion
-                        var val2 = _bitstream.ReadBits(nbits);
+                        var val2 = input.ReadBits(nbits);
                         if (val2 == -1 && (pos + val2 != 0x10e))
                         {
                             return -1;
@@ -196,9 +188,9 @@ namespace War3Net.IO.Compression
                     return pos + 0x100; // Return number of bytes to repeat
 
                 case 0:
-                    if (_compressionType == PKLibCompressionType.Binary)
+                    if (compressionType == PKLibCompressionType.Binary)
                     {
-                        return _bitstream.ReadBits(8);
+                        return input.ReadBits(8);
                     }
 
                     // TODO: Text mode
@@ -209,39 +201,39 @@ namespace War3Net.IO.Compression
             }
         }
 
-        private int DecodeDist(int length)
+        private static int DecodeDist(BitStream input, int dictSizeBits, int length)
         {
-            if (_bitstream.EnsureBits(8) == false)
+            if (input.EnsureBits(8) == false)
             {
                 return 0;
             }
 
-            int pos = _sPosition1[_bitstream.PeekByte()];
+            int pos = _sPosition1[input.PeekByte()];
             var skip = _sDistBits[pos];     // Number of bits to skip
 
             // Skip the appropriate number of bits
-            if (_bitstream.ReadBits(skip) == -1)
+            if (input.ReadBits(skip) == -1)
             {
                 return 0;
             }
 
             if (length == 2)
             {
-                if (_bitstream.EnsureBits(2) == false)
+                if (input.EnsureBits(2) == false)
                 {
                     return 0;
                 }
 
-                pos = (pos << 2) | _bitstream.ReadBits(2);
+                pos = (pos << 2) | input.ReadBits(2);
             }
             else
             {
-                if (_bitstream.EnsureBits(_dictSizeBits) == false)
+                if (input.EnsureBits(dictSizeBits) == false)
                 {
                     return 0;
                 }
 
-                pos = (pos << _dictSizeBits) | _bitstream.ReadBits(_dictSizeBits);
+                pos = (pos << dictSizeBits) | input.ReadBits(dictSizeBits);
             }
 
             return pos + 1;

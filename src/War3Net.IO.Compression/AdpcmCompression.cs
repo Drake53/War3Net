@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="MpqWavCompression.cs" company="Drake53">
+// <copyright file="AdpcmCompression.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,9 @@ using System.IO;
 namespace War3Net.IO.Compression
 {
     /// <summary>
-    /// An IMA ADPCM decompress for Mpq files.
+    /// An IMA ADPCM decompress for analog audio files.
     /// </summary>
-    public static class MpqWavCompression
+    public static class AdpcmCompression
     {
         private static readonly int[] _sLookup =
         {

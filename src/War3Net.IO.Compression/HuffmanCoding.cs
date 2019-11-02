@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="MpqHuffman.cs" company="Drake53">
+// <copyright file="HuffmanCoding.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,7 +13,7 @@ namespace War3Net.IO.Compression
     /// <summary>
     /// A decompressor for MPQ's huffman compression.
     /// </summary>
-    public static class MpqHuffman
+    public static class HuffmanCoding
     {
         private static readonly byte[][] _sPrime =
         {
@@ -170,15 +170,16 @@ namespace War3Net.IO.Compression
 
             var outputstream = new MemoryStream();
             var bitstream = new BitStream(data);
-            int decoded;
-            do
+
+            while (true)
             {
                 var node = Decode(bitstream, head);
-                decoded = node.DecompressedValue;
+                var decoded = node.DecompressedValue;
                 switch (decoded)
                 {
                     case 256:
-                        break;
+                        outputstream.Seek(0, SeekOrigin.Begin);
+                        return outputstream;
                     case 257:
                         var newvalue = bitstream.ReadBits(8);
                         outputstream.WriteByte((byte)newvalue);
@@ -189,10 +190,6 @@ namespace War3Net.IO.Compression
                         break;
                 }
             }
-            while (decoded != 256);
-
-            outputstream.Seek(0, SeekOrigin.Begin);
-            return outputstream;
         }
 
         private static LinkedNode Decode(BitStream input, LinkedNode head)
