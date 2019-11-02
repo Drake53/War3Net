@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CompressionType.cs" company="Drake53">
+// <copyright file="MpqCompressionType.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -7,10 +7,10 @@
 
 using System;
 
-namespace War3Net.IO.Compression
+namespace War3Net.IO.Mpq
 {
     [Flags]
-    public enum CompressionType : byte
+    public enum MpqCompressionType : byte
     {
         Huffman = 0x01,
 

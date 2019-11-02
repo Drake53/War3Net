@@ -20,7 +20,7 @@ namespace War3Net.IO.Mpq
 
         private MpqFileFlags _flags;
         private MpqLocale _locale;
-        private CompressionType _compressionType;
+        private MpqCompressionType _compressionType;
 
         // TODO: move compression and encryption logic to a different file (MpqStream?)
 
@@ -33,7 +33,7 @@ namespace War3Net.IO.Mpq
 
             _flags = flags;
             _locale = locale;
-            _compressionType = CompressionType.ZLib;
+            _compressionType = MpqCompressionType.ZLib;
         }
 
         public ulong Name => _name;
@@ -76,12 +76,12 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        public CompressionType CompressionType
+        public MpqCompressionType CompressionType
         {
             get => _compressionType;
             set
             {
-                if (!Enum.IsDefined(typeof(CompressionType), value))
+                if (!Enum.IsDefined(typeof(MpqCompressionType), value))
                 {
                     throw new ArgumentException("Invalid enum.", nameof(value));
                 }
@@ -294,7 +294,7 @@ namespace War3Net.IO.Mpq
 
                 _ = _compressionType switch
                 {
-                    CompressionType.ZLib => ZLibCompression.CompressTo(_baseStream, compressedStream, (int)bytes, true),
+                    MpqCompressionType.ZLib => ZLibCompression.CompressTo(_baseStream, compressedStream, (int)bytes, true),
 
                     _ => throw new NotSupportedException(),
                 };

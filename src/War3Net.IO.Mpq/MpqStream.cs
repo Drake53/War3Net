@@ -420,55 +420,55 @@ namespace War3Net.IO.Mpq
         {
             using (Stream sinput = new MemoryStream(input))
             {
-                var comptype = (CompressionType)sinput.ReadByte();
+                var comptype = (MpqCompressionType)sinput.ReadByte();
 
                 // WC3 onward mosly use Zlib
                 // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
                 switch (comptype)
                 {
-                    case CompressionType.Huffman:
+                    case MpqCompressionType.Huffman:
                         using (var huffman = MpqHuffman.Decompress(sinput))
                         {
                             return huffman.ToArray();
                         }
 
-                    case CompressionType.ZLib:
+                    case MpqCompressionType.ZLib:
                         return ZlibDecompress(sinput, outputLength);
 
-                    case CompressionType.PKLib:
+                    case MpqCompressionType.PKLib:
                         return PKDecompress(sinput, outputLength);
 
-                    case CompressionType.BZip2:
+                    case MpqCompressionType.BZip2:
                         return BZip2Decompress(sinput, outputLength);
 
-                    case CompressionType.ImaAdpcmStereo:
+                    case MpqCompressionType.ImaAdpcmStereo:
                         return MpqWavCompression.Decompress(sinput, 2);
 
-                    case CompressionType.ImaAdpcmMono:
+                    case MpqCompressionType.ImaAdpcmMono:
                         return MpqWavCompression.Decompress(sinput, 1);
 
-                    case CompressionType.Lzma:
+                    case MpqCompressionType.Lzma:
                         // TODO: LZMA
                         throw new MpqParserException("LZMA compression is not yet supported");
 
-                    case CompressionType.Sparse | CompressionType.ZLib:
+                    case MpqCompressionType.Sparse | MpqCompressionType.ZLib:
                         // TODO: sparse then zlib
                         throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
 
-                    case CompressionType.Sparse | CompressionType.BZip2:
+                    case MpqCompressionType.Sparse | MpqCompressionType.BZip2:
                         // TODO: sparse then bzip2
                         throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
 
-                    case CompressionType.ImaAdpcmMono | CompressionType.Huffman:
+                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman:
                         return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 1);
 
-                    case CompressionType.ImaAdpcmMono | CompressionType.PKLib:
+                    case MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib:
                         return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 1);
 
-                    case CompressionType.ImaAdpcmStereo | CompressionType.Huffman:
+                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman:
                         return MpqWavCompression.Decompress(MpqHuffman.Decompress(sinput), 2);
 
-                    case CompressionType.ImaAdpcmStereo | CompressionType.PKLib:
+                    case MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib:
                         return MpqWavCompression.Decompress(new MemoryStream(PKDecompress(sinput, outputLength)), 2);
 
                     default:
@@ -512,8 +512,8 @@ namespace War3Net.IO.Mpq
                         return reader.ReadBytes(expectedLength);
                     }
 
-                    var comptype = (CompressionType)reader.ReadByte();
-                    if (comptype != CompressionType.ZLib)
+                    var comptype = (MpqCompressionType)reader.ReadByte();
+                    if (comptype != MpqCompressionType.ZLib)
                     {
                         throw new NotImplementedException();
                     }
