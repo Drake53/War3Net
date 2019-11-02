@@ -32,6 +32,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
+        [Obsolete]
         public MpqHash(uint name1, uint name2, MpqLocale locale, uint blockIndex, uint mask)
             : this(CombineNames(name1, name2), locale, blockIndex)
         {
@@ -51,7 +52,7 @@ namespace War3Net.IO.Mpq
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
         public MpqHash(string fileName, uint mask, MpqLocale locale, uint blockIndex)
-            : this(CombineNames(StormBuffer.HashString(fileName, 0x100), StormBuffer.HashString(fileName, 0x200)), locale, blockIndex, mask)
+            : this(GetHashedFileName(fileName), locale, blockIndex, mask)
         {
         }
 
@@ -100,6 +101,11 @@ namespace War3Net.IO.Mpq
             return GetIndex(path) & mask;
         }
 
+        public static ulong GetHashedFileName(string fileName)
+        {
+            return CombineNames(StormBuffer.HashString(fileName, 0x100), StormBuffer.HashString(fileName, 0x200));
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -126,7 +132,8 @@ namespace War3Net.IO.Mpq
             writer.Write(BlockIndex);
         }
 
-        internal static ulong CombineNames(uint name1, uint name2)
+        [Obsolete]
+        private static ulong CombineNames(uint name1, uint name2)
         {
             return name1 | ((ulong)name2 << 32);
         }

@@ -12,21 +12,37 @@ namespace War3Net.IO.Mpq
 {
     public sealed class MpqKnownFile : MpqFile
     {
-        private readonly string _fileName;
         private readonly bool _isOriginalStream;
+        private readonly string _fileName;
+        private readonly long? _filePos;
+        private readonly uint? _fileSize;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqKnownFile"/> class.
         /// </summary>
-        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, bool isOriginalStream = false)
-            : base(sourceStream, flags, locale)
+        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
+            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale)
         {
+            _isOriginalStream = false;
             _fileName = fileName;
-            _isOriginalStream = isOriginalStream;
+            _filePos = null;
+            _fileSize = null;
+        }
 
-            if (isOriginalStream && flags.HasFlag(MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MpqKnownFile"/> class.
+        /// </summary>
+        public MpqKnownFile(string fileName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale, long? filePos, uint? fileSize)
+            : base(MpqHash.GetHashedFileName(fileName), sourceStream, flags, locale)
+        {
+            _isOriginalStream = true;
+            _fileName = fileName;
+            _filePos = filePos;
+            _fileSize = fileSize;
+
+            if (flags.HasFlag(MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey) && (filePos is null || fileSize is null))
             {
-                throw new ArgumentException("Cannot determine the encryption seed used in the original stream, because the filepos and filesize values that were used to adjust the base seed are unknown.");
+                throw new ArgumentNullException($"Cannot determine the encryption seed used, because {nameof(filePos)} and/or {nameof(fileSize)} are null.");
             }
         }
 
@@ -38,11 +54,10 @@ namespace War3Net.IO.Mpq
 
         internal override uint HashCollisions => 0;
 
-        protected override uint? EncryptionSeed => MpqEntry.CalculateEncryptionSeed(_fileName);
+        internal override long? FilePos => _filePos;
 
-        internal override bool Equals(MpqFile other)
-        {
-            return StringComparer.OrdinalIgnoreCase.Compare(_fileName, ((MpqKnownFile)other)._fileName) == 0;
-        }
+        internal override uint? FileSize => _fileSize;
+
+        protected override uint? EncryptionSeed => MpqEntry.CalculateEncryptionSeed(_fileName);
     }
 }

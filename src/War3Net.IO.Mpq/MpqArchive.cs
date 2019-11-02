@@ -971,9 +971,7 @@ namespace War3Net.IO.Mpq
         {
             var index = StormBuffer.HashString(filename, 0);
             index &= _mpqHeader.HashTableSize - 1;
-            var name1 = StormBuffer.HashString(filename, 0x100);
-            var name2 = StormBuffer.HashString(filename, 0x200);
-            var name = MpqHash.CombineNames(name1, name2);
+            var name = MpqHash.GetHashedFileName(filename);
 
             for (var i = index; i < _hashTable.Size; ++i)
             {
@@ -1001,9 +999,7 @@ namespace War3Net.IO.Mpq
         {
             var index = StormBuffer.HashString(filename, 0);
             index &= _mpqHeader.HashTableSize - 1;
-            var name1 = StormBuffer.HashString(filename, 0x100);
-            var name2 = StormBuffer.HashString(filename, 0x200);
-            var name = MpqHash.CombineNames(name1, name2);
+            var name = MpqHash.GetHashedFileName(filename);
 
             var foundAnyHash = false;
 

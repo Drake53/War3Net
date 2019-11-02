@@ -12,7 +12,7 @@ namespace War3Net.IO.Mpq
 {
     public class MpqUnknownFile : MpqFile
     {
-        private readonly MpqHash _hash; // TODO: only store name1, name2, and mask
+        private readonly uint _hashMask;
         private readonly uint _hashIndex;
         private readonly uint _hashCollisions;
         private readonly uint? _encryptionSeed;
@@ -21,7 +21,7 @@ namespace War3Net.IO.Mpq
         /// Initializes a new instance of the <see cref="MpqUnknownFile"/> class.
         /// </summary>
         internal MpqUnknownFile(Stream? sourceStream, MpqFileFlags flags, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
-            : base(sourceStream, flags, mpqHash.Locale)
+            : base(mpqHash.Name, sourceStream, flags, mpqHash.Locale)
         {
             if (mpqHash.Mask == 0)
             {
@@ -33,15 +33,13 @@ namespace War3Net.IO.Mpq
                 throw new ArgumentException($"Cannot encrypt an {nameof(MpqUnknownFile)} without an encryption seed.", nameof(flags));
             }
 
-            _hash = mpqHash;
+            _hashMask = mpqHash.Mask;
             _hashIndex = hashIndex;
             _hashCollisions = hashCollisions;
             _encryptionSeed = encryptionSeed;
         }
 
-        public ulong Name => _hash.Name;
-
-        public uint Mask => _hash.Mask;
+        public uint Mask => _hashMask;
 
         internal override bool IsOriginalStream => false;
 
@@ -49,17 +47,15 @@ namespace War3Net.IO.Mpq
 
         internal override uint HashCollisions => _hashCollisions;
 
+        internal override long? FilePos => null;
+
+        internal override uint? FileSize => null;
+
         protected override uint? EncryptionSeed => _encryptionSeed;
 
         public MpqKnownFile TryAsKnownFile(string filename)
         {
-            // TODO: if filename matches name1+name2, return MpqKnownFile, otherwise return null
-            throw new NotImplementedException();
-        }
-
-        internal override bool Equals(MpqFile other)
-        {
-            // TODO: compare using Name1 and Name2
+            // TODO: if filename matches Name, return MpqKnownFile, otherwise return null
             throw new NotImplementedException();
         }
     }

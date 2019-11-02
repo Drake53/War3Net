@@ -21,10 +21,10 @@ namespace War3Net.IO.Mpq
             _fileSize = fileSize;
         }
 
-        public long FilePos => _filePos;
-
-        public uint FileSize => _fileSize;
-
         internal override bool IsOriginalStream => true;
+
+        internal override long? FilePos => _filePos;
+
+        internal override uint? FileSize => _fileSize;
     }
 }

@@ -15,21 +15,28 @@ namespace War3Net.IO.Mpq
 {
     public abstract class MpqFile : IEquatable<MpqFile>, IDisposable
     {
+        private readonly ulong _name;
         private readonly Stream _baseStream;
+
         private MpqFileFlags _flags;
         private MpqLocale _locale;
+        private CompressionType _compressionType;
 
         // TODO: move compression and encryption logic to a different file (MpqStream?)
 
-        internal MpqFile(Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
+        internal MpqFile(ulong hashedName, Stream? sourceStream, MpqFileFlags flags, MpqLocale locale)
         {
+            _name = hashedName;
             _baseStream = new MemoryStream();
             sourceStream?.CopyTo(_baseStream);
             _baseStream.Position = 0;
 
             _flags = flags;
             _locale = locale;
+            _compressionType = CompressionType.ZLib;
         }
+
+        public ulong Name => _name;
 
         public MpqFileFlags Flags
         {
@@ -69,6 +76,20 @@ namespace War3Net.IO.Mpq
             }
         }
 
+        public CompressionType CompressionType
+        {
+            get => _compressionType;
+            set
+            {
+                if (!Enum.IsDefined(typeof(CompressionType), value))
+                {
+                    throw new ArgumentException("Invalid enum.", nameof(value));
+                }
+
+                _compressionType = value;
+            }
+        }
+
         internal abstract bool IsOriginalStream { get; }
 
         /// <summary>
@@ -85,8 +106,12 @@ namespace War3Net.IO.Mpq
         /// </remarks>
         internal abstract uint HashCollisions { get; }
 
+        internal abstract long? FilePos { get; }
+
+        internal abstract uint? FileSize { get; }
+
         /// <summary>
-        /// The base encryption seed used to encrypt this <see cref="MpqFile"/>'s stream.
+        /// Gets the base encryption seed used to encrypt this <see cref="MpqFile"/>'s stream.
         /// </summary>
         /// <remarks>
         /// If the <see cref="MpqFile"/> has the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag, this seed must be adjusted based on the file's position and size.
@@ -102,11 +127,8 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         bool IEquatable<MpqFile>.Equals(MpqFile other)
         {
-            // TODO: compare locale?
-            return GetType() == other.GetType() ? Equals(other) : false;
+            return _name == other._name && _locale == other._locale;
         }
-
-        internal abstract bool Equals(MpqFile other);
 
         internal void AddToArchive(MpqArchive mpqArchive, uint index, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
@@ -119,26 +141,36 @@ namespace War3Net.IO.Mpq
 
             if (IsOriginalStream)
             {
-                if (this is MpqEncryptedFile encryptedFile)
+                if (_flags.HasFlag(MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey))
                 {
-                    if (_flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) && encryptedFile.FilePos != relativeFileOffset)
+                    if (FilePos!.Value != relativeFileOffset)
                     {
                         throw new Exception("Cannot copy pre-encrypted stream at the current position of the MpqArchive's stream, because the relative file position is incorrect.");
                     }
+                }
 
-                    _baseStream.CopyTo(mpqArchive.BaseStream);
-                    mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, encryptedFile.FileSize, _flags);
-                    mpqHash = new MpqHash(encryptedFile.Name, _locale, index, encryptedFile.Mask);
+                _baseStream.CopyTo(mpqArchive.BaseStream);
+
+                if (this is MpqKnownFile knownFile)
+                {
+                    mpqEntry = new MpqEntry(knownFile.FileName, fileSize, FileSize!.Value, _flags);
+                    mpqHash = new MpqHash(knownFile.FileName, mpqArchive.HashTableMask, _locale, index);
+                    mpqEntry.SetPos(headerOffset, relativeFileOffset);
+                }
+                else if (this is MpqEncryptedFile encryptedFile)
+                {
+                    mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, fileSize, FileSize!.Value, _flags);
+                    mpqHash = new MpqHash(Name, _locale, index, encryptedFile.Mask);
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException($"Unknown subclass of {nameof(MpqFile)}.");
                 }
 
                 return;
             }
 
-            using var compressedStream = GetCompressedStream(CompressionType.ZLib, blockSize);
+            using var compressedStream = GetCompressedStream(blockSize);
             var compressedSize = (uint)compressedStream.Length;
 
             var blockPosCount = (uint)(((int)fileSize + blockSize - 1) / blockSize) + 1;
@@ -213,11 +245,11 @@ namespace War3Net.IO.Mpq
             else if (this is MpqUnknownFile mpqUnknownFile)
             {
                 mpqEntry = new MpqEntry(headerOffset, relativeFileOffset, compressedSize, fileSize, _flags);
-                mpqHash = new MpqHash(mpqUnknownFile.Name, _locale, index, mpqUnknownFile.Mask);
+                mpqHash = new MpqHash(Name, _locale, index, mpqUnknownFile.Mask);
             }
             else
             {
-                throw new NotImplementedException($"Unknown subclass of {nameof(MpqFile)}.");
+                throw new NotSupportedException($"Unknown subclass of {nameof(MpqFile)}.");
             }
         }
 
@@ -250,7 +282,7 @@ namespace War3Net.IO.Mpq
         {
         }*/
 
-        private Stream GetCompressedStream(CompressionType compressionType, int blockSize)
+        private Stream GetCompressedStream(int blockSize)
         {
             var resultStream = new MemoryStream();
             var singleUnit = _flags.HasFlag(MpqFileFlags.SingleUnit);
@@ -260,7 +292,7 @@ namespace War3Net.IO.Mpq
                 var offset = _baseStream.Position;
                 var compressedStream = new MemoryStream();
 
-                _ = compressionType switch
+                _ = _compressionType switch
                 {
                     CompressionType.ZLib => ZLibCompression.CompressTo(_baseStream, compressedStream, (int)bytes, true),
 
@@ -275,7 +307,7 @@ namespace War3Net.IO.Mpq
                 }
                 else
                 {
-                    resultStream.WriteByte((byte)CompressionType.ZLib);
+                    resultStream.WriteByte((byte)_compressionType);
                     compressedStream.Position = 0;
                     compressedStream.CopyTo(resultStream);
                 }
