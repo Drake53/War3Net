@@ -418,43 +418,34 @@ namespace War3Net.IO.Mpq
 
         private static byte[] DecompressMulti(byte[] input, int outputLength)
         {
-            using (Stream sinput = new MemoryStream(input))
-            {
-                var comptype = (MpqCompressionType)sinput.ReadByte();
-                var result = comptype switch
-                {
-                    MpqCompressionType.Huffman => HuffmanCoding.Decompress(sinput),
-                    MpqCompressionType.ZLib => ZlibDecompress(sinput, outputLength),
-                    MpqCompressionType.PKLib => PKDecompress(sinput, outputLength),
-                    MpqCompressionType.BZip2 => BZip2Decompress(sinput, outputLength),
-                    MpqCompressionType.Lzma => throw new MpqParserException("LZMA compression is not yet supported"),
-                    MpqCompressionType.Sparse => throw new MpqParserException("Sparse compression is not yet supported"),
-                    MpqCompressionType.ImaAdpcmMono => AdpcmCompression.Decompress(sinput, 1),
-                    MpqCompressionType.ImaAdpcmStereo => AdpcmCompression.Decompress(sinput, 2),
-
-                    MpqCompressionType.Sparse | MpqCompressionType.ZLib => throw new MpqParserException("Sparse compression + Deflate compression is not yet supported"),
-                    MpqCompressionType.Sparse | MpqCompressionType.BZip2 => throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported"),
-
-                    MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman => AdpcmCompression.Decompress(HuffmanCoding.Decompress(sinput), 1),
-                    MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib => AdpcmCompression.Decompress(PKDecompress(sinput, outputLength), 1),
-
-                    MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman => AdpcmCompression.Decompress(HuffmanCoding.Decompress(sinput), 2),
-                    MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib => AdpcmCompression.Decompress(PKDecompress(sinput, outputLength), 2),
-
-                    _ => throw new MpqParserException($"Compression of type 0x{comptype.ToString("X")} is not yet supported"),
-                };
-
-                return result;
-            }
+            using var memoryStream = new MemoryStream(input);
+            return GetDecompressionFunction((MpqCompressionType)memoryStream.ReadByte(), outputLength).Invoke(memoryStream);
         }
 
-        private static byte[] BZip2Decompress(Stream data, int expectedLength)
+        private static Func<Stream, byte[]> GetDecompressionFunction(MpqCompressionType compressionType, int outputLength)
         {
-            using (var output = new MemoryStream(expectedLength))
+            return compressionType switch
             {
-                BZip2.Decompress(data, output, false);
-                return output.ToArray();
-            }
+                MpqCompressionType.Huffman => HuffmanCoding.Decompress,
+                MpqCompressionType.ZLib => (stream) => ZLibCompression.Decompress(stream, outputLength),
+                MpqCompressionType.PKLib => (stream) => PKDecompress(stream, outputLength),
+                MpqCompressionType.BZip2 => (stream) => BZip2Compression.Decompress(stream, outputLength),
+                MpqCompressionType.Lzma => throw new MpqParserException("LZMA compression is not yet supported"),
+                MpqCompressionType.Sparse => throw new MpqParserException("Sparse compression is not yet supported"),
+                MpqCompressionType.ImaAdpcmMono => (stream) => AdpcmCompression.Decompress(stream, 1),
+                MpqCompressionType.ImaAdpcmStereo => (stream) => AdpcmCompression.Decompress(stream, 2),
+
+                MpqCompressionType.Sparse | MpqCompressionType.ZLib => throw new MpqParserException("Sparse compression + Deflate compression is not yet supported"),
+                MpqCompressionType.Sparse | MpqCompressionType.BZip2 => throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported"),
+
+                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 1),
+                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 1),
+
+                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 2),
+                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 2),
+
+                _ => throw new MpqParserException($"Compression of type 0x{compressionType.ToString("X")} is not yet supported"),
+            };
         }
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
@@ -484,7 +475,7 @@ namespace War3Net.IO.Mpq
                         throw new NotImplementedException();
                     }
 
-                    return ZlibDecompress(data, expectedLength);
+                    return ZLibCompression.Decompress(data, expectedLength);
                 }
             }
             else
@@ -492,12 +483,6 @@ namespace War3Net.IO.Mpq
                 data.Seek(-3, SeekOrigin.Current);
                 return PKLibCompression.Explode(data, expectedLength);
             }
-        }
-
-        private static byte[] ZlibDecompress(Stream data, int expectedLength)
-        {
-            // This assumes that Zlib won't be used in combination with another compression type
-            return ZLibCompression.Decompress(data, expectedLength);
         }
     }
 }

@@ -72,6 +72,11 @@ namespace War3Net.IO.Compression
             return (uint)outputStream.Position;
         }
 
+        public static byte[] Decompress(byte[] data, int expectedLength)
+        {
+            return Decompress(new MemoryStream(data), expectedLength);
+        }
+
         public static byte[] Decompress(Stream compressedData, int expectedLength)
         {
             var output = new byte[expectedLength];
@@ -81,6 +86,7 @@ namespace War3Net.IO.Compression
             var inflater = new InflaterInputStream(compressedData);
 #endif
             var offset = 0;
+            // expectedLength makes this unable to be combined with other compression algorithms?
             while (expectedLength > 0)
             {
                 var size = inflater.Read(output, offset, expectedLength);

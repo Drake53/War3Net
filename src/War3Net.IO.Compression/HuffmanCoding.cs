@@ -151,6 +151,11 @@ namespace War3Net.IO.Compression
             },
         };
 
+        public static byte[] Decompress(byte[] data)
+        {
+            return Decompress(new MemoryStream(data));
+        }
+
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>

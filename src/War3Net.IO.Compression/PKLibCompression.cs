@@ -61,6 +61,11 @@ namespace War3Net.IO.Compression
             Ascii = 1,
         }
 
+        public static byte[] Explode(byte[] data, int expectedSize)
+        {
+            return Explode(new MemoryStream(data), expectedSize);
+        }
+
         /// <summary>
         /// Decompresses the input stream.
         /// </summary>
