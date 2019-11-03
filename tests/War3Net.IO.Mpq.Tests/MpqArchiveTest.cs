@@ -21,11 +21,12 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
+        [Obsolete("does same as test below, except it doesn't skip noise.png")]
         public void TestStoreThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            // var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, MpqFileFlags.Exists, BlockSize);
-            var mpqFile = new MpqKnownFile(filename, fileStream, MpqFileFlags.Exists, MpqLocale.Neutral, true);
+            // var mpqFile = new MpqKnownFile(filename, fileStream, MpqFileFlags.Exists, MpqLocale.Neutral, true);
+            var mpqFile = MpqFile.New(fileStream, filename);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -40,8 +41,9 @@ namespace War3Net.IO.Mpq.Tests
         public void TestStoreThenRetrieveFileWithFlags(string filename, MpqFileFlags flags)
         {
             var fileStream = File.OpenRead(filename);
-            // var mpqFile = new MpqFile(fileStream, filename, MpqLocale.Neutral, flags, BlockSize);
-            var mpqFile = new MpqKnownFile(filename, fileStream, flags, MpqLocale.Neutral, true);
+            // var mpqFile = new MpqKnownFile(filename, fileStream, flags, MpqLocale.Neutral, true);
+            var mpqFile = MpqFile.New(fileStream, filename);
+            mpqFile.TargetFlags = flags;
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -57,8 +59,9 @@ namespace War3Net.IO.Mpq.Tests
         {
             const string FileName = "someRandomFile.empty";
 
-            // var mpqFile = new MpqFile(null, FileName, MpqLocale.Neutral, flags, BlockSize);
-            var mpqFile = new MpqKnownFile(FileName, null, flags, MpqLocale.Neutral);
+            // var mpqFile = new MpqKnownFile(FileName, null, flags, MpqLocale.Neutral);
+            var mpqFile = MpqFile.New(null, FileName);
+            mpqFile.TargetFlags = flags;
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
@@ -78,17 +81,12 @@ namespace War3Net.IO.Mpq.Tests
             }
 
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
-            using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles);
-
-            static bool CheckEncrypted(MpqFile mpqFile)
-            {
-                return mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
-            }
+            using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles, blockSize: inputArchive.Header.BlockSize);
 
             // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
             // TODO: fix assumption of how recreated blocktable's entries are laid out relative to input mpqFiles array? (aka: replace the 'offset' variable)
             var offsetPerUnknownFile = (recreatedArchive.HashTableSize / inputArchive.HashTableSize) - 1;
-            var mpqEncryptedFileCount = mpqFiles.Where(CheckEncrypted).Count();
+            var mpqEncryptedFileCount = mpqFiles.Where(mpqFile => mpqFile.IsFilePositionFixed).Count();
             var offset = mpqEncryptedFileCount * (offsetPerUnknownFile + 1);
             mpqEncryptedFileCount = 0;
             for (var index = 0; index < mpqFiles.Length; index++)
@@ -111,7 +109,7 @@ namespace War3Net.IO.Mpq.Tests
                 }
 
                 var blockIndex = index + (int)offset;
-                if (CheckEncrypted(mpqFile))
+                if (mpqFile.IsFilePositionFixed)
                 {
                     blockIndex = mpqEncryptedFileCount * ((int)offsetPerUnknownFile + 1);
                     mpqEncryptedFileCount++;
@@ -121,10 +119,10 @@ namespace War3Net.IO.Mpq.Tests
 
                 if (exists)
                 {
-                    if (mpqFile is MpqEncryptedFile encryptedFile)
+                    if (!mpqFile.MpqStream.CanBeDecrypted)
                     {
                         // Check if both files have the same encryption seed.
-                        Assert.IsTrue(!mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset);
+                        Assert.IsTrue(!mpqFile.TargetFlags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset);
 
                         inputArchive.BaseStream.Position = inputEntry.FilePosition!.Value;
                         recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition!.Value;
@@ -146,7 +144,7 @@ namespace War3Net.IO.Mpq.Tests
                     Assert.IsFalse(recreatedEntry.Flags.HasFlag(MpqFileFlags.Exists));
                 }
 
-                if (mpqFile is MpqUnknownFile && !CheckEncrypted(mpqFile))
+                if (mpqFile is MpqUnknownFile && !mpqFile.IsFilePositionFixed)
                 {
                     offset += offsetPerUnknownFile;
                 }

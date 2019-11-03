@@ -41,9 +41,10 @@ namespace War3Net.IO.Mpq
         /// <param name="br">The reader from which to read the entry.</param>
         /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="br"/> is null.</exception>
-        public MpqEntry(BinaryReader br, uint headerOffset)
+        internal MpqEntry(BinaryReader br, uint headerOffset)
             : this(headerOffset, br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br)), br.ReadUInt32(), br.ReadUInt32(), (MpqFileFlags)br.ReadUInt32())
         {
+            // TODO: create static parse method
         }
 
         /// <summary>
@@ -78,6 +79,18 @@ namespace War3Net.IO.Mpq
             _compressedSize = compressedSize;
             _fileSize = fileSize;
             _flags = flags;
+        }
+
+        internal MpqEntry(uint headerOffset, uint fileOffset, string? filename, uint? compressedSize, uint fileSize, MpqFileFlags flags)
+        {
+            _headerOffset = headerOffset;
+            _fileOffset = fileOffset;
+            _filename = filename;
+            _compressedSize = compressedSize;
+            _fileSize = fileSize;
+            _flags = flags;
+
+            UpdateEncryptionSeed();
         }
 
         /// <summary>
@@ -155,7 +168,7 @@ namespace War3Net.IO.Mpq
         public uint? FilePosition => _headerOffset + _fileOffset;
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.Compressed"/>.
+        /// Gets a value indicating whether this <see cref="MpqEntry"/> has any of the <see cref="MpqFileFlags.Compressed"/> flags.
         /// </summary>
         public bool IsCompressed => (_flags & MpqFileFlags.Compressed) != 0;
 

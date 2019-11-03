@@ -43,6 +43,8 @@ namespace War3Net.IO.Mpq
         private readonly HashTable _hashTable;
         private readonly BlockTable _blockTable;
 
+        private bool _isStreamOwner = true;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqArchive"/> class.
         /// </summary>
@@ -120,25 +122,21 @@ namespace War3Net.IO.Mpq
                 // var gaps = new List<(long Start, long Length)>();
                 var endOfStream = _baseStream.Position;
 
-                static bool CheckEncrypted(MpqFile mpqFile)
+                // Find files that cannot be decrypted, and need to have a specific position in the archive, because that position is used to calculate the encryption seed.
+                var mpqFixedPositionFiles = mpqFiles.Where(mpqFile => mpqFile.IsFilePositionFixed).OrderBy(mpqFile => mpqFile.MpqStream.FilePosition).ToArray();
+                if (mpqFixedPositionFiles.Length > 0)
                 {
-                    return mpqFile is MpqEncryptedFile && mpqFile.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
-                }
-
-                var mpqEncryptedFiles = mpqFiles.Where(CheckEncrypted).Select(mpqFile => (MpqEncryptedFile)mpqFile).OrderBy(mpqFile => mpqFile.FilePos).ToArray();
-                if (mpqEncryptedFiles.Length > 0)
-                {
-                    if (mpqEncryptedFiles.First()!.FilePos < 0)
+                    if (mpqFixedPositionFiles.First()!.MpqStream.FilePosition < 0)
                     {
                         throw new NotSupportedException("Cannot place files in front of the header.");
                     }
 
-                    foreach (var mpqEncryptedFile in mpqEncryptedFiles)
+                    foreach (var mpqFixedPositionFile in mpqFixedPositionFiles)
                     {
-                        var position = mpqEncryptedFile.FilePos;
+                        var position = mpqFixedPositionFile.MpqStream.FilePosition;
                         if (position < endOfStream)
                         {
-                            throw new ArgumentException("Encrypted filestreams overlap with each other and/or the header. Archive cannot be created.", nameof(inputFiles));
+                            throw new ArgumentException("Fixed position files overlap with each other and/or the header. Archive cannot be created.", nameof(inputFiles));
                         }
 
                         if (position > endOfStream)
@@ -148,21 +146,21 @@ namespace War3Net.IO.Mpq
                             writer.Seek((int)gapSize, SeekOrigin.Current);
                         }
 
-                        mpqEncryptedFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
-                        var hashTableEntries = _hashTable.Add(mpqHash, mpqEncryptedFile.HashIndex, mpqEncryptedFile.HashCollisions);
+                        mpqFixedPositionFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
+                        var hashTableEntries = _hashTable.Add(mpqHash, mpqFixedPositionFile.HashIndex, mpqFixedPositionFile.HashCollisions);
                         for (var i = 0; i < hashTableEntries; i++)
                         {
                             _blockTable.Add(mpqEntry);
                         }
 
-                        mpqEncryptedFile.Dispose();
+                        mpqFixedPositionFile.Dispose();
 
                         fileIndex += hashTableEntries;
                         endOfStream = _baseStream.Position;
                     }
                 }
 
-                mpqFiles.RemoveAll(CheckEncrypted);
+                mpqFiles.RemoveAll(mpqFile => mpqFile.IsFilePositionFixed);
                 foreach (var mpqFile in mpqFiles)
                 {
                     // TODO: insert files into the gaps
@@ -597,15 +595,30 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
+#if !NET45
         /// <summary>
         /// Rebuild this <see cref="MpqArchive"/>'s stream with a single file in its archive replaced.
         /// </summary>
         /// <param name="filename">The internal filename of the file that will be replaced.</param>
         /// <param name="fileStream">The content which will replace the original file content.</param>
+        /// <param name="locale">The locale of the file that will be replaced.</param>
         /// <returns>A stream containing the edited archive.</returns>
-        public MemoryStream ReplaceFile(string filename, Stream? fileStream)
+        public Stream ReplaceFile(string filename, Stream? fileStream, MpqLocale locale = MpqLocale.Neutral)
         {
-            if (!TryGetHashEntry(filename, out var hash))
+            throw new NotImplementedException();
+            /*using var newFile = new MpqKnownFile(filename, fileStream, 0, locale);
+
+            var mpqFiles = GetMpqFiles();
+            var oldFile = mpqFiles.FirstOrDefault(file => file.Equals(newFile)) ?? throw new FileNotFoundException($"File not found: {filename}");
+            var newFiles = mpqFiles.Select(file => ReferenceEquals(file, oldFile) ? newFile : file).ToArray();
+
+            using var newArchive = Create((Stream?)null, newFiles, (ushort)_mpqHeader.HashTableSize, _mpqHeader.BlockSize);
+            newArchive._baseStream.Position = 0;
+            newArchive._isStreamOwner = false;
+
+            return newArchive._baseStream;*/
+
+            /*if (!TryGetHashEntry(filename, out var hash))
             {
                 throw new FileNotFoundException($"File not found: {filename}");
             }
@@ -681,8 +694,9 @@ namespace War3Net.IO.Mpq
             }
 
             resultStream.Position = 0;
-            return resultStream;
+            return resultStream;*/
         }
+#endif
 
         /// <summary>
         /// Opens an <see cref="MpqEntry"/> in the <see cref="MpqArchive"/>.
@@ -827,31 +841,17 @@ namespace War3Net.IO.Mpq
                     if (entry != null)
                     {
                         var stream = mpqHash.IsDeleted ? null : OpenFile(entry);
-                        if (entry.IsEncrypted && entry.EncryptionSeed == 0 && entry.FileSize > 3)
-                        {
-                            // Copied from MpqStream.LoadSingleUnit() method.
-                            // TODO: make internal static method in MpqStream for this piece of code
-                            var filedata = new byte[entry.CompressedSize!.Value];
-                            lock (_baseStream)
-                            {
-                                _baseStream.Seek(entry.FilePosition!.Value, SeekOrigin.Begin);
-                                var read = _baseStream.Read(filedata, 0, filedata.Length);
-                                if (read != filedata.Length)
-                                {
-                                    throw new MpqParserException("Insufficient data or invalid data length");
-                                }
-                            }
+                        var mpqFile = entry.Filename is null
+                            ? MpqFile.New(stream, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
+                            : MpqFile.New(stream, entry.Filename);
 
-                            var mpqFile = new MpqEncryptedFile(new MemoryStream(filedata), entry.Flags, mpqHash, (uint)hashIndex, 0, entry.FileOffset!.Value, entry.FileSize);
-                            pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
-                        }
-                        else
+                        mpqFile.TargetFlags = entry.Flags;
+                        if (entry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
                         {
-                            var mpqFile = entry.Filename is null
-                                ? (MpqFile)new MpqUnknownFile(stream, entry.Flags, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
-                                : new MpqKnownFile(entry.Filename, stream, entry.Flags, mpqHash.Locale);
-                            pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
+                            mpqFile.Locale = mpqHash.Locale;
                         }
+
+                        pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
                     }
                     else
                     {
@@ -860,7 +860,7 @@ namespace War3Net.IO.Mpq
                 }
             }
 
-            var blockIndex = (uint)0;
+            var blockIndex = 0U;
             foreach (var mpqEntry in this)
             {
                 if (!pairs.ContainsKey(mpqEntry))
@@ -868,8 +868,15 @@ namespace War3Net.IO.Mpq
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
                     var mpqFile = mpqEntry.Filename is null
-                        ? (MpqFile)new MpqUnknownFile(null, 0, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
-                        : new MpqKnownFile(mpqEntry.Filename, null, 0, mpqHash.Locale);
+                        ? MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
+                        : MpqFile.New(null, mpqEntry.Filename);
+
+                    mpqFile.TargetFlags = 0;
+                    if (mpqEntry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
+                    {
+                        mpqFile.Locale = mpqHash.Locale;
+                    }
+
                     pairs.Add(mpqEntry, (blockIndex, mpqFile));
                 }
 
@@ -880,12 +887,13 @@ namespace War3Net.IO.Mpq
         }
 #endif
 
-        /// <summary>
-        /// Closes the <see cref="BaseStream"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
-            _baseStream?.Close();
+            if (_isStreamOwner)
+            {
+                _baseStream?.Close();
+            }
         }
 
         /// <inheritdoc/>

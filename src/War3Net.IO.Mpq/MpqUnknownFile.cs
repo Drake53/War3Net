@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 
 namespace War3Net.IO.Mpq
 {
@@ -20,15 +19,15 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqUnknownFile"/> class.
         /// </summary>
-        internal MpqUnknownFile(Stream? sourceStream, MpqFileFlags flags, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
-            : base(mpqHash.Name, sourceStream, flags, mpqHash.Locale, false)
+        internal MpqUnknownFile(MpqStream mpqStream, MpqFileFlags flags, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
+            : base(mpqHash.Name, mpqStream, flags, mpqHash.Locale, false)
         {
             if (mpqHash.Mask == 0)
             {
                 throw new ArgumentException("Expected the Mask value of mpqHash argument to be set to a non-zero value.", nameof(mpqHash));
             }
 
-            if (flags.HasFlag(MpqFileFlags.Encrypted) && encryptionSeed is null && this as MpqEncryptedFile is null)
+            if (flags.HasFlag(MpqFileFlags.Encrypted) && encryptionSeed is null)
             {
                 throw new ArgumentException($"Cannot encrypt an {nameof(MpqUnknownFile)} without an encryption seed.", nameof(flags));
             }
@@ -41,15 +40,9 @@ namespace War3Net.IO.Mpq
 
         public uint Mask => _hashMask;
 
-        internal override bool IsOriginalStream => false;
-
         internal override uint HashIndex => _hashIndex;
 
         internal override uint HashCollisions => _hashCollisions;
-
-        internal override long? FilePos => null;
-
-        internal override uint? FileSize => null;
 
         protected override uint? EncryptionSeed => _encryptionSeed;
 
@@ -61,7 +54,7 @@ namespace War3Net.IO.Mpq
 
         protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
-            mpqEntry = new MpqEntry(mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, Flags);
+            mpqEntry = new MpqEntry(mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, TargetFlags);
             mpqHash = new MpqHash(Name, Locale, index, Mask);
         }
     }
