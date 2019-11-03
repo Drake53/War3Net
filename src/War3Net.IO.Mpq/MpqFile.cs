@@ -20,8 +20,6 @@ namespace War3Net.IO.Mpq
         private MpqLocale _locale;
         private MpqCompressionType _compressionType;
 
-        // TODO: move compression and encryption logic to a different file (MpqStream?)
-
         internal MpqFile(ulong hashedName, MpqStream mpqStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen)
         {
             _name = hashedName;
@@ -36,8 +34,6 @@ namespace War3Net.IO.Mpq
         public ulong Name => _name;
 
         internal MpqStream MpqStream => _mpqStream;
-
-        // public MpqFileFlags CurrentFlags => _mpqStream.Flags;
 
         public MpqFileFlags TargetFlags
         {
@@ -110,15 +106,9 @@ namespace War3Net.IO.Mpq
         /// </remarks>
         protected abstract uint? EncryptionSeed { get; }
 
-        public static MpqFile New(Stream? stream, MpqHash mpqHash, uint hashIndex, uint hashCollisions)
+        public static MpqFile New(Stream? stream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream());
-            return new MpqUnknownFile(mpqStream, mpqStream.Flags, mpqHash, hashIndex, hashCollisions);
-        }
-
-        public static MpqFile New(Stream? stream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint encryptionSeed)
-        {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream());
+            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), null);
             return new MpqUnknownFile(mpqStream, mpqStream.Flags, mpqHash, hashIndex, hashCollisions, encryptionSeed);
         }
 
@@ -127,13 +117,6 @@ namespace War3Net.IO.Mpq
             var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName);
             return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, MpqLocale.Neutral);
         }
-
-        /*public static MpqFile New(Stream stream, string fileName)
-        {
-            return new MpqKnownFile(fileName, )
-        }*/
-
-        // public static MpqFile New()
 
         /// <inheritdoc/>
         public void Dispose()
@@ -172,38 +155,8 @@ namespace War3Net.IO.Mpq
                 using var newStream = _mpqStream.Transform(_flags, _compressionType, relativeFileOffset, mpqArchive.BlockSize);
                 newStream.CopyTo(mpqArchive.BaseStream);
                 GetTableEntries(mpqArchive, index, relativeFileOffset, (uint)newStream.Length, _mpqStream.FileSize, out mpqEntry, out mpqHash);
-                return;
             }
         }
-
-        /*internal void AddToArchive(uint headerOffset, uint index, uint filePos, uint mask)
-        {
-            // TODO: verify that blocksize of mpqfile and mpqarchive to which it gets added are the same, otherwise throw an exception
-
-            _entry.SetPos(headerOffset, filePos);
-
-            // This file came from another archive, and has an unknown filename.
-            if (_hash.HasValue)
-            {
-                // Overwrite blockIndex from old archive.
-                var hash = _hash.Value;
-                _hash = new MpqHash(hash.Name1, hash.Name2, hash.Locale, index, hash.Mask);
-            }
-            else
-            {
-                _hash = new MpqHash(Name, mask, _locale, index);
-                _hashIndex = MpqHash.GetIndex(Name, mask);
-            }
-        }*/
-
-        /*public void SerializeTo( Stream stream )
-        {
-            WriteTo( new BinaryWriter( stream ) );
-        }*/
-
-        /*internal void WriteTo(BinaryWriter writer, bool dispose = true)
-        {
-        }*/
 
         protected abstract void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash);
     }

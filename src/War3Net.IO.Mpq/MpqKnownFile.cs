@@ -30,9 +30,8 @@ namespace War3Net.IO.Mpq
 
         protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
-            mpqEntry = new MpqEntry(_fileName, compressedSize, fileSize, TargetFlags);
+            mpqEntry = new MpqEntry(_fileName, mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, TargetFlags);
             mpqHash = new MpqHash(_fileName, mpqArchive.HashTableMask, Locale, index);
-            mpqEntry.SetPos(mpqArchive.HeaderOffset, relativeFileOffset);
         }
     }
 }

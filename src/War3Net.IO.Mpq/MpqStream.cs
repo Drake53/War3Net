@@ -170,13 +170,8 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        internal MpqStream(Stream baseStream)
-            : this(new MpqEntry(0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
-        {
-        }
-
-        internal MpqStream(Stream baseStream, string fileName)
-            : this(new MpqEntry(0, 0, fileName, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
+        internal MpqStream(Stream baseStream, string? fileName)
+            : this(new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
         {
         }
 

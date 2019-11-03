@@ -42,7 +42,7 @@ namespace War3Net.IO.Mpq
         /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="br"/> is null.</exception>
         internal MpqEntry(BinaryReader br, uint headerOffset)
-            : this(headerOffset, br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br)), br.ReadUInt32(), br.ReadUInt32(), (MpqFileFlags)br.ReadUInt32())
+            : this(null, headerOffset, br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br)), br.ReadUInt32(), br.ReadUInt32(), (MpqFileFlags)br.ReadUInt32())
         {
             // TODO: create static parse method
         }
@@ -50,38 +50,13 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqEntry"/> class.
         /// </summary>
+        /// <param name="filename"></param>
         /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
         /// <param name="fileOffset">The file's position in the archive, relative to the header offset.</param>
         /// <param name="compressedSize">The compressed size of the file.</param>
         /// <param name="fileSize">The uncompressed size of the file.</param>
         /// <param name="flags">The file's <see cref="MpqFileFlags"/>.</param>
-        internal MpqEntry(uint headerOffset, uint fileOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
-        {
-            _headerOffset = headerOffset;
-            _fileOffset = fileOffset;
-            _compressedSize = compressedSize;
-            _fileSize = fileSize;
-            _flags = flags;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
-        /// </summary>
-        /// <param name="filename">The filename of the file.</param>
-        /// <param name="compressedSize">The compressed size of the file.</param>
-        /// <param name="fileSize">The uncompressed size of the file.</param>
-        /// <param name="flags">The file's <see cref="MpqFileFlags"/>.</param>
-        internal MpqEntry(string? filename, uint? compressedSize, uint fileSize, MpqFileFlags flags)
-        {
-            _filename = filename;
-            _headerOffset = null;
-            _fileOffset = null;
-            _compressedSize = compressedSize;
-            _fileSize = fileSize;
-            _flags = flags;
-        }
-
-        internal MpqEntry(uint headerOffset, uint fileOffset, string? filename, uint? compressedSize, uint fileSize, MpqFileFlags flags)
+        internal MpqEntry(string? filename, uint headerOffset, uint fileOffset,uint? compressedSize, uint fileSize, MpqFileFlags flags)
         {
             _headerOffset = headerOffset;
             _fileOffset = fileOffset;
@@ -90,7 +65,10 @@ namespace War3Net.IO.Mpq
             _fileSize = fileSize;
             _flags = flags;
 
-            UpdateEncryptionSeed();
+            if (filename != null)
+            {
+                UpdateEncryptionSeed();
+            }
         }
 
         /// <summary>
@@ -181,28 +159,6 @@ namespace War3Net.IO.Mpq
         /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.SingleUnit"/>.
         /// </summary>
         public bool IsSingleUnit => _flags.HasFlag(MpqFileFlags.SingleUnit);
-
-        /// <summary>
-        /// Sets the file's offsets, which are required to get the absolute position of the file.
-        /// </summary>
-        /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
-        /// <param name="fileOffset">The file's relative offset to the <see cref="MpqHeader"/>.</param>
-        /// <exception cref="InvalidOperationException">Thrown when the <see cref="IsAdded"/> property is true.</exception>
-        public void SetPos(uint headerOffset, uint fileOffset)
-        {
-            if (_fileOffset != null)
-            {
-                throw new InvalidOperationException("Cannot change the FilePos for an MpqEntry after it's been set.");
-            }
-
-            _headerOffset = headerOffset;
-            _fileOffset = fileOffset;
-
-            if (_encryptionSeed == 0)
-            {
-                UpdateEncryptionSeed();
-            }
-        }
 
         /// <inheritdoc/>
         public override string ToString()

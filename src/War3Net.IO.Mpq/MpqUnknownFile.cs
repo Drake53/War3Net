@@ -54,7 +54,7 @@ namespace War3Net.IO.Mpq
 
         protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
-            mpqEntry = new MpqEntry(mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, TargetFlags);
+            mpqEntry = new MpqEntry(null, mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, TargetFlags);
             mpqHash = new MpqHash(Name, Locale, index, Mask);
         }
     }
