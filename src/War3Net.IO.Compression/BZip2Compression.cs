@@ -19,7 +19,7 @@ namespace War3Net.IO.Compression
         /// <param name="data">Byte array containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(byte[] data, int expectedLength)
+        public static byte[] Decompress(byte[] data, uint expectedLength)
         {
             return Decompress(new MemoryStream(data), expectedLength);
         }
@@ -30,9 +30,9 @@ namespace War3Net.IO.Compression
         /// <param name="data">Stream containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(Stream data, int expectedLength)
+        public static byte[] Decompress(Stream data, uint expectedLength)
         {
-            using (var output = new MemoryStream(expectedLength))
+            using (var output = new MemoryStream((int)expectedLength))
             {
                 BZip2.Decompress(data, output, false);
                 return output.ToArray();

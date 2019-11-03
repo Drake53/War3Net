@@ -78,7 +78,7 @@ namespace War3Net.IO.Compression
         /// <param name="data">Byte array containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(byte[] data, int expectedLength)
+        public static byte[] Decompress(byte[] data, uint expectedLength)
         {
             return Decompress(new MemoryStream(data), expectedLength);
         }
@@ -89,7 +89,7 @@ namespace War3Net.IO.Compression
         /// <param name="data">Stream containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(Stream data, int expectedLength)
+        public static byte[] Decompress(Stream data, uint expectedLength)
         {
             var output = new byte[expectedLength];
 #if USING_DOTNETZIP
@@ -99,16 +99,17 @@ namespace War3Net.IO.Compression
 #endif
             var offset = 0;
             // expectedLength makes this unable to be combined with other compression algorithms?
-            while (expectedLength > 0)
+            var remaining = (int)expectedLength;
+            while (remaining > 0)
             {
-                var size = inflater.Read(output, offset, expectedLength);
+                var size = inflater.Read(output, offset, remaining);
                 if (size == 0)
                 {
                     break;
                 }
 
                 offset += size;
-                expectedLength -= size;
+                remaining -= size;
             }
 
             return output;
