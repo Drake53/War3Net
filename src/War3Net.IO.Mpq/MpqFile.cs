@@ -280,7 +280,7 @@ namespace War3Net.IO.Mpq
 
                 // Add one because CompressionType byte not written yet.
                 var length = compressedStream.Length + 1;
-                if (length == bytes || (!singleUnit && length > bytes))
+                if (!singleUnit && length >= bytes)
                 {
                     _baseStream.CopyTo(resultStream, offset, (int)bytes, StreamExtensions.DefaultBufferSize);
                 }

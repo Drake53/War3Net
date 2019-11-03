@@ -445,9 +445,9 @@ namespace War3Net.IO.Mpq
                 StormBuffer.DecryptBlock(filedata, _entry.EncryptionSeed);
             }
 
-            _currentData = _entry.CompressedSize == _entry.FileSize
-                ? filedata
-                : DecompressMulti(filedata, (int)_entry.FileSize);
+            _currentData = _entry.Flags.HasFlag(MpqFileFlags.CompressedMulti)
+                ? DecompressMulti(filedata, (int)_entry.FileSize)
+                : filedata;
         }
     }
 }
