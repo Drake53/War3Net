@@ -10,7 +10,7 @@ using System.IO;
 
 namespace War3Net.IO.Mpq
 {
-    public abstract class MpqFile : IEquatable<MpqFile>, IDisposable
+    public abstract class MpqFile : IDisposable
     {
         private readonly ulong _name;
         private readonly MpqStream _mpqStream;
@@ -127,8 +127,7 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        /// <inheritdoc/>
-        bool IEquatable<MpqFile>.Equals(MpqFile other)
+        public bool IsSameAs(MpqFile other)
         {
             return _name == other._name && _locale == other._locale;
         }

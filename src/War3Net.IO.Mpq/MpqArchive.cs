@@ -500,20 +500,20 @@ namespace War3Net.IO.Mpq
         /// <param name="fileStream">The content which will replace the original file content.</param>
         /// <param name="locale">The locale of the file that will be replaced.</param>
         /// <returns>A stream containing the edited archive.</returns>
-        public Stream ReplaceFile(string filename, Stream? fileStream, MpqLocale locale = MpqLocale.Neutral)
+        public MpqArchive ReplaceFile(string filename, Stream? fileStream, MpqLocale locale = MpqLocale.Neutral)
         {
-            throw new NotImplementedException();
-            /*using var newFile = new MpqKnownFile(filename, fileStream, 0, locale);
+            var newFile = MpqFile.New(fileStream, filename);
+            newFile.Locale = locale;
 
             var mpqFiles = GetMpqFiles();
-            var oldFile = mpqFiles.FirstOrDefault(file => file.Equals(newFile)) ?? throw new FileNotFoundException($"File not found: {filename}");
+            var oldFile = mpqFiles.FirstOrDefault(file => file.IsSameAs(newFile)) ?? throw new FileNotFoundException($"File not found: {filename}");
             var newFiles = mpqFiles.Select(file => ReferenceEquals(file, oldFile) ? newFile : file).ToArray();
 
-            using var newArchive = Create((Stream?)null, newFiles, (ushort)_mpqHeader.HashTableSize, _mpqHeader.BlockSize);
-            newArchive._baseStream.Position = 0;
-            newArchive._isStreamOwner = false;
+            /*using var newArchive =*/ return Create((Stream?)null, newFiles, (ushort)_mpqHeader.HashTableSize, _mpqHeader.BlockSize);
+            // newArchive._baseStream.Position = 0;
+            // newArchive._isStreamOwner = false;
 
-            return newArchive._baseStream;*/
+            // return newArchive._baseStream;
         }
 #endif
 

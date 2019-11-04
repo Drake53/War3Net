@@ -152,6 +152,19 @@ namespace War3Net.IO.Mpq.Tests
         }
 
         [TestMethod]
+        public void TestDeleteFile()
+        {
+            const string inputArchivePath = @".\TestArchives\NewLuaMap.w3m";
+            const string fileName = "war3map.lua";
+
+            using var inputArchive = MpqArchive.Open(inputArchivePath);
+            using var outputArchive = inputArchive.ReplaceFile(fileName, null);
+
+            Assert.IsTrue(outputArchive.FileExists(fileName, out var entryIndex));
+            Assert.AreEqual(0U, outputArchive[entryIndex].FileSize);
+        }
+
+        [TestMethod]
         public void TestRecreatePKCompressed()
         {
             const string inputArchivePath = @"TestArchives\PKCompressed.w3x";
