@@ -12,53 +12,69 @@ namespace War3Net.IO.Compression
     /// </summary>
     internal class LinkedNode
     {
-        public int DecompressedValue;
-        public int Weight;
-        public LinkedNode Parent;
-        public LinkedNode Child0;
+        private readonly int _decompressedValue;
+        private int _weight;
+        private LinkedNode _next;
+        private LinkedNode _prev;
+        private LinkedNode _parent;
+        private LinkedNode _child0;
 
-        public LinkedNode Child1 => Child0.Prev;
+        internal int DecompressedValue => _decompressedValue;
 
-        public LinkedNode Next;
-        public LinkedNode Prev;
+        internal int Weight { get => _weight; set => _weight = value; }
 
-        public LinkedNode(int decompVal, int weight)
+        internal LinkedNode Next { get => _next; set => _next = value; }
+
+        internal LinkedNode Prev { get => _prev; set => _prev = value; }
+
+        internal LinkedNode Parent { get => _parent; set => _parent = value; }
+
+        internal LinkedNode Child0 { get => _child0; set => _child0 = value; }
+
+        internal LinkedNode Child1 => _child0._prev;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LinkedNode"/> class.
+        /// </summary>
+        /// <param name="decompVal"></param>
+        /// <param name="weight"></param>
+        internal LinkedNode(int decompVal, int weight)
         {
-            DecompressedValue = decompVal;
-            Weight = weight;
+            _decompressedValue = decompVal;
+            _weight = weight;
         }
 
         // TODO: This would be more efficient as a member of the other class
         // ie avoid the recursion
-        public LinkedNode Insert(LinkedNode other)
+        internal LinkedNode Insert(LinkedNode other)
         {
             // 'Next' should have a lower weight
             // we should return the lower weight
-            if (other.Weight <= Weight)
+            if (other._weight <= _weight)
             {
                 // insert before
-                if (Next != null)
+                if (_next != null)
                 {
-                    Next.Prev = other;
-                    other.Next = Next;
+                    _next._prev = other;
+                    other._next = _next;
                 }
 
-                Next = other;
-                other.Prev = this;
+                _next = other;
+                other._prev = this;
                 return other;
             }
             else
             {
-                if (Prev == null)
+                if (_prev == null)
                 {
                     // Insert after
-                    other.Prev = null;
-                    Prev = other;
-                    other.Next = this;
+                    other._prev = null;
+                    _prev = other;
+                    other._next = this;
                 }
                 else
                 {
-                    Prev.Insert(other);
+                    _prev.Insert(other);
                 }
             }
 
