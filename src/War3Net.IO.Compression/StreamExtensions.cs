@@ -9,10 +9,20 @@ using System.IO;
 
 namespace War3Net.IO.Compression
 {
+    /// <summary>
+    /// Provides extension methods for the <see cref="Stream"/> class.
+    /// </summary>
     public static class StreamExtensions
     {
         public const int DefaultBufferSize = 81920;
 
+        /// <summary>
+        /// Reads the bytes from the current stream and writes them to another stream.
+        /// </summary>
+        /// <param name="stream">The stream from which to copy.</param>
+        /// <param name="destination">The stream to which the contents of the current stream will be copied.</param>
+        /// <param name="bytesToCopy">The amount of bytes to copy.</param>
+        /// <param name="bufferSize">The size of the buffer. This value must be greater than zero.</param>
         public static void CopyTo(this Stream stream, Stream destination, int bytesToCopy, int bufferSize)
         {
             var buffer = new byte[bufferSize];
@@ -30,6 +40,14 @@ namespace War3Net.IO.Compression
             }
         }
 
+        /// <summary>
+        /// Reads the bytes from the current stream and writes them to another stream.
+        /// </summary>
+        /// <param name="stream">The stream from which to copy.</param>
+        /// <param name="destination">The stream to which the contents of the current stream will be copied.</param>
+        /// <param name="copyOffset">The offset in the <paramref name="stream"/> from where to start copying.</param>
+        /// <param name="bytesToCopy">The amount of bytes to copy.</param>
+        /// <param name="bufferSize">The size of the buffer. This value must be greater than zero.</param>
         public static void CopyTo(this Stream stream, Stream destination, long copyOffset, int bytesToCopy, int bufferSize)
         {
             stream.Position = copyOffset;
