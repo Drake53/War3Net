@@ -124,11 +124,11 @@ namespace War3Net.IO.Mpq.Tests
                         // Check if both files have the same encryption seed.
                         Assert.IsTrue(!mpqFile.TargetFlags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey) || inputEntry.FileOffset == recreatedEntry.FileOffset);
 
-                        inputArchive.BaseStream.Position = inputEntry.FilePosition!.Value;
-                        recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition!.Value;
+                        inputArchive.BaseStream.Position = inputEntry.FilePosition;
+                        recreatedArchive.BaseStream.Position = recreatedEntry.FilePosition;
 
-                        var size1 = inputEntry.CompressedSize!.Value;
-                        var size2 = recreatedEntry.CompressedSize!.Value;
+                        var size1 = inputEntry.CompressedSize;
+                        var size2 = recreatedEntry.CompressedSize;
                         StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
                     }
                     else
@@ -184,11 +184,11 @@ namespace War3Net.IO.Mpq.Tests
 
             for (var i = 0; i < inputArchive.Header.BlockTableSize; i++)
             {
-                inputArchive.BaseStream.Position = inputArchive[i].FilePosition!.Value + 8;
-                recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition!.Value;
+                inputArchive.BaseStream.Position = inputArchive[i].FilePosition + 8;
+                recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition;
 
-                var size1 = inputArchive[i].CompressedSize!.Value;
-                var size2 = recreatedArchive[i].CompressedSize!.Value;
+                var size1 = inputArchive[i].CompressedSize;
+                var size2 = recreatedArchive[i].CompressedSize;
                 StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
             }
 
