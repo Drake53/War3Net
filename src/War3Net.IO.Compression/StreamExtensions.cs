@@ -7,11 +7,11 @@
 
 using System.IO;
 
-namespace War3Net.IO.Mpq
+namespace War3Net.IO.Compression
 {
     public static class StreamExtensions
     {
-        internal const int DefaultBufferSize = 81920;
+        public const int DefaultBufferSize = 81920;
 
         public static void CopyTo(this Stream stream, Stream destination, int bytesToCopy, int bufferSize)
         {

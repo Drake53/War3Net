@@ -18,42 +18,35 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace War3Net.IO.Compression
 {
+    /// <summary>
+    /// Provides methods to compress and decompress using ZLib.
+    /// </summary>
     public static class ZLibCompression
     {
-        public static uint CompressTo(Stream inputStream, Stream outputStream, int bytes, bool leaveOpen)
+        /// <summary>
+        /// Compresses data using DEFLATE.
+        /// </summary>
+        /// <param name="inputStream">The stream containing data to be compressed.</param>
+        /// <param name="bytes">The amount of bytes from the <paramref name="inputStream"/> to compress.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the <paramref name="inputStream"/> open; otherwise, <see langword="false"/>.</param>
+        /// <returns>A <see cref="Stream"/> containing the compressed data.</returns>
+        public static Stream Compress(Stream inputStream, int bytes, bool leaveOpen)
         {
             _ = inputStream ?? throw new ArgumentNullException(nameof(inputStream));
-            _ = outputStream ?? throw new ArgumentNullException(nameof(outputStream));
+
+            var outputStream = new MemoryStream();
 
 #if USING_DOTNETZIP
             using (var deflater = new ZlibStream(outputStream, CompressionMode.Compress, true))
             {
-                for (var i = 0; i < bytes; i++)
-                {
-                    var r = inputStream.ReadByte();
-                    if (r == -1)
-                    {
-                        break;
-                    }
-
-                    deflater.WriteByte((byte)r);
-                }
+                inputStream.CopyTo(deflater, bytes, StreamExtensions.DefaultBufferSize);
             }
 #else
             using (var stream = new MemoryStream())
             {
                 using (var deflater = new DeflaterOutputStream(stream))
                 {
-                    for (var i = 0; i < bytes; i++)
-                    {
-                        var r = inputStream.ReadByte();
-                        if (r == -1)
-                        {
-                            break;
-                        }
-
-                        deflater.WriteByte((byte)r);
-                    }
+                    inputStream.CopyTo(deflater, bytes, StreamExtensions.DefaultBufferSize);
 
                     deflater.Finish();
                     deflater.Flush();
@@ -69,7 +62,7 @@ namespace War3Net.IO.Compression
                 inputStream.Dispose();
             }
 
-            return (uint)outputStream.Position;
+            return outputStream;
         }
 
         /// <summary>
@@ -80,7 +73,8 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, uint expectedLength)
         {
-            return Decompress(new MemoryStream(data), expectedLength);
+            using var memoryStream = new MemoryStream(data);
+            return Decompress(memoryStream, expectedLength);
         }
 
         /// <summary>
@@ -98,6 +92,7 @@ namespace War3Net.IO.Compression
             var inflater = new InflaterInputStream(data);
 #endif
             var offset = 0;
+
             // expectedLength makes this unable to be combined with other compression algorithms?
             var remaining = (int)expectedLength;
             while (remaining > 0)

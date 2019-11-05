@@ -262,11 +262,9 @@ namespace War3Net.IO.Mpq
             void TryCompress(uint bytes)
             {
                 var offset = baseStream.Position;
-                var compressedStream = new MemoryStream();
-
-                _ = compressionType switch
+                var compressedStream = compressionType switch
                 {
-                    MpqCompressionType.ZLib => ZLibCompression.CompressTo(baseStream, compressedStream, (int)bytes, true),
+                    MpqCompressionType.ZLib => ZLibCompression.Compress(baseStream, (int)bytes, true),
 
                     _ => throw new NotSupportedException(),
                 };
