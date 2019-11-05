@@ -13,19 +13,41 @@ namespace War3Net.IO.Compression
     /// <summary>
     /// A utility class for reading groups of bits from a stream.
     /// </summary>
-    internal class BitStream
+    public sealed class BitStream : IDisposable
     {
         private readonly Stream _baseStream;
+        private readonly bool _isStreamOwner;
+
         private int _current;
         private int _bitCount;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BitStream"/> class.
+        /// Initializes a new instance of the <see cref="BitStream"/> class for the specified stream.
         /// </summary>
         /// <param name="sourceStream">The stream to be read.</param>
         public BitStream(Stream sourceStream)
+            : this(sourceStream, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BitStream"/> class for the specified stream, and optionally leaves the stream open.
+        /// </summary>
+        /// <param name="sourceStream">The stream to be read.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the <paramref name="sourceStream"/> open after the <see cref="BitStream"/> object is disposed; otherwise, <see langword="false"/>.</param>
+        public BitStream(Stream sourceStream, bool leaveOpen)
         {
             _baseStream = sourceStream;
+            _isStreamOwner = !leaveOpen;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            if (_isStreamOwner)
+            {
+                _baseStream.Dispose();
+            }
         }
 
         /// <summary>
