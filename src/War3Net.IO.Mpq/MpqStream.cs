@@ -60,9 +60,9 @@ namespace War3Net.IO.Mpq
             _mode = MpqStreamMode.Read;
             _isStreamOwner = false;
 
-            _filePosition = entry.FilePosition!.Value;
+            _filePosition = entry.FilePosition;
             _fileSize = entry.FileSize;
-            _compressedSize = entry.CompressedSize!.Value;
+            _compressedSize = entry.CompressedSize;
             _flags = entry.Flags;
             _isCompressed = (_flags & MpqFileFlags.Compressed) != 0;
             _isEncrypted = _flags.HasFlag(MpqFileFlags.Encrypted);

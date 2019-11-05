@@ -51,7 +51,7 @@ namespace War3Net.IO.Mpq
                 {
                     for (var i = 0; i < size; i++)
                     {
-                        _entries.Add(new MpqEntry(streamReader, headerOffset));
+                        _entries.Add(MpqEntry.FromReader(streamReader, headerOffset));
                     }
                 }
             }
@@ -105,11 +105,6 @@ namespace War3Net.IO.Mpq
             if (entry is null)
             {
                 throw new ArgumentNullException(nameof(entry));
-            }
-
-            if (entry.FilePosition is null)
-            {
-                throw new InvalidOperationException($"Cannot add an {nameof(MpqEntry)} to the {nameof(BlockTable)} before its {nameof(MpqEntry.FilePosition)} is known.");
             }
 
             _entries.Add(entry);

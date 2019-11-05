@@ -24,28 +24,16 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public const uint Size = 16;
 
+        private readonly uint _compressedSize;
         private readonly uint _fileSize;
         private readonly MpqFileFlags _flags;
-
-        private uint? _compressedSize;
-        private uint _encryptionSeed;
-        private uint _baseEncryptionSeed;
+        private readonly uint _headerOffset;
+        private readonly uint _fileOffset;
 
         private string? _filename;
-        private uint? _headerOffset;
-        private uint? _fileOffset;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqEntry"/> class.
-        /// </summary>
-        /// <param name="br">The reader from which to read the entry.</param>
-        /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="br"/> is null.</exception>
-        internal MpqEntry(BinaryReader br, uint headerOffset)
-            : this(null, headerOffset, br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br)), br.ReadUInt32(), br.ReadUInt32(), (MpqFileFlags)br.ReadUInt32())
-        {
-            // TODO: create static parse method
-        }
+        private uint _encryptionSeed;
+        private uint _baseEncryptionSeed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqEntry"/> class.
@@ -56,7 +44,7 @@ namespace War3Net.IO.Mpq
         /// <param name="compressedSize">The compressed size of the file.</param>
         /// <param name="fileSize">The uncompressed size of the file.</param>
         /// <param name="flags">The file's <see cref="MpqFileFlags"/>.</param>
-        internal MpqEntry(string? filename, uint headerOffset, uint fileOffset,uint? compressedSize, uint fileSize, MpqFileFlags flags)
+        internal MpqEntry(string? filename, uint headerOffset, uint fileOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
         {
             _headerOffset = headerOffset;
             _fileOffset = fileOffset;
@@ -72,24 +60,9 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        /// Gets or sets the compressed file size of this <see cref="MpqEntry"/>.
+        /// Gets the compressed file size of this <see cref="MpqEntry"/>.
         /// </summary>
-#if NETCOREAPP3_0
-        [DisallowNull]
-#endif
-        public uint? CompressedSize
-        {
-            get => _compressedSize;
-            set
-            {
-                if (_compressedSize != null)
-                {
-                    throw new NotSupportedException("CompressedSize is read-only, because its value is currently not null.");
-                }
-
-                _compressedSize = value ?? throw new ArgumentNullException(nameof(value));
-            }
-        }
+        public uint CompressedSize => _compressedSize;
 
         /// <summary>
         /// Gets the uncompressed file size of this <see cref="MpqEntry"/>.
@@ -133,17 +106,17 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the containing <see cref="MpqArchive"/>'s header offset.
         /// </summary>
-        public uint? HeaderOffset => _headerOffset;
+        public uint HeaderOffset => _headerOffset;
 
         /// <summary>
         /// Gets the relative (to the <see cref="MpqHeader"/>) position of the file in the archive.
         /// </summary>
-        public uint? FileOffset => _fileOffset;
+        public uint FileOffset => _fileOffset;
 
         /// <summary>
         /// Gets the absolute position of this <see cref="MpqEntry"/>'s file in the base stream of the containing <see cref="MpqArchive"/>.
         /// </summary>
-        public uint? FilePosition => _headerOffset + _fileOffset;
+        public uint FilePosition => _headerOffset + _fileOffset;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="MpqEntry"/> has any of the <see cref="MpqFileFlags.Compressed"/> flags.
@@ -159,6 +132,18 @@ namespace War3Net.IO.Mpq
         /// Gets a value indicating whether this <see cref="MpqEntry"/> has the flag <see cref="MpqFileFlags.SingleUnit"/>.
         /// </summary>
         public bool IsSingleUnit => _flags.HasFlag(MpqFileFlags.SingleUnit);
+
+        public static MpqEntry Parse(Stream stream, uint headerOffset)
+        {
+            using var reader = new BinaryReader(stream);
+            return FromReader(reader, headerOffset);
+        }
+
+        public static MpqEntry FromReader(BinaryReader reader, uint headerOffset)
+        {
+            _ = reader ?? throw new ArgumentNullException(nameof(reader));
+            return new MpqEntry(null, headerOffset, reader.ReadUInt32(), reader.ReadUInt32(), reader.ReadUInt32(), (MpqFileFlags)reader.ReadUInt32());
+        }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -185,13 +170,8 @@ namespace War3Net.IO.Mpq
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            if (_fileOffset is null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            writer.Write((uint)_fileOffset);
-            writer.Write(_compressedSize!.Value);
+            writer.Write(_fileOffset);
+            writer.Write(_compressedSize);
             writer.Write(_fileSize);
             writer.Write((uint)_flags);
         }
@@ -211,7 +191,7 @@ namespace War3Net.IO.Mpq
             return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
         }
 
-        internal static uint CalculateEncryptionSeed(string? filename, uint? fileOffset, uint fileSize, MpqFileFlags flags)
+        internal static uint CalculateEncryptionSeed(string? filename, uint fileOffset, uint fileSize, MpqFileFlags flags)
         {
             if (filename is null)
             {
@@ -219,11 +199,6 @@ namespace War3Net.IO.Mpq
             }
 
             var blockOffsetAdjusted = flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
-            if (fileOffset is null)
-            {
-                return blockOffsetAdjusted ? 0 : CalculateEncryptionSeed(filename);
-            }
-
             var seed = CalculateEncryptionSeed(filename);
             if (blockOffsetAdjusted)
             {
@@ -250,7 +225,7 @@ namespace War3Net.IO.Mpq
 
             _encryptionSeed = result + 1;
             _baseEncryptionSeed = _flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey)
-                ? UnadjustEncryptionSeed(_encryptionSeed, _fileOffset!.Value, _fileSize)
+                ? UnadjustEncryptionSeed(_encryptionSeed, _fileOffset, _fileSize)
                 : _encryptionSeed;
 
             return true;

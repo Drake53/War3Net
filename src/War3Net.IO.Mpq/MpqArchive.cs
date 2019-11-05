@@ -388,7 +388,7 @@ namespace War3Net.IO.Mpq
                         var entry = blockTable[i];
                         if ((entry.Flags & MpqFileFlags.Garbage) == 0)
                         {
-                            var size = entry.CompressedSize!.Value;
+                            var size = entry.CompressedSize;
                             var flags = entry.Flags;
 
                             if (entry.IsEncrypted && entry.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
@@ -407,7 +407,7 @@ namespace War3Net.IO.Mpq
                             }
                             else
                             {
-                                sourceStream.Position = entry.FilePosition!.Value;
+                                sourceStream.Position = entry.FilePosition;
                                 writer.Write(reader.ReadBytes((int)size));
                             }
 
