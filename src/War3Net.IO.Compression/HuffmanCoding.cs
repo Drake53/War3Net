@@ -11,7 +11,7 @@ using System.IO;
 namespace War3Net.IO.Compression
 {
     /// <summary>
-    /// A decompressor for MPQ's huffman compression.
+    /// Provides methods to decompress Huffman compressed data.
     /// </summary>
     public static class HuffmanCoding
     {
@@ -158,7 +158,8 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data)
         {
-            return Decompress(new MemoryStream(data));
+            using var memoryStream = new MemoryStream(data);
+            return Decompress(memoryStream);
         }
 
         /// <summary>
@@ -172,14 +173,14 @@ namespace War3Net.IO.Compression
 
             if (comptype == 0)
             {
-                throw new NotImplementedException("Compression type 0 is not currently supported");
+                throw new NotImplementedException($"Compression type {comptype} is not currently supported");
             }
 
             var tail = BuildList(_sPrime[comptype]);
             var head = BuildTree(tail);
 
-            var outputstream = new MemoryStream();
-            var bitstream = new BitStream(data);
+            using var outputstream = new MemoryStream();
+            using var bitstream = new BitStream(data);
 
             while (true)
             {
@@ -211,7 +212,7 @@ namespace War3Net.IO.Compression
                 var bit = input.ReadBits(1);
                 if (bit == -1)
                 {
-                    throw new Exception("Unexpected end of file");
+                    throw new Exception($"Unexpected end of file");
                 }
 
                 node = bit == 0 ? node.Child0 : node.Child1;

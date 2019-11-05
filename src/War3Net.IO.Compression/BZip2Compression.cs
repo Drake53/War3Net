@@ -11,6 +11,9 @@ using ICSharpCode.SharpZipLib.BZip2;
 
 namespace War3Net.IO.Compression
 {
+    /// <summary>
+    /// Provides methods to decompress BZip2 compressed data.
+    /// </summary>
     public static class BZip2Compression
     {
         /// <summary>
@@ -21,7 +24,8 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, uint expectedLength)
         {
-            return Decompress(new MemoryStream(data), expectedLength);
+            using var memoryStream = new MemoryStream(data);
+            return Decompress(memoryStream, expectedLength);
         }
 
         /// <summary>

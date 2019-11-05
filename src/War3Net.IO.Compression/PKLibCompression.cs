@@ -11,7 +11,7 @@ using System.IO;
 namespace War3Net.IO.Compression
 {
     /// <summary>
-    /// A decompressor for PKLib implode/explode.
+    /// Provides methods to decompress PKLib compressed data.
     /// </summary>
     public static class PKLibCompression
     {
@@ -69,7 +69,8 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, uint expectedLength)
         {
-            return Decompress(new MemoryStream(data), expectedLength);
+            using var memoryStream = new MemoryStream(data);
+            return Decompress(memoryStream, expectedLength);
         }
 
         /// <summary>
@@ -80,12 +81,12 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(Stream data, uint expectedLength)
         {
-            var bitstream = new BitStream(data ?? throw new ArgumentNullException(nameof(data)));
+            using var bitstream = new BitStream(data ?? throw new ArgumentNullException(nameof(data)));
 
             var compressionType = (PKLibCompressionType)data.ReadByte();
             if (compressionType != PKLibCompressionType.Binary && compressionType != PKLibCompressionType.Ascii)
             {
-                throw new InvalidDataException("Invalid compression type: " + compressionType);
+                throw new InvalidDataException($"Invalid compression type: {compressionType}");
             }
 
             var dictSizeBits = data.ReadByte();
@@ -93,10 +94,8 @@ namespace War3Net.IO.Compression
             // This is 6 in test cases
             if (dictSizeBits < 4 || dictSizeBits > 6)
             {
-                throw new InvalidDataException("Invalid dictionary size: " + dictSizeBits);
+                throw new InvalidDataException($"Invalid dictionary size: {dictSizeBits}");
             }
-
-
 
             var outputbuffer = new byte[expectedLength];
             Stream outputstream = new MemoryStream(outputbuffer);
@@ -205,7 +204,7 @@ namespace War3Net.IO.Compression
                     }
 
                     // TODO: Text mode
-                    throw new NotImplementedException("Text mode is not yet implemented");
+                    throw new NotImplementedException($"Text mode is not yet implemented");
 
                 default:
                     return 0;

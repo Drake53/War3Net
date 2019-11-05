@@ -47,7 +47,8 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(byte[] data, int channelCount)
         {
-            return Decompress(new MemoryStream(data), channelCount);
+            using var memoryStream = new MemoryStream(data);
+            return Decompress(memoryStream, channelCount);
         }
 
         /// <summary>
