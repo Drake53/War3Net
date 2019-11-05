@@ -204,7 +204,7 @@ namespace War3Net.IO.Compression
                     }
 
                     // TODO: Text mode
-                    throw new NotImplementedException($"Text mode is not yet implemented");
+                    throw new NotImplementedException($"Text mode (compression of type {PKLibCompressionType.Ascii}) is not yet implemented");
 
                 default:
                     return 0;

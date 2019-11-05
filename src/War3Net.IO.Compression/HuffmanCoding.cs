@@ -215,7 +215,7 @@ namespace War3Net.IO.Compression
                     throw new Exception($"Unexpected end of file");
                 }
 
-                node = bit == 0 ? node.Child0 : node.Child1;
+                node = bit == 0 ? node.Child0! : node.Child1!;
             }
 
             return node;
@@ -294,16 +294,15 @@ namespace War3Net.IO.Compression
         // and adjusts the tree if needed
         private static void AdjustTree(LinkedNode newNode)
         {
-            var current = newNode;
+            LinkedNode? current = newNode;
 
             while (current != null)
             {
                 current.Weight++;
-                LinkedNode insertpoint;
-                LinkedNode prev;
+                LinkedNode? prev;
 
-                // Go backwards thru the list looking for the insertion point
-                insertpoint = current;
+                // Go backwards through the list looking for the insertion point
+                var insertpoint = current;
                 while (true)
                 {
                     prev = insertpoint.Prev;
