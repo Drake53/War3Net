@@ -59,7 +59,7 @@ namespace War3Net.IO.Compression
 #if NETCOREAPP3_0
         [DisallowNull]
 #endif
-        internal LinkedNode? Child1 => _child0._prev;
+        internal LinkedNode? Child1 => _child0?._prev;
 
         // TODO: This would be more efficient as a member of the other class
         // ie avoid the recursion
