@@ -158,7 +158,13 @@ namespace War3Net.IO.Mpq.Tests
             const string fileName = "war3map.lua";
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
-            using var outputArchive = inputArchive.ReplaceFile(fileName, null);
+            var newFile = MpqFile.New(null, fileName);
+
+            var mpqFiles = inputArchive.GetMpqFiles();
+            var oldFile = mpqFiles.FirstOrDefault(file => file.IsSameAs(newFile)) ?? throw new FileNotFoundException($"File not found: {fileName}");
+            var newFiles = mpqFiles.Select(file => ReferenceEquals(file, oldFile) ? newFile : file).ToArray();
+
+            using var outputArchive = MpqArchive.Create((Stream?)null, newFiles, (ushort)inputArchive.Header.HashTableSize, inputArchive.Header.BlockSize);
 
             Assert.IsTrue(outputArchive.FileExists(fileName, out var entryIndex));
             Assert.AreEqual(0U, outputArchive[entryIndex].FileSize);

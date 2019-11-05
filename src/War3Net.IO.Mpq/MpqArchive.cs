@@ -492,31 +492,6 @@ namespace War3Net.IO.Mpq
             return true;
         }
 
-#if !NET45
-        /// <summary>
-        /// Rebuild this <see cref="MpqArchive"/>'s stream with a single file in its archive replaced.
-        /// </summary>
-        /// <param name="filename">The internal filename of the file that will be replaced.</param>
-        /// <param name="fileStream">The content which will replace the original file content.</param>
-        /// <param name="locale">The locale of the file that will be replaced.</param>
-        /// <returns>A stream containing the edited archive.</returns>
-        public MpqArchive ReplaceFile(string filename, Stream? fileStream, MpqLocale locale = MpqLocale.Neutral)
-        {
-            var newFile = MpqFile.New(fileStream, filename);
-            newFile.Locale = locale;
-
-            var mpqFiles = GetMpqFiles();
-            var oldFile = mpqFiles.FirstOrDefault(file => file.IsSameAs(newFile)) ?? throw new FileNotFoundException($"File not found: {filename}");
-            var newFiles = mpqFiles.Select(file => ReferenceEquals(file, oldFile) ? newFile : file).ToArray();
-
-            /*using var newArchive =*/ return Create((Stream?)null, newFiles, (ushort)_mpqHeader.HashTableSize, _mpqHeader.BlockSize);
-            // newArchive._baseStream.Position = 0;
-            // newArchive._isStreamOwner = false;
-
-            // return newArchive._baseStream;
-        }
-#endif
-
         /// <summary>
         /// Opens an <see cref="MpqEntry"/> in the <see cref="MpqArchive"/>.
         /// </summary>
