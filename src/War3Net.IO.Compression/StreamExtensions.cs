@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 namespace War3Net.IO.Compression
@@ -14,6 +15,9 @@ namespace War3Net.IO.Compression
     /// </summary>
     public static class StreamExtensions
     {
+        /// <summary>
+        /// The default buffer size.
+        /// </summary>
         public const int DefaultBufferSize = 81920;
 
         /// <summary>
@@ -23,8 +27,13 @@ namespace War3Net.IO.Compression
         /// <param name="destination">The stream to which the contents of the current stream will be copied.</param>
         /// <param name="bytesToCopy">The amount of bytes to copy.</param>
         /// <param name="bufferSize">The size of the buffer. This value must be greater than zero.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="stream"/> and/or the <paramref name="destination"/> are <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="bufferSize"/> is less than zero.</exception>
         public static void CopyTo(this Stream stream, Stream destination, int bytesToCopy, int bufferSize)
         {
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
+            _ = destination ?? throw new ArgumentNullException(nameof(destination));
+
             var buffer = new byte[bufferSize];
             while (bytesToCopy > 0)
             {
@@ -48,8 +57,12 @@ namespace War3Net.IO.Compression
         /// <param name="copyOffset">The offset in the <paramref name="stream"/> from where to start copying.</param>
         /// <param name="bytesToCopy">The amount of bytes to copy.</param>
         /// <param name="bufferSize">The size of the buffer. This value must be greater than zero.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="stream"/> and/or the <paramref name="destination"/> are <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="bufferSize"/> is less than zero.</exception>
         public static void CopyTo(this Stream stream, Stream destination, long copyOffset, int bytesToCopy, int bufferSize)
         {
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
+
             stream.Position = copyOffset;
             stream.CopyTo(destination, bytesToCopy, bufferSize);
         }
