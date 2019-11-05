@@ -22,16 +22,23 @@ namespace War3Net.IO.Compression
         /// <summary>
         /// Initializes a new instance of the <see cref="BitStream"/> class.
         /// </summary>
+        /// <param name="sourceStream">The stream to be read.</param>
         public BitStream(Stream sourceStream)
         {
             _baseStream = sourceStream;
         }
 
+        /// <summary>
+        /// Read up to 16 bits from the underlying stream.
+        /// </summary>
+        /// <param name="bitCount">The amount of bits to read.</param>
+        /// <returns>The bits read, or -1 if at the end of the stream.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The value of <paramref name="bitCount"/> is greater than 16.</exception>
         public int ReadBits(int bitCount)
         {
             if (bitCount > 16)
             {
-                throw new ArgumentOutOfRangeException(nameof(bitCount), "Maximum BitCount is 16");
+                throw new ArgumentOutOfRangeException(nameof(bitCount), $"Maximum {nameof(bitCount)} is {16}");
             }
 
             if (!EnsureBits(bitCount))
@@ -44,6 +51,10 @@ namespace War3Net.IO.Compression
             return result;
         }
 
+        /// <summary>
+        /// Returns the next byte but does not consume it.
+        /// </summary>
+        /// <returns>The next byte to be read, or -1 if at the end of the stream.</returns>
         public int PeekByte()
         {
             return EnsureBits(8)
@@ -51,8 +62,14 @@ namespace War3Net.IO.Compression
                 : -1;
         }
 
-        public bool EnsureBits(int bitCount)
+        /// <summary>
+        /// Ensures a certain amount of bits are available, by reading from the underlying stream.
+        /// </summary>
+        /// <param name="bitCount">The amount of bits that must be available to read.</param>
+        /// <returns>True if the requested amount of bits are now available, false otherwise.</returns>
+        internal bool EnsureBits(int bitCount)
         {
+            // The requested amount of bits are already available.
             if (bitCount <= _bitCount)
             {
                 return true;
