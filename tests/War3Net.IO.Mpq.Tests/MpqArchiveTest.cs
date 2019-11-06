@@ -184,7 +184,7 @@ namespace War3Net.IO.Mpq.Tests
 
             for (var i = 0; i < inputArchive.Header.BlockTableSize; i++)
             {
-                inputArchive.BaseStream.Position = inputArchive[i].FilePosition + 8;
+                inputArchive.BaseStream.Position = inputArchive[i].FilePosition;
                 recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition;
 
                 var size1 = inputArchive[i].CompressedSize;
@@ -192,7 +192,9 @@ namespace War3Net.IO.Mpq.Tests
                 StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
             }
 
-            StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream);
+            inputArchive.BaseStream.Position = 0;
+            recreatedArchive.BaseStream.Position = 0;
+            StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, MpqHeader.Size);
         }
 
         private static IEnumerable<object[]> GetTestArchives()

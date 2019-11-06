@@ -15,26 +15,26 @@ namespace War3Net.IO.Mpq.Tests
 {
     internal static class StreamAssert
     {
-        internal static void AreEqual(Stream s1, Stream s2)
+        internal static void AreEqual(Stream expected, Stream actual)
         {
-            var size1 = s1.Length;
-            var size2 = s2.Length;
-            AreEqual(s1, s2, size1 > size2 ? size1 : size2);
+            var expectedSize = expected.Length;
+            var actualSize = actual.Length;
+            AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
-        internal static void AreEqual(Stream s1, Stream s2, long lengthToCheck)
+        internal static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
         {
-            Assert.IsTrue(AreStreamsEqual(s1, s2, lengthToCheck, out var message), message);
+            Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, out var message), message);
         }
 
-        private static bool AreStreamsEqual(Stream s1, Stream s2, long lengthToCheck, out string message)
+        private static bool AreStreamsEqual(Stream expected, Stream actual, long lengthToCheck, out string message)
         {
             var result = true;
             var incorrectBytes = 0;
             message = "\r\n";
 
-            var lengthRemaining1 = s1.Length - s1.Position;
-            var lengthRemaining2 = s2.Length - s2.Position;
+            var lengthRemaining1 = expected.Length - expected.Position;
+            var lengthRemaining2 = actual.Length - actual.Position;
 
             if (lengthRemaining1 == lengthRemaining2)
             {
@@ -53,15 +53,15 @@ namespace War3Net.IO.Mpq.Tests
             }
 
 #if BUFFER_STREAM_DATA
-            var data1 = new byte[lengthRemaining1];
-            if (s1.Read(data1, 0, (int)lengthRemaining1) != lengthRemaining1)
+            var data1 = new byte[lengthToCheck];
+            if (expected.Read(data1, 0, (int)lengthToCheck) != lengthToCheck)
             {
                 message += $"[Error]: Could not buffer stream 1.\r\n";
                 result = false;
             }
 
-            var data2 = new byte[lengthRemaining2];
-            if (s2.Read(data2, 0, (int)lengthRemaining2) != lengthRemaining2)
+            var data2 = new byte[lengthToCheck];
+            if (actual.Read(data2, 0, (int)lengthToCheck) != lengthToCheck)
             {
                 message += $"[Error]: Could not buffer stream 2.\r\n";
                 result = false;
@@ -79,7 +79,11 @@ namespace War3Net.IO.Mpq.Tests
                     incorrectBytes++;
                     if (incorrectBytes == 1)
                     {
+#if BUFFER_STREAM_DATA
+                        message += $"[Error]: First mismatch at byte {bytesRead} (expected {data1[bytesRead]}, actual {data2[bytesRead]})";
+#else
                         message += $"[Error]: First mismatch at byte {bytesRead}";
+#endif
                         result = false;
                     }
                 }
@@ -87,7 +91,7 @@ namespace War3Net.IO.Mpq.Tests
 
             if (incorrectBytes > 0)
             {
-                message += $", {incorrectBytes}/{lengthToCheck} bytes were incorrect";
+                message += $", {100 * incorrectBytes / (float)lengthToCheck}% of {lengthToCheck} bytes were incorrect";
             }
 
             return result;
