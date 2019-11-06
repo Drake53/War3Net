@@ -63,11 +63,11 @@ namespace War3Net.IO.Mpq
 
             _mpqHeader = mpqHeader;
             _blockSize = BlockSizeModifier << _mpqHeader.BlockSize;
-            _archiveFollowsHeader = IsArchiveAfterHeader();
+            _archiveFollowsHeader = _mpqHeader.IsArchiveAfterHeader();
 
-            if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
+            if (_mpqHeader.MpqVersion != 0)
             {
-                throw new MpqParserException("MPQ format version 1 features are not supported");
+                throw new MpqParserException($"MPQ format version {_mpqHeader.MpqVersion} is not supported");
             }
 
             using (var reader = new BinaryReader(_baseStream, new UTF8Encoding(), true))
@@ -128,7 +128,7 @@ namespace War3Net.IO.Mpq
                 {
                     if (mpqFixedPositionFiles.First()!.MpqStream.FilePosition < 0)
                     {
-                        throw new NotSupportedException("Cannot place files in front of the header.");
+                        throw new NotSupportedException($"Cannot place files in front of the header.");
                     }
 
                     foreach (var mpqFixedPositionFile in mpqFixedPositionFiles)
@@ -136,7 +136,7 @@ namespace War3Net.IO.Mpq
                         var position = mpqFixedPositionFile.MpqStream.FilePosition;
                         if (position < endOfStream)
                         {
-                            throw new ArgumentException("Fixed position files overlap with each other and/or the header. Archive cannot be created.", nameof(inputFiles));
+                            throw new ArgumentException($"Fixed position files overlap with each other and/or the header. Archive cannot be created.", nameof(inputFiles));
                         }
 
                         if (position > endOfStream)
@@ -261,7 +261,7 @@ namespace War3Net.IO.Mpq
             }
             catch (Exception exception)
             {
-                throw new IOException($"Failed to open the {nameof(MpqArchive)}", exception);
+                throw new IOException($"Failed to open the {nameof(MpqArchive)} at {path}", exception);
             }
 
             return Open(fileStream, loadListfile);
@@ -299,7 +299,7 @@ namespace War3Net.IO.Mpq
             }
             catch (Exception exception)
             {
-                throw new IOException($"Failed to create a {nameof(FileStream)}", exception);
+                throw new IOException($"Failed to create a {nameof(FileStream)} at {path}", exception);
             }
 
             return Create(fileStream, mpqFiles, hashTableSize, blockSize);
@@ -345,12 +345,12 @@ namespace War3Net.IO.Mpq
 
             if (!TryLocateMpqHeader(sourceStream, out var mpqHeader, out var headerOffset))
             {
-                throw new MpqParserException("Unable to locate MPQ header.");
+                throw new MpqParserException($"Unable to locate MPQ header.");
             }
 
-            if (mpqHeader.HashTableOffsetHigh != 0 || mpqHeader.ExtendedBlockTableOffset != 0 || mpqHeader.BlockTableOffsetHigh != 0)
+            if (mpqHeader.MpqVersion != 0)
             {
-                throw new MpqParserException("MPQ format version 1 features are not supported");
+                throw new MpqParserException($"MPQ format version {mpqHeader.MpqVersion} is not supported");
             }
 
             var memoryStream = new MemoryStream();
@@ -366,7 +366,7 @@ namespace War3Net.IO.Mpq
                         ? mpqHeader.BlockTablePosition < mpqHeader.HeaderOffset
                             ? (mpqHeader.HeaderOffset - mpqHeader.BlockTablePosition) / MpqEntry.Size
                             : (uint)(sourceStream.Length - sourceStream.Position) / MpqEntry.Size
-                        : throw new MpqParserException("Unable to determine true BlockTable size.")
+                        : throw new MpqParserException($"Unable to determine true BlockTable size.")
                     : mpqHeader.BlockTableSize;
 
                 var hashTable = (HashTable?)null;
@@ -458,7 +458,7 @@ namespace War3Net.IO.Mpq
             var mpqHash = _hashTable[hashTableIndex];
             if (mpqHash.IsEmpty || mpqHash.IsDeleted)
             {
-                throw new ArgumentException($"The {nameof(MpqHash.BlockIndex)} of the {nameof(MpqHash)} at the given index does not point to an {nameof(MpqEntry)}.", nameof(hashTableIndex));
+                throw new ArgumentException($"The {nameof(MpqHash)} at the given index is {(mpqHash.IsDeleted ? "deleted" : "empty")}.", nameof(hashTableIndex));
             }
 
             return _blockTable[mpqHash.BlockIndex];
@@ -617,11 +617,12 @@ namespace War3Net.IO.Mpq
             return exists;
         }
 
-#if !NET45
         // TODO: set hashCollisions values (currently they're always set to 0)
         public IEnumerable<MpqFile> GetMpqFiles()
         {
-            var pairs = new Dictionary<MpqEntry, (uint, MpqFile)>();
+            // var pairs = new Dictionary<MpqEntry, (uint index, MpqFile file)>();
+            var files = new MpqFile[_blockTable.Size]; // array assumes there's no more than one mpqhash for every mpqentry
+            var addedEntries = new HashSet<MpqEntry>();
             var deletedIndices = new Queue<int>();
 
             for (var hashIndex = 0; hashIndex < _hashTable.Size; hashIndex++)
@@ -629,22 +630,25 @@ namespace War3Net.IO.Mpq
                 var mpqHash = _hashTable[hashIndex];
                 if (!mpqHash.IsEmpty)
                 {
-                    var entry = mpqHash.IsDeleted ? null : _blockTable[mpqHash.BlockIndex];
+                    var mpqEntry = mpqHash.IsDeleted ? null : _blockTable[mpqHash.BlockIndex];
 
-                    if (entry != null)
+                    if (mpqEntry != null)
                     {
-                        var stream = mpqHash.IsDeleted ? null : OpenFile(entry);
-                        var mpqFile = entry.Filename is null
-                            ? MpqFile.New(stream, mpqHash, (uint)hashIndex, 0, entry.BaseEncryptionSeed)
-                            : MpqFile.New(stream, entry.Filename);
+                        var stream = mpqHash.IsDeleted ? null : OpenFile(mpqEntry);
+                        var mpqFile = mpqEntry.Filename is null
+                            ? MpqFile.New(stream, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
+                            : MpqFile.New(stream, mpqEntry.Filename);
 
-                        mpqFile.TargetFlags = entry.Flags;
-                        if (entry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
+                        mpqFile.TargetFlags = mpqEntry.Flags;
+                        if (mpqEntry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
                         {
                             mpqFile.Locale = mpqHash.Locale;
                         }
 
-                        pairs.Add(entry, (mpqHash.BlockIndex, mpqFile));
+                        // pairs.Add(mpqEntry, (mpqHash.BlockIndex, mpqFile));
+                        // files.Add(mpqHash.BlockIndex, mpqFile);
+                        files[mpqHash.BlockIndex] = mpqFile;
+                        addedEntries.Add(mpqEntry);
                     }
                     else
                     {
@@ -656,7 +660,8 @@ namespace War3Net.IO.Mpq
             var blockIndex = 0U;
             foreach (var mpqEntry in this)
             {
-                if (!pairs.ContainsKey(mpqEntry))
+                //if (!pairs.ContainsKey(mpqEntry))
+                if (!addedEntries.Contains(mpqEntry))
                 {
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
@@ -670,15 +675,18 @@ namespace War3Net.IO.Mpq
                         mpqFile.Locale = mpqHash.Locale;
                     }
 
-                    pairs.Add(mpqEntry, (blockIndex, mpqFile));
+                    // pairs.Add(mpqEntry, (blockIndex, mpqFile));
+                    // files.Add(blockIndex, mpqFile);
+                    files[blockIndex] = mpqFile;
                 }
 
                 blockIndex++;
             }
 
-            return pairs.OrderBy(pair => pair.Value.Item1).Select(pair => pair.Value.Item2);
+            // return pairs.OrderBy(pair => pair.Value.index).Select(pair => pair.Value.file);
+            // return files.Values;
+            return files;
         }
-#endif
 
         /// <inheritdoc/>
         public void Dispose()
@@ -854,11 +862,6 @@ namespace War3Net.IO.Mpq
                 && _mpqHeader.BlockTableSize == _blockTable.Size
                 && _mpqHeader.BlockSize == _blockSize >> BlockSizeModifier;
         }*/
-
-        private bool IsArchiveAfterHeader()
-        {
-            return _mpqHeader.IsArchiveAfterHeader();
-        }
 
         /*private uint FindCollidingHashEntries( uint hashIndex, bool returnOnUnknown )
         {

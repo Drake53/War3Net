@@ -94,7 +94,11 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the format version of the .mpq file. Currently, only version 0 is supported.
         /// </summary>
-        public ushort MpqVersion { get; private set; } // Most are 0.  Burning Crusade = 1
+        /// <remarks>
+        /// Starting with World of Warcraft Burning Crusade, the version is 1.
+        /// Currently, only version 0 is supported.
+        /// </remarks>
+        public ushort MpqVersion { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="MpqArchive"/>'s block size.
@@ -121,14 +125,6 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public uint BlockTableSize { get; private set; }
 
-        // Version 1 fields
-        // The extended block table is an array of Int16 - higher bits of the offests in the block table.
-        public long ExtendedBlockTableOffset { get; private set; }
-
-        public short HashTableOffsetHigh { get; private set; }
-
-        public short BlockTableOffsetHigh { get; private set; }
-
         /// <summary>
         /// Gets the offset of this <see cref="MpqHeader"/>, relative to the start of the base stream.
         /// </summary>
@@ -150,63 +146,76 @@ namespace War3Net.IO.Mpq
         public uint BlockTablePosition => BlockTableOffset + HeaderOffset;
 
         /// <summary>
+        /// Reads from the given stream to create a new MPQ header.
+        /// </summary>
+        /// <param name="stream">The stream from which to read.</param>
+        /// <returns>The parsed <see cref="MpqHeader"/>.</returns>
+        public static MpqHeader Parse(Stream stream)
+        {
+            using var reader = new BinaryReader(stream);
+            return FromReader(reader);
+        }
+
+        /// <summary>
         /// Reads from the given reader to create a new MPQ header.
         /// </summary>
-        /// <param name="br"></param>
-        /// <returns></returns>
-        public static MpqHeader FromReader(BinaryReader br)
+        /// <param name="reader">The reader from which to read.</param>
+        /// <returns>The parsed <see cref="MpqHeader"/>.</returns>
+        public static MpqHeader FromReader(BinaryReader reader)
         {
-            var id = br?.ReadUInt32() ?? throw new ArgumentNullException(nameof(br));
+            var id = reader?.ReadUInt32() ?? throw new ArgumentNullException(nameof(reader));
             if (id != MpqId)
             {
-                throw new MpqParserException("");
+                throw new MpqParserException($"Invalid MPQ header signature: {id}");
             }
 
             var header = new MpqHeader
             {
                 ID = id,
-                DataOffset = br.ReadUInt32(),
-                ArchiveSize = br.ReadUInt32(),
-                MpqVersion = br.ReadUInt16(),
-                BlockSize = br.ReadUInt16(),
-                HashTableOffset = br.ReadUInt32(),
-                BlockTableOffset = br.ReadUInt32(),
-                HashTableSize = br.ReadUInt32(),
-                BlockTableSize = br.ReadUInt32(),
+                DataOffset = reader.ReadUInt32(),
+                ArchiveSize = reader.ReadUInt32(),
+                MpqVersion = reader.ReadUInt16(),
+                BlockSize = reader.ReadUInt16(),
+                HashTableOffset = reader.ReadUInt32(),
+                BlockTableOffset = reader.ReadUInt32(),
+                HashTableSize = reader.ReadUInt32(),
+                BlockTableSize = reader.ReadUInt32(),
             };
 
 #if DEBUG
             if (header.MpqVersion == 0)
             {
                 // Check validity
-                // TODO: deal with protected archive DataOffset value.
                 if (header.DataOffset != Size)
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: DataOffset. Was {0}, expected {1}", header.DataOffset, Size));
+                    throw new MpqParserException($"Invalid MPQ header field: DataOffset. Was {header.DataOffset}, expected {Size}");
                 }
 
                 if (header.ArchiveSize != header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: ArchiveSize. Was {0}, expected {1}", header.ArchiveSize, header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize)));
+                    throw new MpqParserException($"Invalid MPQ header field: ArchiveSize. Was {header.ArchiveSize}, expected {header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize)}");
                 }
 
                 if (header.HashTableOffset != header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: HashTablePos. Was {0}, expected {1}", header.HashTableOffset, header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)));
+                    throw new MpqParserException($"Invalid MPQ header field: HashTablePos. Was {header.HashTableOffset}, expected {header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)}");
                 }
 
                 if (header.BlockTableOffset != header.HashTableOffset + (MpqHash.Size * header.HashTableSize))
                 {
-                    throw new MpqParserException(string.Format("Invalid MPQ header field: BlockTablePos. Was {0}, expected {1}", header.BlockTableOffset, header.HashTableOffset + (MpqHash.Size * header.HashTableSize)));
+                    throw new MpqParserException($"Invalid MPQ header field: BlockTablePos. Was {header.BlockTableOffset}, expected {header.HashTableOffset + (MpqHash.Size * header.HashTableSize)}");
                 }
             }
 #endif
 
-            if (header.MpqVersion == 1)
+            if (header.MpqVersion != 0)
             {
-                header.ExtendedBlockTableOffset = br.ReadInt64();
-                header.HashTableOffsetHigh = br.ReadInt16();
-                header.BlockTableOffsetHigh = br.ReadInt16();
+                throw new NotSupportedException($"MPQ format version {header.MpqVersion} is not supported");
+
+                // The extended block table is an array of Int16 - higher bits of the offests in the block table.
+                // header.ExtendedBlockTableOffset = br.ReadInt64();
+                // header.HashTableOffsetHigh = br.ReadInt16();
+                // header.BlockTableOffsetHigh = br.ReadInt16();
             }
 
             return header;
@@ -237,7 +246,7 @@ namespace War3Net.IO.Mpq
 
         internal bool IsArchiveAfterHeader()
         {
-            return DataOffset == MpqHeader.Size || HashTableOffset != MpqHeader.Size;
+            return DataOffset == Size || HashTableOffset != Size;
         }
     }
 }
