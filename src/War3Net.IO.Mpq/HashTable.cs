@@ -89,7 +89,7 @@ namespace War3Net.IO.Mpq
 
             if (size != GenerateMask(size) + 1)
             {
-                throw new ArgumentException("Size must be a power of two.", nameof(size));
+                throw new ArgumentException($"Size must be a power of two.", nameof(size));
             }
 
             _hashes = new MpqHash[size];
@@ -181,37 +181,7 @@ namespace War3Net.IO.Mpq
         /// </returns>
         public uint Add(MpqHash hash, uint hashIndex, uint hashCollisions)
         {
-            var step = hash.Mask + 1;
-
-            var known = step > _mask;
-            /*Console.WriteLine(
-                "Adding file #{0} to hashtable, which is {1} file{2}.",
-                hash.BlockIndex,
-                known ? "a known" : "an unknown",
-                known ? string.Empty : $" found at index {hashIndex} with up to {hashCollisions} collisions");*/
-
-            // If the hash.Mask is smaller than the hashtable's size, this file came from another archive and has an unknown filename.
-            // By passing both the mask and the hashIndex corresponding to that mask, can figure out all hashIndices where this file may belong.
-            return AddEntry(hash, hashIndex, hashCollisions, step);
-
-            // For files with unknown filename, it's also possible that the index at which they were found in the HashTable is not their true index.
-            // This is because there may have been StringHash collisions in the HashTable.
-            // To deal with this, mark the empty entries in this hashtable, where this file's true hashIndex may be located, as deleted.
-            while (hashCollisions > 0)
-            {
-                if (hashIndex == 0)
-                {
-                    hashIndex = step;
-                }
-
-                /** NOTE: replacing AddEntry with AddDeleted is only possible if passing true to the returnOnUnknown argument of method <see cref="MpqArchive.FindCollidingHashEntries"/> */
-
-                AddDeleted(--hashIndex, step);
-                // AddEntry( hash, --hashIndex, step );
-                hashCollisions--;
-            }
-
-            return Size / step;
+            return AddEntry(hash, hashIndex, hashCollisions, hash.Mask + 1);
         }
 
         /// <summary>
@@ -222,31 +192,6 @@ namespace War3Net.IO.Mpq
         protected override void WriteEntry(BinaryWriter writer, int i)
         {
             _hashes[i].WriteTo(writer);
-        }
-
-        [Obsolete]
-        private void AddDeleted(uint hashIndex, uint step)
-        {
-            for (var i = hashIndex; i <= _mask; i += step)
-            {
-                if (_hashes[i].IsEmpty)
-                {
-                    Console.WriteLine("Marked index {0} as deleted.", i);
-                    _hashes[i] = MpqHash.DELETED;
-                }
-                else if (_hashes[i].IsDeleted)
-                {
-                    Console.WriteLine("Index {0} was already marked as deleted.", i);
-                }
-                else if (_hashes[i].Mask == step - 1)
-                {
-                    Console.WriteLine("Index {0} is reserved for another unknown file.", i);
-                }
-                else
-                {
-                    Console.WriteLine("A known file is already located at index {0}.", i);
-                }
-            }
         }
 
         private uint AddEntry(MpqHash hash, uint hashIndex, uint hashCollisions, uint step)
