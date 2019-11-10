@@ -77,7 +77,10 @@ namespace War3Net.Build.Script
             var lib = string.Empty;
             if (csproj is null)
             {
-                var packageLibs = PackageHelper.GetLibs("War3Api.Common", "*").Concat(PackageHelper.GetLibs("War3Api.Blizzard", "*"));
+                var packageLibs =
+                    PackageHelper.GetLibs("War3Api.Common", "*").Concat(
+                    PackageHelper.GetLibs("War3Api.Blizzard", "*").Concat(
+                    PackageHelper.GetLibs("War3Net.CodeAnalysis.Common", "*")));
                 lib = packageLibs.Aggregate((accum, next) => $"{accum};{next}");
             }
 
