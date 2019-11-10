@@ -13,4 +13,12 @@
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="TestData\Script\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.0.1" />
+  </ItemGroup>
+
 </Project>
