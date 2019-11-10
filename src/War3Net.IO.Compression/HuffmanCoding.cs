@@ -206,13 +206,12 @@ namespace War3Net.IO.Compression
         private static LinkedNode Decode(BitStream input, LinkedNode head)
         {
             var node = head;
-
             while (node.Child0 != null)
             {
                 var bit = input.ReadBits(1);
                 if (bit == -1)
                 {
-                    throw new Exception($"Unexpected end of file");
+                    throw new InvalidDataException($"Unexpected end of file");
                 }
 
                 node = bit == 0 ? node.Child0! : node.Child1!;
@@ -239,6 +238,8 @@ namespace War3Net.IO.Compression
             return root;
         }
 
+#nullable disable
+
         private static LinkedNode BuildTree(LinkedNode tail)
         {
             var current = tail;
@@ -264,10 +265,12 @@ namespace War3Net.IO.Compression
             return current;
         }
 
+#nullable restore
+
         private static LinkedNode InsertNode(LinkedNode tail, int decomp)
         {
             var parent = tail;
-            var result = tail.Prev; // This will be the new tail after the tree is updated
+            var result = tail.Prev!; // This will be the new tail after the tree is updated
 
             var temp = new LinkedNode(parent.DecompressedValue, parent.Weight);
             temp.Parent = parent;
@@ -326,6 +329,8 @@ namespace War3Net.IO.Compression
                     continue;
                 }
 
+#nullable disable
+
                 // The following code basicly swaps insertpoint with current
 
                 // remove insert point
@@ -370,6 +375,8 @@ namespace War3Net.IO.Compression
                 {
                     insertparent.Child0 = current;
                 }
+
+#nullable restore
 
                 current.Parent = insertparent;
                 insertpoint.Parent = currentparent;

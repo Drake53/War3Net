@@ -37,7 +37,7 @@ namespace War3Net.IO.Compression
             var outputStream = new MemoryStream();
 
 #if USING_DOTNETZIP
-            using (var deflater = new ZlibStream(outputStream, CompressionMode.Compress, true))
+            using (var deflater = new ZlibStream(outputStream, CompressionMode.Compress, CompressionLevel.BestCompression, true))
             {
                 inputStream.CopyTo(deflater, bytes, StreamExtensions.DefaultBufferSize);
             }

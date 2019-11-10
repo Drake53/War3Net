@@ -5,6 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1600
+#pragma warning disable SA1611
+
 #if NETCOREAPP3_0
 using System.Diagnostics.CodeAnalysis;
 #endif
