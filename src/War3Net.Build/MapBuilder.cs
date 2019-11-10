@@ -208,7 +208,21 @@ namespace War3Net.Build
 
             if (generateListfile)
             {
-                var listfilePath = Path.Combine(compilerOptions.OutputDirectory, ListFile.Key);
+                using var listFile = new ListFile(files.Select(file => file.Key.fileName));
+                listFile.Finish(true);
+
+                if (files.ContainsKey((ListFile.Key, MpqLocale.Neutral)))
+                {
+                    files[(ListFile.Key, MpqLocale.Neutral)].Dispose();
+                    files.Remove((ListFile.Key, MpqLocale.Neutral));
+                }
+
+                files.Add((ListFile.Key, MpqLocale.Neutral), listFile.BaseStream);
+
+                using var fileStream = File.Create(Path.Combine(compilerOptions.OutputDirectory, ListFile.Key));
+                listFile.BaseStream.CopyTo(fileStream);
+
+                /*var listfilePath = Path.Combine(compilerOptions.OutputDirectory, ListFile.Key);
                 using (var listfileStream = File.Create(listfilePath))
                 {
                     using (var streamWriter = new StreamWriter(listfileStream, new UTF8Encoding(false)))
@@ -226,7 +240,7 @@ namespace War3Net.Build
                     files.Remove((ListFile.Key, MpqLocale.Neutral));
                 }
 
-                files.Add((ListFile.Key, MpqLocale.Neutral), File.OpenRead(listfilePath));
+                files.Add((ListFile.Key, MpqLocale.Neutral), File.OpenRead(listfilePath));*/
             }
 
             // Generate mpq files

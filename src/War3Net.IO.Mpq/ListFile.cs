@@ -24,6 +24,7 @@ namespace War3Net.IO.Mpq
 
         private readonly Stream _baseStream;
         private bool _readOnly;
+        private bool _isStreamOwner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListFile"/> class.
@@ -34,6 +35,7 @@ namespace War3Net.IO.Mpq
         {
             _baseStream = new MemoryStream();
             _readOnly = false;
+            _isStreamOwner = true;
 
             using (var writer = GetWriter())
             {
@@ -42,8 +44,6 @@ namespace War3Net.IO.Mpq
                     writer.WriteLine(fileName);
                 }
             }
-
-            _baseStream.Position = 0;
         }
 
         /// <summary>
@@ -57,6 +57,11 @@ namespace War3Net.IO.Mpq
         /// <param name="fileName">The file path to append.</param>
         public void WriteFile(string fileName)
         {
+            if (_readOnly)
+            {
+                throw new InvalidOperationException($"Cannot write to the ListFile, because it's read-only.");
+            }
+
             using (var writer = GetWriter())
             {
                 writer.WriteLine(fileName);
@@ -66,10 +71,21 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Make the <see cref="ListFile"/> read-only.
         /// </summary>
-        public void Finish()
+        /// <param name="transferOwnership">If true, the <see cref="ListFile"/> will no longer be the stream owner, so the <see cref="BaseStream"/> won't be disposed.</param>
+        public void Finish(bool transferOwnership = false)
         {
+            if (_readOnly)
+            {
+                throw new InvalidOperationException($"Called the Finish method twice.");
+            }
+
             _baseStream.Position = 0;
             _readOnly = true;
+
+            if (transferOwnership)
+            {
+                _isStreamOwner = false;
+            }
         }
 
         /// <summary>
@@ -77,14 +93,15 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public void Dispose()
         {
-            _baseStream.Dispose();
+            if (_isStreamOwner)
+            {
+                _baseStream.Dispose();
+            }
         }
 
         private StreamWriter GetWriter()
         {
-            return _readOnly
-                ? throw new InvalidOperationException($"Cannot obtain a {nameof(StreamWriter)} for this {nameof(ListFile)}, because it's read-only.")
-                : new StreamWriter(_baseStream, new UTF8Encoding(false, true), 1024, true);
+            return new StreamWriter(_baseStream, new UTF8Encoding(false, true), 1024, true);
         }
     }
 }
