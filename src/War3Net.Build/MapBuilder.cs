@@ -9,10 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
-using CSharpLua;
-
+using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
@@ -101,11 +99,8 @@ namespace War3Net.Build
             if (compilerOptions.MapInfo != null)
             {
                 var path = Path.Combine(compilerOptions.OutputDirectory, MapInfo.FileName);
-                using (var fileStream = File.Create(path))
-                {
-                    compilerOptions.MapInfo.SerializeTo(fileStream);
-                }
-
+                using var fileStream = File.Create(path);
+                compilerOptions.MapInfo.SerializeTo(fileStream);
                 files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
             }
             else
@@ -113,6 +108,14 @@ namespace War3Net.Build
                 // TODO: set MapInfo by parsing war3map.w3i from assetsDirectories, because it's needed for compilation.
                 // compilerOptions.MapInfo = ...;
                 throw new NotImplementedException();
+            }
+
+            if (compilerOptions.MapEnvironment != null)
+            {
+                var path = Path.Combine(compilerOptions.OutputDirectory, MapEnvironment.FileName);
+                using var fileStream = File.Create(path);
+                compilerOptions.MapEnvironment.SerializeTo(fileStream);
+                files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
             }
 
             /*var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };

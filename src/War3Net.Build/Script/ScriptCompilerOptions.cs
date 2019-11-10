@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.IO.Mpq;
 
@@ -33,6 +34,8 @@ namespace War3Net.Build.Script
         public ScriptBuilderOptions BuilderOptions { get; set; }
 
         public MapInfo MapInfo { get; set; }
+
+        public MapEnvironment MapEnvironment { get; set; }
 
         public string LobbyMusic { get; set; }
 
