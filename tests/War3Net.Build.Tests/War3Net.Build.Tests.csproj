@@ -6,19 +6,17 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
+    <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
+    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="TestData\Script\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
