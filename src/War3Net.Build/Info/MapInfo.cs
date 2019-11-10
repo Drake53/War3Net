@@ -66,7 +66,7 @@ namespace War3Net.Build.Info
         private float _fogDensity;
         private Color _fogColor;
 
-        private int _globalWeather;
+        private WeatherType _globalWeather;
         private string _soundEnvironment;
         private Tileset _lightEnvironment;
         private Color _waterTintingColor;
@@ -273,8 +273,7 @@ namespace War3Net.Build.Info
             set => _fogColor = value;
         }
 
-        // TODO: enum
-        public int GlobalWeather
+        public WeatherType GlobalWeather
         {
             get => _globalWeather;
             set => _globalWeather = value;
@@ -364,7 +363,7 @@ namespace War3Net.Build.Info
                 info._fogDensity = 0.5f;
                 info._fogColor = Color.Black;
 
-                info._globalWeather = 0;
+                info._globalWeather = WeatherType.None;
                 info._soundEnvironment = null;
                 info._lightEnvironment = 0;
                 info._waterTintingColor = Color.White;
@@ -462,7 +461,7 @@ namespace War3Net.Build.Info
                     info._fogDensity = reader.ReadSingle();
                     info._fogColor = reader.ReadColorRgba();
 
-                    info._globalWeather = reader.ReadInt32();
+                    info._globalWeather = (WeatherType)reader.ReadInt32();
                     info._soundEnvironment = reader.ReadChars();
                     info._lightEnvironment = (Tileset)reader.ReadChar();
                     info._waterTintingColor = reader.ReadColorRgba();
@@ -584,7 +583,7 @@ namespace War3Net.Build.Info
                     writer.Write(_fogColor.B);
                     writer.Write(_fogColor.A);
 
-                    writer.Write(_globalWeather);
+                    writer.Write((int)_globalWeather);
                     writer.WriteString(_soundEnvironment);
                     writer.Write((char)_lightEnvironment);
 
