@@ -41,7 +41,7 @@ namespace War3Net.IO.Mpq
         BlockOffsetAdjustedKey = 0x00020000,
 
         /// <summary>
-        ///
+        /// Not supported by Warcraft III maps.
         /// </summary>
         SingleUnit = 0x01000000,
 

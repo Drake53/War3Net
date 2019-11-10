@@ -13,6 +13,7 @@ namespace War3Net.IO.Mpq
 {
     public static class MpqLocaleProvider
     {
+#pragma warning disable SA1600
         public const string ChineseLocaleDirectory = "zh-TW";
         public const string CzechLocaleDirectory = "cs";
         public const string GermanLocaleDirectory = "de";
@@ -26,6 +27,7 @@ namespace War3Net.IO.Mpq
         public const string PortugueseLocaleDirectory = "pt";
         public const string RussianLocaleDirectory = "ru";
         public const string BritishLocaleDirectory = "en-GB";
+#pragma warning restore SA1600
 
         private static readonly Lazy<Dictionary<string, MpqLocale>> _localeLookupDictionary = new Lazy<Dictionary<string, MpqLocale>>(GetMpqLocaleStrings);
 

@@ -648,7 +648,7 @@ namespace War3Net.IO.Mpq
                         // pairs.Add(mpqEntry, (mpqHash.BlockIndex, mpqFile));
                         // files.Add(mpqHash.BlockIndex, mpqFile);
                         files[mpqHash.BlockIndex] = mpqFile;
-                        addedEntries.Add(mpqEntry);
+                        addedEntries.Add(mpqEntry); // TODO: use returned bool to check 'duplicate' mpqhashes (which have same blockindex)
                     }
                     else
                     {

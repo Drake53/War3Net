@@ -89,7 +89,7 @@ namespace War3Net.IO.Mpq
 
             if (size != GenerateMask(size) + 1)
             {
-                throw new ArgumentException($"Size must be a power of two.", nameof(size));
+                throw new ArgumentException($"Size {size} is not a power of two.", nameof(size));
             }
 
             _hashes = new MpqHash[size];
