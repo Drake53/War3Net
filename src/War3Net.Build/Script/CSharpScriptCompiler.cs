@@ -71,9 +71,18 @@ namespace War3Net.Build.Script
             // var csc = Options.Debug ? "-debug:full -define:DEBUG" : null;
             var csc = Options.Debug ? "-define:DEBUG" : null;
 
-            var input = Directory.EnumerateFiles(Options.SourceDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? Options.SourceDirectory;
+            var csproj = Directory.EnumerateFiles(Options.SourceDirectory, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+            var input = csproj ?? Options.SourceDirectory;
+
+            var lib = string.Empty;
+            if (csproj is null)
+            {
+                var packageLibs = PackageHelper.GetLibs("War3Api.Common", "*").Concat(PackageHelper.GetLibs("War3Api.Blizzard", "*"));
+                lib = packageLibs.Aggregate((accum, next) => $"{accum};{next}");
+            }
+
             // var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
-            var compiler = new Compiler(input, Options.OutputDirectory, null, null, csc, false, null, exportEnums ? string.Empty : null)
+            var compiler = new Compiler(input, Options.OutputDirectory, lib, null, csc, false, null, exportEnums ? string.Empty : null)
             {
                 IsExportMetadata = false,
                 IsModule = false,
