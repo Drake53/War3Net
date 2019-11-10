@@ -61,7 +61,7 @@ namespace War3Net.Build.Providers
                     mapInfo.FogColor.B / 255f);
             }
 
-            if (mapInfo.GlobalWeather != 0)
+            if (mapInfo.GlobalWeather != WeatherType.None)
             {
                 yield return builder.GenerateAddWeatherEffectStatement(
                     nameof(War3Api.Common.AddWeatherEffect),
@@ -72,7 +72,7 @@ namespace War3Net.Build.Providers
                     -999999,
                     999999,
                     999999,
-                    mapInfo.GlobalWeather);
+                    (int)mapInfo.GlobalWeather);
             }
 
             yield return builder.GenerateInvocationStatementWithStringArgument(
