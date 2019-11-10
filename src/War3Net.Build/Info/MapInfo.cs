@@ -315,6 +315,86 @@ namespace War3Net.Build.Info
 
         public int RandomItemTableCount => _itemTables.Count;
 
+        public static MapInfo Default
+        {
+            get
+            {
+                var info = new MapInfo();
+
+                info._fileFormatVersion = MapInfoFormatVersion.Lua;
+                info._mapVersion = 1;
+                info._editorVersion = 0x304E3357; // [W]ar[3][N]et.Build v[0].2.1
+                info._gameVersion = new Version(1, 31, 1, 12164);
+
+                info._mapName = "Just another Warcraft III map";
+                info._mapAuthor = "Unknown";
+                info._mapDescription = "Nondescript";
+                info._recommendedPlayers = "Any";
+
+                info._cameraBounds = new Quadrilateral(-2816f, 2816f, 2816f, -3328f);
+                info._cameraBoundsComplements = new RectangleMargins(6, 6, 4, 8);
+                info._playableMapAreaWidth = 52;
+                info._playableMapAreaHeight = 52;
+
+                info._mapFlags
+                    = MapFlags.UseItemClassificationSystem
+                    | MapFlags.ShowWaterWavesOnRollingShores
+                    | MapFlags.ShowWaterWavesOnCliffShores
+                    | MapFlags.MeleeMap
+                    | MapFlags.MaskedAreasArePartiallyVisible
+                    | MapFlags.HasMapPropertiesMenuBeenOpened;
+                info._tileset = Tileset.LordaeronSummer;
+
+                info._loadingScreenBackgroundNumber = -1;
+                info._loadingScreenPath = null;
+                info._loadingScreenText = null;
+                info._loadingScreenTitle = null;
+                info._loadingScreenSubtitle = null;
+
+                info._gameDataSet = GameDataSet.Unset;
+
+                info._prologueScreenPath = null;
+                info._prologueScreenText = null;
+                info._prologueScreenTitle = null;
+                info._prologueScreenSubtitle = null;
+
+                info._fogStyle = FogStyle.Linear;
+                info._fogStartZ = 3000f;
+                info._fogEndZ = 5000f;
+                info._fogDensity = 0.5f;
+                info._fogColor = Color.Black;
+
+                info._globalWeather = 0;
+                info._soundEnvironment = null;
+                info._lightEnvironment = 0;
+                info._waterTintingColor = Color.White;
+
+                info._scriptLanguage = ScriptLanguage.Lua;
+
+                var player0 = new PlayerData()
+                {
+                    PlayerNumber = 0,
+                    PlayerName = "Player 1",
+                    PlayerController = PlayerController.User,
+                    PlayerRace = PlayerRace.Human,
+                    IsRaceSelectable = false,
+                    StartPosition = new PointF(0f, 0f),
+                    FixedStartPosition = false,
+                };
+                info.SetPlayerData(player0);
+
+                var team0 = new ForceData()
+                {
+                    ForceName = "Team 1",
+                    ForceFlags = 0,
+                };
+                team0.SetPlayers(player0);
+                info.SetForceData(team0);
+
+                return info;
+            }
+        }
+
         public static MapInfo Parse(Stream stream, bool leaveOpen = false)
         {
             var info = new MapInfo();

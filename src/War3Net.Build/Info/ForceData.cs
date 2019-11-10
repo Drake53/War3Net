@@ -78,5 +78,10 @@ namespace War3Net.Build.Info
                 _playersMask |= (1 << player.PlayerNumber);
             }
         }
+
+        public void IncludeAllPlayers()
+        {
+            _playersMask = -1;
+        }
     }
 }

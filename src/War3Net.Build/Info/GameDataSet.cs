@@ -23,5 +23,7 @@ namespace War3Net.Build.Info
         /// Latest patch.
         /// </summary>
         Melee = 2,
+
+        Unset = -1,
     }
 }
