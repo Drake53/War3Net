@@ -44,12 +44,6 @@ namespace War3Net.Build.Script
             _rendererOptions = rendererOptions;
         }
 
-        [Obsolete(null, true)]
-        public override ScriptBuilder GetScriptBuilder()
-        {
-            return new JassScriptBuilder();
-        }
-
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
             var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits);

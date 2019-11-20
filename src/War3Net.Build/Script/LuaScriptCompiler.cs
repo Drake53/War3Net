@@ -20,12 +20,6 @@ namespace War3Net.Build.Script
             throw new NotImplementedException();
         }
 
-        [Obsolete(null, true)]
-        public override ScriptBuilder GetScriptBuilder()
-        {
-            return new LuaScriptBuilder();
-        }
-
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
             throw new NotImplementedException();
