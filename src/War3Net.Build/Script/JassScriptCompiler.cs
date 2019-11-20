@@ -6,12 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-
-using CSharpLua;
 
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass;
@@ -55,12 +52,14 @@ namespace War3Net.Build.Script
 
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
-            var mainFunctionBuilder = new JassMainFunctionBuilder(Options.MapInfo);
+            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits);
+
+            var mainFunctionBuilder = new JassMainFunctionBuilder(functionBuilderData);
             mainFunctionBuilder.EnableCSharp = false;
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
             RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
 
-            var configFunctionBuilder = new JassConfigFunctionBuilder(Options.MapInfo);
+            var configFunctionBuilder = new JassConfigFunctionBuilder(functionBuilderData);
             configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);

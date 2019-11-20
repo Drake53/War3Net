@@ -10,6 +10,7 @@ using System.Linq;
 
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
+using War3Net.Build.Widget;
 using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Script
@@ -36,6 +37,8 @@ namespace War3Net.Build.Script
         public MapInfo MapInfo { get; set; }
 
         public MapEnvironment MapEnvironment { get; set; }
+
+        public MapUnits MapUnits { get; set; }
 
         public string LobbyMusic { get; set; }
 

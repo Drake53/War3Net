@@ -5,15 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
     internal abstract class JassFunctionBuilder : FunctionBuilder<NewStatementSyntax, FunctionSyntax>
     {
-        public JassFunctionBuilder(MapInfo mapInfo)
-            : base(mapInfo)
+        public JassFunctionBuilder(FunctionBuilderData data)
+            : base(data)
         {
         }
 

@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Info;
@@ -25,7 +26,7 @@ namespace War3Net.Build.Providers
 
         public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {
-            var mapInfo = builder.MapInfo;
+            var mapInfo = builder.Data.MapInfo;
 
             yield return builder.GenerateSetCameraBoundsStatement(
                 nameof(War3Api.Common.SetCameraBounds),
@@ -87,6 +88,11 @@ namespace War3Net.Build.Providers
                 nameof(War3Api.Blizzard.SetAmbientNightSound),
                 SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset));
 
+            if (builder.Data.MapUnits != null)
+            {
+                throw new NotImplementedException();
+            }
+
             yield return builder.GenerateSetMapMusicStatement(
                 nameof(War3Api.Common.SetMapMusic),
                 MusicName,
@@ -98,9 +104,8 @@ namespace War3Net.Build.Providers
 
             if (builder.EnableCSharp)
             {
-                // TODO: use constant on line 241 of LuaSyntaxGenerator: const string kManifestFuncName = "InitCSharp";
                 yield return builder.GenerateInvocationStatementWithoutArguments(
-                    "InitCSharp");
+                    CSharpLua.LuaSyntaxGenerator.kManifestFuncName);
             }
         }
     }

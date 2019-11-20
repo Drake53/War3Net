@@ -5,20 +5,18 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.Build.Info;
-
 namespace War3Net.Build.Script
 {
     internal abstract class FunctionBuilder<TStatementSyntax, TFunctionSyntax>
     {
-        private readonly MapInfo _mapInfo;
+        private readonly FunctionBuilderData _data;
 
-        public FunctionBuilder(MapInfo mapInfo)
+        public FunctionBuilder(FunctionBuilderData data)
         {
-            _mapInfo = mapInfo;
+            _data = data;
         }
 
-        public MapInfo MapInfo => _mapInfo;
+        public FunctionBuilderData Data => _data;
 
         public abstract TFunctionSyntax Build(
             string functionName,

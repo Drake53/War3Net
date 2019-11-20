@@ -7,7 +7,6 @@
 
 using System.Linq;
 
-using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static War3Net.Build.Providers.ConfigFunctionStatementsProvider<
@@ -19,8 +18,8 @@ namespace War3Net.Build.Script
 {
     internal sealed class JassConfigFunctionBuilder : JassFunctionBuilder, IConfigFunctionBuilder<NewStatementSyntax>
     {
-        public JassConfigFunctionBuilder(MapInfo mapInfo)
-            : base(mapInfo)
+        public JassConfigFunctionBuilder(FunctionBuilderData data)
+            : base(data)
         {
         }
 

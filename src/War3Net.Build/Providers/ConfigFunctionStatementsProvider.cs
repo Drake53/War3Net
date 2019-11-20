@@ -21,7 +21,7 @@ namespace War3Net.Build.Providers
 
         public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {
-            var mapInfo = builder.MapInfo;
+            var mapInfo = builder.Data.MapInfo;
 
             var playerDataCount = mapInfo.PlayerDataCount;
             var forceDataCount = mapInfo.ForceDataCount;

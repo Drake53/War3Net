@@ -38,12 +38,14 @@ namespace War3Net.Build.Script
 
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
-            var mainFunctionBuilder = new LuaMainFunctionBuilder(Options.MapInfo);
+            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits);
+
+            var mainFunctionBuilder = new LuaMainFunctionBuilder(functionBuilderData);
             mainFunctionBuilder.EnableCSharp = true;
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
             RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
 
-            var configFunctionBuilder = new LuaConfigFunctionBuilder(Options.MapInfo);
+            var configFunctionBuilder = new LuaConfigFunctionBuilder(functionBuilderData);
             configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);

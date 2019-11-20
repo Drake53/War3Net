@@ -9,8 +9,6 @@ using System.Linq;
 
 using CSharpLua.LuaAst;
 
-using War3Net.Build.Info;
-
 using static War3Net.Build.Providers.MainFunctionStatementsProvider<
     War3Net.Build.Script.LuaMainFunctionBuilder,
     CSharpLua.LuaAst.LuaStatementSyntax,
@@ -20,8 +18,8 @@ namespace War3Net.Build.Script
 {
     internal sealed class LuaMainFunctionBuilder : LuaFunctionBuilder, IMainFunctionBuilder<LuaStatementSyntax>
     {
-        public LuaMainFunctionBuilder(MapInfo mapInfo)
-            : base(mapInfo)
+        public LuaMainFunctionBuilder(FunctionBuilderData data)
+            : base(data)
         {
         }
 
