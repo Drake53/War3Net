@@ -84,6 +84,19 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                     new EmptyNode(0));
         }
 
+        public static NewExpressionSyntax FourCCExpression(string value)
+        {
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new ConstantExpressionSyntax(
+                        new IntegerSyntax(
+                            new FourCCIntegerSyntax(
+                                new TokenNode(new SyntaxToken(SyntaxTokenType.SingleQuote), 0),
+                                new TokenNode(new SyntaxToken(SyntaxTokenType.FourCCNumber, value), 0),
+                                new TokenNode(new SyntaxToken(SyntaxTokenType.SingleQuote), 0))))),
+                new EmptyNode(0));
+        }
+
         public static NewExpressionSyntax NullExpression()
         {
             return new NewExpressionSyntax(

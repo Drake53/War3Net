@@ -10,10 +10,11 @@
     <Description>War3Net.CodeAnalysis.JASS is a library for parsing, transpiling (to C#), and rendering JASS source files.</Description>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
     <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
+    <PackageReleaseNotes>Added more JassSyntaxFactory methods.</PackageReleaseNotes>
 
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <FileVersion>1.0.2</FileVersion>
-    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
