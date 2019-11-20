@@ -7,6 +7,7 @@
 
 using System.Linq;
 
+using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static War3Net.Build.Providers.MainFunctionStatementsProvider<
@@ -32,6 +33,11 @@ namespace War3Net.Build.Script
         public override FunctionSyntax Build()
         {
             return Build(GetMainFunctionName, GetStatements(this).ToArray());
+        }
+
+        protected override LocalVariableListSyntax GetLocalDeclarations()
+        {
+            return JassSyntaxFactory.LocalVariableList(GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName));
         }
 
         /// <inheritdoc/>
@@ -177,6 +183,30 @@ namespace War3Net.Build.Script
                     JassSyntaxFactory.ConstantExpression(musicName),
                     JassSyntaxFactory.ConstantExpression(random),
                     JassSyntaxFactory.ConstantExpression(index)));
+        }
+
+        public NewStatementSyntax GenerateCreateUnitStatement(
+            string functionName,
+            string playerFunctionName,
+            int owner,
+            string unitId,
+            float x,
+            float y,
+            float facing)
+        {
+            return JassSyntaxFactory.SetStatement(
+                MainFunctionProvider.LocalUnitVariableName,
+                JassSyntaxFactory.EqualsValueClause(
+                    JassSyntaxFactory.InvocationExpression(
+                        functionName,
+                        JassSyntaxFactory.ArgumentList(
+                            JassSyntaxFactory.InvocationExpression(
+                                playerFunctionName,
+                                JassSyntaxFactory.ConstantExpression(owner)),
+                            JassSyntaxFactory.FourCCExpression(unitId),
+                            JassSyntaxFactory.ConstantExpression(x),
+                            JassSyntaxFactory.ConstantExpression(y),
+                            JassSyntaxFactory.ConstantExpression(facing)))));
         }
     }
 }

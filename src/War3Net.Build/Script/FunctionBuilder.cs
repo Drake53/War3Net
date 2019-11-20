@@ -22,6 +22,9 @@ namespace War3Net.Build.Script
             string functionName,
             params TStatementSyntax[] statements);
 
+        public abstract TStatementSyntax GenerateLocalDeclarationStatement(
+            string variableName);
+
         public abstract TStatementSyntax GenerateInvocationStatementWithoutArguments(
             string functionName);
 
@@ -44,5 +47,10 @@ namespace War3Net.Build.Script
         public abstract TStatementSyntax GenerateInvocationStatementWithVariableArgument(
             string functionName,
             string variableName);
+
+        public abstract TStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(
+            string functionName,
+            string variableName,
+            int argument);
     }
 }

@@ -57,5 +57,14 @@ namespace War3Net.Build.Script
             string musicName,
             bool random,
             int index);
+
+        TStatementSyntax GenerateCreateUnitStatement(
+            string functionName,
+            string playerFunctionName,
+            int owner,
+            string unitId,
+            float x,
+            float y,
+            float facing);
     }
 }

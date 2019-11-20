@@ -34,6 +34,13 @@ namespace War3Net.Build.Script
             return globalFunctionSyntax;
         }
 
+        public sealed override LuaStatementSyntax GenerateLocalDeclarationStatement(string variableName)
+        {
+            var variableList = new LuaVariableListDeclarationSyntax();
+            variableList.Variables.Add(new LuaVariableDeclaratorSyntax(variableName));
+            return variableList;
+        }
+
         public sealed override LuaStatementSyntax GenerateInvocationStatementWithoutArguments(
             string functionName)
         {
@@ -73,6 +80,14 @@ namespace War3Net.Build.Script
             string variableName)
         {
             return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, variableName));
+        }
+
+        public sealed override LuaStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(string functionName, string variableName, int argument)
+        {
+            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(
+                functionName,
+                variableName,
+                new LuaFloatLiteralExpressionSyntax(argument)));
         }
     }
 }

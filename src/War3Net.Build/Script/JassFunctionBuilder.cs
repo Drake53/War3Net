@@ -24,7 +24,21 @@ namespace War3Net.Build.Script
         {
             return JassSyntaxFactory.Function(
                 JassSyntaxFactory.FunctionDeclaration(functionName),
+                GetLocalDeclarations(),
                 statements);
+        }
+
+        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)
+        {
+            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name);
+        }
+
+        protected abstract LocalVariableListSyntax GetLocalDeclarations();
+
+        public sealed override NewStatementSyntax GenerateLocalDeclarationStatement(string variableName)
+        {
+            // In JASS syntax, local declarations are not considered to be a statement.
+            return null;
         }
 
         public sealed override NewStatementSyntax GenerateInvocationStatementWithoutArguments(
@@ -66,6 +80,14 @@ namespace War3Net.Build.Script
             string variableName)
         {
             return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.VariableExpression(variableName));
+        }
+
+        public sealed override NewStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(string functionName, string variableName, int argument)
+        {
+            return JassSyntaxFactory.CallStatement(
+                functionName,
+                JassSyntaxFactory.VariableExpression(variableName),
+                JassSyntaxFactory.ConstantExpression(argument));
         }
     }
 }

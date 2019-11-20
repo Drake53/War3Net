@@ -30,6 +30,11 @@ namespace War3Net.Build.Script
             return Build(GetConfigFunctionName, GetStatements(this).ToArray());
         }
 
+        protected override LocalVariableListSyntax GetLocalDeclarations()
+        {
+            return JassSyntaxFactory.LocalVariableList();
+        }
+
         /// <inheritdoc/>
         public NewStatementSyntax GenerateDefineStartLocationStatement(
             string functionName,

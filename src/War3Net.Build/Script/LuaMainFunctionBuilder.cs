@@ -9,6 +9,8 @@ using System.Linq;
 
 using CSharpLua.LuaAst;
 
+using War3Net.Build.Providers;
+
 using static War3Net.Build.Providers.MainFunctionStatementsProvider<
     War3Net.Build.Script.LuaMainFunctionBuilder,
     CSharpLua.LuaAst.LuaStatementSyntax,
@@ -155,6 +157,30 @@ namespace War3Net.Build.Script
                new LuaStringLiteralExpressionSyntax(musicName),
                random ? LuaIdentifierLiteralExpressionSyntax.True : LuaIdentifierLiteralExpressionSyntax.False,
                new LuaFloatLiteralExpressionSyntax(index)));
+        }
+
+        public LuaStatementSyntax GenerateCreateUnitStatement(
+            string functionName,
+            string playerFunctionName,
+            int owner,
+            string unitId,
+            float x,
+            float y,
+            float facing)
+        {
+            return new LuaAssignmentExpressionSyntax(
+                MainFunctionProvider.LocalUnitVariableName,
+                new LuaInvocationExpressionSyntax(
+                    functionName,
+                    new LuaInvocationExpressionSyntax(
+                        playerFunctionName,
+                        new LuaFloatLiteralExpressionSyntax(owner)),
+                    new LuaInvocationExpressionSyntax(
+                        nameof(War3Api.Common.FourCC),
+                        new LuaStringLiteralExpressionSyntax(unitId)),
+                    new LuaFloatLiteralExpressionSyntax(x),
+                    new LuaFloatLiteralExpressionSyntax(y),
+                    new LuaFloatLiteralExpressionSyntax(facing)));
         }
     }
 }

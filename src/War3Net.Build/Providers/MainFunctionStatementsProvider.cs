@@ -10,9 +10,15 @@ using System.Collections.Generic;
 
 using War3Net.Build.Info;
 using War3Net.Build.Script;
+using War3Net.Build.Widget;
 
 namespace War3Net.Build.Providers
 {
+    internal static class MainFunctionProvider
+    {
+        public const string LocalUnitVariableName = "u";
+    }
+
     internal static class MainFunctionStatementsProvider<TBuilder, TStatementSyntax, TFunctionSyntax>
         where TBuilder : FunctionBuilder<TStatementSyntax, TFunctionSyntax>, IMainFunctionBuilder<TStatementSyntax>
     {
@@ -88,16 +94,40 @@ namespace War3Net.Build.Providers
                 nameof(War3Api.Blizzard.SetAmbientNightSound),
                 SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset));
 
-            if (builder.Data.MapUnits != null)
-            {
-                throw new NotImplementedException();
-            }
-
             yield return builder.GenerateSetMapMusicStatement(
                 nameof(War3Api.Common.SetMapMusic),
                 MusicName,
                 MusicRandom,
                 MusicIndex);
+
+            if (builder.Data.MapUnits != null)
+            {
+                var localUnitDeclaration = builder.GenerateLocalDeclarationStatement(MainFunctionProvider.LocalUnitVariableName);
+                if (localUnitDeclaration != null)
+                {
+                    yield return localUnitDeclaration;
+                }
+
+                foreach (var mapUnit in builder.Data.MapUnits)
+                {
+                    yield return builder.GenerateCreateUnitStatement(
+                        nameof(War3Api.Common.CreateUnit),
+                        nameof(War3Api.Common.Player),
+                        mapUnit.Owner,
+                        mapUnit.TypeId,
+                        mapUnit.PositionX,
+                        mapUnit.PositionY,
+                        mapUnit.Facing);
+
+                    if (mapUnit.GoldAmount > 0)
+                    {
+                        yield return builder.GenerateInvocationStatementWithVariableAndIntegerArgument(
+                            nameof(War3Api.Common.SetResourceAmount),
+                            MainFunctionProvider.LocalUnitVariableName,
+                            mapUnit.GoldAmount);
+                    }
+                }
+            }
 
             yield return builder.GenerateInvocationStatementWithoutArguments(
                 nameof(War3Api.Blizzard.InitBlizzard));
