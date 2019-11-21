@@ -41,6 +41,61 @@ namespace War3Net.Build.Script
             return null;
         }
 
+        public sealed override NewStatementSyntax GenerateInvocationStatement(string functionName, params NewExpressionSyntax[] args)
+        {
+            return JassSyntaxFactory.CallStatement(functionName, args);
+        }
+
+        public sealed override NewExpressionSyntax GenerateIntegerLiteralExpression(int value)
+        {
+            return JassSyntaxFactory.ConstantExpression(value);
+        }
+
+        public sealed override NewExpressionSyntax GenerateBooleanLiteralExpression(bool value)
+        {
+            return JassSyntaxFactory.ConstantExpression(value);
+        }
+
+        public sealed override NewExpressionSyntax GenerateStringLiteralExpression(string value)
+        {
+            return JassSyntaxFactory.ConstantExpression(value);
+        }
+
+        public sealed override NewExpressionSyntax GenerateFloatLiteralExpression(float value)
+        {
+            return JassSyntaxFactory.ConstantExpression(value);
+        }
+
+        public sealed override NewExpressionSyntax GenerateNullLiteralExpression()
+        {
+            return JassSyntaxFactory.NullExpression();
+        }
+
+        public sealed override NewExpressionSyntax GenerateVariableExpression(string variableName)
+        {
+            return JassSyntaxFactory.VariableExpression(variableName);
+        }
+
+        public sealed override NewExpressionSyntax GenerateInvocationExpression(string functionName, params NewExpressionSyntax[] args)
+        {
+            return JassSyntaxFactory.InvocationExpression(functionName, args);
+        }
+
+        public sealed override NewExpressionSyntax GenerateFourCCExpression(string fourCC)
+        {
+            return JassSyntaxFactory.FourCCExpression(fourCC);
+        }
+
+        public sealed override NewExpressionSyntax GenerateBinaryAdditionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return JassSyntaxFactory.BinaryAdditionExpression(left, right);
+        }
+
+        public sealed override NewExpressionSyntax GenerateBinarySubtractionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return JassSyntaxFactory.BinarySubtractionExpression(left, right);
+        }
+
         public sealed override NewStatementSyntax GenerateInvocationStatementWithoutArguments(
             string functionName)
         {

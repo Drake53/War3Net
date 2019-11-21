@@ -41,6 +41,61 @@ namespace War3Net.Build.Script
             return variableList;
         }
 
+        public sealed override LuaStatementSyntax GenerateInvocationStatement(string functionName, params LuaExpressionSyntax[] args)
+        {
+            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, args));
+        }
+
+        public sealed override LuaExpressionSyntax GenerateIntegerLiteralExpression(int value)
+        {
+            return new LuaFloatLiteralExpressionSyntax(value);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateBooleanLiteralExpression(bool value)
+        {
+            return value ? LuaIdentifierLiteralExpressionSyntax.True : LuaIdentifierLiteralExpressionSyntax.False;
+        }
+
+        public sealed override LuaExpressionSyntax GenerateStringLiteralExpression(string value)
+        {
+            return new LuaStringLiteralExpressionSyntax(value);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateFloatLiteralExpression(float value)
+        {
+            return new LuaFloatLiteralExpressionSyntax(value);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateNullLiteralExpression()
+        {
+            return new LuaIdentifierLiteralExpressionSyntax(LuaIdentifierNameSyntax.Nil);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateVariableExpression(string variableName)
+        {
+            return variableName;
+        }
+
+        public sealed override LuaExpressionSyntax GenerateInvocationExpression(string functionName, params LuaExpressionSyntax[] args)
+        {
+            return new LuaInvocationExpressionSyntax(functionName, args);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateFourCCExpression(string fourCC)
+        {
+            return new LuaInvocationExpressionSyntax(nameof(War3Api.Common.FourCC), new LuaStringLiteralExpressionSyntax(fourCC));
+        }
+
+        public sealed override LuaExpressionSyntax GenerateBinaryAdditionExpression(LuaExpressionSyntax left, LuaExpressionSyntax right)
+        {
+            return new LuaBinaryExpressionSyntax(left, LuaSyntaxNode.Tokens.Plus, right);
+        }
+
+        public sealed override LuaExpressionSyntax GenerateBinarySubtractionExpression(LuaExpressionSyntax left, LuaExpressionSyntax right)
+        {
+            return new LuaBinaryExpressionSyntax(left, LuaSyntaxNode.Tokens.Sub, right);
+        }
+
         public sealed override LuaStatementSyntax GenerateInvocationStatementWithoutArguments(
             string functionName)
         {
