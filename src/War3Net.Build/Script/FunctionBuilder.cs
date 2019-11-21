@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 namespace War3Net.Build.Script
 {
     internal abstract class FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -66,40 +64,5 @@ namespace War3Net.Build.Script
         public abstract TExpressionSyntax GenerateBinarySubtractionExpression(
             TExpressionSyntax left,
             TExpressionSyntax right);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithoutArguments(
-            string functionName);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithIntegerArgument(
-            string functionName,
-            int argument);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithBooleanArgument(
-            string functionName,
-            bool argument);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithStringArgument(
-            string functionName,
-            string argument);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithFloatArgument(
-            string functionName,
-            float argument);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithVariableArgument(
-            string functionName,
-            string variableName);
-
-        [Obsolete]
-        public abstract TStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(
-            string functionName,
-            string variableName,
-            int argument);
     }
 }

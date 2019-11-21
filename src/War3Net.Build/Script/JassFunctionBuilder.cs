@@ -108,54 +108,5 @@ namespace War3Net.Build.Script
         {
             return JassSyntaxFactory.BinarySubtractionExpression(left, right);
         }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithoutArguments(
-            string functionName)
-        {
-            return JassSyntaxFactory.CallStatement(functionName);
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithIntegerArgument(
-            string functionName,
-            int argument)
-        {
-            return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.ConstantExpression(argument));
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithBooleanArgument(
-            string functionName,
-            bool argument)
-        {
-            return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.ConstantExpression(argument));
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithStringArgument(
-            string functionName,
-            string argument)
-        {
-            return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.ConstantExpression(argument));
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithFloatArgument(
-            string functionName,
-            float argument)
-        {
-            return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.ConstantExpression(argument));
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithVariableArgument(
-            string functionName,
-            string variableName)
-        {
-            return JassSyntaxFactory.CallStatement(functionName, JassSyntaxFactory.VariableExpression(variableName));
-        }
-
-        public sealed override NewStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(string functionName, string variableName, int argument)
-        {
-            return JassSyntaxFactory.CallStatement(
-                functionName,
-                JassSyntaxFactory.VariableExpression(variableName),
-                JassSyntaxFactory.ConstantExpression(argument));
-        }
     }
 }

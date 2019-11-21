@@ -111,54 +111,5 @@ namespace War3Net.Build.Script
         {
             return new LuaBinaryExpressionSyntax(left, LuaSyntaxNode.Tokens.Sub, right);
         }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithoutArguments(
-            string functionName)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithIntegerArgument(
-            string functionName,
-            int argument)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, new LuaFloatLiteralExpressionSyntax(argument)));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithBooleanArgument(
-            string functionName,
-            bool argument)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, argument ? LuaIdentifierLiteralExpressionSyntax.True : LuaIdentifierLiteralExpressionSyntax.False));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithStringArgument(
-            string functionName,
-            string argument)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, new LuaStringLiteralExpressionSyntax(argument)));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithFloatArgument(
-            string functionName,
-            float argument)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, new LuaFloatLiteralExpressionSyntax(argument)));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithVariableArgument(
-            string functionName,
-            string variableName)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, variableName));
-        }
-
-        public sealed override LuaStatementSyntax GenerateInvocationStatementWithVariableAndIntegerArgument(string functionName, string variableName, int argument)
-        {
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(
-                functionName,
-                variableName,
-                new LuaFloatLiteralExpressionSyntax(argument)));
-        }
     }
 }
