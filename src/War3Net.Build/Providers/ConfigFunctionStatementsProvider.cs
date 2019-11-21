@@ -26,43 +26,43 @@ namespace War3Net.Build.Providers
             var playerDataCount = mapInfo.PlayerDataCount;
             var forceDataCount = mapInfo.ForceDataCount;
 
-            yield return builder.GenerateInvocationStatementWithStringArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapName),
-                mapInfo.MapName);
+                builder.GenerateStringLiteralExpression(mapInfo.MapName));
 
-            yield return builder.GenerateInvocationStatementWithStringArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapDescription),
-                mapInfo.MapDescription);
+                builder.GenerateStringLiteralExpression(mapInfo.MapDescription));
 
-            yield return builder.GenerateInvocationStatementWithIntegerArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetPlayers),
-                playerDataCount);
+                builder.GenerateIntegerLiteralExpression(playerDataCount));
 
             // Intuitively this would use forceDataCount, but so far all examples generated with World Editor have same argument for SetPlayers and SetTeams.
-            yield return builder.GenerateInvocationStatementWithIntegerArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetTeams),
-                playerDataCount);
+                builder.GenerateIntegerLiteralExpression(playerDataCount));
 
-            yield return builder.GenerateInvocationStatementWithVariableArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetGamePlacement),
-                nameof(War3Api.Common.MAP_PLACEMENT_TEAMS_TOGETHER));
+                builder.GenerateVariableExpression(nameof(War3Api.Common.MAP_PLACEMENT_TEAMS_TOGETHER)));
 
             if (builder.LobbyMusic != null)
             {
-                yield return builder.GenerateInvocationStatementWithStringArgument(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.PlayMusic),
-                    builder.LobbyMusic);
+                    builder.GenerateStringLiteralExpression(builder.LobbyMusic));
             }
 
             for (var i = 0; i < playerDataCount; i++)
             {
                 var playerData = mapInfo.GetPlayerData(i);
 
-                yield return builder.GenerateDefineStartLocationStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.DefineStartLocation),
-                    i,
-                    playerData.StartPosition.X,
-                    playerData.StartPosition.Y);
+                    builder.GenerateIntegerLiteralExpression(i),
+                    builder.GenerateFloatLiteralExpression(playerData.StartPosition.X),
+                    builder.GenerateFloatLiteralExpression(playerData.StartPosition.Y));
             }
 
             // InitCustomPlayerSlots
@@ -70,44 +70,52 @@ namespace War3Net.Build.Providers
             {
                 var playerData = mapInfo.GetPlayerData(i);
 
-                yield return builder.GenerateSetPlayerStartLocationStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetPlayerStartLocation),
-                    nameof(War3Api.Common.Player),
-                    playerData.PlayerNumber,
-                    i);
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.Player),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                    builder.GenerateIntegerLiteralExpression(i));
 
                 if (playerData.FixedStartPosition)
                 {
-                    yield return builder.GenerateSetPlayerStartLocationStatement(
+                    yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.ForcePlayerStartLocation),
-                        nameof(War3Api.Common.Player),
-                        playerData.PlayerNumber,
-                        i);
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Player),
+                            builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                        builder.GenerateIntegerLiteralExpression(i));
                 }
 
-                yield return builder.GenerateSetPlayerColorStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetPlayerColor),
-                    nameof(War3Api.Common.Player),
-                    nameof(War3Api.Common.ConvertPlayerColor),
-                    playerData.PlayerNumber);
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.Player),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.ConvertPlayerColor),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)));
 
-                yield return builder.GenerateSetPlayerPropertyToVariableStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetPlayerRacePreference),
-                    nameof(War3Api.Common.Player),
-                    playerData.PlayerNumber,
-                    RacePreferenceProvider.GetRacePreferenceString(playerData.PlayerRace));
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.Player),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                    builder.GenerateVariableExpression(RacePreferenceProvider.GetRacePreferenceString(playerData.PlayerRace)));
 
-                yield return builder.GenerateSetPlayerRaceSelectableStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetPlayerRaceSelectable),
-                    nameof(War3Api.Common.Player),
-                    playerData.PlayerNumber,
-                    playerData.IsRaceSelectable || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces));
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.Player),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                    builder.GenerateBooleanLiteralExpression(playerData.IsRaceSelectable || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces)));
 
-                yield return builder.GenerateSetPlayerPropertyToVariableStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetPlayerController),
-                    nameof(War3Api.Common.Player),
-                    playerData.PlayerNumber,
-                    PlayerControllerProvider.GetPlayerControllerString(playerData.PlayerController));
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.Player),
+                        builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                    builder.GenerateVariableExpression(PlayerControllerProvider.GetPlayerControllerString(playerData.PlayerController)));
 
                 if (playerData.PlayerController == PlayerController.Rescuable)
                 {
@@ -116,13 +124,16 @@ namespace War3Net.Build.Providers
                         var otherPlayerData = mapInfo.GetPlayerData(j);
                         if (otherPlayerData.PlayerController == PlayerController.User)
                         {
-                            yield return builder.GenerateSetPlayerAllianceStatement(
+                            yield return builder.GenerateInvocationStatement(
                                 nameof(War3Api.Common.SetPlayerAlliance),
-                                nameof(War3Api.Common.Player),
-                                nameof(War3Api.Common.ALLIANCE_RESCUABLE),
-                                playerData.PlayerNumber,
-                                otherPlayerData.PlayerNumber,
-                                true);
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.Player),
+                                    builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.Player),
+                                    builder.GenerateIntegerLiteralExpression(otherPlayerData.PlayerNumber)),
+                                builder.GenerateVariableExpression(nameof(War3Api.Common.ALLIANCE_RESCUABLE)),
+                                builder.GenerateBooleanLiteralExpression(true));
                         }
                     }
                 }
@@ -134,14 +145,15 @@ namespace War3Net.Build.Providers
                 {
                     var playerData = mapInfo.GetPlayerData(i);
 
-                    yield return builder.GenerateSetPlayerPropertyToVariableStatement(
+                    yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Blizzard.SetPlayerSlotAvailable),
-                        nameof(War3Api.Common.Player),
-                        playerData.PlayerNumber,
-                        nameof(War3Api.Common.MAP_CONTROL_USER));
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Player),
+                            builder.GenerateIntegerLiteralExpression(playerData.PlayerNumber)),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.MAP_CONTROL_USER)));
                 }
 
-                yield return builder.GenerateInvocationStatementWithoutArguments(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Blizzard.InitGenericPlayerSlots));
             }
 
@@ -162,20 +174,22 @@ namespace War3Net.Build.Providers
                 var alliedVictory = forceData.ForceFlags.HasFlag(ForceFlags.AlliedVictory);
                 foreach (var playerSlot in playerSlots)
                 {
-                    yield return builder.GenerateSetPlayerTeamStatement(
+                    yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetPlayerTeam),
-                        nameof(War3Api.Common.Player),
-                        playerSlot,
-                        i);
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Player),
+                            builder.GenerateIntegerLiteralExpression(playerSlot)),
+                        builder.GenerateIntegerLiteralExpression(i));
 
                     if (alliedVictory)
                     {
-                        yield return builder.GenerateSetPlayerStateStatement(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetPlayerState),
-                            nameof(War3Api.Common.Player),
-                            nameof(War3Api.Common.PLAYER_STATE_ALLIED_VICTORY),
-                            playerSlot,
-                            1);
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot)),
+                            builder.GenerateVariableExpression(nameof(War3Api.Common.PLAYER_STATE_ALLIED_VICTORY)),
+                            builder.GenerateIntegerLiteralExpression(1));
                     }
                 }
 
@@ -197,12 +211,15 @@ namespace War3Net.Build.Providers
                 {
                     foreach (var (playerSlot1, playerSlot2) in GetPlayerPairs())
                     {
-                        yield return builder.GenerateSetPlayerAllianceStateStatement(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Blizzard.SetPlayerAllianceStateAllyBJ),
-                            nameof(War3Api.Common.Player),
-                            playerSlot1,
-                            playerSlot2,
-                            true);
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot1)),
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot2)),
+                            builder.GenerateBooleanLiteralExpression(true));
                     }
                 }
 
@@ -210,12 +227,15 @@ namespace War3Net.Build.Providers
                 {
                     foreach (var (playerSlot1, playerSlot2) in GetPlayerPairs())
                     {
-                        yield return builder.GenerateSetPlayerAllianceStateStatement(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Blizzard.SetPlayerAllianceStateVisionBJ),
-                            nameof(War3Api.Common.Player),
-                            playerSlot1,
-                            playerSlot2,
-                            true);
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot1)),
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot2)),
+                            builder.GenerateBooleanLiteralExpression(true));
                     }
                 }
 
@@ -223,12 +243,15 @@ namespace War3Net.Build.Providers
                 {
                     foreach (var (playerSlot1, playerSlot2) in GetPlayerPairs())
                     {
-                        yield return builder.GenerateSetPlayerAllianceStateStatement(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Blizzard.SetPlayerAllianceStateControlBJ),
-                            nameof(War3Api.Common.Player),
-                            playerSlot1,
-                            playerSlot2,
-                            true);
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot1)),
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot2)),
+                            builder.GenerateBooleanLiteralExpression(true));
                     }
                 }
 
@@ -236,12 +259,15 @@ namespace War3Net.Build.Providers
                 {
                     foreach (var (playerSlot1, playerSlot2) in GetPlayerPairs())
                     {
-                        yield return builder.GenerateSetPlayerAllianceStateStatement(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Blizzard.SetPlayerAllianceStateFullControlBJ),
-                            nameof(War3Api.Common.Player),
-                            playerSlot1,
-                            playerSlot2,
-                            true);
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot1)),
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.Player),
+                                builder.GenerateIntegerLiteralExpression(playerSlot2)),
+                            builder.GenerateBooleanLiteralExpression(true));
                     }
                 }
             }
@@ -255,18 +281,22 @@ namespace War3Net.Build.Providers
                 var substatements = new List<TStatementSyntax>();
                 foreach (var (index, highPriority) in playerData.GetStartLocationPriorities())
                 {
-                    substatements.Add(builder.GenerateSetStartLocPrioStatement(
+                    substatements.Add(builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetStartLocPrio),
-                        i,
-                        slotIndex++,
-                        index,
-                        highPriority ? nameof(War3Api.Common.MAP_LOC_PRIO_HIGH) : nameof(War3Api.Common.MAP_LOC_PRIO_LOW)));
+                        builder.GenerateIntegerLiteralExpression(i),
+                        builder.GenerateIntegerLiteralExpression(slotIndex),
+                        builder.GenerateIntegerLiteralExpression(index),
+                        builder.GenerateVariableExpression(highPriority
+                            ? nameof(War3Api.Common.MAP_LOC_PRIO_HIGH)
+                            : nameof(War3Api.Common.MAP_LOC_PRIO_LOW))));
+
+                    slotIndex++;
                 }
 
-                yield return builder.GenerateSetStartLocPrioCountStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetStartLocPrioCount),
-                    i,
-                    slotIndex);
+                    builder.GenerateIntegerLiteralExpression(i),
+                    builder.GenerateIntegerLiteralExpression(slotIndex));
 
                 foreach (var substatement in substatements)
                 {
