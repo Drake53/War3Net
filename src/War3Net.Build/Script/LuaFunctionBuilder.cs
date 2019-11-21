@@ -9,7 +9,7 @@ using CSharpLua.LuaAst;
 
 namespace War3Net.Build.Script
 {
-    internal abstract class LuaFunctionBuilder : FunctionBuilder<LuaStatementSyntax, LuaVariableListDeclarationSyntax>
+    internal abstract class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
     {
         public LuaFunctionBuilder(FunctionBuilderData data)
             : base(data)

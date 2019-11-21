@@ -12,8 +12,8 @@ using War3Net.Build.Script;
 
 namespace War3Net.Build.Providers
 {
-    internal static class ConfigFunctionStatementsProvider<TBuilder, TStatementSyntax, TFunctionSyntax>
-        where TBuilder : FunctionBuilder<TStatementSyntax, TFunctionSyntax>, IConfigFunctionBuilder<TStatementSyntax>
+    internal static class ConfigFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>, IConfigFunctionBuilder<TStatementSyntax>
     {
         private const string ConfigFunctionName = "config";
 

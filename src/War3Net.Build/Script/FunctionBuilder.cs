@@ -7,7 +7,7 @@
 
 namespace War3Net.Build.Script
 {
-    internal abstract class FunctionBuilder<TStatementSyntax, TFunctionSyntax>
+    internal abstract class FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private readonly FunctionBuilderData _data;
 

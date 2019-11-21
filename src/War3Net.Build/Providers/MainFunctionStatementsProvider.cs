@@ -19,8 +19,8 @@ namespace War3Net.Build.Providers
         public const string LocalUnitVariableName = "u";
     }
 
-    internal static class MainFunctionStatementsProvider<TBuilder, TStatementSyntax, TFunctionSyntax>
-        where TBuilder : FunctionBuilder<TStatementSyntax, TFunctionSyntax>, IMainFunctionBuilder<TStatementSyntax>
+    internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>, IMainFunctionBuilder<TStatementSyntax>
     {
         private const string MainFunctionName = "main";
 

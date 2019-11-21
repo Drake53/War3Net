@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
-    internal abstract class JassFunctionBuilder : FunctionBuilder<NewStatementSyntax, FunctionSyntax>
+    internal abstract class JassFunctionBuilder : FunctionBuilder<FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>
     {
         public JassFunctionBuilder(FunctionBuilderData data)
             : base(data)

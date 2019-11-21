@@ -13,8 +13,9 @@ using War3Net.Build.Providers;
 
 using static War3Net.Build.Providers.MainFunctionStatementsProvider<
     War3Net.Build.Script.LuaMainFunctionBuilder,
+    CSharpLua.LuaAst.LuaVariableListDeclarationSyntax,
     CSharpLua.LuaAst.LuaStatementSyntax,
-    CSharpLua.LuaAst.LuaVariableListDeclarationSyntax>;
+    CSharpLua.LuaAst.LuaExpressionSyntax>;
 
 namespace War3Net.Build.Script
 {
