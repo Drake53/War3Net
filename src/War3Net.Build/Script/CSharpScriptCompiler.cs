@@ -33,14 +33,13 @@ namespace War3Net.Build.Script
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
             var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits, Options.LobbyMusic, true);
+            var functionBuilder = new LuaFunctionBuilder(functionBuilderData);
 
-            var mainFunctionBuilder = new LuaMainFunctionBuilder(functionBuilderData);
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
-            RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
+            RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
 
-            var configFunctionBuilder = new LuaConfigFunctionBuilder(functionBuilderData);
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
-            RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
+            RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
         }
 
         // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.

@@ -24,6 +24,10 @@ namespace War3Net.Build.Script
             string functionName,
             params TStatementSyntax[] statements);
 
+        public abstract TFunctionSyntax BuildMainFunction();
+
+        public abstract TFunctionSyntax BuildConfigFunction();
+
         public abstract TStatementSyntax GenerateLocalDeclarationStatement(
             string variableName);
 

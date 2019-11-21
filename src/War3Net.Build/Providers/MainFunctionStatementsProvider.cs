@@ -14,19 +14,16 @@ namespace War3Net.Build.Providers
 {
     internal static class MainFunctionProvider
     {
+        public const string FunctionName = "main";
         public const string LocalUnitVariableName = "u";
     }
 
     internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
-        private const string MainFunctionName = "main";
-
         private const string MusicName = "Music";
         private const bool MusicRandom = true;
         private const int MusicIndex = 0;
-
-        public static string GetMainFunctionName => MainFunctionName;
 
         public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {

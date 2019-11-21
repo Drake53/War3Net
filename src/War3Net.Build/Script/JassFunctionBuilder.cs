@@ -5,18 +5,19 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
+using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
-    internal abstract class JassFunctionBuilder : FunctionBuilder<FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>
+    internal sealed class JassFunctionBuilder : FunctionBuilder<FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>
     {
         public JassFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
         }
-
-        public abstract FunctionSyntax Build();
 
         public sealed override FunctionSyntax Build(
             string functionName,
@@ -24,16 +25,28 @@ namespace War3Net.Build.Script
         {
             return JassSyntaxFactory.Function(
                 JassSyntaxFactory.FunctionDeclaration(functionName),
-                GetLocalDeclarations(),
+                JassSyntaxFactory.LocalVariableList(GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName)), // todo: don't create local var for config func
                 statements);
+        }
+
+        public sealed override FunctionSyntax BuildMainFunction()
+        {
+            return Build(
+                MainFunctionProvider.FunctionName,
+                MainFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetStatements(this).ToArray());
+        }
+
+        public sealed override FunctionSyntax BuildConfigFunction()
+        {
+            return Build(
+                ConfigFunctionProvider.FunctionName,
+                ConfigFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetStatements(this).ToArray());
         }
 
         protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)
         {
             return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name);
         }
-
-        protected abstract LocalVariableListSyntax GetLocalDeclarations();
 
         public sealed override NewStatementSyntax GenerateLocalDeclarationStatement(string variableName)
         {

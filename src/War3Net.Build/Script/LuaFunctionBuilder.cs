@@ -5,18 +5,20 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using CSharpLua.LuaAst;
+
+using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script
 {
-    internal abstract class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
+    internal sealed class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
     {
         public LuaFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
         }
-
-        public abstract LuaVariableListDeclarationSyntax Build();
 
         public sealed override LuaVariableListDeclarationSyntax Build(
             string functionName,
@@ -32,6 +34,20 @@ namespace War3Net.Build.Script
             globalFunctionSyntax.Variables.Add(mainFunctionDeclarator);
 
             return globalFunctionSyntax;
+        }
+
+        public sealed override LuaVariableListDeclarationSyntax BuildMainFunction()
+        {
+            return Build(
+                MainFunctionProvider.FunctionName,
+                MainFunctionStatementsProvider<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetStatements(this).ToArray());
+        }
+
+        public sealed override LuaVariableListDeclarationSyntax BuildConfigFunction()
+        {
+            return Build(
+                ConfigFunctionProvider.FunctionName,
+                ConfigFunctionStatementsProvider<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetStatements(this).ToArray());
         }
 
         public sealed override LuaStatementSyntax GenerateLocalDeclarationStatement(string variableName)

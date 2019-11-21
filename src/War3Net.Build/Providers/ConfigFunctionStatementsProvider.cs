@@ -12,13 +12,14 @@ using War3Net.Build.Script;
 
 namespace War3Net.Build.Providers
 {
+    internal static class ConfigFunctionProvider
+    {
+        public const string FunctionName = "config";
+    }
+
     internal static class ConfigFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
-        private const string ConfigFunctionName = "config";
-
-        public static string GetConfigFunctionName => ConfigFunctionName;
-
         public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {
             var mapInfo = builder.Data.MapInfo;
