@@ -14,15 +14,23 @@ namespace War3Net.Build.Script
     {
         private readonly MapInfo _mapInfo;
         private readonly MapUnits _mapUnits;
+        private readonly string? _lobbyMusic;
+        private readonly bool _csharp;
 
-        public FunctionBuilderData(MapInfo mapInfo, MapUnits mapUnits)
+        public FunctionBuilderData(MapInfo mapInfo, MapUnits mapUnits, string? lobbyMusic, bool csharp)
         {
             _mapInfo = mapInfo;
             _mapUnits = mapUnits;
+            _lobbyMusic = lobbyMusic;
+            _csharp = csharp;
         }
 
         public MapInfo MapInfo => _mapInfo;
 
         public MapUnits MapUnits => _mapUnits;
+
+        public string? LobbyMusic => _lobbyMusic;
+
+        public bool CSharp => _csharp;
     }
 }

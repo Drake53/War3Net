@@ -18,17 +18,11 @@ using static War3Net.Build.Providers.MainFunctionStatementsProvider<
 
 namespace War3Net.Build.Script
 {
-    internal sealed class JassMainFunctionBuilder : JassFunctionBuilder, IMainFunctionBuilder<NewStatementSyntax>
+    internal sealed class JassMainFunctionBuilder : JassFunctionBuilder
     {
         public JassMainFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
-        }
-
-        public bool EnableCSharp
-        {
-            get => false;
-            set { }
         }
 
         public override FunctionSyntax Build()

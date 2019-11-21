@@ -5,12 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Info;
 using War3Net.Build.Script;
-using War3Net.Build.Widget;
 
 namespace War3Net.Build.Providers
 {
@@ -20,7 +18,7 @@ namespace War3Net.Build.Providers
     }
 
     internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
-        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>, IMainFunctionBuilder<TStatementSyntax>
+        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private const string MainFunctionName = "main";
 
@@ -163,7 +161,7 @@ namespace War3Net.Build.Providers
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.InitBlizzard));
 
-            if (builder.EnableCSharp)
+            if (builder.Data.CSharp)
             {
                 yield return builder.GenerateInvocationStatement(
                     CSharpLua.LuaSyntaxGenerator.kManifestFuncName);

@@ -19,14 +19,12 @@ using static War3Net.Build.Providers.MainFunctionStatementsProvider<
 
 namespace War3Net.Build.Script
 {
-    internal sealed class LuaMainFunctionBuilder : LuaFunctionBuilder, IMainFunctionBuilder<LuaStatementSyntax>
+    internal sealed class LuaMainFunctionBuilder : LuaFunctionBuilder
     {
         public LuaMainFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
         }
-
-        public bool EnableCSharp { get; set; }
 
         public override LuaVariableListDeclarationSyntax Build()
         {

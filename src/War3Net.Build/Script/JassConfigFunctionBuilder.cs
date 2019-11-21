@@ -17,14 +17,12 @@ using static War3Net.Build.Providers.ConfigFunctionStatementsProvider<
 
 namespace War3Net.Build.Script
 {
-    internal sealed class JassConfigFunctionBuilder : JassFunctionBuilder, IConfigFunctionBuilder<NewStatementSyntax>
+    internal sealed class JassConfigFunctionBuilder : JassFunctionBuilder
     {
         public JassConfigFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
         }
-
-        public string LobbyMusic { get; set; }
 
         public override FunctionSyntax Build()
         {

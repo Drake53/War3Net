@@ -13,7 +13,7 @@ using War3Net.Build.Script;
 namespace War3Net.Build.Providers
 {
     internal static class ConfigFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
-        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>, IConfigFunctionBuilder<TStatementSyntax>
+        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private const string ConfigFunctionName = "config";
 
@@ -47,11 +47,11 @@ namespace War3Net.Build.Providers
                 nameof(War3Api.Common.SetGamePlacement),
                 builder.GenerateVariableExpression(nameof(War3Api.Common.MAP_PLACEMENT_TEAMS_TOGETHER)));
 
-            if (builder.LobbyMusic != null)
+            if (builder.Data.LobbyMusic != null)
             {
                 yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.PlayMusic),
-                    builder.GenerateStringLiteralExpression(builder.LobbyMusic));
+                    builder.GenerateStringLiteralExpression(builder.Data.LobbyMusic));
             }
 
             for (var i = 0; i < playerDataCount; i++)

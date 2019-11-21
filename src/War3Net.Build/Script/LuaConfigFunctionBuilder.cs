@@ -17,14 +17,12 @@ using static War3Net.Build.Providers.ConfigFunctionStatementsProvider<
 
 namespace War3Net.Build.Script
 {
-    internal sealed class LuaConfigFunctionBuilder : LuaFunctionBuilder, IConfigFunctionBuilder<LuaStatementSyntax>
+    internal sealed class LuaConfigFunctionBuilder : LuaFunctionBuilder
     {
         public LuaConfigFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
         }
-
-        public string LobbyMusic { get; set; }
 
         public override LuaVariableListDeclarationSyntax Build()
         {

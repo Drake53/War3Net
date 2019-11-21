@@ -46,15 +46,13 @@ namespace War3Net.Build.Script
 
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
-            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits);
+            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits, Options.LobbyMusic, false);
 
             var mainFunctionBuilder = new JassMainFunctionBuilder(functionBuilderData);
-            mainFunctionBuilder.EnableCSharp = false;
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
             RenderFunctionSyntaxToFile(mainFunctionBuilder.Build(), mainFunctionFilePath);
 
             var configFunctionBuilder = new JassConfigFunctionBuilder(functionBuilderData);
-            configFunctionBuilder.LobbyMusic = Options.LobbyMusic;
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
             RenderFunctionSyntaxToFile(configFunctionBuilder.Build(), configFunctionFilePath);
         }
