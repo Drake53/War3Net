@@ -34,71 +34,101 @@ namespace War3Net.Build.Providers
         {
             var mapInfo = builder.Data.MapInfo;
 
-            yield return builder.GenerateSetCameraBoundsStatement(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetCameraBounds),
-                nameof(War3Api.Common.GetCameraMargin),
-                nameof(War3Api.Common.CAMERA_MARGIN_LEFT),
-                nameof(War3Api.Common.CAMERA_MARGIN_RIGHT),
-                nameof(War3Api.Common.CAMERA_MARGIN_TOP),
-                nameof(War3Api.Common.CAMERA_MARGIN_BOTTOM),
-                mapInfo.CameraBounds.BottomLeft.X,
-                mapInfo.CameraBounds.BottomLeft.Y,
-                mapInfo.CameraBounds.TopRight.X,
-                mapInfo.CameraBounds.TopRight.Y,
-                mapInfo.CameraBounds.TopLeft.X,
-                mapInfo.CameraBounds.TopLeft.Y,
-                mapInfo.CameraBounds.BottomRight.X,
-                mapInfo.CameraBounds.BottomRight.Y);
+                builder.GenerateBinaryAdditionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomLeft.X),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_LEFT)))),
+                builder.GenerateBinaryAdditionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomLeft.Y),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_BOTTOM)))),
+                builder.GenerateBinarySubtractionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopRight.X),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_RIGHT)))),
+                builder.GenerateBinarySubtractionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopRight.Y),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_TOP)))),
+                builder.GenerateBinaryAdditionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopLeft.X),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_LEFT)))),
+                builder.GenerateBinarySubtractionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopLeft.Y),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_TOP)))),
+                builder.GenerateBinarySubtractionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomRight.X),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_RIGHT)))),
+                builder.GenerateBinaryAdditionExpression(
+                    builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomRight.Y),
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.GetCameraMargin),
+                        builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_BOTTOM)))));
 
-            yield return builder.GenerateSetDayNightModelsStatement(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetDayNightModels),
-                LightEnvironmentProvider.GetTerrainLightEnvironmentModel(mapInfo.LightEnvironment),
-                LightEnvironmentProvider.GetUnitLightEnvironmentModel(mapInfo.LightEnvironment));
+                builder.GenerateStringLiteralExpression(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(mapInfo.LightEnvironment)),
+                builder.GenerateStringLiteralExpression(LightEnvironmentProvider.GetUnitLightEnvironmentModel(mapInfo.LightEnvironment)));
 
             if (mapInfo.MapFlags.HasFlag(MapFlags.HasTerrainFog))
             {
-                yield return builder.GenerateSetTerrainFogExStatement(
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.SetTerrainFogEx),
-                    (int)mapInfo.FogStyle,
-                    mapInfo.FogStartZ,
-                    mapInfo.FogEndZ,
-                    mapInfo.FogDensity,
-                    mapInfo.FogColor.R / 255f,
-                    mapInfo.FogColor.G / 255f,
-                    mapInfo.FogColor.B / 255f);
+                    builder.GenerateIntegerLiteralExpression((int)mapInfo.FogStyle),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogStartZ),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogEndZ),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogDensity),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogColor.R / 255f),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogColor.G / 255f),
+                    builder.GenerateFloatLiteralExpression(mapInfo.FogColor.B / 255f));
             }
 
             if (mapInfo.GlobalWeather != WeatherType.None)
             {
-                yield return builder.GenerateAddWeatherEffectStatement(
-                    nameof(War3Api.Common.AddWeatherEffect),
+                // TODO: use GetWorldBounds or get coords from w3i/w3e
+                yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.EnableWeatherEffect),
-                    nameof(War3Api.Common.Rect),
-                    // TODO: use GetWorldBounds or get coords from w3i
-                    -999999,
-                    -999999,
-                    999999,
-                    999999,
-                    (int)mapInfo.GlobalWeather);
+                    builder.GenerateInvocationExpression(
+                        nameof(War3Api.Common.AddWeatherEffect),
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Rect),
+                            builder.GenerateFloatLiteralExpression(-999999),
+                            builder.GenerateFloatLiteralExpression(-999999),
+                            builder.GenerateFloatLiteralExpression(999999),
+                            builder.GenerateFloatLiteralExpression(999999)),
+                        builder.GenerateIntegerLiteralExpression((int)mapInfo.GlobalWeather)),
+                    builder.GenerateBooleanLiteralExpression(true));
             }
 
-            yield return builder.GenerateInvocationStatementWithStringArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.NewSoundEnvironment),
-                mapInfo.SoundEnvironment);
+                builder.GenerateStringLiteralExpression(mapInfo.SoundEnvironment));
 
-            yield return builder.GenerateInvocationStatementWithStringArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.SetAmbientDaySound),
-                SoundEnvironmentProvider.GetAmbientDaySound(mapInfo.Tileset));
+                builder.GenerateStringLiteralExpression(SoundEnvironmentProvider.GetAmbientDaySound(mapInfo.Tileset)));
 
-            yield return builder.GenerateInvocationStatementWithStringArgument(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.SetAmbientNightSound),
-                SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset));
+                builder.GenerateStringLiteralExpression(SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset)));
 
-            yield return builder.GenerateSetMapMusicStatement(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapMusic),
-                MusicName,
-                MusicRandom,
-                MusicIndex);
+                builder.GenerateStringLiteralExpression(MusicName),
+                builder.GenerateBooleanLiteralExpression(MusicRandom),
+                builder.GenerateIntegerLiteralExpression(MusicIndex));
 
             if (builder.Data.MapUnits != null)
             {
@@ -110,31 +140,32 @@ namespace War3Net.Build.Providers
 
                 foreach (var mapUnit in builder.Data.MapUnits)
                 {
-                    yield return builder.GenerateCreateUnitStatement(
+                    yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.CreateUnit),
-                        nameof(War3Api.Common.Player),
-                        mapUnit.Owner,
-                        mapUnit.TypeId,
-                        mapUnit.PositionX,
-                        mapUnit.PositionY,
-                        mapUnit.Facing);
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Player),
+                            builder.GenerateIntegerLiteralExpression(mapUnit.Owner)),
+                        builder.GenerateFourCCExpression(mapUnit.TypeId),
+                        builder.GenerateFloatLiteralExpression(mapUnit.PositionX),
+                        builder.GenerateFloatLiteralExpression(mapUnit.PositionY),
+                        builder.GenerateFloatLiteralExpression(mapUnit.Facing));
 
                     if (mapUnit.GoldAmount > 0)
                     {
-                        yield return builder.GenerateInvocationStatementWithVariableAndIntegerArgument(
+                        yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetResourceAmount),
-                            MainFunctionProvider.LocalUnitVariableName,
-                            mapUnit.GoldAmount);
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(mapUnit.GoldAmount));
                     }
                 }
             }
 
-            yield return builder.GenerateInvocationStatementWithoutArguments(
+            yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.InitBlizzard));
 
             if (builder.EnableCSharp)
             {
-                yield return builder.GenerateInvocationStatementWithoutArguments(
+                yield return builder.GenerateInvocationStatement(
                     CSharpLua.LuaSyntaxGenerator.kManifestFuncName);
             }
         }
