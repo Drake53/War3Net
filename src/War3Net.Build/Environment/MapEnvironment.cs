@@ -252,6 +252,38 @@ namespace War3Net.Build.Environment
             }
         }
 
+        public void ReplaceTiles(TerrainType oldType, TerrainType newType, bool swapBoth = false)
+        {
+            if (oldType == newType)
+            {
+                return;
+            }
+
+            var oldIndex = _terrainTypes.IndexOf(oldType);
+            if (oldIndex == -1)
+            {
+                throw new ArgumentException($"{oldType.ToString()} is not part of the tileset.");
+            }
+
+            var newIndex = _terrainTypes.IndexOf(newType);
+            if (newIndex == -1)
+            {
+                throw new ArgumentException($"{newType.ToString()} is not part of the tileset.");
+            }
+
+            foreach (var tile in _tiles)
+            {
+                if (tile.Texture == oldIndex)
+                {
+                    tile.Texture = newIndex;
+                }
+                else if (swapBoth && tile.Texture == newIndex)
+                {
+                    tile.Texture = oldIndex;
+                }
+            }
+        }
+
         public bool IsDefaultTileset()
         {
             return AreListsEqual(_terrainTypes, GetDefaultTerrainTypes().ToArray())
