@@ -73,7 +73,7 @@ namespace War3Net.Build.Info
 
         private ScriptLanguage _scriptLanguage;
 
-        private MapInfo()
+        internal MapInfo()
         {
             _playerData = new List<PlayerData>();
             _forceData = new List<ForceData>();
@@ -330,10 +330,22 @@ namespace War3Net.Build.Info
                 info._mapDescription = "Nondescript";
                 info._recommendedPlayers = "Any";
 
-                info._cameraBounds = new Quadrilateral(-2816f, 2816f, 2816f, -3328f);
-                info._cameraBoundsComplements = new RectangleMargins(6, 6, 4, 8);
-                info._playableMapAreaWidth = 52;
-                info._playableMapAreaHeight = 52;
+                const int DefaultSize = 32;
+                const int DefaultLeftComplement = 6;
+                const int DefaultRightComplement = 6;
+                const int DefaultTopComplement = 8;
+                const int DefaultBottomComplement = 4;
+                const int DefaultHorizontalBoundsOffset = 4;
+                const int DefaultVerticalBoundsOffset = 2;
+                const float TileSize = 128f;
+                info._cameraBounds = new Quadrilateral(
+                    -TileSize * (DefaultSize - DefaultLeftComplement - DefaultHorizontalBoundsOffset),
+                    TileSize * (DefaultSize - DefaultRightComplement - DefaultHorizontalBoundsOffset),
+                    TileSize * (DefaultSize - DefaultTopComplement - DefaultVerticalBoundsOffset),
+                    -TileSize * (DefaultSize - DefaultBottomComplement - DefaultVerticalBoundsOffset));
+                info._cameraBoundsComplements = new RectangleMargins(DefaultLeftComplement, DefaultRightComplement, DefaultBottomComplement, DefaultTopComplement);
+                info._playableMapAreaWidth = (2 * DefaultSize) - DefaultLeftComplement - DefaultRightComplement;
+                info._playableMapAreaHeight = (2 * DefaultSize) - DefaultBottomComplement - DefaultTopComplement;
 
                 info._mapFlags
                     = MapFlags.UseItemClassificationSystem
