@@ -73,7 +73,7 @@ namespace War3Net.Build.Info
 
         private ScriptLanguage _scriptLanguage;
 
-        public MapInfo()
+        private MapInfo()
         {
             _playerData = new List<PlayerData>();
             _forceData = new List<ForceData>();
@@ -322,7 +322,7 @@ namespace War3Net.Build.Info
 
                 info._fileFormatVersion = MapInfoFormatVersion.Lua;
                 info._mapVersion = 1;
-                info._editorVersion = 0x304E3357; // [W]ar[3][N]et.Build v[0].2.1
+                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].0.0
                 info._gameVersion = new Version(1, 31, 1, 12164);
 
                 info._mapName = "Just another Warcraft III map";
@@ -517,6 +517,21 @@ namespace War3Net.Build.Info
 
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
+            if (_fileFormatVersion >= MapInfoFormatVersion.Lua && _gameVersion is null)
+            {
+                throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(GameVersion)} is null.");
+            }
+
+            if (_cameraBounds is null)
+            {
+                throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBounds)} is null.");
+            }
+
+            if (_cameraBoundsComplements is null)
+            {
+                throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBoundsComplements)} is null.");
+            }
+
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 writer.Write((int)_fileFormatVersion);
