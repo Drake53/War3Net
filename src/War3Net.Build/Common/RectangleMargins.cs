@@ -14,15 +14,15 @@ namespace War3Net.Build
     {
         private int _left;
         private int _right;
-        private int _top;
         private int _bottom;
+        private int _top;
 
-        public RectangleMargins(int left, int right, int top, int bottom)
+        public RectangleMargins(int left, int right, int bottom, int top)
         {
             _left = left;
             _right = right;
-            _top = top;
             _bottom = bottom;
+            _top = top;
         }
 
         public int Left
@@ -37,16 +37,16 @@ namespace War3Net.Build
             set => _right = value;
         }
 
-        public int Top
-        {
-            get => _top;
-            set => _top = value;
-        }
-
         public int Bottom
         {
             get => _bottom;
             set => _bottom = value;
+        }
+
+        public int Top
+        {
+            get => _top;
+            set => _top = value;
         }
 
         public static RectangleMargins Parse(Stream stream, bool leaveOpen = false)
@@ -73,8 +73,8 @@ namespace War3Net.Build
         {
             writer.Write(_left);
             writer.Write(_right);
-            writer.Write(_top);
             writer.Write(_bottom);
+            writer.Write(_top);
         }
     }
 }
