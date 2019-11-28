@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 
 using War3Net.Build.Common;
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 
 namespace War3Net.Build.Environment
@@ -23,6 +24,12 @@ namespace War3Net.Build.Environment
         public const uint HeaderSignature = 0x21453357; // "W3E!"
         public const uint LatestVersion = 11;
 
+        private const int DefaultCliffLevel = 2;
+
+        private readonly List<TerrainType> _terrainTypes;
+        private readonly List<CliffType> _cliffTypes;
+        private readonly List<MapTile> _tiles;
+
         private Tileset _tileset;
         private uint _version;
 
@@ -31,12 +38,32 @@ namespace War3Net.Build.Environment
         private float _left;
         private float _bottom;
 
-        private readonly List<TerrainType> _terrainTypes;
-        private readonly List<CliffType> _cliffTypes;
+        public MapEnvironment(Tileset tileset, MapInfo mapInfo)
+            : this(
+                  tileset,
+                  (uint)(mapInfo.PlayableMapAreaWidth + mapInfo.CameraBoundsComplements.Left + mapInfo.CameraBoundsComplements.Right + 1),
+                  (uint)(mapInfo.PlayableMapAreaHeight + mapInfo.CameraBoundsComplements.Bottom + mapInfo.CameraBoundsComplements.Top + 1),
+                  DefaultCliffLevel,
+                  mapInfo.CameraBoundsComplements)
+        {
+        }
 
-        private readonly List<MapTile> _tiles;
+        public MapEnvironment(Tileset tileset, uint width, uint height)
+            : this(tileset, width, height, DefaultCliffLevel)
+        {
+        }
 
-        public MapEnvironment(Tileset tileset, uint width, uint height, int cliffLevel = 2)
+        public MapEnvironment(Tileset tileset, uint width, uint height, int cliffLevel)
+            : this(tileset, width, height, cliffLevel, new RectangleMargins(6, 6, 4, 8))
+        {
+        }
+
+        public MapEnvironment(Tileset tileset, uint width, uint height, RectangleMargins cameraBoundsComplements)
+            : this(tileset, width, height, DefaultCliffLevel, cameraBoundsComplements)
+        {
+        }
+
+        public MapEnvironment(Tileset tileset, uint width, uint height, int cliffLevel, RectangleMargins cameraBoundsComplements)
             : this()
         {
             if (!Enum.IsDefined(typeof(Tileset), tileset))
@@ -44,14 +71,21 @@ namespace War3Net.Build.Environment
                 throw new ArgumentOutOfRangeException(nameof(tileset));
             }
 
-            if (((width - 1) % 32) != 0 || width == 0)
+            var maxx = width - 1;
+            if ((maxx % 32) != 0 || width == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(width));
             }
 
-            if (((height - 1) % 32) != 0 || height == 0)
+            var maxy = height - 1;
+            if ((maxy % 32) != 0 || height == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(height));
+            }
+
+            if (cameraBoundsComplements is null)
+            {
+                throw new ArgumentNullException(nameof(cameraBoundsComplements));
             }
 
             _tileset = tileset;
@@ -64,13 +98,10 @@ namespace War3Net.Build.Environment
             _terrainTypes = GetDefaultTerrainTypes().ToList();
             _cliffTypes = GetDefaultCliffTypes().ToList();
 
-            var maxx = width - 1;
-            var maxy = height - 1;
-            var complements = new RectangleMargins(6, 6, 4, 8);
-            var edgeLeft = complements.Left;
-            var edgeRight = maxx - complements.Right;
-            var edgeBottom = complements.Bottom;
-            var edgeTop = maxy - complements.Top;
+            var edgeLeft = cameraBoundsComplements.Left;
+            var edgeRight = maxx - cameraBoundsComplements.Right;
+            var edgeBottom = cameraBoundsComplements.Bottom;
+            var edgeTop = maxy - cameraBoundsComplements.Top;
             for (var y = 0; y < _width; y++)
             {
                 for (var x = 0; x < _height; x++)
@@ -100,7 +131,6 @@ namespace War3Net.Build.Environment
         {
             _terrainTypes = new List<TerrainType>();
             _cliffTypes = new List<CliffType>();
-
             _tiles = new List<MapTile>();
         }
 
@@ -132,7 +162,7 @@ namespace War3Net.Build.Environment
 
         public float MapHeight => MapTile.TileHeight * (_height - 1);
 
-        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65);
+        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
 
         public static MapEnvironment Parse(Stream stream, bool leaveOpen = false)
         {
