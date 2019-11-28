@@ -53,7 +53,6 @@ namespace War3Net.Build.Script
                 throw new NotImplementedException();
             }
 
-            // Options.Optimize;
             // Options.Obfuscate;
 
             // new arguments, not tested
@@ -84,6 +83,7 @@ namespace War3Net.Build.Script
                 IsModule = false,
                 IsInlineSimpleProperty = false,
                 IsPreventDebugObject = preventDebug,
+                IsCommentsDisabled = Options.Optimize,
             };
 
             try
