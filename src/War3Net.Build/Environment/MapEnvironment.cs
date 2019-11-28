@@ -64,13 +64,32 @@ namespace War3Net.Build.Environment
             _terrainTypes = GetDefaultTerrainTypes().ToList();
             _cliffTypes = GetDefaultCliffTypes().ToList();
 
+            var maxx = width - 1;
+            var maxy = height - 1;
+            var complements = new RectangleMargins(6, 6, 4, 8);
+            var edgeLeft = complements.Left;
+            var edgeRight = maxx - complements.Right;
+            var edgeBottom = complements.Bottom;
+            var edgeTop = maxy - complements.Top;
             for (var y = 0; y < _width; y++)
             {
                 for (var x = 0; x < _height; x++)
                 {
                     var tile = new MapTile();
+
                     tile.CliffLevel = cliffLevel;
-                    tile.IsEdgeTile = x == 0 || x == _width - 1 || y == 0 || y == _height - 1;
+                    tile.CliffTexture = 15;
+                    tile.CliffVariation = 0;
+
+                    tile.Height = 0;
+                    tile.IsBlighted = false;
+                    tile.IsBoundary = false;
+                    tile.IsEdgeTile = x != maxx && y != maxy && (x < edgeLeft || x >= edgeRight || y < edgeBottom || y >= edgeTop);
+                    tile.IsRamp = false;
+                    tile.IsWater = false;
+                    tile.Texture = 0;
+                    tile.Variation = 0;
+                    tile.WaterHeight = 0;
 
                     _tiles.Add(tile);
                 }
@@ -113,62 +132,7 @@ namespace War3Net.Build.Environment
 
         public float MapHeight => MapTile.TileHeight * (_height - 1);
 
-        public static MapEnvironment Default
-        {
-            get
-            {
-                var environment = new MapEnvironment();
-
-                environment._version = LatestVersion;
-
-                var tileset = Tileset.LordaeronSummer;
-                environment._tileset = tileset;
-                environment._terrainTypes.AddRange(TerrainTypeProvider.GetTerrainTypes(tileset));
-                environment._cliffTypes.AddRange(TerrainTypeProvider.GetCliffTypes(tileset));
-
-                const uint width = 65U;
-                const uint height = 65U;
-                const uint maxx = width - 1;
-                const uint maxy = height - 1;
-
-                /// <see cref="Info.MapInfo.CameraBoundsComplements"/>
-                const int edgeLeft = 6;
-                const int edgeRight = 6;
-                const int edgeTop = 4;
-                const int edgeBottom = 8;
-
-                environment._width = width;
-                environment._height = height;
-                environment._left = environment.MapWidth * -0.5f;
-                environment._bottom = environment.MapHeight * -0.5f;
-
-                for (var y = 0; y < width; y++)
-                {
-                    for (var x = 0; x < height; x++)
-                    {
-                        var tile = new MapTile();
-
-                        tile.CliffLevel = 2;
-                        tile.CliffTexture = 15;
-                        tile.CliffVariation = 0;
-
-                        tile.Height = 0;
-                        tile.IsBlighted = false;
-                        tile.IsBoundary = false;
-                        tile.IsEdgeTile = x != maxx && y != maxy && (y < edgeTop || x < edgeLeft || x >= maxx - edgeRight || y >= maxy - edgeBottom);
-                        tile.IsRamp = false;
-                        tile.IsWater = false;
-                        tile.Texture = 0;
-                        tile.Variation = 0;
-                        tile.WaterHeight = 0;
-
-                        environment._tiles.Add(tile);
-                    }
-                }
-
-                return environment;
-            }
-        }
+        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65);
 
         public static MapEnvironment Parse(Stream stream, bool leaveOpen = false)
         {
