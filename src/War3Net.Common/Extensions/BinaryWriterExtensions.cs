@@ -7,7 +7,7 @@
 
 using System.IO;
 
-namespace War3Net.Build.Extensions
+namespace War3Net.Common.Extensions
 {
     public static class BinaryWriterExtensions
     {

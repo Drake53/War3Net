@@ -5,10 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Drawing;
 using System.IO;
 
-namespace War3Net.Build.Extensions
+#if !NETSTANDARD1_3
+using System.Drawing;
+#endif
+
+namespace War3Net.Common.Extensions
 {
     public static class BinaryReaderExtensions
     {
@@ -30,6 +33,7 @@ namespace War3Net.Build.Extensions
             return s;
         }
 
+#if !NETSTANDARD1_3
         public static Color ReadColorRgba(this BinaryReader reader)
         {
             var red = reader.ReadByte();
@@ -38,5 +42,6 @@ namespace War3Net.Build.Extensions
             var alpha = reader.ReadByte();
             return Color.FromArgb(alpha, red, green, blue);
         }
+#endif
     }
 }

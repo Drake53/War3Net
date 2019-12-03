@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 
-namespace War3Net.IO.Compression
+namespace War3Net.Common.Extensions
 {
     /// <summary>
     /// Provides extension methods for the <see cref="Stream"/> class.
@@ -65,6 +65,22 @@ namespace War3Net.IO.Compression
 
             stream.Position = copyOffset;
             stream.CopyTo(destination, bytesToCopy, bufferSize);
+        }
+
+        public static ushort ReadWord(this Stream stream)
+        {
+            var b1 = stream.ReadByte();
+            var b2 = stream.ReadByte();
+
+            return (ushort)(b1 | (b2 << 8));
+        }
+
+        public static int ReadWordAsInt(this Stream stream)
+        {
+            var b1 = stream.ReadByte();
+            var b2 = stream.ReadByte();
+
+            return b1 | (b2 << 8);
         }
     }
 }

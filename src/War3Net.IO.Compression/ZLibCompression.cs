@@ -10,6 +10,8 @@
 using System;
 using System.IO;
 
+using War3Net.Common.Extensions;
+
 #if USING_DOTNETZIP
 using Ionic.Zlib;
 #else
