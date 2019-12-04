@@ -116,6 +116,7 @@ namespace War3Net.CodeAnalysis.Jass
             if (outputSource != null)
             {
                 new FileInfo(outputSource).Directory.Create();
+                File.Delete(outputSource);
 
                 // Output C# source code.
 #pragma warning disable CA2000 // Dispose objects before losing scope

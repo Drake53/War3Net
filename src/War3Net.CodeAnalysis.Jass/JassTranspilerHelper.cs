@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,17 +45,28 @@ namespace War3Net.CodeAnalysis.Jass
             {
                 return new[]
                 {
-                SyntaxFactory.ClassDeclaration(
-                default,
-                new SyntaxTokenList(
-                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
-                SyntaxFactory.Identifier(identifier),
-                null,
-                null,
-                default,
-                new SyntaxList<MemberDeclarationSyntax>(members.Select(declr => declr.AddAttributeByName(nameof(NativeLuaMemberAttribute)))))
-                //.AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
+                    SyntaxFactory.ClassDeclaration(
+                    default,
+                    new SyntaxTokenList(
+                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
+                    SyntaxFactory.Identifier(identifier),
+                    null,
+                    null,
+                    default,
+                    // .AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
+                    new SyntaxList<MemberDeclarationSyntax>(
+                        members.Select(declr => declr is ClassDeclarationSyntax
+                        ? declr.AddAttributeByName(
+                            nameof(NativeLuaMemberAttribute))
+                        : declr.WithLeadingTrivia(
+                            SyntaxFactory.TriviaList(
+                                SyntaxFactory.Trivia(SyntaxFactory.DocumentationCommentTrivia(
+                                    SyntaxKind.SingleLineDocumentationCommentTrivia,
+                                    SyntaxFactory.List<XmlNodeSyntax>(new[]
+                                    {
+                                        SyntaxFactory.XmlText($"/// @CSharpLua.Template = \"{GetDeclarationTemplateText(declr)}\"\r\n"),
+                                    })))))))),
                 };
             }
             else
@@ -92,6 +104,25 @@ namespace War3Net.CodeAnalysis.Jass
                 }
 
                 return classList.ToArray();
+            }
+        }
+
+        private static string GetDeclarationTemplateText(MemberDeclarationSyntax memberDeclaration)
+        {
+            if (memberDeclaration is MethodDeclarationSyntax methodDeclaration)
+            {
+                var @params = methodDeclaration.ParameterList.Parameters.Count == 0
+                    ? string.Empty
+                    : methodDeclaration.ParameterList.Parameters.Select((_, index) => $"{{{index}}}").Aggregate((accum, next) => $"{accum}, {next}");
+                return $"{methodDeclaration.Identifier.ValueText}({@params})";
+            }
+            else if (memberDeclaration is FieldDeclarationSyntax fieldDeclaration)
+            {
+                return fieldDeclaration.Declaration.Variables.Single().Identifier.ValueText;
+            }
+            else
+            {
+                throw new NotSupportedException("The attribute @CSharpLua.Template only supports methods and fields.");
             }
         }
 
