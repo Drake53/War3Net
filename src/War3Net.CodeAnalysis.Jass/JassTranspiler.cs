@@ -63,11 +63,18 @@ namespace War3Net.CodeAnalysis.Jass
             {
                 writer.WriteLine($"local {newType} = define(\"{namespaceAndClassPrefix}.{newType}\", {{");
 
+                var members = new List<string>();
+                const int indentCount = 2;
+                var indentation = new string(' ', indentCount);
+
+                // members.Add($"__ctor__ = function(this, {}");
                 if (baseType != null)
                 {
-                    writer.WriteLine($"  __inherits__ = {{ {baseType} }}");
+                    // Should be: CSharpLua.LuaAst.LuaIdentifierNameSyntax.Inherits, but referencing that project requires updating this project to .NET standard 2.1
+                    members.Add($"{"base"} = {{ {baseType} }}");
                 }
 
+                writer.WriteLine(members.Select(line => $"{indentation}{line}").Aggregate((accum, next) => $"{accum},\r\n{next}"));
                 writer.WriteLine("})");
             }
         }
@@ -120,7 +127,6 @@ namespace War3Net.CodeAnalysis.Jass
 
                 // Output C# source code.
 #pragma warning disable CA2000 // Dispose objects before losing scope
-                // TODO: fix existing file not overwritten properly (if new length shorter than old length)
                 CompilationHelper.SerializeTo(compilationUnit, File.OpenWrite(outputSource), false);
 #pragma warning restore CA2000 // Dispose objects before losing scope
             }
