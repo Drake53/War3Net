@@ -38,6 +38,11 @@ namespace War3Net.Build.Environment
         private float _left;
         private float _bottom;
 
+        public MapEnvironment(MapInfo mapInfo)
+            : this(mapInfo.Tileset, mapInfo)
+        {
+        }
+
         public MapEnvironment(Tileset tileset, MapInfo mapInfo)
             : this(
                   tileset,

@@ -31,14 +31,11 @@ namespace War3Net.Build.Script
 
         public MpqFileFlags DefaultFileFlags { get; set; }
 
-        [System.Obsolete(null, true)]
-        public ScriptBuilderOptions BuilderOptions { get; set; }
+        public MapInfo? MapInfo { get; set; }
 
-        public MapInfo MapInfo { get; set; }
+        public MapEnvironment? MapEnvironment { get; set; }
 
-        public MapEnvironment MapEnvironment { get; set; }
-
-        public MapUnits MapUnits { get; set; }
+        public MapUnits? MapUnits { get; set; }
 
         public string LobbyMusic { get; set; }
 

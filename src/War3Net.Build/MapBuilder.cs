@@ -14,6 +14,7 @@ using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
+using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Renderer;
 using War3Net.IO.Mpq;
 
@@ -91,31 +92,86 @@ namespace War3Net.Build
 
         public bool Build(ScriptCompilerOptions compilerOptions, params string[] assetsDirectories)
         {
+            if (compilerOptions is null)
+            {
+                throw new ArgumentNullException(nameof(compilerOptions));
+            }
+
             Directory.CreateDirectory(compilerOptions.OutputDirectory);
 
             var files = new Dictionary<(string fileName, MpqLocale locale), Stream>();
 
-            // Generate mapInfo file
-            if (compilerOptions.MapInfo != null)
+            // If MapInfo is not set, search for it in assets.
+            if (compilerOptions.MapInfo is null)
             {
-                var path = Path.Combine(compilerOptions.OutputDirectory, MapInfo.FileName);
-                using var fileStream = File.Create(path);
-                compilerOptions.MapInfo.SerializeTo(fileStream);
-                files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
-            }
-            else
-            {
-                // TODO: set MapInfo by parsing war3map.w3i from assetsDirectories, because it's needed for compilation.
-                // compilerOptions.MapInfo = ...;
-                throw new NotImplementedException();
+                foreach (var assetsDirectory in assetsDirectories)
+                {
+                    if (string.IsNullOrWhiteSpace(assetsDirectory))
+                    {
+                        continue;
+                    }
+
+                    var mapInfoStream = FindFile(assetsDirectory, MapInfo.FileName);
+                    if (mapInfoStream is null)
+                    {
+                        throw new FileNotFoundException("Could not detect required file", MapInfo.FileName);
+                    }
+
+                    compilerOptions.MapInfo = MapInfo.Parse(mapInfoStream);
+                }
             }
 
-            if (compilerOptions.MapEnvironment != null)
+            // Generate mapInfo file
+            var mapInfoPath = Path.Combine(compilerOptions.OutputDirectory, MapInfo.FileName);
+            using (var mapInfoStream = File.Create(mapInfoPath))
             {
-                var path = Path.Combine(compilerOptions.OutputDirectory, MapEnvironment.FileName);
-                using var fileStream = File.Create(path);
-                compilerOptions.MapEnvironment.SerializeTo(fileStream);
-                files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
+                compilerOptions.MapInfo.SerializeTo(mapInfoStream);
+            }
+
+            files.Add((new FileInfo(mapInfoPath).Name, MpqLocale.Neutral), File.OpenRead(mapInfoPath));
+
+            // If MapEnvironment is not set, search for it in assets.
+            if (compilerOptions.MapEnvironment is null)
+            {
+                foreach (var assetsDirectory in assetsDirectories)
+                {
+                    if (string.IsNullOrWhiteSpace(assetsDirectory))
+                    {
+                        continue;
+                    }
+
+                    var mapEnvironmentStream = FindFile(assetsDirectory, MapEnvironment.FileName);
+                    compilerOptions.MapEnvironment = mapEnvironmentStream is null
+                        ? new MapEnvironment(compilerOptions.MapInfo)
+                        : MapEnvironment.Parse(mapEnvironmentStream);
+                }
+            }
+
+            // Generate mapEnvironment file
+            var mapEnvironmentPath = Path.Combine(compilerOptions.OutputDirectory, MapEnvironment.FileName);
+            using (var mapEnvironmentStream = File.Create(mapEnvironmentPath))
+            {
+                compilerOptions.MapEnvironment.SerializeTo(mapEnvironmentStream);
+            }
+
+            files.Add((new FileInfo(mapEnvironmentPath).Name, MpqLocale.Neutral), File.OpenRead(mapEnvironmentPath));
+
+            // If MapUnits is not set, search for it in assets.
+            if (compilerOptions.MapUnits is null)
+            {
+                foreach (var assetsDirectory in assetsDirectories)
+                {
+                    if (string.IsNullOrWhiteSpace(assetsDirectory))
+                    {
+                        continue;
+                    }
+
+                    var mapUnitsStream = FindFile(assetsDirectory, MapUnits.FileName);
+                    if (mapUnitsStream != null)
+                    {
+                        compilerOptions.MapUnits = MapUnits.Parse(mapUnitsStream);
+                    }
+                }
             }
 
             /*var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
@@ -174,6 +230,19 @@ namespace War3Net.Build
                         files.Add((fileName, locale), stream);
                     }
                 }
+            }
+
+            Stream FindFile(string directory, string searchedFile)
+            {
+                foreach (var (fileName, _, stream) in FileProvider.EnumerateFiles(directory))
+                {
+                    if (fileName == searchedFile)
+                    {
+                        return stream;
+                    }
+                }
+
+                return null;
             }
 
             // Load assets
