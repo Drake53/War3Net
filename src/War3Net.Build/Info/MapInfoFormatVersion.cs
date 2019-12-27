@@ -23,5 +23,10 @@ namespace War3Net.Build.Info
         /// Format introduced with lua in patch 1.31.
         /// </summary>
         Lua = 28,
+
+        /// <summary>
+        /// Warcraft III Reforged (beta?) format, introduced in patch 1.32.
+        /// </summary>
+        Reforged = 31,
     }
 }

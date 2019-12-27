@@ -73,6 +73,9 @@ namespace War3Net.Build.Info
 
         private ScriptLanguage _scriptLanguage;
 
+        private int _unk0;
+        private int _unk1;
+
         internal MapInfo()
         {
             _playerData = new List<PlayerData>();
@@ -302,6 +305,18 @@ namespace War3Net.Build.Info
             set => _scriptLanguage = value;
         }
 
+        public int Unk0
+        {
+            get => _unk0;
+            set => _unk0 = value;
+        }
+
+        public int Unk1
+        {
+            get => _unk1;
+            set => _unk1 = value;
+        }
+
         public int PlayerDataCount => _playerData.Count;
 
         public int ForceDataCount => _forceData.Count;
@@ -323,7 +338,7 @@ namespace War3Net.Build.Info
                 info._fileFormatVersion = MapInfoFormatVersion.Lua;
                 info._mapVersion = 1;
                 info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].0.0
-                info._gameVersion = new Version(1, 31, 1, 12164);
+                info._gameVersion = new Version(1, 31, 1, 12164); // reforged beta: 1.32.0.13991
 
                 info._mapName = "Just another Warcraft III map";
                 info._mapAuthor = "Unknown";
@@ -381,6 +396,9 @@ namespace War3Net.Build.Info
                 info._waterTintingColor = Color.White;
 
                 info._scriptLanguage = ScriptLanguage.Lua;
+
+                info._unk0 = 3;
+                info._unk1 = 1;
 
                 var player0 = new PlayerData()
                 {
@@ -484,10 +502,18 @@ namespace War3Net.Build.Info
                     info._scriptLanguage = (ScriptLanguage)reader.ReadInt32();
                 }
 
+                if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
+                {
+                    info._unk0 = reader.ReadInt32();
+                    info._unk1 = reader.ReadInt32();
+                }
+
                 var playerDataCount = reader.ReadInt32();
                 for (var i = 0; i < playerDataCount; i++)
                 {
-                    info._playerData.Add(PlayerData.Parse(stream, true));
+                    info._playerData.Add(info._fileFormatVersion >= MapInfoFormatVersion.Reforged
+                        ? ReforgedPlayerData.Parse(stream, true)
+                        : PlayerData.Parse(stream, true));
                 }
 
                 var forceDataCount = reader.ReadInt32();
@@ -623,6 +649,12 @@ namespace War3Net.Build.Info
                 if (_fileFormatVersion >= MapInfoFormatVersion.Lua)
                 {
                     writer.Write((int)_scriptLanguage);
+                }
+
+                if (_fileFormatVersion >= MapInfoFormatVersion.Reforged)
+                {
+                    writer.Write(_unk0);
+                    writer.Write(_unk1);
                 }
 
                 writer.Write(_playerData.Count);

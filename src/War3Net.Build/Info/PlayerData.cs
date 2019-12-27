@@ -14,7 +14,7 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
-    public sealed class PlayerData
+    public class PlayerData
     {
         private int _playerNumber;
         private PlayerController _playerController;
@@ -24,6 +24,10 @@ namespace War3Net.Build.Info
         private PointF _startPosition;
         private int _allyLowPriorityFlags;
         private int _allyHighPriorityFlags;
+
+        internal PlayerData()
+        {
+        }
 
         public int PlayerNumber
         {
@@ -72,22 +76,27 @@ namespace War3Net.Build.Info
             var data = new PlayerData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                data._playerNumber = reader.ReadInt32();
-                data._playerController = (PlayerController)reader.ReadInt32();
-                data._playerRace = (PlayerRace)reader.ReadInt32();
-                data._playerFlags = (PlayerFlags)reader.ReadInt32();
-                data._playerName = reader.ReadChars();
-                data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
-
-                // Note: if _playerController is Computer, these values sometimes appear somewhat random.
-                data._allyLowPriorityFlags = reader.ReadInt32();
-                data._allyHighPriorityFlags = reader.ReadInt32();
+                ReadFrom(reader, data);
             }
 
             return data;
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal static void ReadFrom(BinaryReader reader, PlayerData data)
+        {
+            data._playerNumber = reader.ReadInt32();
+            data._playerController = (PlayerController)reader.ReadInt32();
+            data._playerRace = (PlayerRace)reader.ReadInt32();
+            data._playerFlags = (PlayerFlags)reader.ReadInt32();
+            data._playerName = reader.ReadChars();
+            data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
+
+            // Note: if _playerController is Computer, these values sometimes appear somewhat random.
+            data._allyLowPriorityFlags = reader.ReadInt32();
+            data._allyHighPriorityFlags = reader.ReadInt32();
+        }
+
+        public virtual void WriteTo(BinaryWriter writer)
         {
             writer.Write(_playerNumber);
             writer.Write((int)_playerController);
