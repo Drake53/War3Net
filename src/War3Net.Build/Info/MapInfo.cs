@@ -73,7 +73,7 @@ namespace War3Net.Build.Info
 
         private ScriptLanguage _scriptLanguage;
 
-        private int _unk0;
+        private SupportedModes _supportedModes;
         private int _unk1;
 
         internal MapInfo()
@@ -305,10 +305,10 @@ namespace War3Net.Build.Info
             set => _scriptLanguage = value;
         }
 
-        public int Unk0
+        public SupportedModes SupportedModes
         {
-            get => _unk0;
-            set => _unk0 = value;
+            get => _supportedModes;
+            set => _supportedModes = value;
         }
 
         public int Unk1
@@ -397,7 +397,7 @@ namespace War3Net.Build.Info
 
                 info._scriptLanguage = ScriptLanguage.Lua;
 
-                info._unk0 = 3;
+                info._supportedModes = SupportedModes.SD | SupportedModes.HD;
                 info._unk1 = 1;
 
                 var player0 = new PlayerData()
@@ -504,7 +504,7 @@ namespace War3Net.Build.Info
 
                 if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
                 {
-                    info._unk0 = reader.ReadInt32();
+                    info._supportedModes = (SupportedModes)reader.ReadInt32();
                     info._unk1 = reader.ReadInt32();
                 }
 
@@ -653,7 +653,7 @@ namespace War3Net.Build.Info
 
                 if (_fileFormatVersion >= MapInfoFormatVersion.Reforged)
                 {
-                    writer.Write(_unk0);
+                    writer.Write((int)_supportedModes);
                     writer.Write(_unk1);
                 }
 
