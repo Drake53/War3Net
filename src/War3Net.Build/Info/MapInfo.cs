@@ -74,7 +74,7 @@ namespace War3Net.Build.Info
         private ScriptLanguage _scriptLanguage;
 
         private SupportedModes _supportedModes;
-        private int _unk1;
+        private GameDataVersion _gameDataVersion;
 
         internal MapInfo()
         {
@@ -311,10 +311,10 @@ namespace War3Net.Build.Info
             set => _supportedModes = value;
         }
 
-        public int Unk1
+        public GameDataVersion GameDataVersion
         {
-            get => _unk1;
-            set => _unk1 = value;
+            get => _gameDataVersion;
+            set => _gameDataVersion = value;
         }
 
         public int PlayerDataCount => _playerData.Count;
@@ -398,7 +398,7 @@ namespace War3Net.Build.Info
                 info._scriptLanguage = ScriptLanguage.Lua;
 
                 info._supportedModes = SupportedModes.SD | SupportedModes.HD;
-                info._unk1 = 1;
+                info._gameDataVersion = GameDataVersion.TFT;
 
                 var player0 = new PlayerData()
                 {
@@ -505,7 +505,7 @@ namespace War3Net.Build.Info
                 if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
                 {
                     info._supportedModes = (SupportedModes)reader.ReadInt32();
-                    info._unk1 = reader.ReadInt32();
+                    info._gameDataVersion = (GameDataVersion)reader.ReadInt32();
                 }
 
                 var playerDataCount = reader.ReadInt32();
@@ -654,7 +654,7 @@ namespace War3Net.Build.Info
                 if (_fileFormatVersion >= MapInfoFormatVersion.Reforged)
                 {
                     writer.Write((int)_supportedModes);
-                    writer.Write(_unk1);
+                    writer.Write((int)_gameDataVersion);
                 }
 
                 writer.Write(_playerData.Count);
