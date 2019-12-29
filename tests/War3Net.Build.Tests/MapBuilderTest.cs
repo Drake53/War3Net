@@ -21,6 +21,29 @@ namespace War3Net.Build.Tests
     public class MapBuilderTest
     {
         [TestMethod]
+        public void TestGenerateScriptWithUnitData()
+        {
+            const string OutputMapName = "TestOutput.w3x";
+            const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
+
+            var scriptCompilerOptions = new ScriptCompilerOptions();
+            scriptCompilerOptions.MapInfo = MapInfo.Default;
+            scriptCompilerOptions.ForceCompile = true;
+            scriptCompilerOptions.SourceDirectory = null;
+            scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
+
+            var mapBuilder = new MapBuilder(OutputMapName);
+            if (mapBuilder.Build(scriptCompilerOptions, InputPath))
+            {
+                //
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
         public void TestCreateNewTemplateMap()
         {
             const string OutputMapName = "Template.w3x";
@@ -57,7 +80,7 @@ namespace War3Net.Build.Tests
         public void TestDefaultMapInfo()
         {
             // Get World Editor default info file.
-            using var defaultInfoStream = File.OpenRead(@".\TestData\DefaultMapFiles\war3map.w3i");
+            using var defaultInfoStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3i");
             var defaultMapInfo = MapInfo.Parse(defaultInfoStream, true);
             defaultInfoStream.Position = 0;
 
@@ -90,7 +113,7 @@ namespace War3Net.Build.Tests
         public void TestDefaultMapEnvironment()
         {
             // Get World Editor default environment file.
-            using var defaultEnvironmentStream = File.OpenRead(@".\TestData\DefaultMapFiles\war3map.w3e");
+            using var defaultEnvironmentStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3e");
             var defaultMapEnvironment = MapEnvironment.Parse(defaultEnvironmentStream, true);
             defaultEnvironmentStream.Position = 0;
 
