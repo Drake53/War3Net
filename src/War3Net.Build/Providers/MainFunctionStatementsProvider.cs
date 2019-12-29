@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.Build.Info;
 using War3Net.Build.Script;
@@ -16,6 +17,9 @@ namespace War3Net.Build.Providers
     {
         public const string FunctionName = "main";
         public const string LocalUnitVariableName = "u";
+        // IMPORTANT: handle these for JASS version
+        public const string LocalUnitIdVariableName = "unitID";
+        public const string LocalItemIdVariableName = "itemID";
     }
 
     internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -31,42 +35,50 @@ namespace War3Net.Build.Providers
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetCameraBounds),
-                builder.GenerateBinaryAdditionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Addition,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomLeft.X),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_LEFT)))),
-                builder.GenerateBinaryAdditionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Addition,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomLeft.Y),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_BOTTOM)))),
-                builder.GenerateBinarySubtractionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Subtraction,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopRight.X),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_RIGHT)))),
-                builder.GenerateBinarySubtractionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Subtraction,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopRight.Y),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_TOP)))),
-                builder.GenerateBinaryAdditionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Addition,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopLeft.X),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_LEFT)))),
-                builder.GenerateBinarySubtractionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Subtraction,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.TopLeft.Y),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_TOP)))),
-                builder.GenerateBinarySubtractionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Subtraction,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomRight.X),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.CAMERA_MARGIN_RIGHT)))),
-                builder.GenerateBinaryAdditionExpression(
+                builder.GenerateBinaryExpression(
+                    BinaryOperator.Addition,
                     builder.GenerateFloatLiteralExpression(mapInfo.CameraBounds.BottomRight.Y),
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.GetCameraMargin),
@@ -127,30 +139,303 @@ namespace War3Net.Build.Providers
 
             if (builder.Data.MapUnits != null)
             {
-                var localUnitDeclaration = builder.GenerateLocalDeclarationStatement(MainFunctionProvider.LocalUnitVariableName);
-                if (localUnitDeclaration != null)
+                foreach (var localDeclaration in builder.GenerateLocalDeclarationStatements(
+                    MainFunctionProvider.LocalUnitVariableName,
+                    MainFunctionProvider.LocalUnitIdVariableName,
+                    MainFunctionProvider.LocalItemIdVariableName))
                 {
-                    yield return localUnitDeclaration;
+                    if (localDeclaration != null)
+                    {
+                        yield return localDeclaration;
+                    }
                 }
 
-                foreach (var mapUnit in builder.Data.MapUnits)
+                foreach (var item in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsItem))
                 {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.CreateUnit),
-                        builder.GenerateInvocationExpression(
-                            nameof(War3Api.Common.Player),
-                            builder.GenerateIntegerLiteralExpression(mapUnit.Owner)),
-                        builder.GenerateFourCCExpression(mapUnit.TypeId),
-                        builder.GenerateFloatLiteralExpression(mapUnit.PositionX),
-                        builder.GenerateFloatLiteralExpression(mapUnit.PositionY),
-                        builder.GenerateFloatLiteralExpression(mapUnit.Facing));
+                    if (item.IsRandomItem)
+                    {
+                        var randomData = item.RandomData;
+                        switch (randomData.Mode)
+                        {
+                            case 0:
+                                yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    builder.GenerateInvocationExpression(
+                                        nameof(War3Api.Common.ChooseRandomItemEx),
+                                        builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ConvertItemType),
+                                            builder.GenerateIntegerLiteralExpression(randomData.Class)), // TODO: ITEM_TYPE_ANY is 8
+                                        builder.GenerateIntegerLiteralExpression(randomData.Level))); // TODO: use -1 for any level
+                                break;
 
-                    if (mapUnit.GoldAmount > 0)
+                            case 2:
+                                yield return builder.GenerateInvocationStatement(nameof(War3Api.Blizzard.RandomDistReset));
+                                var summedChance = 0;
+                                foreach (var randomItemOption in randomData)
+                                {
+                                    summedChance += randomItemOption.chance;
+                                    yield return builder.GenerateInvocationStatement(
+                                        nameof(War3Api.Blizzard.RandomDistAddItem),
+
+                                        // TODO: update RandomUnitData class mode 2 to also support random item (ChooseRandomItemEx)
+                                        /*builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ChooseRandomItemEx),
+                                            builder.GenerateInvocationExpression(
+                                                nameof(War3Api.Common.ConvertItemType),
+                                                builder.GenerateIntegerLiteralExpression(randomItemOption.Class)), // TODO: ITEM_TYPE_ANY is 8
+                                            builder.GenerateIntegerLiteralExpression(randomItemOption.Level)));*/ // TODO: use -1 for any level
+
+                                        builder.GenerateFourCCExpression(new string(randomItemOption.id)),
+                                        builder.GenerateIntegerLiteralExpression(randomItemOption.chance));
+                                }
+
+                                if (summedChance < 100)
+                                {
+                                    yield return builder.GenerateInvocationStatement(
+                                        nameof(War3Api.Blizzard.RandomDistAddItem),
+                                        builder.GenerateIntegerLiteralExpression(-1),
+                                        builder.GenerateIntegerLiteralExpression(100 - summedChance));
+                                }
+
+                                yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
+                                break;
+
+                            default:
+                                break;
+                        }
+
+                        yield return builder.GenerateIfStatement(
+                            builder.GenerateBinaryExpression(
+                                BinaryOperator.NotEquals,
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalItemIdVariableName),
+                                builder.GenerateIntegerLiteralExpression(-1)),
+                            builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.CreateItem),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalItemIdVariableName),
+                                builder.GenerateFloatLiteralExpression(item.PositionX),
+                                builder.GenerateFloatLiteralExpression(item.PositionY)));
+                    }
+                    else
                     {
                         yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.SetResourceAmount),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateIntegerLiteralExpression(mapUnit.GoldAmount));
+                            nameof(War3Api.Common.CreateItem),
+                            builder.GenerateFourCCExpression(item.TypeId),
+                            builder.GenerateFloatLiteralExpression(item.PositionX),
+                            builder.GenerateFloatLiteralExpression(item.PositionY));
+                    }
+                }
+
+                foreach (var unit in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsUnit))
+                {
+                    if (unit.IsRandomUnit)
+                    {
+                        var randomData = unit.RandomData;
+                        switch (randomData.Mode)
+                        {
+                            case 0:
+                                yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalUnitIdVariableName,
+                                    builder.GenerateInvocationExpression(
+                                        nameof(War3Api.Common.ChooseRandomCreep), // OR: ChooseRandomNPBuilding (how to distinguish?) (NOTE: neutral passive building ignores Level)
+                                        builder.GenerateIntegerLiteralExpression(randomData.Level)));
+                                break;
+
+                            case 1:
+                                // throw new System.NotSupportedException($"Unable to create random unit with mode 1, because global random unit tables are not implemented.");
+                                /*yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalUnitIdVariableName,
+                                    builder.GenerateArrayIndexExpression(
+                                        builder.GenerateVariableExpression("gg_rg_000"), // TODO: create integer array(s) for global random unit table(s)
+                                        builder.GenerateIntegerLiteralExpression(randomData.UnitGroupTableColumn)));*/
+                                break;
+
+                            case 2:
+                                // copypasted from random item
+                                yield return builder.GenerateInvocationStatement(nameof(War3Api.Blizzard.RandomDistReset));
+                                var summedChance = 0;
+                                foreach (var randomUnitOption in randomData)
+                                {
+                                    summedChance += randomUnitOption.chance;
+                                    yield return builder.GenerateInvocationStatement(
+                                        nameof(War3Api.Blizzard.RandomDistAddItem),
+
+                                        // TODO: update RandomUnitData class mode 2 to also support random unit (ChooseRandomCreep)
+                                        /*builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ChooseRandomItemEx),
+                                            builder.GenerateInvocationExpression(
+                                                nameof(War3Api.Common.ConvertItemType),
+                                                builder.GenerateIntegerLiteralExpression(randomItemOption.Class)), // TODO: ITEM_TYPE_ANY is 8
+                                            builder.GenerateIntegerLiteralExpression(randomItemOption.Level)));*/ // TODO: use -1 for any level
+
+                                        builder.GenerateFourCCExpression(new string(randomUnitOption.id)),
+                                        builder.GenerateIntegerLiteralExpression(randomUnitOption.chance));
+                                }
+
+                                if (summedChance < 100)
+                                {
+                                    yield return builder.GenerateInvocationStatement(
+                                        nameof(War3Api.Blizzard.RandomDistAddItem),
+                                        builder.GenerateIntegerLiteralExpression(-1),
+                                        builder.GenerateIntegerLiteralExpression(100 - summedChance));
+                                }
+
+                                yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
+                                break;
+
+                        }
+
+                        yield return builder.GenerateIfStatement(
+                            builder.GenerateBinaryExpression(
+                                BinaryOperator.NotEquals,
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitIdVariableName),
+                                builder.GenerateIntegerLiteralExpression(-1)),
+                            builder.GenerateAssignmentStatement(
+                                MainFunctionProvider.LocalUnitVariableName,
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.CreateUnit),
+                                    builder.GenerateInvocationExpression(
+                                        nameof(War3Api.Common.Player),
+                                        builder.GenerateIntegerLiteralExpression(unit.Owner)),
+                                    builder.GenerateFourCCExpression(MainFunctionProvider.LocalUnitIdVariableName),
+                                    builder.GenerateFloatLiteralExpression(unit.PositionX),
+                                    builder.GenerateFloatLiteralExpression(unit.PositionY),
+                                    builder.GenerateFloatLiteralExpression(unit.Facing))));
+                    }
+                    else
+                    {
+                        yield return builder.GenerateAssignmentStatement(
+                            MainFunctionProvider.LocalUnitVariableName,
+                            builder.GenerateInvocationExpression(
+                                nameof(War3Api.Common.CreateUnit),
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.Player),
+                                    builder.GenerateIntegerLiteralExpression(unit.Owner)),
+                                builder.GenerateFourCCExpression(unit.TypeId),
+                                builder.GenerateFloatLiteralExpression(unit.PositionX),
+                                builder.GenerateFloatLiteralExpression(unit.PositionY),
+                                builder.GenerateFloatLiteralExpression(unit.Facing)));
+
+                        if (unit.Hp != -1)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetUnitState),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)),
+                                builder.GenerateBinaryExpression(
+                                    BinaryOperator.Multiplication,
+                                    builder.GenerateFloatLiteralExpression(unit.Hp * 0.01f),
+                                    builder.GenerateInvocationExpression(
+                                        nameof(War3Api.Common.GetUnitState),
+                                        builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                        builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)))));
+                        }
+
+                        if (unit.Mp != -1)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetUnitState),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_MANA)),
+                                builder.GenerateFloatLiteralExpression(unit.Mp));
+                        }
+
+                        if (unit.GoldAmount > 0)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetResourceAmount),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateIntegerLiteralExpression(unit.GoldAmount));
+                        }
+
+                        if (unit.TargetAcquisition != -1)
+                        {
+                            const float CampAcquisitionRange = 200f;
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetUnitAcquireRange),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
+                        }
+
+                        if (unit.HeroLevel > 1)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetHeroLevel),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
+                                builder.GenerateBooleanLiteralExpression(false));
+                        }
+
+                        if (unit.HeroStrength > 0)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetHeroStr),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
+                                builder.GenerateBooleanLiteralExpression(true));
+                        }
+
+                        if (unit.HeroAgility > 0)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetHeroAgi),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
+                                builder.GenerateBooleanLiteralExpression(true));
+                        }
+
+                        if (unit.HeroIntelligence > 0)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SetHeroInt),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
+                                builder.GenerateBooleanLiteralExpression(true));
+                        }
+
+                        // TODO: CustomPlayerColor
+                        // TODO: WaygateDestination (requires parsing war3map.w3r)
+                        // TODO: CreationNumber? (only used to declare global var if unit is referenced in triggers?, ie useless)
+
+                        foreach (var item in unit.Inventory)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.UnitAddItemToSlotById),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateFourCCExpression(item.Id),
+                                builder.GenerateIntegerLiteralExpression(item.Slot));
+                        }
+
+                        foreach (var ability in unit.AbilityData)
+                        {
+                            // TODO:
+                            /*for (var i = 0; i < ability.Level; i++)
+                            {
+                                // TODO: make sure Level is 0 for non-hero abilities
+                                yield return builder.GenerateInvocationStatement(
+                                    nameof(War3Api.Common.SelectHeroSkill),
+                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                    builder.GenerateFourCCExpression(ability.Id));
+                            }
+
+                            if (ability.IsActive)
+                            {
+                                // TODO: use IssueImmediateOrderById instead?
+                                yield return builder.GenerateInvocationStatement(
+                                    nameof(War3Api.Common.IssueImmediateOrder),
+                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                    builder.GenerateStringLiteralExpression(ability.OrderString));
+                            }*/
+                        }
+
+                        foreach (var droppedItem in unit.DroppedItemData)
+                        {
+                            // TODO: implement
+                            // Create trigger ItemTable######_DropItems or Unit######_DropItems, add events EVENT_UNIT_DEATH and EVENT_UNIT_CHANGE_OWNER
+                        }
                     }
                 }
             }
