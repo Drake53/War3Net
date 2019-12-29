@@ -264,24 +264,21 @@ namespace War3Net.Build.Providers
                                 break;
 
                             case 2:
-                                // copypasted from random item
                                 yield return builder.GenerateInvocationStatement(nameof(War3Api.Blizzard.RandomDistReset));
                                 var summedChance = 0;
                                 foreach (var randomUnitOption in randomData)
                                 {
                                     summedChance += randomUnitOption.chance;
+
+                                    var unitTypeExpression = RandomUnitProvider.IsRandomUnit(randomUnitOption.id, out var level)
+                                        ? builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ChooseRandomCreep),
+                                            builder.GenerateIntegerLiteralExpression(level))
+                                        : builder.GenerateFourCCExpression(new string(randomUnitOption.id));
+
                                     yield return builder.GenerateInvocationStatement(
                                         nameof(War3Api.Blizzard.RandomDistAddItem),
-
-                                        // TODO: update RandomUnitData class mode 2 to also support random unit (ChooseRandomCreep)
-                                        /*builder.GenerateInvocationExpression(
-                                            nameof(War3Api.Common.ChooseRandomItemEx),
-                                            builder.GenerateInvocationExpression(
-                                                nameof(War3Api.Common.ConvertItemType),
-                                                builder.GenerateIntegerLiteralExpression(randomItemOption.Class)), // TODO: ITEM_TYPE_ANY is 8
-                                            builder.GenerateIntegerLiteralExpression(randomItemOption.Level)));*/ // TODO: use -1 for any level
-
-                                        builder.GenerateFourCCExpression(new string(randomUnitOption.id)),
+                                        unitTypeExpression,
                                         builder.GenerateIntegerLiteralExpression(randomUnitOption.chance));
                                 }
 
@@ -297,7 +294,6 @@ namespace War3Net.Build.Providers
                                     MainFunctionProvider.LocalItemIdVariableName,
                                     builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
                                 break;
-
                         }
 
                         yield return builder.GenerateIfStatement(

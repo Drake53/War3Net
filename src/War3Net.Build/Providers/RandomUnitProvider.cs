@@ -14,5 +14,17 @@ namespace War3Net.Build.Providers
         {
             return new[] { 'Y', 'Y', 'U', (char)(level + 48) };
         }
+
+        public static bool IsRandomUnit(char[] code, out int level)
+        {
+            if (code[0] == 'Y' && code[1] == 'Y' && code[2] == 'U')
+            {
+                level = code[3] - 48;
+                return true;
+            }
+
+            level = default;
+            return false;
+        }
     }
 }
