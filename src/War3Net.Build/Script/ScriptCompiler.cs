@@ -27,6 +27,8 @@ namespace War3Net.Build.Script
 
         public abstract bool Compile(out string scriptFilePath, params string[] additionalSourceFiles);
 
+        public abstract void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles);
+
         [Obsolete("Script language should be obtained from MapInfo.ScriptLanguage property.", true)]
         public static ScriptCompiler GetUnknownLanguageCompiler(ScriptCompilerOptions options)
         {

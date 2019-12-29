@@ -55,9 +55,10 @@ namespace War3Net.Build.Widget
 
         public string TypeId => new string(_typeId);
 
-        public bool IsUnit => /*IsRandomUnit ||*/ throw new NotImplementedException();
+        // TODO: find more reliable way to distinguish units and items
+        public bool IsUnit => IsRandomUnit || _typeId[0] == 'h' || _typeId[0] == 'H' || _typeId[0] == 'o' || _typeId[0] == 'O' || _typeId[0] == 'u' || _typeId[0] == 'U' || _typeId[0] == 'e' || _typeId[0] == 'E' || _typeId[0] == 'n' || _typeId[0] == 'N';
 
-        public bool IsItem => /*IsRandomItem ||*/ throw new NotImplementedException();
+        public bool IsItem => !IsUnit;
 
         public bool IsRandomUnit => TypeId == "uDNR";
 

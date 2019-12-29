@@ -112,6 +112,23 @@ namespace War3Net.Build.Script
             return true;
         }
 
+        public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
+        {
+            scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
+            using (var fileStream = File.OpenWrite(scriptFilePath))
+            {
+                fileStream.Seek(0, SeekOrigin.End);
+                foreach (var additionalSourceFile in additionalSourceFiles)
+                {
+                    using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
+                    {
+                        writer.Write(File.ReadAllText(additionalSourceFile));
+                        writer.WriteLine();
+                    }
+                }
+            }
+        }
+
         [Obsolete("These .dll's are now automatically added through PackageReference.EnumerateLibraries()", true)]
         private static IEnumerable<string> DiscoverWar3ApiPackageLibs(bool referenceBlizzardLib = true)
         {

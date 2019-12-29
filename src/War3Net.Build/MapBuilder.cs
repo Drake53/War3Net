@@ -150,6 +150,14 @@ namespace War3Net.Build
                 }
             }
 
+            // todo: check if war3map.doo can actually affect the map script, otherwise doing this like war3mapUnits.doo is useless
+            // -> if it is possible, also add MapDoodads property to ScriptCompilerOptions
+            // If MapDoodads is not set, search for it in assets.
+            // todo
+
+            // Generate mapDoodads file
+            // todo
+
             // Generate mapUnits file
             if (compilerOptions.MapUnits != null)
             {
@@ -205,6 +213,11 @@ namespace War3Net.Build
                 {
                     return false;
                 }
+            }
+            else if (compilerOptions.ForceCompile)
+            {
+                CompileSimple(compilerOptions, out var path);
+                files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
             }
 
             void EnumerateFiles(string directory)
@@ -366,6 +379,13 @@ namespace War3Net.Build
             var compiler = GetCompiler(options);
             compiler.BuildMainAndConfig(out var mainFunctionFilePath, out var configFunctionFilePath);
             return compiler.Compile(out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
+        }
+
+        public void CompileSimple(ScriptCompilerOptions options, out string scriptFilePath)
+        {
+            var compiler = GetCompiler(options);
+            compiler.BuildMainAndConfig(out var mainFunctionFilePath, out var configFunctionFilePath);
+            compiler.CompileSimple(out scriptFilePath, mainFunctionFilePath, configFunctionFilePath);
         }
 
         private ScriptCompiler GetCompiler(ScriptCompilerOptions options)

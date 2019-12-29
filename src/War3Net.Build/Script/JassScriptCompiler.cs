@@ -99,6 +99,11 @@ namespace War3Net.Build.Script
             return success;
         }
 
+        public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
+        {
+            throw new NotImplementedException();
+        }
+
         private void RenderFunctionSyntaxToFile(FunctionSyntax function, string path)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))

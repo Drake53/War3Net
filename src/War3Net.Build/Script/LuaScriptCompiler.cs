@@ -29,5 +29,10 @@ namespace War3Net.Build.Script
         {
             throw new NotImplementedException();
         }
+
+        public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

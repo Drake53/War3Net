@@ -21,6 +21,11 @@ namespace War3Net.Build.Script
 
         public string OutputDirectory { get; set; }
 
+        /// <summary>
+        /// If true, script files added through assets will be overwritten, even if <see cref="SourceDirectory"/> is null.
+        /// </summary>
+        public bool ForceCompile { get; set; }
+
         public bool Debug { get; set; }
 
         public bool Optimize { get; set; }
