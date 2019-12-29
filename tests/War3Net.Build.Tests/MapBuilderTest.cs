@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Script;
+using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
 {
@@ -45,6 +46,10 @@ namespace War3Net.Build.Tests
                 const string Warcraft3ExecutableFilePath = null;
                 Assert.IsNotNull(Warcraft3ExecutableFilePath, "Path to Warcraft III.exe is not set.");
                 Process.Start(Warcraft3ExecutableFilePath, $"-loadfile \"{absoluteMapPath}\"");
+            }
+            else
+            {
+                Assert.Fail();
             }
         }
 

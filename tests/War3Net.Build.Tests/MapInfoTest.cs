@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
+using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
 {
@@ -25,7 +26,7 @@ namespace War3Net.Build.Tests
             using var original = File.OpenRead(mapInfoFilePath);
 
             MapInfo.Parse(original, true).SerializeTo(recreated, true);
-            Assert.IsTrue(SequenceEqual(original, recreated));
+            StreamAssert.AreEqual(original, recreated, true);
         }
 
         [DataTestMethod]
@@ -84,33 +85,6 @@ namespace War3Net.Build.Tests
             yield return new object[] { @".\TestData\Info\Reforged\CustSkinFalse-AccProbFalse-SD-FrozenThrone.w3i", false, false, SupportedModes.SD, true };
             yield return new object[] { @".\TestData\Info\Reforged\CustSkinFalse-AccProbTrue-HDSD-FrozenThrone.w3i", false, true, SupportedModes.HD | SupportedModes.SD, true };
             yield return new object[] { @".\TestData\Info\Reforged\CustSkinTrue-AccProbFalse-HDSD-FrozenThrone.w3i", true, false, SupportedModes.HD | SupportedModes.SD, true };
-        }
-
-        // TODO: re-use StreamAssert class from War3Net.IO.Mpq.Tests project
-        private static bool SequenceEqual(Stream s1, Stream s2)
-        {
-            if (s1.Length != s2.Length)
-            {
-                return false;
-            }
-
-            s1.Position = 0;
-            s2.Position = 0;
-
-            while (true)
-            {
-                var read1 = s1.ReadByte();
-                var read2 = s2.ReadByte();
-                if (read1 != read2)
-                {
-                    return false;
-                }
-
-                if (read1 == -1)
-                {
-                    return true;
-                }
-            }
         }
     }
 }

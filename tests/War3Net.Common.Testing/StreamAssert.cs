@@ -15,8 +15,14 @@ namespace War3Net.Common.Testing
 {
     public static class StreamAssert
     {
-        public static void AreEqual(Stream expected, Stream actual)
+        public static void AreEqual(Stream expected, Stream actual, bool resetPositions = false)
         {
+            if (resetPositions)
+            {
+                expected.Position = 0;
+                actual.Position = 0;
+            }
+
             var expectedSize = expected.Length;
             var actualSize = actual.Length;
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
