@@ -174,18 +174,19 @@ namespace War3Net.Build.Providers
                                 foreach (var randomItemOption in randomData)
                                 {
                                     summedChance += randomItemOption.chance;
-                                    yield return builder.GenerateInvocationStatement(
-                                        nameof(War3Api.Blizzard.RandomDistAddItem),
 
-                                        // TODO: update RandomUnitData class mode 2 to also support random item (ChooseRandomItemEx)
-                                        /*builder.GenerateInvocationExpression(
+                                    var itemTypeExpression = RandomItemProvider.IsRandomItem(randomItemOption.id, out var level, out var @class)
+                                        ? builder.GenerateInvocationExpression(
                                             nameof(War3Api.Common.ChooseRandomItemEx),
                                             builder.GenerateInvocationExpression(
                                                 nameof(War3Api.Common.ConvertItemType),
-                                                builder.GenerateIntegerLiteralExpression(randomItemOption.Class)), // TODO: ITEM_TYPE_ANY is 8
-                                            builder.GenerateIntegerLiteralExpression(randomItemOption.Level)));*/ // TODO: use -1 for any level
+                                                builder.GenerateIntegerLiteralExpression(@class)),
+                                            builder.GenerateIntegerLiteralExpression(level))
+                                        : builder.GenerateFourCCExpression(new string(randomItemOption.id));
 
-                                        builder.GenerateFourCCExpression(new string(randomItemOption.id)),
+                                    yield return builder.GenerateInvocationStatement(
+                                        nameof(War3Api.Blizzard.RandomDistAddItem),
+                                        itemTypeExpression,
                                         builder.GenerateIntegerLiteralExpression(randomItemOption.chance));
                                 }
 

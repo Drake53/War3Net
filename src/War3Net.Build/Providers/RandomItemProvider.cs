@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.Build.Info;
 
 namespace War3Net.Build.Providers
@@ -15,6 +17,33 @@ namespace War3Net.Build.Providers
         public static char[] GetRandomItemTypeCode(ItemClass itemClass, int level)
         {
             return new[] { 'Y', (char)itemClass, 'I', (char)(level + 48) };
+        }
+
+        public static bool IsRandomItem(char[] code, out int level, out int @class)
+        {
+            if (code[0] == 'Y' && code[2] == 'I' && Enum.IsDefined(typeof(ItemClass), (int)code[1]))
+            {
+                level = code[3] - 48;
+                @class = (ItemClass)code[1] switch
+                {
+                    ItemClass.Any => 8,
+                    ItemClass.Permanent => 0,
+                    ItemClass.Charged => 1,
+                    ItemClass.PowerUp => 2,
+                    ItemClass.Artifact => 3,
+                    ItemClass.Purchasable => 4,
+                    ItemClass.Campaign => 5,
+                    ItemClass.Miscellaneous => 6,
+
+                    _ => 7,
+                };
+
+                return true;
+            }
+
+            level = default;
+            @class = default;
+            return false;
         }
     }
 }
