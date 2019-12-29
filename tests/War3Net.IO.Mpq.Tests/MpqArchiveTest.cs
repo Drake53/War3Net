@@ -12,6 +12,8 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Common.Testing;
+
 namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]

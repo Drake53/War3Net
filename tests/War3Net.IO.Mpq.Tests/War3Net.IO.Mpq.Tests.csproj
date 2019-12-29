@@ -1,16 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFrameworks>net45;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\War3Net.Common.Testing\War3Net.Common.Testing.csproj" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\..\src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
+    <PackageReference Include="War3Net.IO.Mpq" Version="1.0.0-preview1" />
   </ItemGroup>
 
   <ItemGroup>

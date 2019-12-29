@@ -11,18 +11,18 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace War3Net.IO.Mpq.Tests
+namespace War3Net.Common.Testing
 {
-    internal static class StreamAssert
+    public static class StreamAssert
     {
-        internal static void AreEqual(Stream expected, Stream actual)
+        public static void AreEqual(Stream expected, Stream actual)
         {
             var expectedSize = expected.Length;
             var actualSize = actual.Length;
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
-        internal static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
+        public static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
         {
             Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, out var message), message);
         }
