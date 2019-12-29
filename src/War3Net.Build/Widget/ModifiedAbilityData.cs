@@ -16,13 +16,19 @@ namespace War3Net.Build.Widget
         private int _isAutocastActive;
         private int _heroAbilityLevel;
 
+        public string Id => new string(_abilityId);
+
+        public bool IsActive => _isAutocastActive != 0;
+
+        public int Level => /*_isHeroAbility ?*/ _heroAbilityLevel /*: 0*/;
+
         public static ModifiedAbilityData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new ModifiedAbilityData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 data._abilityId = reader.ReadChars(4);
-                data._isAutocastActive = reader.ReadInt32(); // 0 == no, 1 == active
+                data._isAutocastActive = reader.ReadInt32();
                 data._heroAbilityLevel = reader.ReadInt32();
             }
 

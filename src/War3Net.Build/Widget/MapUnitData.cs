@@ -34,16 +34,16 @@ namespace War3Net.Build.Widget
         private byte _UNK0;
         private byte _UNK1;
 
-        private int _hp; // -1 == default
-        private int _mp; // -1 == default
+        private int _hp;
+        private int _mp;
 
         private int _mapItemTablePointer; // -1 == no table
 
-        private int _goldAmount; // default: 12500
-        private float _targetAcquisition; // -1 == normal, -2 == camp
+        private int _goldAmount;
+        private float _targetAcquisition;
 
-        private int _heroLevel; // 1 if not hero
-        private int _heroStrength; // 0 == default
+        private int _heroLevel;
+        private int _heroStrength;
         private int _heroAgility;
         private int _heroIntelligence;
 
@@ -87,22 +87,43 @@ namespace War3Net.Build.Widget
 
         public byte Unk1 => _UNK1;
 
+        /// <summary>
+        /// Use -1 for default hp.
+        /// </summary>
         public int Hp => _hp;
 
+        /// <summary>
+        /// Use -1 for default mp.
+        /// </summary>
         public int Mp => _mp;
 
         public int MapItemTablePointer => _mapItemTablePointer;
 
         public int GoldAmount => _goldAmount;
 
+        /// <summary>
+        /// Use -1 for default, and -2 for camp.
+        /// </summary>
         public float TargetAcquisition => _targetAcquisition;
 
+        /// <summary>
+        /// Non-hero units are level 1.
+        /// </summary>
         public int HeroLevel => _heroLevel;
 
+        /// <summary>
+        /// Use 0 for default.
+        /// </summary>
         public int HeroStrength => _heroStrength;
 
+        /// <summary>
+        /// Use 0 for default.
+        /// </summary>
         public int HeroAgility => _heroAgility;
 
+        /// <summary>
+        /// Use 0 for default.
+        /// </summary>
         public int HeroIntelligence => _heroIntelligence;
 
         public RandomUnitData RandomData => _randomData;
@@ -112,6 +133,12 @@ namespace War3Net.Build.Widget
         public int WaygateDestination => _waygateDestination;
 
         public int CreationNumber => _creationNumber;
+
+        public IEnumerable<InventoryItemData> Inventory => _inventory;
+
+        public IEnumerable<ModifiedAbilityData> AbilityData => _modifiedAbilities;
+
+        public IEnumerable<DroppedItemSetData> DroppedItemData => _mapItemTableDropData;
 
         public MapUnitData()
         {

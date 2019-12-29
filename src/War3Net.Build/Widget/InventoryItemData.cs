@@ -15,6 +15,10 @@ namespace War3Net.Build.Widget
         private int _slot;
         private char[] _itemId;
 
+        public int Slot => _slot;
+
+        public string Id => new string(_itemId);
+
         public static InventoryItemData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new InventoryItemData();

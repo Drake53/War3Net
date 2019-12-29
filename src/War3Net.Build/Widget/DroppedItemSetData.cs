@@ -15,6 +15,10 @@ namespace War3Net.Build.Widget
         private char[] _itemId;
         private int _dropChance;
 
+        public string Id => new string(_itemId);
+
+        public int Chance => _dropChance;
+
         public static DroppedItemSetData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new DroppedItemSetData();
