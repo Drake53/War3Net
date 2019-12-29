@@ -115,7 +115,7 @@ namespace War3Net.Build.Script
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
-            using (var fileStream = File.OpenWrite(scriptFilePath))
+            using (var fileStream = File.Create(scriptFilePath))
             {
                 fileStream.Seek(0, SeekOrigin.End);
                 foreach (var additionalSourceFile in additionalSourceFiles)
