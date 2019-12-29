@@ -11,6 +11,10 @@ namespace War3Net.Build.Script
     {
         Addition,
         Subtraction,
+        Multiplication,
+        Division,
+
+        Equals,
         NotEquals,
     }
 }

@@ -120,7 +120,12 @@ namespace War3Net.Build.Script
             {
                 BinaryOperator.Addition => LuaSyntaxNode.Tokens.Plus,
                 BinaryOperator.Subtraction => LuaSyntaxNode.Tokens.Sub,
+                BinaryOperator.Multiplication => LuaSyntaxNode.Tokens.Multiply,
+                BinaryOperator.Division => LuaSyntaxNode.Tokens.Div,
+                BinaryOperator.Equals => LuaSyntaxNode.Tokens.EqualsEquals,
                 BinaryOperator.NotEquals => LuaSyntaxNode.Tokens.NotEquals,
+
+                _ => throw new System.ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
             };
 
             return new LuaBinaryExpressionSyntax(left, operatorToken, right);

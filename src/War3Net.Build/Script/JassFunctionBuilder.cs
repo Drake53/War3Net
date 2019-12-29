@@ -25,6 +25,7 @@ namespace War3Net.Build.Script
         {
             return JassSyntaxFactory.Function(
                 JassSyntaxFactory.FunctionDeclaration(functionName),
+                // TODO: more locals (itemId, ..?)
                 JassSyntaxFactory.LocalVariableList(GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName)), // todo: don't create local var for config func
                 statements);
         }
@@ -122,22 +123,25 @@ namespace War3Net.Build.Script
 
         public override NewExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, NewExpressionSyntax left, NewExpressionSyntax right)
         {
-            // CodeAnalysis.Jass.SyntaxTokenType operatorTokenType = @operator switch;
-
-            return @operator switch
+            var operatorTokenType = @operator switch
             {
-                BinaryOperator.Addition => JassSyntaxFactory.BinaryAdditionExpression(left, right),
-                BinaryOperator.Subtraction => JassSyntaxFactory.BinarySubtractionExpression(left, right),
+                BinaryOperator.Addition => CodeAnalysis.Jass.SyntaxTokenType.PlusOperator,
+                BinaryOperator.Subtraction => CodeAnalysis.Jass.SyntaxTokenType.MinusOperator,
+                BinaryOperator.Multiplication => CodeAnalysis.Jass.SyntaxTokenType.MultiplicationOperator,
+                BinaryOperator.Division => CodeAnalysis.Jass.SyntaxTokenType.DivisionOperator,
 
-                BinaryOperator.NotEquals =>
-                    new NewExpressionSyntax(
-                        left.Expression,
-                        new BinaryExpressionTailSyntax(
-                            new BinaryOperatorSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.UnequalityOperator), 0)),
-                            right)),
+                BinaryOperator.Equals => CodeAnalysis.Jass.SyntaxTokenType.EqualityOperator,
+                BinaryOperator.NotEquals => CodeAnalysis.Jass.SyntaxTokenType.UnequalityOperator,
 
                 _ => throw new System.ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
             };
+
+            // TODO: add JassSyntaxFactory.BinaryExpression method
+            return new NewExpressionSyntax(
+                left.Expression,
+                new BinaryExpressionTailSyntax(
+                    new BinaryOperatorSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(operatorTokenType), 0)),
+                    right));
         }
     }
 }
