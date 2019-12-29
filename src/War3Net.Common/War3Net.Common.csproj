@@ -4,6 +4,19 @@
     <TargetFrameworks>net45;netstandard1.3;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Drake53</Authors>
+
+    <Description>Contains some methods used by several other War3Net projects.</Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Common</PackageProjectUrl>
+    <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+
+    <Version>0.1.0</Version>
+    <FileVersion>0.1.0</FileVersion>
+    <AssemblyVersion>0</AssemblyVersion>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>
