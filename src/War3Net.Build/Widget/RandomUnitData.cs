@@ -35,10 +35,42 @@ namespace War3Net.Build.Widget
 
         public int Mode => _mode;
 
-        // Signed 24-bit number
-        public int Level => (int)((uint)((_levelAndClass & 0x7fffff00) >> 8) | ((uint)_levelAndClass & 0x80000000));
+        // Signed little-endian 24-bit number
+        public int Level
+        {
+            get
+            {
+                // Doesn't work because this assumes the number is big-endian
+                // (int)((uint)((_levelAndClass & 0x7fffff00) >> 8) | ((uint)_levelAndClass & 0x80000000));
 
-        public byte Class => (byte)(_levelAndClass & 0xff);
+                // hacky
+                if ((_levelAndClass & 0x00ffff00) != 0)
+                {
+                    return -1;
+                }
+
+                var @byte = (byte)(((uint)_levelAndClass & 0xff000000) >> 24);
+                return @byte - 1;
+            }
+        }
+
+        public byte Class
+        {
+            get
+            {
+                var @byte = (byte)(_levelAndClass & 0xff);
+                if (@byte == byte.MaxValue)
+                {
+                    // Any class
+                    return 8;
+                }
+                else
+                {
+                    // Unknown class
+                    return @byte >= 8 ? (byte)7 : @byte;
+                }
+            }
+        }
 
         public int UnitGroupTableIndex => _unitGroupTableIndex;
 

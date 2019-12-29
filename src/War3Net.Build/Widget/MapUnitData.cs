@@ -60,7 +60,9 @@ namespace War3Net.Build.Widget
 
         public bool IsItem => !IsUnit;
 
-        public bool IsRandomUnit => TypeId == "uDNR";
+        public bool IsRandomUnit => TypeId == "uDNR" || IsRandomBuilding;
+
+        public bool IsRandomBuilding => TypeId == "bDNR";
 
         public bool IsRandomItem => TypeId == "iDNR";
 

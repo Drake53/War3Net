@@ -164,8 +164,8 @@ namespace War3Net.Build.Providers
                                         nameof(War3Api.Common.ChooseRandomItemEx),
                                         builder.GenerateInvocationExpression(
                                             nameof(War3Api.Common.ConvertItemType),
-                                            builder.GenerateIntegerLiteralExpression(randomData.Class)), // TODO: ITEM_TYPE_ANY is 8
-                                        builder.GenerateIntegerLiteralExpression(randomData.Level))); // TODO: use -1 for any level
+                                            builder.GenerateIntegerLiteralExpression(randomData.Class)),
+                                        builder.GenerateIntegerLiteralExpression(randomData.Level)));
                                 break;
 
                             case 2:
@@ -235,11 +235,22 @@ namespace War3Net.Build.Providers
                         switch (randomData.Mode)
                         {
                             case 0:
-                                yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalUnitIdVariableName,
-                                    builder.GenerateInvocationExpression(
-                                        nameof(War3Api.Common.ChooseRandomCreep), // OR: ChooseRandomNPBuilding (how to distinguish?) (NOTE: neutral passive building ignores Level)
-                                        builder.GenerateIntegerLiteralExpression(randomData.Level)));
+                                if (unit.IsRandomBuilding)
+                                {
+                                    yield return builder.GenerateAssignmentStatement(
+                                        MainFunctionProvider.LocalUnitVariableName,
+                                        builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ChooseRandomNPBuilding)));
+                                }
+                                else
+                                {
+                                    yield return builder.GenerateAssignmentStatement(
+                                        MainFunctionProvider.LocalUnitIdVariableName,
+                                        builder.GenerateInvocationExpression(
+                                            nameof(War3Api.Common.ChooseRandomCreep),
+                                            builder.GenerateIntegerLiteralExpression(randomData.Level)));
+                                }
+
                                 break;
 
                             case 1:
