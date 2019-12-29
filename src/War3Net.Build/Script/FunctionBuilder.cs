@@ -5,6 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace War3Net.Build.Script
 {
     internal abstract class FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -29,9 +32,23 @@ namespace War3Net.Build.Script
         public abstract TStatementSyntax GenerateLocalDeclarationStatement(
             string variableName);
 
+        public IEnumerable<TStatementSyntax> GenerateLocalDeclarationStatements(
+            params string[] variableNames)
+        {
+            return variableNames.Select(GenerateLocalDeclarationStatement);
+        }
+
+        public abstract TStatementSyntax GenerateAssignmentStatement(
+            string variableName,
+            TExpressionSyntax value);
+
         public abstract TStatementSyntax GenerateInvocationStatement(
             string functionName,
             params TExpressionSyntax[] args);
+
+        public abstract TStatementSyntax GenerateIfStatement(
+            TExpressionSyntax condition,
+            params TStatementSyntax[] ifBody);
 
         public abstract TExpressionSyntax GenerateIntegerLiteralExpression(
             int value);
@@ -57,12 +74,23 @@ namespace War3Net.Build.Script
         public abstract TExpressionSyntax GenerateFourCCExpression(
             string fourCC);
 
-        public abstract TExpressionSyntax GenerateBinaryAdditionExpression(
+        public abstract TExpressionSyntax GenerateBinaryExpression(
+            BinaryOperator @operator,
             TExpressionSyntax left,
             TExpressionSyntax right);
 
-        public abstract TExpressionSyntax GenerateBinarySubtractionExpression(
+        public TExpressionSyntax GenerateBinaryAdditionExpression(
             TExpressionSyntax left,
-            TExpressionSyntax right);
+            TExpressionSyntax right)
+        {
+            return GenerateBinaryExpression(BinaryOperator.Addition, left, right);
+        }
+
+        public TExpressionSyntax GenerateBinarySubtractionExpression(
+            TExpressionSyntax left,
+            TExpressionSyntax right)
+        {
+            return GenerateBinaryExpression(BinaryOperator.Subtraction, left, right);
+        }
     }
 }

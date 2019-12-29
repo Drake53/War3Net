@@ -57,9 +57,21 @@ namespace War3Net.Build.Script
             return variableList;
         }
 
+        public override LuaStatementSyntax GenerateAssignmentStatement(string variableName, LuaExpressionSyntax value)
+        {
+            return new LuaExpressionStatementSyntax(new LuaAssignmentExpressionSyntax(variableName, value));
+        }
+
         public sealed override LuaStatementSyntax GenerateInvocationStatement(string functionName, params LuaExpressionSyntax[] args)
         {
             return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(functionName, args));
+        }
+
+        public override LuaStatementSyntax GenerateIfStatement(LuaExpressionSyntax condition, params LuaStatementSyntax[] ifBody)
+        {
+            var ifStatement = new LuaIfStatementSyntax(condition);
+            ifStatement.Body.Statements.AddRange(ifBody);
+            return ifStatement;
         }
 
         public sealed override LuaExpressionSyntax GenerateIntegerLiteralExpression(int value)
@@ -102,14 +114,16 @@ namespace War3Net.Build.Script
             return new LuaInvocationExpressionSyntax(nameof(War3Api.Common.FourCC), new LuaStringLiteralExpressionSyntax(fourCC));
         }
 
-        public sealed override LuaExpressionSyntax GenerateBinaryAdditionExpression(LuaExpressionSyntax left, LuaExpressionSyntax right)
+        public override LuaExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, LuaExpressionSyntax left, LuaExpressionSyntax right)
         {
-            return new LuaBinaryExpressionSyntax(left, LuaSyntaxNode.Tokens.Plus, right);
-        }
+            var operatorToken = @operator switch
+            {
+                BinaryOperator.Addition => LuaSyntaxNode.Tokens.Plus,
+                BinaryOperator.Subtraction => LuaSyntaxNode.Tokens.Sub,
+                BinaryOperator.NotEquals => LuaSyntaxNode.Tokens.NotEquals,
+            };
 
-        public sealed override LuaExpressionSyntax GenerateBinarySubtractionExpression(LuaExpressionSyntax left, LuaExpressionSyntax right)
-        {
-            return new LuaBinaryExpressionSyntax(left, LuaSyntaxNode.Tokens.Sub, right);
+            return new LuaBinaryExpressionSyntax(left, operatorToken, right);
         }
     }
 }

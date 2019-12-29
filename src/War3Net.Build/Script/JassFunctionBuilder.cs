@@ -54,9 +54,30 @@ namespace War3Net.Build.Script
             return null;
         }
 
+        public override NewStatementSyntax GenerateAssignmentStatement(string variableName, NewExpressionSyntax value)
+        {
+            return JassSyntaxFactory.SetStatement(variableName, JassSyntaxFactory.EqualsValueClause(value));
+        }
+
         public sealed override NewStatementSyntax GenerateInvocationStatement(string functionName, params NewExpressionSyntax[] args)
         {
             return JassSyntaxFactory.CallStatement(functionName, args);
+        }
+
+        public override NewStatementSyntax GenerateIfStatement(NewExpressionSyntax condition, params NewStatementSyntax[] ifBody)
+        {
+            // TODO: add JassSyntaxFactory.IfStatement method
+            return new NewStatementSyntax(
+                new StatementSyntax(
+                    new IfStatementSyntax(
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.IfKeyword), 0),
+                        condition,
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.ThenKeyword), 0),
+                        new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))),
+                        new StatementListSyntax(ifBody),
+                        new CodeAnalysis.Jass.EmptyNode(0),
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.EndifKeyword), 0))),
+                new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))));
         }
 
         public sealed override NewExpressionSyntax GenerateIntegerLiteralExpression(int value)
@@ -99,14 +120,24 @@ namespace War3Net.Build.Script
             return JassSyntaxFactory.FourCCExpression(fourCC);
         }
 
-        public sealed override NewExpressionSyntax GenerateBinaryAdditionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        public override NewExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, NewExpressionSyntax left, NewExpressionSyntax right)
         {
-            return JassSyntaxFactory.BinaryAdditionExpression(left, right);
-        }
+            // CodeAnalysis.Jass.SyntaxTokenType operatorTokenType = @operator switch;
 
-        public sealed override NewExpressionSyntax GenerateBinarySubtractionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
-        {
-            return JassSyntaxFactory.BinarySubtractionExpression(left, right);
+            return @operator switch
+            {
+                BinaryOperator.Addition => JassSyntaxFactory.BinaryAdditionExpression(left, right),
+                BinaryOperator.Subtraction => JassSyntaxFactory.BinarySubtractionExpression(left, right),
+
+                BinaryOperator.NotEquals =>
+                    new NewExpressionSyntax(
+                        left.Expression,
+                        new BinaryExpressionTailSyntax(
+                            new BinaryOperatorSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.UnequalityOperator), 0)),
+                            right)),
+
+                _ => throw new System.ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
+            };
         }
     }
 }
