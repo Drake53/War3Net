@@ -35,8 +35,10 @@ namespace War3Net.Build.Widget
 
         public int Mode => _mode;
 
+        public int Level => _levelAndClass == 0x00ffffff ? -1 : _levelAndClass;
+
         // Signed little-endian 24-bit number
-        public int Level
+        public int ItemLevel
         {
             get
             {
@@ -54,7 +56,7 @@ namespace War3Net.Build.Widget
             }
         }
 
-        public byte Class
+        public byte ItemClass
         {
             get
             {

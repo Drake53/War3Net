@@ -152,6 +152,11 @@ namespace War3Net.Build.Providers
 
                 foreach (var item in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsItem))
                 {
+                    if (item.TypeId == "sloc")
+                    {
+                        continue;
+                    }
+
                     if (item.IsRandomItem)
                     {
                         var randomData = item.RandomData;
@@ -164,8 +169,8 @@ namespace War3Net.Build.Providers
                                         nameof(War3Api.Common.ChooseRandomItemEx),
                                         builder.GenerateInvocationExpression(
                                             nameof(War3Api.Common.ConvertItemType),
-                                            builder.GenerateIntegerLiteralExpression(randomData.Class)),
-                                        builder.GenerateIntegerLiteralExpression(randomData.Level)));
+                                            builder.GenerateIntegerLiteralExpression(randomData.ItemClass)),
+                                        builder.GenerateIntegerLiteralExpression(randomData.ItemLevel)));
                                 break;
 
                             case 2:
@@ -255,11 +260,15 @@ namespace War3Net.Build.Providers
                                 break;
 
                             case 1:
-                                // throw new System.NotSupportedException($"Unable to create random unit with mode 1, because global random unit tables are not implemented.");
+                                yield return builder.GenerateAssignmentStatement(
+                                    MainFunctionProvider.LocalUnitIdVariableName,
+                                    builder.GenerateIntegerLiteralExpression(-1));
+
+                                // TODO: create integer array(s) for global random unit table(s)
                                 /*yield return builder.GenerateAssignmentStatement(
                                     MainFunctionProvider.LocalUnitIdVariableName,
                                     builder.GenerateArrayIndexExpression(
-                                        builder.GenerateVariableExpression("gg_rg_000"), // TODO: create integer array(s) for global random unit table(s)
+                                        builder.GenerateVariableExpression("gg_rg_000"),
                                         builder.GenerateIntegerLiteralExpression(randomData.UnitGroupTableColumn)));*/
                                 break;
 
@@ -308,7 +317,7 @@ namespace War3Net.Build.Providers
                                     builder.GenerateInvocationExpression(
                                         nameof(War3Api.Common.Player),
                                         builder.GenerateIntegerLiteralExpression(unit.Owner)),
-                                    builder.GenerateFourCCExpression(MainFunctionProvider.LocalUnitIdVariableName),
+                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitIdVariableName),
                                     builder.GenerateFloatLiteralExpression(unit.PositionX),
                                     builder.GenerateFloatLiteralExpression(unit.PositionY),
                                     builder.GenerateFloatLiteralExpression(unit.Facing))));
@@ -326,124 +335,130 @@ namespace War3Net.Build.Providers
                                 builder.GenerateFloatLiteralExpression(unit.PositionX),
                                 builder.GenerateFloatLiteralExpression(unit.PositionY),
                                 builder.GenerateFloatLiteralExpression(unit.Facing)));
+                    }
 
-                        if (unit.Hp != -1)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetUnitState),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)),
-                                builder.GenerateBinaryExpression(
-                                    BinaryOperator.Multiplication,
-                                    builder.GenerateFloatLiteralExpression(unit.Hp * 0.01f),
-                                    builder.GenerateInvocationExpression(
-                                        nameof(War3Api.Common.GetUnitState),
-                                        builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                        builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)))));
-                        }
-
-                        if (unit.Mp != -1)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetUnitState),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_MANA)),
-                                builder.GenerateFloatLiteralExpression(unit.Mp));
-                        }
-
-                        if (unit.GoldAmount > 0)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetResourceAmount),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateIntegerLiteralExpression(unit.GoldAmount));
-                        }
-
-                        if (unit.TargetAcquisition != -1)
-                        {
-                            const float CampAcquisitionRange = 200f;
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetUnitAcquireRange),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
-                        }
-
-                        if (unit.HeroLevel > 1)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetHeroLevel),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
-                                builder.GenerateBooleanLiteralExpression(false));
-                        }
-
-                        if (unit.HeroStrength > 0)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetHeroStr),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
-                                builder.GenerateBooleanLiteralExpression(true));
-                        }
-
-                        if (unit.HeroAgility > 0)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetHeroAgi),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
-                                builder.GenerateBooleanLiteralExpression(true));
-                        }
-
-                        if (unit.HeroIntelligence > 0)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.SetHeroInt),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
-                                builder.GenerateBooleanLiteralExpression(true));
-                        }
-
-                        // TODO: CustomPlayerColor
-                        // TODO: WaygateDestination (requires parsing war3map.w3r)
-                        // TODO: CreationNumber? (only used to declare global var if unit is referenced in triggers?, ie useless)
-
-                        foreach (var item in unit.Inventory)
-                        {
-                            yield return builder.GenerateInvocationStatement(
-                                nameof(War3Api.Common.UnitAddItemToSlotById),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                builder.GenerateFourCCExpression(item.Id),
-                                builder.GenerateIntegerLiteralExpression(item.Slot));
-                        }
-
-                        foreach (var ability in unit.AbilityData)
-                        {
-                            // TODO:
-                            /*for (var i = 0; i < ability.Level; i++)
-                            {
-                                // TODO: make sure Level is 0 for non-hero abilities
-                                yield return builder.GenerateInvocationStatement(
-                                    nameof(War3Api.Common.SelectHeroSkill),
+                    if (unit.Hp != -1)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetUnitState),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)),
+                            builder.GenerateBinaryExpression(
+                                BinaryOperator.Multiplication,
+                                builder.GenerateFloatLiteralExpression(unit.Hp * 0.01f),
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.GetUnitState),
                                     builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                    builder.GenerateFourCCExpression(ability.Id));
-                            }
+                                    builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)))));
+                    }
 
-                            if (ability.IsActive)
-                            {
-                                // TODO: use IssueImmediateOrderById instead?
-                                yield return builder.GenerateInvocationStatement(
-                                    nameof(War3Api.Common.IssueImmediateOrder),
-                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                                    builder.GenerateStringLiteralExpression(ability.OrderString));
-                            }*/
-                        }
+                    if (unit.Mp != -1)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetUnitState),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_MANA)),
+                            builder.GenerateFloatLiteralExpression(unit.Mp));
+                    }
 
-                        foreach (var droppedItem in unit.DroppedItemData)
+                    if (unit.TypeId == "ngol")
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetResourceAmount),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.GoldAmount));
+                    }
+
+                    if (unit.TargetAcquisition != -1)
+                    {
+                        const float CampAcquisitionRange = 200f;
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetUnitAcquireRange),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
+                    }
+
+                    if (unit.HeroLevel > 1)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroLevel),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
+                            builder.GenerateBooleanLiteralExpression(false));
+                    }
+
+                    if (unit.HeroStrength > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroStr),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
+                    if (unit.HeroAgility > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroAgi),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
+                    if (unit.HeroIntelligence > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroInt),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
+                    // TODO: CustomPlayerColor
+                    // TODO: WaygateDestination (requires parsing war3map.w3r)
+                    // TODO: CreationNumber? (only used to declare global var if unit is referenced in triggers?, ie useless)
+
+                    foreach (var item in unit.Inventory)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.UnitAddItemToSlotById),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateFourCCExpression(item.Id),
+                            builder.GenerateIntegerLiteralExpression(item.Slot));
+                    }
+
+                    foreach (var ability in unit.AbilityData)
+                    {
+                        for (var i = 0; i < ability.Level; i++)
                         {
-                            // TODO: implement
-                            // Create trigger ItemTable######_DropItems or Unit######_DropItems, add events EVENT_UNIT_DEATH and EVENT_UNIT_CHANGE_OWNER
+                            // TODO: make sure Level is 0 for non-hero abilities (can confirm this by checking second char is uppercase?)
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.SelectHeroSkill),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateFourCCExpression(ability.Id));
                         }
+
+                        if (ability.IsActive)
+                        {
+#if false
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.IssueImmediateOrder),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateStringLiteralExpression(ability.OrderString));
+#else
+                            // TODO: test if this works
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.IssueImmediateOrderById),
+                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateFourCCExpression(ability.Id));
+#endif
+                        }
+                    }
+
+                    foreach (var droppedItem in unit.DroppedItemData)
+                    {
+                        // TODO: implement
+                        // Create trigger ItemTable######_DropItems or Unit######_DropItems, add events EVENT_UNIT_DEATH and EVENT_UNIT_CHANGE_OWNER
                     }
                 }
             }
