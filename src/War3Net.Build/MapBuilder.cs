@@ -151,8 +151,7 @@ namespace War3Net.Build
             }
 
             // Generate mapUnits file
-            // todo: implement mapUnits.serialize method
-            /*if (compilerOptions.MapUnits != null)
+            if (compilerOptions.MapUnits != null)
             {
                 var mapUnitsPath = Path.Combine(compilerOptions.OutputDirectory, MapUnits.FileName);
                 using (var mapUnitsStream = File.Create(mapUnitsPath))
@@ -161,7 +160,7 @@ namespace War3Net.Build
                 }
 
                 files.Add((MapUnits.FileName, MpqLocale.Neutral), File.OpenRead(mapUnitsPath));
-            }*/
+            }
 
 
 

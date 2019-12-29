@@ -43,12 +43,11 @@ namespace War3Net.Build.Widget
         private float _targetAcquisition; // -1 == normal, -2 == camp
 
         private int _heroLevel; // 1 if not hero
-        private int _heroStregnth; // 0 == default
+        private int _heroStrength; // 0 == default
         private int _heroAgility;
         private int _heroIntelligence;
 
-        private int _randomFlag; // used if _typeId is uDNR or iDNR, 0 == any/nonrandom, 1 == ?, 2 == ?
-        // todo: random data
+        private RandomUnitData _randomData;
 
         private int _customPlayerColour; // 0-indexed, -1 == none
         private int _waygateDestination; // -1 == deactivated, otherwise refers to rect creation number in war3map.w3r
@@ -75,6 +74,16 @@ namespace War3Net.Build.Widget
 
         public static MapUnitData Parse(Stream stream, bool leaveOpen = false)
         {
+            return Parse(stream, MapWidgetsVersion.RoC, leaveOpen);
+        }
+
+        public static MapUnitData ParseTft(Stream stream, bool leaveOpen = true)
+        {
+            return Parse(stream, MapWidgetsVersion.TFT, leaveOpen);
+        }
+
+        private static MapUnitData Parse(Stream stream, MapWidgetsVersion version, bool leaveOpen)
+        {
             var unitData = new MapUnitData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
@@ -97,7 +106,7 @@ namespace War3Net.Build.Widget
                 unitData._hp = reader.ReadInt32();
                 unitData._mp = reader.ReadInt32();
 
-                unitData._mapItemTablePointer = reader.ReadInt32();
+                unitData._mapItemTablePointer = version >= MapWidgetsVersion.TFT ? reader.ReadInt32() : -1;
 
                 var droppedItemDataCount = reader.ReadInt32();
                 for (var i = 0; i < droppedItemDataCount; i++)
@@ -109,9 +118,12 @@ namespace War3Net.Build.Widget
                 unitData._targetAcquisition = reader.ReadSingle();
 
                 unitData._heroLevel = reader.ReadInt32();
-                unitData._heroStregnth = reader.ReadInt32();
-                unitData._heroAgility = reader.ReadInt32();
-                unitData._heroIntelligence = reader.ReadInt32();
+                if (version >= MapWidgetsVersion.TFT)
+                {
+                    unitData._heroStrength = reader.ReadInt32();
+                    unitData._heroAgility = reader.ReadInt32();
+                    unitData._heroIntelligence = reader.ReadInt32();
+                }
 
                 var inventoryItemCount = reader.ReadInt32();
                 for (var i = 0; i < inventoryItemCount; i++)
@@ -125,14 +137,7 @@ namespace War3Net.Build.Widget
                     unitData._modifiedAbilities.Add(ModifiedAbilityData.Parse(stream, true));
                 }
 
-                unitData._randomFlag = reader.ReadInt32();
-                switch (unitData._randomFlag)
-                {
-                    // TODO: implement
-                    case 0: default: reader.ReadInt32(); break;
-                    case 1: throw new NotImplementedException(); break;
-                    case 2: throw new NotImplementedException(); break;
-                }
+                unitData._randomData = RandomUnitData.Parse(stream, true);
 
                 unitData._customPlayerColour = reader.ReadInt32();
                 unitData._waygateDestination = reader.ReadInt32();
@@ -140,6 +145,70 @@ namespace War3Net.Build.Widget
             }
 
             return unitData;
+        }
+
+        public void SerializeTo(Stream stream, bool leaveOpen = false)
+        {
+            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            {
+                WriteTo(writer);
+            }
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(_typeId);
+            writer.Write(_variation);
+
+            writer.Write(_positionX);
+            writer.Write(_positionY);
+            writer.Write(_positionZ);
+            writer.Write(_rotation);
+            writer.Write(_scaleX);
+            writer.Write(_scaleY);
+            writer.Write(_scaleZ);
+
+            writer.Write(_flags);
+            writer.Write(_owner);
+            writer.Write(_UNK0);
+            writer.Write(_UNK1);
+
+            writer.Write(_hp);
+            writer.Write(_mp);
+
+            writer.Write(_mapItemTablePointer);
+
+            writer.Write(_mapItemTableDropData.Count);
+            foreach (var droppedItemDataSet in _mapItemTableDropData)
+            {
+                droppedItemDataSet.WriteTo(writer);
+            }
+
+            writer.Write(_goldAmount);
+            writer.Write(_targetAcquisition);
+
+            writer.Write(_heroLevel);
+            writer.Write(_heroStrength);
+            writer.Write(_heroAgility);
+            writer.Write(_heroIntelligence);
+
+            writer.Write(_inventory.Count);
+            foreach (var inventoryItemData in _inventory)
+            {
+                inventoryItemData.WriteTo(writer);
+            }
+
+            writer.Write(_modifiedAbilities.Count);
+            foreach (var modifiedAbilityData in _modifiedAbilities)
+            {
+                modifiedAbilityData.WriteTo(writer);
+            }
+
+            _randomData.WriteTo(writer);
+
+            writer.Write(_customPlayerColour);
+            writer.Write(_waygateDestination);
+            writer.Write(_creationNumber);
         }
     }
 }

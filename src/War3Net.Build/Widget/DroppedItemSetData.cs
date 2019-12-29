@@ -12,6 +12,9 @@ namespace War3Net.Build.Widget
 {
     public sealed class DroppedItemSetData
     {
+        private char[] _itemId;
+        private int _dropChance;
+
         public static DroppedItemSetData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new DroppedItemSetData();
@@ -20,12 +23,18 @@ namespace War3Net.Build.Widget
                 var itemCount = reader.ReadInt32();
                 for (var i = 0; i < itemCount; i++)
                 {
-                    var itemId = reader.ReadChars(4); // 0x00000000 == none
-                    var dropChance = reader.ReadInt32(); // in %
+                    data._itemId = reader.ReadChars(4); // 0x00000000 == none
+                    data._dropChance = reader.ReadInt32(); // in %
                 }
             }
 
             return data;
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(_itemId);
+            writer.Write(_dropChance);
         }
     }
 }

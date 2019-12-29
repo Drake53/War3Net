@@ -13,13 +13,17 @@ namespace War3Net.Build.Widget
 {
     public sealed class MapWidgetsHeader
     {
-        private const uint HeaderSignature = 0x6F643357; // "W3do"
-        private const uint LatestVersion = 8;
-        private const uint LatestSubVersion = 11;
+        internal const uint HeaderSignature = 0x6F643357; // "W3do"
+        internal const MapWidgetsVersion LatestVersion = MapWidgetsVersion.TFT;
+        internal const uint LatestSubVersion = 11;
 
-        private uint _version;
+        private MapWidgetsVersion _version;
         private uint _subVersion;
         private uint _dataCount;
+
+        public MapWidgetsVersion Version => _version;
+
+        public uint SubVersion => _subVersion;
 
         public uint DataCount => _dataCount;
 
@@ -33,17 +37,17 @@ namespace War3Net.Build.Widget
                     throw new InvalidDataException();
                 }
 
-                header._version = reader.ReadUInt32();
-                if (header._version != LatestVersion)
+                header._version = (MapWidgetsVersion)reader.ReadUInt32();
+                if (!Enum.IsDefined(typeof(MapWidgetsVersion), header._version))
                 {
-                    throw new NotSupportedException($"Version {header._version} is not supported.");
+                    throw new NotSupportedException($"Version {header._version} for .doo files is not supported.");
                 }
 
                 header._subVersion = reader.ReadUInt32();
-                if (header._subVersion != LatestSubVersion)
+                /*if (header._subVersion != LatestSubVersion)
                 {
                     throw new NotSupportedException($"Subversion {header._subVersion} is not supported.");
-                }
+                }*/
 
                 header._dataCount = reader.ReadUInt32();
             }

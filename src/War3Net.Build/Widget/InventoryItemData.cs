@@ -12,16 +12,25 @@ namespace War3Net.Build.Widget
 {
     public sealed class InventoryItemData
     {
+        private int _slot;
+        private char[] _itemId;
+
         public static InventoryItemData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new InventoryItemData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                var slot = reader.ReadInt32(); // 0-indexed
-                var itemId = reader.ReadChars(4); // 0x00000000 == none
+                data._slot = reader.ReadInt32(); // 0-indexed
+                data._itemId = reader.ReadChars(4); // 0x00000000 == none
             }
 
             return data;
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(_slot);
+            writer.Write(_itemId);
         }
     }
 }

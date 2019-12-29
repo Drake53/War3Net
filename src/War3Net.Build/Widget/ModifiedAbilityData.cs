@@ -12,17 +12,28 @@ namespace War3Net.Build.Widget
 {
     public sealed class ModifiedAbilityData
     {
+        private char[] _abilityId;
+        private int _isAutocastActive;
+        private int _heroAbilityLevel;
+
         public static ModifiedAbilityData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new ModifiedAbilityData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                var abilityId = reader.ReadChars(4);
-                var isAutocastActive = reader.ReadInt32(); // 0 == no, 1 == active
-                var heroAbilityLevel = reader.ReadInt32();
+                data._abilityId = reader.ReadChars(4);
+                data._isAutocastActive = reader.ReadInt32(); // 0 == no, 1 == active
+                data._heroAbilityLevel = reader.ReadInt32();
             }
 
             return data;
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(_abilityId);
+            writer.Write(_isAutocastActive);
+            writer.Write(_heroAbilityLevel);
         }
     }
 }

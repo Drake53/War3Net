@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -31,14 +32,36 @@ namespace War3Net.Build.Widget
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 data._header = MapWidgetsHeader.Parse(stream, true);
+                Func<Stream, bool, MapUnitData> unitParser = data._header.Version switch
+                {
+                    MapWidgetsVersion.RoC => MapUnitData.Parse,
+                    MapWidgetsVersion.TFT => MapUnitData.ParseTft,
+                    _ => throw new NotSupportedException(),
+                };
 
                 for (var i = 0; i < data._header.DataCount; i++)
                 {
-                    data._units.Add(MapUnitData.Parse(stream, true));
+                    data._units.Add(unitParser(stream, true));
                 }
             }
 
             return data;
+        }
+
+        public void SerializeTo(Stream stream, bool leaveOpen = false)
+        {
+            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            {
+                writer.Write(MapWidgetsHeader.HeaderSignature);
+                writer.Write((uint)MapWidgetsHeader.LatestVersion);
+                writer.Write(MapWidgetsHeader.LatestSubVersion);
+
+                writer.Write(_units.Count);
+                foreach (var unit in _units)
+                {
+                    unit.WriteTo(writer);
+                }
+            }
         }
 
         public IEnumerator<MapUnitData> GetEnumerator()
