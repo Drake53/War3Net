@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -13,7 +14,7 @@ namespace War3Net.Build.Widget
 {
     // used if _typeId is uDNR or iDNR
     // for non-random units, _mode is 0 with its data also 0
-    public sealed class RandomUnitData
+    public sealed class RandomUnitData : IEnumerable<(char[] id, int chance)>
     {
         // Mode 2:
         private readonly List<(char[] id, int chance)> _randomUnits;
@@ -32,10 +33,16 @@ namespace War3Net.Build.Widget
             _randomUnits = new List<(char[] id, int chance)>();
         }
 
+        public int Mode => _mode;
+
         // Signed 24-bit number
         public int Level => (int)((uint)((_levelAndClass & 0x7fffff00) >> 8) | ((uint)_levelAndClass & 0x80000000));
 
         public byte Class => (byte)(_levelAndClass & 0xff);
+
+        public int UnitGroupTableIndex => _unitGroupTableIndex;
+
+        public int UnitGroupTableColumn => _column;
 
         public static RandomUnitData Parse(Stream stream, bool leaveOpen = false)
         {
@@ -94,6 +101,16 @@ namespace War3Net.Build.Widget
 
                     break;
             }
+        }
+
+        public IEnumerator<(char[] id, int chance)> GetEnumerator()
+        {
+            return ((IEnumerable<(char[] id, int chance)>)_randomUnits).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<(char[] id, int chance)>)_randomUnits).GetEnumerator();
         }
     }
 }

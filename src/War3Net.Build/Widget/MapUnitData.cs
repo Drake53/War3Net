@@ -53,17 +53,65 @@ namespace War3Net.Build.Widget
         private int _waygateDestination; // -1 == deactivated, otherwise refers to rect creation number in war3map.w3r
         private int _creationNumber;
 
-        public int Owner => _owner;
-
         public string TypeId => new string(_typeId);
+
+        public bool IsUnit => /*IsRandomUnit ||*/ throw new NotImplementedException();
+
+        public bool IsItem => /*IsRandomItem ||*/ throw new NotImplementedException();
+
+        public bool IsRandomUnit => TypeId == "uDNR";
+
+        public bool IsRandomItem => TypeId == "iDNR";
+
+        public int Variation => _variation;
 
         public float PositionX => _positionX;
 
         public float PositionY => _positionY;
 
+        public float PositionZ => _positionZ;
+
         public float Facing => _rotation;
 
+        public float ScaleX => _scaleX;
+
+        public float ScaleY => _scaleY;
+
+        public float ScaleZ => _scaleZ;
+
+        public byte Flags => _flags;
+
+        public int Owner => _owner;
+
+        public byte Unk0 => _UNK0;
+
+        public byte Unk1 => _UNK1;
+
+        public int Hp => _hp;
+
+        public int Mp => _mp;
+
+        public int MapItemTablePointer => _mapItemTablePointer;
+
         public int GoldAmount => _goldAmount;
+
+        public float TargetAcquisition => _targetAcquisition;
+
+        public int HeroLevel => _heroLevel;
+
+        public int HeroStrength => _heroStrength;
+
+        public int HeroAgility => _heroAgility;
+
+        public int HeroIntelligence => _heroIntelligence;
+
+        public RandomUnitData RandomData => _randomData;
+
+        public int CustomPlayerColor => _customPlayerColour;
+
+        public int WaygateDestination => _waygateDestination;
+
+        public int CreationNumber => _creationNumber;
 
         public MapUnitData()
         {
