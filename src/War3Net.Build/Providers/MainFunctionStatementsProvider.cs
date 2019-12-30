@@ -137,7 +137,10 @@ namespace War3Net.Build.Providers
                 builder.GenerateBooleanLiteralExpression(MusicRandom),
                 builder.GenerateIntegerLiteralExpression(MusicIndex));
 
-            // TODO: if (builder.Data.MapDoodads != null
+            if (builder.Data.MapDoodads != null)
+            {
+                // TODO
+            }
 
             if (builder.Data.MapUnits != null)
             {

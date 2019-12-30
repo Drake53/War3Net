@@ -140,6 +140,28 @@ namespace War3Net.Build
 
             files.Add((MapEnvironment.FileName, MpqLocale.Neutral), File.OpenRead(mapEnvironmentPath));
 
+            // If MapDoodads is not set, search for it in assets.
+            if (compilerOptions.MapDoodads is null)
+            {
+                var mapDoodadsStream = FindFile(MapDoodads.FileName);
+                if (mapDoodadsStream != null)
+                {
+                    compilerOptions.MapDoodads = MapDoodads.Parse(mapDoodadsStream);
+                }
+            }
+
+            // Generate mapDoodads file
+            if (compilerOptions.MapDoodads != null)
+            {
+                var mapDoodadsPath = Path.Combine(compilerOptions.OutputDirectory, MapDoodads.FileName);
+                using (var mapDoodadsStream = File.Create(mapDoodadsPath))
+                {
+                    compilerOptions.MapDoodads.SerializeTo(mapDoodadsStream);
+                }
+
+                files.Add((MapDoodads.FileName, MpqLocale.Neutral), File.OpenRead(mapDoodadsPath));
+            }
+
             // If MapUnits is not set, search for it in assets.
             if (compilerOptions.MapUnits is null)
             {
@@ -149,14 +171,6 @@ namespace War3Net.Build
                     compilerOptions.MapUnits = MapUnits.Parse(mapUnitsStream);
                 }
             }
-
-            // todo: check if war3map.doo can actually affect the map script, otherwise doing this like war3mapUnits.doo is useless
-            // -> if it is possible, also add MapDoodads property to ScriptCompilerOptions
-            // If MapDoodads is not set, search for it in assets.
-            // todo
-
-            // Generate mapDoodads file
-            // todo
 
             // Generate mapUnits file
             if (compilerOptions.MapUnits != null)

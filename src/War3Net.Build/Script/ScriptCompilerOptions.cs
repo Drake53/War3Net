@@ -40,6 +40,8 @@ namespace War3Net.Build.Script
 
         public MapEnvironment? MapEnvironment { get; set; }
 
+        public MapDoodads? MapDoodads { get; set; }
+
         public MapUnits? MapUnits { get; set; }
 
         public string LobbyMusic { get; set; }

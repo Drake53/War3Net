@@ -13,19 +13,23 @@ namespace War3Net.Build.Script
     internal sealed class FunctionBuilderData
     {
         private readonly MapInfo _mapInfo;
+        private readonly MapDoodads _mapDoodads;
         private readonly MapUnits _mapUnits;
         private readonly string? _lobbyMusic;
         private readonly bool _csharp;
 
-        public FunctionBuilderData(MapInfo mapInfo, MapUnits mapUnits, string? lobbyMusic, bool csharp)
+        public FunctionBuilderData(MapInfo mapInfo, MapDoodads mapDoodads, MapUnits mapUnits, string? lobbyMusic, bool csharp)
         {
             _mapInfo = mapInfo;
+            _mapDoodads = mapDoodads;
             _mapUnits = mapUnits;
             _lobbyMusic = lobbyMusic;
             _csharp = csharp;
         }
 
         public MapInfo MapInfo => _mapInfo;
+
+        public MapDoodads MapDoodads => _mapDoodads;
 
         public MapUnits MapUnits => _mapUnits;
 

@@ -46,7 +46,7 @@ namespace War3Net.Build.Script
 
         public override void BuildMainAndConfig(out string mainFunctionFilePath, out string configFunctionFilePath)
         {
-            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapUnits, Options.LobbyMusic, false);
+            var functionBuilderData = new FunctionBuilderData(Options.MapInfo, Options.MapDoodads, Options.MapUnits, Options.LobbyMusic, false);
             var functionBuilder = new JassFunctionBuilder(functionBuilderData);
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
