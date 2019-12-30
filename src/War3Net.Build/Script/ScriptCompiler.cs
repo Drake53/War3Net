@@ -27,6 +27,7 @@ namespace War3Net.Build.Script
 
         public abstract bool Compile(out string scriptFilePath, params string[] additionalSourceFiles);
 
+        // todo: not abstract? (since the implementation for jass and C# barely differs)
         public abstract void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles);
 
         [Obsolete("Script language should be obtained from MapInfo.ScriptLanguage property.", true)]

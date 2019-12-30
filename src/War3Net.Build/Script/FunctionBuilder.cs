@@ -50,6 +50,9 @@ namespace War3Net.Build.Script
             TExpressionSyntax condition,
             params TStatementSyntax[] ifBody);
 
+        // TODO: overload that also takes else body
+        // TODO: elseif, ..
+
         public abstract TExpressionSyntax GenerateIntegerLiteralExpression(
             int value);
 

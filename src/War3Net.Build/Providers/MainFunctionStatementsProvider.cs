@@ -16,10 +16,10 @@ namespace War3Net.Build.Providers
     internal static class MainFunctionProvider
     {
         public const string FunctionName = "main";
-        public const string LocalDestructableVariableName = "d"; // TODO: declare this variable in jass
+        public const string LocalDestructableVariableName = "d";
         public const string LocalUnitVariableName = "u";
-        public const string LocalUnitIdVariableName = "unitID"; // TODO: declare this variable in jass
-        public const string LocalItemIdVariableName = "itemID"; // TODO: declare this variable in jass
+        public const string LocalUnitIdVariableName = "unitID";
+        public const string LocalItemIdVariableName = "itemID";
     }
 
     internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -378,6 +378,8 @@ namespace War3Net.Build.Providers
                                 builder.GenerateFloatLiteralExpression(unit.PositionY),
                                 builder.GenerateFloatLiteralExpression(unit.Facing)));
                     }
+
+                    // TODO: test which statements cannot be generated for random units, and put them inside the else block above (hero level/stats?)
 
                     if (unit.HeroLevel > 1)
                     {
