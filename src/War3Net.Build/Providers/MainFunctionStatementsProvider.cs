@@ -137,6 +137,8 @@ namespace War3Net.Build.Providers
                 builder.GenerateBooleanLiteralExpression(MusicRandom),
                 builder.GenerateIntegerLiteralExpression(MusicIndex));
 
+            // TODO: if (builder.Data.MapDoodads != null
+
             if (builder.Data.MapUnits != null)
             {
                 foreach (var localDeclaration in builder.GenerateLocalDeclarationStatements(
@@ -337,6 +339,42 @@ namespace War3Net.Build.Providers
                                 builder.GenerateFloatLiteralExpression(unit.Facing)));
                     }
 
+                    if (unit.HeroLevel > 1)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroLevel),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
+                            builder.GenerateBooleanLiteralExpression(false));
+                    }
+
+                    if (unit.HeroStrength > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroStr),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
+                    if (unit.HeroAgility > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroAgi),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
+                    if (unit.HeroIntelligence > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroInt),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
+
                     if (unit.Hp != -1)
                     {
                         yield return builder.GenerateInvocationStatement(
@@ -378,54 +416,9 @@ namespace War3Net.Build.Providers
                             builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
                     }
 
-                    if (unit.HeroLevel > 1)
-                    {
-                        yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.SetHeroLevel),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
-                            builder.GenerateBooleanLiteralExpression(false));
-                    }
-
-                    if (unit.HeroStrength > 0)
-                    {
-                        yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.SetHeroStr),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
-                            builder.GenerateBooleanLiteralExpression(true));
-                    }
-
-                    if (unit.HeroAgility > 0)
-                    {
-                        yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.SetHeroAgi),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
-                            builder.GenerateBooleanLiteralExpression(true));
-                    }
-
-                    if (unit.HeroIntelligence > 0)
-                    {
-                        yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.SetHeroInt),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
-                            builder.GenerateBooleanLiteralExpression(true));
-                    }
-
                     // TODO: CustomPlayerColor
                     // TODO: WaygateDestination (requires parsing war3map.w3r)
                     // TODO: CreationNumber? (only used to declare global var if unit is referenced in triggers?, ie useless)
-
-                    foreach (var item in unit.Inventory)
-                    {
-                        yield return builder.GenerateInvocationStatement(
-                            nameof(War3Api.Common.UnitAddItemToSlotById),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
-                            builder.GenerateFourCCExpression(item.Id),
-                            builder.GenerateIntegerLiteralExpression(item.Slot));
-                    }
 
                     foreach (var ability in unit.AbilityData)
                     {
@@ -453,6 +446,15 @@ namespace War3Net.Build.Providers
                                 builder.GenerateFourCCExpression(ability.Id));
 #endif
                         }
+                    }
+
+                    foreach (var item in unit.Inventory)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.UnitAddItemToSlotById),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateFourCCExpression(item.Id),
+                            builder.GenerateIntegerLiteralExpression(item.Slot));
                     }
 
                     foreach (var droppedItem in unit.DroppedItemData)
