@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MainFunctionStatementsProvider.cs" company="Drake53">
+// <copyright file="MainFunctionGenerator.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -9,38 +9,35 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Info;
-using War3Net.Build.Script;
+using War3Net.Build.Providers;
 
-namespace War3Net.Build.Providers
+namespace War3Net.Build.Script.Main
 {
-    internal static class MainFunctionProvider
-    {
-        public const string FunctionName = "main";
-        public const string LocalDestructableVariableName = "d";
-        public const string LocalUnitVariableName = "u";
-        public const string LocalUnitIdVariableName = "unitID";
-        public const string LocalItemIdVariableName = "itemID";
-    }
-
-    internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private const string MusicName = "Music";
         private const bool MusicRandom = true;
         private const int MusicIndex = 0;
 
+        private const string LocalDestructableVariableName = "d";
+        private const string LocalUnitVariableName = "u";
+        private const string LocalUnitIdVariableName = "unitID";
+        private const string LocalItemIdVariableName = "itemID";
+
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
         {
             var locals = new List<(string, string)>()
             {
                 // Note: typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
-                (nameof(War3Api.Common.destructable), MainFunctionProvider.LocalDestructableVariableName),
-                (nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName),
-                ("integer", MainFunctionProvider.LocalUnitIdVariableName),
-                ("integer", MainFunctionProvider.LocalItemIdVariableName),
+                (nameof(War3Api.Common.destructable), LocalDestructableVariableName),
+                (nameof(War3Api.Common.unit), LocalUnitVariableName),
+                // var integerKeyword = CodeAnalysis.Jass.SyntaxToken.GetDefaultTokenValue(CodeAnalysis.Jass.SyntaxTokenType.IntegerKeyword);
+                ("integer", LocalUnitIdVariableName),
+                ("integer", LocalItemIdVariableName),
             };
 
-            yield return builder.Build(MainFunctionProvider.FunctionName, locals, GetStatements(builder));
+            yield return builder.Build("main", locals, GetStatements(builder));
         }
 
         // TODO: split into multiple methods, one per function
@@ -154,7 +151,7 @@ namespace War3Net.Build.Providers
 
             if (builder.Data.MapDoodads != null)
             {
-                var localDeclaration = builder.GenerateLocalDeclarationStatement(MainFunctionProvider.LocalDestructableVariableName);
+                var localDeclaration = builder.GenerateLocalDeclarationStatement(LocalDestructableVariableName);
                 if (localDeclaration != null)
                 {
                     yield return localDeclaration;
@@ -163,7 +160,7 @@ namespace War3Net.Build.Providers
                 foreach (var destructable in builder.Data.MapDoodads.Where(mapDoodad => mapDoodad.DroppedItemData.FirstOrDefault() != null))
                 {
                     yield return builder.GenerateAssignmentStatement(
-                        MainFunctionProvider.LocalDestructableVariableName,
+                        LocalDestructableVariableName,
                         builder.GenerateInvocationExpression(
                             nameof(War3Api.Common.CreateDestructable),
                             builder.GenerateFourCCExpression(destructable.TypeId),
@@ -177,13 +174,13 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetDestructableLife),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalDestructableVariableName),
+                            builder.GenerateVariableExpression(LocalDestructableVariableName),
                             builder.GenerateBinaryExpression(
                                 BinaryOperator.Multiplication,
                                 builder.GenerateFloatLiteralExpression(destructable.Life * 0.01f),
                                 builder.GenerateInvocationExpression(
                                     nameof(War3Api.Common.GetDestructableLife),
-                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalDestructableVariableName))));
+                                    builder.GenerateVariableExpression(LocalDestructableVariableName))));
                     }
 
                     foreach (var droppedItem in destructable.DroppedItemData)
@@ -197,9 +194,9 @@ namespace War3Net.Build.Providers
             if (builder.Data.MapUnits != null)
             {
                 foreach (var localDeclaration in builder.GenerateLocalDeclarationStatements(
-                    MainFunctionProvider.LocalUnitVariableName,
-                    MainFunctionProvider.LocalUnitIdVariableName,
-                    MainFunctionProvider.LocalItemIdVariableName))
+                    LocalUnitVariableName,
+                    LocalUnitIdVariableName,
+                    LocalItemIdVariableName))
                 {
                     if (localDeclaration != null)
                     {
@@ -221,7 +218,7 @@ namespace War3Net.Build.Providers
                         {
                             case 0:
                                 yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    LocalItemIdVariableName,
                                     builder.GenerateInvocationExpression(
                                         nameof(War3Api.Common.ChooseRandomItemEx),
                                         builder.GenerateInvocationExpression(
@@ -261,7 +258,7 @@ namespace War3Net.Build.Providers
                                 }
 
                                 yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    LocalItemIdVariableName,
                                     builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
                                 break;
 
@@ -272,11 +269,11 @@ namespace War3Net.Build.Providers
                         yield return builder.GenerateIfStatement(
                             builder.GenerateBinaryExpression(
                                 BinaryOperator.NotEquals,
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalItemIdVariableName),
+                                builder.GenerateVariableExpression(LocalItemIdVariableName),
                                 builder.GenerateIntegerLiteralExpression(-1)),
                             builder.GenerateInvocationStatement(
                                 nameof(War3Api.Common.CreateItem),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalItemIdVariableName),
+                                builder.GenerateVariableExpression(LocalItemIdVariableName),
                                 builder.GenerateFloatLiteralExpression(item.PositionX),
                                 builder.GenerateFloatLiteralExpression(item.PositionY)));
                     }
@@ -301,14 +298,14 @@ namespace War3Net.Build.Providers
                                 if (unit.IsRandomBuilding)
                                 {
                                     yield return builder.GenerateAssignmentStatement(
-                                        MainFunctionProvider.LocalUnitVariableName,
+                                        LocalUnitVariableName,
                                         builder.GenerateInvocationExpression(
                                             nameof(War3Api.Common.ChooseRandomNPBuilding)));
                                 }
                                 else
                                 {
                                     yield return builder.GenerateAssignmentStatement(
-                                        MainFunctionProvider.LocalUnitIdVariableName,
+                                        LocalUnitIdVariableName,
                                         builder.GenerateInvocationExpression(
                                             nameof(War3Api.Common.ChooseRandomCreep),
                                             builder.GenerateIntegerLiteralExpression(randomData.Level)));
@@ -318,7 +315,7 @@ namespace War3Net.Build.Providers
 
                             case 1:
                                 yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalUnitIdVariableName,
+                                    LocalUnitIdVariableName,
                                     builder.GenerateIntegerLiteralExpression(-1));
 
                                 // TODO: create integer array(s) for global random unit table(s)
@@ -357,7 +354,7 @@ namespace War3Net.Build.Providers
                                 }
 
                                 yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalUnitIdVariableName,
+                                    LocalUnitIdVariableName,
                                     builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
                                 break;
                         }
@@ -365,16 +362,16 @@ namespace War3Net.Build.Providers
                         yield return builder.GenerateIfStatement(
                             builder.GenerateBinaryExpression(
                                 BinaryOperator.NotEquals,
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitIdVariableName),
+                                builder.GenerateVariableExpression(LocalUnitIdVariableName),
                                 builder.GenerateIntegerLiteralExpression(-1)),
                             builder.GenerateAssignmentStatement(
-                                MainFunctionProvider.LocalUnitVariableName,
+                                LocalUnitVariableName,
                                 builder.GenerateInvocationExpression(
                                     nameof(War3Api.Common.CreateUnit),
                                     builder.GenerateInvocationExpression(
                                         nameof(War3Api.Common.Player),
                                         builder.GenerateIntegerLiteralExpression(unit.Owner)),
-                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitIdVariableName),
+                                    builder.GenerateVariableExpression(LocalUnitIdVariableName),
                                     builder.GenerateFloatLiteralExpression(unit.PositionX),
                                     builder.GenerateFloatLiteralExpression(unit.PositionY),
                                     builder.GenerateFloatLiteralExpression(unit.Facing))));
@@ -382,7 +379,7 @@ namespace War3Net.Build.Providers
                     else
                     {
                         yield return builder.GenerateAssignmentStatement(
-                            MainFunctionProvider.LocalUnitVariableName,
+                            LocalUnitVariableName,
                             builder.GenerateInvocationExpression(
                                 nameof(War3Api.Common.CreateUnit),
                                 builder.GenerateInvocationExpression(
@@ -400,7 +397,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroLevel),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
                             builder.GenerateBooleanLiteralExpression(false));
                     }
@@ -409,7 +406,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroStr),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -418,7 +415,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroAgi),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -427,7 +424,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroInt),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -436,14 +433,14 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetUnitState),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)),
                             builder.GenerateBinaryExpression(
                                 BinaryOperator.Multiplication,
                                 builder.GenerateFloatLiteralExpression(unit.Hp * 0.01f),
                                 builder.GenerateInvocationExpression(
                                     nameof(War3Api.Common.GetUnitState),
-                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                    builder.GenerateVariableExpression(LocalUnitVariableName),
                                     builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)))));
                     }
 
@@ -451,7 +448,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetUnitState),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_MANA)),
                             builder.GenerateFloatLiteralExpression(unit.Mp));
                     }
@@ -460,7 +457,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetResourceAmount),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.GoldAmount));
                     }
 
@@ -469,7 +466,7 @@ namespace War3Net.Build.Providers
                         const float CampAcquisitionRange = 200f;
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetUnitAcquireRange),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
                     }
 
@@ -484,7 +481,7 @@ namespace War3Net.Build.Providers
                             // TODO: make sure Level is 0 for non-hero abilities (can confirm this by checking second char is uppercase?)
                             yield return builder.GenerateInvocationStatement(
                                 nameof(War3Api.Common.SelectHeroSkill),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateVariableExpression(LocalUnitVariableName),
                                 builder.GenerateFourCCExpression(ability.Id));
                         }
 
@@ -493,13 +490,13 @@ namespace War3Net.Build.Providers
 #if false
                             yield return builder.GenerateInvocationStatement(
                                 nameof(War3Api.Common.IssueImmediateOrder),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateVariableExpression(LocalUnitVariableName),
                                 builder.GenerateStringLiteralExpression(ability.OrderString));
 #else
                             // TODO: test if this works
                             yield return builder.GenerateInvocationStatement(
                                 nameof(War3Api.Common.IssueImmediateOrderById),
-                                builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                                builder.GenerateVariableExpression(LocalUnitVariableName),
                                 builder.GenerateFourCCExpression(ability.Id));
 #endif
                         }
@@ -509,7 +506,7 @@ namespace War3Net.Build.Providers
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.UnitAddItemToSlotById),
-                            builder.GenerateVariableExpression(MainFunctionProvider.LocalUnitVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
                             builder.GenerateFourCCExpression(item.Id),
                             builder.GenerateIntegerLiteralExpression(item.Slot));
                     }

@@ -10,8 +10,6 @@ using System.Linq;
 
 using CSharpLua.LuaAst;
 
-using War3Net.Build.Providers;
-
 namespace War3Net.Build.Script
 {
     internal sealed class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
@@ -21,26 +19,13 @@ namespace War3Net.Build.Script
         {
         }
 
-        public sealed override LuaVariableListDeclarationSyntax Build(
-            string functionName,
-            params LuaStatementSyntax[] statements)
-        {
-            var functionSyntax = new LuaFunctionExpressionSyntax();
-            functionSyntax.AddStatements(statements);
-
-            var mainFunctionDeclarator = new LuaVariableDeclaratorSyntax(functionName, functionSyntax);
-            mainFunctionDeclarator.IsLocalDeclaration = false;
-
-            var globalFunctionSyntax = new LuaVariableListDeclarationSyntax();
-            globalFunctionSyntax.Variables.Add(mainFunctionDeclarator);
-
-            return globalFunctionSyntax;
-        }
-
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
             var variableList = new LuaVariableListDeclarationSyntax();
-            variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
+            if (locals != null)
+            {
+                variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
+            }
 
             var functionSyntax = new LuaFunctionExpressionSyntax();
             functionSyntax.AddStatements(statements.Prepend(variableList));
@@ -56,12 +41,12 @@ namespace War3Net.Build.Script
 
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildMainFunction()
         {
-            return MainFunctionStatementsProvider<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
+            return Main.MainFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
         }
 
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildConfigFunction()
         {
-            return ConfigFunctionStatementsProvider<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
+            return Config.ConfigFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
         }
 
         public sealed override LuaStatementSyntax GenerateLocalDeclarationStatement(string variableName)

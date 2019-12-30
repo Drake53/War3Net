@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
@@ -20,28 +19,13 @@ namespace War3Net.Build.Script
         {
         }
 
-        public sealed override FunctionSyntax Build(
-            string functionName,
-            params NewStatementSyntax[] statements)
-        {
-            var integerKeyword = CodeAnalysis.Jass.SyntaxToken.GetDefaultTokenValue(CodeAnalysis.Jass.SyntaxTokenType.IntegerKeyword);
-            return JassSyntaxFactory.Function(
-                JassSyntaxFactory.FunctionDeclaration(functionName),
-                // todo: don't create local vars for config func, these are only used by main
-                JassSyntaxFactory.LocalVariableList(
-                    GenerateLocalDeclaration(nameof(War3Api.Common.destructable), MainFunctionProvider.LocalDestructableVariableName),
-                    GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName),
-                    GenerateLocalDeclaration(integerKeyword, MainFunctionProvider.LocalUnitIdVariableName),
-                    GenerateLocalDeclaration(integerKeyword, MainFunctionProvider.LocalItemIdVariableName)),
-                statements);
-        }
-
         public override FunctionSyntax Build(
             string functionName,
             IEnumerable<(string type, string name)> locals,
             IEnumerable<NewStatementSyntax> statements)
         {
-            var localDeclarations = locals.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name)).ToArray();
+            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name)).ToArray()
+                ?? System.Array.Empty<LocalVariableDeclarationSyntax>();
             return localDeclarations.Length > 0
                 ? JassSyntaxFactory.Function(
                     JassSyntaxFactory.FunctionDeclaration(functionName),
@@ -54,12 +38,12 @@ namespace War3Net.Build.Script
 
         public sealed override IEnumerable<FunctionSyntax> BuildMainFunction()
         {
-            return MainFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
+            return Main.MainFunctionGenerator<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
         public sealed override IEnumerable<FunctionSyntax> BuildConfigFunction()
         {
-            return ConfigFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
+            return Config.ConfigFunctionGenerator<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
         protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)

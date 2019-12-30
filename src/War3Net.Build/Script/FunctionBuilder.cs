@@ -22,10 +22,12 @@ namespace War3Net.Build.Script
 
         public FunctionBuilderData Data => _data;
 
-        [Obsolete]
-        public abstract TFunctionSyntax Build(
+        public TFunctionSyntax Build(
             string functionName,
-            params TStatementSyntax[] statements);
+            IEnumerable<TStatementSyntax> statements)
+        {
+            return Build(functionName, null, statements);
+        }
 
         public abstract TFunctionSyntax Build(
             string functionName,
