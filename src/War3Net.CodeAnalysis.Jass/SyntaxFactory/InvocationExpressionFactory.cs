@@ -51,6 +51,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public static NewExpressionSyntax InvocationExpression(string identifier, params NewExpressionSyntax[] arguments)
         {
+            if (arguments.Length == 0)
+            {
+                return InvocationExpression(identifier);
+            }
+
             return new NewExpressionSyntax(
                 new ExpressionSyntax(
                     new FunctionCallSyntax(

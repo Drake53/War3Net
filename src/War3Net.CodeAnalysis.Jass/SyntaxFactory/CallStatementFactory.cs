@@ -54,6 +54,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public static NewStatementSyntax CallStatement(string functionName, params NewExpressionSyntax[] arguments)
         {
+            if (arguments.Length == 0)
+            {
+                return CallStatement(functionName);
+            }
+
             return new NewStatementSyntax(
                 new StatementSyntax(
                     new CallStatementSyntax(
