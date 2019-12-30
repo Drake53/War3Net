@@ -35,6 +35,32 @@ namespace War3Net.Build.Widget
 
         public string TypeId => new string(_typeId);
 
+        public int Variation => _variation;
+
+        public float PositionX => _positionX;
+
+        public float PositionY => _positionY;
+
+        public float PositionZ => _positionZ;
+
+        public float Facing => _rotation;
+
+        public float ScaleX => _scaleX;
+
+        public float ScaleY => _scaleY;
+
+        public float ScaleZ => _scaleZ;
+
+        public DoodadState State => _state;
+
+        public byte Life => _life;
+
+        public int MapItemTablePointer => _mapItemTablePointer;
+
+        public int CreationNumber => _creationNumber;
+
+        public IEnumerable<DroppedItemSetData> DroppedItemData => _mapItemTableDropData;
+
         public MapDoodadData()
         {
             _mapItemTableDropData = new List<DroppedItemSetData>();

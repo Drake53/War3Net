@@ -16,10 +16,10 @@ namespace War3Net.Build.Providers
     internal static class MainFunctionProvider
     {
         public const string FunctionName = "main";
+        public const string LocalDestructableVariableName = "d"; // TODO: declare this variable in jass
         public const string LocalUnitVariableName = "u";
-        // IMPORTANT: handle these for JASS version
-        public const string LocalUnitIdVariableName = "unitID";
-        public const string LocalItemIdVariableName = "itemID";
+        public const string LocalUnitIdVariableName = "unitID"; // TODO: declare this variable in jass
+        public const string LocalItemIdVariableName = "itemID"; // TODO: declare this variable in jass
     }
 
     internal static class MainFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -139,7 +139,44 @@ namespace War3Net.Build.Providers
 
             if (builder.Data.MapDoodads != null)
             {
-                // TODO
+                var localDeclaration = builder.GenerateLocalDeclarationStatement(MainFunctionProvider.LocalDestructableVariableName);
+                if (localDeclaration != null)
+                {
+                    yield return localDeclaration;
+                }
+
+                foreach (var destructable in builder.Data.MapDoodads.Where(mapDoodad => mapDoodad.DroppedItemData.FirstOrDefault() != null))
+                {
+                    yield return builder.GenerateAssignmentStatement(
+                        MainFunctionProvider.LocalDestructableVariableName,
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.CreateDestructable),
+                            builder.GenerateFourCCExpression(destructable.TypeId),
+                            builder.GenerateFloatLiteralExpression(destructable.PositionX),
+                            builder.GenerateFloatLiteralExpression(destructable.PositionY),
+                            builder.GenerateFloatLiteralExpression(destructable.Facing),
+                            builder.GenerateFloatLiteralExpression(destructable.ScaleX),
+                            builder.GenerateIntegerLiteralExpression(destructable.Variation)));
+
+                    if (destructable.Life != 100)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetDestructableLife),
+                            builder.GenerateVariableExpression(MainFunctionProvider.LocalDestructableVariableName),
+                            builder.GenerateBinaryExpression(
+                                BinaryOperator.Multiplication,
+                                builder.GenerateFloatLiteralExpression(destructable.Life * 0.01f),
+                                builder.GenerateInvocationExpression(
+                                    nameof(War3Api.Common.GetDestructableLife),
+                                    builder.GenerateVariableExpression(MainFunctionProvider.LocalDestructableVariableName))));
+                    }
+
+                    foreach (var droppedItem in destructable.DroppedItemData)
+                    {
+                        // TODO: implement
+                        // Create trigger ItemTable######_DropItems or Doodad######_DropItems, add event TriggerRegisterDeathEvent and action SaveDyingWidget
+                    }
+                }
             }
 
             if (builder.Data.MapUnits != null)
