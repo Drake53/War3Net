@@ -55,10 +55,9 @@ namespace War3Net.Build.Widget
 
         public string TypeId => new string(_typeId);
 
-        // TODO: find more reliable way to distinguish units and items
-        public bool IsUnit => IsRandomUnit || _typeId[0] == 'h' || _typeId[0] == 'H' || _typeId[0] == 'o' || _typeId[0] == 'O' || _typeId[0] == 'u' || _typeId[0] == 'U' || _typeId[0] == 'e' || _typeId[0] == 'E' || _typeId[0] == 'n' || _typeId[0] == 'N';
+        public bool IsUnit => _heroLevel > 0;
 
-        public bool IsItem => !IsUnit;
+        public bool IsItem => _heroLevel == 0;
 
         public bool IsRandomUnit => TypeId == "uDNR" || IsRandomBuilding;
 
@@ -175,6 +174,30 @@ namespace War3Net.Build.Widget
                 unitData._scaleX = reader.ReadSingle();
                 unitData._scaleY = reader.ReadSingle();
                 unitData._scaleZ = reader.ReadSingle();
+
+                var temp = new string(reader.ReadChars(4));
+                if (temp.Equals(unitData.TypeId, StringComparison.Ordinal))
+                {
+                    // 4 + 1 + 42 + 4 + 4 + 4 + 4 = 63 bytes
+                    var unk0 = reader.ReadByte(); // 2
+
+                    stream.Seek(42, SeekOrigin.Current); // all zeroes
+                    var unk1 = reader.ReadInt32(); // 1
+                    var unk2 = reader.ReadInt32(); // -1
+                    var unk3 = reader.ReadInt32(); // -1
+                    stream.Seek(4, SeekOrigin.Current); // all zeroes
+
+                    unitData._randomData = new RandomUnitData();
+
+                    return unitData;
+                }
+                else
+                {
+                    // Assuming lists are empty:
+                    // RoC: 1 + 4 + 1 + 1 + 4 + 4     + 4 + 4 + 4 + 4             + 4 + 4 + randomData + 4 + 4 + 4 = 51 + randomData
+                    // TFT: 1 + 4 + 1 + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + randomData + 4 + 4 + 4 = 67 + randomData
+                    stream.Seek(-4, SeekOrigin.Current);
+                }
 
                 unitData._flags = reader.ReadByte();
                 unitData._owner = reader.ReadInt32();

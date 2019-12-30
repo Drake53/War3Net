@@ -342,7 +342,7 @@ namespace War3Net.Build.Providers
                                 }
 
                                 yield return builder.GenerateAssignmentStatement(
-                                    MainFunctionProvider.LocalItemIdVariableName,
+                                    MainFunctionProvider.LocalUnitIdVariableName,
                                     builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
                                 break;
                         }
