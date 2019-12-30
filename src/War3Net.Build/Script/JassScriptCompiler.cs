@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -28,18 +27,21 @@ namespace War3Net.Build.Script
         public JassScriptCompiler(ScriptCompilerOptions options, JassRendererOptions rendererOptions)
             : base(options)
         {
-            // todo: retrieve these vals from somewhere
-            var x86 = true;
-            var ptr = false;
+            if (options.SourceDirectory != null)
+            {
+                // todo: retrieve these vals from somewhere
+                var x86 = true;
+                var ptr = false;
 
-            _jasshelperPath = Path.Combine(new FileInfo(WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
+                _jasshelperPath = Path.Combine(new FileInfo(WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
 
-            var jasshelperDocuments = Path.Combine(
+                var jasshelperDocuments = Path.Combine(
                 System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
                 ptr ? "Warcraft III Public Test" : "Warcraft III",
                 "Jasshelper");
-            _commonPath = Path.Combine(jasshelperDocuments, "common.j");
-            _blizzardPath = Path.Combine(jasshelperDocuments, "Blizzard.j");
+                _commonPath = Path.Combine(jasshelperDocuments, "common.j");
+                _blizzardPath = Path.Combine(jasshelperDocuments, "Blizzard.j");
+            }
 
             _rendererOptions = rendererOptions;
         }
@@ -101,7 +103,18 @@ namespace War3Net.Build.Script
 
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
         {
-            throw new NotImplementedException();
+            scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.j");
+            using (var fileStream = FileProvider.OpenNewWrite(scriptFilePath))
+            {
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
+                {
+                    foreach (var additionalSourceFile in additionalSourceFiles)
+                    {
+                        writer.Write(File.ReadAllText(additionalSourceFile));
+                        writer.WriteLine();
+                    }
+                }
+            }
         }
 
         private void RenderFunctionSyntaxToFile(FunctionSyntax function, string path)

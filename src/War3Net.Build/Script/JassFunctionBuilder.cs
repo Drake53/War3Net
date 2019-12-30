@@ -23,10 +23,15 @@ namespace War3Net.Build.Script
             string functionName,
             params NewStatementSyntax[] statements)
         {
+            var integerKeyword = CodeAnalysis.Jass.SyntaxToken.GetDefaultTokenValue(CodeAnalysis.Jass.SyntaxTokenType.IntegerKeyword);
             return JassSyntaxFactory.Function(
                 JassSyntaxFactory.FunctionDeclaration(functionName),
-                // TODO: more locals (itemId, ..?)
-                JassSyntaxFactory.LocalVariableList(GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName)), // todo: don't create local var for config func
+                // todo: don't create local vars for config func, these are only used by main
+                JassSyntaxFactory.LocalVariableList(
+                    GenerateLocalDeclaration(nameof(War3Api.Common.destructable), MainFunctionProvider.LocalDestructableVariableName),
+                    GenerateLocalDeclaration(nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName),
+                    GenerateLocalDeclaration(integerKeyword, MainFunctionProvider.LocalUnitIdVariableName),
+                    GenerateLocalDeclaration(integerKeyword, MainFunctionProvider.LocalItemIdVariableName)),
                 statements);
         }
 

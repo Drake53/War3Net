@@ -16,13 +16,10 @@ namespace War3Net.Build.Providers
     {
         public static FileStream OpenNewWrite(string path)
         {
-            /*if (File.Exists(path))
+            var directory = new FileInfo(path).Directory;
+            if (!directory.Exists)
             {
-                File.Delete(path);
-            }
-            else*/ if (!Directory.Exists(new FileInfo(path).DirectoryName))
-            {
-                Directory.CreateDirectory(new FileInfo(path).DirectoryName);
+                directory.Create();
             }
 
             return File.Create(path);

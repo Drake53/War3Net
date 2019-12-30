@@ -99,9 +99,9 @@ namespace War3Net.Build.Script
             using (var fileStream = File.OpenWrite(scriptFilePath))
             {
                 fileStream.Seek(0, SeekOrigin.End);
-                foreach (var additionalSourceFile in additionalSourceFiles)
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
                 {
-                    using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
+                    foreach (var additionalSourceFile in additionalSourceFiles)
                     {
                         writer.Write(File.ReadAllText(additionalSourceFile));
                         writer.WriteLine();
@@ -115,12 +115,11 @@ namespace War3Net.Build.Script
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
-            using (var fileStream = File.Create(scriptFilePath))
+            using (var fileStream = FileProvider.OpenNewWrite(scriptFilePath))
             {
-                fileStream.Seek(0, SeekOrigin.End);
-                foreach (var additionalSourceFile in additionalSourceFiles)
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
                 {
-                    using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
+                    foreach (var additionalSourceFile in additionalSourceFiles)
                     {
                         writer.Write(File.ReadAllText(additionalSourceFile));
                         writer.WriteLine();
