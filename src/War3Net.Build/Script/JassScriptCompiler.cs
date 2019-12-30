@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -52,10 +54,12 @@ namespace War3Net.Build.Script
             var functionBuilder = new JassFunctionBuilder(functionBuilderData);
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
-            RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
+            // RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
+            RenderFunctionsToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
 
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
-            RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
+            // RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
+            RenderFunctionsToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
         public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
@@ -117,6 +121,7 @@ namespace War3Net.Build.Script
             }
         }
 
+        [Obsolete]
         private void RenderFunctionSyntaxToFile(FunctionSyntax function, string path)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
@@ -126,6 +131,23 @@ namespace War3Net.Build.Script
                     var renderer = new JassRenderer(writer);
                     renderer.Options = _rendererOptions;
                     renderer.Render(JassSyntaxFactory.File(function));
+                }
+            }
+        }
+
+        private void RenderFunctionsToFile(string path, IEnumerable<FunctionSyntax> functions)
+        {
+            using (var fileStream = FileProvider.OpenNewWrite(path))
+            {
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
+                {
+                    var renderer = new JassRenderer(writer);
+                    renderer.Options = _rendererOptions;
+
+                    foreach (var function in functions)
+                    {
+                        renderer.Render(JassSyntaxFactory.File(function));
+                    }
                 }
             }
         }

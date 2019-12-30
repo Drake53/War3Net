@@ -29,7 +29,22 @@ namespace War3Net.Build.Providers
         private const bool MusicRandom = true;
         private const int MusicIndex = 0;
 
-        public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
+        public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
+        {
+            var locals = new List<(string, string)>()
+            {
+                // Note: typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
+                (nameof(War3Api.Common.destructable), MainFunctionProvider.LocalDestructableVariableName),
+                (nameof(War3Api.Common.unit), MainFunctionProvider.LocalUnitVariableName),
+                ("integer", MainFunctionProvider.LocalUnitIdVariableName),
+                ("integer", MainFunctionProvider.LocalItemIdVariableName),
+            };
+
+            yield return builder.Build(MainFunctionProvider.FunctionName, locals, GetStatements(builder));
+        }
+
+        // TODO: split into multiple methods, one per function
+        private static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {
             var mapInfo = builder.Data.MapInfo;
 

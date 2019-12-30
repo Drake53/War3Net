@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Providers;
@@ -35,18 +36,30 @@ namespace War3Net.Build.Script
                 statements);
         }
 
-        public sealed override FunctionSyntax BuildMainFunction()
+        public override FunctionSyntax Build(
+            string functionName,
+            IEnumerable<(string type, string name)> locals,
+            IEnumerable<NewStatementSyntax> statements)
         {
-            return Build(
-                MainFunctionProvider.FunctionName,
-                MainFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetStatements(this).ToArray());
+            var localDeclarations = locals.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name)).ToArray();
+            return localDeclarations.Length > 0
+                ? JassSyntaxFactory.Function(
+                    JassSyntaxFactory.FunctionDeclaration(functionName),
+                    JassSyntaxFactory.LocalVariableList(localDeclarations),
+                    statements.ToArray())
+                : JassSyntaxFactory.Function(
+                    JassSyntaxFactory.FunctionDeclaration(functionName),
+                    statements.ToArray());
         }
 
-        public sealed override FunctionSyntax BuildConfigFunction()
+        public sealed override IEnumerable<FunctionSyntax> BuildMainFunction()
         {
-            return Build(
-                ConfigFunctionProvider.FunctionName,
-                ConfigFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetStatements(this).ToArray());
+            return MainFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
+        }
+
+        public sealed override IEnumerable<FunctionSyntax> BuildConfigFunction()
+        {
+            return ConfigFunctionStatementsProvider<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
         protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)

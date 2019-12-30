@@ -20,7 +20,13 @@ namespace War3Net.Build.Providers
     internal static class ConfigFunctionStatementsProvider<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
-        public static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
+        public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
+        {
+            var locals = new List<(string, string)>();
+            yield return builder.Build(ConfigFunctionProvider.FunctionName, locals, GetStatements(builder));
+        }
+
+        private static IEnumerable<TStatementSyntax> GetStatements(TBuilder builder)
         {
             var mapInfo = builder.Data.MapInfo;
 

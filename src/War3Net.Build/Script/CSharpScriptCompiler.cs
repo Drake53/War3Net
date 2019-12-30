@@ -36,10 +36,12 @@ namespace War3Net.Build.Script
             var functionBuilder = new LuaFunctionBuilder(functionBuilderData);
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
-            RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
+            // RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
+            RenderFunctionsToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
 
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
-            RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
+            // RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
+            RenderFunctionsToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
         // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
@@ -144,6 +146,7 @@ namespace War3Net.Build.Script
             }
         }
 
+        [Obsolete]
         private void RenderFunctionSyntaxToFile(LuaVariableListDeclarationSyntax function, string path)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
@@ -154,6 +157,25 @@ namespace War3Net.Build.Script
 
                     var compilationUnitSyntax = new LuaCompilationUnitSyntax();
                     compilationUnitSyntax.AddStatement(function);
+                    renderer.RenderCompilationUnit(compilationUnitSyntax);
+                }
+            }
+        }
+
+        private void RenderFunctionsToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax> functions)
+        {
+            using (var fileStream = FileProvider.OpenNewWrite(path))
+            {
+                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
+                {
+                    var renderer = new LuaRenderer(_rendererOptions, writer);
+
+                    var compilationUnitSyntax = new LuaCompilationUnitSyntax();
+                    foreach (var function in functions)
+                    {
+                        compilationUnitSyntax.AddStatement(function);
+                    }
+
                     renderer.RenderCompilationUnit(compilationUnitSyntax);
                 }
             }

@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,13 +22,19 @@ namespace War3Net.Build.Script
 
         public FunctionBuilderData Data => _data;
 
+        [Obsolete]
         public abstract TFunctionSyntax Build(
             string functionName,
             params TStatementSyntax[] statements);
 
-        public abstract TFunctionSyntax BuildMainFunction();
+        public abstract TFunctionSyntax Build(
+            string functionName,
+            IEnumerable<(string type, string name)> locals,
+            IEnumerable<TStatementSyntax> statements);
 
-        public abstract TFunctionSyntax BuildConfigFunction();
+        public abstract IEnumerable<TFunctionSyntax> BuildMainFunction();
+
+        public abstract IEnumerable<TFunctionSyntax> BuildConfigFunction();
 
         public abstract TStatementSyntax GenerateLocalDeclarationStatement(
             string variableName);
