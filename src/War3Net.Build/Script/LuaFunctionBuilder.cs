@@ -21,14 +21,20 @@ namespace War3Net.Build.Script
 
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
-            var variableList = new LuaVariableListDeclarationSyntax();
+            var variableList = new List<LuaVariableListDeclarationSyntax>();
             if (locals != null)
             {
-                variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
+                // variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
+                variableList = locals.Select(localDeclaration =>
+                {
+                    var variableDeclaration = new LuaVariableListDeclarationSyntax();
+                    variableDeclaration.Variables.Add(new LuaVariableDeclaratorSyntax(localDeclaration.name));
+                    return variableDeclaration;
+                }).ToList();
             }
 
             var functionSyntax = new LuaFunctionExpressionSyntax();
-            functionSyntax.AddStatements(statements.Prepend(variableList));
+            functionSyntax.AddStatements(variableList.Concat(statements));
 
             var mainFunctionDeclarator = new LuaVariableDeclaratorSyntax(functionName, functionSyntax);
             mainFunctionDeclarator.IsLocalDeclaration = false;
