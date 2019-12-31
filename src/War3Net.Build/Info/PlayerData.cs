@@ -71,6 +71,11 @@ namespace War3Net.Build.Info
             set => _startPosition = value;
         }
 
+        public static PlayerData Create(bool isReforged = false)
+        {
+            return isReforged ? new ReforgedPlayerData() : new PlayerData();
+        }
+
         public static PlayerData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new PlayerData();

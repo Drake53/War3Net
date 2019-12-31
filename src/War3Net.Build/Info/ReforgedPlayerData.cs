@@ -15,6 +15,10 @@ namespace War3Net.Build.Info
         private int _unk0;
         private int _unk1;
 
+        internal ReforgedPlayerData()
+        {
+        }
+
         public int Unk0
         {
             get => _unk0;
