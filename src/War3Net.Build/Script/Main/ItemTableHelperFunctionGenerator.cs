@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 
-using War3Net.Build.Info;
+using War3Net.Build.Widget;
 
 namespace War3Net.Build.Script.Main
 {
@@ -30,10 +30,23 @@ namespace War3Net.Build.Script.Main
                 ("boolean", LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
             };
 
-            return builder.Build($"ItemTable{internalTableIndex.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, table));
+            return builder.Build($"ItemTable{internalTableIndex.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, table.ItemSets));
         }
 
-        private static IEnumerable<TStatementSyntax> GetItemTableHelperFunctionStatements(TBuilder builder, RandomItemTable table)
+        private static TFunctionSyntax GenerateItemTableHelperFunction(TBuilder builder, MapUnitData unit)
+        {
+            var locals = new List<(string, string, TExpressionSyntax)>()
+            {
+                (nameof(War3Api.Common.widget), LocalTrigWidgetVariableName, builder.GenerateNullLiteralExpression()),
+                (nameof(War3Api.Common.unit), LocalTrigUnitVariableName, builder.GenerateNullLiteralExpression()),
+                ("integer", LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
+                ("boolean", LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
+            };
+
+            return builder.Build($"Unit{unit.CreationNumber.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, unit.DroppedItemSets));
+        }
+
+        private static IEnumerable<TStatementSyntax> GetItemTableHelperFunctionStatements(TBuilder builder, params IEnumerable<(int chance, string id)>[] itemSets)
         {
             yield return builder.GenerateAssignmentStatement(LocalTrigWidgetVariableName, builder.GenerateVariableExpression(nameof(War3Api.Blizzard.bj_lastDyingWidget)));
 
@@ -76,20 +89,20 @@ namespace War3Net.Build.Script.Main
                                 builder.GenerateVariableExpression(nameof(War3Api.Common.PLAYER_NEUTRAL_AGGRESSIVE)))))));
 
             var randomDistStatements = new List<TStatementSyntax>();
-            for (var i = 0; i < table.ItemSetCount; i++)
+            for (var i = 0; i < itemSets.Length; i++)
             {
-                var itemSet = table.GetSet(i);
+                var itemSet = itemSets[i];
                 randomDistStatements.Add(builder.GenerateInvocationStatement(nameof(War3Api.Blizzard.RandomDistReset)));
 
                 var summedChance = 0;
-                foreach (var setItem in itemSet)
+                foreach (var (chance, id) in itemSet)
                 {
-                    summedChance += setItem.Item1;
+                    summedChance += chance;
                     randomDistStatements.Add(
                         builder.GenerateInvocationStatement(
                             nameof(War3Api.Blizzard.RandomDistAddItem),
-                            builder.GenerateFourCCExpression(new string(setItem.Item2)),
-                            builder.GenerateIntegerLiteralExpression(setItem.Item1)));
+                            builder.GenerateFourCCExpression(id),
+                            builder.GenerateIntegerLiteralExpression(chance)));
                 }
 
                 if (summedChance < 100)

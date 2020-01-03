@@ -35,6 +35,12 @@ namespace War3Net.Build.Script.Main
                 yield return GenerateItemTableHelperFunction(builder, i);
             }
 
+            var mapUnits = builder.Data.MapUnits;
+            foreach (var unit in mapUnits.Where(mapUnit => mapUnit.IsUnit && mapUnit.DroppedItemData.FirstOrDefault() != null))
+            {
+                yield return GenerateItemTableHelperFunction(builder, unit);
+            }
+
             var locals = new List<(string, string)>()
             {
                 // Note: typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
@@ -200,6 +206,7 @@ namespace War3Net.Build.Script.Main
                 }
             }
 
+            var mapUnits = builder.Data.MapUnits; // TODO
             if (builder.Data.MapUnits != null)
             {
                 foreach (var localDeclaration in builder.GenerateLocalDeclarationStatements(

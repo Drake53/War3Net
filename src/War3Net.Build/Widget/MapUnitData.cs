@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Build.Widget
@@ -141,6 +142,21 @@ namespace War3Net.Build.Widget
         public IEnumerable<ModifiedAbilityData> AbilityData => _modifiedAbilities;
 
         public IEnumerable<DroppedItemSetData> DroppedItemData => _mapItemTableDropData;
+
+        public IEnumerable<(int chance, string id)>[] DroppedItemSets
+        {
+            get
+            {
+                var itemSetCount = _mapItemTableDropData.Count;
+                var itemSets = new IEnumerable<(int chance, string id)>[itemSetCount];
+                for (var i = 0; i < itemSetCount; i++)
+                {
+                    itemSets[i] = _mapItemTableDropData[i].ItemSet.Select(itemSet => (itemSet.Item1, new string(itemSet.Item2)));
+                }
+
+                return itemSets;
+            }
+        }
 
         public MapUnitData()
         {

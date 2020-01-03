@@ -5,15 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
-    public sealed class RandomItemTable
+    public sealed class RandomItemTable : IEnumerable<RandomItemSet>
     {
         private readonly List<RandomItemSet> _sets;
 
@@ -28,6 +30,21 @@ namespace War3Net.Build.Info
         public int Index => _tableNumber;
 
         public int ItemSetCount => _sets.Count;
+
+        public IEnumerable<(int chance, string id)>[] ItemSets
+        {
+            get
+            {
+                var itemSetCount = ItemSetCount;
+                var itemSets = new IEnumerable<(int chance, string id)>[itemSetCount];
+                for (var i = 0; i < itemSetCount; i++)
+                {
+                    itemSets[i] = _sets[i].Select(itemSet => (itemSet.Item1, new string(itemSet.Item2)));
+                }
+
+                return itemSets;
+            }
+        }
 
         public static RandomItemTable Parse(Stream stream, bool leaveOpen = false)
         {
@@ -74,6 +91,16 @@ namespace War3Net.Build.Info
         public RandomItemSet GetSet(int setIndex)
         {
             return _sets[setIndex];
+        }
+
+        public IEnumerator<RandomItemSet> GetEnumerator()
+        {
+            return ((IEnumerable<RandomItemSet>)_sets).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<RandomItemSet>)_sets).GetEnumerator();
         }
     }
 }
