@@ -13,8 +13,9 @@ using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script.Main
 {
-    internal static class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TExpressionSyntax : class
     {
         private const string MusicName = "Music";
         private const bool MusicRandom = true;
@@ -24,9 +25,16 @@ namespace War3Net.Build.Script.Main
         private const string LocalUnitVariableName = "u";
         private const string LocalUnitIdVariableName = "unitID";
         private const string LocalItemIdVariableName = "itemID";
+        private const string LocalTriggerVariableName = "t";
 
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
         {
+            var mapInfo = builder.Data.MapInfo;
+            for (var i = 0; i < mapInfo.RandomItemTableCount; i++)
+            {
+                yield return GenerateItemTableHelperFunction(builder, i);
+            }
+
             var locals = new List<(string, string)>()
             {
                 // Note: typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
@@ -35,6 +43,7 @@ namespace War3Net.Build.Script.Main
                 // var integerKeyword = CodeAnalysis.Jass.SyntaxToken.GetDefaultTokenValue(CodeAnalysis.Jass.SyntaxTokenType.IntegerKeyword);
                 ("integer", LocalUnitIdVariableName),
                 ("integer", LocalItemIdVariableName),
+                (nameof(War3Api.Common.trigger), LocalTriggerVariableName),
             };
 
             yield return builder.Build("main", locals, GetStatements(builder));
@@ -511,10 +520,40 @@ namespace War3Net.Build.Script.Main
                             builder.GenerateIntegerLiteralExpression(item.Slot));
                     }
 
-                    foreach (var droppedItem in unit.DroppedItemData)
+                    if (unit.MapItemTablePointer != -1 || unit.DroppedItemData.FirstOrDefault() != null)
                     {
-                        // TODO: implement
-                        // Create trigger ItemTable######_DropItems or Unit######_DropItems, add events EVENT_UNIT_DEATH and EVENT_UNIT_CHANGE_OWNER
+                        yield return builder.GenerateAssignmentStatement(
+                            LocalTriggerVariableName,
+                            builder.GenerateInvocationExpression(nameof(War3Api.Common.CreateTrigger)));
+
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.TriggerRegisterUnitEvent),
+                            builder.GenerateVariableExpression(LocalTriggerVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(nameof(War3Api.Common.EVENT_UNIT_DEATH)));
+
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.TriggerRegisterUnitEvent),
+                            builder.GenerateVariableExpression(LocalTriggerVariableName),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(nameof(War3Api.Common.EVENT_UNIT_CHANGE_OWNER)));
+
+                        if (unit.MapItemTablePointer != -1)
+                        {
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.TriggerAddAction),
+                                builder.GenerateVariableExpression(LocalTriggerVariableName),
+                                builder.GenerateFunctionExpression($"ItemTable{mapInfo.GetItemTable(unit.MapItemTablePointer).Index.ToString("D6")}_DropItems"));
+                        }
+                        else
+                        {
+                            // TODO: generate funtion Unit######_DropItems
+
+                            yield return builder.GenerateInvocationStatement(
+                                nameof(War3Api.Common.TriggerAddAction),
+                                builder.GenerateVariableExpression(LocalTriggerVariableName),
+                                builder.GenerateFunctionExpression($"Unit{unit.CreationNumber.ToString("D6")}_DropItems"));
+                        }
                     }
                 }
             }
