@@ -76,6 +76,14 @@ namespace War3Net.Build.Info
             return isReforged ? new ReforgedPlayerData() : new PlayerData();
         }
 
+        public static PlayerData Create(int playerNumber, bool isReforged = false)
+        {
+            var data = Create(isReforged);
+            data._playerNumber = playerNumber;
+            data._playerName = $"Player {playerNumber + 1}";
+            return data;
+        }
+
         public static PlayerData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new PlayerData();
