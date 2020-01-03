@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -69,11 +68,9 @@ namespace War3Net.Build.Script
             RenderToFile(globalsFilePath, new GlobalsDeclarationListSyntax(globals));
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
-            // RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
             RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
 
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.j");
-            // RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
             RenderToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
@@ -132,20 +129,6 @@ namespace War3Net.Build.Script
                         writer.Write(File.ReadAllText(additionalSourceFile));
                         writer.WriteLine();
                     }
-                }
-            }
-        }
-
-        [Obsolete]
-        private void RenderFunctionSyntaxToFile(FunctionSyntax function, string path)
-        {
-            using (var fileStream = FileProvider.OpenNewWrite(path))
-            {
-                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
-                {
-                    var renderer = new JassRenderer(writer);
-                    renderer.Options = _rendererOptions;
-                    renderer.Render(JassSyntaxFactory.File(function));
                 }
             }
         }

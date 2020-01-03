@@ -184,38 +184,6 @@ namespace War3Net.Build
                 files.Add((MapUnits.FileName, MpqLocale.Neutral), File.OpenRead(mapUnitsPath));
             }
 
-
-
-            /*var references = new[] { new FolderReference(compilerOptions.SourceDirectory) };
-            var references = new List<ContentReference>();
-            RecursiveAddReferences(new ProjectReference(compilerOptions.SourceDirectory));
-
-            void RecursiveAddReferences(ContentReference contentReference)
-            {
-                if (references.Contains(contentReference))
-                {
-                    return;
-                }
-
-                references.Add(contentReference);
-                foreach (var reference in contentReference.GetReferences(false))
-                {
-                    if (reference is ProjectReference)
-                    {
-                        RecursiveAddReferences(reference);
-                    }
-
-                    if (reference is PackageReference packageReference)
-                    {
-                        // TODO: replace with better condition
-                        if (packageReference.Name.StartsWith("War3Api") || packageReference.Name.StartsWith("War3Lib") || packageReference.Name == "War3Net.CodeAnalysis.Common")
-                        {
-                            RecursiveAddReferences(reference);
-                        }
-                    }
-                }
-            }*/
-
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
             {
@@ -318,26 +286,6 @@ namespace War3Net.Build
 
                 using var fileStream = File.Create(Path.Combine(compilerOptions.OutputDirectory, ListFile.Key));
                 listFile.BaseStream.CopyTo(fileStream);
-
-                /*var listfilePath = Path.Combine(compilerOptions.OutputDirectory, ListFile.Key);
-                using (var listfileStream = File.Create(listfilePath))
-                {
-                    using (var streamWriter = new StreamWriter(listfileStream, new UTF8Encoding(false)))
-                    {
-                        foreach (var file in files)
-                        {
-                            streamWriter.WriteLine(file.Key.fileName);
-                        }
-                    }
-                }
-
-                if (files.ContainsKey((ListFile.Key, MpqLocale.Neutral)))
-                {
-                    files[(ListFile.Key, MpqLocale.Neutral)].Dispose();
-                    files.Remove((ListFile.Key, MpqLocale.Neutral));
-                }
-
-                files.Add((ListFile.Key, MpqLocale.Neutral), File.OpenRead(listfilePath));*/
             }
 
             // Generate mpq files
@@ -347,7 +295,6 @@ namespace War3Net.Build
                 var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key.fileName, out var flags) ? flags : compilerOptions.DefaultFileFlags;
                 if (fileflags.HasFlag(MpqFileFlags.Exists))
                 {
-                    // mpqFiles.Add(new MpqKnownFile(file.Key.fileName, file.Value, fileflags, file.Key.locale));
                     var mpqFile = MpqFile.New(file.Value, file.Key.fileName);
                     mpqFile.TargetFlags = fileflags;
                     mpqFile.Locale = file.Key.locale;
@@ -366,27 +313,6 @@ namespace War3Net.Build
 
             return true;
         }
-
-        /*public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
-        {
-            var compiler = ScriptCompiler.GetUnknownLanguageCompiler(options);
-            if (compiler is null)
-            {
-                scriptFilePath = null;
-                return false;
-            }
-
-            var scriptBuilder = compiler.GetScriptBuilder();
-            scriptFilePath = Path.Combine(options.OutputDirectory, $"war3map{scriptBuilder.Extension}");
-
-            var mainFunctionFile = Path.Combine(options.OutputDirectory, $"main{scriptBuilder.Extension}");
-            scriptBuilder.BuildMainFunction(mainFunctionFile, options.BuilderOptions);
-
-            var configFunctionFile = Path.Combine(options.OutputDirectory, $"config{scriptBuilder.Extension}");
-            scriptBuilder.BuildConfigFunction(configFunctionFile, options.BuilderOptions);
-
-            return compiler.Compile(mainFunctionFile, configFunctionFile);
-        }*/
 
         public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
         {

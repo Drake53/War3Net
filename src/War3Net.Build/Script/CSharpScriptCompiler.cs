@@ -25,8 +25,6 @@ namespace War3Net.Build.Script
         public CSharpScriptCompiler(ScriptCompilerOptions options, LuaSyntaxGenerator.SettingInfo rendererOptions)
             : base(options)
         {
-            // options.BuilderOptions.InitializationFunctions.Add("InitCSharp");
-
             _rendererOptions = rendererOptions;
         }
 
@@ -50,11 +48,9 @@ namespace War3Net.Build.Script
             RenderToFile(globalsFilePath, globals);
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
-            // RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
             RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
 
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
-            // RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
             RenderToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
@@ -140,38 +136,6 @@ namespace War3Net.Build.Script
                         writer.Write(File.ReadAllText(additionalSourceFile));
                         writer.WriteLine();
                     }
-                }
-            }
-        }
-
-        [Obsolete("These .dll's are now automatically added through PackageReference.EnumerateLibraries()", true)]
-        private static IEnumerable<string> DiscoverWar3ApiPackageLibs(bool referenceBlizzardLib = true)
-        {
-            // TODO: use 'dotnet nuget locals global-packages --list' to find global package locations, instead of hardcoded default path
-            // TODO: don't hardcode 1.31.1 and netstandard2.0 values in path
-
-            var globalPackageDirectory = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), @".nuget\packages");
-
-            yield return Path.Combine(globalPackageDirectory, @"war3api.common\1.31.1\lib\netstandard2.0\War3Api.Common.dll");
-
-            if (referenceBlizzardLib)
-            {
-                yield return Path.Combine(globalPackageDirectory, @"war3api.blizzard\1.31.1\lib\netstandard2.0\War3Api.Blizzard.dll");
-            }
-        }
-
-        [Obsolete]
-        private void RenderFunctionSyntaxToFile(LuaVariableListDeclarationSyntax function, string path)
-        {
-            using (var fileStream = FileProvider.OpenNewWrite(path))
-            {
-                using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
-                {
-                    var renderer = new LuaRenderer(_rendererOptions, writer);
-
-                    var compilationUnitSyntax = new LuaCompilationUnitSyntax();
-                    compilationUnitSyntax.AddStatement(function);
-                    renderer.RenderCompilationUnit(compilationUnitSyntax);
                 }
             }
         }
