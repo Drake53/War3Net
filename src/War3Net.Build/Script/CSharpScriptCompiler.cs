@@ -36,15 +36,26 @@ namespace War3Net.Build.Script
             var functionBuilder = new LuaFunctionBuilder(functionBuilderData);
 
             globalsFilePath = Path.Combine(Options.OutputDirectory, "globals.lua");
-            // TODO
+            var globals = new LuaVariableListDeclarationSyntax[Options.MapInfo.RandomUnitTableCount];
+            for (var i = 0; i < globals.Length; i++)
+            {
+                globals[i] = new LuaVariableListDeclarationSyntax();
+                globals[i].Variables.Add(new LuaVariableDeclaratorSyntax(
+                    $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}",
+                    functionBuilder.GenerateInvocationExpression(
+                        "__jarray",
+                        functionBuilder.GenerateIntegerLiteralExpression(0))));
+            }
+
+            RenderToFile(globalsFilePath, globals);
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
             // RenderFunctionSyntaxToFile(functionBuilder.BuildMainFunction(), mainFunctionFilePath);
-            RenderFunctionsToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
+            RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
 
             configFunctionFilePath = Path.Combine(Options.OutputDirectory, "config.lua");
             // RenderFunctionSyntaxToFile(functionBuilder.BuildConfigFunction(), configFunctionFilePath);
-            RenderFunctionsToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
+            RenderToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
         // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
@@ -165,7 +176,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private void RenderFunctionsToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax> functions)
+        private void RenderToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax> functions)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
             {

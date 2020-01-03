@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -47,7 +48,28 @@ namespace War3Net.Build.Script
 
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name, LuaExpressionSyntax value)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
-            throw new System.NotImplementedException();
+            var variableList = new List<LuaVariableListDeclarationSyntax>();
+            if (locals != null)
+            {
+                // variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
+                variableList = locals.Select(localDeclaration =>
+                {
+                    var variableDeclaration = new LuaVariableListDeclarationSyntax();
+                    variableDeclaration.Variables.Add(new LuaVariableDeclaratorSyntax(localDeclaration.name, localDeclaration.value));
+                    return variableDeclaration;
+                }).ToList();
+            }
+
+            var functionSyntax = new LuaFunctionExpressionSyntax();
+            functionSyntax.AddStatements(variableList.Concat(statements));
+
+            var mainFunctionDeclarator = new LuaVariableDeclaratorSyntax(functionName, functionSyntax);
+            mainFunctionDeclarator.IsLocalDeclaration = false;
+
+            var globalFunctionSyntax = new LuaVariableListDeclarationSyntax();
+            globalFunctionSyntax.Variables.Add(mainFunctionDeclarator);
+
+            return globalFunctionSyntax;
         }
 
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildMainFunction()
@@ -67,7 +89,7 @@ namespace War3Net.Build.Script
 
         public override LuaStatementSyntax GenerateAssignmentStatement(string variableName, LuaExpressionSyntax arrayIndex, LuaExpressionSyntax value)
         {
-            throw new System.NotImplementedException();
+            return new LuaExpressionStatementSyntax(new LuaAssignmentExpressionSyntax(new LuaTableIndexAccessExpressionSyntax(variableName, arrayIndex), value));
         }
 
         public sealed override LuaStatementSyntax GenerateInvocationStatement(string functionName, params LuaExpressionSyntax[] args)
@@ -84,7 +106,29 @@ namespace War3Net.Build.Script
 
         public override LuaStatementSyntax GenerateElseClause(LuaStatementSyntax ifStatement, LuaExpressionSyntax condition, params LuaStatementSyntax[] elseBody)
         {
-            throw new System.NotImplementedException();
+            if (!(ifStatement is LuaIfStatementSyntax ifNode))
+            {
+                throw new ArgumentException();
+            }
+
+            if (ifNode.Else != null)
+            {
+                throw new ArgumentException();
+            }
+
+            if (condition is null)
+            {
+                ifNode.Else = new LuaElseClauseSyntax();
+                ifNode.Else.Body.Statements.AddRange(elseBody);
+            }
+            else
+            {
+                var elseif = new LuaElseIfStatementSyntax(condition);
+                elseif.Body.Statements.AddRange(elseBody);
+                ifNode.ElseIfStatements.Add(elseif);
+            }
+
+            return ifStatement;
         }
 
         public sealed override LuaExpressionSyntax GenerateIntegerLiteralExpression(int value)
@@ -109,7 +153,8 @@ namespace War3Net.Build.Script
 
         public override LuaExpressionSyntax GenerateFloatLiteralExpression(float value, int decimalPlaces)
         {
-            throw new System.NotImplementedException();
+            // ...
+            return new LuaFloatLiteralExpressionSyntax(value);
         }
 
         public sealed override LuaExpressionSyntax GenerateNullLiteralExpression()
@@ -134,17 +179,24 @@ namespace War3Net.Build.Script
 
         public override LuaExpressionSyntax GenerateFunctionReferenceExpression(string functionName)
         {
-            throw new System.NotImplementedException();
+            return GenerateVariableExpression(functionName);
         }
 
         public override LuaExpressionSyntax GenerateArrayReferenceExpression(string variableName, LuaExpressionSyntax index)
         {
-            throw new System.NotImplementedException();
+            return new LuaTableIndexAccessExpressionSyntax(variableName, index);
         }
 
         public override LuaExpressionSyntax GenerateUnaryExpression(UnaryOperator @operator, LuaExpressionSyntax expression)
         {
-            throw new System.NotImplementedException();
+            var operatorToken = @operator switch
+            {
+                UnaryOperator.Not => LuaSyntaxNode.Keyword.Not,
+
+                _ => throw new ArgumentException($"Unary operator {@operator} is not supported, or not defined", nameof(@operator)),
+            };
+
+            return new LuaPrefixUnaryExpressionSyntax(expression, operatorToken);
         }
 
         public override LuaExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, LuaExpressionSyntax left, LuaExpressionSyntax right)
@@ -157,8 +209,10 @@ namespace War3Net.Build.Script
                 BinaryOperator.Division => LuaSyntaxNode.Tokens.Div,
                 BinaryOperator.Equals => LuaSyntaxNode.Tokens.EqualsEquals,
                 BinaryOperator.NotEquals => LuaSyntaxNode.Tokens.NotEquals,
+                BinaryOperator.And => LuaSyntaxNode.Keyword.And,
+                BinaryOperator.Or => LuaSyntaxNode.Keyword.Or,
 
-                _ => throw new System.ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
+                _ => throw new ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
             };
 
             return new LuaBinaryExpressionSyntax(left, operatorToken, right);
