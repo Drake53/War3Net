@@ -51,7 +51,6 @@ namespace War3Net.Build.Script
             var variableList = new List<LuaVariableListDeclarationSyntax>();
             if (locals != null)
             {
-                // variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
                 variableList = locals.Select(localDeclaration =>
                 {
                     var variableDeclaration = new LuaVariableListDeclarationSyntax();
@@ -108,12 +107,12 @@ namespace War3Net.Build.Script
         {
             if (!(ifStatement is LuaIfStatementSyntax ifNode))
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"{nameof(ifStatement)} must be of type {nameof(LuaIfStatementSyntax)}.", nameof(ifStatement));
             }
 
             if (ifNode.Else != null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Cannot extend the if statement, because it already contains an else node.", nameof(ifStatement));
             }
 
             if (condition is null)

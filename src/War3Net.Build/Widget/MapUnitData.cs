@@ -38,7 +38,7 @@ namespace War3Net.Build.Widget
         private int _hp;
         private int _mp;
 
-        private int _mapItemTablePointer; // -1 == no table
+        private int _mapItemTablePointer;
 
         private int _goldAmount;
         private float _targetAcquisition;
@@ -107,6 +107,9 @@ namespace War3Net.Build.Widget
         /// </summary>
         public int Mp => _mp;
 
+        /// <summary>
+        /// Use -1 for no table.
+        /// </summary>
         public int MapItemTablePointer => _mapItemTablePointer;
 
         public int GoldAmount => _goldAmount;
