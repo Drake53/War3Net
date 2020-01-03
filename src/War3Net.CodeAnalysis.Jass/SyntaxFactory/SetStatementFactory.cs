@@ -22,5 +22,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                         equalsValueClause)),
                 new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
         }
+
+        public static NewStatementSyntax SetStatement(string variableName, NewExpressionSyntax arrayIndex, EqualsValueClauseSyntax equalsValueClause)
+        {
+            return new NewStatementSyntax(
+                new StatementSyntax(
+                    new SetStatementSyntax(
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.SetKeyword), 0),
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, variableName), 0),
+                        new BracketedExpressionSyntax(
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.SquareBracketOpenSymbol), 0),
+                            arrayIndex,
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.SquareBracketCloseSymbol), 0)),
+                        equalsValueClause)),
+                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
+        }
     }
 }

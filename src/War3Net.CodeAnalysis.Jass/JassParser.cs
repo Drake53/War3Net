@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass
             ps.Position = 0;
             ps.Tokens = _tokenizer.Tokenize().ToList();
 
-            return FileSyntax.Parser.Get.Parse(ps).First().Node as FileSyntax;
+            return (FileSyntax.Parser.Get.Parse(ps).FirstOrDefault()?.Node as FileSyntax) ?? throw new InvalidDataException("Parsing failed. There may be syntax errors.");
 
             /*var r = 0;
             foreach (var parseResult in FileSyntax.Parser.Get.Parse(ps))
