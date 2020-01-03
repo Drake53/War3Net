@@ -46,11 +46,13 @@ namespace War3Net.Build.Script
 
         public abstract IEnumerable<TFunctionSyntax> BuildConfigFunction();
 
-        public abstract TStatementSyntax GenerateLocalDeclarationStatement(
-            string variableName);
+        public abstract TStatementSyntax GenerateAssignmentStatement(
+            string variableName,
+            TExpressionSyntax value);
 
         public abstract TStatementSyntax GenerateAssignmentStatement(
             string variableName,
+            TExpressionSyntax arrayIndex,
             TExpressionSyntax value);
 
         public abstract TStatementSyntax GenerateInvocationStatement(

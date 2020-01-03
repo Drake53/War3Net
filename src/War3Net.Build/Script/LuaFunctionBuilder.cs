@@ -60,16 +60,14 @@ namespace War3Net.Build.Script
             return Config.ConfigFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
         }
 
-        public sealed override LuaStatementSyntax GenerateLocalDeclarationStatement(string variableName)
-        {
-            var variableList = new LuaVariableListDeclarationSyntax();
-            variableList.Variables.Add(new LuaVariableDeclaratorSyntax(variableName));
-            return variableList;
-        }
-
         public override LuaStatementSyntax GenerateAssignmentStatement(string variableName, LuaExpressionSyntax value)
         {
             return new LuaExpressionStatementSyntax(new LuaAssignmentExpressionSyntax(variableName, value));
+        }
+
+        public override LuaStatementSyntax GenerateAssignmentStatement(string variableName, LuaExpressionSyntax arrayIndex, LuaExpressionSyntax value)
+        {
+            throw new System.NotImplementedException();
         }
 
         public sealed override LuaStatementSyntax GenerateInvocationStatement(string functionName, params LuaExpressionSyntax[] args)

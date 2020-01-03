@@ -28,6 +28,11 @@ namespace War3Net.Build.Info
             _unitIds.Add(id);
         }
 
+        public char[] GetId(int index)
+        {
+            return _unitIds[index];
+        }
+
         public IEnumerator<char[]> GetEnumerator()
         {
             return ((IEnumerable<char[]>)_unitIds).GetEnumerator();

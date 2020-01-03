@@ -74,15 +74,14 @@ namespace War3Net.Build.Script
             return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name, value);
         }
 
-        public sealed override NewStatementSyntax GenerateLocalDeclarationStatement(string variableName)
-        {
-            // In JASS syntax, local declarations are not considered to be a statement.
-            return null;
-        }
-
         public override NewStatementSyntax GenerateAssignmentStatement(string variableName, NewExpressionSyntax value)
         {
             return JassSyntaxFactory.SetStatement(variableName, JassSyntaxFactory.EqualsValueClause(value));
+        }
+
+        public override NewStatementSyntax GenerateAssignmentStatement(string variableName, NewExpressionSyntax arrayIndex, NewExpressionSyntax value)
+        {
+            return JassSyntaxFactory.SetStatement(variableName, arrayIndex, JassSyntaxFactory.EqualsValueClause(value));
         }
 
         public sealed override NewStatementSyntax GenerateInvocationStatement(string functionName, params NewExpressionSyntax[] args)
@@ -124,6 +123,45 @@ namespace War3Net.Build.Script
                         new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))),
                         new StatementListSyntax(elseBody),
                         new CodeAnalysis.Jass.EmptyNode(0)));
+
+            var elseifs = new Stack<ElseifSyntax>();
+            var oldElseClause = ifNode.ElseClauseNode;
+            if (oldElseClause != null)
+            {
+                while (true)
+                {
+                    if (oldElseClause.ElseNode != null)
+                    {
+                        throw new ArgumentException("Cannot extend the if statement, because it already contains an else node.", nameof(ifStatement));
+                    }
+
+                    var elseif = oldElseClause.ElseifNode;
+                    elseifs.Push(elseif);
+                    if (elseif.ElseClauseNode != null)
+                    {
+                        oldElseClause = elseif.ElseClauseNode;
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                while (elseifs.Count > 0)
+                {
+                    var pop = elseifs.Pop();
+                    var rebuild = new ElseifSyntax(
+                        pop.ElseifKeywordToken,
+                        pop.ConditionExpressionNode,
+                        pop.ThenKeywordToken,
+                        pop.LineDelimiterNode,
+                        pop.StatementListNode,
+                        elseClause);
+
+                    elseClause = new ElseClauseSyntax(rebuild);
+                }
+            }
 
             return new NewStatementSyntax(
                 new StatementSyntax(

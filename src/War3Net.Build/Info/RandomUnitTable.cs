@@ -27,6 +27,12 @@ namespace War3Net.Build.Info
             _sets = new List<RandomUnitSet>();
         }
 
+        public int Index => _tableNumber;
+
+        public int Positions => _positionTypes.Count;
+
+        public int UnitSetCount => _sets.Count;
+
         public static RandomUnitTable Parse(Stream stream, bool leaveOpen = false)
         {
             var table = new RandomUnitTable();
@@ -77,6 +83,16 @@ namespace War3Net.Build.Info
                     writer.Write(id);
                 }
             }
+        }
+
+        public WidgetType GetType(int position)
+        {
+            return _positionTypes[position];
+        }
+
+        public RandomUnitSet GetSet(int setIndex)
+        {
+            return setIndex < _sets.Count ? _sets[setIndex] : null;
         }
     }
 }

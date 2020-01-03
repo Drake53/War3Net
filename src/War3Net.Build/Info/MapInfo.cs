@@ -757,6 +757,11 @@ namespace War3Net.Build.Info
 
         // TODO: methods for upgradeData, techData, unitTables, itemTables
 
+        public RandomUnitTable GetUnitTable(int tableIndex)
+        {
+            return _unitTables[tableIndex];
+        }
+
         public RandomItemTable GetItemTable(int tableIndex)
         {
             return _itemTables[tableIndex];

@@ -27,12 +27,6 @@ namespace War3Net.Build.Script.Main
 
         private static IEnumerable<TStatementSyntax> GetCreateAllDestructablesHelperFunctionStatements(TBuilder builder)
         {
-            var localDeclaration = builder.GenerateLocalDeclarationStatement(LocalDestructableVariableName);
-            if (localDeclaration != null)
-            {
-                yield return localDeclaration;
-            }
-
             foreach (var destructable in builder.Data.MapDoodads.Where(mapDoodad => mapDoodad.DroppedItemData.FirstOrDefault() != null))
             {
                 yield return builder.GenerateAssignmentStatement(
@@ -61,8 +55,24 @@ namespace War3Net.Build.Script.Main
 
                 foreach (var droppedItem in destructable.DroppedItemData)
                 {
-                    // TODO: implement
-                    // Create trigger ItemTable######_DropItems or Doodad######_DropItems, add event TriggerRegisterDeathEvent and action SaveDyingWidget
+                    yield return builder.GenerateAssignmentStatement(
+                        LocalTriggerVariableName,
+                        builder.GenerateInvocationExpression(nameof(War3Api.Common.CreateTrigger)));
+
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.TriggerRegisterDeathEvent),
+                        builder.GenerateVariableExpression(LocalTriggerVariableName),
+                        builder.GenerateVariableExpression(LocalDestructableVariableName));
+
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.TriggerAddAction),
+                        builder.GenerateVariableExpression(LocalTriggerVariableName),
+                        builder.GenerateFunctionExpression(nameof(War3Api.Blizzard.SaveDyingWidget)));
+
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.TriggerAddAction),
+                        builder.GenerateVariableExpression(LocalTriggerVariableName),
+                        builder.GenerateFunctionExpression($"Doodad{destructable.CreationNumber.ToString("D6")}_DropItems"));
                 }
             }
         }

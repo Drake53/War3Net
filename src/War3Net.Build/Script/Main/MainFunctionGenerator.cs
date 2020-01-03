@@ -27,6 +27,11 @@ namespace War3Net.Build.Script.Main
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
         {
             var mapInfo = builder.Data.MapInfo;
+            if (mapInfo.RandomUnitTableCount > 0)
+            {
+                yield return GenerateUnitTableHelperFunction(builder);
+            }
+
             for (var i = 0; i < mapInfo.RandomItemTableCount; i++)
             {
                 yield return GenerateItemTableHelperFunction(builder, i);
