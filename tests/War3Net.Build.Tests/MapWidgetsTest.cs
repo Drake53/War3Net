@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,6 +27,8 @@ namespace War3Net.Build.Tests
             using var original = File.OpenRead(mapDoodadsFilePath);
 
             var data = MapDoodads.Parse(original, true);
+            Assert.AreEqual(original.Length, original.Position);
+
             data.SerializeTo(recreated, true);
 
             // TODO: skip header, since it's ignored in SerializeTo method (so always saves as TFT version)
@@ -42,10 +45,20 @@ namespace War3Net.Build.Tests
             using var original = File.OpenRead(mapUnitsFilePath);
 
             var data = MapUnits.Parse(original, true);
+            Assert.AreEqual(original.Length, original.Position);
+
             data.SerializeTo(recreated, true);
 
-            // TODO: skip header, since it's ignored in SerializeTo method (so always saves as TFT version)
-            //if (data.)
+            original.Position = 4;
+            using (var reader = new BinaryReader(original, new UTF8Encoding(false, true), true))
+            {
+                var version = (MapWidgetsVersion)reader.ReadUInt32();
+                if (version != MapWidgetsVersion.TFT)
+                {
+                    // Can't compare streams, because serialize always saves as TFT, which sets header version to 8 and has additional data per unit.
+                    return;
+                }
+            }
 
             StreamAssert.AreEqual(original, recreated, true);
         }

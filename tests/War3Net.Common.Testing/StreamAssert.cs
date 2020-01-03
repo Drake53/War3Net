@@ -28,12 +28,30 @@ namespace War3Net.Common.Testing
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
-        public static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
+        public static void AreEqualText(Stream expected, Stream actual, bool resetPositions = false)
         {
-            Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, out var message), message);
+            if (resetPositions)
+            {
+                expected.Position = 0;
+                actual.Position = 0;
+            }
+
+            var expectedSize = expected.Length;
+            var actualSize = actual.Length;
+            AreEqualText(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
-        private static bool AreStreamsEqual(Stream expected, Stream actual, long lengthToCheck, out string message)
+        public static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
+        {
+            Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, false, out var message), message);
+        }
+
+        public static void AreEqualText(Stream expected, Stream actual, long lengthToCheck)
+        {
+            Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, true, out var message), message);
+        }
+
+        private static bool AreStreamsEqual(Stream expected, Stream actual, long lengthToCheck, bool isText, out string message)
         {
             var result = true;
             var incorrectBytes = 0;
@@ -41,6 +59,9 @@ namespace War3Net.Common.Testing
 
             var lengthRemaining1 = expected.Length - expected.Position;
             var lengthRemaining2 = actual.Length - actual.Position;
+
+            var line = 1;
+            var offset = 1;
 
             if (lengthRemaining1 == lengthRemaining2)
             {
@@ -86,11 +107,28 @@ namespace War3Net.Common.Testing
                     if (incorrectBytes == 1)
                     {
 #if BUFFER_STREAM_DATA
-                        message += $"[Error]: First mismatch at byte {bytesRead} (expected {data1[bytesRead]}, actual {data2[bytesRead]})";
+                        if (isText)
+                        {
+                            // TODO: escape \r \n \\
+                            message += $"[Error]: First mismatch at ({line},{offset}) (expected {(char)data1[bytesRead]}, actual {(char)data2[bytesRead]})";
+                        }
+                        else
+                        {
+                            message += $"[Error]: First mismatch at byte {bytesRead} (expected {data1[bytesRead]}, actual {data2[bytesRead]})";
+                        }
 #else
                         message += $"[Error]: First mismatch at byte {bytesRead}";
 #endif
                         result = false;
+                    }
+                }
+                else
+                {
+                    offset++;
+                    if (data1[bytesRead] == '\n')
+                    {
+                        line++;
+                        offset = 1;
                     }
                 }
             }

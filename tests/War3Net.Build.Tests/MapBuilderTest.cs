@@ -20,14 +20,15 @@ namespace War3Net.Build.Tests
     [TestClass]
     public class MapBuilderTest
     {
+        private const string Warcraft3ExecutableFilePath = null;
+
         [TestMethod]
-        public void TestGenerateScriptWithUnitData()
+        public void TestGenerateJassScriptWithUnitData()
         {
             const string OutputMapName = "TestOutput.w3x";
             const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
 
             var scriptCompilerOptions = new ScriptCompilerOptions();
-            scriptCompilerOptions.MapInfo = MapInfo.Default;
             scriptCompilerOptions.ForceCompile = true;
             scriptCompilerOptions.SourceDirectory = null;
             scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
@@ -35,7 +36,36 @@ namespace War3Net.Build.Tests
             var mapBuilder = new MapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions, InputPath))
             {
-                //
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void TestGenerateLuaScriptWithUnitData()
+        {
+            const string OutputMapName = "TestOutput.w3x";
+            const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
+
+            var mapInfo = MapInfo.Parse(File.OpenRead(Path.Combine(InputPath, MapInfo.FileName)));
+            mapInfo.ScriptLanguage = ScriptLanguage.Lua;
+
+            var scriptCompilerOptions = new ScriptCompilerOptions();
+            scriptCompilerOptions.MapInfo = mapInfo;
+            scriptCompilerOptions.ForceCompile = true;
+            scriptCompilerOptions.SourceDirectory = null;
+            scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
+
+            var mapBuilder = new MapBuilder(OutputMapName);
+            if (mapBuilder.Build(scriptCompilerOptions, InputPath))
+            {
+                var mapPath = Path.Combine(scriptCompilerOptions.OutputDirectory, OutputMapName);
+                var absoluteMapPath = new FileInfo(mapPath).FullName;
+
+                Assert.IsNotNull(Warcraft3ExecutableFilePath, "Path to Warcraft III.exe is not set.");
+                Process.Start(Warcraft3ExecutableFilePath, $"-loadfile \"{absoluteMapPath}\"");
             }
             else
             {
@@ -66,7 +96,6 @@ namespace War3Net.Build.Tests
                 var mapPath = Path.Combine(scriptCompilerOptions.OutputDirectory, OutputMapName);
                 var absoluteMapPath = new FileInfo(mapPath).FullName;
 
-                const string Warcraft3ExecutableFilePath = null;
                 Assert.IsNotNull(Warcraft3ExecutableFilePath, "Path to Warcraft III.exe is not set.");
                 Process.Start(Warcraft3ExecutableFilePath, $"-loadfile \"{absoluteMapPath}\"");
             }
