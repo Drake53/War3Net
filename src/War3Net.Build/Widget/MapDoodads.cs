@@ -28,6 +28,8 @@ namespace War3Net.Build.Widget
             _specialDoodads = new List<MapSpecialDoodadData>();
         }
 
+        public int Count => _doodads.Count;
+
         public static MapDoodads Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new MapDoodads();

@@ -26,6 +26,8 @@ namespace War3Net.Build.Widget
             _units = new List<MapUnitData>();
         }
 
+        public int Count => _units.Count;
+
         public static MapUnits Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new MapUnits();

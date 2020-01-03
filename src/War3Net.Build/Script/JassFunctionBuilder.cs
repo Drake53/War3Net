@@ -158,6 +158,12 @@ namespace War3Net.Build.Script
             return JassSyntaxFactory.ConstantExpression(value);
         }
 
+        public override NewExpressionSyntax GenerateFloatLiteralExpression(float value, int decimalPlaces)
+        {
+            // return JassSyntaxFactory.ConstantExpression(value, decimalPlaces);
+            return GenerateFloatLiteralExpression(value);
+        }
+
         public sealed override NewExpressionSyntax GenerateNullLiteralExpression()
         {
             return JassSyntaxFactory.NullExpression();

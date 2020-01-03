@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Build.Widget
@@ -32,6 +33,11 @@ namespace War3Net.Build.Widget
         private int _mapItemTablePointer; // -1 == no table
 
         private int _creationNumber;
+
+        public MapDoodadData()
+        {
+            _mapItemTableDropData = new List<DroppedItemSetData>();
+        }
 
         public string TypeId => new string(_typeId);
 
@@ -61,9 +67,19 @@ namespace War3Net.Build.Widget
 
         public IEnumerable<DroppedItemSetData> DroppedItemData => _mapItemTableDropData;
 
-        public MapDoodadData()
+        public IEnumerable<(int chance, string id)>[] DroppedItemSets
         {
-            _mapItemTableDropData = new List<DroppedItemSetData>();
+            get
+            {
+                var itemSetCount = _mapItemTableDropData.Count;
+                var itemSets = new IEnumerable<(int chance, string id)>[itemSetCount];
+                for (var i = 0; i < itemSetCount; i++)
+                {
+                    itemSets[i] = _mapItemTableDropData[i].ItemSet.Select(itemSet => (itemSet.Item1, new string(itemSet.Item2)));
+                }
+
+                return itemSets;
+            }
         }
 
         public static MapDoodadData Parse(Stream stream, bool leaveOpen = false)

@@ -54,6 +54,13 @@ namespace War3Net.Build.Widget
         private int _waygateDestination; // -1 == deactivated, otherwise refers to rect creation number in war3map.w3r
         private int _creationNumber;
 
+        public MapUnitData()
+        {
+            _inventory = new List<InventoryItemData>();
+            _modifiedAbilities = new List<ModifiedAbilityData>();
+            _mapItemTableDropData = new List<DroppedItemSetData>();
+        }
+
         public string TypeId => new string(_typeId);
 
         public bool IsUnit => _heroLevel > 0;
@@ -156,13 +163,6 @@ namespace War3Net.Build.Widget
 
                 return itemSets;
             }
-        }
-
-        public MapUnitData()
-        {
-            _inventory = new List<InventoryItemData>();
-            _modifiedAbilities = new List<ModifiedAbilityData>();
-            _mapItemTableDropData = new List<DroppedItemSetData>();
         }
 
         public static MapUnitData Parse(Stream stream, bool leaveOpen = false)

@@ -8,7 +8,6 @@
 #nullable enable
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace War3Net.Build.Script
 {
@@ -31,6 +30,8 @@ namespace War3Net.Build.Script
             return Build(functionName, (IEnumerable<(string type, string name)>)null, statements);
         }
 
+        // Note: locals typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
+        // Example, instead of string "integer", should create new enum similar to Unary/BinaryOperator, then: SyntaxToken.GetDefaultTokenValue(SyntaxTokenType.IntegerKeyword)
         public abstract TFunctionSyntax Build(
             string functionName,
             IEnumerable<(string type, string name)> locals,
@@ -47,12 +48,6 @@ namespace War3Net.Build.Script
 
         public abstract TStatementSyntax GenerateLocalDeclarationStatement(
             string variableName);
-
-        public IEnumerable<TStatementSyntax> GenerateLocalDeclarationStatements(
-            params string[] variableNames)
-        {
-            return variableNames.Select(GenerateLocalDeclarationStatement);
-        }
 
         public abstract TStatementSyntax GenerateAssignmentStatement(
             string variableName,
@@ -82,6 +77,10 @@ namespace War3Net.Build.Script
 
         public abstract TExpressionSyntax GenerateFloatLiteralExpression(
             float value);
+
+        public abstract TExpressionSyntax GenerateFloatLiteralExpression(
+            float value,
+            int decimalPlaces);
 
         public abstract TExpressionSyntax GenerateNullLiteralExpression();
 

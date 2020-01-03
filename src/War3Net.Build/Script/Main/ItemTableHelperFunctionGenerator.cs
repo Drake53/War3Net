@@ -33,6 +33,19 @@ namespace War3Net.Build.Script.Main
             return builder.Build($"ItemTable{internalTableIndex.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, table.ItemSets));
         }
 
+        private static TFunctionSyntax GenerateItemTableHelperFunction(TBuilder builder, MapDoodadData doodad)
+        {
+            var locals = new List<(string, string, TExpressionSyntax)>()
+            {
+                (nameof(War3Api.Common.widget), LocalTrigWidgetVariableName, builder.GenerateNullLiteralExpression()),
+                (nameof(War3Api.Common.unit), LocalTrigUnitVariableName, builder.GenerateNullLiteralExpression()),
+                ("integer", LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
+                ("boolean", LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
+            };
+
+            return builder.Build($"Doodad{doodad.CreationNumber.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, doodad.DroppedItemSets));
+        }
+
         private static TFunctionSyntax GenerateItemTableHelperFunction(TBuilder builder, MapUnitData unit)
         {
             var locals = new List<(string, string, TExpressionSyntax)>()

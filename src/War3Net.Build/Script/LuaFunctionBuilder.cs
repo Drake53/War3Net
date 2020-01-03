@@ -109,6 +109,11 @@ namespace War3Net.Build.Script
             return new LuaFloatLiteralExpressionSyntax(value);
         }
 
+        public override LuaExpressionSyntax GenerateFloatLiteralExpression(float value, int decimalPlaces)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public sealed override LuaExpressionSyntax GenerateNullLiteralExpression()
         {
             return new LuaIdentifierLiteralExpressionSyntax(LuaIdentifierNameSyntax.Nil);
