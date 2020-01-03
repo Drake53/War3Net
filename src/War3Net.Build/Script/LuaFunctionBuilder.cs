@@ -132,7 +132,12 @@ namespace War3Net.Build.Script
             return new LuaInvocationExpressionSyntax(nameof(War3Api.Common.FourCC), new LuaStringLiteralExpressionSyntax(fourCC));
         }
 
-        public override LuaExpressionSyntax GenerateFunctionExpression(string functionName)
+        public override LuaExpressionSyntax GenerateFunctionReferenceExpression(string functionName)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override LuaExpressionSyntax GenerateArrayReferenceExpression(string variableName, LuaExpressionSyntax index)
         {
             throw new System.NotImplementedException();
         }

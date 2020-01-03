@@ -96,8 +96,12 @@ namespace War3Net.Build.Script
         public abstract TExpressionSyntax GenerateFourCCExpression(
             string fourCC);
 
-        public abstract TExpressionSyntax GenerateFunctionExpression(
+        public abstract TExpressionSyntax GenerateFunctionReferenceExpression(
             string functionName);
+
+        public abstract TExpressionSyntax GenerateArrayReferenceExpression(
+            string variableName,
+            TExpressionSyntax index);
 
         public abstract TExpressionSyntax GenerateUnaryExpression(
             UnaryOperator @operator,

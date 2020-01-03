@@ -64,14 +64,9 @@ namespace War3Net.Build.Script.Main
                         case 1:
                             yield return builder.GenerateAssignmentStatement(
                                 LocalUnitIdVariableName,
-                                builder.GenerateIntegerLiteralExpression(-1));
-
-                            // TODO: create integer array(s) for global random unit table(s)
-                            /*yield return builder.GenerateAssignmentStatement(
-                                MainFunctionProvider.LocalUnitIdVariableName,
-                                builder.GenerateArrayIndexExpression(
-                                    builder.GenerateVariableExpression("gg_rg_000"),
-                                    builder.GenerateIntegerLiteralExpression(randomData.UnitGroupTableColumn)));*/
+                                builder.GenerateArrayReferenceExpression(
+                                    $"gg_rg_{randomData.UnitGroupTableIndex.ToString("D3")}",
+                                    builder.GenerateIntegerLiteralExpression(randomData.UnitGroupTableColumn)));
                             break;
 
                         case 2:
@@ -82,10 +77,10 @@ namespace War3Net.Build.Script.Main
                                 summedChance += randomUnitOption.chance;
 
                                 var unitTypeExpression = RandomUnitProvider.IsRandomUnit(randomUnitOption.id, out var level)
-                                        ? builder.GenerateInvocationExpression(
-                                            nameof(War3Api.Common.ChooseRandomCreep),
-                                            builder.GenerateIntegerLiteralExpression(level))
-                                        : builder.GenerateFourCCExpression(new string(randomUnitOption.id));
+                                    ? builder.GenerateInvocationExpression(
+                                        nameof(War3Api.Common.ChooseRandomCreep),
+                                        builder.GenerateIntegerLiteralExpression(level))
+                                    : builder.GenerateFourCCExpression(new string(randomUnitOption.id));
 
                                 yield return builder.GenerateInvocationStatement(
                                     nameof(War3Api.Blizzard.RandomDistAddItem),
@@ -282,14 +277,14 @@ namespace War3Net.Build.Script.Main
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.TriggerAddAction),
                             builder.GenerateVariableExpression(LocalTriggerVariableName),
-                            builder.GenerateFunctionExpression($"ItemTable{mapInfo.GetItemTable(unit.MapItemTablePointer).Index.ToString("D6")}_DropItems"));
+                            builder.GenerateFunctionReferenceExpression($"ItemTable{mapInfo.GetItemTable(unit.MapItemTablePointer).Index.ToString("D6")}_DropItems"));
                     }
                     else
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.TriggerAddAction),
                             builder.GenerateVariableExpression(LocalTriggerVariableName),
-                            builder.GenerateFunctionExpression($"Unit{unit.CreationNumber.ToString("D6")}_DropItems"));
+                            builder.GenerateFunctionReferenceExpression($"Unit{unit.CreationNumber.ToString("D6")}_DropItems"));
                     }
                 }
             }

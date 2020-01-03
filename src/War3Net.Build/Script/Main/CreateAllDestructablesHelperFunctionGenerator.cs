@@ -67,12 +67,12 @@ namespace War3Net.Build.Script.Main
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.TriggerAddAction),
                         builder.GenerateVariableExpression(LocalTriggerVariableName),
-                        builder.GenerateFunctionExpression(nameof(War3Api.Blizzard.SaveDyingWidget)));
+                        builder.GenerateFunctionReferenceExpression(nameof(War3Api.Blizzard.SaveDyingWidget)));
 
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.TriggerAddAction),
                         builder.GenerateVariableExpression(LocalTriggerVariableName),
-                        builder.GenerateFunctionExpression($"Doodad{destructable.CreationNumber.ToString("D6")}_DropItems"));
+                        builder.GenerateFunctionReferenceExpression($"Doodad{destructable.CreationNumber.ToString("D6")}_DropItems"));
                 }
             }
         }

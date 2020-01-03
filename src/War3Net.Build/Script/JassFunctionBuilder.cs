@@ -222,13 +222,25 @@ namespace War3Net.Build.Script
             return JassSyntaxFactory.FourCCExpression(fourCC);
         }
 
-        public override NewExpressionSyntax GenerateFunctionExpression(string functionName)
+        public override NewExpressionSyntax GenerateFunctionReferenceExpression(string functionName)
         {
             return new NewExpressionSyntax(
                 new ExpressionSyntax(
                     new FunctionReferenceSyntax(
                         new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.FunctionKeyword), 0),
                         new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.AlphanumericIdentifier, functionName), 0))),
+                new CodeAnalysis.Jass.EmptyNode(0));
+        }
+
+        public override NewExpressionSyntax GenerateArrayReferenceExpression(string variableName, NewExpressionSyntax index)
+        {
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new ArrayReferenceSyntax(
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.AlphanumericIdentifier, variableName), 0),
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.SquareBracketOpenSymbol), 0),
+                        index,
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.SquareBracketCloseSymbol), 0))),
                 new CodeAnalysis.Jass.EmptyNode(0));
         }
 
