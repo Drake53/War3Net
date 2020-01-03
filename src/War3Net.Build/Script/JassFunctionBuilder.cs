@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,7 +26,24 @@ namespace War3Net.Build.Script
             IEnumerable<NewStatementSyntax> statements)
         {
             var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name)).ToArray()
-                ?? System.Array.Empty<LocalVariableDeclarationSyntax>();
+                ?? Array.Empty<LocalVariableDeclarationSyntax>();
+            return localDeclarations.Length > 0
+                ? JassSyntaxFactory.Function(
+                    JassSyntaxFactory.FunctionDeclaration(functionName),
+                    JassSyntaxFactory.LocalVariableList(localDeclarations),
+                    statements.ToArray())
+                : JassSyntaxFactory.Function(
+                    JassSyntaxFactory.FunctionDeclaration(functionName),
+                    statements.ToArray());
+        }
+
+        public override FunctionSyntax Build(
+            string functionName,
+            IEnumerable<(string type, string name, NewExpressionSyntax value)> locals,
+            IEnumerable<NewStatementSyntax> statements)
+        {
+            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name, localDeclaration.value)).ToArray()
+                ?? Array.Empty<LocalVariableDeclarationSyntax>();
             return localDeclarations.Length > 0
                 ? JassSyntaxFactory.Function(
                     JassSyntaxFactory.FunctionDeclaration(functionName),
@@ -49,6 +67,11 @@ namespace War3Net.Build.Script
         protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)
         {
             return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name);
+        }
+
+        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name, NewExpressionSyntax value)
+        {
+            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name, value);
         }
 
         public sealed override NewStatementSyntax GenerateLocalDeclarationStatement(string variableName)
@@ -81,6 +104,38 @@ namespace War3Net.Build.Script
                         new CodeAnalysis.Jass.EmptyNode(0),
                         new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.EndifKeyword), 0))),
                 new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))));
+        }
+
+        public override NewStatementSyntax GenerateElseClause(NewStatementSyntax ifStatement, NewExpressionSyntax condition, params NewStatementSyntax[] elseBody)
+        {
+            var ifNode = ifStatement.StatementNode?.IfStatementNode ?? throw new ArgumentException("Expression node must contain if statement.", nameof(ifStatement));
+
+            var elseClause = condition is null
+                ? new ElseClauseSyntax(
+                    new ElseSyntax(
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.ElseKeyword), 0),
+                        new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))),
+                        new StatementListSyntax(elseBody)))
+                : new ElseClauseSyntax(
+                    new ElseifSyntax(
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.ElseifKeyword), 0),
+                        condition,
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.ThenKeyword), 0),
+                        new LineDelimiterSyntax(new EndOfLineSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.NewlineSymbol), 0))),
+                        new StatementListSyntax(elseBody),
+                        new CodeAnalysis.Jass.EmptyNode(0)));
+
+            return new NewStatementSyntax(
+                new StatementSyntax(
+                    new IfStatementSyntax(
+                        ifNode.IfKeywordToken,
+                        ifNode.ConditionExpressionNode,
+                        ifNode.ThenKeywordToken,
+                        ifNode.LineDelimiterNode,
+                        ifNode.StatementListNode,
+                        elseClause,
+                        ifNode.EndifKeywordToken)),
+                ifStatement.LineDelimiterNode);
         }
 
         public sealed override NewExpressionSyntax GenerateIntegerLiteralExpression(int value)
@@ -123,6 +178,33 @@ namespace War3Net.Build.Script
             return JassSyntaxFactory.FourCCExpression(fourCC);
         }
 
+        public override NewExpressionSyntax GenerateFunctionExpression(string functionName)
+        {
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new FunctionReferenceSyntax(
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.FunctionKeyword), 0),
+                        new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(CodeAnalysis.Jass.SyntaxTokenType.AlphanumericIdentifier, functionName), 0))),
+                new CodeAnalysis.Jass.EmptyNode(0));
+        }
+
+        public override NewExpressionSyntax GenerateUnaryExpression(UnaryOperator @operator, NewExpressionSyntax expression)
+        {
+            var operatorTokenType = @operator switch
+            {
+                UnaryOperator.Not => CodeAnalysis.Jass.SyntaxTokenType.NotOperator,
+
+                _ => throw new ArgumentException($"Unary operator {@operator} is not supported, or not defined", nameof(@operator)),
+            };
+
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new UnaryExpressionSyntax(
+                        new UnaryOperatorSyntax(new CodeAnalysis.Jass.TokenNode(new CodeAnalysis.Jass.SyntaxToken(operatorTokenType), 0)),
+                        expression)),
+                new CodeAnalysis.Jass.EmptyNode(0));
+        }
+
         public override NewExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, NewExpressionSyntax left, NewExpressionSyntax right)
         {
             var operatorTokenType = @operator switch
@@ -135,7 +217,10 @@ namespace War3Net.Build.Script
                 BinaryOperator.Equals => CodeAnalysis.Jass.SyntaxTokenType.EqualityOperator,
                 BinaryOperator.NotEquals => CodeAnalysis.Jass.SyntaxTokenType.UnequalityOperator,
 
-                _ => throw new System.ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
+                BinaryOperator.And => CodeAnalysis.Jass.SyntaxTokenType.AndOperator,
+                BinaryOperator.Or => CodeAnalysis.Jass.SyntaxTokenType.OrOperator,
+
+                _ => throw new ArgumentException($"Binary operator {@operator} is not supported, or not defined", nameof(@operator)),
             };
 
             // TODO: add JassSyntaxFactory.BinaryExpression method

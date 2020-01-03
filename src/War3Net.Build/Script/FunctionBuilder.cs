@@ -5,13 +5,15 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 
 namespace War3Net.Build.Script
 {
     internal abstract class FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TExpressionSyntax : class
     {
         private readonly FunctionBuilderData _data;
 
@@ -26,12 +28,17 @@ namespace War3Net.Build.Script
             string functionName,
             IEnumerable<TStatementSyntax> statements)
         {
-            return Build(functionName, null, statements);
+            return Build(functionName, (IEnumerable<(string type, string name)>)null, statements);
         }
 
         public abstract TFunctionSyntax Build(
             string functionName,
             IEnumerable<(string type, string name)> locals,
+            IEnumerable<TStatementSyntax> statements);
+
+        public abstract TFunctionSyntax Build(
+            string functionName,
+            IEnumerable<(string type, string name, TExpressionSyntax? value)> locals,
             IEnumerable<TStatementSyntax> statements);
 
         public abstract IEnumerable<TFunctionSyntax> BuildMainFunction();
@@ -59,8 +66,10 @@ namespace War3Net.Build.Script
             TExpressionSyntax condition,
             params TStatementSyntax[] ifBody);
 
-        // TODO: overload that also takes else body
-        // TODO: elseif, ..
+        public abstract TStatementSyntax GenerateElseClause(
+            TStatementSyntax ifStatement,
+            TExpressionSyntax? condition,
+            params TStatementSyntax[] elseBody);
 
         public abstract TExpressionSyntax GenerateIntegerLiteralExpression(
             int value);
@@ -85,6 +94,13 @@ namespace War3Net.Build.Script
 
         public abstract TExpressionSyntax GenerateFourCCExpression(
             string fourCC);
+
+        public abstract TExpressionSyntax GenerateFunctionExpression(
+            string functionName);
+
+        public abstract TExpressionSyntax GenerateUnaryExpression(
+            UnaryOperator @operator,
+            TExpressionSyntax expression);
 
         public abstract TExpressionSyntax GenerateBinaryExpression(
             BinaryOperator @operator,

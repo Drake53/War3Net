@@ -45,6 +45,11 @@ namespace War3Net.Build.Script
             return globalFunctionSyntax;
         }
 
+        public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name, LuaExpressionSyntax value)> locals, IEnumerable<LuaStatementSyntax> statements)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildMainFunction()
         {
             return Main.MainFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
@@ -77,6 +82,11 @@ namespace War3Net.Build.Script
             var ifStatement = new LuaIfStatementSyntax(condition);
             ifStatement.Body.Statements.AddRange(ifBody);
             return ifStatement;
+        }
+
+        public override LuaStatementSyntax GenerateElseClause(LuaStatementSyntax ifStatement, LuaExpressionSyntax condition, params LuaStatementSyntax[] elseBody)
+        {
+            throw new System.NotImplementedException();
         }
 
         public sealed override LuaExpressionSyntax GenerateIntegerLiteralExpression(int value)
@@ -117,6 +127,16 @@ namespace War3Net.Build.Script
         public sealed override LuaExpressionSyntax GenerateFourCCExpression(string fourCC)
         {
             return new LuaInvocationExpressionSyntax(nameof(War3Api.Common.FourCC), new LuaStringLiteralExpressionSyntax(fourCC));
+        }
+
+        public override LuaExpressionSyntax GenerateFunctionExpression(string functionName)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override LuaExpressionSyntax GenerateUnaryExpression(UnaryOperator @operator, LuaExpressionSyntax expression)
+        {
+            throw new System.NotImplementedException();
         }
 
         public override LuaExpressionSyntax GenerateBinaryExpression(BinaryOperator @operator, LuaExpressionSyntax left, LuaExpressionSyntax right)
