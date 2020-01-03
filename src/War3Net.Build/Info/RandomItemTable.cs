@@ -25,6 +25,10 @@ namespace War3Net.Build.Info
             _sets = new List<RandomItemSet>();
         }
 
+        public int Index => _tableNumber;
+
+        public int ItemSetCount => _sets.Count;
+
         public static RandomItemTable Parse(Stream stream, bool leaveOpen = false)
         {
             var table = new RandomItemTable();
@@ -65,6 +69,11 @@ namespace War3Net.Build.Info
                     writer.Write(id);
                 }
             }
+        }
+
+        public RandomItemSet GetSet(int setIndex)
+        {
+            return _sets[setIndex];
         }
     }
 }

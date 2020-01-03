@@ -754,5 +754,12 @@ namespace War3Net.Build.Info
             teamIndex = -1;
             return null;
         }
+
+        // TODO: methods for upgradeData, techData, unitTables, itemTables
+
+        public RandomItemTable GetItemTable(int tableIndex)
+        {
+            return _itemTables[tableIndex];
+        }
     }
 }
