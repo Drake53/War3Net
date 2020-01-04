@@ -10,6 +10,7 @@ using System.Linq;
 
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
+using War3Net.Build.Widget;
 
 namespace War3Net.Build.Script.Main
 {
@@ -23,6 +24,21 @@ namespace War3Net.Build.Script.Main
 
         private const string LocalItemIdVariableName = "itemID";
         private const string LocalTriggerVariableName = "t";
+
+        private static bool WantGenerateDestructablesHelperFunction(MapDoodads mapDoodads)
+        {
+            return (mapDoodads?.Count ?? 0) > 0;
+        }
+
+        private static bool WantGenerateItemsHelperFunction(MapUnits mapUnits)
+        {
+            return mapUnits?.Where(mapUnit => mapUnit.IsItem && mapUnit.TypeId != "sloc").FirstOrDefault() != null;
+        }
+
+        private static bool WantGenerateUnitsHelperFunction(MapUnits mapUnits)
+        {
+            return mapUnits?.Where(mapUnit => mapUnit.IsUnit).FirstOrDefault() != null;
+        }
 
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)
         {
@@ -45,7 +61,7 @@ namespace War3Net.Build.Script.Main
                     yield return GenerateItemTableHelperFunction(builder, doodad);
                 }
 
-                if (mapDoodads.Count > 0)
+                if (WantGenerateDestructablesHelperFunction(mapDoodads))
                 {
                     yield return GenerateCreateAllDestructablesHelperFunction(builder);
                 }
@@ -59,12 +75,12 @@ namespace War3Net.Build.Script.Main
                     yield return GenerateItemTableHelperFunction(builder, unit);
                 }
 
-                if (mapUnits.Where(mapUnit => mapUnit.IsItem).FirstOrDefault() != default)
+                if (WantGenerateItemsHelperFunction(mapUnits))
                 {
                     yield return GenerateCreateAllItemsHelperFunction(builder);
                 }
 
-                if (mapUnits.Where(mapUnit => mapUnit.IsUnit).FirstOrDefault() != default)
+                if (WantGenerateUnitsHelperFunction(mapUnits))
                 {
                     yield return GenerateCreateAllUnitsHelperFunction(builder);
                 }
@@ -181,14 +197,21 @@ namespace War3Net.Build.Script.Main
                 builder.GenerateBooleanLiteralExpression(MusicRandom),
                 builder.GenerateIntegerLiteralExpression(MusicIndex));
 
-            if (builder.Data.MapDoodads != null)
+            var mapDoodads = builder.Data.MapDoodads;
+            var mapUnits = builder.Data.MapUnits;
+
+            if (WantGenerateDestructablesHelperFunction(mapDoodads))
             {
                 yield return builder.GenerateInvocationStatement("CreateAllDestructables");
             }
 
-            if (builder.Data.MapUnits != null)
+            if (WantGenerateItemsHelperFunction(mapUnits))
             {
                 yield return builder.GenerateInvocationStatement("CreateAllItems");
+            }
+
+            if (WantGenerateUnitsHelperFunction(mapUnits))
+            {
                 yield return builder.GenerateInvocationStatement("CreateAllUnits");
             }
 
