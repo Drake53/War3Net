@@ -44,6 +44,8 @@ namespace War3Net.Build.Script
 
         public MapUnits? MapUnits { get; set; }
 
+        public MapRegions? MapRegions { get; set; }
+
         public string LobbyMusic { get; set; }
 
         internal List<string> Libraries { get; private set; }

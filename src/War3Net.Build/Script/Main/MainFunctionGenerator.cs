@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
@@ -24,6 +25,11 @@ namespace War3Net.Build.Script.Main
 
         private const string LocalItemIdVariableName = "itemID";
         private const string LocalTriggerVariableName = "t";
+
+        private static bool WantGenerateRegionsHelperFunction(MapRegions mapRegions)
+        {
+            return mapRegions?.Where(region => region.WeatherId != "\0\0\0\0").FirstOrDefault() != null;
+        }
 
         private static bool WantGenerateDestructablesHelperFunction(MapDoodads mapDoodads)
         {
@@ -51,6 +57,12 @@ namespace War3Net.Build.Script.Main
             for (var i = 0; i < mapInfo.RandomItemTableCount; i++)
             {
                 yield return GenerateItemTableHelperFunction(builder, i);
+            }
+
+            var mapRegions = builder.Data.MapRegions;
+            if (WantGenerateRegionsHelperFunction(mapRegions))
+            {
+                yield return GenerateCreateRegionsHelperFunction(builder);
             }
 
             var mapDoodads = builder.Data.MapDoodads;
@@ -197,8 +209,16 @@ namespace War3Net.Build.Script.Main
                 builder.GenerateBooleanLiteralExpression(MusicRandom),
                 builder.GenerateIntegerLiteralExpression(MusicIndex));
 
+            var mapRegions = builder.Data.MapRegions;
             var mapDoodads = builder.Data.MapDoodads;
             var mapUnits = builder.Data.MapUnits;
+
+            // TODO: generate helper function: InitSounds, and support regions with ambient sound
+
+            if (WantGenerateRegionsHelperFunction(mapRegions))
+            {
+                yield return builder.GenerateInvocationStatement("CreateRegions");
+            }
 
             if (WantGenerateDestructablesHelperFunction(mapDoodads))
             {

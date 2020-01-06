@@ -28,6 +28,16 @@ namespace War3Net.Build.Environment
 
         private Color _color;
 
+        public float Left => _left;
+
+        public float Bottom => _bottom;
+
+        public float Right => _right;
+
+        public float Top => _top;
+
+        public string WeatherId => new string(_weatherId);
+
         public static Region Parse(Stream stream, bool leaveOpen)
         {
             var region = new Region();

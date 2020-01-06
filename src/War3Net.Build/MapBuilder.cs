@@ -184,6 +184,28 @@ namespace War3Net.Build
                 files.Add((MapUnits.FileName, MpqLocale.Neutral), File.OpenRead(mapUnitsPath));
             }
 
+            // If MapRegions is not set, search for it in assets.
+            if (compilerOptions.MapRegions is null)
+            {
+                var mapRegionsStream = FindFile(MapRegions.FileName);
+                if (mapRegionsStream != null)
+                {
+                    compilerOptions.MapRegions = MapRegions.Parse(mapRegionsStream);
+                }
+            }
+
+            // Generate mapRegions file
+            if (compilerOptions.MapRegions != null)
+            {
+                var mapRegionsPath = Path.Combine(compilerOptions.OutputDirectory, MapRegions.FileName);
+                using (var mapRegionsStream = File.Create(mapRegionsPath))
+                {
+                    compilerOptions.MapRegions.SerializeTo(mapRegionsStream);
+                }
+
+                files.Add((MapRegions.FileName, MpqLocale.Neutral), File.OpenRead(mapRegionsPath));
+            }
+
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
             {
