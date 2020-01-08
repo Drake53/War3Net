@@ -54,7 +54,7 @@ namespace War3Net.Build.Script
             var functionBuilder = new JassFunctionBuilder(functionBuilderData);
 
             globalsFilePath = Path.Combine(Options.OutputDirectory, "globals.j");
-            RenderToFile(globalsFilePath, new GlobalsDeclarationListSyntax(functionBuilder.BuildGlobalDeclarations().ToArray()));
+            RenderToFile(globalsFilePath, functionBuilder.BuildGlobalDeclarations());
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
             RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
@@ -122,7 +122,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private void RenderToFile(string path, GlobalsDeclarationListSyntax globals)
+        private void RenderToFile(string path, IEnumerable<GlobalDeclarationSyntax> globals)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
             {
@@ -136,7 +136,7 @@ namespace War3Net.Build.Script
                             new DeclarationSyntax(new GlobalsBlockSyntax(
                                 new TokenNode(new SyntaxToken(SyntaxTokenType.GlobalsKeyword), 0),
                                 new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))),
-                                globals,
+                                new GlobalsDeclarationListSyntax(globals.ToArray()),
                                 new TokenNode(new SyntaxToken(SyntaxTokenType.EndglobalsKeyword), 0))),
                             new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))))));
                 }
