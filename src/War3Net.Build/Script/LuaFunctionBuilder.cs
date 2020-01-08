@@ -40,7 +40,7 @@ namespace War3Net.Build.Script
             return result;
         }
 
-        public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
+        public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string typeName, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
             var variableList = new List<LuaVariableListDeclarationSyntax>();
             if (locals != null)
@@ -66,7 +66,7 @@ namespace War3Net.Build.Script
             return globalFunctionSyntax;
         }
 
-        public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name, LuaExpressionSyntax value)> locals, IEnumerable<LuaStatementSyntax> statements)
+        public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string typeName, string name, LuaExpressionSyntax value)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
             var variableList = new List<LuaVariableListDeclarationSyntax>();
             if (locals != null)

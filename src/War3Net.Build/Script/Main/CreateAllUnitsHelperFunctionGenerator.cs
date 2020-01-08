@@ -21,11 +21,11 @@ namespace War3Net.Build.Script.Main
         {
             var locals = new List<(string, string)>()
             {
-                // player p
+                // (nameof(War3Api.Common.player), "p"),
                 (nameof(War3Api.Common.unit), LocalUnitVariableName),
                 (builder.GetTypeName(BuiltinType.Int32), LocalUnitIdVariableName),
                 (nameof(War3Api.Common.trigger), LocalTriggerVariableName),
-                // real life
+                // (builder.GetTypeName(BuiltinType.Single), "life"),
             };
 
             return builder.Build("CreateAllUnits", locals, GetCreateAllUnitsHelperFunctionStatements(builder));

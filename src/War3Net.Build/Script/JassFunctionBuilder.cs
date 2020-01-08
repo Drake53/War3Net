@@ -23,16 +23,16 @@ namespace War3Net.Build.Script
 
         public override string GetTypeName(BuiltinType type)
         {
-            return type switch
+            return SyntaxToken.GetDefaultTokenValue(type switch
             {
-                BuiltinType.Boolean => "boolean",
-                BuiltinType.Single => "real",
-                BuiltinType.Int32 => "integer",
-                BuiltinType.Object => "handle",
-                BuiltinType.String => "string",
+                BuiltinType.Boolean => SyntaxTokenType.BooleanKeyword,
+                BuiltinType.Single => SyntaxTokenType.RealKeyword,
+                BuiltinType.Int32 => SyntaxTokenType.IntegerKeyword,
+                BuiltinType.Object => SyntaxTokenType.HandleKeyword,
+                BuiltinType.String => SyntaxTokenType.StringKeyword,
 
                 _ => throw new NotSupportedException(),
-            };
+            });
         }
 
         public override GlobalDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, bool isArray)
@@ -69,10 +69,10 @@ namespace War3Net.Build.Script
 
         public override FunctionSyntax Build(
             string functionName,
-            IEnumerable<(string type, string name)> locals,
+            IEnumerable<(string typeName, string name)> locals,
             IEnumerable<NewStatementSyntax> statements)
         {
-            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name)).ToArray()
+            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.typeName, localDeclaration.name)).ToArray()
                 ?? Array.Empty<LocalVariableDeclarationSyntax>();
             return localDeclarations.Length > 0
                 ? JassSyntaxFactory.Function(
@@ -86,10 +86,10 @@ namespace War3Net.Build.Script
 
         public override FunctionSyntax Build(
             string functionName,
-            IEnumerable<(string type, string name, NewExpressionSyntax value)> locals,
+            IEnumerable<(string typeName, string name, NewExpressionSyntax value)> locals,
             IEnumerable<NewStatementSyntax> statements)
         {
-            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.type, localDeclaration.name, localDeclaration.value)).ToArray()
+            var localDeclarations = locals?.Select(localDeclaration => GenerateLocalDeclaration(localDeclaration.typeName, localDeclaration.name, localDeclaration.value)).ToArray()
                 ?? Array.Empty<LocalVariableDeclarationSyntax>();
             return localDeclarations.Length > 0
                 ? JassSyntaxFactory.Function(
@@ -111,14 +111,14 @@ namespace War3Net.Build.Script
             return Config.ConfigFunctionGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
-        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)
+        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string typeName, string name)
         {
-            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name);
+            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(typeName), name);
         }
 
-        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name, NewExpressionSyntax value)
+        protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string typeName, string name, NewExpressionSyntax value)
         {
-            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(type), name, value);
+            return JassSyntaxFactory.VariableDefinition(JassSyntaxFactory.ParseTypeName(typeName), name, value);
         }
 
         public override NewStatementSyntax GenerateAssignmentStatement(string variableName, NewExpressionSyntax value)

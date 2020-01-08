@@ -40,19 +40,17 @@ namespace War3Net.Build.Script
             string functionName,
             IEnumerable<TStatementSyntax> statements)
         {
-            return Build(functionName, (IEnumerable<(string type, string name)>)null, statements);
+            return Build(functionName, (IEnumerable<(string typeName, string name)>)null, statements);
         }
 
-        // Note: locals typenames are for JASS, but should be abstracted away (doesn't matter for now though since don't use typename when declaring local in lua)
-        // Example, instead of string "integer", should create new enum similar to Unary/BinaryOperator, then: SyntaxToken.GetDefaultTokenValue(SyntaxTokenType.IntegerKeyword)
         public abstract TFunctionSyntax Build(
             string functionName,
-            IEnumerable<(string type, string name)> locals,
+            IEnumerable<(string typeName, string name)> locals,
             IEnumerable<TStatementSyntax> statements);
 
         public abstract TFunctionSyntax Build(
             string functionName,
-            IEnumerable<(string type, string name, TExpressionSyntax? value)> locals,
+            IEnumerable<(string typeName, string name, TExpressionSyntax? value)> locals,
             IEnumerable<TStatementSyntax> statements);
 
         public abstract IEnumerable<TFunctionSyntax> BuildMainFunction();

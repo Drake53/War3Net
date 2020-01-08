@@ -39,8 +39,8 @@ namespace War3Net.Build.Script.Main
             {
                 (nameof(War3Api.Common.widget), LocalTrigWidgetVariableName, builder.GenerateNullLiteralExpression()),
                 (nameof(War3Api.Common.unit), LocalTrigUnitVariableName, builder.GenerateNullLiteralExpression()),
-                ("integer", LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
-                ("boolean", LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
+                (builder.GetTypeName(BuiltinType.Int32), LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
+                (builder.GetTypeName(BuiltinType.Boolean), LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
             };
 
             return builder.Build($"Doodad{doodad.CreationNumber.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, doodad.DroppedItemSets));
@@ -52,8 +52,8 @@ namespace War3Net.Build.Script.Main
             {
                 (nameof(War3Api.Common.widget), LocalTrigWidgetVariableName, builder.GenerateNullLiteralExpression()),
                 (nameof(War3Api.Common.unit), LocalTrigUnitVariableName, builder.GenerateNullLiteralExpression()),
-                ("integer", LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
-                ("boolean", LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
+                (builder.GetTypeName(BuiltinType.Int32), LocalItemIdVariableName, builder.GenerateIntegerLiteralExpression(0)),
+                (builder.GetTypeName(BuiltinType.Boolean), LocalCanDropVariableName, builder.GenerateBooleanLiteralExpression(true)),
             };
 
             return builder.Build($"Unit{unit.CreationNumber.ToString("D6")}_DropItems", locals, GetItemTableHelperFunctionStatements(builder, unit.DroppedItemSets));
