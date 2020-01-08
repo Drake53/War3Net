@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
@@ -45,6 +46,8 @@ namespace War3Net.Build.Script
         public MapUnits? MapUnits { get; set; }
 
         public MapRegions? MapRegions { get; set; }
+
+        public MapSounds? MapSounds { get; set; }
 
         public string LobbyMusic { get; set; }
 

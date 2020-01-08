@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
@@ -17,14 +18,17 @@ namespace War3Net.Build.Script
         private readonly MapDoodads _mapDoodads;
         private readonly MapUnits _mapUnits;
         private readonly MapRegions _mapRegions;
+        private readonly MapSounds _mapSounds;
         private readonly string? _lobbyMusic;
         private readonly bool _csharp;
 
-        public FunctionBuilderData(MapInfo mapInfo, MapDoodads mapDoodads, MapUnits mapUnits, MapRegions mapRegions, string? lobbyMusic, bool csharp)
+        public FunctionBuilderData(MapInfo mapInfo, MapDoodads mapDoodads, MapUnits mapUnits, MapRegions mapRegions, MapSounds mapSounds, string? lobbyMusic, bool csharp)
         {
             _mapInfo = mapInfo;
             _mapDoodads = mapDoodads;
             _mapUnits = mapUnits;
+            _mapRegions = mapRegions;
+            _mapSounds = mapSounds;
             _lobbyMusic = lobbyMusic;
             _csharp = csharp;
         }
@@ -36,6 +40,8 @@ namespace War3Net.Build.Script
         public MapUnits MapUnits => _mapUnits;
 
         public MapRegions MapRegions => _mapRegions;
+
+        public MapSounds MapSounds => _mapSounds;
 
         public string? LobbyMusic => _lobbyMusic;
 
