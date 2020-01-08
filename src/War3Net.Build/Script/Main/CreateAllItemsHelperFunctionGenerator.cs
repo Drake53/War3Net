@@ -18,7 +18,7 @@ namespace War3Net.Build.Script.Main
         {
             var locals = new List<(string, string)>()
             {
-                ("integer", LocalItemIdVariableName),
+                (builder.GetTypeName(BuiltinType.Int32), LocalItemIdVariableName),
             };
 
             return builder.Build("CreateAllItems", locals, GetCreateAllItemsHelperFunctionStatements(builder));

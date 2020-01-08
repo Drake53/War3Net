@@ -23,7 +23,7 @@ namespace War3Net.Build.Script.Main
             {
                 // player p
                 (nameof(War3Api.Common.unit), LocalUnitVariableName),
-                ("integer", LocalUnitIdVariableName),
+                (builder.GetTypeName(BuiltinType.Int32), LocalUnitIdVariableName),
                 (nameof(War3Api.Common.trigger), LocalTriggerVariableName),
                 // real life
             };

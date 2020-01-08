@@ -20,7 +20,7 @@ namespace War3Net.Build.Script.Main
         {
             var locals = new List<(string, string)>()
             {
-                ("integer", LocalCurrentSetVariableName),
+                (builder.GetTypeName(BuiltinType.Int32), LocalCurrentSetVariableName),
             };
 
             return builder.Build("InitRandomGroups", locals, GetUnitTableHelperFunctionStatements(builder));
