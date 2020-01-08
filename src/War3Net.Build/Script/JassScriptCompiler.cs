@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using War3Net.Build.Providers;
@@ -53,16 +54,7 @@ namespace War3Net.Build.Script
             var functionBuilder = new JassFunctionBuilder(functionBuilderData);
 
             globalsFilePath = Path.Combine(Options.OutputDirectory, "globals.j");
-            var globals = new GlobalDeclarationSyntax[Options.MapInfo.RandomUnitTableCount];
-            for (var i = 0; i < globals.Length; i++)
-            {
-                globals[i] = functionBuilder.GenerateGlobalDeclaration(
-                    functionBuilder.GetTypeName(BuiltinType.Int32),
-                    $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}",
-                    true);
-            }
-
-            RenderToFile(globalsFilePath, new GlobalsDeclarationListSyntax(globals));
+            RenderToFile(globalsFilePath, new GlobalsDeclarationListSyntax(functionBuilder.BuildGlobalDeclarations().ToArray()));
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.j");
             RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());

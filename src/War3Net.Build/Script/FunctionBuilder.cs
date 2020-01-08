@@ -53,6 +53,8 @@ namespace War3Net.Build.Script
             IEnumerable<(string typeName, string name, TExpressionSyntax? value)> locals,
             IEnumerable<TStatementSyntax> statements);
 
+        public abstract IEnumerable<TGlobalDeclarationSyntax> BuildGlobalDeclarations();
+
         public abstract IEnumerable<TFunctionSyntax> BuildMainFunction();
 
         public abstract IEnumerable<TFunctionSyntax> BuildConfigFunction();

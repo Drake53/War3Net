@@ -101,6 +101,11 @@ namespace War3Net.Build.Script
                     statements.ToArray());
         }
 
+        public override IEnumerable<GlobalDeclarationSyntax> BuildGlobalDeclarations()
+        {
+            return GlobalDeclarationsGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetGlobals(this);
+        }
+
         public sealed override IEnumerable<FunctionSyntax> BuildMainFunction()
         {
             return Main.MainFunctionGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);

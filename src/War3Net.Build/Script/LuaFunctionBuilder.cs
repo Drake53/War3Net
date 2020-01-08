@@ -91,6 +91,11 @@ namespace War3Net.Build.Script
             return globalFunctionSyntax;
         }
 
+        public override IEnumerable<LuaVariableListDeclarationSyntax> BuildGlobalDeclarations()
+        {
+            return GlobalDeclarationsGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetGlobals(this);
+        }
+
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildMainFunction()
         {
             return Main.MainFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);

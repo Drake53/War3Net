@@ -34,16 +34,7 @@ namespace War3Net.Build.Script
             var functionBuilder = new LuaFunctionBuilder(functionBuilderData);
 
             globalsFilePath = Path.Combine(Options.OutputDirectory, "globals.lua");
-            var globals = new LuaVariableListDeclarationSyntax[Options.MapInfo.RandomUnitTableCount];
-            for (var i = 0; i < globals.Length; i++)
-            {
-                globals[i] = functionBuilder.GenerateGlobalDeclaration(
-                    functionBuilder.GetTypeName(BuiltinType.Int32),
-                    $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}",
-                    true);
-            }
-
-            RenderToFile(globalsFilePath, globals);
+            RenderToFile(globalsFilePath, functionBuilder.BuildGlobalDeclarations());
 
             mainFunctionFilePath = Path.Combine(Options.OutputDirectory, "main.lua");
             RenderToFile(mainFunctionFilePath, functionBuilder.BuildMainFunction());
