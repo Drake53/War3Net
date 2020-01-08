@@ -12,7 +12,7 @@ using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script.Main
 {
-    internal static partial class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private static TFunctionSyntax GenerateCreateAllItemsHelperFunction(TBuilder builder)
         {

@@ -11,7 +11,7 @@ using War3Net.Build.Widget;
 
 namespace War3Net.Build.Script.Main
 {
-    internal static partial class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private const string LocalTrigWidgetVariableName = "trigWidget";
         private const string LocalTrigUnitVariableName = "trigUnit";

@@ -9,15 +9,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Script
 {
-    internal sealed class JassFunctionBuilder : FunctionBuilder<FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>
+    internal sealed class JassFunctionBuilder : FunctionBuilder<GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>
     {
         public JassFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
+        }
+
+        public override string GetTypeName(BuiltinType type)
+        {
+            return type switch
+            {
+                BuiltinType.Boolean => "boolean",
+                BuiltinType.Single => "real",
+                BuiltinType.Int32 => "integer",
+                BuiltinType.Object => "handle",
+                BuiltinType.String => "string",
+
+                _ => throw new NotSupportedException(),
+            };
+        }
+
+        public override GlobalDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, bool isArray)
+        {
+            return isArray
+                ? new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
+                    new VariableDeclarationSyntax(
+                        new ArrayDefinitionSyntax(
+                            JassSyntaxFactory.ParseTypeName(typeName),
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.ArrayKeyword), 0),
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, name), 0))),
+                    new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0)))))
+                : new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
+                    new VariableDeclarationSyntax(
+                        new VariableDefinitionSyntax(
+                            JassSyntaxFactory.ParseTypeName(typeName),
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, name), 0),
+                            new EmptyNode(0))),
+                    new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0)))));
+        }
+
+        public override GlobalDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, NewExpressionSyntax value)
+        {
+            return new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
+                new VariableDeclarationSyntax(
+                    new VariableDefinitionSyntax(
+                        JassSyntaxFactory.ParseTypeName(typeName),
+                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, name), 0),
+                        new EqualsValueClauseSyntax(
+                            new TokenNode(new SyntaxToken(SyntaxTokenType.Assignment), 0),
+                            value))),
+                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0)))));
         }
 
         public override FunctionSyntax Build(
@@ -56,12 +103,12 @@ namespace War3Net.Build.Script
 
         public sealed override IEnumerable<FunctionSyntax> BuildMainFunction()
         {
-            return Main.MainFunctionGenerator<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
+            return Main.MainFunctionGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
         public sealed override IEnumerable<FunctionSyntax> BuildConfigFunction()
         {
-            return Config.ConfigFunctionGenerator<JassFunctionBuilder, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
+            return Config.ConfigFunctionGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetFunctions(this);
         }
 
         protected LocalVariableDeclarationSyntax GenerateLocalDeclaration(string type, string name)

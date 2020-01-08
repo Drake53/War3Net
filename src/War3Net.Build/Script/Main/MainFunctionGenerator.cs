@@ -15,8 +15,8 @@ using War3Net.Build.Widget;
 
 namespace War3Net.Build.Script.Main
 {
-    internal static partial class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
-        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TBuilder : FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TExpressionSyntax : class
     {
         private const string MusicName = "Music";

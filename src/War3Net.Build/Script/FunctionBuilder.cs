@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace War3Net.Build.Script
 {
-    internal abstract class FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal abstract class FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TExpressionSyntax : class
     {
         private readonly FunctionBuilderData _data;
@@ -22,6 +22,19 @@ namespace War3Net.Build.Script
         }
 
         public FunctionBuilderData Data => _data;
+
+        public abstract string GetTypeName(
+            BuiltinType type);
+
+        public abstract TGlobalDeclarationSyntax GenerateGlobalDeclaration(
+            string typeName,
+            string name,
+            bool isArray);
+
+        public abstract TGlobalDeclarationSyntax GenerateGlobalDeclaration(
+            string typeName,
+            string name,
+            TExpressionSyntax value);
 
         public TFunctionSyntax Build(
             string functionName,

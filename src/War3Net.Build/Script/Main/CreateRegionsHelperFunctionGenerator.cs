@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace War3Net.Build.Script.Main
 {
-    internal static partial class MainFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private static TFunctionSyntax GenerateCreateRegionsHelperFunction(TBuilder builder)
         {

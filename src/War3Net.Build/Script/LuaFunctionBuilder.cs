@@ -13,11 +13,31 @@ using CSharpLua.LuaAst;
 
 namespace War3Net.Build.Script
 {
-    internal sealed class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
+    internal sealed class LuaFunctionBuilder : FunctionBuilder<LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>
     {
         public LuaFunctionBuilder(FunctionBuilderData data)
             : base(data)
         {
+        }
+
+        public override string GetTypeName(BuiltinType type)
+        {
+            return null;
+        }
+
+        public override LuaVariableListDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, bool isArray)
+        {
+            return GenerateGlobalDeclaration(
+                typeName,
+                name,
+                isArray ? GenerateInvocationExpression("__jarray", GenerateIntegerLiteralExpression(0)) : null);
+        }
+
+        public override LuaVariableListDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, LuaExpressionSyntax value)
+        {
+            var result = new LuaVariableListDeclarationSyntax();
+            result.Variables.Add(new LuaVariableDeclaratorSyntax(name, value));
+            return result;
         }
 
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string type, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
@@ -73,12 +93,12 @@ namespace War3Net.Build.Script
 
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildMainFunction()
         {
-            return Main.MainFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
+            return Main.MainFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
         }
 
         public sealed override IEnumerable<LuaVariableListDeclarationSyntax> BuildConfigFunction()
         {
-            return Config.ConfigFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
+            return Config.ConfigFunctionGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetFunctions(this);
         }
 
         public override LuaStatementSyntax GenerateAssignmentStatement(string variableName, LuaExpressionSyntax value)

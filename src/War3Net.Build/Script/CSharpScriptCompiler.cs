@@ -37,12 +37,10 @@ namespace War3Net.Build.Script
             var globals = new LuaVariableListDeclarationSyntax[Options.MapInfo.RandomUnitTableCount];
             for (var i = 0; i < globals.Length; i++)
             {
-                globals[i] = new LuaVariableListDeclarationSyntax();
-                globals[i].Variables.Add(new LuaVariableDeclaratorSyntax(
+                globals[i] = functionBuilder.GenerateGlobalDeclaration(
+                    functionBuilder.GetTypeName(BuiltinType.Int32),
                     $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}",
-                    functionBuilder.GenerateInvocationExpression(
-                        "__jarray",
-                        functionBuilder.GenerateIntegerLiteralExpression(0))));
+                    true);
             }
 
             RenderToFile(globalsFilePath, globals);

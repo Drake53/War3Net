@@ -56,13 +56,10 @@ namespace War3Net.Build.Script
             var globals = new GlobalDeclarationSyntax[Options.MapInfo.RandomUnitTableCount];
             for (var i = 0; i < globals.Length; i++)
             {
-                globals[i] = new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
-                    new VariableDeclarationSyntax(
-                        new ArrayDefinitionSyntax(
-                            JassSyntaxFactory.ParseTypeName("integer"),
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.ArrayKeyword), 0),
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}"), 0))),
-                    new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0)))));
+                globals[i] = functionBuilder.GenerateGlobalDeclaration(
+                    functionBuilder.GetTypeName(BuiltinType.Int32),
+                    $"gg_rg_{Options.MapInfo.GetUnitTable(i).Index.ToString("D3")}",
+                    true);
             }
 
             RenderToFile(globalsFilePath, new GlobalsDeclarationListSyntax(globals));

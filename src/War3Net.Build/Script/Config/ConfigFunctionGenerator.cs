@@ -11,8 +11,8 @@ using War3Net.Build.Info;
 
 namespace War3Net.Build.Script.Config
 {
-    internal static partial class ConfigFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
-        where TBuilder : FunctionBuilder<TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class ConfigFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TBuilder : FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TExpressionSyntax : class
     {
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)

@@ -12,7 +12,7 @@ using War3Net.Build.Providers;
 
 namespace War3Net.Build.Script.Config
 {
-    internal static partial class ConfigFunctionGenerator<TBuilder, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+    internal static partial class ConfigFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
         private static TFunctionSyntax GenerateInitCustomPlayerSlotsHelperFunction(TBuilder builder)
         {
