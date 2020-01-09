@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
@@ -204,6 +205,28 @@ namespace War3Net.Build
                 }
 
                 files.Add((MapRegions.FileName, MpqLocale.Neutral), File.OpenRead(mapRegionsPath));
+            }
+
+            // If MapSounds is not set, search for it in assets.
+            if (compilerOptions.MapSounds is null)
+            {
+                var mapSoundsStream = FindFile(MapSounds.FileName);
+                if (mapSoundsStream != null)
+                {
+                    compilerOptions.MapSounds = MapSounds.Parse(mapSoundsStream);
+                }
+            }
+
+            // Generate mapSounds file
+            if (compilerOptions.MapSounds != null)
+            {
+                var mapSoundsPath = Path.Combine(compilerOptions.OutputDirectory, MapSounds.FileName);
+                using (var mapSoundsStream = File.Create(mapSoundsPath))
+                {
+                    compilerOptions.MapSounds.SerializeTo(mapSoundsStream);
+                }
+
+                files.Add((MapSounds.FileName, MpqLocale.Neutral), File.OpenRead(mapSoundsPath));
             }
 
             // Generate script file

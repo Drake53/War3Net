@@ -21,7 +21,7 @@ namespace War3Net.Build.Script.Main
         {
             foreach (var region in builder.Data.MapRegions.Where(region => region.WeatherId != "\0\0\0\0" || region.AmbientSound != null))
             {
-                var regionName = $"gg_rct_{region.Name}";
+                var regionName = $"gg_rct_{region.Name.Replace(' ', '_')}";
                 yield return builder.GenerateAssignmentStatement(
                     regionName,
                     builder.GenerateInvocationExpression(

@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace War3Net.Build.Script
 {
@@ -25,21 +26,27 @@ namespace War3Net.Build.Script
             }
 
             var mapSounds = builder.Data.MapSounds;
-            foreach (var sound in mapSounds)
+            if ((mapSounds?.Count ?? 0) > 0)
             {
-                yield return builder.GenerateGlobalDeclaration(
-                    nameof(War3Api.Common.sound),
-                    sound.Name,
-                    false);
+                foreach (var sound in mapSounds)
+                {
+                    yield return builder.GenerateGlobalDeclaration(
+                        nameof(War3Api.Common.sound),
+                        sound.Name,
+                        false);
+                }
             }
 
             var mapRegions = builder.Data.MapRegions;
-            foreach (var region in mapRegions)
+            if (mapRegions?.Where(region => region.WeatherId != "\0\0\0\0" || region.AmbientSound != null) != null)
             {
-                yield return builder.GenerateGlobalDeclaration(
-                    nameof(War3Api.Common.rect),
-                    $"gg_rct_{region.Name}",
-                    false);
+                foreach (var region in mapRegions)
+                {
+                    yield return builder.GenerateGlobalDeclaration(
+                        nameof(War3Api.Common.rect),
+                        $"gg_rct_{region.Name.Replace(' ', '_')}",
+                        false);
+                }
             }
         }
     }
