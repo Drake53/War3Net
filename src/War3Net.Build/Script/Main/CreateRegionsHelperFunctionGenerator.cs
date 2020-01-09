@@ -19,21 +19,45 @@ namespace War3Net.Build.Script.Main
 
         private static IEnumerable<TStatementSyntax> GetCreateRegionsHelperFunctionStatements(TBuilder builder)
         {
-            // TODO: assign rects to global gg_rct_ (or local) variable, so can perform multiple operations on them (ambient sound)
-            foreach (var region in builder.Data.MapRegions.Where(region => region.WeatherId != "\0\0\0\0"))
+            foreach (var region in builder.Data.MapRegions.Where(region => region.WeatherId != "\0\0\0\0" || region.AmbientSound != null))
             {
-                yield return builder.GenerateInvocationStatement(
-                    nameof(War3Api.Common.EnableWeatherEffect),
+                var regionName = $"gg_rct_{region.Name}";
+                yield return builder.GenerateAssignmentStatement(
+                    regionName,
                     builder.GenerateInvocationExpression(
-                        nameof(War3Api.Common.AddWeatherEffect),
+                        nameof(War3Api.Common.Rect),
+                        builder.GenerateFloatLiteralExpression(region.Left),
+                        builder.GenerateFloatLiteralExpression(region.Bottom),
+                        builder.GenerateFloatLiteralExpression(region.Right),
+                        builder.GenerateFloatLiteralExpression(region.Top)));
+
+                if (region.WeatherId != "\0\0\0\0")
+                {
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.EnableWeatherEffect),
                         builder.GenerateInvocationExpression(
-                            nameof(War3Api.Common.Rect),
-                            builder.GenerateFloatLiteralExpression(region.Left),
-                            builder.GenerateFloatLiteralExpression(region.Bottom),
-                            builder.GenerateFloatLiteralExpression(region.Right),
-                            builder.GenerateFloatLiteralExpression(region.Top)),
-                        builder.GenerateFourCCExpression(region.WeatherId)),
-                    builder.GenerateBooleanLiteralExpression(true));
+                            nameof(War3Api.Common.AddWeatherEffect),
+                            builder.GenerateVariableExpression(regionName),
+                            builder.GenerateFourCCExpression(region.WeatherId)),
+                        builder.GenerateBooleanLiteralExpression(true));
+                }
+
+                if (region.AmbientSound != null)
+                {
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.SetSoundPosition),
+                        builder.GenerateVariableExpression(region.AmbientSound),
+                        builder.GenerateFloatLiteralExpression(region.CenterX),
+                        builder.GenerateFloatLiteralExpression(region.CenterY),
+                        builder.GenerateFloatLiteralExpression(0));
+
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.RegisterStackedSound),
+                        builder.GenerateVariableExpression(region.AmbientSound),
+                        builder.GenerateBooleanLiteralExpression(true),
+                        builder.GenerateFloatLiteralExpression(region.Width),
+                        builder.GenerateFloatLiteralExpression(region.Height));
+                }
             }
         }
     }

@@ -36,7 +36,19 @@ namespace War3Net.Build.Environment
 
         public float Top => _top;
 
+        public float Width => _right - _left;
+
+        public float Height => _top - _bottom;
+
+        public float CenterX => 0.5f * (_left + _right);
+
+        public float CenterY => 0.5f * (_top + _bottom);
+
+        public string Name => _name;
+
         public string WeatherId => new string(_weatherId);
+
+        public string AmbientSound => _ambientSound;
 
         public static Region Parse(Stream stream, bool leaveOpen)
         {

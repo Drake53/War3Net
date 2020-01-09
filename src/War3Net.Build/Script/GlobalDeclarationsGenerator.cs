@@ -23,6 +23,24 @@ namespace War3Net.Build.Script
                     $"gg_rg_{mapInfo.GetUnitTable(i).Index.ToString("D3")}",
                     true);
             }
+
+            var mapSounds = builder.Data.MapSounds;
+            foreach (var sound in mapSounds)
+            {
+                yield return builder.GenerateGlobalDeclaration(
+                    nameof(War3Api.Common.sound),
+                    sound.Name,
+                    false);
+            }
+
+            var mapRegions = builder.Data.MapRegions;
+            foreach (var region in mapRegions)
+            {
+                yield return builder.GenerateGlobalDeclaration(
+                    nameof(War3Api.Common.rect),
+                    $"gg_rct_{region.Name}",
+                    false);
+            }
         }
     }
 }

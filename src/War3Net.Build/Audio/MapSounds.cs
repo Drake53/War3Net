@@ -33,6 +33,8 @@ namespace War3Net.Build.Audio
             _sounds = new List<Sound>();
         }
 
+        public int Count => _sounds.Count;
+
         public static MapSounds Parse(Stream stream, bool leaveOpen = false)
         {
             var mapSounds = new MapSounds();
