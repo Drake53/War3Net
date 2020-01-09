@@ -131,12 +131,17 @@ namespace War3Net.Build.Script
                     var renderer = new JassRenderer(writer);
                     renderer.Options = _rendererOptions;
 
+                    var globalsArray = globals.ToArray();
+                    var globalsDeclarationList = globalsArray.Length == 0
+                        ? new GlobalsDeclarationListSyntax(new EmptyNode(0))
+                        : new GlobalsDeclarationListSyntax(globalsArray);
+
                     renderer.Render(JassSyntaxFactory.File(
                         new NewDeclarationSyntax(
                             new DeclarationSyntax(new GlobalsBlockSyntax(
                                 new TokenNode(new SyntaxToken(SyntaxTokenType.GlobalsKeyword), 0),
                                 new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))),
-                                new GlobalsDeclarationListSyntax(globals.ToArray()),
+                                globalsDeclarationList,
                                 new TokenNode(new SyntaxToken(SyntaxTokenType.EndglobalsKeyword), 0))),
                             new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))))));
                 }
