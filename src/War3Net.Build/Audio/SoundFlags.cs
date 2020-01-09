@@ -16,5 +16,17 @@ namespace War3Net.Build.Audio
         Is3DSound = 1 << 1,
         StopWhenOutOfRange = 1 << 2,
         Music = 1 << 3,
+
+        // flags from .slk files:
+        // WANT3D
+        // IGNOREUSERNAME
+        // CHANNELFULLPREEMPT
+        // NODUPLICATES
+        // SCALEPRIORITY
+        // LOOPING
+        // RANDOMPITCH
+        // CHANNELFULLPREEMPTOLDEST
+        // DYNAMICOCCLUSION
+        // LISTFULLPREEMPT
     }
 }

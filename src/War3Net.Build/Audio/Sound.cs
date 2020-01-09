@@ -26,8 +26,8 @@ namespace War3Net.Build.Audio
         private int _volume;
         private float _pitch;
 
-        private float _unk0;
-        private int _unk1;
+        private float _pitchVariance; // used when RANDOMPITCH flag is set
+        private int _priority;
 
         private SoundChannel _channel;
         private float _minDistance;
@@ -87,8 +87,8 @@ namespace War3Net.Build.Audio
                 sound._volume = reader.ReadInt32();
                 sound._pitch = reader.ReadSingle();
 
-                sound._unk0 = reader.ReadSingle();
-                sound._unk1 = reader.ReadInt32();
+                sound._pitchVariance = reader.ReadSingle();
+                sound._priority = reader.ReadInt32();
 
                 sound._channel = (SoundChannel)reader.ReadInt32();
                 sound._minDistance = reader.ReadSingle();
@@ -124,8 +124,8 @@ namespace War3Net.Build.Audio
             writer.Write(_volume);
             writer.Write(_pitch);
 
-            writer.Write(_unk0);
-            writer.Write(_unk1);
+            writer.Write(_pitchVariance);
+            writer.Write(_priority);
 
             writer.Write((int)_channel);
             writer.Write(_minDistance);
