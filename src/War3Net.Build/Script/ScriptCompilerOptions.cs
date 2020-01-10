@@ -23,6 +23,15 @@ namespace War3Net.Build.Script
         public string OutputDirectory { get; set; }
 
         /// <summary>
+        /// Path to clijasshelper.exe, this property must be set when compiling vJass source code.
+        /// </summary>
+        public string JasshelperCliPath { get; set; }
+
+        public string CommonJPath { get; set; }
+
+        public string BlizzardJPath { get; set; }
+
+        /// <summary>
         /// If true, script files added through assets will be overwritten, even if <see cref="SourceDirectory"/> is null.
         /// </summary>
         public bool ForceCompile { get; set; }

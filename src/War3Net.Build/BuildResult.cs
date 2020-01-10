@@ -25,12 +25,12 @@ namespace War3Net.Build
             if (compileResult is null)
             {
                 _success = success;
-                _diagnostics = ImmutableArray.Create(diagnostics.ToArray());
+                _diagnostics = diagnostics.ToImmutableArray();
             }
             else
             {
                 _success = success && compileResult.Success;
-                _diagnostics = ImmutableArray.Create(compileResult.Diagnostics.Concat(diagnostics).ToArray());
+                _diagnostics = compileResult.Diagnostics.Concat(diagnostics).ToImmutableArray();
             }
         }
 

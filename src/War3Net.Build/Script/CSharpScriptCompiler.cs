@@ -43,8 +43,8 @@ namespace War3Net.Build.Script
             RenderToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
-        // Additional source files (usually main.lua and config.lua) are assumed to be .lua source files, not .cs source files.
-        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
+        // Additional source files (usually globals.lua, main.lua, and config.lua) are assumed to be .lua source files, not .cs source files.
+        public override CompileResult Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
 
@@ -93,8 +93,9 @@ namespace War3Net.Build.Script
             }
             catch (CompilationErrorException e)
             {
-                // Console.WriteLine(e.Message);
-                return false;
+                // TODO: retrieve diagnostics from EmitResult
+                // return new CompileResult(emitResult);
+                return new CompileResult(false, null);
             }
 
             using (var fileStream = File.OpenWrite(scriptFilePath))
@@ -110,7 +111,9 @@ namespace War3Net.Build.Script
                 }
             }
 
-            return true;
+            // TODO: retrieve diagnostics from EmitResult
+            // return new CompileResult(emitResult);
+            return new CompileResult(true, null);
         }
 
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)

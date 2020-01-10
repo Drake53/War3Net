@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace War3Net.Build
 {
@@ -16,10 +18,16 @@ namespace War3Net.Build
         private readonly bool _success;
         private readonly ImmutableArray<Diagnostic> _diagnostics;
 
-        internal CompileResult(bool success, params Diagnostic[] diagnostics)
+        internal CompileResult(EmitResult emitResult)
+        {
+            _success = emitResult.Success;
+            _diagnostics = emitResult.Diagnostics;
+        }
+
+        internal CompileResult(bool success, IEnumerable<Diagnostic> diagnostics)
         {
             _success = success;
-            _diagnostics = ImmutableArray.Create(diagnostics);
+            _diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray.Create<Diagnostic>();
         }
 
         public bool Success => _success;

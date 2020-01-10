@@ -22,7 +22,7 @@ namespace War3Net.Build.Script
             throw new NotImplementedException();
         }
 
-        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
+        public override CompileResult Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             throw new NotImplementedException();
         }

@@ -5,12 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 using Microsoft.Win32;
 
 namespace War3Net.Build.Providers
 {
+    [Obsolete("", true)]
     internal static class WarcraftPathProvider
     {
         public static string GetExePath(bool x86, bool ptr)

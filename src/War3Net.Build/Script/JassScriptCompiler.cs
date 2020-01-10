@@ -20,30 +20,33 @@ namespace War3Net.Build.Script
 {
     internal sealed class JassScriptCompiler : ScriptCompiler
     {
-        private readonly string _jasshelperPath;
-        private readonly string _commonPath;
-        private readonly string _blizzardPath;
-
         private readonly JassRendererOptions _rendererOptions;
 
         public JassScriptCompiler(ScriptCompilerOptions options, JassRendererOptions rendererOptions)
             : base(options)
         {
-            if (options.SourceDirectory != null)
+            /*if (options.SourceDirectory != null)
             {
+                if (options.JasshelperCliPath is null)
+                {
+                    throw new System.Exception();
+                }
+
                 // todo: retrieve these vals from somewhere
                 var x86 = true;
                 var ptr = false;
+                // var reforged = ?;
 
-                _jasshelperPath = Path.Combine(new FileInfo(WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
+                // _jasshelperPath = Path.Combine(new FileInfo(WarcraftPathProvider.GetExePath(x86, ptr)).DirectoryName, "JassHelper", "jasshelper.exe");
 
                 var jasshelperDocuments = Path.Combine(
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
-                ptr ? "Warcraft III Public Test" : "Warcraft III",
-                "Jasshelper");
+                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments),
+                    ptr ? "Warcraft III Public Test" : "Warcraft III",
+                    "Jasshelper");
+
                 _commonPath = Path.Combine(jasshelperDocuments, "common.j");
                 _blizzardPath = Path.Combine(jasshelperDocuments, "Blizzard.j");
-            }
+            }*/
 
             _rendererOptions = rendererOptions;
         }
@@ -63,7 +66,7 @@ namespace War3Net.Build.Script
             RenderToFile(configFunctionFilePath, functionBuilder.BuildConfigFunction());
         }
 
-        public override bool Compile(out string scriptFilePath, params string[] additionalSourceFiles)
+        public override CompileResult Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
             using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
@@ -90,20 +93,36 @@ namespace War3Net.Build.Script
                 }
             }
 
+            var commonPath = Options.CommonJPath;
+            var blizzardPath = Options.BlizzardJPath;
+
             var outputScript = "war3map.j";
             scriptFilePath = Path.Combine(Options.OutputDirectory, outputScript);
             var jasshelperOutputScript = Path.Combine(Options.OutputDirectory, Options.Obfuscate ? "war3map.original.j" : outputScript);
             var jasshelperOptions = Options.Debug ? "--debug" : Options.Optimize ? string.Empty : "--nooptimize";
-            var jasshelper = Process.Start(_jasshelperPath, $"{jasshelperOptions} --scriptonly \"{_commonPath}\" \"{_blizzardPath}\" \"{inputScript}\" \"{jasshelperOutputScript}\"");
+            var jasshelper = Process.Start(Options.JasshelperCliPath, $"{jasshelperOptions} --scriptonly \"{commonPath}\" \"{blizzardPath}\" \"{inputScript}\" \"{jasshelperOutputScript}\"");
             jasshelper.WaitForExit();
 
             var success = jasshelper.ExitCode == 0;
-            if (success && Options.Obfuscate)
+            var diagnostics = new List<Microsoft.CodeAnalysis.Diagnostic>();
+            if (success)
             {
-                JassObfuscator.Obfuscate(jasshelperOutputScript, scriptFilePath, _commonPath, _blizzardPath);
+                if (Options.Obfuscate)
+                {
+                    JassObfuscator.Obfuscate(jasshelperOutputScript, scriptFilePath, commonPath, blizzardPath);
+                }
+            }
+            else
+            {
+                while (!jasshelper.StandardOutput.EndOfStream)
+                {
+                    // TODO: parse stdout
+                    // diagnostics.Add(Diagnostic.Create())
+                    jasshelper.StandardOutput.ReadLine();
+                }
             }
 
-            return success;
+            return new CompileResult(success, diagnostics);
         }
 
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
