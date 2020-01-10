@@ -553,6 +553,11 @@ namespace War3Net.Build.Info
             return info;
         }
 
+        public static void Serialize(MapInfo mapInfo, Stream stream, bool leaveOpen = false)
+        {
+            mapInfo.SerializeTo(stream, leaveOpen);
+        }
+
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
             if (_fileFormatVersion >= MapInfoFormatVersion.Lua && _gameVersion is null)

@@ -56,6 +56,11 @@ namespace War3Net.Build.Audio
             return mapSounds;
         }
 
+        public static void Serialize(MapSounds mapSounds, Stream stream, bool leaveOpen = false)
+        {
+            mapSounds.SerializeTo(stream, leaveOpen);
+        }
+
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))

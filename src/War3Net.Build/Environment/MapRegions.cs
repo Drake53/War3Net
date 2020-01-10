@@ -48,6 +48,11 @@ namespace War3Net.Build.Environment
             return mapRegions;
         }
 
+        public static void Serialize(MapRegions mapRegions, Stream stream, bool leaveOpen = false)
+        {
+            mapRegions.SerializeTo(stream, leaveOpen);
+        }
+
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))

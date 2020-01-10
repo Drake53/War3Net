@@ -50,6 +50,11 @@ namespace War3Net.Build.Widget
             return data;
         }
 
+        public static void Serialize(MapUnits mapUnits, Stream stream, bool leaveOpen = false)
+        {
+            mapUnits.SerializeTo(stream, leaveOpen);
+        }
+
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))

@@ -218,6 +218,11 @@ namespace War3Net.Build.Environment
             return environment;
         }
 
+        public static void Serialize(MapEnvironment mapEnvironment, Stream stream, bool leaveOpen = false)
+        {
+            mapEnvironment.SerializeTo(stream, leaveOpen);
+        }
+
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
