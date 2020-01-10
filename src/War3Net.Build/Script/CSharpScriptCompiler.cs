@@ -93,9 +93,15 @@ namespace War3Net.Build.Script
             }
             catch (CompilationErrorException e)
             {
-                // TODO: retrieve diagnostics from EmitResult
-                // return new CompileResult(emitResult);
-                return new CompileResult(false, null);
+                if (e.EmitResult != null)
+                {
+                    return new CompileResult(e.EmitResult);
+                }
+                else
+                {
+                    // TODO: turn exception message into a diagnostic?
+                    return new CompileResult(false, null);
+                }
             }
 
             using (var fileStream = File.OpenWrite(scriptFilePath))
