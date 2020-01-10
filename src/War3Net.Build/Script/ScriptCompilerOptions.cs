@@ -66,5 +66,58 @@ namespace War3Net.Build.Script
             DefaultFileFlags = MpqFileFlags.Exists;
             Libraries = libraries.ToList();
         }
+
+        public object GetMapFile(string fileName)
+        {
+            return fileName switch
+            {
+                MapInfo.FileName => MapInfo,
+                MapEnvironment.FileName => MapEnvironment,
+                MapDoodads.FileName => MapDoodads,
+                MapUnits.FileName => MapUnits,
+                MapRegions.FileName => MapRegions,
+                MapSounds.FileName => MapSounds,
+
+                _ => null,
+            };
+        }
+
+        public bool SetMapFile(object file)
+        {
+            if (file is null)
+            {
+                return false;
+            }
+            else if (file is MapInfo mapInfo)
+            {
+                MapInfo = mapInfo;
+            }
+            else if (file is MapEnvironment mapEnvironment)
+            {
+                MapEnvironment = mapEnvironment;
+            }
+            else if (file is MapDoodads mapDoodads)
+            {
+                MapDoodads = mapDoodads;
+            }
+            else if (file is MapUnits mapUnits)
+            {
+                MapUnits = mapUnits;
+            }
+            else if (file is MapRegions mapRegions)
+            {
+                MapRegions = mapRegions;
+            }
+            else if (file is MapSounds mapSounds)
+            {
+                MapSounds = mapSounds;
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
