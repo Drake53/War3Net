@@ -16,7 +16,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 
-using War3Net.CodeAnalysis.Common;
 using War3Net.CodeAnalysis.CSharp;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.CodeAnalysis.Jass.Transpilers;
@@ -259,7 +258,6 @@ namespace War3Net.CodeAnalysis.Jass
         {
             yield return MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             yield return MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51").Location);
-            yield return MetadataReference.CreateFromFile(typeof(NativeLuaMemberAttribute).Assembly.Location);
         }
 
         private static UsingDirectiveSyntax GetCSharpDirective()

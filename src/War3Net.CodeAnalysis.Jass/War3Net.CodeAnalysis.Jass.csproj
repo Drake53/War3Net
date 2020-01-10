@@ -10,11 +10,11 @@
     <Description>War3Net.CodeAnalysis.JASS is a library for parsing, transpiling (to C#), and rendering JASS source files.</Description>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
     <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Remove dependency on War3Net.CodeAnalysis.Common package.</PackageReleaseNotes>
 
-    <Version>1.1.0</Version>
-    <FileVersion>1.1.0</FileVersion>
-    <AssemblyVersion>1.1</AssemblyVersion>
+    <Version>1.2.0</Version>
+    <FileVersion>1.2.0</FileVersion>
+    <AssemblyVersion>1.2</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,12 +22,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\War3Net.CodeAnalysis.Common\War3Net.CodeAnalysis.Common.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.CSharp\War3Net.CodeAnalysis.CSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Common" Version="1.0.1" />
     <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.2" />
   </ItemGroup>
 

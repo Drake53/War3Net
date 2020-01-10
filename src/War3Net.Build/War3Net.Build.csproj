@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.1.0" />
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.2.0" />
     <PackageReference Include="War3Net.Common" Version="0.1.0" />
     <PackageReference Include="War3Net.IO.Mpq" Version="1.0.0-preview1" />
     <PackageReference Include="War3Net.CSharpLua" Version="1.5.7" />

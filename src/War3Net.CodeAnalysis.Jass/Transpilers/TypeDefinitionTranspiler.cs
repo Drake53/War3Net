@@ -14,8 +14,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.Common;
-
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
     public static partial class JassToCSharpTranspiler
@@ -31,14 +29,10 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 typeDefinitionNode.NewTypeNameNode.ValueText,
                 SyntaxTriviaList.Empty); // todo: comment?
 
-            if (TranspileToEnumHandler.IsTypeEnum(typeDefinitionNode.NewTypeNameNode.ValueText, out var convertFunction))
+            if (TranspileToEnumHandler.IsTypeEnum(typeDefinitionNode.NewTypeNameNode.ValueText, out _))
             {
                 var enumDeclr = SyntaxFactory.EnumDeclaration(
-                    new SyntaxList<AttributeListSyntax>(
-                        SyntaxFactory.AttributeList(
-                            default(SeparatedSyntaxList<AttributeSyntax>).Add(SyntaxFactory.Attribute(
-                                SyntaxFactory.ParseName(nameof(EnumCastMethodAttribute)),
-                                SyntaxFactory.ParseAttributeArgumentList($"(nameof({convertFunction}))"))))),
+                    new SyntaxList<AttributeListSyntax>(SyntaxFactory.AttributeList()),
                     new SyntaxTokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
                     identifier,
                     null,

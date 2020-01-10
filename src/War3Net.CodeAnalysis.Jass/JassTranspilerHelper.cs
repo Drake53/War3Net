@@ -13,8 +13,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.Common;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassTranspilerHelper
@@ -57,8 +55,7 @@ namespace War3Net.CodeAnalysis.Jass
                     // .AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
                     new SyntaxList<MemberDeclarationSyntax>(
                         members.Select(declr => declr is ClassDeclarationSyntax
-                        ? declr.AddAttributeByName(
-                            nameof(NativeLuaMemberAttribute))
+                        ? declr
                         : declr.WithLeadingTrivia(
                             SyntaxFactory.TriviaList(
                                 SyntaxFactory.Trivia(SyntaxFactory.DocumentationCommentTrivia(
