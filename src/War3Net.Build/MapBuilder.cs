@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Microsoft.CodeAnalysis;
+
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
@@ -83,7 +85,7 @@ namespace War3Net.Build
             set => _generateListfile = value;
         }
 
-        public bool Build(ScriptCompilerOptions compilerOptions, params string[] assetsDirectories)
+        public BuildResult Build(ScriptCompilerOptions compilerOptions, params string[] assetsDirectories)
         {
             if (compilerOptions is null)
             {
@@ -93,42 +95,65 @@ namespace War3Net.Build
             Directory.CreateDirectory(compilerOptions.OutputDirectory);
 
             var files = new Dictionary<(string fileName, MpqLocale locale), Stream>();
+            var diagnostics = new List<Diagnostic>();
+            var haveErrorDiagnostic = false;
 
-            void TrySetMapFile<TMapFile>(string fileName, Func<Stream, bool, TMapFile> parser, Action<TMapFile, Stream> serializer, Func<TMapFile> defaultObjectGenerator)
+            void AddDiagnostic(Diagnostic diagnostic)
+            {
+                diagnostics.Add(diagnostic);
+                if (diagnostic.Severity == DiagnosticSeverity.Error)
+                {
+                    haveErrorDiagnostic = true;
+                }
+            }
+
+            void TrySetMapFile<TMapFile>(string fileName, Func<Stream, bool, TMapFile> parser, Action<TMapFile, Stream, bool> serializer, DiagnosticDescriptor descriptor, Func<TMapFile> defaultObjectGenerator = null)
             {
                 var isMapFileSet = true;
                 if (!(compilerOptions.GetMapFile(fileName) is TMapFile mapFile))
                 {
+                    isMapFileSet = false;
+
                     var fileStream = FindFile(fileName);
                     mapFile = fileStream is null
-                        ? defaultObjectGenerator()
+                        ? default
                         : parser(fileStream, false);
-
-                    isMapFileSet = compilerOptions.SetMapFile(mapFile);
                 }
 
-                if (isMapFileSet)
+                if (!isMapFileSet)
+                {
+                    AddDiagnostic(Diagnostic.Create(descriptor, null));
+
+                    defaultObjectGenerator ??= (Func<TMapFile>)(() => default);
+                    if (mapFile is null)
+                    {
+                        mapFile = defaultObjectGenerator();
+                    }
+                }
+
+                if (compilerOptions.SetMapFile(mapFile))
                 {
                     var outputPath = Path.Combine(compilerOptions.OutputDirectory, fileName);
                     using (var outputStream = File.Create(outputPath))
                     {
-                        serializer(mapFile, outputStream);
+                        serializer(mapFile, outputStream, false);
                     }
 
                     files.Add((fileName, MpqLocale.Neutral), File.OpenRead(outputPath));
                 }
-                else if (fileName == MapInfo.FileName)
-                {
-                    throw new FileNotFoundException("Could not detect required file", fileName);
-                }
             }
 
-            TrySetMapFile(MapInfo.FileName,        MapInfo.Parse,        (mapInfo,        stream) => mapInfo.SerializeTo(stream),        () => null);
-            TrySetMapFile(MapEnvironment.FileName, MapEnvironment.Parse, (mapEnvironment, stream) => mapEnvironment.SerializeTo(stream), () => new MapEnvironment(compilerOptions.MapInfo));
-            TrySetMapFile(MapDoodads.FileName,     MapDoodads.Parse,     (mapDoodads,     stream) => mapDoodads.SerializeTo(stream),     () => null);
-            TrySetMapFile(MapUnits.FileName,       MapUnits.Parse,       (mapUnits,       stream) => mapUnits.SerializeTo(stream),       () => null);
-            TrySetMapFile(MapRegions.FileName,     MapRegions.Parse,     (mapRegions,     stream) => mapRegions.SerializeTo(stream),     () => null);
-            TrySetMapFile(MapSounds.FileName,      MapSounds.Parse,      (mapSounds,      stream) => mapSounds.SerializeTo(stream),      () => null);
+            TrySetMapFile(MapInfo.FileName,        MapInfo.Parse,        MapInfo.Serialize,        DiagnosticProvider.MissingMapInfo);
+            if (haveErrorDiagnostic)
+            {
+                return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+            }
+
+            TrySetMapFile(MapEnvironment.FileName, MapEnvironment.Parse, MapEnvironment.Serialize, DiagnosticProvider.MissingMapEnvironment, () => new MapEnvironment(compilerOptions.MapInfo));
+            TrySetMapFile(MapDoodads.FileName,     MapDoodads.Parse,     MapDoodads.Serialize,     DiagnosticProvider.MissingMapDoodads);
+            TrySetMapFile(MapUnits.FileName,       MapUnits.Parse,       MapUnits.Serialize,       DiagnosticProvider.MissingMapUnits);
+            TrySetMapFile(MapRegions.FileName,     MapRegions.Parse,     MapRegions.Serialize,     DiagnosticProvider.MissingMapRegions);
+            TrySetMapFile(MapSounds.FileName,      MapSounds.Parse,      MapSounds.Serialize,      DiagnosticProvider.MissingMapSounds);
 
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
@@ -139,7 +164,7 @@ namespace War3Net.Build
                 }
                 else
                 {
-                    return false;
+                    return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
                 }
             }
             else if (compilerOptions.ForceCompile)
@@ -257,7 +282,7 @@ namespace War3Net.Build
             var outputMap = Path.Combine(compilerOptions.OutputDirectory, _outputMapName);
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
-            return true;
+            return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
         }
 
         public bool Compile(ScriptCompilerOptions options, out string scriptFilePath)
