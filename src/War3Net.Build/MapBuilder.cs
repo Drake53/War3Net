@@ -122,13 +122,21 @@ namespace War3Net.Build
 
                 if (!isMapFileSet)
                 {
-                    AddDiagnostic(Diagnostic.Create(descriptor, null));
-
-                    defaultObjectGenerator ??= (Func<TMapFile>)(() => default);
+                    Diagnostic diagnostic;
                     if (mapFile is null)
                     {
+                        defaultObjectGenerator ??= (Func<TMapFile>)(() => default);
                         mapFile = defaultObjectGenerator();
+                        diagnostic = Diagnostic.Create(descriptor, null);
                     }
+                    else
+                    {
+                        diagnostic = descriptor.DefaultSeverity == DiagnosticSeverity.Error
+                            ? Diagnostic.Create(descriptor, null, DiagnosticSeverity.Warning, null, null)
+                            : Diagnostic.Create(descriptor, null);
+                    }
+
+                    AddDiagnostic(diagnostic);
                 }
 
                 if (compilerOptions.SetMapFile(mapFile))
