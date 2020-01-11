@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Build.Audio;
 using War3Net.Build.Common;
 
 namespace War3Net.Build.Providers

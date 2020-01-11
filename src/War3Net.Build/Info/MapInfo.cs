@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Audio;
 using War3Net.Build.Common;
 using War3Net.Common.Extensions;
 
@@ -665,6 +666,11 @@ namespace War3Net.Build.Info
                 writer.Write(_playerData.Count);
                 foreach (var data in _playerData)
                 {
+                    if ((_fileFormatVersion >= MapInfoFormatVersion.Reforged) != (data is ReforgedPlayerData))
+                    {
+                        throw new InvalidDataException($"The .w3i file has a {(_fileFormatVersion >= MapInfoFormatVersion.Reforged ? string.Empty : "non-")}Reforged file format version, but contains {(data is ReforgedPlayerData ? string.Empty : "non-")}Reforged PlayerData.");
+                    }
+
                     data.WriteTo(writer);
                 }
 
