@@ -46,6 +46,8 @@ namespace War3Net.Build.Environment
 
         public string Name => _name;
 
+        public int CreationNumber => _creationNumber;
+
         public string WeatherId => new string(_weatherId);
 
         public string AmbientSound => _ambientSound;

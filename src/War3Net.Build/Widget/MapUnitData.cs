@@ -30,7 +30,7 @@ namespace War3Net.Build.Widget
         private float _scaleY;
         private float _scaleZ;
 
-        private byte _flags; // refer to documentation of war3map.doo
+        private byte _flags;
         private int _owner;
         private byte _UNK0;
         private byte _UNK1;
@@ -50,8 +50,8 @@ namespace War3Net.Build.Widget
 
         private RandomUnitData _randomData;
 
-        private int _customPlayerColour; // 0-indexed, -1 == none
-        private int _waygateDestination; // -1 == deactivated, otherwise refers to rect creation number in war3map.w3r
+        private int _customPlayerColour;
+        private int _waygateDestination;
         private int _creationNumber;
 
         public MapUnitData()
@@ -141,8 +141,14 @@ namespace War3Net.Build.Widget
 
         public RandomUnitData RandomData => _randomData;
 
+        /// <summary>
+        /// Use -1 for non-custom color.
+        /// </summary>
         public int CustomPlayerColor => _customPlayerColour;
 
+        /// <summary>
+        /// Use -1 to deactivate. Index refers to <see cref="Environment.Region.CreationNumber"/>.
+        /// </summary>
         public int WaygateDestination => _waygateDestination;
 
         public int CreationNumber => _creationNumber;

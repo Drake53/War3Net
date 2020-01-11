@@ -213,9 +213,32 @@ namespace War3Net.Build.Script.Main
                         builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
                 }
 
-                // TODO: CustomPlayerColor
-                // TODO: WaygateDestination (requires parsing war3map.w3r)
-                // TODO: CreationNumber? (only used to declare global var if unit is referenced in triggers?, ie useless)
+                if (unit.CustomPlayerColor != -1)
+                {
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.SetUnitColor),
+                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.ConvertPlayerColor),
+                            builder.GenerateIntegerLiteralExpression(unit.CustomPlayerColor)));
+                }
+
+                if (unit.WaygateDestination != -1)
+                {
+                    var targetRect = builder.Data.MapRegions?.Where(region => region.CreationNumber == unit.WaygateDestination).SingleOrDefault();
+                    var targetX = targetRect?.CenterX ?? 0;
+                    var targetY = targetRect?.CenterY ?? 0;
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.WaygateSetDestination),
+                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateFloatLiteralExpression(targetX),
+                        builder.GenerateFloatLiteralExpression(targetY));
+
+                    yield return builder.GenerateInvocationStatement(
+                        nameof(War3Api.Common.WaygateActivate),
+                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateBooleanLiteralExpression(true));
+                }
 
                 foreach (var ability in unit.AbilityData)
                 {
