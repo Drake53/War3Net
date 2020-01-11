@@ -23,6 +23,12 @@ namespace War3Net.Build.Providers
         internal static readonly DiagnosticDescriptor MissingMapRegions = CreateMissingMapFileDescriptor("W3N1005", MapRegions.FileName, DiagnosticSeverity.Info);
         internal static readonly DiagnosticDescriptor MissingMapSounds = CreateMissingMapFileDescriptor("W3N1006", MapSounds.FileName, DiagnosticSeverity.Info);
 
+        internal static readonly DiagnosticDescriptor MissingSourceDirectory = CreateMissingSourceDirectoryDescriptor("W3N2001");
+
+        internal static readonly DiagnosticDescriptor MissingPathJasshelper = CreateMissingPathDescriptor("W3N2101", "clijasshelper.exe");
+        internal static readonly DiagnosticDescriptor MissingPathCommonJ = CreateMissingPathDescriptor("W3N2102", "common.j");
+        internal static readonly DiagnosticDescriptor MissingPathBlizzardJ = CreateMissingPathDescriptor("W3N2103", "Blizzard.j");
+
         private static DiagnosticDescriptor CreateMissingMapFileDescriptor(string id, string fileName, DiagnosticSeverity severity)
         {
             return new DiagnosticDescriptor(
@@ -35,6 +41,34 @@ namespace War3Net.Build.Providers
                 null,
                 null,
                 WellKnownDiagnosticTags.Build);
+        }
+
+        private static DiagnosticDescriptor CreateMissingSourceDirectoryDescriptor(string id)
+        {
+            return new DiagnosticDescriptor(
+                id,
+                $"Path to source code directory should be set.",
+                $"The source code directory was not found at '{{0}}'. The directory does not exist.",
+                "Usage",
+                DiagnosticSeverity.Error,
+                true,
+                null,
+                null,
+                WellKnownDiagnosticTags.Compiler);
+        }
+
+        private static DiagnosticDescriptor CreateMissingPathDescriptor(string id, string fileName)
+        {
+            return new DiagnosticDescriptor(
+                id,
+                $"Path to '{fileName}' should be set.",
+                $"The file '{fileName}' was not found at '{{0}}'. This file is required to compile vJass source code.",
+                "Usage",
+                DiagnosticSeverity.Error,
+                true,
+                null,
+                null,
+                WellKnownDiagnosticTags.Compiler);
         }
     }
 }

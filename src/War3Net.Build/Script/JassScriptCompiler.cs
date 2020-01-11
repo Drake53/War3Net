@@ -68,6 +68,27 @@ namespace War3Net.Build.Script
 
         public override CompileResult Compile(out string scriptFilePath, params string[] additionalSourceFiles)
         {
+            var outputScript = "war3map.j";
+            scriptFilePath = Path.Combine(Options.OutputDirectory, outputScript);
+
+            var jasshelperPath = Options.JasshelperCliPath;
+            if (string.IsNullOrEmpty(jasshelperPath) || !File.Exists(jasshelperPath))
+            {
+                return new CompileResult(false, new[] { Microsoft.CodeAnalysis.Diagnostic.Create(DiagnosticProvider.MissingPathJasshelper, null, jasshelperPath) });
+            }
+
+            var commonPath = Options.CommonJPath;
+            if (string.IsNullOrEmpty(commonPath) || !File.Exists(commonPath))
+            {
+                return new CompileResult(false, new[] { Microsoft.CodeAnalysis.Diagnostic.Create(DiagnosticProvider.MissingPathCommonJ, null, commonPath) });
+            }
+
+            var blizzardPath = Options.BlizzardJPath;
+            if (string.IsNullOrEmpty(blizzardPath) || !File.Exists(blizzardPath))
+            {
+                return new CompileResult(false, new[] { Microsoft.CodeAnalysis.Diagnostic.Create(DiagnosticProvider.MissingPathBlizzardJ, null, blizzardPath) });
+            }
+
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
             using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
             {
@@ -93,11 +114,6 @@ namespace War3Net.Build.Script
                 }
             }
 
-            var commonPath = Options.CommonJPath;
-            var blizzardPath = Options.BlizzardJPath;
-
-            var outputScript = "war3map.j";
-            scriptFilePath = Path.Combine(Options.OutputDirectory, outputScript);
             var jasshelperOutputScript = Path.Combine(Options.OutputDirectory, Options.Obfuscate ? "war3map.original.j" : outputScript);
             var jasshelperOptions = Options.Debug ? "--debug" : Options.Optimize ? string.Empty : "--nooptimize";
             var jasshelper = Process.Start(Options.JasshelperCliPath, $"{jasshelperOptions} --scriptonly \"{commonPath}\" \"{blizzardPath}\" \"{inputScript}\" \"{jasshelperOutputScript}\"");

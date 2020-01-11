@@ -152,6 +152,12 @@ namespace War3Net.Build
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
             {
+                if (!Directory.Exists(compilerOptions.SourceDirectory))
+                {
+                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingSourceDirectory, null, compilerOptions.SourceDirectory));
+                    return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+                }
+
                 var compileResult = Compile(compilerOptions, out var path);
                 if (compileResult.Success)
                 {
