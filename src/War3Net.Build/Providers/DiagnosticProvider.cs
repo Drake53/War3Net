@@ -28,7 +28,7 @@ namespace War3Net.Build.Providers
             return new DiagnosticDescriptor(
                 id,
                 $"Map should contain a '{fileName}' file.",
-                $"Make sure that '{fileName}' gets added when building the map.",
+                $"The {(severity == DiagnosticSeverity.Info ? "optional" : "required")} file '{fileName}' was not found. Make sure that it gets added when building the map.",
                 "Usage",
                 severity,
                 true,

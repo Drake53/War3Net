@@ -109,34 +109,20 @@ namespace War3Net.Build
 
             void TrySetMapFile<TMapFile>(string fileName, Func<Stream, bool, TMapFile> parser, Action<TMapFile, Stream, bool> serializer, DiagnosticDescriptor descriptor, Func<TMapFile> defaultObjectGenerator = null)
             {
-                var isMapFileSet = true;
                 if (!(compilerOptions.GetMapFile(fileName) is TMapFile mapFile))
                 {
-                    isMapFileSet = false;
-
                     var fileStream = FindFile(fileName);
-                    mapFile = fileStream is null
-                        ? default
-                        : parser(fileStream, false);
-                }
-
-                if (!isMapFileSet)
-                {
-                    Diagnostic diagnostic;
-                    if (mapFile is null)
+                    if (fileStream is null)
                     {
+                        AddDiagnostic(Diagnostic.Create(descriptor, null));
+
                         defaultObjectGenerator ??= (Func<TMapFile>)(() => default);
                         mapFile = defaultObjectGenerator();
-                        diagnostic = Diagnostic.Create(descriptor, null);
                     }
                     else
                     {
-                        diagnostic = descriptor.DefaultSeverity == DiagnosticSeverity.Error
-                            ? Diagnostic.Create(descriptor, null, DiagnosticSeverity.Warning, null, null)
-                            : Diagnostic.Create(descriptor, null);
+                        mapFile = parser(fileStream, false);
                     }
-
-                    AddDiagnostic(diagnostic);
                 }
 
                 if (compilerOptions.SetMapFile(mapFile))
