@@ -10,16 +10,15 @@
     <Description>Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.</Description>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build</PackageProjectUrl>
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes>MapBuilder.Build returns BuildResult instead of bool.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
 
-    <Version>1.0.0-preview9</Version>
+    <Version>1.0.0-rc1</Version>
     <FileVersion>1.0.0</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="War3Api.Common" Version="1.31.1.2" />
-    <PackageReference Include="War3Api.Blizzard" Version="1.31.1.1" />
+    <PackageReference Include="War3Api.Blizzard" Version="1.32.0.4-beta2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
