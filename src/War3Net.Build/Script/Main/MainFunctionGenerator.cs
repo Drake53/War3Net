@@ -37,6 +37,21 @@ namespace War3Net.Build.Script.Main
             return mapRegions?.Where(region => region.WeatherId != "\0\0\0\0" || region.AmbientSound != null).FirstOrDefault() != null;
         }
 
+        private static bool WantGenerateCamerasHelperFunction(object unk)
+        {
+            return false;
+        }
+
+        private static bool WantGenerateUpgradesHelperFunction(MapInfo mapInfo)
+        {
+            return (mapInfo?.UpgradeDataCount ?? 0) > 0;
+        }
+
+        private static bool WantGenerateTechTreeHelperFunction(MapInfo mapInfo)
+        {
+            return (mapInfo?.TechDataCount ?? 0) > 0;
+        }
+
         private static bool WantGenerateDestructablesHelperFunction(MapDoodads mapDoodads)
         {
             return (mapDoodads?.Count ?? 0) > 0;
@@ -75,6 +90,21 @@ namespace War3Net.Build.Script.Main
             if (WantGenerateRegionsHelperFunction(mapRegions))
             {
                 yield return GenerateCreateRegionsHelperFunction(builder);
+            }
+
+            if (WantGenerateCamerasHelperFunction(null))
+            {
+                // todo
+            }
+
+            if (WantGenerateUpgradesHelperFunction(mapInfo))
+            {
+                yield return GenerateUpgradesHelperFunction(builder);
+            }
+
+            if (WantGenerateTechTreeHelperFunction(mapInfo))
+            {
+                yield return GenerateTechTreeHelperFunction(builder);
             }
 
             var mapDoodads = builder.Data.MapDoodads;
@@ -234,6 +264,21 @@ namespace War3Net.Build.Script.Main
             if (WantGenerateRegionsHelperFunction(mapRegions))
             {
                 yield return builder.GenerateInvocationStatement("CreateRegions");
+            }
+
+            if (WantGenerateCamerasHelperFunction(null))
+            {
+                yield return builder.GenerateInvocationStatement("CreateCameras");
+            }
+
+            if (WantGenerateUpgradesHelperFunction(mapInfo))
+            {
+                yield return builder.GenerateInvocationStatement("InitUpgrades");
+            }
+
+            if (WantGenerateTechTreeHelperFunction(mapInfo))
+            {
+                yield return builder.GenerateInvocationStatement("InitTechTree");
             }
 
             if (WantGenerateDestructablesHelperFunction(mapDoodads))

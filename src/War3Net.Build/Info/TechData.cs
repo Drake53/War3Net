@@ -13,7 +13,14 @@ namespace War3Net.Build.Info
     public sealed class TechData
     {
         private int _playersMask;
-        private char[] _techId; // can be item, unit, or ability
+        private char[] _techId;
+
+        public string Id => new string(_techId);
+
+        /// <summary>
+        /// Gets a value indicating whether the tech is an ability, or it is an item or unit.
+        /// </summary>
+        public bool IsAbility => _techId[0] == 'A';
 
         public static TechData Parse(Stream stream, bool leaveOpen = false)
         {

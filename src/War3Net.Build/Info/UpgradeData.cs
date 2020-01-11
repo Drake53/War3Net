@@ -17,6 +17,12 @@ namespace War3Net.Build.Info
         private int _upgradeLevel; // 0-indexed
         private UpgradeAvailability _availability;
 
+        public string Id => new string(_upgradeId);
+
+        public int Level => _upgradeLevel;
+
+        public UpgradeAvailability Availability => _availability;
+
         public static UpgradeData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new UpgradeData();

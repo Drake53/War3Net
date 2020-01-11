@@ -760,7 +760,15 @@ namespace War3Net.Build.Info
             return null;
         }
 
-        // TODO: methods for upgradeData, techData, unitTables, itemTables
+        public UpgradeData GetUpgradeData(int index)
+        {
+            return _upgradeData[index];
+        }
+
+        public TechData GetTechData(int index)
+        {
+            return _techData[index];
+        }
 
         public RandomUnitTable GetUnitTable(int tableIndex)
         {
