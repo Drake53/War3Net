@@ -15,7 +15,7 @@ namespace War3Net.Build.Environment
     public class PathingMap
     {
         public const string FileName = "war3map.wpm"; // can also be a TGA image, war3mapPath.tga, where red=walk, green=fly, blue=build (0=yes, 255=no, alpha always 0)
-        public const uint HeaderSignature = 0x4D503357; // "W3PM"
+        public const uint HeaderSignature = 0x5733504D; // "W3PM"
         public const uint LatestVersion = 0;
 
         private readonly List<PathingType> _cells;
