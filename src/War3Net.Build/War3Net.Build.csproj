@@ -10,9 +10,9 @@
     <Description>Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.</Description>
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build</PackageProjectUrl>
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>Added constructors for certain objects, created more diagnostic warnings for building.</PackageReleaseNotes>
 
-    <Version>1.0.0-rc1</Version>
+    <Version>1.0.0-rc2</Version>
     <FileVersion>1.0.0</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.2.0" />
     <PackageReference Include="War3Net.Common" Version="0.1.0" />
     <PackageReference Include="War3Net.IO.Mpq" Version="1.0.0-preview1" />
-    <PackageReference Include="War3Net.CSharpLua" Version="1.5.7" />
+    <PackageReference Include="War3Net.CSharpLua" Version="1.5.8" />
   </ItemGroup>
 
 </Project>
