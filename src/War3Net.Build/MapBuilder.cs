@@ -260,22 +260,53 @@ namespace War3Net.Build
                 listFile.BaseStream.CopyTo(fileStream);
             }
 
+            // Create warning diagnostics if applicable.
+            var expectedFiles = new HashSet<string>(compilerOptions.FileFlags.Where(pair => pair.Value.HasFlag(MpqFileFlags.Exists)).Select(pair => pair.Key));
+            var haveNeutralLocale = new Dictionary<string, bool>();
+
             // Generate mpq files
             var mpqFiles = new List<MpqFile>(files.Count);
             foreach (var file in files)
             {
-                var fileflags = compilerOptions.FileFlags.TryGetValue(file.Key.fileName, out var flags) ? flags : compilerOptions.DefaultFileFlags;
+                var fileName = file.Key.fileName;
+                var locale = file.Key.locale;
+                var isNeutralLocale = locale == MpqLocale.Neutral;
+
+                expectedFiles.Remove(fileName);
+                if (haveNeutralLocale.TryGetValue(fileName, out var yes))
+                {
+                    haveNeutralLocale[fileName] = yes || isNeutralLocale;
+                }
+                else
+                {
+                    haveNeutralLocale.Add(fileName, isNeutralLocale);
+                }
+
+                var fileflags = compilerOptions.FileFlags.TryGetValue(fileName, out var flags) ? flags : compilerOptions.DefaultFileFlags;
                 if (fileflags.HasFlag(MpqFileFlags.Exists))
                 {
-                    var mpqFile = MpqFile.New(file.Value, file.Key.fileName);
+                    var mpqFile = MpqFile.New(file.Value, fileName);
                     mpqFile.TargetFlags = fileflags;
-                    mpqFile.Locale = file.Key.locale;
+                    mpqFile.Locale = locale;
                     mpqFiles.Add(mpqFile);
-
                 }
                 else
                 {
                     file.Value.Dispose();
+                }
+            }
+
+            // Generate warnings
+            foreach (var expectedFile in expectedFiles)
+            {
+                AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileWithCustomMpqFlags, null, expectedFile, compilerOptions.FileFlags[expectedFile]));
+            }
+
+            foreach (var pair in haveNeutralLocale)
+            {
+                if (!pair.Value)
+                {
+                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileNeutralLocale, null, pair.Key));
                 }
             }
 
