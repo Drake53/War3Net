@@ -25,6 +25,7 @@ namespace War3Net.Build.Environment
         public const uint LatestVersion = 11;
 
         private const int DefaultCliffLevel = 2;
+        private const int TerrainTypeLimit = 16;
 
         private readonly List<TerrainType> _terrainTypes;
         private readonly List<CliffType> _cliffTypes;
@@ -121,6 +122,77 @@ namespace War3Net.Build.Environment
                     tile.IsBlighted = false;
                     tile.IsBoundary = false;
                     tile.IsEdgeTile = x != maxx && y != maxy && (x < edgeLeft || x >= edgeRight || y < edgeBottom || y >= edgeTop);
+                    tile.IsRamp = false;
+                    tile.IsWater = false;
+                    tile.Texture = 0;
+                    tile.Variation = 0;
+                    tile.WaterHeight = 0;
+
+                    _tiles.Add(tile);
+                }
+            }
+        }
+
+        public MapEnvironment(Tileset tileset, IEnumerable<TerrainType> terrainTypes, MapTile[,] mapTiles)
+            : this()
+        {
+            _tileset = tileset;
+            _terrainTypes = new List<TerrainType>(terrainTypes);
+            _cliffTypes = GetDefaultCliffTypes().ToList();
+
+            if (_terrainTypes.Count == 0)
+            {
+                _terrainTypes.AddRange(GetDefaultTerrainTypes());
+            }
+            else if (_terrainTypes.Count > TerrainTypeLimit)
+            {
+                throw new ArgumentException($"Cannot store more than {TerrainTypeLimit} terraintypes.", nameof(terrainTypes));
+            }
+            else
+            {
+                foreach (var terrainType in terrainTypes)
+                {
+                    if (!Enum.IsDefined(typeof(TerrainType), terrainType))
+                    {
+                        throw new ArgumentException($"Unknown terraintype: {terrainType}", nameof(terrainTypes));
+                    }
+                }
+            }
+
+            var width = mapTiles.GetLength(0);
+            var height = mapTiles.GetLength(1);
+
+            static uint RoundUpSize(int size)
+            {
+                return 1 + (uint)((size + 30) / 32) * 32;
+            }
+
+            _version = LatestVersion;
+            _width = RoundUpSize(width);
+            _height = RoundUpSize(height);
+            _left = 0;
+            _bottom = 0;
+
+            for (var y = 0; y < _width; y++)
+            {
+                for (var x = 0; x < _height; x++)
+                {
+                    if (x < width && y < height)
+                    {
+                        _tiles.Add(mapTiles[x, y]);
+                        continue;
+                    }
+
+                    var tile = new MapTile();
+
+                    tile.CliffLevel = DefaultCliffLevel;
+                    tile.CliffTexture = 15;
+                    tile.CliffVariation = 0;
+
+                    tile.Height = 0;
+                    tile.IsBlighted = false;
+                    tile.IsBoundary = false;
+                    tile.IsEdgeTile = false;
                     tile.IsRamp = false;
                     tile.IsWater = false;
                     tile.Texture = 0;

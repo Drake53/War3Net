@@ -29,6 +29,25 @@ namespace War3Net.Build.Environment
             _cells = new List<PathingType>();
         }
 
+        public PathingMap(PathingType[,] cells)
+            : this()
+        {
+            _width = (uint)cells.GetLength(0);
+            _height = (uint)cells.GetLength(1);
+
+            for (var y = 0; y < _width; y++)
+            {
+                for (var x = 0; x < _height; x++)
+                {
+                    _cells.Add(cells[x, y]);
+                }
+            }
+        }
+
+        public uint Width => _width;
+
+        public uint Height => _height;
+
         public static PathingMap Parse(Stream stream, bool leaveOpen = false)
         {
             var pathingMap = new PathingMap();
