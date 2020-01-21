@@ -61,6 +61,40 @@ namespace War3Net.Build.Widget
             _mapItemTableDropData = new List<DroppedItemSetData>();
         }
 
+        public MapUnitData(char[] typeId, float x, float y, float rotation, float scale, int owner, int creationNumber)
+            : this()
+        {
+            _typeId = typeId;
+            _variation = 0;
+            _positionX = x;
+            _positionY = y;
+            _positionZ = 0;
+            _rotation = rotation;
+            _scaleX = scale;
+            _scaleY = scale;
+            _scaleZ = scale;
+
+            _flags = 0;
+            _owner = owner;
+            // unk0/1
+
+            _hp = -1;
+            _mp = -1;
+
+            _mapItemTablePointer = -1;
+
+            _goldAmount = 12500;
+            _targetAcquisition = -1;
+
+            _heroLevel = 1;
+
+            _randomData = new RandomUnitData();
+
+            _customPlayerColour = -1;
+            _waygateDestination = -1;
+            _creationNumber = creationNumber;
+        }
+
         public string TypeId => new string(_typeId);
 
         public bool IsUnit => _heroLevel > 0;
@@ -120,7 +154,7 @@ namespace War3Net.Build.Widget
         public float TargetAcquisition => _targetAcquisition;
 
         /// <summary>
-        /// Non-hero units are level 1.
+        /// Non-hero units are level 1, items are level 0.
         /// </summary>
         public int HeroLevel => _heroLevel;
 

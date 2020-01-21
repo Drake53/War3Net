@@ -22,8 +22,13 @@ namespace War3Net.Build.Widget
         private MapWidgetsHeader _header;
 
         public MapUnits()
+            : this(Array.Empty<MapUnitData>())
         {
-            _units = new List<MapUnitData>();
+        }
+
+        public MapUnits(IEnumerable<MapUnitData> units)
+        {
+            _units = new List<MapUnitData>(units);
         }
 
         public int Count => _units.Count;

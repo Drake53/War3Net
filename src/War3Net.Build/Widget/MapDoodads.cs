@@ -23,9 +23,19 @@ namespace War3Net.Build.Widget
         private MapWidgetsHeader _header;
 
         public MapDoodads()
+            : this(Array.Empty<MapDoodadData>())
         {
-            _doodads = new List<MapDoodadData>();
-            _specialDoodads = new List<MapSpecialDoodadData>();
+        }
+
+        public MapDoodads(IEnumerable<MapDoodadData> doodads)
+            : this(doodads, Array.Empty<MapSpecialDoodadData>())
+        {
+        }
+
+        public MapDoodads(IEnumerable<MapDoodadData> doodads, IEnumerable<MapSpecialDoodadData> specialDoodads)
+        {
+            _doodads = new List<MapDoodadData>(doodads);
+            _specialDoodads = new List<MapSpecialDoodadData>(specialDoodads);
         }
 
         public int Count => _doodads.Count;
