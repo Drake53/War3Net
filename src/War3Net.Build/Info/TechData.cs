@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Text;
 
@@ -14,6 +15,27 @@ namespace War3Net.Build.Info
     {
         private int _playersMask;
         private char[] _techId;
+
+        private TechData()
+        {
+        }
+
+        public TechData(string id, int playersMask = -1)
+            : this()
+        {
+            if (id is null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (id.Length != 4)
+            {
+                throw new ArgumentException("Upgrade id must be 4 characters long.", nameof(id));
+            }
+
+            _playersMask = playersMask;
+            _techId = new[] { id[0], id[1], id[2], id[3] };
+        }
 
         public string Id => new string(_techId);
 

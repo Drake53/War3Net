@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Text;
 
@@ -16,6 +17,29 @@ namespace War3Net.Build.Info
         private char[] _upgradeId;
         private int _upgradeLevel; // 0-indexed
         private UpgradeAvailability _availability;
+
+        private UpgradeData()
+        {
+        }
+
+        public UpgradeData(string id, int level, UpgradeAvailability availability, int playersMask = -1)
+            : this()
+        {
+            if (id is null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (id.Length != 4)
+            {
+                throw new ArgumentException("Upgrade id must be 4 characters long.", nameof(id));
+            }
+
+            _playersMask = playersMask;
+            _upgradeId = new[] { id[0], id[1], id[2], id[3] };
+            _upgradeLevel = level;
+            _availability = availability;
+        }
 
         public string Id => new string(_upgradeId);
 

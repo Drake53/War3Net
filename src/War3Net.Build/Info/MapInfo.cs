@@ -771,9 +771,21 @@ namespace War3Net.Build.Info
             return _upgradeData[index];
         }
 
+        public void SetUpgradeData(params UpgradeData[] data)
+        {
+            _upgradeData.Clear();
+            _upgradeData.AddRange(data);
+        }
+
         public TechData GetTechData(int index)
         {
             return _techData[index];
+        }
+
+        public void SetTechData(params TechData[] data)
+        {
+            _techData.Clear();
+            _techData.AddRange(data);
         }
 
         public RandomUnitTable GetUnitTable(int tableIndex)
