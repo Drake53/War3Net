@@ -45,21 +45,36 @@ namespace War3Net.Build.Widget
 
         public static MapUnits Parse(Stream stream, bool leaveOpen = false)
         {
-            var data = new MapUnits();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                data._header = MapWidgetsHeader.Parse(stream, true);
-                var unitParser = data._header.UseTftParser
+                var data = new MapUnits();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+                {
+                    data._header = MapWidgetsHeader.Parse(stream, true);
+                    var unitParser = data._header.UseTftParser
                     ? (Func<Stream, bool, MapUnitData>)MapUnitData.ParseTft
                     : MapUnitData.Parse;
 
-                for (var i = 0; i < data._header.DataCount; i++)
-                {
-                    data._units.Add(unitParser(stream, true));
+                    for (var i = 0; i < data._header.DataCount; i++)
+                    {
+                        data._units.Add(unitParser(stream, true));
+                    }
                 }
-            }
 
-            return data;
+                return data;
+            }
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapUnits mapUnits, Stream stream, bool leaveOpen = false)

@@ -41,23 +41,38 @@ namespace War3Net.Build.Environment
 
         public static MapRegions Parse(Stream stream, bool leaveOpen = false)
         {
-            var mapRegions = new MapRegions();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                mapRegions._version = reader.ReadUInt32();
-                if (mapRegions._version != LatestVersion)
+                var mapRegions = new MapRegions();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    throw new Exception();
+                    mapRegions._version = reader.ReadUInt32();
+                    if (mapRegions._version != LatestVersion)
+                    {
+                        throw new Exception();
+                    }
+
+                    var regionCount = reader.ReadUInt32();
+                    for (var i = 0; i < regionCount; i++)
+                    {
+                        mapRegions._regions.Add(Region.Parse(stream, true));
+                    }
                 }
 
-                var regionCount = reader.ReadUInt32();
-                for (var i = 0; i < regionCount; i++)
-                {
-                    mapRegions._regions.Add(Region.Parse(stream, true));
-                }
+                return mapRegions;
             }
-
-            return mapRegions;
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapRegions mapRegions, Stream stream, bool leaveOpen = false)

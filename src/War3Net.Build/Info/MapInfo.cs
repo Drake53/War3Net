@@ -72,10 +72,10 @@ namespace War3Net.Build.Info
         private Tileset _lightEnvironment;
         private Color _waterTintingColor;
 
-        private ScriptLanguage _scriptLanguage;
+        private ScriptLanguage _scriptLanguage; // Lua (1.31)
 
-        private SupportedModes _supportedModes;
-        private GameDataVersion _gameDataVersion;
+        private SupportedModes _supportedModes; // Reforged (1.32)
+        private GameDataVersion _gameDataVersion; // Reforged (1.32)
 
         internal MapInfo()
         {
@@ -429,131 +429,146 @@ namespace War3Net.Build.Info
 
         public static MapInfo Parse(Stream stream, bool leaveOpen = false)
         {
-            var info = new MapInfo();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                info._fileFormatVersion = (MapInfoFormatVersion)reader.ReadInt32();
-                info._mapVersion = reader.ReadInt32();
-                info._editorVersion = reader.ReadInt32();
-
-                if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
+                var info = new MapInfo();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    info._gameVersion = new Version(
-                        reader.ReadInt32(),
-                        reader.ReadInt32(),
-                        reader.ReadInt32(),
-                        reader.ReadInt32());
-                }
+                    info._fileFormatVersion = (MapInfoFormatVersion)reader.ReadInt32();
+                    info._mapVersion = reader.ReadInt32();
+                    info._editorVersion = reader.ReadInt32();
 
-                info._mapName = reader.ReadChars();
-                info._mapAuthor = reader.ReadChars();
-                info._mapDescription = reader.ReadChars();
-                info._recommendedPlayers = reader.ReadChars();
-
-                info._cameraBounds = Quadrilateral.Parse(stream, true);
-                info._cameraBoundsComplements = RectangleMargins.Parse(stream, true);
-                info._playableMapAreaWidth = reader.ReadInt32();
-                info._playableMapAreaHeight = reader.ReadInt32();
-
-                info._mapFlags = (MapFlags)reader.ReadInt32();
-                info._tileset = (Tileset)reader.ReadChar();
-
-                if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
-                {
-                    info._campaignBackgroundNumber = reader.ReadInt32();
-                }
-                else
-                {
-                    info._loadingScreenBackgroundNumber = reader.ReadInt32();
-                    info._loadingScreenPath = reader.ReadChars();
-                }
-
-                info._loadingScreenText = reader.ReadChars();
-                info._loadingScreenTitle = reader.ReadChars();
-                info._loadingScreenSubtitle = reader.ReadChars();
-
-                if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
-                {
-                    info._loadingScreenNumber = reader.ReadInt32();
-                }
-                else
-                {
-                    info._gameDataSet = (GameDataSet)reader.ReadInt32();
-                    info._prologueScreenPath = reader.ReadChars();
-                }
-
-                info._prologueScreenText = reader.ReadChars();
-                info._prologueScreenTitle = reader.ReadChars();
-                info._prologueScreenSubtitle = reader.ReadChars();
-
-                if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
-                {
-                    info._fogStyle = (FogStyle)reader.ReadInt32();
-                    info._fogStartZ = reader.ReadSingle();
-                    info._fogEndZ = reader.ReadSingle();
-                    info._fogDensity = reader.ReadSingle();
-                    info._fogColor = reader.ReadColorRgba();
-
-                    info._globalWeather = (WeatherType)reader.ReadInt32();
-                    info._soundEnvironment = reader.ReadChars();
-                    info._lightEnvironment = (Tileset)reader.ReadChar();
-                    info._waterTintingColor = reader.ReadColorRgba();
-                }
-
-                if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
-                {
-                    info._scriptLanguage = (ScriptLanguage)reader.ReadInt32();
-                }
-
-                if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
-                {
-                    info._supportedModes = (SupportedModes)reader.ReadInt32();
-                    info._gameDataVersion = (GameDataVersion)reader.ReadInt32();
-                }
-
-                var playerDataCount = reader.ReadInt32();
-                for (var i = 0; i < playerDataCount; i++)
-                {
-                    info._playerData.Add(info._fileFormatVersion >= MapInfoFormatVersion.Reforged
-                        ? ReforgedPlayerData.Parse(stream, true)
-                        : PlayerData.Parse(stream, true));
-                }
-
-                var forceDataCount = reader.ReadInt32();
-                for (var i = 0; i < forceDataCount; i++)
-                {
-                    info._forceData.Add(ForceData.Parse(stream, true));
-                }
-
-                var upgradeDataCount = reader.ReadInt32();
-                for (var i = 0; i < upgradeDataCount; i++)
-                {
-                    info._upgradeData.Add(UpgradeData.Parse(stream, true));
-                }
-
-                var techDataCount = reader.ReadInt32();
-                for (var i = 0; i < techDataCount; i++)
-                {
-                    info._techData.Add(TechData.Parse(stream, true));
-                }
-
-                var randomUnitTableCount = reader.ReadInt32();
-                for (var i = 0; i < randomUnitTableCount; i++)
-                {
-                    info._unitTables.Add(RandomUnitTable.Parse(stream, true));
-                }
-
-                if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
-                {
-                    var randomItemTableCount = reader.ReadInt32();
-                    for (var i = 0; i < randomItemTableCount; i++)
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
                     {
-                        info._itemTables.Add(RandomItemTable.Parse(stream, true));
+                        info._gameVersion = new Version(
+                            reader.ReadInt32(),
+                            reader.ReadInt32(),
+                            reader.ReadInt32(),
+                            reader.ReadInt32());
+                    }
+
+                    info._mapName = reader.ReadChars();
+                    info._mapAuthor = reader.ReadChars();
+                    info._mapDescription = reader.ReadChars();
+                    info._recommendedPlayers = reader.ReadChars();
+
+                    info._cameraBounds = Quadrilateral.Parse(stream, true);
+                    info._cameraBoundsComplements = RectangleMargins.Parse(stream, true);
+                    info._playableMapAreaWidth = reader.ReadInt32();
+                    info._playableMapAreaHeight = reader.ReadInt32();
+
+                    info._mapFlags = (MapFlags)reader.ReadInt32();
+                    info._tileset = (Tileset)reader.ReadChar();
+
+                    if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
+                    {
+                        info._campaignBackgroundNumber = reader.ReadInt32();
+                    }
+                    else
+                    {
+                        info._loadingScreenBackgroundNumber = reader.ReadInt32();
+                        info._loadingScreenPath = reader.ReadChars();
+                    }
+
+                    info._loadingScreenText = reader.ReadChars();
+                    info._loadingScreenTitle = reader.ReadChars();
+                    info._loadingScreenSubtitle = reader.ReadChars();
+
+                    if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
+                    {
+                        info._loadingScreenNumber = reader.ReadInt32();
+                    }
+                    else
+                    {
+                        info._gameDataSet = (GameDataSet)reader.ReadInt32();
+                        info._prologueScreenPath = reader.ReadChars();
+                    }
+
+                    info._prologueScreenText = reader.ReadChars();
+                    info._prologueScreenTitle = reader.ReadChars();
+                    info._prologueScreenSubtitle = reader.ReadChars();
+
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                    {
+                        info._fogStyle = (FogStyle)reader.ReadInt32();
+                        info._fogStartZ = reader.ReadSingle();
+                        info._fogEndZ = reader.ReadSingle();
+                        info._fogDensity = reader.ReadSingle();
+                        info._fogColor = reader.ReadColorRgba();
+
+                        info._globalWeather = (WeatherType)reader.ReadInt32();
+                        info._soundEnvironment = reader.ReadChars();
+                        info._lightEnvironment = (Tileset)reader.ReadChar();
+                        info._waterTintingColor = reader.ReadColorRgba();
+                    }
+
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
+                    {
+                        info._scriptLanguage = (ScriptLanguage)reader.ReadInt32();
+                    }
+
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
+                    {
+                        info._supportedModes = (SupportedModes)reader.ReadInt32();
+                        info._gameDataVersion = (GameDataVersion)reader.ReadInt32();
+                    }
+
+                    var playerDataCount = reader.ReadInt32();
+                    for (var i = 0; i < playerDataCount; i++)
+                    {
+                        info._playerData.Add(info._fileFormatVersion >= MapInfoFormatVersion.Reforged
+                            ? ReforgedPlayerData.Parse(stream, true)
+                            : PlayerData.Parse(stream, true));
+                    }
+
+                    var forceDataCount = reader.ReadInt32();
+                    for (var i = 0; i < forceDataCount; i++)
+                    {
+                        info._forceData.Add(ForceData.Parse(stream, true));
+                    }
+
+                    var upgradeDataCount = reader.ReadInt32();
+                    for (var i = 0; i < upgradeDataCount; i++)
+                    {
+                        info._upgradeData.Add(UpgradeData.Parse(stream, true));
+                    }
+
+                    var techDataCount = reader.ReadInt32();
+                    for (var i = 0; i < techDataCount; i++)
+                    {
+                        info._techData.Add(TechData.Parse(stream, true));
+                    }
+
+                    var randomUnitTableCount = reader.ReadInt32();
+                    for (var i = 0; i < randomUnitTableCount; i++)
+                    {
+                        info._unitTables.Add(RandomUnitTable.Parse(stream, true));
+                    }
+
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                    {
+                        var randomItemTableCount = reader.ReadInt32();
+                        for (var i = 0; i < randomItemTableCount; i++)
+                        {
+                            info._itemTables.Add(RandomItemTable.Parse(stream, true));
+                        }
                     }
                 }
-            }
 
-            return info;
+                return info;
+            }
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapInfo mapInfo, Stream stream, bool leaveOpen = false)

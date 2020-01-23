@@ -54,36 +54,51 @@ namespace War3Net.Build.Widget
 
         public static MapDoodads Parse(Stream stream, bool leaveOpen = false)
         {
-            var data = new MapDoodads();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                data._header = MapWidgetsHeader.Parse(stream, true);
-                Func<Stream, bool, MapDoodadData> doodadParser = data._header.Version switch
+                var data = new MapDoodads();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    MapWidgetsVersion.RoC => MapDoodadData.Parse,
-                    MapWidgetsVersion.TFT => MapDoodadData.ParseTft,
-                    _ => throw new NotSupportedException(),
-                };
+                    data._header = MapWidgetsHeader.Parse(stream, true);
+                    Func<Stream, bool, MapDoodadData> doodadParser = data._header.Version switch
+                    {
+                        MapWidgetsVersion.RoC => MapDoodadData.Parse,
+                        MapWidgetsVersion.TFT => MapDoodadData.ParseTft,
+                        _ => throw new NotSupportedException(),
+                    };
 
-                for (var i = 0; i < data._header.DataCount; i++)
-                {
-                    data._doodads.Add(doodadParser(stream, true));
+                    for (var i = 0; i < data._header.DataCount; i++)
+                    {
+                        data._doodads.Add(doodadParser(stream, true));
+                    }
+
+                    var specialDoodadsVersion = reader.ReadInt32();
+                    if (specialDoodadsVersion != 0)
+                    {
+                        throw new NotSupportedException($"Unknown special doodads version: {specialDoodadsVersion}.");
+                    }
+
+                    var specialDoodads = reader.ReadInt32();
+                    for (var i = 0; i < specialDoodads; i++)
+                    {
+                        data._specialDoodads.Add(MapSpecialDoodadData.Parse(stream, true));
+                    }
                 }
 
-                var specialDoodadsVersion = reader.ReadInt32();
-                if (specialDoodadsVersion != 0)
-                {
-                    throw new NotSupportedException($"Unknown special doodads version: {specialDoodadsVersion}.");
-                }
-
-                var specialDoodads = reader.ReadInt32();
-                for (var i = 0; i < specialDoodads; i++)
-                {
-                    data._specialDoodads.Add(MapSpecialDoodadData.Parse(stream, true));
-                }
+                return data;
             }
-
-            return data;
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapDoodads mapDoodads, Stream stream, bool leaveOpen = false)

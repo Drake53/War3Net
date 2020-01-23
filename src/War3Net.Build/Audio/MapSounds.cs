@@ -41,23 +41,38 @@ namespace War3Net.Build.Audio
 
         public static MapSounds Parse(Stream stream, bool leaveOpen = false)
         {
-            var mapSounds = new MapSounds();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                mapSounds._version = reader.ReadUInt32();
-                if (mapSounds._version != LatestVersion)
+                var mapSounds = new MapSounds();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    throw new Exception();
+                    mapSounds._version = reader.ReadUInt32();
+                    if (mapSounds._version != LatestVersion)
+                    {
+                        throw new Exception();
+                    }
+
+                    var soundCount = reader.ReadUInt32();
+                    for (var i = 0; i < soundCount; i++)
+                    {
+                        mapSounds._sounds.Add(Sound.Parse(stream, true));
+                    }
                 }
 
-                var soundCount = reader.ReadUInt32();
-                for (var i = 0; i < soundCount; i++)
-                {
-                    mapSounds._sounds.Add(Sound.Parse(stream, true));
-                }
+                return mapSounds;
             }
-
-            return mapSounds;
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapSounds mapSounds, Stream stream, bool leaveOpen = false)

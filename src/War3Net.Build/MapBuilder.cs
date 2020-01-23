@@ -145,10 +145,13 @@ namespace War3Net.Build
                         {
                             mapFile = handler.Parse(fileStream, false);
                         }
-                        catch (InvalidDataException e)
+                        catch (InvalidDataException)
                         {
-                            // todo: generate diagnostic (and make sure parse methods do not throw other types of exceptions)
-                            throw;
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.InvalidMapFile, null, fileName));
+                        }
+                        catch (Exception e)
+                        {
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.GenericMapFileError, null, fileName, e.Message));
                         }
                     }
                 }

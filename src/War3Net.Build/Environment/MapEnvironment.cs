@@ -245,51 +245,66 @@ namespace War3Net.Build.Environment
 
         public static MapEnvironment Parse(Stream stream, bool leaveOpen = false)
         {
-            var environment = new MapEnvironment();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                if (reader.ReadUInt32() != HeaderSignature)
+                var environment = new MapEnvironment();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    throw new Exception();
-                }
-
-                environment._version = reader.ReadUInt32();
-
-                if (environment._version != LatestVersion)
-                {
-                    throw new Exception();
-                }
-
-                environment._tileset = (Tileset)reader.ReadChar();
-                /*var customTileset =*/ reader.ReadUInt32();
-
-                var terrainTypeCount = reader.ReadUInt32();
-                for (var i = 0; i < terrainTypeCount; i++)
-                {
-                    environment._terrainTypes.Add((TerrainType)reader.ReadUInt32());
-                }
-
-                var cliffTypeCount = reader.ReadUInt32();
-                for (var i = 0; i < cliffTypeCount; i++)
-                {
-                    environment._cliffTypes.Add((CliffType)reader.ReadUInt32());
-                }
-
-                environment._width = reader.ReadUInt32();
-                environment._height = reader.ReadUInt32();
-                environment._left = reader.ReadSingle();
-                environment._bottom = reader.ReadSingle();
-
-                for (var y = 0; y < environment._width; y++)
-                {
-                    for (var x = 0; x < environment._height; x++)
+                    if (reader.ReadUInt32() != HeaderSignature)
                     {
-                        environment._tiles.Add(MapTile.Parse(stream, true));
+                        throw new Exception();
+                    }
+
+                    environment._version = reader.ReadUInt32();
+
+                    if (environment._version != LatestVersion)
+                    {
+                        throw new Exception();
+                    }
+
+                    environment._tileset = (Tileset)reader.ReadChar();
+                    /*var customTileset =*/ reader.ReadUInt32();
+
+                    var terrainTypeCount = reader.ReadUInt32();
+                    for (var i = 0; i < terrainTypeCount; i++)
+                    {
+                        environment._terrainTypes.Add((TerrainType)reader.ReadUInt32());
+                    }
+
+                    var cliffTypeCount = reader.ReadUInt32();
+                    for (var i = 0; i < cliffTypeCount; i++)
+                    {
+                        environment._cliffTypes.Add((CliffType)reader.ReadUInt32());
+                    }
+
+                    environment._width = reader.ReadUInt32();
+                    environment._height = reader.ReadUInt32();
+                    environment._left = reader.ReadSingle();
+                    environment._bottom = reader.ReadSingle();
+
+                    for (var y = 0; y < environment._width; y++)
+                    {
+                        for (var x = 0; x < environment._height; x++)
+                        {
+                            environment._tiles.Add(MapTile.Parse(stream, true));
+                        }
                     }
                 }
-            }
 
-            return environment;
+                return environment;
+            }
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public static void Serialize(MapEnvironment mapEnvironment, Stream stream, bool leaveOpen = false)

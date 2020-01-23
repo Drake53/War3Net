@@ -13,6 +13,8 @@ namespace War3Net.Build.Providers
     {
         // Map file diagnostics
         internal static readonly DiagnosticDescriptor MissingMapFile = CreateMissingMapFileDescriptor("W3N1001");
+        internal static readonly DiagnosticDescriptor InvalidMapFile = CreateInvalidMapFileDescriptor("W3N1002");
+        internal static readonly DiagnosticDescriptor GenericMapFileError = CreateGenericMapFileErrorDescriptor("W3N1003");
 
         // Asset file diagnostics
         internal static readonly DiagnosticDescriptor MissingFileWithCustomMpqFlags = CreateMissingFileWithCustomMpqFlagsDescriptor("W3N1020");
@@ -33,6 +35,34 @@ namespace War3Net.Build.Providers
                 $"Map should contain a '{{0}}' file.",
                 $"The {{1}} file '{{0}}' was not found. Make sure that it gets added when building the map.",
                 "Usage",
+                DiagnosticSeverity.Error,
+                true,
+                null,
+                null,
+                WellKnownDiagnosticTags.Build);
+        }
+
+        private static DiagnosticDescriptor CreateInvalidMapFileDescriptor(string id)
+        {
+            return new DiagnosticDescriptor(
+                id,
+                $"File '{{0}}' is invalid.",
+                $"The '{{0}}' file contains invalid data. It could not be parsed.",
+                string.Empty,
+                DiagnosticSeverity.Error,
+                true,
+                null,
+                null,
+                WellKnownDiagnosticTags.Build);
+        }
+
+        private static DiagnosticDescriptor CreateGenericMapFileErrorDescriptor(string id)
+        {
+            return new DiagnosticDescriptor(
+                id,
+                $"File '{{0}}' could not be read.",
+                $"An exception occured when trying to parse the '{{0}}' file: {{1}}",
+                string.Empty,
                 DiagnosticSeverity.Error,
                 true,
                 null,
