@@ -27,6 +27,8 @@ namespace War3Net.Build.Widget
 
         public uint DataCount => _dataCount;
 
+        internal bool UseTftParser => _version == LatestVersion && _subVersion == LatestSubVersion;
+
         public static MapWidgetsHeader Parse(Stream stream, bool leaveOpen = false)
         {
             var header = new MapWidgetsHeader();

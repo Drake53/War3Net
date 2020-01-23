@@ -39,12 +39,9 @@ namespace War3Net.Build.Widget
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 data._header = MapWidgetsHeader.Parse(stream, true);
-                Func<Stream, bool, MapUnitData> unitParser = data._header.Version switch
-                {
-                    MapWidgetsVersion.RoC => MapUnitData.Parse,
-                    MapWidgetsVersion.TFT => MapUnitData.ParseTft,
-                    _ => throw new NotSupportedException(),
-                };
+                var unitParser = data._header.UseTftParser
+                    ? (Func<Stream, bool, MapUnitData>)MapUnitData.ParseTft
+                    : MapUnitData.Parse;
 
                 for (var i = 0; i < data._header.DataCount; i++)
                 {
@@ -65,13 +62,13 @@ namespace War3Net.Build.Widget
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 writer.Write(MapWidgetsHeader.HeaderSignature);
-                writer.Write((uint)MapWidgetsHeader.LatestVersion);
-                writer.Write(MapWidgetsHeader.LatestSubVersion);
+                writer.Write((uint)_header.Version);
+                writer.Write(_header.SubVersion);
 
                 writer.Write(_units.Count);
                 foreach (var unit in _units)
                 {
-                    unit.WriteTo(writer);
+                    unit.WriteTo(writer, _header.UseTftParser);
                 }
             }
         }

@@ -30,6 +30,8 @@ namespace War3Net.Build.Widget
         private float _scaleY;
         private float _scaleZ;
 
+        private bool _hasTypeIdCheck;
+
         private byte _flags;
         private int _owner;
         private byte _UNK0;
@@ -234,28 +236,18 @@ namespace War3Net.Build.Widget
                 unitData._scaleY = reader.ReadSingle();
                 unitData._scaleZ = reader.ReadSingle();
 
-                var temp = new string(reader.ReadChars(4));
-                if (temp.Equals(unitData.TypeId, StringComparison.Ordinal))
+                var position = stream.Position;
+                try
                 {
-                    // 4 + 1 + 42 + 4 + 4 + 4 + 4 = 63 bytes
-                    var unk0 = reader.ReadByte(); // 2
-
-                    stream.Seek(42, SeekOrigin.Current); // all zeroes
-                    var unk1 = reader.ReadInt32(); // 1
-                    var unk2 = reader.ReadInt32(); // -1
-                    var unk3 = reader.ReadInt32(); // -1
-                    stream.Seek(4, SeekOrigin.Current); // all zeroes
-
-                    unitData._randomData = new RandomUnitData();
-
-                    return unitData;
+                    unitData._hasTypeIdCheck = new string(reader.ReadChars(4)).Equals(unitData.TypeId, StringComparison.Ordinal);
+                    if (!unitData._hasTypeIdCheck)
+                    {
+                        stream.Seek(-4, SeekOrigin.Current);
+                    }
                 }
-                else
+                catch (DecoderFallbackException e)
                 {
-                    // Assuming lists are empty:
-                    // RoC: 1 + 4 + 1 + 1 + 4 + 4     + 4 + 4 + 4 + 4             + 4 + 4 + randomData + 4 + 4 + 4 = 51 + randomData
-                    // TFT: 1 + 4 + 1 + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + randomData + 4 + 4 + 4 = 67 + randomData
-                    stream.Seek(-4, SeekOrigin.Current);
+                    stream.Position = position;
                 }
 
                 unitData._flags = reader.ReadByte();
@@ -315,7 +307,7 @@ namespace War3Net.Build.Widget
             }
         }
 
-        public void WriteTo(BinaryWriter writer)
+        public void WriteTo(BinaryWriter writer, bool tft = true)
         {
             writer.Write(_typeId);
             writer.Write(_variation);
@@ -328,6 +320,11 @@ namespace War3Net.Build.Widget
             writer.Write(_scaleY);
             writer.Write(_scaleZ);
 
+            if (_hasTypeIdCheck)
+            {
+                writer.Write(_typeId);
+            }
+
             writer.Write(_flags);
             writer.Write(_owner);
             writer.Write(_UNK0);
@@ -336,7 +333,10 @@ namespace War3Net.Build.Widget
             writer.Write(_hp);
             writer.Write(_mp);
 
-            writer.Write(_mapItemTablePointer);
+            if (tft)
+            {
+                writer.Write(_mapItemTablePointer);
+            }
 
             writer.Write(_mapItemTableDropData.Count);
             foreach (var droppedItemDataSet in _mapItemTableDropData)
@@ -348,9 +348,12 @@ namespace War3Net.Build.Widget
             writer.Write(_targetAcquisition);
 
             writer.Write(_heroLevel);
-            writer.Write(_heroStrength);
-            writer.Write(_heroAgility);
-            writer.Write(_heroIntelligence);
+            if (tft)
+            {
+                writer.Write(_heroStrength);
+                writer.Write(_heroAgility);
+                writer.Write(_heroIntelligence);
+            }
 
             writer.Write(_inventory.Count);
             foreach (var inventoryItemData in _inventory)

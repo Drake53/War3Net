@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -48,17 +47,6 @@ namespace War3Net.Build.Tests
             Assert.AreEqual(original.Length, original.Position);
 
             data.SerializeTo(recreated, true);
-
-            original.Position = 4;
-            using (var reader = new BinaryReader(original, new UTF8Encoding(false, true), true))
-            {
-                var version = (MapWidgetsVersion)reader.ReadUInt32();
-                if (version != MapWidgetsVersion.TFT)
-                {
-                    // Can't compare streams, because serialize always saves as TFT, which sets header version to 8 and has additional data per unit.
-                    return;
-                }
-            }
 
             StreamAssert.AreEqual(original, recreated, true);
         }
