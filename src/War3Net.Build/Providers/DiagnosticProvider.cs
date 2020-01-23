@@ -7,39 +7,33 @@
 
 using Microsoft.CodeAnalysis;
 
-using War3Net.Build.Audio;
-using War3Net.Build.Environment;
-using War3Net.Build.Info;
-using War3Net.Build.Widget;
-
 namespace War3Net.Build.Providers
 {
     internal static class DiagnosticProvider
     {
-        internal static readonly DiagnosticDescriptor MissingMapInfo = CreateMissingMapFileDescriptor("W3N1001", MapInfo.FileName, DiagnosticSeverity.Error);
-        internal static readonly DiagnosticDescriptor MissingMapEnvironment = CreateMissingMapFileDescriptor("W3N1002", MapEnvironment.FileName, DiagnosticSeverity.Warning);
-        internal static readonly DiagnosticDescriptor MissingMapDoodads = CreateMissingMapFileDescriptor("W3N1003", MapDoodads.FileName, DiagnosticSeverity.Info);
-        internal static readonly DiagnosticDescriptor MissingMapUnits = CreateMissingMapFileDescriptor("W3N1004", MapUnits.FileName, DiagnosticSeverity.Info);
-        internal static readonly DiagnosticDescriptor MissingMapRegions = CreateMissingMapFileDescriptor("W3N1005", MapRegions.FileName, DiagnosticSeverity.Info);
-        internal static readonly DiagnosticDescriptor MissingMapSounds = CreateMissingMapFileDescriptor("W3N1006", MapSounds.FileName, DiagnosticSeverity.Info);
+        // Map file diagnostics
+        internal static readonly DiagnosticDescriptor MissingMapFile = CreateMissingMapFileDescriptor("W3N1001");
 
+        // Asset file diagnostics
         internal static readonly DiagnosticDescriptor MissingFileWithCustomMpqFlags = CreateMissingFileWithCustomMpqFlagsDescriptor("W3N1020");
         internal static readonly DiagnosticDescriptor MissingFileNeutralLocale = CreateMissingFileNeutralLocaleDescriptor("W3N1021");
 
+        // Script (C#) diagnostics
         internal static readonly DiagnosticDescriptor MissingSourceDirectory = CreateMissingSourceDirectoryDescriptor("W3N2001");
 
+        // Script (JASS) diagnostics
         internal static readonly DiagnosticDescriptor MissingPathJasshelper = CreateMissingPathDescriptor("W3N2101", "clijasshelper.exe");
         internal static readonly DiagnosticDescriptor MissingPathCommonJ = CreateMissingPathDescriptor("W3N2102", "common.j");
         internal static readonly DiagnosticDescriptor MissingPathBlizzardJ = CreateMissingPathDescriptor("W3N2103", "Blizzard.j");
 
-        private static DiagnosticDescriptor CreateMissingMapFileDescriptor(string id, string fileName, DiagnosticSeverity severity)
+        private static DiagnosticDescriptor CreateMissingMapFileDescriptor(string id)
         {
             return new DiagnosticDescriptor(
                 id,
-                $"Map should contain a '{fileName}' file.",
-                $"The {(severity == DiagnosticSeverity.Info ? "optional" : "required")} file '{fileName}' was not found. Make sure that it gets added when building the map.",
+                $"Map should contain a '{{0}}' file.",
+                $"The {{1}} file '{{0}}' was not found. Make sure that it gets added when building the map.",
                 "Usage",
-                severity,
+                DiagnosticSeverity.Error,
                 true,
                 null,
                 null,

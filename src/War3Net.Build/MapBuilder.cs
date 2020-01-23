@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 
 using War3Net.Build.Audio;
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
@@ -98,6 +99,11 @@ namespace War3Net.Build
             var diagnostics = new List<Diagnostic>();
             var haveErrorDiagnostic = false;
 
+            BuildResult GenerateResult()
+            {
+                return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+            }
+
             void AddDiagnostic(Diagnostic diagnostic)
             {
                 diagnostics.Add(diagnostic);
@@ -107,47 +113,81 @@ namespace War3Net.Build
                 }
             }
 
-            void TrySetMapFile<TMapFile>(string fileName, Func<Stream, bool, TMapFile> parser, Action<TMapFile, Stream, bool> serializer, DiagnosticDescriptor descriptor, Func<TMapFile> defaultObjectGenerator = null)
+            bool TrySetMapFile<TMapFile>(MapFileHandler<TMapFile> handler, Func<TMapFile> defaultObjectGenerator = null)
             {
+                var fileName = handler.FileName;
                 if (!(compilerOptions.GetMapFile(fileName) is TMapFile mapFile))
                 {
+                    mapFile = default;
+
                     var fileStream = FindFile(fileName);
                     if (fileStream is null)
                     {
-                        AddDiagnostic(Diagnostic.Create(descriptor, null));
-
-                        defaultObjectGenerator ??= (Func<TMapFile>)(() => default);
-                        mapFile = defaultObjectGenerator();
+                        var required = handler.IsRequired;
+                        var requiredString = required ? "required" : "optional";
+                        if (required && defaultObjectGenerator is null)
+                        {
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, fileName, requiredString));
+                        }
+                        else
+                        {
+                            var severity = required ? DiagnosticSeverity.Warning : DiagnosticSeverity.Info;
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, severity, null, null, fileName, requiredString));
+                            if (required || !compilerOptions.Optimize)
+                            {
+                                mapFile = (defaultObjectGenerator ?? handler.GetDefault)();
+                            }
+                        }
                     }
                     else
                     {
-                        mapFile = parser(fileStream, false);
+                        try
+                        {
+                            mapFile = handler.Parse(fileStream, false);
+                        }
+                        catch (InvalidDataException e)
+                        {
+                            // todo: generate diagnostic (and make sure parse methods do not throw other types of exceptions)
+                            throw;
+                        }
                     }
                 }
 
                 if (compilerOptions.SetMapFile(mapFile))
                 {
                     var outputPath = Path.Combine(compilerOptions.OutputDirectory, fileName);
-                    using (var outputStream = File.Create(outputPath))
+                    try
                     {
-                        serializer(mapFile, outputStream, false);
+                        var outputStream = File.Create(outputPath);
+                        handler.Serialize(mapFile, outputStream, false);
+
+                        files.Add((fileName, MpqLocale.Neutral), File.OpenRead(outputPath));
                     }
-
-                    files.Add((fileName, MpqLocale.Neutral), File.OpenRead(outputPath));
+                    catch (UnauthorizedAccessException e)
+                    {
+                        // todo: generate diagnostic
+                        throw;
+                    }
+                    catch (IOException e)
+                    {
+                        // todo: generate diagnostic
+                        throw;
+                    }
                 }
+
+                return !haveErrorDiagnostic;
             }
 
-            TrySetMapFile(MapInfo.FileName,        MapInfo.Parse,        MapInfo.Serialize,        DiagnosticProvider.MissingMapInfo);
-            if (haveErrorDiagnostic)
+            // Set map files
+            if (!TrySetMapFile(new MapFileHandler<MapInfo>()) ||
+                !TrySetMapFile(new MapFileHandler<MapEnvironment>(), () => new MapEnvironment(compilerOptions.MapInfo)) ||
+                !TrySetMapFile(new MapFileHandler<MapDoodads>()) ||
+                !TrySetMapFile(new MapFileHandler<MapUnits>()) ||
+                !TrySetMapFile(new MapFileHandler<MapRegions>()) ||
+                !TrySetMapFile(new MapFileHandler<MapSounds>()))
             {
-                return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+                return GenerateResult();
             }
-
-            TrySetMapFile(MapEnvironment.FileName, MapEnvironment.Parse, MapEnvironment.Serialize, DiagnosticProvider.MissingMapEnvironment, () => new MapEnvironment(compilerOptions.MapInfo));
-            TrySetMapFile(MapDoodads.FileName,     MapDoodads.Parse,     MapDoodads.Serialize,     DiagnosticProvider.MissingMapDoodads);
-            TrySetMapFile(MapUnits.FileName,       MapUnits.Parse,       MapUnits.Serialize,       DiagnosticProvider.MissingMapUnits);
-            TrySetMapFile(MapRegions.FileName,     MapRegions.Parse,     MapRegions.Serialize,     DiagnosticProvider.MissingMapRegions);
-            TrySetMapFile(MapSounds.FileName,      MapSounds.Parse,      MapSounds.Serialize,      DiagnosticProvider.MissingMapSounds);
 
             // Generate script file
             if (compilerOptions.SourceDirectory != null)
@@ -155,7 +195,7 @@ namespace War3Net.Build
                 if (!Directory.Exists(compilerOptions.SourceDirectory))
                 {
                     AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingSourceDirectory, null, compilerOptions.SourceDirectory));
-                    return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+                    return GenerateResult();
                 }
 
                 var compileResult = Compile(compilerOptions, out var path);
@@ -315,7 +355,7 @@ namespace War3Net.Build
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
             // TODO: pass compileResult argument
-            return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
+            return GenerateResult();
         }
 
         public CompileResult Compile(ScriptCompilerOptions options, out string scriptFilePath)
