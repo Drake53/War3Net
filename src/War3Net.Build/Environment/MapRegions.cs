@@ -22,10 +22,22 @@ namespace War3Net.Build.Environment
 
         private uint _version;
 
+        public MapRegions(params Region[] regions)
+        {
+            _regions = new List<Region>(regions);
+            _version = LatestVersion;
+        }
+
         private MapRegions()
         {
             _regions = new List<Region>();
         }
+
+        public static MapRegions Default => new MapRegions(Array.Empty<Region>());
+
+        public static bool IsRequired => false;
+
+        public int Count => _regions.Count;
 
         public static MapRegions Parse(Stream stream, bool leaveOpen = false)
         {

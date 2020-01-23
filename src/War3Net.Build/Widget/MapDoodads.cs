@@ -22,11 +22,6 @@ namespace War3Net.Build.Widget
 
         private MapWidgetsHeader _header;
 
-        public MapDoodads()
-            : this(Array.Empty<MapDoodadData>())
-        {
-        }
-
         public MapDoodads(IEnumerable<MapDoodadData> doodads)
             : this(doodads, Array.Empty<MapSpecialDoodadData>())
         {
@@ -37,6 +32,23 @@ namespace War3Net.Build.Widget
             _doodads = new List<MapDoodadData>(doodads);
             _specialDoodads = new List<MapSpecialDoodadData>(specialDoodads);
         }
+
+        public MapDoodads(params MapDoodadData[] doodads)
+        {
+            _doodads = new List<MapDoodadData>(doodads);
+            _specialDoodads = new List<MapSpecialDoodadData>();
+            _header = MapWidgetsHeader.GetDefault((uint)_doodads.Count);
+        }
+
+        private MapDoodads()
+        {
+            _doodads = new List<MapDoodadData>();
+            _specialDoodads = new List<MapSpecialDoodadData>();
+        }
+
+        public static MapDoodads Default => new MapDoodads(Array.Empty<MapDoodadData>());
+
+        public static bool IsRequired => false;
 
         public int Count => _doodads.Count;
 

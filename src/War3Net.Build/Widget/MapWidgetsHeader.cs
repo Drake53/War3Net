@@ -56,5 +56,14 @@ namespace War3Net.Build.Widget
 
             return header;
         }
+
+        internal static MapWidgetsHeader GetDefault(uint dataCount)
+        {
+            var header = new MapWidgetsHeader();
+            header._version = LatestVersion;
+            header._subVersion = LatestSubVersion;
+            header._dataCount = dataCount;
+            return header;
+        }
     }
 }

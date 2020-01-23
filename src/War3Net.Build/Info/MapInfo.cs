@@ -373,17 +373,17 @@ namespace War3Net.Build.Info
                 info._tileset = Tileset.LordaeronSummer;
 
                 info._loadingScreenBackgroundNumber = -1;
-                info._loadingScreenPath = null;
-                info._loadingScreenText = null;
-                info._loadingScreenTitle = null;
-                info._loadingScreenSubtitle = null;
+                info._loadingScreenPath = string.Empty;
+                info._loadingScreenText = string.Empty;
+                info._loadingScreenTitle = string.Empty;
+                info._loadingScreenSubtitle = string.Empty;
 
                 info._gameDataSet = GameDataSet.Unset;
 
-                info._prologueScreenPath = null;
-                info._prologueScreenText = null;
-                info._prologueScreenTitle = null;
-                info._prologueScreenSubtitle = null;
+                info._prologueScreenPath = string.Empty;
+                info._prologueScreenText = string.Empty;
+                info._prologueScreenTitle = string.Empty;
+                info._prologueScreenSubtitle = string.Empty;
 
                 info._fogStyle = FogStyle.Linear;
                 info._fogStartZ = 3000f;
@@ -392,7 +392,7 @@ namespace War3Net.Build.Info
                 info._fogColor = Color.Black;
 
                 info._globalWeather = WeatherType.None;
-                info._soundEnvironment = null;
+                info._soundEnvironment = string.Empty;
                 info._lightEnvironment = 0;
                 info._waterTintingColor = Color.White;
 
@@ -424,6 +424,8 @@ namespace War3Net.Build.Info
                 return info;
             }
         }
+
+        public static bool IsRequired => true;
 
         public static MapInfo Parse(Stream stream, bool leaveOpen = false)
         {

@@ -211,6 +211,10 @@ namespace War3Net.Build.Environment
             _tiles = new List<MapTile>();
         }
 
+        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
+
+        public static bool IsRequired => true;
+
         public float Left
         {
             get => _left;
@@ -238,8 +242,6 @@ namespace War3Net.Build.Environment
         public float MapWidth => MapTile.TileWidth * (_width - 1);
 
         public float MapHeight => MapTile.TileHeight * (_height - 1);
-
-        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
 
         public static MapEnvironment Parse(Stream stream, bool leaveOpen = false)
         {
