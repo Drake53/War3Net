@@ -31,13 +31,13 @@ namespace War3Net.Build.Script.Main
                     sound.Name,
                     builder.GenerateInvocationExpression(
                         nameof(War3Api.Common.CreateSound),
-                        builder.GenerateStringLiteralExpression(sound.FilePath),
+                        builder.GenerateEscapedStringLiteralExpression(sound.FilePath),
                         builder.GenerateBooleanLiteralExpression(sound.Flags.HasFlag(SoundFlags.Looping)),
                         builder.GenerateBooleanLiteralExpression(is3DSound),
                         builder.GenerateBooleanLiteralExpression(is3DSound ? sound.Flags.HasFlag(SoundFlags.StopWhenOutOfRange) : false),
                         builder.GenerateIntegerLiteralExpression(sound.FadeInRate),
                         builder.GenerateIntegerLiteralExpression(sound.FadeOutRate),
-                        builder.GenerateStringLiteralExpression(sound.EaxSetting)));
+                        builder.GenerateEscapedStringLiteralExpression(sound.EaxSetting)));
 
                 // var hasNonDefaultFields = false;
 

@@ -30,11 +30,11 @@ namespace War3Net.Build.Script.Config
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapName),
-                builder.GenerateStringLiteralExpression(mapInfo.MapName));
+                builder.GenerateEscapedStringLiteralExpression(mapInfo.MapName));
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapDescription),
-                builder.GenerateStringLiteralExpression(mapInfo.MapDescription));
+                builder.GenerateEscapedStringLiteralExpression(mapInfo.MapDescription));
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetPlayers),
@@ -53,7 +53,7 @@ namespace War3Net.Build.Script.Config
             {
                 yield return builder.GenerateInvocationStatement(
                     nameof(War3Api.Common.PlayMusic),
-                    builder.GenerateStringLiteralExpression(builder.Data.LobbyMusic));
+                    builder.GenerateEscapedStringLiteralExpression(builder.Data.LobbyMusic));
             }
 
             for (var i = 0; i < playerDataCount; i++)

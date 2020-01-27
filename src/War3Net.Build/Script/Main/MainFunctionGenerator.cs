@@ -200,8 +200,8 @@ namespace War3Net.Build.Script.Main
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetDayNightModels),
-                builder.GenerateStringLiteralExpression(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(mapInfo.LightEnvironment)),
-                builder.GenerateStringLiteralExpression(LightEnvironmentProvider.GetUnitLightEnvironmentModel(mapInfo.LightEnvironment)));
+                builder.GenerateEscapedStringLiteralExpression(LightEnvironmentProvider.GetTerrainLightEnvironmentModel(mapInfo.LightEnvironment)),
+                builder.GenerateEscapedStringLiteralExpression(LightEnvironmentProvider.GetUnitLightEnvironmentModel(mapInfo.LightEnvironment)));
 
             if (mapInfo.MapFlags.HasFlag(MapFlags.HasTerrainFog))
             {
@@ -235,19 +235,19 @@ namespace War3Net.Build.Script.Main
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.NewSoundEnvironment),
-                builder.GenerateStringLiteralExpression(mapInfo.SoundEnvironment));
+                builder.GenerateEscapedStringLiteralExpression(mapInfo.SoundEnvironment));
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.SetAmbientDaySound),
-                builder.GenerateStringLiteralExpression(SoundEnvironmentProvider.GetAmbientDaySound(mapInfo.Tileset)));
+                builder.GenerateEscapedStringLiteralExpression(SoundEnvironmentProvider.GetAmbientDaySound(mapInfo.Tileset)));
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Blizzard.SetAmbientNightSound),
-                builder.GenerateStringLiteralExpression(SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset)));
+                builder.GenerateEscapedStringLiteralExpression(SoundEnvironmentProvider.GetAmbientNightSound(mapInfo.Tileset)));
 
             yield return builder.GenerateInvocationStatement(
                 nameof(War3Api.Common.SetMapMusic),
-                builder.GenerateStringLiteralExpression(MusicName),
+                builder.GenerateEscapedStringLiteralExpression(MusicName),
                 builder.GenerateBooleanLiteralExpression(MusicRandom),
                 builder.GenerateIntegerLiteralExpression(MusicIndex));
 

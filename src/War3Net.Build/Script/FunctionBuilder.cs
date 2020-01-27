@@ -8,6 +8,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace War3Net.Build.Script
 {
@@ -89,6 +90,12 @@ namespace War3Net.Build.Script
 
         public abstract TExpressionSyntax GenerateStringLiteralExpression(
             string value);
+
+        public TExpressionSyntax GenerateEscapedStringLiteralExpression(
+            string value)
+        {
+            return GenerateStringLiteralExpression(Regex.Escape(value));
+        }
 
         public abstract TExpressionSyntax GenerateFloatLiteralExpression(
             float value);
