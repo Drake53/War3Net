@@ -63,6 +63,7 @@ namespace War3Net.Build.Widget
             _mapItemTableDropData = new List<DroppedItemSetData>();
         }
 
+        /// <param name="rotation">The unit's facing angle (in radians).</param>
         public MapUnitData(char[] typeId, float x, float y, float rotation, float scale, int owner, int creationNumber)
             : this()
         {
@@ -118,6 +119,8 @@ namespace War3Net.Build.Widget
         public float PositionZ => _positionZ;
 
         public float Facing => _rotation;
+
+        public float FacingDeg => _rotation * (180 / MathF.PI);
 
         public float ScaleX => _scaleX;
 

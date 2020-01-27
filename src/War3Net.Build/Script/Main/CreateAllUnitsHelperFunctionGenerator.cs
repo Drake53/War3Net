@@ -117,7 +117,7 @@ namespace War3Net.Build.Script.Main
                                 builder.GenerateVariableExpression(LocalUnitIdVariableName),
                                 builder.GenerateFloatLiteralExpression(unit.PositionX),
                                 builder.GenerateFloatLiteralExpression(unit.PositionY),
-                                builder.GenerateFloatLiteralExpression(unit.Facing))));
+                                builder.GenerateFloatLiteralExpression(unit.FacingDeg))));
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace War3Net.Build.Script.Main
                             builder.GenerateFourCCExpression(unit.TypeId),
                             builder.GenerateFloatLiteralExpression(unit.PositionX),
                             builder.GenerateFloatLiteralExpression(unit.PositionY),
-                            builder.GenerateFloatLiteralExpression(unit.Facing)));
+                            builder.GenerateFloatLiteralExpression(unit.FacingDeg)));
                 }
 
                 // TODO: test which statements cannot be generated for random units, and put them inside the else block above (hero level/stats?)
