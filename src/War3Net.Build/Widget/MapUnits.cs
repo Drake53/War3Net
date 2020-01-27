@@ -24,6 +24,7 @@ namespace War3Net.Build.Widget
         public MapUnits(IEnumerable<MapUnitData> units)
         {
             _units = new List<MapUnitData>(units);
+            _header = MapWidgetsHeader.GetDefault((uint)_units.Count);
         }
 
         public MapUnits(params MapUnitData[] units)

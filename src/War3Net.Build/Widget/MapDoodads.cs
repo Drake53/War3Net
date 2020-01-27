@@ -31,6 +31,7 @@ namespace War3Net.Build.Widget
         {
             _doodads = new List<MapDoodadData>(doodads);
             _specialDoodads = new List<MapSpecialDoodadData>(specialDoodads);
+            _header = MapWidgetsHeader.GetDefault((uint)_doodads.Count);
         }
 
         public MapDoodads(params MapDoodadData[] doodads)
