@@ -336,10 +336,10 @@ namespace War3Net.Build.Info
             {
                 var info = new MapInfo();
 
-                info._fileFormatVersion = MapInfoFormatVersion.Lua;
+                info._fileFormatVersion = MapInfoFormatVersion.Reforged;
                 info._mapVersion = 1;
                 info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].0.0
-                info._gameVersion = new Version(1, 31, 1, 12164); // reforged beta: 1.32.0.13991
+                info._gameVersion = new Version(1, 32, 0, 14481);
 
                 info._mapName = "Just another Warcraft III map";
                 info._mapAuthor = "Unknown";
