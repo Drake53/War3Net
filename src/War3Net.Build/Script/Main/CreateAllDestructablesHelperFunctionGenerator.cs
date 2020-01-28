@@ -36,7 +36,7 @@ namespace War3Net.Build.Script.Main
                         builder.GenerateFourCCExpression(destructable.TypeId),
                         builder.GenerateFloatLiteralExpression(destructable.PositionX),
                         builder.GenerateFloatLiteralExpression(destructable.PositionY),
-                        builder.GenerateFloatLiteralExpression(destructable.Facing),
+                        builder.GenerateFloatLiteralExpression(destructable.FacingDeg),
                         builder.GenerateFloatLiteralExpression(destructable.ScaleX),
                         builder.GenerateIntegerLiteralExpression(destructable.Variation)));
 

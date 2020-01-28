@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,6 +75,8 @@ namespace War3Net.Build.Widget
         public float PositionZ => _positionZ;
 
         public float Facing => _rotation;
+
+        public float FacingDeg => _rotation * (180 / MathF.PI);
 
         public float ScaleX => _scaleX;
 
