@@ -435,6 +435,11 @@ namespace War3Net.Build.Info
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
                     info._fileFormatVersion = (MapInfoFormatVersion)reader.ReadInt32();
+                    if (!Enum.IsDefined(typeof(MapInfoFormatVersion), info._fileFormatVersion))
+                    {
+                        throw new NotSupportedException($"Unknown version of {FileName}: {info._fileFormatVersion}");
+                    }
+
                     info._mapVersion = reader.ReadInt32();
                     info._editorVersion = reader.ReadInt32();
 

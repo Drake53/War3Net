@@ -49,7 +49,7 @@ namespace War3Net.Build.Audio
                     mapSounds._version = reader.ReadUInt32();
                     if (mapSounds._version != LatestVersion)
                     {
-                        throw new Exception();
+                        throw new NotSupportedException($"Unknown version of {FileName}: {mapSounds._version}");
                     }
 
                     var soundCount = reader.ReadUInt32();

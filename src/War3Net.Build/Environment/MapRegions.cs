@@ -49,7 +49,7 @@ namespace War3Net.Build.Environment
                     mapRegions._version = reader.ReadUInt32();
                     if (mapRegions._version != LatestVersion)
                     {
-                        throw new Exception();
+                        throw new NotSupportedException($"Unknown version of {FileName}: {mapRegions._version}");
                     }
 
                     var regionCount = reader.ReadUInt32();

@@ -36,7 +36,7 @@ namespace War3Net.Build.Widget
             {
                 if (reader.ReadUInt32() != HeaderSignature)
                 {
-                    throw new InvalidDataException();
+                    throw new InvalidDataException($"Expected file header signature at the start of a .doo file.");
                 }
 
                 header._version = (MapWidgetsVersion)reader.ReadUInt32();

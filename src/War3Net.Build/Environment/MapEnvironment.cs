@@ -252,14 +252,13 @@ namespace War3Net.Build.Environment
                 {
                     if (reader.ReadUInt32() != HeaderSignature)
                     {
-                        throw new Exception();
+                        throw new InvalidDataException($"Expected file header signature at the start of a {FileName} file.");
                     }
 
                     environment._version = reader.ReadUInt32();
-
                     if (environment._version != LatestVersion)
                     {
-                        throw new Exception();
+                        throw new NotSupportedException($"Unknown version of {FileName}: {environment._version}");
                     }
 
                     environment._tileset = (Tileset)reader.ReadChar();
