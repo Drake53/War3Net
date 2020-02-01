@@ -1,5 +1,13 @@
 # War3Net.Build Changelog
 
+## v1.0.2
+
+### Changes
+- Added reforged sound channels (not tested).
+- Added setters for most MapUnits properties, and added the Skin property.
+### Breaking changes
+- Subversion type for .doo headers changed from uint to MapWidgetsSubVersion enum.
+
 ## v1.0.1
 
 ### Changes

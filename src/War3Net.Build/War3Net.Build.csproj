@@ -12,8 +12,8 @@
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes>Read the changelog.md for the latest changes.</PackageReleaseNotes>
 
-    <Version>1.0.1</Version>
-    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.2</Version>
+    <FileVersion>1.0.2</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
