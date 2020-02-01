@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -84,6 +85,42 @@ namespace War3Net.Build.Info
             return data;
         }
 
+        public static PlayerData Create(PlayerData original, bool includeReforgedData)
+        {
+            if (original is null)
+            {
+                throw new ArgumentNullException(nameof(original));
+            }
+
+            PlayerData copy;
+            if (includeReforgedData && original is ReforgedPlayerData reforgedOriginal)
+            {
+                var reforgedCopy = new ReforgedPlayerData();
+                reforgedCopy.Unk0 = reforgedOriginal.Unk0;
+                reforgedCopy.Unk1 = reforgedOriginal.Unk1;
+                copy = reforgedCopy;
+            }
+            else if (!includeReforgedData)
+            {
+                copy = new PlayerData();
+            }
+            else
+            {
+                throw new ArgumentException("Unable to create a copy with reforged data, when the original object did not contain reforged data.");
+            }
+
+            copy._playerNumber = original._playerNumber;
+            copy._playerController = original._playerController;
+            copy._playerRace = original._playerRace;
+            copy._playerFlags = original._playerFlags;
+            copy._playerName = original._playerName;
+            copy._startPosition = original._startPosition;
+            copy._allyLowPriorityFlags = original._allyLowPriorityFlags;
+            copy._allyHighPriorityFlags = original._allyHighPriorityFlags;
+
+            return copy;
+        }
+
         public static PlayerData Parse(Stream stream, bool leaveOpen = false)
         {
             var data = new PlayerData();
@@ -93,20 +130,6 @@ namespace War3Net.Build.Info
             }
 
             return data;
-        }
-
-        internal static void ReadFrom(BinaryReader reader, PlayerData data)
-        {
-            data._playerNumber = reader.ReadInt32();
-            data._playerController = (PlayerController)reader.ReadInt32();
-            data._playerRace = (PlayerRace)reader.ReadInt32();
-            data._playerFlags = (PlayerFlags)reader.ReadInt32();
-            data._playerName = reader.ReadChars();
-            data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
-
-            // Note: if _playerController is Computer, these values sometimes appear somewhat random.
-            data._allyLowPriorityFlags = reader.ReadInt32();
-            data._allyHighPriorityFlags = reader.ReadInt32();
         }
 
         public virtual void WriteTo(BinaryWriter writer)
@@ -147,6 +170,20 @@ namespace War3Net.Build.Info
                     yield return (index, true);
                 }
             }
+        }
+
+        internal static void ReadFrom(BinaryReader reader, PlayerData data)
+        {
+            data._playerNumber = reader.ReadInt32();
+            data._playerController = (PlayerController)reader.ReadInt32();
+            data._playerRace = (PlayerRace)reader.ReadInt32();
+            data._playerFlags = (PlayerFlags)reader.ReadInt32();
+            data._playerName = reader.ReadChars();
+            data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
+
+            // Note: if _playerController is Computer, these values sometimes appear somewhat random.
+            data._allyLowPriorityFlags = reader.ReadInt32();
+            data._allyHighPriorityFlags = reader.ReadInt32();
         }
     }
 }
