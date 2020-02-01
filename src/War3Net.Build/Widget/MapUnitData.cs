@@ -30,7 +30,7 @@ namespace War3Net.Build.Widget
         private float _scaleY;
         private float _scaleZ;
 
-        private bool _hasTypeIdCheck;
+        private char[] _skin;
 
         private byte _flags;
         private int _owner;
@@ -128,6 +128,8 @@ namespace War3Net.Build.Widget
 
         public float ScaleZ => _scaleZ;
 
+        public string Skin => new string(_skin);
+
         public byte Flags => _flags;
 
         public int Owner => _owner;
@@ -215,15 +217,15 @@ namespace War3Net.Build.Widget
 
         public static MapUnitData Parse(Stream stream, bool leaveOpen = false)
         {
-            return Parse(stream, MapWidgetsVersion.RoC, leaveOpen);
+            return Parse(stream, false, leaveOpen);
         }
 
-        public static MapUnitData ParseTft(Stream stream, bool leaveOpen = true)
+        public static MapUnitData ParseTft(Stream stream, bool leaveOpen = false)
         {
-            return Parse(stream, MapWidgetsVersion.TFT, leaveOpen);
+            return Parse(stream, true, leaveOpen);
         }
 
-        private static MapUnitData Parse(Stream stream, MapWidgetsVersion version, bool leaveOpen)
+        private static MapUnitData Parse(Stream stream, bool tft, bool leaveOpen)
         {
             var unitData = new MapUnitData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
@@ -239,18 +241,11 @@ namespace War3Net.Build.Widget
                 unitData._scaleY = reader.ReadSingle();
                 unitData._scaleZ = reader.ReadSingle();
 
-                var position = stream.Position;
-                try
+                // Check if next byte is 'printable' (this also assumes that _flags byte is a low number).
+                if (reader.PeekChar() >= 0x20)
                 {
-                    unitData._hasTypeIdCheck = new string(reader.ReadChars(4)).Equals(unitData.TypeId, StringComparison.Ordinal);
-                    if (!unitData._hasTypeIdCheck)
-                    {
-                        stream.Seek(-4, SeekOrigin.Current);
-                    }
-                }
-                catch (DecoderFallbackException e)
-                {
-                    stream.Position = position;
+                    // Read reforged skin data (it's possible that the file contains this, but NOT tft data).
+                    unitData._skin = reader.ReadChars(4);
                 }
 
                 unitData._flags = reader.ReadByte();
@@ -261,7 +256,7 @@ namespace War3Net.Build.Widget
                 unitData._hp = reader.ReadInt32();
                 unitData._mp = reader.ReadInt32();
 
-                unitData._mapItemTablePointer = version >= MapWidgetsVersion.TFT ? reader.ReadInt32() : -1;
+                unitData._mapItemTablePointer = tft ? reader.ReadInt32() : -1;
 
                 var droppedItemDataCount = reader.ReadInt32();
                 for (var i = 0; i < droppedItemDataCount; i++)
@@ -273,7 +268,7 @@ namespace War3Net.Build.Widget
                 unitData._targetAcquisition = reader.ReadSingle();
 
                 unitData._heroLevel = reader.ReadInt32();
-                if (version >= MapWidgetsVersion.TFT)
+                if (tft)
                 {
                     unitData._heroStrength = reader.ReadInt32();
                     unitData._heroAgility = reader.ReadInt32();
@@ -323,9 +318,9 @@ namespace War3Net.Build.Widget
             writer.Write(_scaleY);
             writer.Write(_scaleZ);
 
-            if (_hasTypeIdCheck)
+            if (_skin != null)
             {
-                writer.Write(_typeId);
+                writer.Write(_skin);
             }
 
             writer.Write(_flags);
