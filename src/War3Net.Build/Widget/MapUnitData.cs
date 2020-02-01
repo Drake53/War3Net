@@ -112,15 +112,35 @@ namespace War3Net.Build.Widget
 
         public int Variation => _variation;
 
-        public float PositionX => _positionX;
+        public float PositionX
+        {
+            get => _positionX;
+            set => _positionX = value;
+        }
 
-        public float PositionY => _positionY;
+        public float PositionY
+        {
+            get => _positionY;
+            set => _positionY = value;
+        }
 
-        public float PositionZ => _positionZ;
+        public float PositionZ
+        {
+            get => _positionZ;
+            set => _positionZ = value;
+        }
 
-        public float Facing => _rotation;
+        public float Facing
+        {
+            get => _rotation;
+            set => _rotation = value;
+        }
 
-        public float FacingDeg => _rotation * (180 / MathF.PI);
+        public float FacingDeg
+        {
+            get => _rotation * (180 / MathF.PI);
+            set => _rotation = value * (MathF.PI / 180);
+        }
 
         public float ScaleX => _scaleX;
 
@@ -128,7 +148,19 @@ namespace War3Net.Build.Widget
 
         public float ScaleZ => _scaleZ;
 
-        public string Skin => new string(_skin);
+        public string? Skin
+        {
+            get => new string(_skin);
+            set
+            {
+                if ((value?.Length ?? 4) != 4)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Skin id string must be exactly 4 characters long, or it must be set to null.");
+                }
+
+                _skin = value?.ToCharArray();
+            }
+        }
 
         public byte Flags => _flags;
 
@@ -141,51 +173,87 @@ namespace War3Net.Build.Widget
         /// <summary>
         /// Use -1 for default hp.
         /// </summary>
-        public int Hp => _hp;
+        public int Hp
+        {
+            get => _hp;
+            set => _hp = value;
+        }
 
         /// <summary>
         /// Use -1 for default mp.
         /// </summary>
-        public int Mp => _mp;
+        public int Mp
+        {
+            get => _mp;
+            set => _mp = value;
+        }
 
         /// <summary>
         /// Use -1 for no table.
         /// </summary>
         public int MapItemTablePointer => _mapItemTablePointer;
 
-        public int GoldAmount => _goldAmount;
+        public int GoldAmount
+        {
+            get => _goldAmount;
+            set => _goldAmount = value;
+        }
 
         /// <summary>
         /// Use -1 for default, and -2 for camp.
         /// </summary>
-        public float TargetAcquisition => _targetAcquisition;
+        public float TargetAcquisition
+        {
+            get => _targetAcquisition;
+            set => _targetAcquisition = value;
+        }
 
         /// <summary>
         /// Non-hero units are level 1, items are level 0.
         /// </summary>
-        public int HeroLevel => _heroLevel;
+        public int HeroLevel
+        {
+            get => _heroLevel;
+            set => _heroLevel = value;
+        }
 
         /// <summary>
         /// Use 0 for default.
         /// </summary>
-        public int HeroStrength => _heroStrength;
+        public int HeroStrength
+        {
+            get => _heroStrength;
+            set => _heroStrength = value;
+        }
 
         /// <summary>
         /// Use 0 for default.
         /// </summary>
-        public int HeroAgility => _heroAgility;
+        public int HeroAgility
+        {
+            get => _heroAgility;
+            set => _heroAgility = value;
+        }
 
         /// <summary>
         /// Use 0 for default.
         /// </summary>
-        public int HeroIntelligence => _heroIntelligence;
+        public int HeroIntelligence
+        {
+            get => _heroIntelligence;
+            set => _heroIntelligence = value;
+        }
 
         public RandomUnitData RandomData => _randomData;
 
         /// <summary>
         /// Use -1 for non-custom color.
         /// </summary>
-        public int CustomPlayerColor => _customPlayerColour;
+        public int CustomPlayerColor
+        {
+            get => _customPlayerColour;
+            set => _customPlayerColour = value;
+        }
 
         /// <summary>
         /// Use -1 to deactivate. Index refers to <see cref="Environment.Region.CreationNumber"/>.
