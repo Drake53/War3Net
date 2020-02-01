@@ -11,21 +11,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Audio
 {
     public sealed class MapSounds : IEnumerable<Sound>
     {
         public const string FileName = "war3map.w3s";
-        public const uint LatestVersion = 1;
+        public const uint LatestVersion = 2;
 
         private readonly List<Sound> _sounds;
 
         private uint _version;
 
         public MapSounds(params Sound[] sounds)
+            : this(LatestVersion, sounds)
+        {
+        }
+
+        public MapSounds(uint version, params Sound[] sounds)
         {
             _sounds = new List<Sound>(sounds);
-            _version = LatestVersion;
+            _version = version;
         }
 
         private MapSounds()
@@ -46,16 +53,37 @@ namespace War3Net.Build.Audio
                 var mapSounds = new MapSounds();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    mapSounds._version = reader.ReadUInt32();
-                    if (mapSounds._version != LatestVersion)
+                    var version = reader.ReadUInt32();
+                    if (version < 1 || version > LatestVersion)
                     {
                         throw new NotSupportedException($"Unknown version of {FileName}: {mapSounds._version}");
                     }
 
+                    mapSounds._version = version;
                     var soundCount = reader.ReadUInt32();
                     for (var i = 0; i < soundCount; i++)
                     {
-                        mapSounds._sounds.Add(Sound.Parse(stream, true));
+                        var sound = Sound.Parse(stream, true);
+                        mapSounds._sounds.Add(sound);
+
+                        if (version == 2)
+                        {
+                            var repeatSoundName = reader.ReadChars();
+                            var unk1 = reader.ReadByte();
+                            var repeatSoundPath = reader.ReadChars();
+
+                            if (repeatSoundName != sound.Name || repeatSoundPath != sound.FilePath)
+                            {
+                                throw new InvalidDataException();
+                            }
+
+                            var unk2 = reader.ReadInt32();
+                            var unk3 = reader.ReadByte();
+                            var unk4 = reader.ReadInt32();
+                            var unk5 = reader.ReadByte();
+                            var unk6 = reader.ReadInt32();
+                            var unk7 = reader.ReadInt32();
+                        }
                     }
                 }
 
@@ -84,12 +112,25 @@ namespace War3Net.Build.Audio
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                writer.Write(LatestVersion);
+                writer.Write(_version);
 
                 writer.Write(_sounds.Count);
-                foreach (var region in _sounds)
+                foreach (var sound in _sounds)
                 {
-                    region.WriteTo(writer);
+                    sound.WriteTo(writer);
+                    if (_version == 2)
+                    {
+                        writer.WriteString(sound.Name);
+                        writer.Write((byte)0);
+                        writer.WriteString(sound.FilePath);
+
+                        writer.Write(-1);
+                        writer.Write((byte)0);
+                        writer.Write(-1);
+                        writer.Write((byte)0);
+                        writer.Write(0);
+                        writer.Write(0);
+                    }
                 }
             }
         }
