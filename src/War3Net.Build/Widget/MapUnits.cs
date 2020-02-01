@@ -53,8 +53,8 @@ namespace War3Net.Build.Widget
                 {
                     data._header = MapWidgetsHeader.Parse(stream, true);
                     var unitParser = data._header.UseTftParser
-                    ? (Func<Stream, bool, MapUnitData>)MapUnitData.ParseTft
-                    : MapUnitData.Parse;
+                        ? (Func<Stream, bool, MapUnitData>)MapUnitData.ParseTft
+                        : MapUnitData.Parse;
 
                     for (var i = 0; i < data._header.DataCount; i++)
                     {
@@ -89,7 +89,7 @@ namespace War3Net.Build.Widget
             {
                 writer.Write(MapWidgetsHeader.HeaderSignature);
                 writer.Write((uint)_header.Version);
-                writer.Write(_header.SubVersion);
+                writer.Write((uint)_header.SubVersion);
 
                 writer.Write(_units.Count);
                 foreach (var unit in _units)

@@ -113,7 +113,7 @@ namespace War3Net.Build.Widget
             {
                 writer.Write(MapWidgetsHeader.HeaderSignature);
                 writer.Write((uint)MapWidgetsHeader.LatestVersion);
-                writer.Write(MapWidgetsHeader.LatestSubVersion);
+                writer.Write((uint)MapWidgetsHeader.LatestSubVersion);
 
                 writer.Write(_doodads.Count);
                 foreach (var doodad in _doodads)
