@@ -24,5 +24,15 @@ namespace War3Net.Build.Audio
         Construction = 12,
         Birth = 13,
         Fire = 14,
+
+        // Reforged channels (not verified that indices are correct)
+        LegacyMidi = 15,
+        CinematicGeneral = 16,
+        CinematicAmbient = 17,
+        CinematicMusic = 18,
+        CinematicDialogue = 19,
+        CinematicSfx1 = 20,
+        CinematicSfx2 = 21,
+        CinematicSfx3 = 22,
     }
 }
