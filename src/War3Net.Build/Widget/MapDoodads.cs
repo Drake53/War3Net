@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Build.Widget
@@ -50,6 +51,36 @@ namespace War3Net.Build.Widget
         public static MapDoodads Default => new MapDoodads(Array.Empty<MapDoodadData>());
 
         public static bool IsRequired => false;
+
+        public MapWidgetsFormatVersion FormatVersion
+        {
+            get
+            {
+                return this.All(doodad => string.IsNullOrEmpty(doodad.Skin))
+                    ? _header.UseTftParser ? MapWidgetsFormatVersion.Tft : MapWidgetsFormatVersion.Roc
+                    : MapWidgetsFormatVersion.Reforged;
+            }
+
+            set
+            {
+                var haveSkin = value == MapWidgetsFormatVersion.Reforged;
+                foreach (var doodad in _doodads)
+                {
+                    doodad.Skin = haveSkin ? doodad.TypeId : null;
+                }
+
+                if (value == MapWidgetsFormatVersion.Roc)
+                {
+                    _header.Version = MapWidgetsVersion.RoC;
+                    _header.SubVersion = MapWidgetsSubVersion.V9;
+                }
+                else
+                {
+                    _header.Version = MapWidgetsVersion.TFT;
+                    _header.SubVersion = MapWidgetsSubVersion.V11;
+                }
+            }
+        }
 
         public int Count => _doodads.Count;
 
@@ -112,13 +143,13 @@ namespace War3Net.Build.Widget
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 writer.Write(MapWidgetsHeader.HeaderSignature);
-                writer.Write((uint)MapWidgetsHeader.LatestVersion);
-                writer.Write((uint)MapWidgetsHeader.LatestSubVersion);
+                writer.Write((uint)_header.Version);
+                writer.Write((uint)_header.SubVersion);
 
                 writer.Write(_doodads.Count);
                 foreach (var doodad in _doodads)
                 {
-                    doodad.WriteTo(writer);
+                    doodad.WriteTo(writer, _header.UseTftParser);
                 }
 
                 writer.Write(0); // specialDoodadVersion

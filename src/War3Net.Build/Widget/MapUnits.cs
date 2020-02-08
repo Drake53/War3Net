@@ -43,24 +43,24 @@ namespace War3Net.Build.Widget
 
         public static bool IsRequired => false;
 
-        public MapUnitsFormatVersion FormatVersion
+        public MapWidgetsFormatVersion FormatVersion
         {
             get
             {
                 return this.All(unit => string.IsNullOrEmpty(unit.Skin))
-                    ? _header.UseTftParser ? MapUnitsFormatVersion.Tft : MapUnitsFormatVersion.Roc
-                    : MapUnitsFormatVersion.Reforged;
+                    ? _header.UseTftParser ? MapWidgetsFormatVersion.Tft : MapWidgetsFormatVersion.Roc
+                    : MapWidgetsFormatVersion.Reforged;
             }
 
             set
             {
-                var haveSkin = value == MapUnitsFormatVersion.Reforged;
+                var haveSkin = value == MapWidgetsFormatVersion.Reforged;
                 foreach (var unit in _units)
                 {
                     unit.Skin = haveSkin ? unit.TypeId : null;
                 }
 
-                if (value == MapUnitsFormatVersion.Roc)
+                if (value == MapWidgetsFormatVersion.Roc)
                 {
                     _header.Version = MapWidgetsVersion.RoC;
                     _header.SubVersion = MapWidgetsSubVersion.V9;

@@ -30,9 +30,6 @@ namespace War3Net.Build.Tests
 
             data.SerializeTo(recreated, true);
 
-            // TODO: skip header, since it's ignored in SerializeTo method (so always saves as TFT version)
-            //if (data.)
-
             StreamAssert.AreEqual(original, recreated, true);
         }
 

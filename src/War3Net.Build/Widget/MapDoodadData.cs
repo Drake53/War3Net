@@ -28,6 +28,8 @@ namespace War3Net.Build.Widget
         private float _scaleY;
         private float _scaleZ;
 
+        private char[] _skin;
+
         private DoodadState _state;
         private byte _life; // in %, where 0x64 = 100%
 
@@ -84,6 +86,20 @@ namespace War3Net.Build.Widget
 
         public float ScaleZ => _scaleZ;
 
+        public string? Skin
+        {
+            get => new string(_skin);
+            set
+            {
+                if ((value?.Length ?? 4) != 4)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Skin id string must be exactly 4 characters long, or it must be set to null.");
+                }
+
+                _skin = value?.ToCharArray();
+            }
+        }
+
         public DoodadState State => _state;
 
         public byte Life => _life;
@@ -135,6 +151,13 @@ namespace War3Net.Build.Widget
                 doodadData._scaleY = reader.ReadSingle();
                 doodadData._scaleZ = reader.ReadSingle();
 
+                // Check if next byte is 'printable'.
+                if (reader.PeekChar() >= 0x20)
+                {
+                    // Read reforged skin data (it's possible that the file contains this, but NOT tft data).
+                    doodadData._skin = reader.ReadChars(4);
+                }
+
                 doodadData._state = (DoodadState)reader.ReadByte();
                 doodadData._life = reader.ReadByte();
 
@@ -163,7 +186,7 @@ namespace War3Net.Build.Widget
             }
         }
 
-        public void WriteTo(BinaryWriter writer)
+        public void WriteTo(BinaryWriter writer, bool tft = true)
         {
             writer.Write(_typeId);
             writer.Write(_variation);
@@ -176,15 +199,23 @@ namespace War3Net.Build.Widget
             writer.Write(_scaleY);
             writer.Write(_scaleZ);
 
+            if (_skin != null)
+            {
+                writer.Write(_skin);
+            }
+
             writer.Write((byte)_state);
             writer.Write(_life);
 
-            writer.Write(_mapItemTablePointer);
-
-            writer.Write(_mapItemTableDropData.Count);
-            foreach (var droppedItemDataSet in _mapItemTableDropData)
+            if (tft)
             {
-                droppedItemDataSet.WriteTo(writer);
+                writer.Write(_mapItemTablePointer);
+
+                writer.Write(_mapItemTableDropData.Count);
+                foreach (var droppedItemDataSet in _mapItemTableDropData)
+                {
+                    droppedItemDataSet.WriteTo(writer);
+                }
             }
 
             writer.Write(_creationNumber);
