@@ -13,6 +13,7 @@ using System.Text;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
+using War3Net.Build.Providers;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
@@ -108,7 +109,15 @@ namespace War3Net.Build.Info
         public Version GameVersion
         {
             get => _gameVersion;
-            set => _gameVersion = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Lua)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _gameVersion = value;
+            }
         }
 
         public string MapName
@@ -173,23 +182,46 @@ namespace War3Net.Build.Info
             set => _tileset = value;
         }
 
-        [Obsolete("This field is only used in the RoC file format version.")]
         public int CampaignBackgroundNumber
         {
             get => _campaignBackgroundNumber;
-            set => _campaignBackgroundNumber = value;
+            set
+            {
+                if (_fileFormatVersion > MapInfoFormatVersion.RoC)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _campaignBackgroundNumber = value;
+            }
         }
 
         public int LoadingScreenBackgroundNumber
         {
             get => _loadingScreenBackgroundNumber;
-            set => _loadingScreenBackgroundNumber = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _loadingScreenBackgroundNumber = value;
+            }
         }
 
         public string LoadingScreenPath
         {
             get => _loadingScreenPath;
-            set => _loadingScreenPath = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _loadingScreenPath = value;
+            }
         }
 
         public string LoadingScreenText
@@ -210,23 +242,46 @@ namespace War3Net.Build.Info
             set => _loadingScreenSubtitle = value;
         }
 
-        [Obsolete("This field is only used in the RoC file format version.")]
         public int LoadingScreenNumber
         {
             get => _loadingScreenNumber;
-            set => _loadingScreenNumber = value;
+            set
+            {
+                if (_fileFormatVersion > MapInfoFormatVersion.RoC)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _loadingScreenNumber = value;
+            }
         }
 
         public GameDataSet GameDataSet
         {
             get => _gameDataSet;
-            set => _gameDataSet = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _gameDataSet = value;
+            }
         }
 
         public string PrologueScreenPath
         {
             get => _prologueScreenPath;
-            set => _prologueScreenPath = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _prologueScreenPath = value;
+            }
         }
 
         public string PrologueScreenText
@@ -250,37 +305,85 @@ namespace War3Net.Build.Info
         public FogStyle FogStyle
         {
             get => _fogStyle;
-            set => _fogStyle = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _fogStyle = value;
+            }
         }
 
         public float FogStartZ
         {
             get => _fogStartZ;
-            set => _fogStartZ = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _fogStartZ = value;
+            }
         }
 
         public float FogEndZ
         {
             get => _fogEndZ;
-            set => _fogEndZ = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _fogEndZ = value;
+            }
         }
 
         public float FogDensity
         {
             get => _fogDensity;
-            set => _fogDensity = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _fogDensity = value;
+            }
         }
 
         public Color FogColor
         {
             get => _fogColor;
-            set => _fogColor = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _fogColor = value;
+            }
         }
 
         public WeatherType GlobalWeather
         {
             get => _globalWeather;
-            set => _globalWeather = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _globalWeather = value;
+            }
         }
 
         public string SoundEnvironment
@@ -291,31 +394,71 @@ namespace War3Net.Build.Info
         public Tileset LightEnvironment
         {
             get => _lightEnvironment == Tileset.Unspecified ? _tileset : _lightEnvironment;
-            set => _lightEnvironment = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _lightEnvironment = value;
+            }
         }
 
         public Color WaterTintingColor
         {
             get => _waterTintingColor;
-            set => _waterTintingColor = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Tft)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _waterTintingColor = value;
+            }
         }
 
         public ScriptLanguage ScriptLanguage
         {
             get => _scriptLanguage;
-            set => _scriptLanguage = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Lua)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _scriptLanguage = value;
+            }
         }
 
         public SupportedModes SupportedModes
         {
             get => _supportedModes;
-            set => _supportedModes = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Reforged)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _supportedModes = value;
+            }
         }
 
         public GameDataVersion GameDataVersion
         {
             get => _gameDataVersion;
-            set => _gameDataVersion = value;
+            set
+            {
+                if (_fileFormatVersion < MapInfoFormatVersion.Reforged)
+                {
+                    throw new NotSupportedException();
+                }
+
+                _gameDataVersion = value;
+            }
         }
 
         public int PlayerDataCount => _playerData.Count;
@@ -336,10 +479,10 @@ namespace War3Net.Build.Info
             {
                 var info = new MapInfo();
 
-                info._fileFormatVersion = MapInfoFormatVersion.Reforged;
+                info._fileFormatVersion = MapInfoFormatVersion.Lua;
                 info._mapVersion = 1;
-                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].0.0
-                info._gameVersion = new Version(1, 32, 0, 14481);
+                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
+                info._gameVersion = GamePatchVersionProvider.GetPatchVersion(GamePatch.v1_31_0);
 
                 info._mapName = "Just another Warcraft III map";
                 info._mapAuthor = "Unknown";
