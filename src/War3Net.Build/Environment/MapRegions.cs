@@ -16,11 +16,11 @@ namespace War3Net.Build.Environment
     public sealed class MapRegions : IEnumerable<Region>
     {
         public const string FileName = "war3map.w3r";
-        public const uint LatestVersion = 5;
+        public const MapRegionsFormatVersion LatestVersion = MapRegionsFormatVersion.Normal;
 
         private readonly List<Region> _regions;
 
-        private uint _version;
+        private MapRegionsFormatVersion _version;
 
         public MapRegions(params Region[] regions)
         {
@@ -31,6 +31,12 @@ namespace War3Net.Build.Environment
         private MapRegions()
         {
             _regions = new List<Region>();
+        }
+
+        public MapRegionsFormatVersion FormatVersion
+        {
+            get => _version;
+            set => _version = value;
         }
 
         public static MapRegions Default => new MapRegions(Array.Empty<Region>());
@@ -46,7 +52,7 @@ namespace War3Net.Build.Environment
                 var mapRegions = new MapRegions();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    mapRegions._version = reader.ReadUInt32();
+                    mapRegions._version = (MapRegionsFormatVersion)reader.ReadUInt32();
                     if (mapRegions._version != LatestVersion)
                     {
                         throw new NotSupportedException($"Unknown version of {FileName}: {mapRegions._version}");
@@ -84,7 +90,7 @@ namespace War3Net.Build.Environment
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                writer.Write(LatestVersion);
+                writer.Write((uint)_version);
 
                 writer.Write(_regions.Count);
                 foreach (var region in _regions)
