@@ -121,11 +121,11 @@ namespace War3Net.Build.Widget
             }
             catch (DecoderFallbackException e)
             {
-                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
             }
             catch (EndOfStreamException e)
             {
-                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
             }
             catch
             {

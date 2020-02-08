@@ -580,7 +580,7 @@ namespace War3Net.Build.Info
                     info._fileFormatVersion = (MapInfoFormatVersion)reader.ReadInt32();
                     if (!Enum.IsDefined(typeof(MapInfoFormatVersion), info._fileFormatVersion))
                     {
-                        throw new NotSupportedException($"Unknown version of {FileName}: {info._fileFormatVersion}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {info._fileFormatVersion}");
                     }
 
                     info._mapVersion = reader.ReadInt32();
@@ -707,11 +707,11 @@ namespace War3Net.Build.Info
             }
             catch (DecoderFallbackException e)
             {
-                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
             }
             catch (EndOfStreamException e)
             {
-                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
             }
             catch
             {

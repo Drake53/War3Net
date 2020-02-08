@@ -258,13 +258,13 @@ namespace War3Net.Build.Environment
                 {
                     if (reader.ReadUInt32() != HeaderSignature)
                     {
-                        throw new InvalidDataException($"Expected file header signature at the start of a {FileName} file.");
+                        throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
                     }
 
                     environment._version = (MapEnvironmentFormatVersion)reader.ReadUInt32();
                     if (environment._version != LatestVersion)
                     {
-                        throw new NotSupportedException($"Unknown version of {FileName}: {environment._version}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {environment._version}");
                     }
 
                     environment._tileset = (Tileset)reader.ReadChar();
@@ -300,11 +300,11 @@ namespace War3Net.Build.Environment
             }
             catch (DecoderFallbackException e)
             {
-                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
             }
             catch (EndOfStreamException e)
             {
-                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
             }
             catch
             {

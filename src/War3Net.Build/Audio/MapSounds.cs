@@ -62,7 +62,7 @@ namespace War3Net.Build.Audio
                     var version = (MapSoundsFormatVersion)reader.ReadUInt32();
                     if (version < MapSoundsFormatVersion.Normal || version > LatestVersion)
                     {
-                        throw new NotSupportedException($"Unknown version of {FileName}: {mapSounds._version}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapSounds._version}");
                     }
 
                     mapSounds._version = version;
@@ -97,11 +97,11 @@ namespace War3Net.Build.Audio
             }
             catch (DecoderFallbackException e)
             {
-                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
             }
             catch (EndOfStreamException e)
             {
-                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
             }
             catch
             {

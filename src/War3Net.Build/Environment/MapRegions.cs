@@ -55,7 +55,7 @@ namespace War3Net.Build.Environment
                     mapRegions._version = (MapRegionsFormatVersion)reader.ReadUInt32();
                     if (mapRegions._version != LatestVersion)
                     {
-                        throw new NotSupportedException($"Unknown version of {FileName}: {mapRegions._version}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapRegions._version}");
                     }
 
                     var regionCount = reader.ReadUInt32();
@@ -69,11 +69,11 @@ namespace War3Net.Build.Environment
             }
             catch (DecoderFallbackException e)
             {
-                throw new InvalidDataException($"The {FileName} file contains invalid characters.", e);
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
             }
             catch (EndOfStreamException e)
             {
-                throw new InvalidDataException($"The {FileName} file is missing data, or its data is invalid.", e);
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
             }
             catch
             {
