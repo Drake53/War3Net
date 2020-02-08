@@ -101,11 +101,24 @@ namespace War3Net.Build.Script.Main
                 }
                 else
                 {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.CreateItem),
+                    var args = new List<TExpressionSyntax>()
+                    {
                         builder.GenerateFourCCExpression(item.TypeId),
-                        builder.GenerateFloatLiteralExpression(item.PositionX, 1),
-                        builder.GenerateFloatLiteralExpression(item.PositionY, 1));
+                        builder.GenerateFloatLiteralExpression(item.PositionX),
+                        builder.GenerateFloatLiteralExpression(item.PositionY),
+                    };
+
+                    var hasSkin = (item.Skin?.Length ?? 0) == 4 && item.Skin != item.TypeId;
+                    if (hasSkin)
+                    {
+                        args.Add(builder.GenerateFourCCExpression(item.Skin));
+                    }
+
+                    yield return builder.GenerateInvocationStatement(
+                        hasSkin
+                            ? nameof(War3Api.Common.BlzCreateItemWithSkin)
+                            : nameof(War3Api.Common.CreateItem),
+                        args.ToArray());
                 }
             }
         }

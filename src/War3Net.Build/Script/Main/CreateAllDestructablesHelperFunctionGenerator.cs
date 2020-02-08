@@ -29,16 +29,29 @@ namespace War3Net.Build.Script.Main
         {
             foreach (var destructable in builder.Data.MapDoodads.Where(mapDoodad => mapDoodad.DroppedItemData.FirstOrDefault() != null))
             {
+                var args = new List<TExpressionSyntax>()
+                {
+                    builder.GenerateFourCCExpression(destructable.TypeId),
+                    builder.GenerateFloatLiteralExpression(destructable.PositionX),
+                    builder.GenerateFloatLiteralExpression(destructable.PositionY),
+                    builder.GenerateFloatLiteralExpression(destructable.FacingDeg),
+                    builder.GenerateFloatLiteralExpression(destructable.ScaleX),
+                    builder.GenerateIntegerLiteralExpression(destructable.Variation),
+                };
+
+                var hasSkin = (destructable.Skin?.Length ?? 0) == 4 && destructable.Skin != destructable.TypeId;
+                if (hasSkin)
+                {
+                    args.Add(builder.GenerateFourCCExpression(destructable.Skin));
+                }
+
                 yield return builder.GenerateAssignmentStatement(
                     LocalDestructableVariableName,
                     builder.GenerateInvocationExpression(
-                        nameof(War3Api.Common.CreateDestructable),
-                        builder.GenerateFourCCExpression(destructable.TypeId),
-                        builder.GenerateFloatLiteralExpression(destructable.PositionX),
-                        builder.GenerateFloatLiteralExpression(destructable.PositionY),
-                        builder.GenerateFloatLiteralExpression(destructable.FacingDeg),
-                        builder.GenerateFloatLiteralExpression(destructable.ScaleX),
-                        builder.GenerateIntegerLiteralExpression(destructable.Variation)));
+                        hasSkin
+                            ? nameof(War3Api.Common.BlzCreateDestructableWithSkin)
+                            : nameof(War3Api.Common.CreateDestructable),
+                        args.ToArray()));
 
                 if (destructable.Life != 100)
                 {

@@ -121,17 +121,30 @@ namespace War3Net.Build.Script.Main
                 }
                 else
                 {
+                    var args = new List<TExpressionSyntax>()
+                    {
+                        builder.GenerateInvocationExpression(
+                            nameof(War3Api.Common.Player),
+                            builder.GenerateIntegerLiteralExpression(unit.Owner)),
+                        builder.GenerateFourCCExpression(unit.TypeId),
+                        builder.GenerateFloatLiteralExpression(unit.PositionX),
+                        builder.GenerateFloatLiteralExpression(unit.PositionY),
+                        builder.GenerateFloatLiteralExpression(unit.FacingDeg),
+                    };
+
+                    var hasSkin = (unit.Skin?.Length ?? 0) == 4 && unit.Skin != unit.TypeId;
+                    if (hasSkin)
+                    {
+                        args.Add(builder.GenerateFourCCExpression(unit.Skin));
+                    }
+
                     yield return builder.GenerateAssignmentStatement(
                         LocalUnitVariableName,
                         builder.GenerateInvocationExpression(
-                            nameof(War3Api.Common.CreateUnit),
-                            builder.GenerateInvocationExpression(
-                                nameof(War3Api.Common.Player),
-                                builder.GenerateIntegerLiteralExpression(unit.Owner)),
-                            builder.GenerateFourCCExpression(unit.TypeId),
-                            builder.GenerateFloatLiteralExpression(unit.PositionX),
-                            builder.GenerateFloatLiteralExpression(unit.PositionY),
-                            builder.GenerateFloatLiteralExpression(unit.FacingDeg)));
+                            hasSkin
+                                ? nameof(War3Api.Common.BlzCreateUnitWithSkin)
+                                : nameof(War3Api.Common.CreateUnit),
+                            args.ToArray()));
                 }
 
                 // TODO: test which statements cannot be generated for random units, and put them inside the else block above (hero level/stats?)
