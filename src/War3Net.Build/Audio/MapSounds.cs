@@ -18,18 +18,18 @@ namespace War3Net.Build.Audio
     public sealed class MapSounds : IEnumerable<Sound>
     {
         public const string FileName = "war3map.w3s";
-        public const uint LatestVersion = 2;
+        public const MapSoundsFormatVersion LatestVersion = MapSoundsFormatVersion.Reforged;
 
         private readonly List<Sound> _sounds;
 
-        private uint _version;
+        private MapSoundsFormatVersion _version;
 
         public MapSounds(params Sound[] sounds)
             : this(LatestVersion, sounds)
         {
         }
 
-        public MapSounds(uint version, params Sound[] sounds)
+        public MapSounds(MapSoundsFormatVersion version, params Sound[] sounds)
         {
             _sounds = new List<Sound>(sounds);
             _version = version;
@@ -38,6 +38,12 @@ namespace War3Net.Build.Audio
         private MapSounds()
         {
             _sounds = new List<Sound>();
+        }
+
+        public MapSoundsFormatVersion FormatVersion
+        {
+            get => _version;
+            set => _version = value;
         }
 
         public static MapSounds Default => new MapSounds(Array.Empty<Sound>());
@@ -53,8 +59,8 @@ namespace War3Net.Build.Audio
                 var mapSounds = new MapSounds();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    var version = reader.ReadUInt32();
-                    if (version < 1 || version > LatestVersion)
+                    var version = (MapSoundsFormatVersion)reader.ReadUInt32();
+                    if (version < MapSoundsFormatVersion.Normal || version > LatestVersion)
                     {
                         throw new NotSupportedException($"Unknown version of {FileName}: {mapSounds._version}");
                     }
@@ -66,7 +72,7 @@ namespace War3Net.Build.Audio
                         var sound = Sound.Parse(stream, true);
                         mapSounds._sounds.Add(sound);
 
-                        if (version == 2)
+                        if (version == MapSoundsFormatVersion.Reforged)
                         {
                             var repeatSoundName = reader.ReadChars();
                             var unk1 = reader.ReadByte();
@@ -112,13 +118,13 @@ namespace War3Net.Build.Audio
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                writer.Write(_version);
+                writer.Write((uint)_version);
 
                 writer.Write(_sounds.Count);
                 foreach (var sound in _sounds)
                 {
                     sound.WriteTo(writer);
-                    if (_version == 2)
+                    if (_version == MapSoundsFormatVersion.Reforged)
                     {
                         writer.WriteString(sound.Name);
                         writer.Write((byte)0);

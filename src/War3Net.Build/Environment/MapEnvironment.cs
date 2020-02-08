@@ -22,7 +22,7 @@ namespace War3Net.Build.Environment
     {
         public const string FileName = "war3map.w3e";
         public const uint HeaderSignature = 0x21453357; // "W3E!"
-        public const uint LatestVersion = 11;
+        public const MapEnvironmentFormatVersion LatestVersion = MapEnvironmentFormatVersion.Normal;
 
         private const int DefaultCliffLevel = 2;
         private const int TerrainTypeLimit = 16;
@@ -32,7 +32,7 @@ namespace War3Net.Build.Environment
         private readonly List<MapTile> _tiles;
 
         private Tileset _tileset;
-        private uint _version;
+        private MapEnvironmentFormatVersion _version;
 
         private uint _width;
         private uint _height;
@@ -211,6 +211,12 @@ namespace War3Net.Build.Environment
             _tiles = new List<MapTile>();
         }
 
+        public MapEnvironmentFormatVersion FormatVersion
+        {
+            get => _version;
+            set => _version = value;
+        }
+
         public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
 
         public static bool IsRequired => true;
@@ -255,7 +261,7 @@ namespace War3Net.Build.Environment
                         throw new InvalidDataException($"Expected file header signature at the start of a {FileName} file.");
                     }
 
-                    environment._version = reader.ReadUInt32();
+                    environment._version = (MapEnvironmentFormatVersion)reader.ReadUInt32();
                     if (environment._version != LatestVersion)
                     {
                         throw new NotSupportedException($"Unknown version of {FileName}: {environment._version}");
@@ -316,7 +322,7 @@ namespace War3Net.Build.Environment
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 writer.Write(HeaderSignature);
-                writer.Write(_version);
+                writer.Write((uint)_version);
                 writer.Write((char)_tileset);
                 writer.Write(IsDefaultTileset() ? 0 : 1);
 
