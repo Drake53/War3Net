@@ -47,12 +47,9 @@ namespace War3Net.Build.Widget
         {
             get
             {
-                if (this.Any(unit => unit.Skin != null))
-                {
-                    return MapUnitsFormatVersion.Reforged;
-                }
-
-                return _header.UseTftParser ? MapUnitsFormatVersion.Tft : MapUnitsFormatVersion.Roc;
+                return this.All(unit => string.IsNullOrEmpty(unit.Skin))
+                    ? _header.UseTftParser ? MapUnitsFormatVersion.Tft : MapUnitsFormatVersion.Roc
+                    : MapUnitsFormatVersion.Reforged;
             }
 
             set
