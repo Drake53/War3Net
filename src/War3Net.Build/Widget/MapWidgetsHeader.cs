@@ -21,9 +21,17 @@ namespace War3Net.Build.Widget
         private MapWidgetsSubVersion _subVersion;
         private uint _dataCount;
 
-        public MapWidgetsVersion Version => _version;
+        public MapWidgetsVersion Version
+        {
+            get => _version;
+            internal set => _version = value;
+        }
 
-        public MapWidgetsSubVersion SubVersion => _subVersion;
+        public MapWidgetsSubVersion SubVersion
+        {
+            get => _subVersion;
+            internal set => _subVersion = value;
+        }
 
         public uint DataCount => _dataCount;
 

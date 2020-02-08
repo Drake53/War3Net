@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Build.Widget
@@ -41,6 +42,39 @@ namespace War3Net.Build.Widget
         public static MapUnits Default => new MapUnits(Array.Empty<MapUnitData>());
 
         public static bool IsRequired => false;
+
+        public MapUnitsFormatVersion FormatVersion
+        {
+            get
+            {
+                if (this.Any(unit => unit.Skin != null))
+                {
+                    return MapUnitsFormatVersion.Reforged;
+                }
+
+                return _header.UseTftParser ? MapUnitsFormatVersion.Tft : MapUnitsFormatVersion.Roc;
+            }
+
+            set
+            {
+                var haveSkin = value == MapUnitsFormatVersion.Reforged;
+                foreach (var unit in _units)
+                {
+                    unit.Skin = haveSkin ? unit.TypeId : null;
+                }
+
+                if (value == MapUnitsFormatVersion.Roc)
+                {
+                    _header.Version = MapWidgetsVersion.RoC;
+                    _header.SubVersion = MapWidgetsSubVersion.V9;
+                }
+                else
+                {
+                    _header.Version = MapWidgetsVersion.TFT;
+                    _header.SubVersion = MapWidgetsSubVersion.V11;
+                }
+            }
+        }
 
         public int Count => _units.Count;
 
