@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.1.1
+### Bugfixes
+- Replace Regex.Escape, which escapes too many characters (eg '.').
+- Update CSharpLua to v1.5.9, which has some more bug fixes.
+
 ## v1.1.0
 ### Changes
 - Default FormatVersion for MapInfo set back to v1.31 format.
@@ -33,3 +38,4 @@
 - Sounds paths in war3map.w3s files are now correctly escaped.
 ### Breaking changes
 - Strings from MapInfo.MapName, MapInfo.MapDescription, and Options.LobbyMusic are now automatically escaped in the map script.
+	- This change introduced a bug, that has been fixed in v1.1.1
