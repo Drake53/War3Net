@@ -42,7 +42,7 @@ namespace War3Net.Build.Script.Main
                         builder.GenerateBooleanLiteralExpression(true));
                 }
 
-                if (region.AmbientSound != null)
+                if (!string.IsNullOrEmpty(region.AmbientSound))
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetSoundPosition),
