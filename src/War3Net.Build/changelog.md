@@ -1,5 +1,9 @@
 # War3Net.Build Changelog
 
+## v1.1.2
+### Bugfixes
+- Fix MapRegions containing regions without sound generates invalid syntax.
+
 ## v1.1.1
 ### Bugfixes
 - Replace Regex.Escape, which escapes too many characters (eg '.').
