@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using War3Net.Common.Extensions;
-
 namespace War3Net.Build.Audio
 {
     public sealed class MapSounds : IEnumerable<Sound>
@@ -69,27 +67,8 @@ namespace War3Net.Build.Audio
                     var soundCount = reader.ReadUInt32();
                     for (var i = 0; i < soundCount; i++)
                     {
-                        var sound = Sound.Parse(stream, true);
+                        var sound = Sound.Parse(stream, version, true);
                         mapSounds._sounds.Add(sound);
-
-                        if (version == MapSoundsFormatVersion.Reforged)
-                        {
-                            var repeatSoundName = reader.ReadChars();
-                            var unk1 = reader.ReadByte();
-                            var repeatSoundPath = reader.ReadChars();
-
-                            if (repeatSoundName != sound.Name || repeatSoundPath != sound.FilePath)
-                            {
-                                throw new InvalidDataException();
-                            }
-
-                            var unk2 = reader.ReadInt32();
-                            var unk3 = reader.ReadByte();
-                            var unk4 = reader.ReadInt32();
-                            var unk5 = reader.ReadByte();
-                            var unk6 = reader.ReadInt32();
-                            var unk7 = reader.ReadInt32();
-                        }
                     }
                 }
 
@@ -123,20 +102,12 @@ namespace War3Net.Build.Audio
                 writer.Write(_sounds.Count);
                 foreach (var sound in _sounds)
                 {
-                    sound.WriteTo(writer);
-                    if (_version == MapSoundsFormatVersion.Reforged)
+                    if ((_version >= MapSoundsFormatVersion.Reforged) != (sound.SoundName != null))
                     {
-                        writer.WriteString(sound.Name);
-                        writer.Write((byte)0);
-                        writer.WriteString(sound.FilePath);
-
-                        writer.Write(-1);
-                        writer.Write((byte)0);
-                        writer.Write(-1);
-                        writer.Write((byte)0);
-                        writer.Write(0);
-                        writer.Write(0);
+                        throw new InvalidDataException($"The .w3s file has a {(_version >= MapSoundsFormatVersion.Reforged ? string.Empty : "non-")}Reforged file format version, but contains {(sound.SoundName != null ? string.Empty : "non-")}Reforged SoundData.");
                     }
+
+                    sound.WriteTo(writer);
                 }
             }
         }

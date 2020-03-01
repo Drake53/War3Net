@@ -16,6 +16,7 @@ namespace War3Net.Build.Audio
     public sealed class Sound
     {
         private string _variableName;
+        private string _soundName; // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
         private string _filePath;
         private string _eaxSetting; // TODO: enum?
 
@@ -40,6 +41,8 @@ namespace War3Net.Build.Audio
         private Vector3 _coneOrientation;
 
         public string Name => _variableName;
+
+        public string SoundName => _soundName;
 
         public string FilePath => _filePath;
 
@@ -73,6 +76,11 @@ namespace War3Net.Build.Audio
 
         public static Sound Parse(Stream stream, bool leaveOpen)
         {
+            return Parse(stream, MapSoundsFormatVersion.Normal, leaveOpen);
+        }
+
+        public static Sound Parse(Stream stream, MapSoundsFormatVersion formatVersion, bool leaveOpen)
+        {
             var sound = new Sound();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
@@ -99,6 +107,25 @@ namespace War3Net.Build.Audio
                 sound._coneOutside = reader.ReadSingle();
                 sound._coneOutsideVolume = reader.ReadInt32();
                 sound._coneOrientation = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+
+                if (formatVersion >= MapSoundsFormatVersion.Reforged)
+                {
+                    var repeatVariableName = reader.ReadChars();
+                    sound._soundName = reader.ReadChars();
+                    var repeatSoundPath = reader.ReadChars();
+
+                    if (repeatVariableName != sound.Name || repeatSoundPath != sound.FilePath)
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    var unk2 = reader.ReadInt32();
+                    var unk3 = reader.ReadByte();
+                    var unk4 = reader.ReadInt32();
+                    var unk5 = reader.ReadByte();
+                    var unk6 = reader.ReadInt32();
+                    var unk7 = reader.ReadInt32();
+                }
             }
 
             return sound;
@@ -138,6 +165,21 @@ namespace War3Net.Build.Audio
             writer.Write(_coneOrientation.X);
             writer.Write(_coneOrientation.Y);
             writer.Write(_coneOrientation.Z);
+
+            if (_soundName != null)
+            {
+                // Write reforged sound data.
+                writer.WriteString(_variableName);
+                writer.WriteString(_soundName);
+                writer.WriteString(_filePath);
+
+                writer.Write(-1);
+                writer.Write((byte)0);
+                writer.Write(-1);
+                writer.Write((byte)0);
+                writer.Write(0);
+                writer.Write(0);
+            }
         }
     }
 }
