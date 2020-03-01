@@ -1,5 +1,9 @@
 # War3Net.Build Changelog
 
+## v1.1.3
+### Bugfixes
+- Fix MapSounds reforged file format was not parsed correctly.
+
 ## v1.1.2
 ### Bugfixes
 - Fix MapRegions containing regions without sound generates invalid syntax.
