@@ -112,6 +112,17 @@ namespace War3Net.Build.Audio
             }
         }
 
+        public Sound GetSound(int index)
+        {
+            return _sounds[index];
+        }
+
+        public void SetSounds(params Sound[] sounds)
+        {
+            _sounds.Clear();
+            _sounds.AddRange(sounds);
+        }
+
         public IEnumerator<Sound> GetEnumerator()
         {
             return ((IEnumerable<Sound>)_sounds).GetEnumerator();

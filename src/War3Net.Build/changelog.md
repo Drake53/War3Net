@@ -1,5 +1,11 @@
 # War3Net.Build Changelog
 
+## v1.1.4
+### Changes
+- Added setters for Sound properties.
+- Added get/set methods in MapSounds to handle sound collection.
+- Update CSharpLua to v1.5.10, and War3Api to v1.32.2
+
 ## v1.1.3
 ### Bugfixes
 - Fix MapSounds reforged file format was not parsed correctly.

@@ -40,39 +40,107 @@ namespace War3Net.Build.Audio
         private int _coneOutsideVolume;
         private Vector3 _coneOrientation;
 
-        public string Name => _variableName;
+        public string Name
+        {
+            get => _variableName;
+            set => _variableName = value;
+        }
 
-        public string SoundName => _soundName;
+        public string SoundName
+        {
+            get => _soundName;
+            set => _soundName = value;
+        }
 
-        public string FilePath => _filePath;
+        public string FilePath
+        {
+            get => _filePath;
+            set => _filePath = value;
+        }
 
-        public string EaxSetting => _eaxSetting;
+        public string EaxSetting
+        {
+            get => _eaxSetting;
+            set => _eaxSetting = value;
+        }
 
-        public SoundFlags Flags => _flags;
+        public SoundFlags Flags
+        {
+            get => _flags;
+            set => _flags = value;
+        }
 
-        public int FadeInRate => _fadeInRate;
+        public int FadeInRate
+        {
+            get => _fadeInRate;
+            set => _fadeInRate = value;
+        }
 
-        public int FadeOutRate => _fadeOutRate;
+        public int FadeOutRate
+        {
+            get => _fadeOutRate;
+            set => _fadeOutRate = value;
+        }
 
-        public int Volume => _volume;
+        public int Volume
+        {
+            get => _volume;
+            set => _volume = value;
+        }
 
-        public float Pitch => _pitch;
+        public float Pitch
+        {
+            get => _pitch;
+            set => _pitch = value;
+        }
 
-        public SoundChannel Channel => _channel;
+        public SoundChannel Channel
+        {
+            get => _channel;
+            set => _channel = value;
+        }
 
-        public float MinDistance => _minDistance;
+        public float MinDistance
+        {
+            get => _minDistance;
+            set => _minDistance = value;
+        }
 
-        public float MaxDistance => _maxDistance;
+        public float MaxDistance
+        {
+            get => _maxDistance;
+            set => _maxDistance = value;
+        }
 
-        public float DistanceCutoff => _distanceCutoff;
+        public float DistanceCutoff
+        {
+            get => _distanceCutoff;
+            set => _distanceCutoff = value;
+        }
 
-        public float ConeAngleInside => _coneInside;
+        public float ConeAngleInside
+        {
+            get => _coneInside;
+            set => _coneInside = value;
+        }
 
-        public float ConeAngleOutside => _coneOutside;
+        public float ConeAngleOutside
+        {
+            get => _coneOutside;
+            set => _coneOutside = value;
+        }
 
-        public int ConeOutsideVolume => _coneOutsideVolume;
+        public int ConeOutsideVolume
+        {
+            get => _coneOutsideVolume;
+            set => _coneOutsideVolume = value;
+        }
 
-        public Vector3 ConeOrientation => _coneOrientation;
+        public Vector3 ConeOrientation
+        {
+            get => _coneOrientation;
+            set => _coneOrientation = value;
+        }
 
         public static Sound Parse(Stream stream, bool leaveOpen)
         {
