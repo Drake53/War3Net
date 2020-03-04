@@ -42,16 +42,11 @@ namespace War3Net.Build.Script
 
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string typeName, string name)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
-            var variableList = new List<LuaVariableListDeclarationSyntax>();
+            var variableList = new List<LuaLocalVariableDeclaratorSyntax>();
             if (locals != null)
             {
-                // variableList.Variables.AddRange(locals.Select(localDeclaration => new LuaVariableDeclaratorSyntax(localDeclaration.name)));
-                variableList = locals.Select(localDeclaration =>
-                {
-                    var variableDeclaration = new LuaVariableListDeclarationSyntax();
-                    variableDeclaration.Variables.Add(new LuaVariableDeclaratorSyntax(localDeclaration.name));
-                    return variableDeclaration;
-                }).ToList();
+                variableList = locals.Select(localDeclaration
+                    => new LuaLocalVariableDeclaratorSyntax(new LuaVariableDeclaratorSyntax(localDeclaration.name))).ToList();
             }
 
             var functionSyntax = new LuaFunctionExpressionSyntax();
@@ -68,15 +63,11 @@ namespace War3Net.Build.Script
 
         public override LuaVariableListDeclarationSyntax Build(string functionName, IEnumerable<(string typeName, string name, LuaExpressionSyntax value)> locals, IEnumerable<LuaStatementSyntax> statements)
         {
-            var variableList = new List<LuaVariableListDeclarationSyntax>();
+            var variableList = new List<LuaLocalVariableDeclaratorSyntax>();
             if (locals != null)
             {
-                variableList = locals.Select(localDeclaration =>
-                {
-                    var variableDeclaration = new LuaVariableListDeclarationSyntax();
-                    variableDeclaration.Variables.Add(new LuaVariableDeclaratorSyntax(localDeclaration.name, localDeclaration.value));
-                    return variableDeclaration;
-                }).ToList();
+                variableList = locals.Select(localDeclaration
+                    => new LuaLocalVariableDeclaratorSyntax(new LuaVariableDeclaratorSyntax(localDeclaration.name, localDeclaration.value))).ToList();
             }
 
             var functionSyntax = new LuaFunctionExpressionSyntax();
