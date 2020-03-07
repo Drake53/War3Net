@@ -74,7 +74,7 @@ namespace War3Net.Common.Testing
             {
                 if (lengthToCheck - lengthRemaining1 > 0 || lengthToCheck - lengthRemaining2 > 0)
                 {
-                    message += $"[Error]: Streams have different length: {lengthRemaining1} vs {lengthRemaining2}.\r\n";
+                    message += $"[Error]: Streams have different length: expected {lengthRemaining1}, actual {lengthRemaining2}.\r\n";
                     result = false;
                 }
             }
