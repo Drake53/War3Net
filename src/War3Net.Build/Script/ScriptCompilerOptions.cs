@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,6 +59,8 @@ namespace War3Net.Build.Script
 
         public MapSounds? MapSounds { get; set; }
 
+        public MapPreviewIcons? MapIcons { get; set; }
+
         public string LobbyMusic { get; set; }
 
         internal List<string> Libraries { get; private set; }
@@ -86,6 +89,7 @@ namespace War3Net.Build.Script
                 MapUnits.FileName => MapUnits,
                 MapRegions.FileName => MapRegions,
                 MapSounds.FileName => MapSounds,
+                MapPreviewIcons.FileName => MapIcons,
 
                 _ => null,
             };
@@ -121,9 +125,13 @@ namespace War3Net.Build.Script
             {
                 MapSounds = mapSounds;
             }
+            else if (file is MapPreviewIcons mapIcons)
+            {
+                MapIcons = mapIcons;
+            }
             else
             {
-                return false;
+                throw new ArgumentException("The object is not a map file.", nameof(file));
             }
 
             return true;
