@@ -11,6 +11,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Info;
+using War3Net.Build.Providers;
+using War3Net.Build.Widget;
+
 namespace War3Net.Build.Environment
 {
     public sealed class MapPreviewIcons : IEnumerable<MapPreviewIcon>
@@ -21,6 +25,42 @@ namespace War3Net.Build.Environment
         private readonly List<MapPreviewIcon> _icons;
 
         private MapPreviewIconsFormatVersion _version;
+
+        public MapPreviewIcons(MapInfo info, MapEnvironment environment, MapUnits units)
+        {
+            var padding = info.CameraBoundsComplements;
+
+            var minX = environment.Left + (128 * padding.Left);
+            var width = environment.Right - (128 * padding.Right) - minX;
+
+            var minY = environment.Bottom + (128 * padding.Bottom);
+            var height = environment.Top - (128 * padding.Top) - minY;
+
+            var ratio = width / height;
+            var sizeX = 255 * (ratio > 1 ? 1 : ratio);
+            var sizeY = 255 * (ratio > 1 ? 1 / ratio : 1);
+
+            var lowerX = 1 + (0.5f * (255 - sizeX));
+            var upperY = 1 + (0.5f * (255 + sizeY));
+
+            sizeX /= width;
+            sizeY /= height;
+
+            _icons = new List<MapPreviewIcon>();
+            foreach (var unit in units)
+            {
+                if (MapPreviewIconProvider.TryGetIcon(unit.TypeId, unit.Owner, out var iconType, out var iconColor))
+                {
+                    _icons.Add(new MapPreviewIcon()
+                    {
+                        IconType = iconType,
+                        X = (byte)(lowerX + (sizeX * (unit.PositionX - minX))),
+                        Y = (byte)(upperY - (sizeY * (unit.PositionY - minY))),
+                        Color = iconColor,
+                    });
+                }
+            }
+        }
 
         public MapPreviewIcons(IEnumerable<MapPreviewIcon> icons)
         {
