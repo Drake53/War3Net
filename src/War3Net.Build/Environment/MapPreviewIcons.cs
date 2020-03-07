@@ -26,7 +26,7 @@ namespace War3Net.Build.Environment
 
         private MapPreviewIconsFormatVersion _version;
 
-        public MapPreviewIcons(MapInfo info, MapEnvironment environment, MapUnits units)
+        public MapPreviewIcons(MapInfo info, MapEnvironment environment, MapUnits? units)
         {
             var padding = info.CameraBoundsComplements;
 
@@ -47,17 +47,20 @@ namespace War3Net.Build.Environment
             sizeY /= height;
 
             _icons = new List<MapPreviewIcon>();
-            foreach (var unit in units)
+            if (units != null)
             {
-                if (MapPreviewIconProvider.TryGetIcon(unit.TypeId, unit.Owner, out var iconType, out var iconColor))
+                foreach (var unit in units)
                 {
-                    _icons.Add(new MapPreviewIcon()
+                    if (MapPreviewIconProvider.TryGetIcon(unit.TypeId, unit.Owner, out var iconType, out var iconColor))
                     {
-                        IconType = iconType,
-                        X = (byte)(lowerX + (sizeX * (unit.PositionX - minX))),
-                        Y = (byte)(upperY - (sizeY * (unit.PositionY - minY))),
-                        Color = iconColor,
-                    });
+                        _icons.Add(new MapPreviewIcon()
+                        {
+                            IconType = iconType,
+                            X = (byte)(lowerX + (sizeX * (unit.PositionX - minX))),
+                            Y = (byte)(upperY - (sizeY * (unit.PositionY - minY))),
+                            Color = iconColor,
+                        });
+                    }
                 }
             }
         }

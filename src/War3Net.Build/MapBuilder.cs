@@ -187,7 +187,8 @@ namespace War3Net.Build
                 !TrySetMapFile(new MapFileHandler<MapDoodads>()) ||
                 !TrySetMapFile(new MapFileHandler<MapUnits>()) ||
                 !TrySetMapFile(new MapFileHandler<MapRegions>()) ||
-                !TrySetMapFile(new MapFileHandler<MapSounds>()))
+                !TrySetMapFile(new MapFileHandler<MapSounds>()) ||
+                !TrySetMapFile(new MapFileHandler<MapPreviewIcons>(), () => new MapPreviewIcons(compilerOptions.MapInfo, compilerOptions.MapEnvironment, compilerOptions.MapUnits)))
             {
                 return GenerateResult();
             }
