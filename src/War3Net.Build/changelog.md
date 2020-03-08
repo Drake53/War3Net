@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.2.0
+### Changes
+- Support war3map.mmp files.
+- Support water tinting color.
+
 ## v1.1.4
 ### Changes
 - Added setters for Sound properties.
