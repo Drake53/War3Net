@@ -30,9 +30,9 @@ namespace War3Net.Build.Info
         HasTerrainFog = 0x2000,
         RequiresExpansion = 0x4000,
         UseItemClassificationSystem = 0x8000,
+        HasWaterTintingColor = 0x10000,
 
         // Reforged only
-        Unk0 = 0x10000, // this flag may be unused
         AccurateProbabilityForCalculations = 0x20000,
         CustomAbilitySkin = 0x40000,
     }

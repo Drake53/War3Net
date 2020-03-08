@@ -216,6 +216,16 @@ namespace War3Net.Build.Script.Main
                     builder.GenerateFloatLiteralExpression(mapInfo.FogColor.B / 255f));
             }
 
+            if (mapInfo.MapFlags.HasFlag(MapFlags.HasWaterTintingColor))
+            {
+                yield return builder.GenerateInvocationStatement(
+                    nameof(War3Api.Common.SetWaterBaseColor),
+                    builder.GenerateIntegerLiteralExpression(mapInfo.WaterTintingColor.R),
+                    builder.GenerateIntegerLiteralExpression(mapInfo.WaterTintingColor.G),
+                    builder.GenerateIntegerLiteralExpression(mapInfo.WaterTintingColor.B),
+                    builder.GenerateIntegerLiteralExpression(mapInfo.WaterTintingColor.A));
+            }
+
             if (mapInfo.GlobalWeather != WeatherType.None)
             {
                 // TODO: use GetWorldBounds or get coords from w3i/w3e
