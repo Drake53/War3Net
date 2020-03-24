@@ -25,6 +25,32 @@ namespace War3Net.Build.Providers
             return File.Create(path);
         }
 
+        public static bool FileExists(string path)
+        {
+            if (File.Exists(path))
+            {
+                return true;
+            }
+            else
+            {
+                // Check if file is contained in an mpq archive.
+                var subPath = path;
+                var fullPath = new FileInfo(path).FullName;
+                while (!File.Exists(subPath))
+                {
+                    subPath = new FileInfo(subPath).DirectoryName;
+                }
+
+                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith("\\") ? 0 : 1));
+
+                using (var archive = MpqArchive.Open(subPath))
+                {
+                    return archive.FileExists(relativePath);
+                }
+            }
+        }
+
+        /// <exception cref="FileNotFoundException"></exception>
         public static Stream GetFile(string path)
         {
             if (File.Exists(path))
