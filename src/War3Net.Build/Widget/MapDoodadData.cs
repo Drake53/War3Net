@@ -100,6 +100,8 @@ namespace War3Net.Build.Widget
             }
         }
 
+        public bool HasSkin => (_skin?.Length ?? 0) == 4 && new string(_skin) != new string(_typeId);
+
         public DoodadState State => _state;
 
         public byte Life => _life;
@@ -159,6 +161,11 @@ namespace War3Net.Build.Widget
                 }
 
                 doodadData._state = (DoodadState)reader.ReadByte();
+                if ((int)doodadData._state >= 8)
+                {
+                    throw new InvalidDataException($"Invalid doodad state: {doodadData._state}.");
+                }
+
                 doodadData._life = reader.ReadByte();
 
                 if (version >= MapWidgetsVersion.TFT)
@@ -219,6 +226,11 @@ namespace War3Net.Build.Widget
             }
 
             writer.Write(_creationNumber);
+        }
+
+        public override string ToString()
+        {
+            return $"{TypeId}{(HasSkin ? $" ({Skin})" : string.Empty)}";
         }
     }
 }

@@ -5,12 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.Build.Widget
 {
+    [Flags]
     public enum DoodadState
     {
         NonSolidInvisible = 0,
         NonSolidVisible = 1,
         Normal = 2,
+
+        WithZ = 4,
     }
 }

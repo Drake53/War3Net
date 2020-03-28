@@ -8,6 +8,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Widget;
+
 namespace War3Net.Build.Script.Main
 {
     internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
@@ -29,17 +31,22 @@ namespace War3Net.Build.Script.Main
         {
             foreach (var destructable in builder.Data.MapDoodads.Where(mapDoodad => mapDoodad.DroppedItemData.FirstOrDefault() != null))
             {
-                var args = new List<TExpressionSyntax>()
-                {
-                    builder.GenerateFourCCExpression(destructable.TypeId),
-                    builder.GenerateFloatLiteralExpression(destructable.PositionX),
-                    builder.GenerateFloatLiteralExpression(destructable.PositionY),
-                    builder.GenerateFloatLiteralExpression(destructable.FacingDeg),
-                    builder.GenerateFloatLiteralExpression(destructable.ScaleX),
-                    builder.GenerateIntegerLiteralExpression(destructable.Variation),
-                };
+                var isDead = destructable.Life == 0;
+                var hasZ = destructable.State.HasFlag(DoodadState.WithZ);
+                var hasSkin = destructable.HasSkin;
 
-                var hasSkin = (destructable.Skin?.Length ?? 0) == 4 && destructable.Skin != destructable.TypeId;
+                var args = new List<TExpressionSyntax>();
+                args.Add(builder.GenerateFourCCExpression(destructable.TypeId));
+                args.Add(builder.GenerateFloatLiteralExpression(destructable.PositionX));
+                args.Add(builder.GenerateFloatLiteralExpression(destructable.PositionY));
+                if (hasZ)
+                {
+                    args.Add(builder.GenerateFloatLiteralExpression(destructable.PositionZ));
+                }
+
+                args.Add(builder.GenerateFloatLiteralExpression(destructable.FacingDeg));
+                args.Add(builder.GenerateFloatLiteralExpression(destructable.ScaleX));
+                args.Add(builder.GenerateIntegerLiteralExpression(destructable.Variation));
                 if (hasSkin)
                 {
                     args.Add(builder.GenerateFourCCExpression(destructable.Skin));
@@ -49,11 +56,23 @@ namespace War3Net.Build.Script.Main
                     LocalDestructableVariableName,
                     builder.GenerateInvocationExpression(
                         hasSkin
-                            ? nameof(War3Api.Common.BlzCreateDestructableWithSkin)
-                            : nameof(War3Api.Common.CreateDestructable),
+                            ? hasZ
+                                ? isDead
+                                    ? nameof(War3Api.Common.BlzCreateDeadDestructableZWithSkin)
+                                    : nameof(War3Api.Common.BlzCreateDestructableZWithSkin)
+                                : isDead
+                                    ? nameof(War3Api.Common.BlzCreateDeadDestructableWithSkin)
+                                    : nameof(War3Api.Common.BlzCreateDestructableWithSkin)
+                            : hasZ
+                                ? isDead
+                                    ? nameof(War3Api.Common.CreateDeadDestructableZ)
+                                    : nameof(War3Api.Common.CreateDestructableZ)
+                                : isDead
+                                    ? nameof(War3Api.Common.CreateDeadDestructable)
+                                    : nameof(War3Api.Common.CreateDestructable),
                         args.ToArray()));
 
-                if (destructable.Life != 100)
+                if (!isDead && destructable.Life != 100)
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetDestructableLife),
