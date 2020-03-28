@@ -833,7 +833,7 @@ namespace War3Net.Build.Info
                 {
                     if ((_fileFormatVersion >= MapInfoFormatVersion.Reforged) != (data is ReforgedPlayerData))
                     {
-                        throw new InvalidDataException($"The .w3i file has a {(_fileFormatVersion >= MapInfoFormatVersion.Reforged ? string.Empty : "non-")}Reforged file format version, but contains {(data is ReforgedPlayerData ? string.Empty : "non-")}Reforged PlayerData.");
+                        throw new InvalidDataException($"The '{FileName}' file has a {(_fileFormatVersion >= MapInfoFormatVersion.Reforged ? string.Empty : "non-")}Reforged file format version, but contains {(data is ReforgedPlayerData ? string.Empty : "non-")}Reforged PlayerData.");
                     }
 
                     data.WriteTo(writer);
@@ -872,6 +872,11 @@ namespace War3Net.Build.Info
                     }
                 }
             }
+        }
+
+        public void SetGameVersion(GamePatch gamePatch)
+        {
+            _gameVersion = GamePatchVersionProvider.GetPatchVersion(gamePatch);
         }
 
         public void SetSoundEnvironment(SoundEnvironment soundEnvironment)

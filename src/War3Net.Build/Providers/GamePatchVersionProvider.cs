@@ -11,12 +11,14 @@ using War3Net.Build.Common;
 
 namespace War3Net.Build.Providers
 {
+    // https://wow.gamepedia.com/Warcraft_client_builds
     public static class GamePatchVersionProvider
     {
         public static Version GetPatchVersion(GamePatch gamePatch)
         {
             return gamePatch switch
             {
+#pragma warning disable SA1025 // Code should not contain multiple whitespace in a row
                 GamePatch.v1_00   => new Version(1,  0, 0,  4448),
                 GamePatch.v1_01   => new Version(1,  1, 0,  4482),
                 GamePatch.v1_01b  => new Version(1,  1, 2,  4483),
@@ -79,6 +81,9 @@ namespace War3Net.Build.Providers
                 GamePatch.v1_31_1 => new Version(1, 31, 1, 12164),
                 GamePatch.v1_32_0 => new Version(1, 32, 0, 14481),
                 GamePatch.v1_32_1 => new Version(1, 32, 1, 14604),
+                GamePatch.v1_32_2 => new Version(1, 32, 2, 14722),
+                GamePatch.v1_32_3 => new Version(1, 32, 3, 14883),
+#pragma warning restore SA1025 // Code should not contain multiple whitespace in a row
             };
         }
     }

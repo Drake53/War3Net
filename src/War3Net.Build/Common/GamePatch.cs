@@ -77,5 +77,7 @@ namespace War3Net.Build.Common
         // Reforged
         v1_32_0,
         v1_32_1,
+        v1_32_2,
+        v1_32_3,
     }
 }
