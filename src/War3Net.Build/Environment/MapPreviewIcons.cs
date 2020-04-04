@@ -80,15 +80,15 @@ namespace War3Net.Build.Environment
             _icons = new List<MapPreviewIcon>();
         }
 
+        public static MapPreviewIcons Default => new MapPreviewIcons(Array.Empty<MapPreviewIcon>());
+
+        public static bool IsRequired => false;
+
         public MapPreviewIconsFormatVersion FormatVersion
         {
             get => _version;
             set => _version = value;
         }
-
-        public static MapPreviewIcons Default => new MapPreviewIcons(Array.Empty<MapPreviewIcon>());
-
-        public static bool IsRequired => false;
 
         public static MapPreviewIcons Parse(Stream stream, bool leaveOpen = false)
         {

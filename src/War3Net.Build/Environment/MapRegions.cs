@@ -33,15 +33,15 @@ namespace War3Net.Build.Environment
             _regions = new List<Region>();
         }
 
+        public static MapRegions Default => new MapRegions(Array.Empty<Region>());
+
+        public static bool IsRequired => false;
+
         public MapRegionsFormatVersion FormatVersion
         {
             get => _version;
             set => _version = value;
         }
-
-        public static MapRegions Default => new MapRegions(Array.Empty<Region>());
-
-        public static bool IsRequired => false;
 
         public int Count => _regions.Count;
 

@@ -38,15 +38,15 @@ namespace War3Net.Build.Audio
             _sounds = new List<Sound>();
         }
 
+        public static MapSounds Default => new MapSounds(Array.Empty<Sound>());
+
+        public static bool IsRequired => false;
+
         public MapSoundsFormatVersion FormatVersion
         {
             get => _version;
             set => _version = value;
         }
-
-        public static MapSounds Default => new MapSounds(Array.Empty<Sound>());
-
-        public static bool IsRequired => false;
 
         public int Count => _sounds.Count;
 

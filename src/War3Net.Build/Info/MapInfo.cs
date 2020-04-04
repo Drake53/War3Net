@@ -88,6 +88,103 @@ namespace War3Net.Build.Info
             _itemTables = new List<RandomItemTable>();
         }
 
+        public static MapInfo Default
+        {
+            get
+            {
+                var info = new MapInfo();
+
+                info._fileFormatVersion = MapInfoFormatVersion.Lua;
+                info._mapVersion = 1;
+                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
+                info._gameVersion = GamePatchVersionProvider.GetPatchVersion(GamePatch.v1_31_0);
+
+                info._mapName = "Just another Warcraft III map";
+                info._mapAuthor = "Unknown";
+                info._mapDescription = "Nondescript";
+                info._recommendedPlayers = "Any";
+
+                const int DefaultSize = 32;
+                const int DefaultLeftComplement = 6;
+                const int DefaultRightComplement = 6;
+                const int DefaultTopComplement = 8;
+                const int DefaultBottomComplement = 4;
+                const int DefaultHorizontalBoundsOffset = 4;
+                const int DefaultVerticalBoundsOffset = 2;
+                const float TileSize = 128f;
+                info._cameraBounds = new Quadrilateral(
+                    -TileSize * (DefaultSize - DefaultLeftComplement - DefaultHorizontalBoundsOffset),
+                    TileSize * (DefaultSize - DefaultRightComplement - DefaultHorizontalBoundsOffset),
+                    TileSize * (DefaultSize - DefaultTopComplement - DefaultVerticalBoundsOffset),
+                    -TileSize * (DefaultSize - DefaultBottomComplement - DefaultVerticalBoundsOffset));
+                info._cameraBoundsComplements = new RectangleMargins(DefaultLeftComplement, DefaultRightComplement, DefaultBottomComplement, DefaultTopComplement);
+                info._playableMapAreaWidth = (2 * DefaultSize) - DefaultLeftComplement - DefaultRightComplement;
+                info._playableMapAreaHeight = (2 * DefaultSize) - DefaultBottomComplement - DefaultTopComplement;
+
+                info._mapFlags
+                    = MapFlags.UseItemClassificationSystem
+                    | MapFlags.ShowWaterWavesOnRollingShores
+                    | MapFlags.ShowWaterWavesOnCliffShores
+                    | MapFlags.MeleeMap
+                    | MapFlags.MaskedAreasArePartiallyVisible
+                    | MapFlags.HasMapPropertiesMenuBeenOpened;
+                info._tileset = Tileset.LordaeronSummer;
+
+                info._loadingScreenBackgroundNumber = -1;
+                info._loadingScreenPath = string.Empty;
+                info._loadingScreenText = string.Empty;
+                info._loadingScreenTitle = string.Empty;
+                info._loadingScreenSubtitle = string.Empty;
+
+                info._gameDataSet = GameDataSet.Unset;
+
+                info._prologueScreenPath = string.Empty;
+                info._prologueScreenText = string.Empty;
+                info._prologueScreenTitle = string.Empty;
+                info._prologueScreenSubtitle = string.Empty;
+
+                info._fogStyle = FogStyle.Linear;
+                info._fogStartZ = 3000f;
+                info._fogEndZ = 5000f;
+                info._fogDensity = 0.5f;
+                info._fogColor = Color.Black;
+
+                info._globalWeather = WeatherType.None;
+                info._soundEnvironment = string.Empty;
+                info._lightEnvironment = 0;
+                info._waterTintingColor = Color.White;
+
+                info._scriptLanguage = ScriptLanguage.Lua;
+
+                info._supportedModes = SupportedModes.SD | SupportedModes.HD;
+                info._gameDataVersion = GameDataVersion.TFT;
+
+                var player0 = new PlayerData()
+                {
+                    PlayerNumber = 0,
+                    PlayerName = "Player 1",
+                    PlayerController = PlayerController.User,
+                    PlayerRace = PlayerRace.Human,
+                    IsRaceSelectable = false,
+                    StartPosition = new PointF(0f, 0f),
+                    FixedStartPosition = false,
+                };
+                info.SetPlayerData(player0);
+
+                var team0 = new ForceData()
+                {
+                    ForceName = "Team 1",
+                    ForceFlags = 0,
+                };
+                team0.SetPlayers(player0);
+                info.SetForceData(team0);
+
+                return info;
+            }
+        }
+
+        public static bool IsRequired => true;
+
         public MapInfoFormatVersion FormatVersion
         {
             get => _fileFormatVersion;
@@ -389,6 +486,7 @@ namespace War3Net.Build.Info
         public string SoundEnvironment
         {
             get => string.IsNullOrEmpty(_soundEnvironment) ? "Default" : _soundEnvironment;
+            set => _soundEnvironment = value;
         }
 
         public Tileset LightEnvironment
@@ -472,103 +570,6 @@ namespace War3Net.Build.Info
         public int RandomUnitTableCount => _unitTables.Count;
 
         public int RandomItemTableCount => _itemTables.Count;
-
-        public static MapInfo Default
-        {
-            get
-            {
-                var info = new MapInfo();
-
-                info._fileFormatVersion = MapInfoFormatVersion.Lua;
-                info._mapVersion = 1;
-                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
-                info._gameVersion = GamePatchVersionProvider.GetPatchVersion(GamePatch.v1_31_0);
-
-                info._mapName = "Just another Warcraft III map";
-                info._mapAuthor = "Unknown";
-                info._mapDescription = "Nondescript";
-                info._recommendedPlayers = "Any";
-
-                const int DefaultSize = 32;
-                const int DefaultLeftComplement = 6;
-                const int DefaultRightComplement = 6;
-                const int DefaultTopComplement = 8;
-                const int DefaultBottomComplement = 4;
-                const int DefaultHorizontalBoundsOffset = 4;
-                const int DefaultVerticalBoundsOffset = 2;
-                const float TileSize = 128f;
-                info._cameraBounds = new Quadrilateral(
-                    -TileSize * (DefaultSize - DefaultLeftComplement - DefaultHorizontalBoundsOffset),
-                    TileSize * (DefaultSize - DefaultRightComplement - DefaultHorizontalBoundsOffset),
-                    TileSize * (DefaultSize - DefaultTopComplement - DefaultVerticalBoundsOffset),
-                    -TileSize * (DefaultSize - DefaultBottomComplement - DefaultVerticalBoundsOffset));
-                info._cameraBoundsComplements = new RectangleMargins(DefaultLeftComplement, DefaultRightComplement, DefaultBottomComplement, DefaultTopComplement);
-                info._playableMapAreaWidth = (2 * DefaultSize) - DefaultLeftComplement - DefaultRightComplement;
-                info._playableMapAreaHeight = (2 * DefaultSize) - DefaultBottomComplement - DefaultTopComplement;
-
-                info._mapFlags
-                    = MapFlags.UseItemClassificationSystem
-                    | MapFlags.ShowWaterWavesOnRollingShores
-                    | MapFlags.ShowWaterWavesOnCliffShores
-                    | MapFlags.MeleeMap
-                    | MapFlags.MaskedAreasArePartiallyVisible
-                    | MapFlags.HasMapPropertiesMenuBeenOpened;
-                info._tileset = Tileset.LordaeronSummer;
-
-                info._loadingScreenBackgroundNumber = -1;
-                info._loadingScreenPath = string.Empty;
-                info._loadingScreenText = string.Empty;
-                info._loadingScreenTitle = string.Empty;
-                info._loadingScreenSubtitle = string.Empty;
-
-                info._gameDataSet = GameDataSet.Unset;
-
-                info._prologueScreenPath = string.Empty;
-                info._prologueScreenText = string.Empty;
-                info._prologueScreenTitle = string.Empty;
-                info._prologueScreenSubtitle = string.Empty;
-
-                info._fogStyle = FogStyle.Linear;
-                info._fogStartZ = 3000f;
-                info._fogEndZ = 5000f;
-                info._fogDensity = 0.5f;
-                info._fogColor = Color.Black;
-
-                info._globalWeather = WeatherType.None;
-                info._soundEnvironment = string.Empty;
-                info._lightEnvironment = 0;
-                info._waterTintingColor = Color.White;
-
-                info._scriptLanguage = ScriptLanguage.Lua;
-
-                info._supportedModes = SupportedModes.SD | SupportedModes.HD;
-                info._gameDataVersion = GameDataVersion.TFT;
-
-                var player0 = new PlayerData()
-                {
-                    PlayerNumber = 0,
-                    PlayerName = "Player 1",
-                    PlayerController = PlayerController.User,
-                    PlayerRace = PlayerRace.Human,
-                    IsRaceSelectable = false,
-                    StartPosition = new PointF(0f, 0f),
-                    FixedStartPosition = false,
-                };
-                info.SetPlayerData(player0);
-
-                var team0 = new ForceData()
-                {
-                    ForceName = "Team 1",
-                    ForceFlags = 0,
-                };
-                team0.SetPlayers(player0);
-                info.SetForceData(team0);
-
-                return info;
-            }
-        }
-
-        public static bool IsRequired => true;
 
         public static MapInfo Parse(Stream stream, bool leaveOpen = false)
         {

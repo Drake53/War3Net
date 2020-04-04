@@ -54,6 +54,43 @@ namespace War3Net.Build.Info
             _maps = new List<CampaignMap>();
         }
 
+        public static CampaignInfo Default
+        {
+            get
+            {
+                var info = new CampaignInfo();
+
+                info._fileFormatVersion = CampaignInfoFormatVersion.Normal;
+                info._campaignVersion = 1;
+                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
+
+                info._campaignName = "Just another Warcraft III campaign";
+                info._campaignDifficulty = "Normal";
+                info._campaignAuthor = "Unknown";
+                info._campaignDescription = "Nondescript";
+
+                info._campaignFlags = 0;
+
+                info._campaignBackgroundNumber = -1;
+                info._backgroundScreenPath = string.Empty;
+                info._minimapPath = string.Empty;
+                info._ambientSoundNumber = -1;
+                info._ambientSoundPath = string.Empty;
+
+                info._fogStyle = (FogStyle)(-1);
+                info._fogStartZ = 0f;
+                info._fogEndZ = 0f;
+                info._fogDensity = 0f;
+                info._fogColor = Color.Black;
+
+                info._race = CampaignRace.Human;
+
+                return info;
+            }
+        }
+
+        public static bool IsRequired => true;
+
         public CampaignInfoFormatVersion FormatVersion
         {
             get => _fileFormatVersion;
@@ -171,43 +208,6 @@ namespace War3Net.Build.Info
         public int MapButtonCount => _mapButtons.Count;
 
         public int MapCount => _maps.Count;
-
-        public static CampaignInfo Default
-        {
-            get
-            {
-                var info = new CampaignInfo();
-
-                info._fileFormatVersion = CampaignInfoFormatVersion.Normal;
-                info._campaignVersion = 1;
-                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
-
-                info._campaignName = "Just another Warcraft III campaign";
-                info._campaignDifficulty = "Normal";
-                info._campaignAuthor = "Unknown";
-                info._campaignDescription = "Nondescript";
-
-                info._campaignFlags = 0;
-
-                info._campaignBackgroundNumber = -1;
-                info._backgroundScreenPath = string.Empty;
-                info._minimapPath = string.Empty;
-                info._ambientSoundNumber = -1;
-                info._ambientSoundPath = string.Empty;
-
-                info._fogStyle = (FogStyle)(-1);
-                info._fogStartZ = 0f;
-                info._fogEndZ = 0f;
-                info._fogDensity = 0f;
-                info._fogColor = Color.Black;
-
-                info._race = CampaignRace.Human;
-
-                return info;
-            }
-        }
-
-        public static bool IsRequired => true;
 
         public static CampaignInfo Parse(Stream stream, bool leaveOpen = false)
         {

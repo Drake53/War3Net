@@ -211,15 +211,15 @@ namespace War3Net.Build.Environment
             _tiles = new List<MapTile>();
         }
 
+        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
+
+        public static bool IsRequired => true;
+
         public MapEnvironmentFormatVersion FormatVersion
         {
             get => _version;
             set => _version = value;
         }
-
-        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
-
-        public static bool IsRequired => true;
 
         public float Left
         {
@@ -360,13 +360,13 @@ namespace War3Net.Build.Environment
             var oldIndex = _terrainTypes.IndexOf(oldType);
             if (oldIndex == -1)
             {
-                throw new ArgumentException($"{oldType.ToString()} is not part of the tileset.");
+                throw new ArgumentException($"{oldType} is not part of the tileset.");
             }
 
             var newIndex = _terrainTypes.IndexOf(newType);
             if (newIndex == -1)
             {
-                throw new ArgumentException($"{newType.ToString()} is not part of the tileset.");
+                throw new ArgumentException($"{newType} is not part of the tileset.");
             }
 
             foreach (var tile in _tiles)
