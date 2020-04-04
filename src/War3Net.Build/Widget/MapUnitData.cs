@@ -162,6 +162,8 @@ namespace War3Net.Build.Widget
             }
         }
 
+        public bool HasSkin => (_skin?.Length ?? 0) == 4 && new string(_skin) != new string(_typeId);
+
         public byte Flags => _flags;
 
         public int Owner => _owner;
@@ -438,6 +440,11 @@ namespace War3Net.Build.Widget
             writer.Write(_customPlayerColour);
             writer.Write(_waygateDestination);
             writer.Write(_creationNumber);
+        }
+
+        public override string ToString()
+        {
+            return $"{TypeId}{(HasSkin ? $" ({Skin})" : string.Empty)}";
         }
     }
 }

@@ -164,7 +164,7 @@ namespace War3Net.Build.Environment
 
             static uint RoundUpSize(int size)
             {
-                return 1 + (uint)((size + 30) / 32) * 32;
+                return 1 + ((uint)((size + 30) / 32) * 32);
             }
 
             _version = LatestVersion;
@@ -388,6 +388,16 @@ namespace War3Net.Build.Environment
                 && AreListsEqual(_cliffTypes, GetDefaultCliffTypes().ToArray());
         }
 
+        public IEnumerator<MapTile> GetEnumerator()
+        {
+            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
+        }
+
         private static bool AreListsEqual(IList list1, IList list2)
         {
             var count = list1.Count;
@@ -415,16 +425,6 @@ namespace War3Net.Build.Environment
         private IEnumerable<CliffType> GetDefaultCliffTypes()
         {
             return TerrainTypeProvider.GetCliffTypes(_tileset);
-        }
-
-        public IEnumerator<MapTile> GetEnumerator()
-        {
-            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
         }
     }
 }

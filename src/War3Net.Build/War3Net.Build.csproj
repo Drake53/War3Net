@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="War3Api.Common" Version="1.32.3" />
     <PackageReference Include="War3Api.Blizzard" Version="1.32.2" />
   </ItemGroup>
 

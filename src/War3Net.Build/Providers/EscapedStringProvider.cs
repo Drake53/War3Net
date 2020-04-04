@@ -17,6 +17,11 @@ namespace War3Net.Build.Providers
         /// </summary>
         public static string GetEscapedString(string input)
         {
+            if (input is null)
+            {
+                return null;
+            }
+
             for (var i = 0; i < input.Length; i++)
             {
                 if (IsMetachar(input[i]))

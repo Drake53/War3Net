@@ -25,7 +25,8 @@ namespace War3Net.Build.Audio
         Birth = 13,
         Fire = 14,
 
-        // Reforged channels (not verified that indices are correct)
+        // Reforged channels
+        // TODO: verify indices are correct
         LegacyMidi = 15,
         CinematicGeneral = 16,
         CinematicAmbient = 17,
