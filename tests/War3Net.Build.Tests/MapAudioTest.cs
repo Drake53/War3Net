@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CampaignInfoTest.cs" company="Drake53">
+// <copyright file="MapAudioTest.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,37 +11,37 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Build.Info;
+using War3Net.Build.Audio;
 using War3Net.Build.Providers;
 using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
 {
     [TestClass]
-    public class CampaignInfoTest
+    public class MapAudioTest
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetCampaignInfoData), DynamicDataSourceType.Method)]
-        public void TestParseCampaignInfo(string campaignInfoFilePath)
+        [DynamicData(nameof(GetDefaultAudioFiles), DynamicDataSourceType.Method)]
+        public void TestParseMapAudio(string mapSoundsFilePath)
         {
-            using var original = FileProvider.GetFile(campaignInfoFilePath);
+            using var original = FileProvider.GetFile(mapSoundsFilePath);
             using var recreated = new MemoryStream();
 
-            CampaignInfo.Parse(original, true).SerializeTo(recreated, true);
+            MapSounds.Parse(original, true).SerializeTo(recreated, true);
             StreamAssert.AreEqual(original, recreated, true);
         }
 
-        private static IEnumerable<object[]> GetCampaignInfoData()
+        private static IEnumerable<object[]> GetDefaultAudioFiles()
         {
             return TestDataProvider.GetDynamicData(
-                CampaignInfo.FileName.GetSearchPattern(),
+                MapSounds.FileName.GetSearchPattern(),
                 SearchOption.AllDirectories,
-                Path.Combine("Info", "Campaign"))
+                Path.Combine("Audio"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                CampaignInfo.FileName,
+                MapSounds.FileName,
                 SearchOption.TopDirectoryOnly,
-                "Campaigns"));
+                "Maps"));
         }
     }
 }

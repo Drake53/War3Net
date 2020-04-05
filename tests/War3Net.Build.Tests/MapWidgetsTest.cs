@@ -7,9 +7,11 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.Common.Testing;
 
@@ -22,14 +24,10 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetMapDoodadsData), DynamicDataSourceType.Method)]
         public void TestParseMapDoodads(string mapDoodadsFilePath)
         {
+            using var original = FileProvider.GetFile(mapDoodadsFilePath);
             using var recreated = new MemoryStream();
-            using var original = File.OpenRead(mapDoodadsFilePath);
 
-            var data = MapDoodads.Parse(original, true);
-            Assert.AreEqual(original.Length, original.Position);
-
-            data.SerializeTo(recreated, true);
-
+            MapDoodads.Parse(original, true).SerializeTo(recreated, true);
             StreamAssert.AreEqual(original, recreated, true);
         }
 
@@ -37,31 +35,37 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetMapUnitsData), DynamicDataSourceType.Method)]
         public void TestParseMapUnits(string mapUnitsFilePath)
         {
+            using var original = FileProvider.GetFile(mapUnitsFilePath);
             using var recreated = new MemoryStream();
-            using var original = File.OpenRead(mapUnitsFilePath);
 
-            var data = MapUnits.Parse(original, true);
-            Assert.AreEqual(original.Length, original.Position);
-
-            data.SerializeTo(recreated, true);
-
+            MapUnits.Parse(original, true).SerializeTo(recreated, true);
             StreamAssert.AreEqual(original, recreated, true);
         }
 
         private static IEnumerable<object[]> GetMapDoodadsData()
         {
-            foreach (var unitData in Directory.EnumerateFiles(@".\TestData\Widget\Doodads"))
-            {
-                yield return new[] { unitData };
-            }
+            return TestDataProvider.GetDynamicData(
+                MapDoodads.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Widget", "Doodads"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapDoodads.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
         }
 
         private static IEnumerable<object[]> GetMapUnitsData()
         {
-            foreach (var unitData in Directory.EnumerateFiles(@".\TestData\Widget\Units"))
-            {
-                yield return new[] { unitData };
-            }
+            return TestDataProvider.GetDynamicData(
+                MapUnits.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Widget", "Units"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapUnits.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
         }
     }
 }

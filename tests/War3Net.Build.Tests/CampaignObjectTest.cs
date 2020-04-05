@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -133,47 +134,15 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object[]> GetCampaignObjectData(string directory, string fileName)
         {
-            var pattern = $"*{new FileInfo(fileName).Extension}";
+            return TestDataProvider.GetDynamicData(
+                fileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Object", directory))
 
-            if (Directory.Exists($@".\TestData\Object\{directory}"))
-            {
-                foreach (var file in Directory.EnumerateFiles($@".\TestData\Object\{directory}", pattern, SearchOption.AllDirectories))
-                {
-                    yield return new[] { file };
-                }
-            }
-
-            if (Directory.Exists($@".\TestData\Local\Object\{directory}"))
-            {
-                foreach (var file in Directory.EnumerateFiles($@".\TestData\Local\Object\{directory}", pattern, SearchOption.AllDirectories))
-                {
-                    yield return new[] { file };
-                }
-            }
-
-            if (Directory.Exists(@".\TestData\Campaigns"))
-            {
-                foreach (var campaignPath in Directory.EnumerateFiles(@".\TestData\Campaigns", "*.w3n", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(campaignPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-            }
-
-            if (Directory.Exists(@".\TestData\Local\Campaigns"))
-            {
-                foreach (var campaignPath in Directory.EnumerateFiles(@".\TestData\Local\Campaigns", "*.w3n", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(campaignPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-            }
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                fileName,
+                SearchOption.TopDirectoryOnly,
+                "Campaigns"));
         }
     }
 }

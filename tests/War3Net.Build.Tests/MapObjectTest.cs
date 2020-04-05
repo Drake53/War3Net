@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -133,65 +134,15 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object[]> GetMapObjectData(string directory, string fileName)
         {
-            var pattern = $"*{new FileInfo(fileName).Extension}";
+            return TestDataProvider.GetDynamicData(
+                fileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Object", directory))
 
-            if (Directory.Exists($@".\TestData\Object\{directory}"))
-            {
-                foreach (var file in Directory.EnumerateFiles($@".\TestData\Object\{directory}", pattern, SearchOption.AllDirectories))
-                {
-                    yield return new[] { file };
-                }
-            }
-
-            if (Directory.Exists($@".\TestData\Local\Object\{directory}"))
-            {
-                foreach (var file in Directory.EnumerateFiles($@".\TestData\Local\Object\{directory}", pattern, SearchOption.AllDirectories))
-                {
-                    yield return new[] { file };
-                }
-            }
-
-            if (Directory.Exists(@".\TestData\Maps"))
-            {
-                foreach (var mapPath in Directory.EnumerateFiles(@".\TestData\Maps", "*.w3m", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(mapPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-
-                foreach (var mapPath in Directory.EnumerateFiles(@".\TestData\Maps", "*.w3x", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(mapPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-            }
-
-            if (Directory.Exists(@".\TestData\Local\Maps"))
-            {
-                foreach (var mapPath in Directory.EnumerateFiles(@".\TestData\Local\Maps", "*.w3m", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(mapPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-
-                foreach (var mapPath in Directory.EnumerateFiles(@".\TestData\Local\Maps", "*.w3x", SearchOption.TopDirectoryOnly))
-                {
-                    var file = Path.Combine(mapPath, fileName);
-                    if (FileProvider.FileExists(file))
-                    {
-                        yield return new[] { file };
-                    }
-                }
-            }
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                fileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
         }
     }
 }

@@ -7,11 +7,13 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
+using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.Common.Testing;
 
@@ -21,48 +23,56 @@ namespace War3Net.Build.Tests
     public class MapEnvironmentTest
     {
         [DataTestMethod]
+        [DynamicData(nameof(GetEnvironmentFiles), DynamicDataSourceType.Method)]
+        public void TestParseMapEnvironment(string environmentFilePath)
+        {
+            using var original = FileProvider.GetFile(environmentFilePath);
+            using var recreated = new MemoryStream();
+
+            MapEnvironment.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetPathingFiles), DynamicDataSourceType.Method)]
+        public void TestParsePathingMap(string pathingMapFile)
+        {
+            using var original = FileProvider.GetFile(pathingMapFile);
+            using var recreated = new MemoryStream();
+
+            PathingMap.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetRegionFiles), DynamicDataSourceType.Method)]
+        public void TestParseMapRegions(string regionsFilePath)
+        {
+            using var original = FileProvider.GetFile(regionsFilePath);
+            using var recreated = new MemoryStream();
+
+            MapRegions.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapIconsFiles), DynamicDataSourceType.Method)]
+        public void TestParseMapIcons(string iconsFilePath)
+        {
+            using var original = FileProvider.GetFile(iconsFilePath);
+            using var recreated = new MemoryStream();
+
+            MapPreviewIcons.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
+        [DataTestMethod]
         [DynamicData(nameof(GetDefaultEnvironmentFiles), DynamicDataSourceType.Method)]
         public void TestDefaultTileset(string environmentFilePath)
         {
             using var fileStream = File.OpenRead(environmentFilePath);
             var environment = MapEnvironment.Parse(fileStream);
             Assert.IsTrue(environment.IsDefaultTileset());
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetDefaultPathingFiles), DynamicDataSourceType.Method)]
-        public void TestPathingMap(string pathingMapFile)
-        {
-            using var fileStream = File.OpenRead(pathingMapFile);
-            var pathingMap = PathingMap.Parse(fileStream, true);
-            using var memoryStream = new MemoryStream();
-            pathingMap.SerializeTo(memoryStream, true);
-
-            StreamAssert.AreEqual(fileStream, memoryStream, true);
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetDefaultRegionFiles), DynamicDataSourceType.Method)]
-        public void TestMapRegions(string regionsFilePath)
-        {
-            using var fileStream = File.OpenRead(regionsFilePath);
-            var mapRegions = MapRegions.Parse(fileStream, true);
-            using var memoryStream = new MemoryStream();
-            mapRegions.SerializeTo(memoryStream, true);
-
-            StreamAssert.AreEqual(fileStream, memoryStream, true);
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetDefaultMapIconsFiles), DynamicDataSourceType.Method)]
-        public void TestMapIcons(string iconsFilePath)
-        {
-            using var fileStream = File.OpenRead(iconsFilePath);
-            var mapIcons = MapPreviewIcons.Parse(fileStream, true);
-            using var memoryStream = new MemoryStream();
-            mapIcons.SerializeTo(memoryStream, true);
-
-            StreamAssert.AreEqual(fileStream, memoryStream, true);
         }
 
         [DataTestMethod]
@@ -85,9 +95,10 @@ namespace War3Net.Build.Tests
                     var expectedIcon = expectedEnumerator.Current;
                     var actualIcon = actualEnumerator.Current;
 
+                    const int delta = 1;
                     Assert.AreEqual(expectedIcon.IconType, actualIcon.IconType);
-                    Assert.AreEqual(expectedIcon.X, actualIcon.X, 1);
-                    Assert.AreEqual(expectedIcon.Y, actualIcon.Y, 1);
+                    Assert.AreEqual(expectedIcon.X, actualIcon.X, delta);
+                    Assert.AreEqual(expectedIcon.Y, actualIcon.Y, delta);
                     Assert.AreEqual(expectedIcon.Color.ToArgb(), actualIcon.Color.ToArgb());
                 }
                 else if (expectedEnumerator.Current != null || actualEnumerator.Current != null)
@@ -101,36 +112,64 @@ namespace War3Net.Build.Tests
             }
         }
 
+        private static IEnumerable<object[]> GetEnvironmentFiles()
+        {
+            return TestDataProvider.GetDynamicData(
+                MapEnvironment.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Environment"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapEnvironment.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
+        }
+
+        private static IEnumerable<object[]> GetPathingFiles()
+        {
+            return TestDataProvider.GetDynamicData(
+                PathingMap.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Pathing"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                PathingMap.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
+        }
+
+        private static IEnumerable<object[]> GetRegionFiles()
+        {
+            return TestDataProvider.GetDynamicData(
+                MapRegions.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Region"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapRegions.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
+        }
+
+        private static IEnumerable<object[]> GetMapIconsFiles()
+        {
+            return TestDataProvider.GetDynamicData(
+                MapPreviewIcons.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                Path.Combine("Icons"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapPreviewIcons.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
+        }
+
         private static IEnumerable<object[]> GetDefaultEnvironmentFiles()
         {
-            foreach (var env in Directory.EnumerateFiles(@".\TestData\Environment\Default"))
-            {
-                yield return new[] { env };
-            }
-        }
-
-        private static IEnumerable<object[]> GetDefaultPathingFiles()
-        {
-            foreach (var pathingMapFile in Directory.EnumerateFiles(@".\TestData\Pathing"))
-            {
-                yield return new[] { pathingMapFile };
-            }
-        }
-
-        private static IEnumerable<object[]> GetDefaultRegionFiles()
-        {
-            foreach (var mapRegions in Directory.EnumerateFiles(@".\TestData\Region"))
-            {
-                yield return new[] { mapRegions };
-            }
-        }
-
-        private static IEnumerable<object[]> GetDefaultMapIconsFiles()
-        {
-            foreach (var mapIcons in Directory.EnumerateFiles(@".\TestData\Icons"))
-            {
-                yield return new[] { mapIcons };
-            }
+            return TestDataProvider.GetDynamicData(
+                MapEnvironment.FileName.GetSearchPattern(),
+                SearchOption.TopDirectoryOnly,
+                Path.Combine("Environment", "Default"));
         }
 
         private static IEnumerable<object[]> GetMapIconsMapFolders()

@@ -7,10 +7,12 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
+using War3Net.Build.Providers;
 using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
@@ -22,8 +24,8 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetMapInfoData), DynamicDataSourceType.Method)]
         public void TestParseMapInfo(string mapInfoFilePath)
         {
+            using var original = FileProvider.GetFile(mapInfoFilePath);
             using var recreated = new MemoryStream();
-            using var original = File.OpenRead(mapInfoFilePath);
 
             MapInfo.Parse(original, true).SerializeTo(recreated, true);
             StreamAssert.AreEqual(original, recreated, true);
@@ -63,10 +65,15 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object[]> GetMapInfoData()
         {
-            foreach (var info in Directory.EnumerateFiles(@".\TestData\Info", "*.w3i", SearchOption.AllDirectories))
-            {
-                yield return new[] { info };
-            }
+            return TestDataProvider.GetDynamicData(
+                MapInfo.FileName.GetSearchPattern(),
+                SearchOption.AllDirectories,
+                "Info")
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapInfo.FileName,
+                SearchOption.TopDirectoryOnly,
+                "Maps"));
         }
 
         private static IEnumerable<object[]> GetMapInfoDataGameDataSet()

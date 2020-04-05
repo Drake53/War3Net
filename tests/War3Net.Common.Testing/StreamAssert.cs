@@ -19,6 +19,8 @@ namespace War3Net.Common.Testing
         {
             if (resetPositions)
             {
+                Assert.AreEqual(expected.Length, expected.Position);
+
                 expected.Position = 0;
                 actual.Position = 0;
             }
