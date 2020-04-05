@@ -29,6 +29,9 @@ namespace War3Net.Build.Info
         private readonly List<RandomUnitTable> _unitTables;
         private readonly List<RandomItemTable> _itemTables;
 
+        // Because why waste 15 bytes on some zeroes...
+        private bool _skipData;
+
         private MapInfoFormatVersion _fileFormatVersion;
         private int _mapVersion;
         private int _editorVersion;
@@ -676,30 +679,39 @@ namespace War3Net.Build.Info
                         info._forceData.Add(ForceData.Parse(stream, true));
                     }
 
-                    var upgradeDataCount = reader.ReadInt32();
-                    for (var i = 0; i < upgradeDataCount; i++)
+                    if (reader.ReadByte() == 255)
                     {
-                        info._upgradeData.Add(UpgradeData.Parse(stream, true));
+                        info._skipData = true;
                     }
-
-                    var techDataCount = reader.ReadInt32();
-                    for (var i = 0; i < techDataCount; i++)
+                    else
                     {
-                        info._techData.Add(TechData.Parse(stream, true));
-                    }
+                        stream.Seek(-1, SeekOrigin.Current);
 
-                    var randomUnitTableCount = reader.ReadInt32();
-                    for (var i = 0; i < randomUnitTableCount; i++)
-                    {
-                        info._unitTables.Add(RandomUnitTable.Parse(stream, true));
-                    }
-
-                    if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
-                    {
-                        var randomItemTableCount = reader.ReadInt32();
-                        for (var i = 0; i < randomItemTableCount; i++)
+                        var upgradeDataCount = reader.ReadInt32();
+                        for (var i = 0; i < upgradeDataCount; i++)
                         {
-                            info._itemTables.Add(RandomItemTable.Parse(stream, true));
+                            info._upgradeData.Add(UpgradeData.Parse(stream, true));
+                        }
+
+                        var techDataCount = reader.ReadInt32();
+                        for (var i = 0; i < techDataCount; i++)
+                        {
+                            info._techData.Add(TechData.Parse(stream, true));
+                        }
+
+                        var randomUnitTableCount = reader.ReadInt32();
+                        for (var i = 0; i < randomUnitTableCount; i++)
+                        {
+                            info._unitTables.Add(RandomUnitTable.Parse(stream, true));
+                        }
+
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                        {
+                            var randomItemTableCount = reader.ReadInt32();
+                            for (var i = 0; i < randomItemTableCount; i++)
+                            {
+                                info._itemTables.Add(RandomItemTable.Parse(stream, true));
+                            }
                         }
                     }
                 }
@@ -846,6 +858,12 @@ namespace War3Net.Build.Info
                     data.WriteTo(writer);
                 }
 
+                if (_skipData)
+                {
+                    writer.Write((byte)255);
+                    return;
+                }
+
                 writer.Write(_upgradeData.Count);
                 foreach (var data in _upgradeData)
                 {
@@ -946,6 +964,8 @@ namespace War3Net.Build.Info
         {
             _upgradeData.Clear();
             _upgradeData.AddRange(data);
+
+            _skipData = false;
         }
 
         public TechData GetTechData(int index)
@@ -957,6 +977,8 @@ namespace War3Net.Build.Info
         {
             _techData.Clear();
             _techData.AddRange(data);
+
+            _skipData = false;
         }
 
         public RandomUnitTable GetUnitTable(int tableIndex)
@@ -964,9 +986,25 @@ namespace War3Net.Build.Info
             return _unitTables[tableIndex];
         }
 
+        public void SetUnitTables(params RandomUnitTable[] tables)
+        {
+            _unitTables.Clear();
+            _unitTables.AddRange(tables);
+
+            _skipData = false;
+        }
+
         public RandomItemTable GetItemTable(int tableIndex)
         {
             return _itemTables[tableIndex];
+        }
+
+        public void SetItemTables(params RandomItemTable[] tables)
+        {
+            _itemTables.Clear();
+            _itemTables.AddRange(tables);
+
+            _skipData = false;
         }
     }
 }
