@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using War3Net.Build.Common;
+
 namespace War3Net.Build.Object
 {
     public sealed class ObjectModification : IEnumerable<ObjectDataModification>
@@ -26,6 +28,21 @@ namespace War3Net.Build.Object
 
             _oldId = oldId;
             _newId = newId;
+        }
+
+        public ObjectModification(int oldId, string newRawcode, params ObjectDataModification[] modifications)
+            : this(oldId, newRawcode.FromRawcode(), modifications)
+        {
+        }
+
+        public ObjectModification(string oldRawcode, int newId, params ObjectDataModification[] modifications)
+            : this(oldRawcode.FromRawcode(), newId, modifications)
+        {
+        }
+
+        public ObjectModification(string oldRawcode, string newRawcode, params ObjectDataModification[] modifications)
+            : this(oldRawcode.FromRawcode(), newRawcode.FromRawcode(), modifications)
+        {
         }
 
         private ObjectModification()
