@@ -97,6 +97,17 @@ namespace War3Net.Build.Tests
             StreamAssert.AreEqual(original, recreated, true);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetCampaignAllObjectData), DynamicDataSourceType.Method)]
+        public void TestParseCampaignObjectData(string campaignObjectDataFilePath)
+        {
+            using var original = FileProvider.GetFile(campaignObjectDataFilePath);
+            using var recreated = new MemoryStream();
+
+            CampaignObjectData.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
         private static IEnumerable<object[]> GetCampaignUnitObjectData()
         {
             return GetCampaignObjectData("Unit", CampaignUnitObjectData.FileName);
@@ -130,6 +141,11 @@ namespace War3Net.Build.Tests
         private static IEnumerable<object[]> GetCampaignUpgradeObjectData()
         {
             return GetCampaignObjectData("Upgrade", CampaignUpgradeObjectData.FileName);
+        }
+
+        private static IEnumerable<object[]> GetCampaignAllObjectData()
+        {
+            return GetCampaignObjectData("All", CampaignObjectData.FileName);
         }
 
         private static IEnumerable<object[]> GetCampaignObjectData(string directory, string fileName)

@@ -9,6 +9,7 @@ namespace War3Net.Build.Object
 {
     public enum ObjectDataFormatVersion
     {
+        V1 = 1,
         Normal = 2,
     }
 }

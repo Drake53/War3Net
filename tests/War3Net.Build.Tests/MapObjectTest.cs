@@ -97,6 +97,17 @@ namespace War3Net.Build.Tests
             StreamAssert.AreEqual(original, recreated, true);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapAllObjectData), DynamicDataSourceType.Method)]
+        public void TestParseMapObjectData(string mapObjectDataFilePath)
+        {
+            using var original = FileProvider.GetFile(mapObjectDataFilePath);
+            using var recreated = new MemoryStream();
+
+            MapObjectData.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
         private static IEnumerable<object[]> GetMapUnitObjectData()
         {
             return GetMapObjectData("Unit", MapUnitObjectData.FileName);
@@ -130,6 +141,11 @@ namespace War3Net.Build.Tests
         private static IEnumerable<object[]> GetMapUpgradeObjectData()
         {
             return GetMapObjectData("Upgrade", MapUpgradeObjectData.FileName);
+        }
+
+        private static IEnumerable<object[]> GetMapAllObjectData()
+        {
+            return GetMapObjectData("All", MapObjectData.FileName);
         }
 
         private static IEnumerable<object[]> GetMapObjectData(string directory, string fileName)
