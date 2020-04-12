@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Authors>Drake53</Authors>
+
+    <Description>Library for opening and creating files in SLK format.</Description>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Slk</PackageProjectUrl>
+    <PackageTags>slk sylk warcraft3 warcraft-iii</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+
+    <Version>0.1.0-preview1</Version>
+    <FileVersion>0.1.0</FileVersion>
+    <AssemblyVersion>0.1</AssemblyVersion>
+  </PropertyGroup>
+
+</Project>
