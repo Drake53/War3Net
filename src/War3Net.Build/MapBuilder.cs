@@ -17,6 +17,7 @@ using War3Net.Build.Common;
 using War3Net.Build.Diagnostics;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
+using War3Net.Build.Object;
 using War3Net.Build.Providers;
 using War3Net.Build.Script;
 using War3Net.Build.Widget;
@@ -194,7 +195,14 @@ namespace War3Net.Build
                 !TrySetMapFile(new MapFileHandler<MapUnits>()) ||
                 !TrySetMapFile(new MapFileHandler<MapRegions>()) ||
                 !TrySetMapFile(new MapFileHandler<MapSounds>()) ||
-                !TrySetMapFile(new MapFileHandler<MapPreviewIcons>(), () => new MapPreviewIcons(compilerOptions.MapInfo, compilerOptions.MapEnvironment, compilerOptions.MapUnits)))
+                !TrySetMapFile(new MapFileHandler<MapPreviewIcons>(), () => new MapPreviewIcons(compilerOptions.MapInfo, compilerOptions.MapEnvironment, compilerOptions.MapUnits)) ||
+                !TrySetMapFile(new MapFileHandler<MapUnitObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapItemObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapDestructableObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapDoodadObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapAbilityObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapBuffObjectData>()) ||
+                !TrySetMapFile(new MapFileHandler<MapUpgradeObjectData>()))
             {
                 return GenerateResult();
             }

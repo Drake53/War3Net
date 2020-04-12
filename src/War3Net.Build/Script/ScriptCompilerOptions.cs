@@ -10,8 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Audio;
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
+using War3Net.Build.Object;
 using War3Net.Build.Widget;
 using War3Net.IO.Mpq;
 
@@ -19,12 +21,27 @@ namespace War3Net.Build.Script
 {
     public sealed class ScriptCompilerOptions
     {
+        public ScriptCompilerOptions(params string[] libraries)
+        {
+            FileFlags = new Dictionary<string, MpqFileFlags>();
+            DefaultFileFlags = MpqFileFlags.Exists;
+            Libraries = new List<string>(libraries);
+        }
+
+        public ScriptCompilerOptions(IEnumerable<string> libraries)
+        {
+            FileFlags = new Dictionary<string, MpqFileFlags>();
+            DefaultFileFlags = MpqFileFlags.Exists;
+            Libraries = libraries.ToList();
+        }
+
         public string SourceDirectory { get; set; }
 
         public string OutputDirectory { get; set; }
 
         /// <summary>
-        /// Path to clijasshelper.exe, this property must be set when compiling vJass source code.
+        /// Gets or sets the path to clijasshelper.exe.
+        /// This property must be set when compiling vJass source code.
         /// </summary>
         public string JasshelperCliPath { get; set; }
 
@@ -61,23 +78,25 @@ namespace War3Net.Build.Script
 
         public MapPreviewIcons? MapIcons { get; set; }
 
+        public MapUnitObjectData? MapUnitData { get; set; }
+
+        public MapItemObjectData? MapItemData { get; set; }
+
+        public MapDestructableObjectData? MapDestructableData { get; set; }
+
+        public MapDoodadObjectData? MapDoodadData { get; set; }
+
+        public MapAbilityObjectData? MapAbilityData { get; set; }
+
+        public MapBuffObjectData? MapBuffData { get; set; }
+
+        public MapUpgradeObjectData? MapUpgradeData { get; set; }
+
         public string LobbyMusic { get; set; }
 
+        public GamePatch? TargetPatch { get; set; }
+
         internal List<string> Libraries { get; private set; }
-
-        public ScriptCompilerOptions(params string[] libraries)
-        {
-            FileFlags = new Dictionary<string, MpqFileFlags>();
-            DefaultFileFlags = MpqFileFlags.Exists;
-            Libraries = new List<string>(libraries);
-        }
-
-        public ScriptCompilerOptions(IEnumerable<string> libraries)
-        {
-            FileFlags = new Dictionary<string, MpqFileFlags>();
-            DefaultFileFlags = MpqFileFlags.Exists;
-            Libraries = libraries.ToList();
-        }
 
         public object GetMapFile(string fileName)
         {
@@ -90,6 +109,14 @@ namespace War3Net.Build.Script
                 MapRegions.FileName => MapRegions,
                 MapSounds.FileName => MapSounds,
                 MapPreviewIcons.FileName => MapIcons,
+
+                MapUnitObjectData.FileName => MapUnitData,
+                MapItemObjectData.FileName => MapItemData,
+                MapDestructableObjectData.FileName => MapDestructableData,
+                MapDoodadObjectData.FileName => MapDoodadData,
+                MapAbilityObjectData.FileName => MapAbilityData,
+                MapBuffObjectData.FileName => MapBuffData,
+                MapUpgradeObjectData.FileName => MapUpgradeData,
 
                 _ => null,
             };
@@ -128,6 +155,34 @@ namespace War3Net.Build.Script
             else if (file is MapPreviewIcons mapIcons)
             {
                 MapIcons = mapIcons;
+            }
+            else if (file is MapUnitObjectData mapUnitData)
+            {
+                MapUnitData = mapUnitData;
+            }
+            else if (file is MapItemObjectData mapItemData)
+            {
+                MapItemData = mapItemData;
+            }
+            else if (file is MapDestructableObjectData mapDestructableData)
+            {
+                MapDestructableData = mapDestructableData;
+            }
+            else if (file is MapDoodadObjectData mapDoodadData)
+            {
+                MapDoodadData = mapDoodadData;
+            }
+            else if (file is MapAbilityObjectData mapAbilityData)
+            {
+                MapAbilityData = mapAbilityData;
+            }
+            else if (file is MapBuffObjectData mapBuffData)
+            {
+                MapBuffData = mapBuffData;
+            }
+            else if (file is MapUpgradeObjectData mapUpgradeData)
+            {
+                MapUpgradeData = mapUpgradeData;
             }
             else
             {
