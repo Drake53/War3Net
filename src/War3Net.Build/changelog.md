@@ -1,5 +1,15 @@
 # War3Net.Build Changelog
 
+## v1.3.0
+### Changes
+- Support .w3u, .w3t, .w3b, .w3d, .w3a, .w3h, .w3q, .w3o, and .w3f files.
+- Added ObjectData and TargetPatch properties to ScriptCompilerOptions. Not setting the TargetPatch will generate a new warning diagnostic.
+- FileProvider can now search recursively in MPQ archives (useful for campaigns). Also added FileExists method.
+- CreateAllDestructables can now generate the dead and withZ variants of CreateDestructable.
+- Added property HasSkin to unit and doodad data.
+- Include latest Reforged patches in GamePatch enum.
+- Added SetGameVersion method to MapInfo.
+
 ## v1.2.0
 ### Changes
 - Support war3map.mmp files.
