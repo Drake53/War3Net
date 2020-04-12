@@ -104,7 +104,7 @@ namespace War3Net.Build.Script.Main
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.TriggerAddAction),
                         builder.GenerateVariableExpression(LocalTriggerVariableName),
-                        builder.GenerateFunctionReferenceExpression($"Doodad{destructable.CreationNumber.ToString("D6")}_DropItems"));
+                        builder.GenerateFunctionReferenceExpression($"Doodad{destructable.CreationNumber: D6}_DropItems"));
                 }
             }
         }

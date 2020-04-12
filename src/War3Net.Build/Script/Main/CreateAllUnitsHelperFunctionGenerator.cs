@@ -145,44 +145,42 @@ namespace War3Net.Build.Script.Main
                                 ? nameof(War3Api.Common.BlzCreateUnitWithSkin)
                                 : nameof(War3Api.Common.CreateUnit),
                             args.ToArray()));
-                }
 
-                // TODO: test which statements cannot be generated for random units, and put them inside the else block above (hero level/stats?)
+                    if (unit.HeroLevel > 1)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroLevel),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
+                            builder.GenerateBooleanLiteralExpression(false));
+                    }
 
-                if (unit.HeroLevel > 1)
-                {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.SetHeroLevel),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
-                        builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
-                        builder.GenerateBooleanLiteralExpression(false));
-                }
+                    if (unit.HeroStrength > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroStr),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
 
-                if (unit.HeroStrength > 0)
-                {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.SetHeroStr),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
-                        builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
-                        builder.GenerateBooleanLiteralExpression(true));
-                }
+                    if (unit.HeroAgility > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroAgi),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
 
-                if (unit.HeroAgility > 0)
-                {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.SetHeroAgi),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
-                        builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
-                        builder.GenerateBooleanLiteralExpression(true));
-                }
-
-                if (unit.HeroIntelligence > 0)
-                {
-                    yield return builder.GenerateInvocationStatement(
-                        nameof(War3Api.Common.SetHeroInt),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
-                        builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
-                        builder.GenerateBooleanLiteralExpression(true));
+                    if (unit.HeroIntelligence > 0)
+                    {
+                        yield return builder.GenerateInvocationStatement(
+                            nameof(War3Api.Common.SetHeroInt),
+                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
+                            builder.GenerateBooleanLiteralExpression(true));
+                    }
                 }
 
                 if (unit.Hp != -1)

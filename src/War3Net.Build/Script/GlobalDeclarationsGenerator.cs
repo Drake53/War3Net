@@ -21,7 +21,7 @@ namespace War3Net.Build.Script
             {
                 yield return builder.GenerateGlobalDeclaration(
                     builder.GetTypeName(BuiltinType.Int32),
-                    $"gg_rg_{mapInfo.GetUnitTable(i).Index.ToString("D3")}",
+                    $"gg_rg_{mapInfo.GetUnitTable(i).Index: D3}",
                     true);
             }
 

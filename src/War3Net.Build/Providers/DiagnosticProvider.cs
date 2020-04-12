@@ -5,12 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using Microsoft.CodeAnalysis;
 
 namespace War3Net.Build.Providers
 {
+    [Obsolete]
     internal static class DiagnosticProvider
     {
+        // todo: make Campaign variants for Map-related diagnostics
+
         // Map file diagnostics
         internal static readonly DiagnosticDescriptor MissingMapFile = CreateMissingMapFileDescriptor("W3N1001");
         internal static readonly DiagnosticDescriptor InvalidMapFile = CreateInvalidMapFileDescriptor("W3N1002");
