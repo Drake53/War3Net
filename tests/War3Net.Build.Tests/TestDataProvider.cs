@@ -15,14 +15,14 @@ namespace War3Net.Build.Tests
 {
     public static class TestDataProvider
     {
-        private const string TestDataFolder = "TestData";
-        private const string LocalDataFolder = "Local";
+        internal const string TestDataFolder = "TestData";
+        internal const string LocalDataFolder = "Local";
 
         private static readonly ISet<string> _archiveFileExtensions = new HashSet<string>() { ".w3m", ".w3x", ".w3n", };
 
         public static IEnumerable<object[]> GetDynamicData(string searchPattern, SearchOption searchOption, params string[] directories)
         {
-            foreach (var directory in directories.SelectMany(dir => new[] { Path.Combine(TestDataFolder, dir), Path.Combine(TestDataFolder, LocalDataFolder, dir), }))
+            foreach (var directory in GetTestDataDirectories(directories))
             {
                 if (Directory.Exists(directory))
                 {
@@ -36,7 +36,7 @@ namespace War3Net.Build.Tests
 
         public static IEnumerable<object[]> GetDynamicArchiveData(string fileName, SearchOption searchOption, params string[] directories)
         {
-            foreach (var directory in directories.SelectMany(dir => new[] { Path.Combine(TestDataFolder, dir), Path.Combine(TestDataFolder, LocalDataFolder, dir), }))
+            foreach (var directory in GetTestDataDirectories(directories))
             {
                 if (Directory.Exists(directory))
                 {
@@ -58,6 +58,18 @@ namespace War3Net.Build.Tests
         public static string GetSearchPattern(this string fileName)
         {
             return $"*{new FileInfo(fileName).Extension}";
+        }
+
+        private static IEnumerable<string> GetTestDataDirectories(params string[] directories)
+        {
+#if DEBUG
+            foreach (var directory in directories.SelectMany(directory => new[] { Path.Combine(TestDataFolder, directory), Path.Combine(TestDataFolder, LocalDataFolder, directory), }))
+#else
+            foreach (var directory in directories.Select(directory => Path.Combine(TestDataFolder, directory)))
+#endif
+            {
+                yield return directory;
+            }
         }
     }
 }
