@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -31,23 +32,50 @@ namespace War3Net.Build.Providers
             {
                 return true;
             }
-            else
+
+            // Check if file is contained in an mpq archive.
+            var subPath = path;
+            var fullPath = new FileInfo(path).FullName;
+            while (!File.Exists(subPath))
             {
-                // Check if file is contained in an mpq archive.
-                var subPath = path;
-                var fullPath = new FileInfo(path).FullName;
-                while (!File.Exists(subPath))
+                subPath = new FileInfo(subPath).DirectoryName;
+                if (subPath is null)
                 {
-                    subPath = new FileInfo(subPath).DirectoryName;
-                }
-
-                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith("\\") ? 0 : 1));
-
-                using (var archive = MpqArchive.Open(subPath))
-                {
-                    return archive.FileExists(relativePath);
+                    return false;
                 }
             }
+
+            var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var archive = MpqArchive.Open(subPath);
+            return FileExists(archive, relativePath);
+        }
+
+        public static bool FileExists(MpqArchive archive, string path)
+        {
+            if (archive.FileExists(path))
+            {
+                return true;
+            }
+
+            // Check if file is contained in an mpq archive.
+            var subPath = path;
+            var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
+            while (!archive.FileExists(subPath))
+            {
+                var directoryName = new FileInfo(subPath).DirectoryName;
+                if (directoryName.Length <= ignoreLength)
+                {
+                    return false;
+                }
+
+                subPath = directoryName.Substring(ignoreLength);
+            }
+
+            var relativePath = path.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var subArchive = MpqArchive.Open(archive.OpenFile(subPath));
+            return FileExists(subArchive, relativePath);
         }
 
         /// <exception cref="FileNotFoundException"></exception>
@@ -67,7 +95,7 @@ namespace War3Net.Build.Providers
                     subPath = new FileInfo(subPath).DirectoryName;
                 }
 
-                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith("\\") ? 0 : 1));
+                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
 
                 var memoryStream = new MemoryStream();
                 using (var archive = MpqArchive.Open(subPath))
@@ -106,7 +134,7 @@ namespace War3Net.Build.Providers
             }
             else if (Directory.Exists(path))
             {
-                var pathPrefixLength = path.Length + (path.EndsWith("\\") ? 0 : 1);
+                var pathPrefixLength = path.Length + (path.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1);
                 foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                 {
                     var fileName = new FileInfo(file).ToString().Substring(pathPrefixLength);
