@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
+using War3Net.Build.Diagnostics;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
@@ -24,7 +25,7 @@ using War3Net.IO.Mpq;
 
 namespace War3Net.Build
 {
-    public class MapBuilder
+    public sealed class MapBuilder
     {
         private const string DefaultMapName = "TestMap.w3x";
         private const ushort DefaultBlockSize = 3;
@@ -179,6 +180,11 @@ namespace War3Net.Build
                 }
 
                 return !haveErrorDiagnostic;
+            }
+
+            if (!compilerOptions.TargetPatch.HasValue)
+            {
+                AddDiagnostic(Diagnostic.Create(CompatibilityDiagnostics.TargetPatchNotSet, null));
             }
 
             // Set map files
