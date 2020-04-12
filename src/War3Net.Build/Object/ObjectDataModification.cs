@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Text;
 
@@ -27,20 +28,83 @@ namespace War3Net.Build.Object
             : this(id, value, ObjectDataType.Int, null)
         { }
 
+        public ObjectDataModification(int id, float value, bool isUnreal)
+            : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
+        { }
+
         public ObjectDataModification(int id, string value)
             : this(id, value, ObjectDataType.String, null)
+        { }
+
+        public ObjectDataModification(int id, bool value)
+            : this(id, value, ObjectDataType.Bool, null)
+        { }
+
+        public ObjectDataModification(int id, char value)
+            : this(id, value, ObjectDataType.Char, null)
         { }
 
         public ObjectDataModification(int id, int level, int value)
             : this(id, value, ObjectDataType.Int, level)
         { }
 
+        public ObjectDataModification(int id, int level, float value, bool isUnreal)
+            : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
+        { }
+
         public ObjectDataModification(int id, int level, string value)
             : this(id, value, ObjectDataType.String, level)
         { }
 
+        public ObjectDataModification(int id, int level, bool value)
+            : this(id, value, ObjectDataType.Bool, level)
+        { }
+
+        public ObjectDataModification(int id, int level, char value)
+            : this(id, value, ObjectDataType.Char, level)
+        { }
+
+        public ObjectDataModification(string rawcode, int value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Int, null)
+        { }
+
+        public ObjectDataModification(string rawcode, float value, bool isUnreal)
+            : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
+        { }
+
+        public ObjectDataModification(string rawcode, string value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.String, null)
+        { }
+
+        public ObjectDataModification(string rawcode, bool value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Bool, null)
+        { }
+
+        public ObjectDataModification(string rawcode, char value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Char, null)
+        { }
+
+        public ObjectDataModification(string rawcode, int level, int value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Int, level)
+        { }
+
+        public ObjectDataModification(string rawcode, int level, float value, bool isUnreal)
+            : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
+        { }
+
+        public ObjectDataModification(string rawcode, int level, string value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.String, level)
+        { }
+
+        public ObjectDataModification(string rawcode, int level, bool value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Bool, level)
+        { }
+
+        public ObjectDataModification(string rawcode, int level, char value)
+            : this(rawcode.FromRawcode(), value, ObjectDataType.Char, level)
+        { }
+
         private ObjectDataModification(int id, object value, ObjectDataType type, int? level, int pointer = 0)
-            : this()
         {
             _id = id;
             _value = value;
@@ -62,6 +126,16 @@ namespace War3Net.Build.Object
         public ObjectDataType Type => _type;
 
         public int? Level => _level;
+
+        public int ValueAsInt => _type == ObjectDataType.Int ? (int)_value : throw new InvalidOperationException();
+
+        public float ValueAsFloat => _type == ObjectDataType.Real || _type == ObjectDataType.Unreal ? (float)_value : throw new InvalidOperationException();
+
+        public string ValueAsString => _type == ObjectDataType.String ? (string)_value : throw new InvalidOperationException();
+
+        public bool ValueAsBool => _type == ObjectDataType.Bool ? (bool)_value : throw new InvalidOperationException();
+
+        public char ValueAsChar => _type == ObjectDataType.Char ? (char)_value : throw new InvalidOperationException();
 
         public static ObjectDataModification Parse(Stream stream, int oldId, int newId, bool readLevelData, bool leaveOpen = false)
         {
