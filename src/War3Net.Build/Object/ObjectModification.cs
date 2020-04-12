@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using War3Net.Build.Common;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
