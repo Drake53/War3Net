@@ -28,6 +28,10 @@ namespace War3Net.Build.Object
             : this(id, value, ObjectDataType.Int, null)
         { }
 
+        /// <param name="isUnreal">
+        /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
+        /// Which one should be used depends on <paramref name="id"/>'s type (found in metadata.slk's 'type' column).
+        /// </param>
         public ObjectDataModification(int id, float value, bool isUnreal)
             : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
         { }
@@ -48,6 +52,10 @@ namespace War3Net.Build.Object
             : this(id, value, ObjectDataType.Int, level)
         { }
 
+        /// <param name="isUnreal">
+        /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
+        /// Which one should be used depends on <paramref name="id"/>'s type (found in metadata.slk's 'type' column).
+        /// </param>
         public ObjectDataModification(int id, int level, float value, bool isUnreal)
             : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
         { }
@@ -68,6 +76,10 @@ namespace War3Net.Build.Object
             : this(rawcode.FromRawcode(), value, ObjectDataType.Int, null)
         { }
 
+        /// <param name="isUnreal">
+        /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
+        /// Which one should be used depends on <paramref name="rawcode"/>'s type (found in metadata.slk's 'type' column).
+        /// </param>
         public ObjectDataModification(string rawcode, float value, bool isUnreal)
             : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
         { }
@@ -88,6 +100,10 @@ namespace War3Net.Build.Object
             : this(rawcode.FromRawcode(), value, ObjectDataType.Int, level)
         { }
 
+        /// <param name="isUnreal">
+        /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
+        /// Which one should be used depends on <paramref name="rawcode"/>'s type (found in metadata.slk's 'type' column).
+        /// </param>
         public ObjectDataModification(string rawcode, int level, float value, bool isUnreal)
             : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
         { }
