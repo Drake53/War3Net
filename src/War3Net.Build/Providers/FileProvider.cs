@@ -74,7 +74,8 @@ namespace War3Net.Build.Providers
 
             var relativePath = path.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
 
-            using var subArchive = MpqArchive.Open(archive.OpenFile(subPath));
+            using var subArchiveStream = archive.OpenFile(subPath);
+            using var subArchive = MpqArchive.Open(subArchiveStream);
             return FileExists(subArchive, relativePath);
         }
 
@@ -85,27 +86,52 @@ namespace War3Net.Build.Providers
             {
                 return File.OpenRead(path);
             }
-            else
+
+            // Assume file is contained in an mpq archive.
+            var subPath = path;
+            var fullPath = new FileInfo(path).FullName;
+            while (!File.Exists(subPath))
             {
-                // Assume file is contained in an mpq archive.
-                var subPath = path;
-                var fullPath = new FileInfo(path).FullName;
-                while (!File.Exists(subPath))
+                subPath = new FileInfo(subPath).DirectoryName;
+                if (subPath is null)
                 {
-                    subPath = new FileInfo(subPath).DirectoryName;
+                    throw new FileNotFoundException($"File not found: {path}");
                 }
-
-                var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
-
-                var memoryStream = new MemoryStream();
-                using (var archive = MpqArchive.Open(subPath))
-                {
-                    archive.OpenFile(relativePath).CopyTo(memoryStream);
-                }
-
-                memoryStream.Position = 0;
-                return memoryStream;
             }
+
+            var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var archive = MpqArchive.Open(subPath);
+            return GetFile(archive, relativePath);
+        }
+
+        /// <exception cref="FileNotFoundException"></exception>
+        public static Stream GetFile(MpqArchive archive, string path)
+        {
+            if (archive.FileExists(path))
+            {
+                return GetArchiveFileStream(archive, path);
+            }
+
+            // Assume file is contained in an mpq archive.
+            var subPath = path;
+            var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
+            while (!archive.FileExists(subPath))
+            {
+                var directoryName = new FileInfo(subPath).DirectoryName;
+                if (directoryName.Length <= ignoreLength)
+                {
+                    throw new FileNotFoundException($"File not found: {path}");
+                }
+
+                subPath = directoryName.Substring(ignoreLength);
+            }
+
+            var relativePath = path.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var subArchiveStream = archive.OpenFile(subPath);
+            using var subArchive = MpqArchive.Open(subArchiveStream);
+            return GetArchiveFileStream(subArchive, relativePath);
         }
 
         public static IEnumerable<(string fileName, MpqLocale locale, Stream stream)> EnumerateFiles(string path)
@@ -146,6 +172,14 @@ namespace War3Net.Build.Providers
                     yield return (filePath, locale, File.OpenRead(file));
                 }
             }
+        }
+
+        private static MemoryStream GetArchiveFileStream(MpqArchive archive, string filePath)
+        {
+            var memoryStream = new MemoryStream();
+            archive.OpenFile(filePath).CopyTo(memoryStream);
+            memoryStream.Position = 0;
+            return memoryStream;
         }
     }
 }
