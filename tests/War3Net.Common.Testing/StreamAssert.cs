@@ -17,29 +17,41 @@ namespace War3Net.Common.Testing
     {
         public static void AreEqual(Stream expected, Stream actual, bool resetPositions = false)
         {
+            var expectedSize = expected.Length;
+            var actualSize = actual.Length;
             if (resetPositions)
             {
-                Assert.AreEqual(expected.Length, expected.Position);
+                Assert.AreEqual(expected.Length, expected.Position, "Expected to be at end of stream.");
 
                 expected.Position = 0;
                 actual.Position = 0;
             }
+            else
+            {
+                expectedSize -= expected.Position;
+                actualSize -= actual.Position;
+            }
 
-            var expectedSize = expected.Length;
-            var actualSize = actual.Length;
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
         public static void AreEqualText(Stream expected, Stream actual, bool resetPositions = false)
         {
+            var expectedSize = expected.Length;
+            var actualSize = actual.Length;
             if (resetPositions)
             {
+                Assert.AreEqual(expected.Length, expected.Position, "Expected to be at end of stream.");
+
                 expected.Position = 0;
                 actual.Position = 0;
             }
+            else
+            {
+                expectedSize -= expected.Position;
+                actualSize -= actual.Position;
+            }
 
-            var expectedSize = expected.Length;
-            var actualSize = actual.Length;
             AreEqualText(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
@@ -111,8 +123,7 @@ namespace War3Net.Common.Testing
 #if BUFFER_STREAM_DATA
                         if (isText)
                         {
-                            // TODO: escape \r \n \\
-                            message += $"[Error]: First mismatch at ({line},{offset}) (expected {(char)data1[bytesRead]}, actual {(char)data2[bytesRead]})";
+                            message += $"[Error]: First mismatch at ({line},{offset}) (expected '{((char)data1[bytesRead]).Escape()}', actual '{((char)data2[bytesRead]).Escape()}')";
                         }
                         else
                         {
@@ -141,6 +152,19 @@ namespace War3Net.Common.Testing
             }
 
             return result;
+        }
+
+        private static string Escape(this char @char)
+        {
+            return @char switch
+            {
+                '\n' => @"\n",
+                '\r' => @"\r",
+                '\t' => @"\t",
+                '\f' => @"\f",
+
+                _ => $"{@char}",
+            };
         }
     }
 }
