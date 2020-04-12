@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Build.Object
@@ -20,6 +21,12 @@ namespace War3Net.Build.Object
         private readonly Dictionary<int, ObjectModification> _newModifications;
 
         private ObjectDataFormatVersion _fileFormatVersion;
+
+        public MapDestructableObjectData(params ObjectModification[] modifications)
+            : this()
+        {
+            SetData(modifications);
+        }
 
         internal MapDestructableObjectData()
         {
@@ -110,6 +117,11 @@ namespace War3Net.Build.Object
             }
         }
 
+        public IEnumerable<ObjectModification> GetBaseData()
+        {
+            return _baseModifications.Values;
+        }
+
         public ObjectModification GetBaseData(int id)
         {
             return _baseModifications[id];
@@ -124,6 +136,11 @@ namespace War3Net.Build.Object
             }
         }
 
+        public IEnumerable<ObjectModification> GetNewData()
+        {
+            return _newModifications.Values;
+        }
+
         public ObjectModification GetNewData(int id)
         {
             return _newModifications[id];
@@ -135,6 +152,33 @@ namespace War3Net.Build.Object
             foreach (var mod in data)
             {
                 _newModifications.Add(mod.NewId, mod);
+            }
+        }
+
+        public IEnumerable<ObjectModification> GetData()
+        {
+            return GetBaseData().Concat(GetNewData());
+        }
+
+        public ObjectModification GetData(int id)
+        {
+            return _baseModifications.TryGetValue(id, out var baseMod) ? baseMod : _newModifications[id];
+        }
+
+        public void SetData(params ObjectModification[] data)
+        {
+            _baseModifications.Clear();
+            _newModifications.Clear();
+            foreach (var mod in data)
+            {
+                if (mod.NewId == 0)
+                {
+                    _baseModifications.Add(mod.OldId, mod);
+                }
+                else
+                {
+                    _newModifications.Add(mod.NewId, mod);
+                }
             }
         }
     }
