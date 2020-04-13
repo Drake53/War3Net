@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable CA1810 // Initialize reference type static fields inline
+
 using System;
 using System.IO;
 
@@ -15,8 +17,8 @@ namespace War3Net.IO.Compression
     /// </summary>
     public static class PKLibCompression
     {
-        private static readonly byte[] _sPosition1 = GenerateDecodeTable(_sDistBits, _sDistCode);
-        private static readonly byte[] _sPosition2 = GenerateDecodeTable(_sLenBits, _sLenCode);
+        private static readonly byte[] _sPosition1;
+        private static readonly byte[] _sPosition2;
 
         private static readonly byte[] _sLenBits =
         {
@@ -55,10 +57,10 @@ namespace War3Net.IO.Compression
             0xF0, 0x70, 0xB0, 0x30, 0xD0, 0x50, 0x90, 0x10, 0xE0, 0x60, 0xA0, 0x20, 0xC0, 0x40, 0x80, 0x00,
         };
 
-        private enum PKLibCompressionType
+        static PKLibCompression()
         {
-            Binary = 0,
-            Ascii = 1,
+            _sPosition1 = GenerateDecodeTable(_sDistBits, _sDistCode);
+            _sPosition2 = GenerateDecodeTable(_sLenBits, _sLenCode);
         }
 
         /// <summary>
