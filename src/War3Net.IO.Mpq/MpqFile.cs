@@ -112,10 +112,10 @@ namespace War3Net.IO.Mpq
             return new MpqUnknownFile(mpqStream, mpqStream.Flags, mpqHash, hashIndex, hashCollisions, encryptionSeed);
         }
 
-        public static MpqFile New(Stream? stream, string fileName)
+        public static MpqFile New(Stream? stream, string fileName, bool leaveOpen = false)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName);
-            return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, MpqLocale.Neutral);
+            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName, leaveOpen);
+            return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, MpqLocale.Neutral, leaveOpen);
         }
 
         /// <inheritdoc/>

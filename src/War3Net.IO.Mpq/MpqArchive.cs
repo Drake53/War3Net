@@ -91,7 +91,7 @@ namespace War3Net.IO.Mpq
         /// Initializes a new instance of the <see cref="MpqArchive"/> class.
         /// </summary>
         /// <param name="sourceStream">The <see cref="Stream"/> containing pre-archive data. Can be null.</param>
-        /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
+        /// <param name="inputFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
         /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <param name="writeArchiveFirst">If true, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.</param>
@@ -104,8 +104,8 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << blockSize;
             _archiveFollowsHeader = writeArchiveFirst;
 
-            var mpqFiles = inputFiles.ToList();
-            var fileCount = (uint)(mpqFiles ?? throw new ArgumentNullException(nameof(mpqFiles))).Count;
+            var mpqFiles = inputFiles?.ToList() ?? throw new ArgumentNullException(nameof(inputFiles));
+            var fileCount = (uint)mpqFiles.Count;
 
             _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
             _blockTable = new BlockTable();
@@ -595,9 +595,9 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="filename">The name for which to check if a corresponding <see cref="MpqEntry"/> exists.</param>
         /// <returns>True if an <see cref="MpqEntry"/> with the given <paramref name="filename"/> exists in this <see cref="MpqArchive"/>, false otherwise.</returns>
-        public bool FileExists(string filename)
+        public bool FileExists(string? filename)
         {
-            return TryGetHashEntry(filename, out _);
+            return string.IsNullOrEmpty(filename) ? false : TryGetHashEntry(filename, out _);
         }
 
         /// <summary>

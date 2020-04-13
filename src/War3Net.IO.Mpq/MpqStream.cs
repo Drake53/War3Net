@@ -171,9 +171,10 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        internal MpqStream(Stream baseStream, string? fileName)
+        internal MpqStream(Stream baseStream, string? fileName, bool leaveOpen = false)
             : this(new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
         {
+            _isStreamOwner = !leaveOpen;
         }
 
         internal Stream Transform(MpqFileFlags targetFlags, MpqCompressionType compressionType, uint targetFilePosition, int targetBlockSize)

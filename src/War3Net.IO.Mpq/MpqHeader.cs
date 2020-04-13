@@ -186,10 +186,10 @@ namespace War3Net.IO.Mpq
             if (header.MpqVersion == 0)
             {
                 // Check validity
-                if (header.DataOffset != Size)
-                {
-                    throw new MpqParserException($"Invalid MPQ header field: DataOffset. Was {header.DataOffset}, expected {Size}");
-                }
+                // if (header.DataOffset != Size)
+                // {
+                //     throw new MpqParserException($"Invalid MPQ header field: DataOffset. Was {header.DataOffset}, expected {Size}");
+                // }
 
                 if (header.ArchiveSize != header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize))
                 {

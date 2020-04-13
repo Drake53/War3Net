@@ -28,6 +28,11 @@ namespace War3Net.IO.Mpq
 
         protected override uint? EncryptionSeed => MpqEntry.CalculateEncryptionSeed(_fileName);
 
+        public override string ToString()
+        {
+            return _fileName;
+        }
+
         protected override void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
             mpqEntry = new MpqEntry(_fileName, mpqArchive.HeaderOffset, relativeFileOffset, compressedSize, fileSize, TargetFlags);
