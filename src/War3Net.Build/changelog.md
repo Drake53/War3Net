@@ -1,5 +1,11 @@
 # War3Net.Build Changelog
 
+## v1.3.1
+### Changes
+- Update CSharpLua and MPQ packages.
+### Bugfixes
+- Can now run MapBuilder's Build method multiple times, without needing to restart the application.
+
 ## v1.3.0
 ### Changes
 - Support .w3u, .w3t, .w3b, .w3d, .w3a, .w3h, .w3q, .w3o, and .w3f files.
