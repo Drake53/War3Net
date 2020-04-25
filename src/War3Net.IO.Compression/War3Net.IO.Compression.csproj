@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.4" />
+    <PackageReference Include="DotNetZip" Version="1.13.7" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
   </ItemGroup>
 
@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="0.1.1" />
+    <PackageReference Include="War3Net.Common" Version="0.1.2" />
   </ItemGroup>
 
 </Project>
