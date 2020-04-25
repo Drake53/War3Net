@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Text;
@@ -25,43 +27,43 @@ namespace War3Net.Build.Object
         private MapBuffObjectData? _buffData;
         private MapUpgradeObjectData? _upgradeData;
 
-        public MapUnitObjectData UnitData
+        public MapUnitObjectData? UnitData
         {
             get => _unitData;
             set => _unitData = value;
         }
 
-        public MapItemObjectData ItemData
+        public MapItemObjectData? ItemData
         {
             get => _itemData;
             set => _itemData = value;
         }
 
-        public MapDestructableObjectData DestructableData
+        public MapDestructableObjectData? DestructableData
         {
             get => _destructableData;
             set => _destructableData = value;
         }
 
-        public MapDoodadObjectData DoodadData
+        public MapDoodadObjectData? DoodadData
         {
             get => _doodadData;
             set => _doodadData = value;
         }
 
-        public MapAbilityObjectData AbilityData
+        public MapAbilityObjectData? AbilityData
         {
             get => _abilityData;
             set => _abilityData = value;
         }
 
-        public MapBuffObjectData BuffData
+        public MapBuffObjectData? BuffData
         {
             get => _buffData;
             set => _buffData = value;
         }
 
-        public MapUpgradeObjectData UpgradeData
+        public MapUpgradeObjectData? UpgradeData
         {
             get => _upgradeData;
             set => _upgradeData = value;

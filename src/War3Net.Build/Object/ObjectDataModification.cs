@@ -26,7 +26,8 @@ namespace War3Net.Build.Object
 
         public ObjectDataModification(int id, int value)
             : this(id, value, ObjectDataType.Int, null)
-        { }
+        {
+        }
 
         /// <param name="isUnreal">
         /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
@@ -34,23 +35,28 @@ namespace War3Net.Build.Object
         /// </param>
         public ObjectDataModification(int id, float value, bool isUnreal)
             : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, string value)
             : this(id, value, ObjectDataType.String, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, bool value)
             : this(id, value, ObjectDataType.Bool, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, char value)
             : this(id, value, ObjectDataType.Char, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, int level, int value)
             : this(id, value, ObjectDataType.Int, level)
-        { }
+        {
+        }
 
         /// <param name="isUnreal">
         /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
@@ -58,23 +64,28 @@ namespace War3Net.Build.Object
         /// </param>
         public ObjectDataModification(int id, int level, float value, bool isUnreal)
             : this(id, value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, int level, string value)
             : this(id, value, ObjectDataType.String, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, int level, bool value)
             : this(id, value, ObjectDataType.Bool, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(int id, int level, char value)
             : this(id, value, ObjectDataType.Char, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, int value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Int, null)
-        { }
+        {
+        }
 
         /// <param name="isUnreal">
         /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
@@ -82,23 +93,28 @@ namespace War3Net.Build.Object
         /// </param>
         public ObjectDataModification(string rawcode, float value, bool isUnreal)
             : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, string value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.String, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, bool value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Bool, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, char value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Char, null)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, int level, int value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Int, level)
-        { }
+        {
+        }
 
         /// <param name="isUnreal">
         /// Set to <see langword="true"/> for <see cref="ObjectDataType.Unreal"/>, and <see langword="false"/> for <see cref="ObjectDataType.Real"/>.
@@ -106,19 +122,23 @@ namespace War3Net.Build.Object
         /// </param>
         public ObjectDataModification(string rawcode, int level, float value, bool isUnreal)
             : this(rawcode.FromRawcode(), value, isUnreal ? ObjectDataType.Unreal : ObjectDataType.Real, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, int level, string value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.String, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, int level, bool value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Bool, level)
-        { }
+        {
+        }
 
         public ObjectDataModification(string rawcode, int level, char value)
             : this(rawcode.FromRawcode(), value, ObjectDataType.Char, level)
-        { }
+        {
+        }
 
         private ObjectDataModification(int id, object value, ObjectDataType type, int? level, int pointer = 0)
         {

@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,11 +45,11 @@ namespace War3Net.Build.Script
         /// Gets or sets the path to clijasshelper.exe.
         /// This property must be set when compiling vJass source code.
         /// </summary>
-        public string JasshelperCliPath { get; set; }
+        public string? JasshelperCliPath { get; set; }
 
-        public string CommonJPath { get; set; }
+        public string? CommonJPath { get; set; }
 
-        public string BlizzardJPath { get; set; }
+        public string? BlizzardJPath { get; set; }
 
         /// <summary>
         /// If true, script files added through assets will be overwritten, even if <see cref="SourceDirectory"/> is null.
@@ -121,13 +123,13 @@ namespace War3Net.Build.Script
             }
         }
 
-        public string LobbyMusic { get; set; }
+        public string? LobbyMusic { get; set; }
 
         public GamePatch? TargetPatch { get; set; }
 
         internal List<string> Libraries { get; private set; }
 
-        public object GetMapFile(string fileName)
+        public object? GetMapFile(string fileName)
         {
             return fileName switch
             {
