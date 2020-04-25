@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -50,9 +51,17 @@ namespace War3Net.Build.Object
             _modifications = new Dictionary<long, ObjectDataModification>();
         }
 
-        public ObjectDataModification this[int key] => _modifications.TryGetValue(ToKey(key, 0), out var value) ? value : null;
+        public ObjectDataModification this[int key]
+        {
+            get => _modifications.TryGetValue(ToKey(key, 0), out var value) ? value : null;
+            set => _modifications.SetValue(ToKey(key, 0), value);
+        }
 
-        public ObjectDataModification this[int rawcode, int level] => _modifications.TryGetValue(ToKey(rawcode, level), out var value) ? value : null;
+        public ObjectDataModification this[int rawcode, int level]
+        {
+            get => _modifications.TryGetValue(ToKey(rawcode, level), out var value) ? value : null;
+            set => _modifications.SetValue(ToKey(rawcode, level), value);
+        }
 
         public int OldId => _oldId;
 
@@ -96,16 +105,12 @@ namespace War3Net.Build.Object
 
         public ObjectModification AddModification(ObjectDataModification modification)
         {
-            var key = ToKey(modification.Id, modification.Level ?? 0);
-            if (_modifications.ContainsKey(key))
+            if (modification is null)
             {
-                _modifications[key] = modification;
-            }
-            else
-            {
-                _modifications.Add(key, modification);
+                throw new ArgumentNullException(nameof(modification));
             }
 
+            this[modification.Id, modification.Level ?? 0] = modification;
             return this;
         }
 

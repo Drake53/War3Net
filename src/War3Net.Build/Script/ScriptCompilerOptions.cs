@@ -92,6 +92,35 @@ namespace War3Net.Build.Script
 
         public MapUpgradeObjectData? MapUpgradeData { get; set; }
 
+        public MapObjectData MapObjectData
+        {
+            get => new MapObjectData()
+            {
+                UnitData = MapUnitData,
+                ItemData = MapItemData,
+                DestructableData = MapDestructableData,
+                DoodadData = MapDoodadData,
+                AbilityData = MapAbilityData,
+                BuffData = MapBuffData,
+                UpgradeData = MapUpgradeData,
+            };
+            set
+            {
+                if (value is null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                MapUnitData = value.UnitData;
+                MapItemData = value.ItemData;
+                MapDestructableData = value.DestructableData;
+                MapDoodadData = value.DoodadData;
+                MapAbilityData = value.AbilityData;
+                MapBuffData = value.BuffData;
+                MapUpgradeData = value.UpgradeData;
+            }
+        }
+
         public string LobbyMusic { get; set; }
 
         public GamePatch? TargetPatch { get; set; }
