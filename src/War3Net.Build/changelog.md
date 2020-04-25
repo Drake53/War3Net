@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.3.2
+### Changes
+- Added setter indexer to ObjectDataModification.
+- Added property MapObjectData to ScriptCompilerOptions.
+
 ## v1.3.1
 ### Changes
 - Update CSharpLua and MPQ packages.
