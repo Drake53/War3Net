@@ -83,6 +83,8 @@ namespace War3Net.Build.Providers
                 GamePatch.v1_32_1 => new Version(1, 32, 1, 14604),
                 GamePatch.v1_32_2 => new Version(1, 32, 2, 14722),
                 GamePatch.v1_32_3 => new Version(1, 32, 3, 14883),
+                GamePatch.v1_32_4 => new Version(1, 32, 4, 15098),
+                GamePatch.v1_32_5 => new Version(1, 32, 5, 15129),
 #pragma warning restore SA1025 // Code should not contain multiple whitespace in a row
             };
         }
