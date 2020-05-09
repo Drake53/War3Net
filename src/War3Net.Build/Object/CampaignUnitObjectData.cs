@@ -16,6 +16,7 @@ namespace War3Net.Build.Object
     public sealed class CampaignUnitObjectData
     {
         public const string FileName = "war3campaign.w3u";
+        public const ObjectDataFormatVersion LatestVersion = ObjectDataFormatVersion.Normal;
 
         private readonly Dictionary<int, ObjectModification> _baseModifications;
         private readonly Dictionary<int, ObjectModification> _newModifications;
@@ -26,6 +27,8 @@ namespace War3Net.Build.Object
             : this()
         {
             SetData(modifications);
+
+            _fileFormatVersion = LatestVersion;
         }
 
         internal CampaignUnitObjectData()

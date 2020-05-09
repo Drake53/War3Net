@@ -16,6 +16,7 @@ namespace War3Net.Build.Object
     public sealed class MapDoodadObjectData
     {
         public const string FileName = "war3map.w3d";
+        public const ObjectDataFormatVersion LatestVersion = ObjectDataFormatVersion.Normal;
 
         private readonly Dictionary<int, ObjectModification> _baseModifications;
         private readonly Dictionary<int, ObjectModification> _newModifications;
@@ -26,6 +27,8 @@ namespace War3Net.Build.Object
             : this()
         {
             SetData(modifications);
+
+            _fileFormatVersion = LatestVersion;
         }
 
         internal MapDoodadObjectData()
