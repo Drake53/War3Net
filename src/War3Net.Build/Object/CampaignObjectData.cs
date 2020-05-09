@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Text;
@@ -14,6 +16,7 @@ namespace War3Net.Build.Object
     public sealed class CampaignObjectData
     {
         public const string FileName = "war3campaign.w3o";
+        public const ObjectDataFormatVersion LatestVersion = ObjectDataFormatVersion.Normal;
 
         private ObjectDataFormatVersion _fileFormatVersion;
 
@@ -24,6 +27,30 @@ namespace War3Net.Build.Object
         private CampaignAbilityObjectData? _abilityData;
         private CampaignBuffObjectData? _buffData;
         private CampaignUpgradeObjectData? _upgradeData;
+
+        public CampaignObjectData(
+            CampaignUnitObjectData? unitData = null,
+            CampaignItemObjectData? itemData = null,
+            CampaignDestructableObjectData? destructableData = null,
+            CampaignDoodadObjectData? doodadData = null,
+            CampaignAbilityObjectData? abilityData = null,
+            CampaignBuffObjectData? buffData = null,
+            CampaignUpgradeObjectData? upgradeData = null)
+        {
+            _unitData = unitData;
+            _itemData = itemData;
+            _destructableData = destructableData;
+            _doodadData = doodadData;
+            _abilityData = abilityData;
+            _buffData = buffData;
+            _upgradeData = upgradeData;
+
+            _fileFormatVersion = LatestVersion;
+        }
+
+        internal CampaignObjectData()
+        {
+        }
 
         public CampaignUnitObjectData UnitData
         {
@@ -65,6 +92,12 @@ namespace War3Net.Build.Object
         {
             get => _upgradeData;
             set => _upgradeData = value;
+        }
+
+        public ObjectDataFormatVersion FormatVersion
+        {
+            get => _fileFormatVersion;
+            set => _fileFormatVersion = value;
         }
 
         public static CampaignObjectData Parse(Stream stream, bool leaveOpen = false)

@@ -16,6 +16,7 @@ namespace War3Net.Build.Object
     public sealed class MapObjectData
     {
         public const string FileName = "war3map.w3o";
+        public const ObjectDataFormatVersion LatestVersion = ObjectDataFormatVersion.Normal;
 
         private ObjectDataFormatVersion _fileFormatVersion;
 
@@ -26,6 +27,30 @@ namespace War3Net.Build.Object
         private MapAbilityObjectData? _abilityData;
         private MapBuffObjectData? _buffData;
         private MapUpgradeObjectData? _upgradeData;
+
+        public MapObjectData(
+            MapUnitObjectData? unitData = null,
+            MapItemObjectData? itemData = null,
+            MapDestructableObjectData? destructableData = null,
+            MapDoodadObjectData? doodadData = null,
+            MapAbilityObjectData? abilityData = null,
+            MapBuffObjectData? buffData = null,
+            MapUpgradeObjectData? upgradeData = null)
+        {
+            _unitData = unitData;
+            _itemData = itemData;
+            _destructableData = destructableData;
+            _doodadData = doodadData;
+            _abilityData = abilityData;
+            _buffData = buffData;
+            _upgradeData = upgradeData;
+
+            _fileFormatVersion = LatestVersion;
+        }
+
+        internal MapObjectData()
+        {
+        }
 
         public MapUnitObjectData? UnitData
         {
@@ -67,6 +92,12 @@ namespace War3Net.Build.Object
         {
             get => _upgradeData;
             set => _upgradeData = value;
+        }
+
+        public ObjectDataFormatVersion FormatVersion
+        {
+            get => _fileFormatVersion;
+            set => _fileFormatVersion = value;
         }
 
         public static MapObjectData Parse(Stream stream, bool leaveOpen = false)

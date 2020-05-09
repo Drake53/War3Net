@@ -96,16 +96,7 @@ namespace War3Net.Build.Script
 
         public MapObjectData MapObjectData
         {
-            get => new MapObjectData()
-            {
-                UnitData = MapUnitData,
-                ItemData = MapItemData,
-                DestructableData = MapDestructableData,
-                DoodadData = MapDoodadData,
-                AbilityData = MapAbilityData,
-                BuffData = MapBuffData,
-                UpgradeData = MapUpgradeData,
-            };
+            get => new MapObjectData(MapUnitData, MapItemData, MapDestructableData, MapDoodadData, MapAbilityData, MapBuffData, MapUpgradeData);
             set
             {
                 if (value is null)
