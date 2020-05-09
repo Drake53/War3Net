@@ -1,5 +1,11 @@
 # War3Net.Build Changelog
 
+## v1.3.3
+### Changes
+- Include latest Reforged patches in GamePatch enum.
+### Bugfixes
+- Added default value and property for ObjectData format version, so its value is not stuck at 0, which is invalid.
+
 ## v1.3.2
 ### Changes
 - Added setter indexer to ObjectDataModification.
