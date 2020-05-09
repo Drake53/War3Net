@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,25 @@ namespace War3Net.Build.Tests
     [TestClass]
     public class CampaignObjectTest
     {
+        [TestMethod]
+        public void TestCreateNewObjectData()
+        {
+            var objectData = new CampaignObjectData(
+                new CampaignUnitObjectData(Array.Empty<ObjectModification>()),
+                new CampaignItemObjectData(Array.Empty<ObjectModification>()),
+                new CampaignDestructableObjectData(Array.Empty<ObjectModification>()),
+                new CampaignDoodadObjectData(Array.Empty<ObjectModification>()),
+                new CampaignAbilityObjectData(Array.Empty<ObjectModification>()),
+                new CampaignBuffObjectData(Array.Empty<ObjectModification>()),
+                new CampaignUpgradeObjectData(Array.Empty<ObjectModification>()));
+
+            using var memoryStream = new MemoryStream();
+            objectData.SerializeTo(memoryStream, true);
+
+            memoryStream.Position = 0;
+            CampaignObjectData.Parse(memoryStream);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetCampaignUnitObjectData), DynamicDataSourceType.Method)]
         public void TestParseCampaignUnitObjectData(string campaignUnitObjectDataFilePath)
