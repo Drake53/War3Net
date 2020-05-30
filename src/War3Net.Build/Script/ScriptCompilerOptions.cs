@@ -52,9 +52,14 @@ namespace War3Net.Build.Script
         public string? BlizzardJPath { get; set; }
 
         /// <summary>
-        /// If true, script files added through assets will be overwritten, even if <see cref="SourceDirectory"/> is null.
+        /// If <see langword="true"/>, script files added through assets will be overwritten, even if <see cref="SourceDirectory"/> is null.
         /// </summary>
         public bool ForceCompile { get; set; }
+
+        /// <summary>
+        /// If <see langword="true"/>, .dll files from package references are decompiled into .cs files, so that they can be transpiled to lua.
+        /// </summary>
+        public bool DecompilePackageLibs { get; set; }
 
         public bool Debug { get; set; }
 

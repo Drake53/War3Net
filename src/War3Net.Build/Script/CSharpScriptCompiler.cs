@@ -73,7 +73,7 @@ namespace War3Net.Build.Script
                 var packageLibs =
                     PackageHelper.GetLibs("War3Api.Common", "*").Concat(
                     PackageHelper.GetLibs("War3Api.Blizzard", "*"));
-                lib = packageLibs.Aggregate((accum, next) => $"{accum};{next}");
+                lib = string.Join(';', packageLibs);
             }
 
             // var compiler = new Compiler(Options.SourceDirectory, scriptFilePath, null, null, null, false, null, exportEnums ? string.Empty : null)
@@ -84,6 +84,7 @@ namespace War3Net.Build.Script
                 IsInlineSimpleProperty = false,
                 IsPreventDebugObject = preventDebug,
                 IsCommentsDisabled = Options.Optimize,
+                IsDecompilePackageLibs = Options.DecompilePackageLibs,
             };
 
             try
