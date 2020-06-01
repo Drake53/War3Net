@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.2.0" />
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.2.1" />
   </ItemGroup>
 
 </Project>
