@@ -190,8 +190,6 @@ namespace War3Net.CodeAnalysis.Jass
                 const string CommonClassName = "Common";
                 const string BlizzardClassName = "Blizzard";
 
-                var cSharpDirective = GetCSharpDirective();
-
                 if (!referenceBlizzard)
                 {
                     TranspileToEnumHandler.DefineEnumTypes(CommonEnumTypesProvider.GetEnumTypes());
@@ -203,7 +201,7 @@ namespace War3Net.CodeAnalysis.Jass
                     ApiNamespaceName,
                     CommonClassName,
                     metadataReferences,
-                    new[] { cSharpDirective },
+                    Array.Empty<UsingDirectiveSyntax>(),
                     out var commonReference,
                     out var commonDirective,
                     out emitResult,
@@ -226,7 +224,7 @@ namespace War3Net.CodeAnalysis.Jass
                         ApiNamespaceName,
                         BlizzardClassName,
                         metadataReferences,
-                        new[] { cSharpDirective, commonDirective },
+                        new[] { commonDirective },
                         out var blizzardReference,
                         out var blizzardDirective,
                         out emitResult,
@@ -258,22 +256,6 @@ namespace War3Net.CodeAnalysis.Jass
         {
             yield return MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             yield return MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51").Location);
-        }
-
-        private static UsingDirectiveSyntax GetCSharpDirective()
-        {
-            return SyntaxFactory.UsingDirective(
-                SyntaxFactory.ParseName("War3Net.CodeAnalysis.CSharp.Attributes")) // TODO: not hardcoded name
-                .WithLeadingTrivia(SyntaxFactory.Trivia(
-                    SyntaxFactory.PragmaWarningDirectiveTrivia(
-                        SyntaxFactory.Token(SyntaxKind.DisableKeyword),
-                        default(SeparatedSyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax>).AddRange(new[]
-                        {
-                            SyntaxFactory.ParseExpression("IDE0052"),
-                            SyntaxFactory.ParseExpression("IDE1006"),
-                            SyntaxFactory.ParseExpression("CS0626"),
-                        }),
-                        true)));
         }
     }
 }

@@ -55,15 +55,21 @@ namespace War3Net.CodeAnalysis.Jass
                     // .AddAttributeByName(nameof(CSharpLua.NativeLuaMemberContainerAttribute)),
                     new SyntaxList<MemberDeclarationSyntax>(
                         members.Select(declr => declr is ClassDeclarationSyntax
-                        ? declr
+                        ? declr.WithLeadingTrivia(
+                            SyntaxFactory.TriviaList(
+                                SyntaxFactory.Trivia(
+                                    GetSingleLineDocumentationCommentTrivia(
+                                        SyntaxFactory.XmlText("@CSharpLua.Ignore")))))
                         : declr.WithLeadingTrivia(
                             SyntaxFactory.TriviaList(
-                                SyntaxFactory.Trivia(SyntaxFactory.DocumentationCommentTrivia(
-                                    SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                    SyntaxFactory.List<XmlNodeSyntax>(new[]
-                                    {
-                                        SyntaxFactory.XmlText($"/// @CSharpLua.Template = \"{GetDeclarationTemplateText(declr)}\"\r\n"),
-                                    })))))))),
+                                SyntaxFactory.Trivia(
+                                    GetSingleLineDocumentationCommentTrivia(
+                                        SyntaxFactory.XmlText($"@CSharpLua.Template = \"{GetDeclarationTemplateText(declr)}\""))))))))
+                    .WithLeadingTrivia(
+                        SyntaxFactory.TriviaList(
+                            SyntaxFactory.Trivia(
+                                GetSingleLineDocumentationCommentTrivia(
+                                    SyntaxFactory.XmlText("@CSharpLua.Ignore"))))),
                 };
             }
             else
@@ -102,6 +108,26 @@ namespace War3Net.CodeAnalysis.Jass
 
                 return classList.ToArray();
             }
+        }
+
+        private static DocumentationCommentTriviaSyntax GetSingleLineDocumentationCommentTrivia(XmlTextSyntax xmlTextSyntax)
+        {
+            return SyntaxFactory.DocumentationCommentTrivia(
+                SyntaxKind.SingleLineDocumentationCommentTrivia,
+                SyntaxFactory.List(new XmlNodeSyntax[]
+                {
+                    SyntaxFactory.XmlText(
+                        SyntaxFactory.XmlTextLiteral(
+                            SyntaxFactory.TriviaList(
+                                SyntaxFactory.DocumentationCommentExterior("///")),
+                            " ",
+                            " ",
+                            default)),
+                    xmlTextSyntax,
+                    SyntaxFactory.XmlText(
+                        SyntaxFactory.XmlTextNewLine("\r\n", false)),
+                }),
+                SyntaxFactory.Token(SyntaxKind.EndOfDocumentationCommentToken));
         }
 
         private static string GetDeclarationTemplateText(MemberDeclarationSyntax memberDeclaration)
