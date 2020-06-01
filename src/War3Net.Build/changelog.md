@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.3.4
+### Changes
+- Added DecompilePackageLibs to ScriptCompilerOptions.
+- Updated War3Net.CodeAnalysis.Jass, CSharpLua, and War3Api packages.
+
 ## v1.3.3
 ### Changes
 - Include latest Reforged patches in GamePatch enum.
