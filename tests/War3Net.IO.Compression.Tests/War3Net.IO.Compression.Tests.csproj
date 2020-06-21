@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\..\src\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
+    <PackageReference Include="War3Net.IO.Compression" Version="1.0.0-preview2" />
   </ItemGroup>
 
 </Project>
