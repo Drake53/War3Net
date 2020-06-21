@@ -18,6 +18,11 @@ namespace War3Net.Common.Extensions
             var endsWithNullChar = false;
             foreach (var c in s ?? string.Empty)
             {
+                if (endsWithNullChar)
+                {
+                    throw new ArgumentException("String is not allowed to contain \0, unless it is the last character.", nameof(s));
+                }
+
                 writer.Write(c);
                 endsWithNullChar = c == char.MinValue;
             }
