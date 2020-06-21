@@ -16,6 +16,7 @@ namespace War3Net.Common.Tests
     {
         internal static IEnumerable<object?[]> GetTestStrings()
         {
+            yield return new[] { "Hello world" };
             yield return new[] { "Hello world!" };
             yield return new[] { string.Empty };
             yield return new[] { (string?)null };
@@ -30,6 +31,9 @@ namespace War3Net.Common.Tests
             yield return new object?[] { "\uDCAB\uDCAB", typeof(ArgumentException) };
             yield return new object?[] { "\uDCAB\uD83D", typeof(ArgumentException) };
             yield return new[] { "\uD83D\uDCAB" };
+            yield return new[] { "a\uD83D\uDCAB" };
+            yield return new[] { "\uD83D\uDCABa" };
+            yield return new[] { "a\uD83D\uDCABa" };
         }
     }
 }
