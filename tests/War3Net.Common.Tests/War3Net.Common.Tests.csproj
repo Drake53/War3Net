@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\War3Net.Common.Testing\War3Net.Common.Testing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.Common\War3Net.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <!-- TODO: PackageReference instead of ProjectReference -->
+    <ProjectReference Include="..\..\src\War3Net.Common\War3Net.Common.csproj" />
+  </ItemGroup>
+
+</Project>
