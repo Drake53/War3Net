@@ -5,7 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
+using System.Text;
 
 #if !NETSTANDARD1_3
 using System.Drawing;
@@ -17,20 +19,34 @@ namespace War3Net.Common.Extensions
     {
         public static string ReadChars(this BinaryReader reader)
         {
-            // todo: use stringbuilder?
-            var s = string.Empty;
-            while (true)
+            if (reader is null)
             {
-                var read = reader.ReadChar();
-                if (read == char.MinValue)
-                {
-                    break;
-                }
-
-                s += read;
+                throw new ArgumentNullException(nameof(reader));
             }
 
-            return s;
+            var baseStream = reader.BaseStream;
+            var start = baseStream.Position;
+            while (true)
+            {
+                if (baseStream.Position >= baseStream.Length)
+                {
+                    throw new InvalidDataException("Reached end of the stream without encountering a \0 character to mark the end of the string.");
+                }
+
+                if (reader.ReadByte() == char.MinValue)
+                {
+                    var bytesToRead = (int)(baseStream.Position - start - 1);
+                    baseStream.Position = start;
+
+                    var bytes = reader.ReadBytes(bytesToRead);
+                    var result = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+
+                    // Read the \0 character.
+                    reader.ReadByte();
+
+                    return result;
+                }
+            }
         }
 
         public static string ReadString(this BinaryReader reader, int count)
