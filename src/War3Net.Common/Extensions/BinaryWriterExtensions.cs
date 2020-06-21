@@ -13,17 +13,17 @@ namespace War3Net.Common.Extensions
     {
         public static void WriteString(this BinaryWriter writer, string s)
         {
-            var endsWithNullChar = false;
+            string toBeWritten = string.Empty;
             foreach (var c in s ?? string.Empty)
             {
-                writer.Write(c);
-                endsWithNullChar = c == char.MinValue;
+                if(c == char.MinValue){
+                    toBeWritten+=char.MinValue;
+                    break;
+                }
+                toBeWritten+=c;
             }
 
-            if (!endsWithNullChar)
-            {
-                writer.Write(char.MinValue);
-            }
+            writer.Write(toBeWritten);
         }
     }
 }
