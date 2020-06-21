@@ -45,20 +45,25 @@ namespace War3Net.Common.Tests.Extensions
             s ??= string.Empty;
             var expectedStringLength = s.Length;
 
-            if (s.EndsWith(char.MinValue))
+            if (!s.EndsWith(char.MinValue))
             {
-                s = s.TrimEnd(char.MinValue);
-            }
-            else
-            {
+                s += char.MinValue;
                 expectedStringLength++;
+            }
+
+            foreach (var c in s)
+            {
+                if (char.IsSurrogate(c))
+                {
+                    expectedStringLength++;
+                }
             }
 
             Assert.AreEqual(expectedStringLength, memoryStream.Length);
 
             memoryStream.Position = 0;
             using var binaryReader = new BinaryReader(memoryStream);
-            Assert.AreEqual(s, binaryReader.ReadChars());
+            Assert.AreEqual(s, new string(binaryReader.ReadChars(expectedStringLength)));
         }
 
         private static IEnumerable<object?[]> GetTestWriteStrings()
