@@ -15,6 +15,12 @@ namespace War3Net.Common.Extensions
     {
         public static void WriteString(this BinaryWriter writer, string? s)
         {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            char? storedSurrogateChar = null;
             var endsWithNullChar = false;
             foreach (var c in s ?? string.Empty)
             {
@@ -23,8 +29,35 @@ namespace War3Net.Common.Extensions
                     throw new ArgumentException("String is not allowed to contain \0, unless it is the last character.", nameof(s));
                 }
 
-                writer.Write(c);
-                endsWithNullChar = c == char.MinValue;
+                if (storedSurrogateChar.HasValue)
+                {
+                    if (!char.IsSurrogatePair(storedSurrogateChar.Value, c))
+                    {
+                        throw new ArgumentException("Invalid surrogate pair.", nameof(s));
+                    }
+
+                    writer.Write(new[] { storedSurrogateChar.Value, c });
+                    storedSurrogateChar = null;
+                }
+                else if (char.IsSurrogate(c))
+                {
+                    if (!char.IsHighSurrogate(c))
+                    {
+                        throw new ArgumentException("Surrogate pair must start with high surrogate.", nameof(s));
+                    }
+
+                    storedSurrogateChar = c;
+                }
+                else
+                {
+                    writer.Write(c);
+                    endsWithNullChar = c == char.MinValue;
+                }
+            }
+
+            if (storedSurrogateChar.HasValue)
+            {
+                throw new ArgumentException("Expected surrogate pair.", nameof(s));
             }
 
             if (!endsWithNullChar)
