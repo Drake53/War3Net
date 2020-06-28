@@ -2,7 +2,7 @@
 ## A .NET implementation of Warcraft III related libraries
 
 [![GitHub stars](https://img.shields.io/github/stars/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network)
+[![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network/members)
 
 ---
 
@@ -23,7 +23,7 @@
 
 War3Net is a collection of libraries for Warcraft III modding.
 
-## Projects
+### Projects
 
 - [War3Net.Build]
     - Class library for building a warcraft III map file, including generation of the main and config functions.
@@ -39,12 +39,12 @@ War3Net is a collection of libraries for Warcraft III modding.
     - Class library for opening and creating MPQ files.
     - *Previously forked from:* [MpqTool](https://github.com/hazzik/MpqTool)
 
-## Contributing
+### Contributing
 
 [![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
 
-## License
+### License
 
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
