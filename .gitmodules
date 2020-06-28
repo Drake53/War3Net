@@ -1,0 +1,3 @@
+[submodule "submodules/CSharp.lua"]
+	path = submodules/CSharp.lua
+	url = https://github.com/Drake53/CSharp.lua

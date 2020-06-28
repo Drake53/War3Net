@@ -10,7 +10,7 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
-    <ProjectReference Include="..\..\..\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj" />
+    <ProjectReference Include="..\..\submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">

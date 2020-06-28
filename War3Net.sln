@@ -31,13 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.CSharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Tests", "tests\War3Net.CodeAnalysis.Tests\War3Net.CodeAnalysis.Tests.csproj", "{06DFEA66-553A-4C27-B992-AED8D6F33AD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "..\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "submodules\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Build.Tests", "tests\War3Net.Build.Tests\War3Net.Build.Tests.csproj", "{BC48D49B-4C20-4122-BD31-D88B2421DAD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression", "src\War3Net.IO.Compression\War3Net.IO.Compression.csproj", "{E7055A8C-A27B-4AC4-91EB-70DA65D4C385}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua.CoreSystem", "..\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj", "{E1533516-FE29-4F48-A402-4308E8CC3882}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua.CoreSystem", "submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj", "{E1533516-FE29-4F48-A402-4308E8CC3882}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Replay", "src\War3Net.Replay\War3Net.Replay.csproj", "{B158ED8F-9BFE-46FD-A39C-C3102CA52C95}"
 EndProject
