@@ -3,67 +3,61 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Mpq", "src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj", "{BB33E313-B458-45AE-A18E-C0978C14CC43}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp", "src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj", "{75A5929C-4828-4C97-858C-0893840C27C8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp.Tests", "tests\War3Net.Drawing.Blp.Tests\War3Net.Drawing.Blp.Tests.csproj", "{F5FBAAFE-0010-4333-8D34-39ACF94B6D52}"
-	ProjectSection(ProjectDependencies) = postProject
-		{75A5929C-4828-4C97-858C-0893840C27C8} = {75A5929C-4828-4C97-858C-0893840C27C8}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga", "src\War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj", "{FC21AC42-5F24-4CE5-9046-027DF1693FFA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga.Tests", "tests\War3Net.Drawing.Tga.Tests\War3Net.Drawing.Tga.Tests.csproj", "{22285811-FF4E-49DA-89BC-84B8CAAA03C1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FC21AC42-5F24-4CE5-9046-027DF1693FFA} = {FC21AC42-5F24-4CE5-9046-027DF1693FFA}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Mpq.Tests", "tests\War3Net.IO.Mpq.Tests\War3Net.IO.Mpq.Tests.csproj", "{09C7D345-4AD5-431B-8D2D-E0F766C89196}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Jass", "src\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj", "{7C1425CC-E4C4-4EBF-B645-22D4775DC03A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Jass.Tests", "tests\War3Net.CodeAnalysis.Jass.Tests\War3Net.CodeAnalysis.Jass.Tests.csproj", "{6A8D67F1-D8C1-410D-A894-0F918E65F5C3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{14550F94-CB5A-40D1-95C7-6DBEFA3E96AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Build", "src\War3Net.Build\War3Net.Build.csproj", "{1EDC8582-2B2C-4CBD-93FB-E4CBD85DC8CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.CSharp", "src\War3Net.CodeAnalysis.CSharp\War3Net.CodeAnalysis.CSharp.csproj", "{9676B7B4-C1E7-4617-A528-693222B30954}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Tests", "tests\War3Net.CodeAnalysis.Tests\War3Net.CodeAnalysis.Tests.csproj", "{06DFEA66-553A-4C27-B992-AED8D6F33AD2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "submodules\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Build.Tests", "tests\War3Net.Build.Tests\War3Net.Build.Tests.csproj", "{BC48D49B-4C20-4122-BD31-D88B2421DAD8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression", "src\War3Net.IO.Compression\War3Net.IO.Compression.csproj", "{E7055A8C-A27B-4AC4-91EB-70DA65D4C385}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua.CoreSystem", "submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj", "{E1533516-FE29-4F48-A402-4308E8CC3882}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Replay", "src\War3Net.Replay\War3Net.Replay.csproj", "{B158ED8F-9BFE-46FD-A39C-C3102CA52C95}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Replay.Tests", "tests\War3Net.Replay.Tests\War3Net.Replay.Tests.csproj", "{B9D05909-690F-47DB-8AD5-BC26DB3D9918}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Jass", "src\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj", "{7C1425CC-E4C4-4EBF-B645-22D4775DC03A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Common", "src\War3Net.Common\War3Net.Common.csproj", "{2BB2862E-F10C-48DD-97C2-B508E425BD5E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Common.Testing", "tests\War3Net.Common.Testing\War3Net.Common.Testing.csproj", "{46DD6F2E-B864-4E30-B3EC-8EEFD1049E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp", "src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj", "{75A5929C-4828-4C97-858C-0893840C27C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{14550F94-CB5A-40D1-95C7-6DBEFA3E96AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga", "src\War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj", "{FC21AC42-5F24-4CE5-9046-027DF1693FFA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{11A2CA17-F0A5-416A-B80D-794D67A49891}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression", "src\War3Net.IO.Compression\War3Net.IO.Compression.csproj", "{E7055A8C-A27B-4AC4-91EB-70DA65D4C385}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Mpq", "src\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj", "{BB33E313-B458-45AE-A18E-C0978C14CC43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Slk", "src\War3Net.IO.Slk\War3Net.IO.Slk.csproj", "{D1328289-F479-4181-8528-142A6AA50D8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Slk.Tests", "tests\War3Net.IO.Slk.Tests\War3Net.IO.Slk.Tests.csproj", "{6824E77A-F57A-4899-B862-BA35B2B12958}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Modeling", "src\War3Net.Modeling\War3Net.Modeling.csproj", "{C22C827D-7D88-4E6D-AC8A-2692979E2E53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Modeling.Tests", "tests\War3Net.Modeling.Tests\War3Net.Modeling.Tests.csproj", "{76E0C475-8882-4675-BCBB-B79B2291D5C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Replay", "src\War3Net.Replay\War3Net.Replay.csproj", "{B158ED8F-9BFE-46FD-A39C-C3102CA52C95}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression.Tests", "tests\War3Net.IO.Compression.Tests\War3Net.IO.Compression.Tests.csproj", "{491F3BD8-659E-4C07-9D8F-4593B0E7A0A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{11A2CA17-F0A5-416A-B80D-794D67A49891}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Build.Tests", "tests\War3Net.Build.Tests\War3Net.Build.Tests.csproj", "{BC48D49B-4C20-4122-BD31-D88B2421DAD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.CSharp.Tests", "tests\War3Net.CodeAnalysis.CSharp.Tests\War3Net.CodeAnalysis.CSharp.Tests.csproj", "{805FB6DA-6097-4026-9CBE-54730DEAF8A1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Jass.Tests", "tests\War3Net.CodeAnalysis.Jass.Tests\War3Net.CodeAnalysis.Jass.Tests.csproj", "{6A8D67F1-D8C1-410D-A894-0F918E65F5C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.CodeAnalysis.Tests", "tests\War3Net.CodeAnalysis.Tests\War3Net.CodeAnalysis.Tests.csproj", "{06DFEA66-553A-4C27-B992-AED8D6F33AD2}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Common.Tests", "tests\War3Net.Common.Tests\War3Net.Common.Tests.csproj", "{946A1A91-2643-412C-BE53-FEDEAE0B9C39}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp.Tests", "tests\War3Net.Drawing.Blp.Tests\War3Net.Drawing.Blp.Tests.csproj", "{F5FBAAFE-0010-4333-8D34-39ACF94B6D52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Tga.Tests", "tests\War3Net.Drawing.Tga.Tests\War3Net.Drawing.Tga.Tests.csproj", "{22285811-FF4E-49DA-89BC-84B8CAAA03C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Compression.Tests", "tests\War3Net.IO.Compression.Tests\War3Net.IO.Compression.Tests.csproj", "{491F3BD8-659E-4C07-9D8F-4593B0E7A0A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Mpq.Tests", "tests\War3Net.IO.Mpq.Tests\War3Net.IO.Mpq.Tests.csproj", "{09C7D345-4AD5-431B-8D2D-E0F766C89196}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.IO.Slk.Tests", "tests\War3Net.IO.Slk.Tests\War3Net.IO.Slk.Tests.csproj", "{6824E77A-F57A-4899-B862-BA35B2B12958}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Modeling.Tests", "tests\War3Net.Modeling.Tests\War3Net.Modeling.Tests.csproj", "{76E0C475-8882-4675-BCBB-B79B2291D5C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Replay.Tests", "tests\War3Net.Replay.Tests\War3Net.Replay.Tests.csproj", "{B9D05909-690F-47DB-8AD5-BC26DB3D9918}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Common.Testing", "tests\War3Net.Common.Testing\War3Net.Common.Testing.csproj", "{46DD6F2E-B864-4E30-B3EC-8EEFD1049E27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "submodules\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua.CoreSystem", "submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj", "{E1533516-FE29-4F48-A402-4308E8CC3882}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
