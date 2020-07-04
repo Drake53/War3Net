@@ -16,7 +16,7 @@ namespace War3Net.Build.Audio
     public sealed class MapSounds : IEnumerable<Sound>
     {
         public const string FileName = "war3map.w3s";
-        public const MapSoundsFormatVersion LatestVersion = MapSoundsFormatVersion.Reforged;
+        public const MapSoundsFormatVersion LatestVersion = MapSoundsFormatVersion.ReforgedV3;
 
         private readonly List<Sound> _sounds;
 
@@ -102,12 +102,7 @@ namespace War3Net.Build.Audio
                 writer.Write(_sounds.Count);
                 foreach (var sound in _sounds)
                 {
-                    if ((_version >= MapSoundsFormatVersion.Reforged) != (sound.SoundName != null))
-                    {
-                        throw new InvalidDataException($"The .w3s file has a {(_version >= MapSoundsFormatVersion.Reforged ? string.Empty : "non-")}Reforged file format version, but contains {(sound.SoundName != null ? string.Empty : "non-")}Reforged SoundData.");
-                    }
-
-                    sound.WriteTo(writer);
+                    sound.WriteTo(writer, _version);
                 }
             }
         }

@@ -11,5 +11,6 @@ namespace War3Net.Build.Audio
     {
         Normal = 1,
         Reforged = 2,
+        ReforgedV3 = 3,
     }
 }

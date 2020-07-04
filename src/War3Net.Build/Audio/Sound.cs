@@ -193,21 +193,26 @@ namespace War3Net.Build.Audio
                     var unk5 = reader.ReadByte();
                     var unk6 = reader.ReadInt32();
                     var unk7 = reader.ReadInt32();
+
+                    if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
+                    {
+                        var unk8 = reader.ReadInt32();
+                    }
                 }
             }
 
             return sound;
         }
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
+        public void SerializeTo(Stream stream, MapSoundsFormatVersion formatVersion, bool leaveOpen = false)
         {
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                WriteTo(writer);
+                WriteTo(writer, formatVersion);
             }
         }
 
-        public void WriteTo(BinaryWriter writer)
+        public void WriteTo(BinaryWriter writer, MapSoundsFormatVersion formatVersion)
         {
             writer.WriteString(_variableName);
             writer.WriteString(_filePath);
@@ -234,7 +239,7 @@ namespace War3Net.Build.Audio
             writer.Write(_coneOrientation.Y);
             writer.Write(_coneOrientation.Z);
 
-            if (_soundName != null)
+            if (formatVersion >= MapSoundsFormatVersion.Reforged)
             {
                 // Write reforged sound data.
                 writer.WriteString(_variableName);
@@ -247,6 +252,11 @@ namespace War3Net.Build.Audio
                 writer.Write((byte)0);
                 writer.Write(0);
                 writer.Write(0);
+
+                if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
+                {
+                    writer.Write(1);
+                }
             }
         }
     }
