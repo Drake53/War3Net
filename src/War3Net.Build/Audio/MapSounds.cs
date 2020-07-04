@@ -60,7 +60,7 @@ namespace War3Net.Build.Audio
                     var version = (MapSoundsFormatVersion)reader.ReadUInt32();
                     if (version < MapSoundsFormatVersion.Normal || version > LatestVersion)
                     {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapSounds._version}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {version}");
                     }
 
                     mapSounds._version = version;
