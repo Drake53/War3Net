@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -167,6 +168,11 @@ namespace War3Net.Build.Audio
                 sound._priority = reader.ReadInt32();
 
                 sound._channel = (SoundChannel)reader.ReadInt32();
+                if (!Enum.IsDefined(typeof(SoundChannel), sound._channel))
+                {
+                    throw new InvalidDataException($"Unknown sound channel: {sound._channel}");
+                }
+
                 sound._minDistance = reader.ReadSingle();
                 sound._maxDistance = reader.ReadSingle();
                 sound._distanceCutoff = reader.ReadSingle();
@@ -184,7 +190,7 @@ namespace War3Net.Build.Audio
 
                     if (repeatVariableName != sound.Name || repeatSoundPath != sound.FilePath)
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException($"Expected sound's {nameof(sound.Name)} and {nameof(sound.FilePath)} to be repeated.");
                     }
 
                     var unk2 = reader.ReadInt32();

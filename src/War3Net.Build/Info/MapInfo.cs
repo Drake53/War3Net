@@ -213,7 +213,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Lua)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(GameVersion)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Lua}' or higher.");
                 }
 
                 _gameVersion = value;
@@ -289,7 +289,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion > MapInfoFormatVersion.RoC)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(CampaignBackgroundNumber)} can only be set when {nameof(FormatVersion)} is version '{MapInfoFormatVersion.RoC}'.");
                 }
 
                 _campaignBackgroundNumber = value;
@@ -303,7 +303,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(LoadingScreenBackgroundNumber)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _loadingScreenBackgroundNumber = value;
@@ -317,7 +317,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(LoadingScreenPath)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _loadingScreenPath = value;
@@ -349,7 +349,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion > MapInfoFormatVersion.RoC)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(LoadingScreenNumber)} can only be set when {nameof(FormatVersion)} is version '{MapInfoFormatVersion.RoC}'.");
                 }
 
                 _loadingScreenNumber = value;
@@ -363,7 +363,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(GameDataSet)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _gameDataSet = value;
@@ -377,7 +377,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(PrologueScreenPath)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _prologueScreenPath = value;
@@ -409,7 +409,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(FogStyle)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _fogStyle = value;
@@ -423,7 +423,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(FogStartZ)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _fogStartZ = value;
@@ -437,7 +437,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(FogEndZ)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _fogEndZ = value;
@@ -451,7 +451,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(FogDensity)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _fogDensity = value;
@@ -465,7 +465,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(FogColor)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _fogColor = value;
@@ -479,7 +479,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(GlobalWeather)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _globalWeather = value;
@@ -499,7 +499,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(LightEnvironment)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _lightEnvironment = value;
@@ -513,7 +513,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Tft)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(WaterTintingColor)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Tft}' or higher.");
                 }
 
                 _waterTintingColor = value;
@@ -527,7 +527,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Lua)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(ScriptLanguage)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Lua}' or higher.");
                 }
 
                 _scriptLanguage = value;
@@ -541,7 +541,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Reforged)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(SupportedModes)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Reforged}' or higher.");
                 }
 
                 _supportedModes = value;
@@ -555,7 +555,7 @@ namespace War3Net.Build.Info
             {
                 if (_fileFormatVersion < MapInfoFormatVersion.Reforged)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"Property {nameof(GameDataVersion)} cannot be set when {nameof(FormatVersion)} is not version '{MapInfoFormatVersion.Reforged}' or higher.");
                 }
 
                 _gameDataVersion = value;

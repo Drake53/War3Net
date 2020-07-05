@@ -96,7 +96,6 @@ namespace War3Net.Build.Widget
                     {
                         MapWidgetsVersion.RoC => MapDoodadData.Parse,
                         MapWidgetsVersion.TFT => MapDoodadData.ParseTft,
-                        _ => throw new NotSupportedException(),
                     };
 
                     for (var i = 0; i < data._header.DataCount; i++)

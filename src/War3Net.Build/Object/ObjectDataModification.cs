@@ -163,15 +163,15 @@ namespace War3Net.Build.Object
 
         public int? Level => _level;
 
-        public int ValueAsInt => _type == ObjectDataType.Int ? (int)_value : throw new InvalidOperationException();
+        public int ValueAsInt => _type == ObjectDataType.Int ? (int)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.Int}.");
 
-        public float ValueAsFloat => _type == ObjectDataType.Real || _type == ObjectDataType.Unreal ? (float)_value : throw new InvalidOperationException();
+        public float ValueAsFloat => _type == ObjectDataType.Real || _type == ObjectDataType.Unreal ? (float)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.Real} or {ObjectDataType.Unreal}.");
 
-        public string ValueAsString => _type == ObjectDataType.String ? (string)_value : throw new InvalidOperationException();
+        public string ValueAsString => _type == ObjectDataType.String ? (string)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.String}.");
 
-        public bool ValueAsBool => _type == ObjectDataType.Bool ? (bool)_value : throw new InvalidOperationException();
+        public bool ValueAsBool => _type == ObjectDataType.Bool ? (bool)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.Bool}.");
 
-        public char ValueAsChar => _type == ObjectDataType.Char ? (char)_value : throw new InvalidOperationException();
+        public char ValueAsChar => _type == ObjectDataType.Char ? (char)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.Char}.");
 
         public static ObjectDataModification Parse(Stream stream, int oldId, int newId, bool readLevelData, bool leaveOpen = false)
         {
@@ -214,7 +214,7 @@ namespace War3Net.Build.Object
                 var sanityCheck = reader.ReadInt32();
                 if (sanityCheck != 0 && sanityCheck != oldId && sanityCheck != newId)
                 {
-                    throw new InvalidDataException();
+                    throw new InvalidDataException($"Sanity check failed. Expected 0, '{oldId.ToRawcode()}', or '{newId.ToRawcode()}', but got '{sanityCheck.ToRawcode()}'.");
                 }
 
                 data._sanityCheck = sanityCheck;

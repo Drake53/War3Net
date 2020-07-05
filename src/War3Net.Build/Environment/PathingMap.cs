@@ -50,35 +50,49 @@ namespace War3Net.Build.Environment
 
         public static PathingMap Parse(Stream stream, bool leaveOpen = false)
         {
-            var pathingMap = new PathingMap();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            try
             {
-                if (reader.ReadUInt32() != HeaderSignature)
+                var pathingMap = new PathingMap();
+                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    throw new Exception();
-                }
-
-                pathingMap._version = reader.ReadUInt32();
-
-                if (pathingMap._version != LatestVersion)
-                {
-                    throw new Exception();
-                }
-
-                // Width and height should be four times the size in .w3e file (since MapTile is 128x128, and cells in PathingMap are 32x32).
-                pathingMap._width = reader.ReadUInt32();
-                pathingMap._height = reader.ReadUInt32();
-
-                for (var y = 0; y < pathingMap._width; y++)
-                {
-                    for (var x = 0; x < pathingMap._height; x++)
+                    if (reader.ReadUInt32() != HeaderSignature)
                     {
-                        pathingMap._cells.Add((PathingType)reader.ReadByte());
+                        throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
+                    }
+
+                    pathingMap._version = reader.ReadUInt32();
+                    if (pathingMap._version != LatestVersion)
+                    {
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {pathingMap._version}");
+                    }
+
+                    // Width and height should be four times the size in .w3e file (since MapTile is 128x128, and cells in PathingMap are 32x32).
+                    pathingMap._width = reader.ReadUInt32();
+                    pathingMap._height = reader.ReadUInt32();
+
+                    for (var y = 0; y < pathingMap._width; y++)
+                    {
+                        for (var x = 0; x < pathingMap._height; x++)
+                        {
+                            pathingMap._cells.Add((PathingType)reader.ReadByte());
+                        }
                     }
                 }
-            }
 
-            return pathingMap;
+                return pathingMap;
+            }
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
+            }
+            catch (EndOfStreamException e)
+            {
+                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public void SerializeTo(Stream stream, bool leaveOpen = false)

@@ -57,17 +57,16 @@ namespace War3Net.Build.Audio
                 var mapSounds = new MapSounds();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    var version = (MapSoundsFormatVersion)reader.ReadUInt32();
-                    if (version < MapSoundsFormatVersion.Normal || version > LatestVersion)
+                    mapSounds._version = (MapSoundsFormatVersion)reader.ReadUInt32();
+                    if (mapSounds._version < MapSoundsFormatVersion.Normal || mapSounds._version > LatestVersion)
                     {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {version}");
+                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapSounds._version}");
                     }
 
-                    mapSounds._version = version;
                     var soundCount = reader.ReadUInt32();
                     for (var i = 0; i < soundCount; i++)
                     {
-                        var sound = Sound.Parse(stream, version, true);
+                        var sound = Sound.Parse(stream, mapSounds._version, true);
                         mapSounds._sounds.Add(sound);
                     }
                 }

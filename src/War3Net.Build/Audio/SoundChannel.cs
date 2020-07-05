@@ -9,6 +9,8 @@ namespace War3Net.Build.Audio
 {
     public enum SoundChannel
     {
+        Undefined = -1,
+
         General = 0,
         UnitSelection = 1,
         UnitAcknowledgement = 2,

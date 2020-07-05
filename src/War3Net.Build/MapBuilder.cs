@@ -150,11 +150,10 @@ namespace War3Net.Build
                         }
                         catch (TargetInvocationException e)
                         {
-                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.InvalidMapFile, null, fileName, e.InnerException.Message));
-                        }
-                        catch (Exception e)
-                        {
-                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.GenericMapFileError, null, fileName, e.Message));
+                            var innerException = e.InnerException;
+                            var diagnosticDescriptor = innerException is InvalidDataException ? DiagnosticProvider.InvalidMapFile : DiagnosticProvider.GenericMapFileError;
+
+                            AddDiagnostic(Diagnostic.Create(diagnosticDescriptor, null, fileName, innerException.Message));
                         }
                     }
                 }
@@ -406,7 +405,7 @@ namespace War3Net.Build
                     return new CSharpScriptCompiler(options, rendererOptions);
 
                 default:
-                    throw new Exception();
+                    throw new NotSupportedException();
             }
         }
     }
