@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 
@@ -147,9 +148,9 @@ namespace War3Net.Build
                         {
                             mapFile = handler.Parse(fileStream, false);
                         }
-                        catch (InvalidDataException)
+                        catch (TargetInvocationException e)
                         {
-                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.InvalidMapFile, null, fileName));
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.InvalidMapFile, null, fileName, e.InnerException.Message));
                         }
                         catch (Exception e)
                         {

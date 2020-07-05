@@ -52,7 +52,7 @@ namespace War3Net.Build.Providers
             return new DiagnosticDescriptor(
                 id,
                 $"File '{{0}}' is invalid.",
-                $"The '{{0}}' file contains invalid data. It could not be parsed.",
+                $"Encountered invalid data when parsing the '{{0}}' file: {{1}}",
                 string.Empty,
                 DiagnosticSeverity.Error,
                 true,
@@ -66,7 +66,7 @@ namespace War3Net.Build.Providers
             return new DiagnosticDescriptor(
                 id,
                 $"File '{{0}}' could not be read.",
-                $"An exception occured when trying to parse the '{{0}}' file: {{1}}",
+                $"An exception occured when parsing the '{{0}}' file: {{1}}",
                 string.Empty,
                 DiagnosticSeverity.Error,
                 true,
