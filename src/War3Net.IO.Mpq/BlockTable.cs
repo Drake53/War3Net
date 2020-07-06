@@ -40,6 +40,17 @@ namespace War3Net.IO.Mpq
         /// <param name="headerOffset">The length (in bytes) of data before the <see cref="MpqHeader"/>.</param>
         internal BlockTable(BinaryReader reader, uint size, uint headerOffset)
         {
+            var bytesRemaining = reader.BaseStream.Length - reader.BaseStream.Position;
+            if (bytesRemaining < size * MpqEntry.Size)
+            {
+                if (bytesRemaining % MpqEntry.Size != 0)
+                {
+                    throw new MpqParserException($"Remaining amount of bytes ({bytesRemaining}) is not enough for {size} MPQ entries, and is also not a multiple of {MpqEntry.Size}.");
+                }
+
+                size = (uint)bytesRemaining / MpqEntry.Size;
+            }
+
             _entries = new List<MpqEntry>((int)size);
 
             var entrydata = reader.ReadBytes((int)(size * MpqEntry.Size));
