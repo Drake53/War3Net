@@ -173,6 +173,12 @@ namespace War3Net.Build.Object
 
         public char ValueAsChar => _type == ObjectDataType.Char ? (char)_value : throw new InvalidOperationException($"Modification is of type {_type}, so cannot retrieve it as {ObjectDataType.Char}.");
 
+        internal int SanityCheck
+        {
+            get => _sanityCheck;
+            set => _sanityCheck = value;
+        }
+
         public static ObjectDataModification Parse(Stream stream, int oldId, int newId, bool readLevelData, bool leaveOpen = false)
         {
             var data = new ObjectDataModification();
@@ -211,13 +217,16 @@ namespace War3Net.Build.Object
                         break;
                 }
 
-                var sanityCheck = reader.ReadInt32();
-                if (sanityCheck != 0 && sanityCheck != oldId && sanityCheck != newId)
-                {
-                    throw new InvalidDataException($"Sanity check failed. Expected 0, '{oldId.ToRawcode()}', or '{newId.ToRawcode()}', but got '{sanityCheck.ToRawcode()}'.");
-                }
+                data._sanityCheck = reader.ReadInt32();
 
-                data._sanityCheck = sanityCheck;
+                // var sanityCheck = reader.ReadInt32();
+                // if (sanityCheck != 0 && sanityCheck != oldId && sanityCheck != newId)
+                // {
+                //     var expectedMessage = newId == 0 ? $"0 or '{oldId.ToRawcode()}'" : $"0, '{oldId.ToRawcode()}', or '{newId.ToRawcode()}'";
+                //     throw new InvalidDataException($"Sanity check failed. Expected {expectedMessage}, but got '{sanityCheck.ToRawcode()}'.");
+                // }
+
+                // data._sanityCheck = sanityCheck;
             }
 
             return data;
