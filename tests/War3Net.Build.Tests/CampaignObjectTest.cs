@@ -48,7 +48,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignUnitObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -59,7 +59,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignItemObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -70,7 +70,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignDestructableObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -81,7 +81,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignDoodadObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -92,7 +92,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignAbilityObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -103,7 +103,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignBuffObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -114,7 +114,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignUpgradeObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -125,7 +125,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             CampaignObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         private static IEnumerable<object[]> GetCampaignUnitObjectData()

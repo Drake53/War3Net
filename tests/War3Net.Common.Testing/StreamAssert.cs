@@ -15,13 +15,24 @@ namespace War3Net.Common.Testing
 {
     public static class StreamAssert
     {
-        public static void AreEqual(Stream expected, Stream actual, bool resetPositions = false)
+        public static void AreEqual(Stream expected, Stream actual, bool resetPositions = false, bool allowPadding = false)
         {
             var expectedSize = expected.Length;
             var actualSize = actual.Length;
             if (resetPositions)
             {
-                Assert.AreEqual(expected.Length, expected.Position, "Expected to be at end of stream.");
+                if (allowPadding)
+                {
+                    while (expected.Position < expected.Length)
+                    {
+                        Assert.AreEqual(0, expected.ReadByte(), "Padding bytes must be zeroes.");
+                        actual.WriteByte(0);
+                    }
+                }
+                else
+                {
+                    Assert.AreEqual(expected.Length, expected.Position, "Expected to be at end of stream.");
+                }
 
                 expected.Position = 0;
                 actual.Position = 0;

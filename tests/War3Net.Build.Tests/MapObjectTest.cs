@@ -48,7 +48,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapUnitObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -59,7 +59,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapItemObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -70,7 +70,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapDestructableObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -81,7 +81,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapDoodadObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -92,7 +92,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapAbilityObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -103,7 +103,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapBuffObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -114,7 +114,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapUpgradeObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         [DataTestMethod]
@@ -125,7 +125,7 @@ namespace War3Net.Build.Tests
             using var recreated = new MemoryStream();
 
             MapObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            StreamAssert.AreEqual(original, recreated, true, true);
         }
 
         private static IEnumerable<object[]> GetMapUnitObjectData()
