@@ -5,9 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using War3Net.Build.Providers;
 
@@ -17,6 +22,7 @@ namespace War3Net.Build.Tests
     {
         internal const string TestDataFolder = "TestData";
         internal const string LocalDataFolder = "Local";
+        internal const string WebCacheDataFolder = "WebCache";
 
         private static readonly ISet<string> _archiveFileExtensions = new HashSet<string>() { ".w3m", ".w3x", ".w3n", };
 
@@ -62,13 +68,99 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<string> GetTestDataDirectories(params string[] directories)
         {
+            foreach (var directory in directories)
+            {
+                DownloadTestData(directory);
+            }
+
 #if DEBUG
-            foreach (var directory in directories.SelectMany(directory => new[] { Path.Combine(TestDataFolder, directory), Path.Combine(TestDataFolder, LocalDataFolder, directory), }))
+            foreach (var directory in directories.SelectMany(directory => new[]
+            {
+                Path.Combine(TestDataFolder, directory),
+                Path.Combine(TestDataFolder, LocalDataFolder, directory),
+                Path.Combine(TestDataFolder, WebCacheDataFolder, directory),
+            }))
 #else
             foreach (var directory in directories.Select(directory => Path.Combine(TestDataFolder, directory)))
 #endif
             {
                 yield return directory;
+            }
+        }
+
+        private static void DownloadTestData(string directoryName)
+        {
+            switch (directoryName)
+            {
+                case "Maps": DownloadMapsAsync("Maps").Wait(); break;
+
+                default: break;
+            }
+        }
+
+        private static async Task DownloadMapsAsync(string directoryName)
+        {
+            var mapIdsToDownload = new HashSet<int>(new[]
+            {
+                20000,  // Dota2.w3x
+                30000,  // Creature Wars (Castle Edition) V1beta.w3x
+                306773, // MM_RPG_V1.12.w3x
+                306784, // LegendaryResistanceV2.14.w3x
+            });
+
+            var directoryInfo = new DirectoryInfo(Path.Combine(TestDataFolder, WebCacheDataFolder, directoryName));
+            if (!directoryInfo.Exists)
+            {
+                directoryInfo.Create();
+            }
+            else
+            {
+                foreach (var map in directoryInfo.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
+                {
+                    // Remove maps that have already been downloaded.
+                    mapIdsToDownload.Remove(int.Parse(map.Name.Substring(0, map.Name.Length - map.Extension.Length)));
+                }
+            }
+
+            using var httpClient = new HttpClient();
+            foreach (var mapId in mapIdsToDownload)
+            {
+                try
+                {
+                    var responseBody = await httpClient.GetStringAsync(new Uri($@"https://www.epicwar.com/maps/{mapId}/"));
+
+                    var downloadLinkMatch = Regex.Match(responseBody, $"<a href=\"/maps/download/{mapId}/[0-9a-f]{{72}}/[\\w\\-. %]+\">");
+                    if (downloadLinkMatch.Success)
+                    {
+                        // Get href value by removing '<a href="' and '">' from the matched string.
+                        var hrefValue = downloadLinkMatch.Value.Substring(9, downloadLinkMatch.Value.Length - 11);
+                        var extension = new FileInfo(hrefValue).Extension;
+                        if (!_archiveFileExtensions.Contains(extension))
+                        {
+                            throw new Exception($"Unexpected file extension: '{extension}'");
+                        }
+
+                        var fileUri = new Uri($"https://www.epicwar.com{hrefValue}");
+                        var findFile = await httpClient.GetAsync(fileUri);
+                        if (findFile.StatusCode == HttpStatusCode.Found)
+                        {
+                            fileUri = findFile.Headers.Location;
+                        }
+
+                        using var mapFile = await httpClient.GetStreamAsync(fileUri);
+                        using var fileStream = File.Create(Path.Combine(TestDataFolder, WebCacheDataFolder, directoryName, $"{mapId}{extension}"));
+
+                        await mapFile.CopyToAsync(fileStream);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException($"No regex match for map with id {mapId}.");
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
     }
