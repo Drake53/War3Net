@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,11 +23,12 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestGetMpqFiles(string mpqFilePath)
         {
-            if (TestDataProvider.IsArchiveFile(mpqFilePath, out _))
-            {
-                using var archive = MpqArchive.Open(mpqFilePath, true);
-                archive.GetMpqFiles();
-            }
+            Assert.IsTrue(TestDataProvider.IsArchiveFile(mpqFilePath, out _));
+
+            using var archive = MpqArchive.Open(mpqFilePath, true);
+            var mpqFiles = archive.GetMpqFiles();
+
+            Assert.AreEqual(archive.Header.BlockTableSize, (uint)mpqFiles.Count());
         }
 
         private static IEnumerable<object[]> GetTestData()
