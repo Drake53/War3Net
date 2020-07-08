@@ -633,7 +633,7 @@ namespace War3Net.IO.Mpq
                             ? MpqFile.New(stream, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
                             : MpqFile.New(stream, mpqEntry.Filename);
 
-                        mpqFile.TargetFlags = mpqEntry.Flags;
+                        mpqFile.TargetFlags = mpqEntry.Flags & ~MpqFileFlags.Garbage;
                         if (mpqEntry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
                         {
                             mpqFile.Locale = mpqHash.Locale;
