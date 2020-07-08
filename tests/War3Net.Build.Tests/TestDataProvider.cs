@@ -26,6 +26,12 @@ namespace War3Net.Build.Tests
 
         private static readonly ISet<string> _archiveFileExtensions = new HashSet<string>() { ".w3m", ".w3x", ".w3n", };
 
+        public static bool IsArchiveFile(string fileName, out string extension)
+        {
+            extension = new FileInfo(fileName).Extension;
+            return _archiveFileExtensions.Contains(extension);
+        }
+
         public static IEnumerable<object[]> GetDynamicData(string searchPattern, SearchOption searchOption, params string[] directories)
         {
             foreach (var directory in GetTestDataDirectories(directories))
@@ -106,6 +112,7 @@ namespace War3Net.Build.Tests
                 30000,  // Creature Wars (Castle Edition) V1beta.w3x
                 306773, // MM_RPG_V1.12.w3x
                 306784, // LegendaryResistanceV2.14.w3x
+                306890, // OrangeMushroomStory_4.9_english.w3x
             });
 
             var directoryInfo = new DirectoryInfo(Path.Combine(TestDataFolder, WebCacheDataFolder, directoryName));
@@ -134,8 +141,7 @@ namespace War3Net.Build.Tests
                     {
                         // Get href value by removing '<a href="' and '">' from the matched string.
                         var hrefValue = downloadLinkMatch.Value.Substring(9, downloadLinkMatch.Value.Length - 11);
-                        var extension = new FileInfo(hrefValue).Extension;
-                        if (!_archiveFileExtensions.Contains(extension))
+                        if (!IsArchiveFile(hrefValue, out var extension))
                         {
                             throw new Exception($"Unexpected file extension: '{extension}'");
                         }
