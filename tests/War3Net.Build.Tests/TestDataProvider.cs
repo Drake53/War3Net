@@ -79,16 +79,14 @@ namespace War3Net.Build.Tests
                 DownloadTestData(directory);
             }
 
-#if DEBUG
             foreach (var directory in directories.SelectMany(directory => new[]
             {
                 Path.Combine(TestDataFolder, directory),
+#if DEBUG
                 Path.Combine(TestDataFolder, LocalDataFolder, directory),
                 Path.Combine(TestDataFolder, WebCacheDataFolder, directory),
-            }))
-#else
-            foreach (var directory in directories.Select(directory => Path.Combine(TestDataFolder, directory)))
 #endif
+            }))
             {
                 yield return directory;
             }
@@ -111,6 +109,7 @@ namespace War3Net.Build.Tests
                 20000,  // Dota2.w3x
                 30000,  // Creature Wars (Castle Edition) V1beta.w3x
                 241070, // RabbitsVsSheep3.0.36.w3x
+                301324, // Forest Defense 0.21f_p.w3x
                 306773, // MM_RPG_V1.12.w3x
                 306775, // Spring Liquidation v1_80b.w3x
                 306784, // LegendaryResistanceV2.14.w3x
