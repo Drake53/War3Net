@@ -108,12 +108,14 @@ namespace War3Net.Build.Tests
             {
                 20000,  // Dota2.w3x
                 30000,  // Creature Wars (Castle Edition) V1beta.w3x
+                142119, // Bomberman 1.74.w3m
                 241070, // RabbitsVsSheep3.0.36.w3x
                 301324, // Forest Defense 0.21f_p.w3x
                 306773, // MM_RPG_V1.12.w3x
                 306775, // Spring Liquidation v1_80b.w3x
                 306784, // LegendaryResistanceV2.14.w3x
                 306890, // OrangeMushroomStory_4.9_english.w3x
+                306913, // platform_escape_bw_2.9e.w3x
             });
 
             var directoryInfo = new DirectoryInfo(Path.Combine(TestDataFolder, WebCacheDataFolder, directoryName));
