@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 #if NETCOREAPP3_0
 using System.Diagnostics.CodeAnalysis;
@@ -211,16 +212,30 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Try to determine the entry's encryption seed when the filename is not known.
         /// </summary>
-        /// <param name="blockPos0">The first block's offset in the <see cref="MpqStream"/>.</param>
-        /// <param name="blockPos1">The second block's offset in the <see cref="MpqStream"/>.</param>
+        /// <param name="blockPos0">The encrypted value for the first block's offset in the <see cref="MpqStream"/>.</param>
+        /// <param name="blockPos1">The encrypted value for the second block's offset in the <see cref="MpqStream"/>.</param>
         /// <param name="blockPosSize">The size (in bytes) for all the block position offsets in the stream.</param>
+        /// <param name="max">The highest possible value that <paramref name="blockPos1"/> can have when decrypted.</param>
         /// <returns>True if the operation was successful, false otherwise.</returns>
-        internal bool TryUpdateEncryptionSeed(uint blockPos0, uint blockPos1, uint blockPosSize)
+        internal bool TryUpdateEncryptionSeed(uint blockPos0, uint blockPos1, uint blockPosSize, uint max)
         {
-            var result = StormBuffer.DetectFileSeed(blockPos0, blockPos1, blockPosSize);
-            if (result == 0)
+            if (!StormBuffer.DetectFileSeed(blockPos0, blockPos1, blockPosSize, out var result))
             {
-                return false;
+                var possibleSeeds = StormBuffer.DetectFileSeeds(blockPos0, blockPosSize)
+                    .Where(seed =>
+                    {
+                        var data = new[] { blockPos0, blockPos1 };
+                        StormBuffer.DecryptBlock(data, seed);
+                        return data[1] <= max;
+                    })
+                    .ToList();
+
+                if (possibleSeeds.Count != 1)
+                {
+                    return false;
+                }
+
+                result = possibleSeeds.Single();
             }
 
             _encryptionSeed = result + 1;

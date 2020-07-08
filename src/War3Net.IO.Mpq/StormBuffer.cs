@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace War3Net.IO.Mpq
@@ -154,7 +155,7 @@ namespace War3Net.IO.Mpq
 
         // This function calculates the encryption key based on
         // some assumptions we can make about the headers for encrypted files
-        internal static uint DetectFileSeed(uint value0, uint value1, uint decrypted)
+        internal static bool DetectFileSeed(uint value0, uint value1, uint decrypted, out uint detectedSeed)
         {
             var temp = (value0 ^ decrypted) - 0xeeeeeeee;
 
@@ -169,7 +170,7 @@ namespace War3Net.IO.Mpq
                     continue;
                 }
 
-                var saveseed1 = seed1;
+                detectedSeed = seed1;
 
                 // Test this result against the 2nd value
                 seed1 = ((~seed1 << 21) + 0x11111111) | (seed1 >> 11);
@@ -180,11 +181,29 @@ namespace War3Net.IO.Mpq
 
                 if ((result & 0xfffc0000) == 0)
                 {
-                    return saveseed1;
+                    return true;
                 }
             }
 
-            return 0;
+            detectedSeed = 0;
+            return false;
+        }
+
+        internal static IEnumerable<uint> DetectFileSeeds(uint value0, uint decrypted)
+        {
+            var temp = (value0 ^ decrypted) - 0xeeeeeeee;
+
+            for (var i = 0; i < 0x100; i++)
+            {
+                var seed1 = temp - Buffer[0x400 + i];
+                var seed2 = 0xeeeeeeee + Buffer[0x400 + (seed1 & 0xff)];
+                var result = value0 ^ (seed1 + seed2);
+
+                if (result == decrypted)
+                {
+                    yield return seed1;
+                }
+            }
         }
     }
 }

@@ -144,10 +144,11 @@ namespace War3Net.IO.Mpq
 
                     if (_isEncrypted && blockposcount > 1)
                     {
+                        var maxOffset1 = (uint)_blockSize + blockpossize;
                         if (_encryptionSeed == 0)
                         {
                             // This should only happen when the file name is not known.
-                            if (!entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize))
+                            if (!entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize, maxOffset1))
                             {
                                 throw new MpqParserException("Unable to determine encyption seed");
                             }
@@ -162,7 +163,7 @@ namespace War3Net.IO.Mpq
                             throw new MpqParserException("Decryption failed");
                         }
 
-                        if (_blockPositions[1] > _blockSize + blockpossize)
+                        if (_blockPositions[1] > maxOffset1)
                         {
                             throw new MpqParserException("Decryption failed");
                         }
