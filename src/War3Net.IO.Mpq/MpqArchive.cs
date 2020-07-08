@@ -65,11 +65,6 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << _mpqHeader.BlockSize;
             _archiveFollowsHeader = _mpqHeader.IsArchiveAfterHeader();
 
-            if (_mpqHeader.MpqVersion != 0)
-            {
-                throw new MpqParserException($"MPQ format version {_mpqHeader.MpqVersion} is not supported");
-            }
-
             using (var reader = new BinaryReader(_baseStream, new UTF8Encoding(), true))
             {
                 // Load hash table
@@ -630,8 +625,7 @@ namespace War3Net.IO.Mpq
                 var mpqHash = _hashTable[hashIndex];
                 if (!mpqHash.IsEmpty)
                 {
-                    var mpqEntry = mpqHash.IsDeleted ? null : _blockTable[mpqHash.BlockIndex];
-
+                    var mpqEntry = mpqHash.IsValidBlockIndex ? _blockTable[mpqHash.BlockIndex] : null;
                     if (mpqEntry != null)
                     {
                         var stream = mpqHash.IsDeleted ? null : OpenFile(mpqEntry);

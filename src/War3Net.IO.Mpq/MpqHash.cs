@@ -91,6 +91,10 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public bool IsAvailable => BlockIndex >= 0xFFFFFFFE;
 
+        // The hash table's size cannot be larger than 2^16 (mpq v0) or 2^20 (mpq v1).
+        // Assuming the block table's size is also at most that large, a block index of (2^24 - 1) or higher should be invalid.
+        internal bool IsValidBlockIndex => BlockIndex < 0x00FFFFFF;
+
         public static uint GetIndex(string path)
         {
             return StormBuffer.HashString(path, 0);
