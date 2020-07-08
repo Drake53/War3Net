@@ -110,7 +110,9 @@ namespace War3Net.Build.Tests
             {
                 20000,  // Dota2.w3x
                 30000,  // Creature Wars (Castle Edition) V1beta.w3x
+                241070, // RabbitsVsSheep3.0.36.w3x
                 306773, // MM_RPG_V1.12.w3x
+                306775, // Spring Liquidation v1_80b.w3x
                 306784, // LegendaryResistanceV2.14.w3x
                 306890, // OrangeMushroomStory_4.9_english.w3x
             });
