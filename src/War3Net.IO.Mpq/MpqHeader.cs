@@ -202,14 +202,16 @@ namespace War3Net.IO.Mpq
 #if DEBUG
             if (header.MpqVersion == 0)
             {
-                if (header.HashTableOffset != header.BlockTableOffset - (MpqHash.Size * header.HashTableSize))
+                var expectedHashTableOffset = header.BlockTableOffset - (MpqHash.Size * header.HashTableSize);
+                if (header.HashTableOffset != expectedHashTableOffset)
                 {
-                    throw new MpqParserException($"Invalid MPQ header field: HashTablePos. Was {header.HashTableOffset}, expected {header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)}");
+                    throw new MpqParserException($"Invalid MPQ header field: {nameof(HashTableOffset)}. Expected: {expectedHashTableOffset}, Actual: {header.HashTableOffset}.");
                 }
 
-                if (header.BlockTableOffset != header.HashTableOffset + (MpqHash.Size * header.HashTableSize))
+                var expectedBlockTableOffset = header.HashTableOffset + (MpqHash.Size * header.HashTableSize);
+                if (header.BlockTableOffset != expectedBlockTableOffset)
                 {
-                    throw new MpqParserException($"Invalid MPQ header field: BlockTablePos. Was {header.BlockTableOffset}, expected {header.HashTableOffset + (MpqHash.Size * header.HashTableSize)}");
+                    throw new MpqParserException($"Invalid MPQ header field: {nameof(BlockTableOffset)}. Expected: {expectedBlockTableOffset}, Actual:  {header.BlockTableOffset}.");
                 }
             }
 #endif
