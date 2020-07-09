@@ -618,7 +618,6 @@ namespace War3Net.IO.Mpq
             // var pairs = new Dictionary<MpqEntry, (uint index, MpqFile file)>();
             var files = new MpqFile[_blockTable.Size]; // array assumes there's no more than one mpqhash for every mpqentry
             var addedEntries = new HashSet<MpqEntry>();
-            var deletedIndices = new Queue<int>();
 
             for (var hashIndex = 0; hashIndex < _hashTable.Size; hashIndex++)
             {
@@ -644,35 +643,22 @@ namespace War3Net.IO.Mpq
                         files[mpqHash.BlockIndex] = mpqFile;
                         addedEntries.Add(mpqEntry); // TODO: use returned bool to check 'duplicate' mpqhashes (which have same blockindex)
                     }
-                    else
-                    {
-                        deletedIndices.Enqueue(hashIndex);
-                    }
                 }
             }
 
-            var blockIndex = 0U;
-            foreach (var mpqEntry in this)
+            for (var i = 0; i < Count; i++)
             {
-                //if (!pairs.ContainsKey(mpqEntry))
+                var mpqEntry = this[i];
                 if (!addedEntries.Contains(mpqEntry))
                 {
-                    var hashIndex = deletedIndices.Dequeue();
-                    var mpqHash = _hashTable[hashIndex];
+                    // TODO
+                    //var mpqFile = MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed);
+                    //mpqFile.TargetFlags = 0;
 
-                    var mpqFile = MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed);
-                    mpqFile.TargetFlags = 0;
-
-                    // pairs.Add(mpqEntry, (blockIndex, mpqFile));
-                    // files.Add(blockIndex, mpqFile);
-                    files[blockIndex] = mpqFile;
+                    //files[i] = mpqFile;
                 }
-
-                blockIndex++;
             }
 
-            // return pairs.OrderBy(pair => pair.Value.index).Select(pair => pair.Value.file);
-            // return files.Values;
             return files;
         }
 
