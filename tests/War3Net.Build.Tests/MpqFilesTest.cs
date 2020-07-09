@@ -29,6 +29,10 @@ namespace War3Net.Build.Tests
             var mpqFiles = archive.GetMpqFiles();
 
             Assert.AreEqual(archive.Count, mpqFiles.Count());
+            foreach (var mpqFile in mpqFiles)
+            {
+                Assert.IsNotNull(mpqFile);
+            }
         }
 
         private static IEnumerable<object[]> GetTestData()
