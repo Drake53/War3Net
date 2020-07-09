@@ -202,20 +202,6 @@ namespace War3Net.IO.Mpq
 #if DEBUG
             if (header.MpqVersion == 0)
             {
-                // Check validity
-                // if (header.DataOffset != Size)
-                // {
-                //     throw new MpqParserException($"Invalid MPQ header field: DataOffset. Was {header.DataOffset}, expected {Size}");
-                // }
-
-                if (header.ArchiveSize != header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize))
-                {
-                    if (header.ArchiveSize != header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize) + 1)
-                    {
-                        throw new MpqParserException($"Invalid MPQ header field: ArchiveSize. Was {header.ArchiveSize}, expected {header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize)}");
-                    }
-                }
-
                 if (header.HashTableOffset != header.BlockTableOffset - (MpqHash.Size * header.HashTableSize))
                 {
                     throw new MpqParserException($"Invalid MPQ header field: HashTablePos. Was {header.HashTableOffset}, expected {header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)}");
