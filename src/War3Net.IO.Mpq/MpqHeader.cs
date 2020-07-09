@@ -182,6 +182,23 @@ namespace War3Net.IO.Mpq
                 BlockTableSize = reader.ReadUInt32(),
             };
 
+            if (header.MpqVersion == 1)
+            {
+                // TODO: support v1
+                // The extended block table is an array of Int16 - higher bits of the offests in the block table.
+                // header.ExtendedBlockTableOffset = br.ReadInt64();
+                // header.HashTableOffsetHigh = br.ReadInt16();
+                // header.BlockTableOffsetHigh = br.ReadInt16();
+
+                // TODO: validate v1
+                const bool IsInvalidVersion1 = true;
+                if (IsInvalidVersion1)
+                {
+                    // Assume real version is 0, but it was set to 1 for protection.
+                    header.MpqVersion = 0;
+                }
+            }
+
 #if DEBUG
             if (header.MpqVersion == 0)
             {
@@ -214,11 +231,6 @@ namespace War3Net.IO.Mpq
             if (header.MpqVersion != 0)
             {
                 throw new NotSupportedException($"MPQ format version {header.MpqVersion} is not supported");
-
-                // The extended block table is an array of Int16 - higher bits of the offests in the block table.
-                // header.ExtendedBlockTableOffset = br.ReadInt64();
-                // header.HashTableOffsetHigh = br.ReadInt16();
-                // header.BlockTableOffsetHigh = br.ReadInt16();
             }
 
             return header;
