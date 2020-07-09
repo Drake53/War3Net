@@ -659,15 +659,9 @@ namespace War3Net.IO.Mpq
                 {
                     var hashIndex = deletedIndices.Dequeue();
                     var mpqHash = _hashTable[hashIndex];
-                    var mpqFile = mpqEntry.Filename is null
-                        ? MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
-                        : MpqFile.New(null, mpqEntry.Filename);
 
+                    var mpqFile = MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed);
                     mpqFile.TargetFlags = 0;
-                    if (mpqEntry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
-                    {
-                        mpqFile.Locale = mpqHash.Locale;
-                    }
 
                     // pairs.Add(mpqEntry, (blockIndex, mpqFile));
                     // files.Add(blockIndex, mpqFile);
