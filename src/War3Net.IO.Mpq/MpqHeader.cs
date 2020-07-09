@@ -199,7 +199,7 @@ namespace War3Net.IO.Mpq
                     }
                 }
 
-                if (header.HashTableOffset != (header.BlockTableOffset + (MpqEntry.Size * header.BlockTableSize)) - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize))
+                if (header.HashTableOffset != header.BlockTableOffset - (MpqHash.Size * header.HashTableSize))
                 {
                     throw new MpqParserException($"Invalid MPQ header field: HashTablePos. Was {header.HashTableOffset}, expected {header.ArchiveSize - (MpqHash.Size * header.HashTableSize) - (MpqEntry.Size * header.BlockTableSize)}");
                 }
