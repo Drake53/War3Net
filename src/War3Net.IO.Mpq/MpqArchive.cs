@@ -99,7 +99,7 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << blockSize;
             _archiveFollowsHeader = writeArchiveFirst;
 
-            var mpqFiles = inputFiles?.ToList() ?? throw new ArgumentNullException(nameof(inputFiles));
+            var mpqFiles = inputFiles?.Where(mpqFile => !(mpqFile is MpqOrphanedFile)).ToList() ?? throw new ArgumentNullException(nameof(inputFiles));
             var fileCount = (uint)mpqFiles.Count;
 
             _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
@@ -627,19 +627,14 @@ namespace War3Net.IO.Mpq
                     var mpqEntry = mpqHash.IsValidBlockIndex ? _blockTable[mpqHash.BlockIndex] : null;
                     if (mpqEntry != null)
                     {
-                        var stream = mpqHash.IsDeleted ? null : OpenFile(mpqEntry);
+                        // var stream = mpqHash.IsDeleted ? null : OpenFile(mpqEntry);
+                        var stream = OpenFile(mpqEntry);
                         var mpqFile = mpqEntry.Filename is null
                             ? MpqFile.New(stream, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed)
-                            : MpqFile.New(stream, mpqEntry.Filename);
+                            : MpqFile.New(stream, mpqEntry.Filename, mpqHash.Locale);
 
                         mpqFile.TargetFlags = mpqEntry.Flags & ~MpqFileFlags.Garbage;
-                        if (mpqEntry.Filename != null && Enum.IsDefined(typeof(MpqLocale), mpqHash.Locale))
-                        {
-                            mpqFile.Locale = mpqHash.Locale;
-                        }
 
-                        // pairs.Add(mpqEntry, (mpqHash.BlockIndex, mpqFile));
-                        // files.Add(mpqHash.BlockIndex, mpqFile);
                         files[mpqHash.BlockIndex] = mpqFile;
                         addedEntries.Add(mpqEntry); // TODO: use returned bool to check 'duplicate' mpqhashes (which have same blockindex)
                     }
@@ -651,11 +646,9 @@ namespace War3Net.IO.Mpq
                 var mpqEntry = this[i];
                 if (!addedEntries.Contains(mpqEntry))
                 {
-                    // TODO
-                    //var mpqFile = MpqFile.New(null, mpqHash, (uint)hashIndex, 0, mpqEntry.BaseEncryptionSeed);
-                    //mpqFile.TargetFlags = 0;
-
-                    //files[i] = mpqFile;
+                    var mpqFile = MpqFile.New(OpenFile(mpqEntry));
+                    mpqFile.TargetFlags = 0;
+                    files[i] = mpqFile;
                 }
             }
 

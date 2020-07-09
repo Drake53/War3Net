@@ -192,6 +192,20 @@ namespace War3Net.IO.Mpq
             return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
         }
 
+        internal static bool CalculateEncryptionSeed(string? filename, out uint encryptionSeed)
+        {
+            if (filename is null)
+            {
+                encryptionSeed = 0;
+                return false;
+            }
+            else
+            {
+                encryptionSeed = StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+                return true;
+            }
+        }
+
         internal static uint CalculateEncryptionSeed(string? filename, uint fileOffset, uint fileSize, MpqFileFlags flags)
         {
             if (filename is null)

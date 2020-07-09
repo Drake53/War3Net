@@ -12,7 +12,7 @@ namespace War3Net.IO.Mpq
 {
     public abstract class MpqFile : IDisposable
     {
-        private readonly ulong _name;
+        private readonly ulong? _name;
         private readonly MpqStream _mpqStream;
         private readonly bool _isStreamOwner;
 
@@ -20,7 +20,7 @@ namespace War3Net.IO.Mpq
         private MpqLocale _locale;
         private MpqCompressionType _compressionType;
 
-        internal MpqFile(ulong hashedName, MpqStream mpqStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen)
+        internal MpqFile(ulong? hashedName, MpqStream mpqStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen)
         {
             _name = hashedName;
             _mpqStream = mpqStream ?? throw new ArgumentNullException(nameof(mpqStream));
@@ -31,7 +31,7 @@ namespace War3Net.IO.Mpq
             _compressionType = MpqCompressionType.ZLib;
         }
 
-        public ulong Name => _name;
+        public ulong Name => _name.Value;
 
         internal MpqStream MpqStream => _mpqStream;
 
@@ -106,16 +106,27 @@ namespace War3Net.IO.Mpq
         /// </remarks>
         protected abstract uint? EncryptionSeed { get; }
 
+        public static MpqFile New(Stream? stream, string fileName, bool leaveOpen = false)
+        {
+            return New(stream, fileName, MpqLocale.Neutral, leaveOpen);
+        }
+
+        public static MpqFile New(Stream? stream, string fileName, MpqLocale locale, bool leaveOpen = false)
+        {
+            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName, leaveOpen);
+            return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, locale, leaveOpen);
+        }
+
         public static MpqFile New(Stream? stream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
         {
             var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), null);
             return new MpqUnknownFile(mpqStream, mpqStream.Flags, mpqHash, hashIndex, hashCollisions, encryptionSeed);
         }
 
-        public static MpqFile New(Stream? stream, string fileName, bool leaveOpen = false)
+        public static MpqFile New(Stream? stream)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName, leaveOpen);
-            return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, MpqLocale.Neutral, leaveOpen);
+            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), null);
+            return new MpqOrphanedFile(mpqStream, mpqStream.Flags);
         }
 
         /// <inheritdoc/>
@@ -129,7 +140,9 @@ namespace War3Net.IO.Mpq
 
         public bool IsSameAs(MpqFile other)
         {
-            return _name == other._name && _locale == other._locale;
+            return _name.HasValue && other._name.HasValue
+                ? _name.Value == other._name.Value && _locale == other._locale
+                : false;
         }
 
         internal void AddToArchive(MpqArchive mpqArchive, uint index, out MpqEntry mpqEntry, out MpqHash mpqHash)
