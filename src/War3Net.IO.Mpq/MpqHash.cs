@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 namespace War3Net.IO.Mpq
 {
@@ -97,6 +98,11 @@ namespace War3Net.IO.Mpq
 
         public static uint GetIndex(string path)
         {
+            if (path.Any(c => c >= 0x200))
+            {
+                throw new ArgumentException($"One or more of the characters in the input string have a numerical value of 0x200 or larger.", nameof(path));
+            }
+
             return StormBuffer.HashString(path, 0);
         }
 
@@ -107,6 +113,11 @@ namespace War3Net.IO.Mpq
 
         public static ulong GetHashedFileName(string fileName)
         {
+            if (fileName.Any(c => c >= 0x200))
+            {
+                throw new ArgumentException($"One or more of the characters in the input string have a numerical value of 0x200 or larger.", nameof(fileName));
+            }
+
             return CombineNames(StormBuffer.HashString(fileName, 0x100), StormBuffer.HashString(fileName, 0x200));
         }
 

@@ -745,7 +745,12 @@ namespace War3Net.IO.Mpq
 
         private bool TryGetHashEntry(string filename, out MpqHash hash)
         {
-            var index = StormBuffer.HashString(filename, 0);
+            if (!StormBuffer.TryGetHashString(filename, 0, out var index))
+            {
+                hash = default;
+                return false;
+            }
+
             index &= _mpqHeader.HashTableSize - 1;
             var name = MpqHash.GetHashedFileName(filename);
 
@@ -773,13 +778,11 @@ namespace War3Net.IO.Mpq
 
         private IEnumerable<MpqHash> GetHashEntries(string filename)
         {
-            if (filename.Any(c => c >= 0x200))
+            if (!StormBuffer.TryGetHashString(filename, 0, out var index))
             {
-                // throw new Exception($"Filename contains one or more invalid characters: {string.Join(", ", filename.Where(c => c >= 0x200).Select(c => $"'{c}'"))}.");
                 yield break;
             }
 
-            var index = StormBuffer.HashString(filename, 0);
             index &= _mpqHeader.HashTableSize - 1;
             var name = MpqHash.GetHashedFileName(filename);
 

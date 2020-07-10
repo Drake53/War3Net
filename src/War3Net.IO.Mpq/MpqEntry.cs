@@ -189,21 +189,18 @@ namespace War3Net.IO.Mpq
 
         internal static uint CalculateEncryptionSeed(string? filename)
         {
-            return filename is null ? 0 : StormBuffer.HashString(Path.GetFileName(filename), 0x300);
+            return CalculateEncryptionSeed(filename, out var encryptionSeed) ? encryptionSeed : 0;
         }
 
         internal static bool CalculateEncryptionSeed(string? filename, out uint encryptionSeed)
         {
-            if (filename is null)
+            if (filename != null && StormBuffer.TryGetHashString(Path.GetFileName(filename), 0x300, out encryptionSeed))
             {
-                encryptionSeed = 0;
-                return false;
-            }
-            else
-            {
-                encryptionSeed = StormBuffer.HashString(Path.GetFileName(filename), 0x300);
                 return true;
             }
+
+            encryptionSeed = 0;
+            return false;
         }
 
         internal static uint CalculateEncryptionSeed(string? filename, uint fileOffset, uint fileSize, MpqFileFlags flags)

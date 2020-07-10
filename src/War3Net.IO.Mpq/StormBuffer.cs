@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace War3Net.IO.Mpq
 {
@@ -58,6 +59,27 @@ namespace War3Net.IO.Mpq
             }
 
             return seed1;
+        }
+
+        internal static bool TryGetHashString(string input, int offset, out uint hash)
+        {
+            hash = 0x7fed7fed; // seed1
+
+            // StormBuffer size is 0x500, offset can be 0, 0x100, 0x200, or 0x300, so characters' numerical value cannot be 0x200 or higher.
+            if (input.Any(c => c >= 0x200))
+            {
+                return false;
+            }
+
+            var seed2 = 0xeeeeeeee;
+            foreach (var c in input.ToUpper())
+            {
+                var val = (int)c;
+                hash = Buffer[offset + val] ^ (hash + seed2);
+                seed2 = (uint)val + hash + seed2 + (seed2 << 5) + 3;
+            }
+
+            return true;
         }
 
         internal static byte[] EncryptStream(Stream stream, uint seed1, int offset, int length)
