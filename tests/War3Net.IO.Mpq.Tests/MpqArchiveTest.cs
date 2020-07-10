@@ -27,15 +27,13 @@ namespace War3Net.IO.Mpq.Tests
         public void TestStoreThenRetrieveFile(string filename)
         {
             var fileStream = File.OpenRead(filename);
-            // var mpqFile = new MpqKnownFile(filename, fileStream, MpqFileFlags.Exists, MpqLocale.Neutral, true);
-            var mpqFile = MpqFile.New(fileStream, filename);
+            var mpqFile = MpqFile.New(fileStream, filename, true);
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
 
-            fileStream.Position = 0;
-            StreamAssert.AreEqual(fileStream, openedStream);
+            StreamAssert.AreEqual(fileStream, openedStream, true);
         }
 
         [DataTestMethod]
@@ -43,16 +41,14 @@ namespace War3Net.IO.Mpq.Tests
         public void TestStoreThenRetrieveFileWithFlags(string filename, MpqFileFlags flags)
         {
             var fileStream = File.OpenRead(filename);
-            // var mpqFile = new MpqKnownFile(filename, fileStream, flags, MpqLocale.Neutral, true);
-            var mpqFile = MpqFile.New(fileStream, filename);
+            var mpqFile = MpqFile.New(fileStream, filename, true);
             mpqFile.TargetFlags = flags;
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
 
-            fileStream.Position = 0;
-            StreamAssert.AreEqual(fileStream, openedStream);
+            StreamAssert.AreEqual(fileStream, openedStream, true);
         }
 
         [DataTestMethod]
@@ -61,7 +57,6 @@ namespace War3Net.IO.Mpq.Tests
         {
             const string FileName = "someRandomFile.empty";
 
-            // var mpqFile = new MpqKnownFile(FileName, null, flags, MpqLocale.Neutral);
             var mpqFile = MpqFile.New(null, FileName);
             mpqFile.TargetFlags = flags;
             var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
