@@ -1,5 +1,13 @@
 # War3Net.Build Changelog
 
+## v1.3.5
+### Changes
+- Can now parse and serialize war3map.w3s file format version 3. Meaning of the added data not yet known, nor stored in the MapSounds object.
+- Object data file parsers no longer validate the object modifications.
+- Updated War3Net.Common and War3Net.IO.Mpq packages.
+### Bugfixes
+- Changed/added some exception messages.
+
 ## v1.3.4
 ### Changes
 - Added DecompilePackageLibs to ScriptCompilerOptions.

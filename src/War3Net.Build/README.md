@@ -22,6 +22,8 @@ options.BlizzardJPath = "path\\to\\Blizzard.j";
 
 ## Dependencies
 
+https://github.com/Drake53/War3Net/network/dependencies
+
 War3Net.Build targets [.NET Standard 2.1](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.1.md).
 Additionally, the following NuGet packages are referenced:
 
