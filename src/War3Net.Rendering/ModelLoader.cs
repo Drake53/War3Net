@@ -50,10 +50,12 @@ namespace War3Net.Rendering
             var scaleY = 2 / (maxY - minY);
             var scale = new[] { scaleX, scaleY }.Min();
 
+            var transform = Matrix4x4.CreateTranslation(translateX, translateY, translateZ) * Matrix4x4.CreateScale(scale);
+
             var geosetResources = new List<GeosetResources>();
             foreach (var geoset in model.Geosets)
             {
-                geosetResources.Add(LoadGeoset(graphicsDevice, geoset, scale, new Vector3(translateX, translateY, translateZ), paths));
+                geosetResources.Add(LoadGeoset(graphicsDevice, geoset));
             }
 
             // TODO: support multiple layers
@@ -99,8 +101,6 @@ namespace War3Net.Rendering
                 throw new NotSupportedException("Only BLP textures supported.");
             }
 
-            var transform = Matrix4x4.Identity;
-
             return new ModelResources
             {
                 GeosetResources = geosetResources,
@@ -109,7 +109,7 @@ namespace War3Net.Rendering
             };
         }
 
-        public static GeosetResources LoadGeoset(GraphicsDevice graphicsDevice, Geoset geoset, float scale, Vector3 translate, params string[] paths)
+        public static GeosetResources LoadGeoset(GraphicsDevice graphicsDevice, Geoset geoset)
         {
             var factory = graphicsDevice.ResourceFactory;
 
@@ -120,11 +120,7 @@ namespace War3Net.Rendering
             }
 
             var vertexNormals = geoset.Normals;
-            var vertexPositions = geoset.Vertices.Select(vertex => new Vector3(
-                scale * (vertex.X + translate.X),
-                scale * (vertex.Y + translate.Y),
-                scale * (vertex.Z + translate.Z)))
-                .ToArray();
+            var vertexPositions = geoset.Vertices;
 
             var vertices = new Vertex[vertexUVs.Count];
             for (var i = 0; i < vertexUVs.Count; i++)
