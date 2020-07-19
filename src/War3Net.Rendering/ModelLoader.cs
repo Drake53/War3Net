@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -24,16 +25,22 @@ namespace War3Net.Rendering
         {
             var factory = graphicsDevice.ResourceFactory;
 
-            // TODO: support models with multiple geosets
-            var geoset = model.Geosets.First();
-
             // Translate and scale vertices so they fit in the window (range -1 to 1).
-            var minX = geoset.Vertices.Min(vertex => vertex.X);
-            var maxX = geoset.Vertices.Max(vertex => vertex.X);
-            var minY = geoset.Vertices.Min(vertex => vertex.Y);
-            var maxY = geoset.Vertices.Max(vertex => vertex.Y);
-            var minZ = geoset.Vertices.Min(vertex => vertex.Z);
-            var maxZ = geoset.Vertices.Max(vertex => vertex.Z);
+            var minX = float.MaxValue;
+            var maxX = float.MinValue;
+            var minY = float.MaxValue;
+            var maxY = float.MinValue;
+            var minZ = float.MaxValue;
+            var maxZ = float.MinValue;
+            foreach (var geoset in model.Geosets)
+            {
+                minX = MathF.Min(minX, geoset.Vertices.Min(vertex => vertex.X));
+                maxX = MathF.Max(maxX, geoset.Vertices.Max(vertex => vertex.X));
+                minY = MathF.Min(minY, geoset.Vertices.Min(vertex => vertex.Y));
+                maxY = MathF.Max(maxY, geoset.Vertices.Max(vertex => vertex.Y));
+                minZ = MathF.Min(minZ, geoset.Vertices.Min(vertex => vertex.Z));
+                maxZ = MathF.Max(maxZ, geoset.Vertices.Max(vertex => vertex.Z));
+            }
 
             var translateX = (minX + maxX) / -2;
             var translateY = (minY + maxY) / -2;
@@ -43,50 +50,14 @@ namespace War3Net.Rendering
             var scaleY = 2 / (maxY - minY);
             var scale = new[] { scaleX, scaleY }.Min();
 
-            var vertexUVs = geoset.TextureCoordinateSets.Single().TextureCoordinates.Select(textureCoordinate => new Vector2(
-                textureCoordinate.X,
-                textureCoordinate.Y))
-                .ToArray();
-
-            var vertexNormals = geoset.Normals.Select(normal => new Vector3(
-                normal.X,
-                normal.Y,
-                normal.Z))
-                .ToArray();
-
-            var vertexPositions = geoset.Vertices.Select(vertex => new Vector3(
-                scale * (vertex.X + translateX),
-                scale * (vertex.Y + translateY),
-                scale * (vertex.Z + translateZ)))
-                .ToArray();
-
-            if (vertexUVs.Length != vertexNormals.Length || vertexUVs.Length != vertexPositions.Length)
+            var geosetResources = new List<GeosetResources>();
+            foreach (var geoset in model.Geosets)
             {
-                throw new InvalidDataException();
+                geosetResources.Add(LoadGeoset(graphicsDevice, geoset, scale, new Vector3(translateX, translateY, translateZ), paths));
             }
-
-            var vertices = new Vertex[vertexUVs.Length];
-            for (var i = 0; i < vertexUVs.Length; i++)
-            {
-                vertices[i] = new Vertex
-                {
-                    UV = vertexUVs[i],
-                    Normal = vertexNormals[i],
-                    Position = vertexPositions[i],
-                };
-            }
-
-            var vertexIndices = geoset.Faces.ToArray();
-            var indexCount = (uint)vertexIndices.Length;
-
-            var vertexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertices.Length * Vertex.SizeInBytes, BufferUsage.VertexBuffer));
-            var indexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertexIndices.Length * sizeof(ushort), BufferUsage.IndexBuffer));
-
-            graphicsDevice.UpdateBuffer(vertexBuffer, 0, vertices);
-            graphicsDevice.UpdateBuffer(indexBuffer, 0, vertexIndices);
 
             // TODO: support multiple layers
-            var textureFileName = model.Textures[(int)model.Materials[(int)geoset.MaterialId].Layers.First().TextureId].FileName;
+            var textureFileName = model.Textures[(int)model.Materials[(int)model.Geosets.First().MaterialId].Layers.First().TextureId].FileName;
             string textureFilePath = null;
 
             FileInfo textureFileInfo = null;
@@ -130,11 +101,54 @@ namespace War3Net.Rendering
 
             return new ModelResources
             {
+                GeosetResources = geosetResources,
+                Texture = texture,
+            };
+        }
+
+        public static GeosetResources LoadGeoset(GraphicsDevice graphicsDevice, Geoset geoset, float scale, Vector3 translate, params string[] paths)
+        {
+            var factory = graphicsDevice.ResourceFactory;
+
+            var vertexUVs = geoset.TextureCoordinateSets.Single().TextureCoordinates;
+            if (vertexUVs.Count != geoset.Normals.Count || vertexUVs.Count != geoset.Vertices.Count)
+            {
+                throw new InvalidDataException();
+            }
+
+            var vertexNormals = geoset.Normals;
+            var vertexPositions = geoset.Vertices.Select(vertex => new Vector3(
+                scale * (vertex.X + translate.X),
+                scale * (vertex.Y + translate.Y),
+                scale * (vertex.Z + translate.Z)))
+                .ToArray();
+
+            var vertices = new Vertex[vertexUVs.Count];
+            for (var i = 0; i < vertexUVs.Count; i++)
+            {
+                vertices[i] = new Vertex
+                {
+                    UV = vertexUVs[i],
+                    Normal = vertexNormals[i],
+                    Position = vertexPositions[i],
+                };
+            }
+
+            var vertexIndices = geoset.Faces.ToArray();
+            var indexCount = (uint)vertexIndices.Length;
+
+            var vertexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertices.Length * Vertex.SizeInBytes, BufferUsage.VertexBuffer));
+            var indexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertexIndices.Length * sizeof(ushort), BufferUsage.IndexBuffer));
+
+            graphicsDevice.UpdateBuffer(vertexBuffer, 0, vertices);
+            graphicsDevice.UpdateBuffer(indexBuffer, 0, vertexIndices);
+
+            return new GeosetResources
+            {
                 VertexIndicesCount = indexCount,
                 PrimitiveTopology = geoset.FaceTypeGroups.Single().ToPrimitiveTopology(),
                 VertexBuffer = vertexBuffer,
                 IndexBuffer = indexBuffer,
-                Texture = texture,
             };
         }
     }
