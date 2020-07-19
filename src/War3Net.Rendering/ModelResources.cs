@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 using Veldrid;
 
@@ -17,6 +18,8 @@ namespace War3Net.Rendering
         public IReadOnlyList<GeosetResources> GeosetResources { get; set; }
 
         public Texture Texture { get; set; }
+
+        public Matrix4x4 Transform { get; set; }
 
         public void Dispose()
         {

@@ -99,10 +99,13 @@ namespace War3Net.Rendering
                 throw new NotSupportedException("Only BLP textures supported.");
             }
 
+            var transform = Matrix4x4.Identity;
+
             return new ModelResources
             {
                 GeosetResources = geosetResources,
                 Texture = texture,
+                Transform = transform,
             };
         }
 
