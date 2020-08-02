@@ -11,9 +11,9 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct Model
     {
-        public ModelVersion Version { get; set; }
+        public ModelVersion? Version { get; set; }
 
-        public ModelInfo ModelInfo { get; set; }
+        public ModelInfo? ModelInfo { get; set; }
 
         public Sequence[] Sequences { get; set; }
 
