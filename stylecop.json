@@ -25,7 +25,8 @@
       {
         "licenseName": "MIT",
         "licenseFile": "LICENSE"
-      }
+      },
+      "documentInternalElements": false
     },
 
     "indentation":
