@@ -36,7 +36,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockTableEntries">The amount of <see cref="MpqEntry"/> objects in the <see cref="BlockTable"/>.</param>
         /// <param name="blockSize">The blocksize that the corresponding <see cref="MpqArchive"/> has.</param>
         /// <param name="archiveBeforeTables">If true, the archive and table offsets are set so that the archive directly follows the header.</param>
-        public MpqHeader(uint fileArchiveSize, uint hashTableEntries, uint blockTableEntries, ushort blockSize, bool archiveBeforeTables = true)
+        public MpqHeader(uint headerOffset, uint fileArchiveSize, uint hashTableEntries, uint blockTableEntries, ushort blockSize, bool archiveBeforeTables = true)
             : this()
         {
             var hashTableSize = hashTableEntries * MpqHash.Size;
@@ -45,24 +45,24 @@ namespace War3Net.IO.Mpq
             if (archiveBeforeTables)
             {
                 // MPQ contents are in order: header, archive, HT, BT
-                DataOffset = Size;
+                DataOffset = Size - headerOffset;
                 ArchiveSize = Size + fileArchiveSize + hashTableSize + blockTableSize;
                 MpqVersion = 0;
                 BlockSize = blockSize;
-                HashTableOffset = Size + fileArchiveSize;
-                BlockTableOffset = Size + fileArchiveSize + hashTableSize;
+                HashTableOffset = Size + fileArchiveSize - headerOffset;
+                BlockTableOffset = Size + fileArchiveSize + hashTableSize - headerOffset;
                 HashTableSize = hashTableEntries;
                 BlockTableSize = blockTableEntries;
             }
             else
             {
                 // MPQ contents are in order: header, HT, BT, archive
-                DataOffset = Size + hashTableSize + blockTableSize;
+                DataOffset = Size + hashTableSize + blockTableSize - headerOffset;
                 ArchiveSize = Size + fileArchiveSize + hashTableSize + blockTableSize;
                 MpqVersion = 0;
                 BlockSize = blockSize;
-                HashTableOffset = Size;
-                BlockTableOffset = Size + hashTableSize;
+                HashTableOffset = Size - headerOffset;
+                BlockTableOffset = Size + hashTableSize - headerOffset;
                 HashTableSize = hashTableEntries;
                 BlockTableSize = blockTableEntries;
             }

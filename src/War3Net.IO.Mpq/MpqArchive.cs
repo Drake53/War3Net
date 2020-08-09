@@ -197,7 +197,7 @@ namespace War3Net.IO.Mpq
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader((uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, blockSize, _archiveFollowsHeader);
+                _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, blockSize, _archiveFollowsHeader);
                 _mpqHeader.WriteTo(writer);
             }
         }
@@ -431,7 +431,7 @@ namespace War3Net.IO.Mpq
                 blockTable.SerializeTo(memoryStream);
 
                 writer.Seek(0, SeekOrigin.Begin);
-                new MpqHeader(archiveSize, hashTableEntries, blockTableEntries, mpqHeader.BlockSize).WriteTo(writer);
+                new MpqHeader(0, archiveSize, hashTableEntries, blockTableEntries, mpqHeader.BlockSize).WriteTo(writer);
             }
 
             if (!leaveOpen)
@@ -690,7 +690,7 @@ namespace War3Net.IO.Mpq
             sourceStream.Seek(0, SeekOrigin.Begin);
             using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
             {
-                for (headerOffset = 0; headerOffset < sourceStream.Length - MpqHeader.Size; headerOffset += PreArchiveAlignBytes)
+                for (headerOffset = 0; headerOffset <= sourceStream.Length - MpqHeader.Size; headerOffset += PreArchiveAlignBytes)
                 {
                     if (reader.ReadUInt32() == MpqHeader.MpqId)
                     {

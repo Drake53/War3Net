@@ -51,7 +51,7 @@ namespace War3Net.IO.Mpq
             uint seed1 = 0x7fed7fed;
             var seed2 = 0xeeeeeeee;
 
-            foreach (var c in input.ToUpper())
+            foreach (var c in NormalizeString(input))
             {
                 var val = (int)c;
                 seed1 = Buffer[offset + val] ^ (seed1 + seed2);
@@ -72,7 +72,7 @@ namespace War3Net.IO.Mpq
             }
 
             var seed2 = 0xeeeeeeee;
-            foreach (var c in input.ToUpper())
+            foreach (var c in NormalizeString(input))
             {
                 var val = (int)c;
                 hash = Buffer[offset + val] ^ (hash + seed2);
@@ -80,6 +80,11 @@ namespace War3Net.IO.Mpq
             }
 
             return true;
+        }
+
+        internal static string NormalizeString(string input)
+        {
+            return input.ToUpper();
         }
 
         internal static byte[] EncryptStream(Stream stream, uint seed1, int offset, int length)
