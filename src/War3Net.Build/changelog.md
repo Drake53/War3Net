@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.3.6
+### Changes
+- Created new project 'War3Net.Build.Core', and moved useful files there to reduce dependencies.
+- Include 1.32.6 and 1.32.7 in GamePatch enum.
+
 ## v1.3.5
 ### Changes
 - Can now parse and serialize war3map.w3s file format version 3. Meaning of the added data not yet known, nor stored in the MapSounds object.

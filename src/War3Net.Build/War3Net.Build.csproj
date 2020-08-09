@@ -12,8 +12,8 @@
     <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes>Read the changelog.md for the latest changes.</PackageReleaseNotes>
 
-    <Version>1.3.5</Version>
-    <FileVersion>1.3.5</FileVersion>
+    <Version>1.3.6</Version>
+    <FileVersion>1.3.6</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
@@ -24,15 +24,13 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
-    <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
-    <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
+    <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
     <ProjectReference Include="..\..\submodules\CSharp.lua\CSharp.lua\CSharp.lua.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="1.2.1" />
-    <PackageReference Include="War3Net.Common" Version="0.1.3" />
-    <PackageReference Include="War3Net.IO.Mpq" Version="1.0.0" />
+    <PackageReference Include="War3Net.Build.Core" Version="1.3.6" />
     <PackageReference Include="War3Net.CSharpLua" Version="1.6.1" />
   </ItemGroup>
 
