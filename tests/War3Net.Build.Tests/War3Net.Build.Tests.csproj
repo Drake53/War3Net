@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build" Version="1.3.2" />
-    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.2.2" />
+    <PackageReference Include="War3Net.Build" Version="1.3.6" />
+    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.2.4" />
   </ItemGroup>
 
   <ItemGroup>

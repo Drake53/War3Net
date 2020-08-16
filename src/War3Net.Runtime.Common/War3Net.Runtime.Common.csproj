@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.Build.Core\War3Net.Build.Core.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Rendering\War3Net.Rendering.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Rendering\War3Net.Rendering.csproj" />
+  </ItemGroup>
+
+</Project>

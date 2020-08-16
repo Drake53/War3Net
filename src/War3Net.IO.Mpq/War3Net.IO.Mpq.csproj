@@ -13,8 +13,8 @@
     <PackageTags>mpq mopaq warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
 
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.1</Version>
+    <FileVersion>1.0.1</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
