@@ -21,7 +21,7 @@ namespace War3Net.Build.Script
             {
                 yield return builder.GenerateGlobalDeclaration(
                     builder.GetTypeName(BuiltinType.Int32),
-                    $"gg_rg_{mapInfo.GetUnitTable(i).Index: D3}",
+                    $"gg_rg_{mapInfo.GetUnitTable(i).Index:D3}",
                     true);
             }
 
@@ -56,7 +56,7 @@ namespace War3Net.Build.Script
                 {
                     yield return builder.GenerateGlobalDeclaration(
                         nameof(War3Api.Common.unit),
-                        $"gg_unit_{unit.TypeId}_{unit.CreationNumber: D4}",
+                        $"gg_unit_{unit.TypeId}_{unit.CreationNumber:D4}",
                         false);
                 }
             }

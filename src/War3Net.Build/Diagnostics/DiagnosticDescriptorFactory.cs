@@ -25,7 +25,7 @@ namespace War3Net.Build.Diagnostics
                 throw new ArgumentOutOfRangeException(nameof(id));
             }
 
-            return new DiagnosticDescriptor($"W3N{(int)category}{id: D3}", title, messageFormat, category.ToString(), defaultSeverity, true, null, null, customTags);
+            return new DiagnosticDescriptor($"W3N{(int)category}{id:D3}", title, messageFormat, category.ToString(), defaultSeverity, true, null, null, customTags);
         }
 
         internal static DiagnosticDescriptor Create(string title, string messageFormat, int id, DiagnosticCategory category, DiagnosticSeverity defaultSeverity, params string[] customTags)
@@ -40,7 +40,7 @@ namespace War3Net.Build.Diagnostics
                 throw new ArgumentOutOfRangeException(nameof(id));
             }
 
-            return new DiagnosticDescriptor($"W3N{(int)category}{id: D3}", title, messageFormat, category.ToString(), defaultSeverity, true, null, null, customTags);
+            return new DiagnosticDescriptor($"W3N{(int)category}{id:D3}", title, messageFormat, category.ToString(), defaultSeverity, true, null, null, customTags);
         }
 
         internal static DiagnosticDescriptor Info(LocalizableString title, LocalizableString messageFormat, int id, DiagnosticCategory category, params string[] customTags)

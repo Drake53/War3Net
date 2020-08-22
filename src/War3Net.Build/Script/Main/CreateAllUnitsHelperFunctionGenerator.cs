@@ -37,7 +37,7 @@ namespace War3Net.Build.Script.Main
 
             foreach (var unit in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsUnit))
             {
-                var globalUnitVariableName = $"gg_unit_{unit.TypeId}_{unit.CreationNumber: D4}";
+                var globalUnitVariableName = $"gg_unit_{unit.TypeId}_{unit.CreationNumber:D4}";
 
                 if (unit.IsRandomUnit)
                 {
@@ -67,7 +67,7 @@ namespace War3Net.Build.Script.Main
                             yield return builder.GenerateAssignmentStatement(
                                 LocalUnitIdVariableName,
                                 builder.GenerateArrayReferenceExpression(
-                                    $"gg_rg_{randomData.UnitGroupTableIndex.ToString("D3")}",
+                                    $"gg_rg_{randomData.UnitGroupTableIndex:D3}",
                                     builder.GenerateIntegerLiteralExpression(randomData.UnitGroupTableColumn)));
                             break;
 

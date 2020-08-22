@@ -48,7 +48,7 @@ namespace War3Net.Build.Script.Main
                     LocalCurrentSetVariableName,
                     builder.GenerateInvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose)));
 
-                var groupVarName = $"gg_rg_{unitTable.Index.ToString("D3")}";
+                var groupVarName = $"gg_rg_{unitTable.Index:D3}";
                 var bodyStatements = new TStatementSyntax[unitTable.UnitSetCount + 1][];
                 for (var setIndex = 0; setIndex <= unitTable.UnitSetCount; setIndex++)
                 {
