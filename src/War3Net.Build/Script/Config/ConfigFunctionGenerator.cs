@@ -13,6 +13,7 @@ namespace War3Net.Build.Script.Config
 {
     internal static partial class ConfigFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TGlobalDeclarationSyntax : class
         where TExpressionSyntax : class
     {
         public static IEnumerable<TFunctionSyntax> GetFunctions(TBuilder builder)

@@ -18,6 +18,7 @@ namespace War3Net.Build.Script.Main
 {
     internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TGlobalDeclarationSyntax : class
         where TExpressionSyntax : class
     {
         private const string MusicName = "Music";
