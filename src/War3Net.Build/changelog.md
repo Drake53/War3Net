@@ -1,5 +1,9 @@
 # War3Net.Build Changelog
 
+## v1.3.8
+## Bugfixes
+- Fix string interpolation uses incorrect format string.
+
 ## v1.3.7
 ### Changes
 - Preplaced units are now assigned to a global variable.
