@@ -1,7 +1,11 @@
 # War3Net.Build Changelog
 
+## v1.3.9
+### Bugfixes
+- Fix lua global declarations.
+
 ## v1.3.8
-## Bugfixes
+### Bugfixes
 - Fix string interpolation uses incorrect format string.
 
 ## v1.3.7
