@@ -1,5 +1,10 @@
 # War3Net.Build Changelog
 
+## v1.3.7
+### Changes
+- Preplaced units are now assigned to a global variable.
+- Include 1.32.8 in GamePatch enum.
+
 ## v1.3.6
 ### Changes
 - Created new project 'War3Net.Build.Core', and moved useful files there to reduce dependencies.
