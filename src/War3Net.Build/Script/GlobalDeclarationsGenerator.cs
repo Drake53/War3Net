@@ -48,6 +48,18 @@ namespace War3Net.Build.Script
                         false);
                 }
             }
+
+            var mapUnits = builder.Data.MapUnits;
+            if (mapUnits?.Where(mapUnit => mapUnit.IsUnit).FirstOrDefault() != null)
+            {
+                foreach (var unit in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsUnit))
+                {
+                    yield return builder.GenerateGlobalDeclaration(
+                        nameof(War3Api.Common.unit),
+                        $"gg_unit_{unit.TypeId}_{unit.CreationNumber: D4}",
+                        false);
+                }
+            }
         }
     }
 }

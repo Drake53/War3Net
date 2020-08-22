@@ -14,7 +14,7 @@ namespace War3Net.Build.Script.Main
 {
     internal static partial class MainFunctionGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
     {
-        private const string LocalUnitVariableName = "u";
+        // private const string LocalUnitVariableName = "u";
         private const string LocalUnitIdVariableName = "unitID";
 
         private static TFunctionSyntax GenerateCreateAllUnitsHelperFunction(TBuilder builder)
@@ -22,7 +22,7 @@ namespace War3Net.Build.Script.Main
             var locals = new List<(string, string)>()
             {
                 // (nameof(War3Api.Common.player), "p"),
-                (nameof(War3Api.Common.unit), LocalUnitVariableName),
+                // (nameof(War3Api.Common.unit), LocalUnitVariableName),
                 (builder.GetTypeName(BuiltinType.Int32), LocalUnitIdVariableName),
                 (nameof(War3Api.Common.trigger), LocalTriggerVariableName),
                 // (builder.GetTypeName(BuiltinType.Single), "life"),
@@ -37,6 +37,8 @@ namespace War3Net.Build.Script.Main
 
             foreach (var unit in builder.Data.MapUnits.Where(mapUnit => mapUnit.IsUnit))
             {
+                var globalUnitVariableName = $"gg_unit_{unit.TypeId}_{unit.CreationNumber: D4}";
+
                 if (unit.IsRandomUnit)
                 {
                     var randomData = unit.RandomData;
@@ -46,7 +48,7 @@ namespace War3Net.Build.Script.Main
                             if (unit.IsRandomBuilding)
                             {
                                 yield return builder.GenerateAssignmentStatement(
-                                    LocalUnitVariableName,
+                                    LocalUnitIdVariableName,
                                     builder.GenerateInvocationExpression(
                                         nameof(War3Api.Common.ChooseRandomNPBuilding)));
                             }
@@ -108,7 +110,7 @@ namespace War3Net.Build.Script.Main
                             builder.GenerateVariableExpression(LocalUnitIdVariableName),
                             builder.GenerateIntegerLiteralExpression(-1)),
                         builder.GenerateAssignmentStatement(
-                            LocalUnitVariableName,
+                            globalUnitVariableName,
                             builder.GenerateInvocationExpression(
                                 nameof(War3Api.Common.CreateUnit),
                                 builder.GenerateInvocationExpression(
@@ -139,7 +141,7 @@ namespace War3Net.Build.Script.Main
                     }
 
                     yield return builder.GenerateAssignmentStatement(
-                        LocalUnitVariableName,
+                        globalUnitVariableName,
                         builder.GenerateInvocationExpression(
                             hasSkin
                                 ? nameof(War3Api.Common.BlzCreateUnitWithSkin)
@@ -150,7 +152,7 @@ namespace War3Net.Build.Script.Main
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroLevel),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroLevel),
                             builder.GenerateBooleanLiteralExpression(false));
                     }
@@ -159,7 +161,7 @@ namespace War3Net.Build.Script.Main
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroStr),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroStrength),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -168,7 +170,7 @@ namespace War3Net.Build.Script.Main
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroAgi),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroAgility),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -177,7 +179,7 @@ namespace War3Net.Build.Script.Main
                     {
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SetHeroInt),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateIntegerLiteralExpression(unit.HeroIntelligence),
                             builder.GenerateBooleanLiteralExpression(true));
                     }
@@ -187,14 +189,14 @@ namespace War3Net.Build.Script.Main
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetUnitState),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)),
                         builder.GenerateBinaryExpression(
                             BinaryOperator.Multiplication,
                             builder.GenerateFloatLiteralExpression(unit.Hp * 0.01f),
                             builder.GenerateInvocationExpression(
                                 nameof(War3Api.Common.GetUnitState),
-                                builder.GenerateVariableExpression(LocalUnitVariableName),
+                                builder.GenerateVariableExpression(globalUnitVariableName),
                                 builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_LIFE)))));
                 }
 
@@ -202,7 +204,7 @@ namespace War3Net.Build.Script.Main
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetUnitState),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.UNIT_STATE_MANA)),
                         builder.GenerateFloatLiteralExpression(unit.Mp));
                 }
@@ -211,7 +213,7 @@ namespace War3Net.Build.Script.Main
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetResourceAmount),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateIntegerLiteralExpression(unit.GoldAmount));
                 }
 
@@ -220,7 +222,7 @@ namespace War3Net.Build.Script.Main
                     const float CampAcquisitionRange = 200f;
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetUnitAcquireRange),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateFloatLiteralExpression(unit.TargetAcquisition == -2 ? CampAcquisitionRange : unit.TargetAcquisition));
                 }
 
@@ -228,7 +230,7 @@ namespace War3Net.Build.Script.Main
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.SetUnitColor),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateInvocationExpression(
                             nameof(War3Api.Common.ConvertPlayerColor),
                             builder.GenerateIntegerLiteralExpression(unit.CustomPlayerColor)));
@@ -241,13 +243,13 @@ namespace War3Net.Build.Script.Main
                     var targetY = targetRect?.CenterY ?? 0;
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.WaygateSetDestination),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateFloatLiteralExpression(targetX),
                         builder.GenerateFloatLiteralExpression(targetY));
 
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.WaygateActivate),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateBooleanLiteralExpression(true));
                 }
 
@@ -258,7 +260,7 @@ namespace War3Net.Build.Script.Main
                         // TODO: make sure Level is 0 for non-hero abilities (can confirm this by checking second char is uppercase?)
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.SelectHeroSkill),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateFourCCExpression(ability.Id));
                     }
 
@@ -273,7 +275,7 @@ namespace War3Net.Build.Script.Main
                         // TODO: test if this works
                         yield return builder.GenerateInvocationStatement(
                             nameof(War3Api.Common.IssueImmediateOrderById),
-                            builder.GenerateVariableExpression(LocalUnitVariableName),
+                            builder.GenerateVariableExpression(globalUnitVariableName),
                             builder.GenerateFourCCExpression(ability.Id));
 #endif
                     }
@@ -283,7 +285,7 @@ namespace War3Net.Build.Script.Main
                 {
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.UnitAddItemToSlotById),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateFourCCExpression(item.Id),
                         builder.GenerateIntegerLiteralExpression(item.Slot));
                 }
@@ -297,13 +299,13 @@ namespace War3Net.Build.Script.Main
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.TriggerRegisterUnitEvent),
                         builder.GenerateVariableExpression(LocalTriggerVariableName),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.EVENT_UNIT_DEATH)));
 
                     yield return builder.GenerateInvocationStatement(
                         nameof(War3Api.Common.TriggerRegisterUnitEvent),
                         builder.GenerateVariableExpression(LocalTriggerVariableName),
-                        builder.GenerateVariableExpression(LocalUnitVariableName),
+                        builder.GenerateVariableExpression(globalUnitVariableName),
                         builder.GenerateVariableExpression(nameof(War3Api.Common.EVENT_UNIT_CHANGE_OWNER)));
 
                     if (unit.MapItemTablePointer != -1)
