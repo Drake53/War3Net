@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,7 @@ namespace War3Net.Build.Script
             return null;
         }
 
-        public override LuaVariableListDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, bool isArray)
+        public override LuaVariableListDeclarationSyntax? GenerateGlobalDeclaration(string typeName, string name, bool isArray)
         {
             return GenerateGlobalDeclaration(
                 typeName,
@@ -33,10 +35,18 @@ namespace War3Net.Build.Script
                 isArray ? GenerateInvocationExpression("__jarray", GenerateIntegerLiteralExpression(0)) : null);
         }
 
-        public override LuaVariableListDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, LuaExpressionSyntax value)
+        public override LuaVariableListDeclarationSyntax? GenerateGlobalDeclaration(string typeName, string name, LuaExpressionSyntax? value)
         {
+            if (value is null)
+            {
+                return null;
+            }
+
+            var declarator = new LuaVariableDeclaratorSyntax(name, value);
+            declarator.IsLocalDeclaration = false;
+
             var result = new LuaVariableListDeclarationSyntax();
-            result.Variables.Add(new LuaVariableDeclaratorSyntax(name, value));
+            result.Variables.Add(declarator);
             return result;
         }
 
@@ -82,7 +92,7 @@ namespace War3Net.Build.Script
             return globalFunctionSyntax;
         }
 
-        public override IEnumerable<LuaVariableListDeclarationSyntax> BuildGlobalDeclarations()
+        public override IEnumerable<LuaVariableListDeclarationSyntax?> BuildGlobalDeclarations()
         {
             return GlobalDeclarationsGenerator<LuaFunctionBuilder, LuaVariableListDeclarationSyntax, LuaVariableListDeclarationSyntax, LuaStatementSyntax, LuaExpressionSyntax>.GetGlobals(this);
         }

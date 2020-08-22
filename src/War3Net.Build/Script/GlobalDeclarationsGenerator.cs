@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,9 +14,10 @@ namespace War3Net.Build.Script
 {
     internal static partial class GlobalDeclarationsGenerator<TBuilder, TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
         where TBuilder : FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TGlobalDeclarationSyntax : class
         where TExpressionSyntax : class
     {
-        public static IEnumerable<TGlobalDeclarationSyntax> GetGlobals(TBuilder builder)
+        public static IEnumerable<TGlobalDeclarationSyntax?> GetGlobals(TBuilder builder)
         {
             var mapInfo = builder.Data.MapInfo;
             for (var i = 0; i < mapInfo.RandomUnitTableCount; i++)

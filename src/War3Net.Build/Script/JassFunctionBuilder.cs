@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +37,7 @@ namespace War3Net.Build.Script
             });
         }
 
-        public override GlobalDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, bool isArray)
+        public override GlobalDeclarationSyntax? GenerateGlobalDeclaration(string typeName, string name, bool isArray)
         {
             return isArray
                 ? new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
@@ -54,7 +56,7 @@ namespace War3Net.Build.Script
                     new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0)))));
         }
 
-        public override GlobalDeclarationSyntax GenerateGlobalDeclaration(string typeName, string name, NewExpressionSyntax value)
+        public override GlobalDeclarationSyntax? GenerateGlobalDeclaration(string typeName, string name, NewExpressionSyntax value)
         {
             return new GlobalDeclarationSyntax(new GlobalVariableDeclarationSyntax(
                 new VariableDeclarationSyntax(
@@ -101,7 +103,7 @@ namespace War3Net.Build.Script
                     statements.ToArray());
         }
 
-        public override IEnumerable<GlobalDeclarationSyntax> BuildGlobalDeclarations()
+        public override IEnumerable<GlobalDeclarationSyntax?> BuildGlobalDeclarations()
         {
             return GlobalDeclarationsGenerator<JassFunctionBuilder, GlobalDeclarationSyntax, FunctionSyntax, NewStatementSyntax, NewExpressionSyntax>.GetGlobals(this);
         }

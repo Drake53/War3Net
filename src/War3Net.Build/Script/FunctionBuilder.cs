@@ -14,6 +14,7 @@ using War3Net.Build.Providers;
 namespace War3Net.Build.Script
 {
     internal abstract class FunctionBuilder<TGlobalDeclarationSyntax, TFunctionSyntax, TStatementSyntax, TExpressionSyntax>
+        where TGlobalDeclarationSyntax : class
         where TExpressionSyntax : class
     {
         private readonly FunctionBuilderData _data;
@@ -28,12 +29,12 @@ namespace War3Net.Build.Script
         public abstract string GetTypeName(
             BuiltinType type);
 
-        public abstract TGlobalDeclarationSyntax GenerateGlobalDeclaration(
+        public abstract TGlobalDeclarationSyntax? GenerateGlobalDeclaration(
             string typeName,
             string name,
             bool isArray);
 
-        public abstract TGlobalDeclarationSyntax GenerateGlobalDeclaration(
+        public abstract TGlobalDeclarationSyntax? GenerateGlobalDeclaration(
             string typeName,
             string name,
             TExpressionSyntax value);
@@ -55,7 +56,7 @@ namespace War3Net.Build.Script
             IEnumerable<(string typeName, string name, TExpressionSyntax? value)> locals,
             IEnumerable<TStatementSyntax> statements);
 
-        public abstract IEnumerable<TGlobalDeclarationSyntax> BuildGlobalDeclarations();
+        public abstract IEnumerable<TGlobalDeclarationSyntax?> BuildGlobalDeclarations();
 
         public abstract IEnumerable<TFunctionSyntax> BuildMainFunction();
 

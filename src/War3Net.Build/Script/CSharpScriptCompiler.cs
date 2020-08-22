@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,7 +140,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private void RenderToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax> functions)
+        private void RenderToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax?> functions)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
             {
@@ -149,7 +151,10 @@ namespace War3Net.Build.Script
                     var compilationUnitSyntax = new LuaCompilationUnitSyntax();
                     foreach (var function in functions)
                     {
-                        compilationUnitSyntax.AddStatement(function);
+                        if (function != null)
+                        {
+                            compilationUnitSyntax.AddStatement(function);
+                        }
                     }
 
                     renderer.RenderCompilationUnit(compilationUnitSyntax);

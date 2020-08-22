@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -157,7 +159,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        private void RenderToFile(string path, IEnumerable<GlobalDeclarationSyntax> globals)
+        private void RenderToFile(string path, IEnumerable<GlobalDeclarationSyntax?> globals)
         {
             using (var fileStream = FileProvider.OpenNewWrite(path))
             {
@@ -166,7 +168,7 @@ namespace War3Net.Build.Script
                     var renderer = new JassRenderer(writer);
                     renderer.Options = _rendererOptions;
 
-                    var globalsArray = globals.ToArray();
+                    var globalsArray = globals.Where(global => global != null).ToArray();
                     var globalsDeclarationList = globalsArray.Length == 0
                         ? new GlobalsDeclarationListSyntax(new EmptyNode(0))
                         : new GlobalsDeclarationListSyntax(globalsArray);
