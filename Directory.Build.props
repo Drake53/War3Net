@@ -14,7 +14,9 @@
     <None Remove="README.md" />
     <None Remove="../../LICENSE" />
     <None Remove="../../stylecop.json" />
-    <Content Include="../../LICENSE" />
+    <Content Include="../../LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <AdditionalFiles Include="../../stylecop.json" />
   </ItemGroup>
   <PropertyGroup>
