@@ -1,0 +1,56 @@
+﻿// ------------------------------------------------------------------------------
+// <copyright file="UnitBooleanField.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace War3Net.Runtime.Common.Enums.Object
+{
+    public sealed class UnitBooleanField
+    {
+        private static readonly Dictionary<int, UnitBooleanField> _events = GetTypes().ToDictionary(t => (int)t, t => new UnitBooleanField(t));
+
+        private readonly Type _type;
+
+        private UnitBooleanField(Type type)
+        {
+            _type = type;
+        }
+
+        public enum Type
+        {
+            RAISABLE = 1970430313,
+            DECAYABLE = 1969513827,
+            IS_A_BUILDING = 1969382503,
+            USE_EXTENDED_LINE_OF_SIGHT = 1970040691,
+            NEUTRAL_BUILDING_SHOWS_MINIMAP_ICON = 1970168429,
+            HERO_HIDE_HERO_INTERFACE_ICON = 1969776738,
+            HERO_HIDE_HERO_MINIMAP_DISPLAY = 1969776749,
+            HERO_HIDE_HERO_DEATH_MESSAGE = 1969776740,
+            HIDE_MINIMAP_DISPLAY = 1969778541,
+            SCALE_PROJECTILES = 1970496354,
+            SELECTION_CIRCLE_ON_WATER = 1970496887,
+            HAS_WATER_SHADOW = 1970497650,
+        }
+
+        public static UnitBooleanField? GetUnitBooleanField(int i)
+        {
+            return _events.TryGetValue(i, out var unitBooleanField) ? unitBooleanField : null;
+        }
+
+        private static IEnumerable<Type> GetTypes()
+        {
+            foreach (Type type in Enum.GetValues(typeof(Type)))
+            {
+                yield return type;
+            }
+        }
+    }
+}
