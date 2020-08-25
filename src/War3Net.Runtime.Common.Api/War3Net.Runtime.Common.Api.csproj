@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.Runtime.Common\War3Net.Runtime.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <!-- todo: packagereferences -->
+    <ProjectReference Include="..\..\src\War3Net.Runtime.Common\War3Net.Runtime.Common.csproj" />
+  </ItemGroup>
+
+</Project>
