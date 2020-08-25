@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class UnitWeaponIntegerField
     {
-        private static readonly Dictionary<int, UnitWeaponIntegerField> _events = GetTypes().ToDictionary(t => (int)t, t => new UnitWeaponIntegerField(t));
+        private static readonly Dictionary<int, UnitWeaponIntegerField> _fields = GetTypes().ToDictionary(t => (int)t, t => new UnitWeaponIntegerField(t));
 
         private readonly Type _type;
 
@@ -38,7 +38,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static UnitWeaponIntegerField? GetUnitWeaponIntegerField(int i)
         {
-            return _events.TryGetValue(i, out var unitWeaponIntegerField) ? unitWeaponIntegerField : null;
+            return _fields.TryGetValue(i, out var unitWeaponIntegerField) ? unitWeaponIntegerField : null;
         }
 
         private static IEnumerable<Type> GetTypes()

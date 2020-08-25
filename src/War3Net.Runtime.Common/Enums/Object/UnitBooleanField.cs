@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class UnitBooleanField
     {
-        private static readonly Dictionary<int, UnitBooleanField> _events = GetTypes().ToDictionary(t => (int)t, t => new UnitBooleanField(t));
+        private static readonly Dictionary<int, UnitBooleanField> _fields = GetTypes().ToDictionary(t => (int)t, t => new UnitBooleanField(t));
 
         private readonly Type _type;
 
@@ -42,7 +42,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static UnitBooleanField? GetUnitBooleanField(int i)
         {
-            return _events.TryGetValue(i, out var unitBooleanField) ? unitBooleanField : null;
+            return _fields.TryGetValue(i, out var unitBooleanField) ? unitBooleanField : null;
         }
 
         private static IEnumerable<Type> GetTypes()

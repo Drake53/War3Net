@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class AbilityIntegerLevelArrayField
     {
-        private static readonly Dictionary<int, AbilityIntegerLevelArrayField> _events = GetTypes().ToDictionary(t => (int)t, t => new AbilityIntegerLevelArrayField(t));
+        private static readonly Dictionary<int, AbilityIntegerLevelArrayField> _fields = GetTypes().ToDictionary(t => (int)t, t => new AbilityIntegerLevelArrayField(t));
 
         private readonly Type _type;
 
@@ -30,7 +30,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static AbilityIntegerLevelArrayField? GetAbilityIntegerLevelArrayField(int i)
         {
-            return _events.TryGetValue(i, out var abilityIntegerLevelArrayField) ? abilityIntegerLevelArrayField : null;
+            return _fields.TryGetValue(i, out var abilityIntegerLevelArrayField) ? abilityIntegerLevelArrayField : null;
         }
 
         private static IEnumerable<Type> GetTypes()

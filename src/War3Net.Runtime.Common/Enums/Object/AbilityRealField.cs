@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class AbilityRealField
     {
-        private static readonly Dictionary<int, AbilityRealField> _events = GetTypes().ToDictionary(t => (int)t, t => new AbilityRealField(t));
+        private static readonly Dictionary<int, AbilityRealField> _fields = GetTypes().ToDictionary(t => (int)t, t => new AbilityRealField(t));
 
         private readonly Type _type;
 
@@ -31,7 +31,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static AbilityRealField? GetAbilityRealField(int i)
         {
-            return _events.TryGetValue(i, out var abilityRealField) ? abilityRealField : null;
+            return _fields.TryGetValue(i, out var abilityRealField) ? abilityRealField : null;
         }
 
         private static IEnumerable<Type> GetTypes()

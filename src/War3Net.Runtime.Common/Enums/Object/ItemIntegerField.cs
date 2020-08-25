@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class ItemIntegerField
     {
-        private static readonly Dictionary<int, ItemIntegerField> _events = GetTypes().ToDictionary(t => (int)t, t => new ItemIntegerField(t));
+        private static readonly Dictionary<int, ItemIntegerField> _fields = GetTypes().ToDictionary(t => (int)t, t => new ItemIntegerField(t));
 
         private readonly Type _type;
 
@@ -41,7 +41,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static ItemIntegerField? GetItemIntegerField(int i)
         {
-            return _events.TryGetValue(i, out var itemIntegerField) ? itemIntegerField : null;
+            return _fields.TryGetValue(i, out var itemIntegerField) ? itemIntegerField : null;
         }
 
         private static IEnumerable<Type> GetTypes()

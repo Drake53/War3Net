@@ -15,7 +15,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 {
     public sealed class UnitRealField
     {
-        private static readonly Dictionary<int, UnitRealField> _events = GetTypes().ToDictionary(t => (int)t, t => new UnitRealField(t));
+        private static readonly Dictionary<int, UnitRealField> _fields = GetTypes().ToDictionary(t => (int)t, t => new UnitRealField(t));
 
         private readonly Type _type;
 
@@ -62,7 +62,7 @@ namespace War3Net.Runtime.Common.Enums.Object
 
         public static UnitRealField? GetUnitRealField(int i)
         {
-            return _events.TryGetValue(i, out var unitRealField) ? unitRealField : null;
+            return _fields.TryGetValue(i, out var unitRealField) ? unitRealField : null;
         }
 
         private static IEnumerable<Type> GetTypes()
