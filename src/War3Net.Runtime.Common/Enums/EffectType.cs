@@ -35,9 +35,15 @@ namespace War3Net.Runtime.Common.Enums
             Lightning = 6,
         }
 
-        public static EffectType? GetEffectType(int i)
+        public static EffectType GetEffectType(int i)
         {
-            return _types.TryGetValue(i, out var effectType) ? effectType : null;
+            if (!_types.TryGetValue(i, out var effectType))
+            {
+                effectType = new EffectType((Type)i);
+                _types.Add(i, effectType);
+            }
+
+            return effectType;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums
             Agility = 3,
         }
 
-        public static HeroAttribute? GetHeroAttribute(int i)
+        public static HeroAttribute GetHeroAttribute(int i)
         {
-            return _attributes.TryGetValue(i, out var heroAttribute) ? heroAttribute : null;
+            if (!_attributes.TryGetValue(i, out var heroAttribute))
+            {
+                heroAttribute = new HeroAttribute((Type)i);
+                _attributes.Add(i, heroAttribute);
+            }
+
+            return heroAttribute;
         }
 
         private static IEnumerable<Type> GetTypes()

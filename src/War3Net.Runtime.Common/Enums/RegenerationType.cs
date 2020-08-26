@@ -33,9 +33,15 @@ namespace War3Net.Runtime.Common.Enums
             Night = 4,
         }
 
-        public static RegenerationType? GetRegenerationType(int i)
+        public static RegenerationType GetRegenerationType(int i)
         {
-            return _types.TryGetValue(i, out var regenerationType) ? regenerationType : null;
+            if (!_types.TryGetValue(i, out var regenerationType))
+            {
+                regenerationType = new RegenerationType((Type)i);
+                _types.Add(i, regenerationType);
+            }
+
+            return regenerationType;
         }
 
         private static IEnumerable<Type> GetTypes()

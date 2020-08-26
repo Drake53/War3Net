@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums
             Neutral = 3,
         }
 
-        public static PlayerGameResult? GetPlayerGameResult(int i)
+        public static PlayerGameResult GetPlayerGameResult(int i)
         {
-            return _results.TryGetValue(i, out var playerGameResult) ? playerGameResult : null;
+            if (!_results.TryGetValue(i, out var playerGameResult))
+            {
+                playerGameResult = new PlayerGameResult((Type)i);
+                _results.Add(i, playerGameResult);
+            }
+
+            return playerGameResult;
         }
 
         private static IEnumerable<Type> GetTypes()

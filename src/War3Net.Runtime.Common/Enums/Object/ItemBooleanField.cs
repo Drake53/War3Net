@@ -35,9 +35,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ACTIVELY_USED = 1769304929,
         }
 
-        public static ItemBooleanField? GetItemBooleanField(int i)
+        public static ItemBooleanField GetItemBooleanField(int i)
         {
-            return _fields.TryGetValue(i, out var itemBooleanField) ? itemBooleanField : null;
+            if (!_fields.TryGetValue(i, out var itemBooleanField))
+            {
+                itemBooleanField = new ItemBooleanField((Type)i);
+                _fields.Add(i, itemBooleanField);
+            }
+
+            return itemBooleanField;
         }
 
         private static IEnumerable<Type> GetTypes()

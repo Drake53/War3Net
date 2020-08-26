@@ -28,9 +28,15 @@ namespace War3Net.Runtime.Common.Enums.Object
         {
         }
 
-        public static AbilityRealLevelArrayField? GetAbilityRealLevelArrayField(int i)
+        public static AbilityRealLevelArrayField GetAbilityRealLevelArrayField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityRealLevelArrayField) ? abilityRealLevelArrayField : null;
+            if (!_fields.TryGetValue(i, out var abilityRealLevelArrayField))
+            {
+                abilityRealLevelArrayField = new AbilityRealLevelArrayField((Type)i);
+                _fields.Add(i, abilityRealLevelArrayField);
+            }
+
+            return abilityRealLevelArrayField;
         }
 
         private static IEnumerable<Type> GetTypes()

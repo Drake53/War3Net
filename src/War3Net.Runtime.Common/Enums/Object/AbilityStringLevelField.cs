@@ -71,9 +71,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             SPAWN_UNIT_ID_NSY2 = 1316190514,
         }
 
-        public static AbilityStringLevelField? GetAbilityStringLevelField(int i)
+        public static AbilityStringLevelField GetAbilityStringLevelField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityStringLevelField) ? abilityStringLevelField : null;
+            if (!_fields.TryGetValue(i, out var abilityStringLevelField))
+            {
+                abilityStringLevelField = new AbilityStringLevelField((Type)i);
+                _fields.Add(i, abilityStringLevelField);
+            }
+
+            return abilityStringLevelField;
         }
 
         private static IEnumerable<Type> GetTypes()

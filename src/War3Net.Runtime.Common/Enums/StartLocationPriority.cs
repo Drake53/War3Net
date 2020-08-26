@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums
             Not = 2,
         }
 
-        public static StartLocationPriority? GetStartLocationPriority(int i)
+        public static StartLocationPriority GetStartLocationPriority(int i)
         {
-            return _priorities.TryGetValue(i, out var startLocationPriority) ? startLocationPriority : null;
+            if (!_priorities.TryGetValue(i, out var startLocationPriority))
+            {
+                startLocationPriority = new StartLocationPriority((Type)i);
+                _priorities.Add(i, startLocationPriority);
+            }
+
+            return startLocationPriority;
         }
 
         private static IEnumerable<Type> GetTypes()

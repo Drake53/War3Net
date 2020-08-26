@@ -36,9 +36,15 @@ namespace War3Net.Runtime.Common.Enums
             AmphibiousPathing = 7,
         }
 
-        public static PathingType? GetPathingType(int i)
+        public static PathingType GetPathingType(int i)
         {
-            return _types.TryGetValue(i, out var pathingType) ? pathingType : null;
+            if (!_types.TryGetValue(i, out var pathingType))
+            {
+                pathingType = new PathingType((Type)i);
+                _types.Add(i, pathingType);
+            }
+
+            return pathingType;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -57,9 +57,15 @@ namespace War3Net.Runtime.Common.Enums
             RockHeavyBash = 23,
         }
 
-        public static WeaponType? GetWeaponType(int i)
+        public static WeaponType GetWeaponType(int i)
         {
-            return _types.TryGetValue(i, out var weaponType) ? weaponType : null;
+            if (!_types.TryGetValue(i, out var weaponType))
+            {
+                weaponType = new WeaponType((Type)i);
+                _types.Add(i, weaponType);
+            }
+
+            return weaponType;
         }
 
         private static IEnumerable<Type> GetTypes()

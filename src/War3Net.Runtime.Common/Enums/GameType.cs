@@ -37,9 +37,15 @@ namespace War3Net.Runtime.Common.Enums
             FourTeamPlay = 1 << 7,
         }
 
-        public static GameType? GetGameType(int i)
+        public static GameType GetGameType(int i)
         {
-            return _types.TryGetValue(i, out var gameType) ? gameType : null;
+            if (!_types.TryGetValue(i, out var gameType))
+            {
+                gameType = new GameType((Type)i);
+                _types.Add(i, gameType);
+            }
+
+            return gameType;
         }
 
         private static IEnumerable<Type> GetTypes()

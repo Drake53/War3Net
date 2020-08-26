@@ -39,9 +39,15 @@ namespace War3Net.Runtime.Common.Enums
             BottomRight = 8,
         }
 
-        public static FramePointType? GetFramePointType(int i)
+        public static FramePointType GetFramePointType(int i)
         {
-            return _types.TryGetValue(i, out var framePointType) ? framePointType : null;
+            if (!_types.TryGetValue(i, out var framePointType))
+            {
+                framePointType = new FramePointType((Type)i);
+                _types.Add(i, framePointType);
+            }
+
+            return framePointType;
         }
 
         private static IEnumerable<Type> GetTypes()

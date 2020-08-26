@@ -94,9 +94,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             PawnItem = 294,
         }
 
-        public static UnitEvent? GetUnitEvent(int i)
+        public static UnitEvent GetUnitEvent(int i)
         {
-            return _events.TryGetValue(i, out var unitEvent) ? unitEvent : null;
+            if (!_events.TryGetValue(i, out var unitEvent))
+            {
+                unitEvent = new UnitEvent((Type)i);
+                _events.Add(i, unitEvent);
+            }
+
+            return unitEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

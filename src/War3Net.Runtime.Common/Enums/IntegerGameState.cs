@@ -30,9 +30,15 @@ namespace War3Net.Runtime.Common.Enums
             Disconnected = 1,
         }
 
-        public static IntegerGameState? GetIntegerGameState(int i)
+        public static IntegerGameState GetIntegerGameState(int i)
         {
-            return _states.TryGetValue(i, out var integerGameState) ? integerGameState : null;
+            if (!_states.TryGetValue(i, out var integerGameState))
+            {
+                integerGameState = new IntegerGameState((Type)i);
+                _states.Add(i, integerGameState);
+            }
+
+            return integerGameState;
         }
 
         private static IEnumerable<Type> GetTypes()

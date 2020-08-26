@@ -90,9 +90,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             Damaging = 315,
         }
 
-        public static PlayerUnitEvent? GetPlayerUnitEvent(int i)
+        public static PlayerUnitEvent GetPlayerUnitEvent(int i)
         {
-            return _events.TryGetValue(i, out var playerUnitEvent) ? playerUnitEvent : null;
+            if (!_events.TryGetValue(i, out var playerUnitEvent))
+            {
+                playerUnitEvent = new PlayerUnitEvent((Type)i);
+                _events.Add(i, playerUnitEvent);
+            }
+
+            return playerUnitEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

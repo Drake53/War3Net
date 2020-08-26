@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ATTACK_PROJECTILE_HOMING_ENABLED = 1970104369,
         }
 
-        public static UnitWeaponBooleanField? GetWeaponUnitBooleanField(int i)
+        public static UnitWeaponBooleanField GetUnitWeaponBooleanField(int i)
         {
-            return _fields.TryGetValue(i, out var unitWeaponBooleanField) ? unitWeaponBooleanField : null;
+            if (!_fields.TryGetValue(i, out var unitWeaponBooleanField))
+            {
+                unitWeaponBooleanField = new UnitWeaponBooleanField((Type)i);
+                _fields.Add(i, unitWeaponBooleanField);
+            }
+
+            return unitWeaponBooleanField;
         }
 
         private static IEnumerable<Type> GetTypes()

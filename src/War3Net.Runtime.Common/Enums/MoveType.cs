@@ -37,9 +37,15 @@ namespace War3Net.Runtime.Common.Enums
             Unbuildable = 1 << 6,
         }
 
-        public static MoveType? GetMoveType(int i)
+        public static MoveType GetMoveType(int i)
         {
-            return _types.TryGetValue(i, out var moveType) ? moveType : null;
+            if (!_types.TryGetValue(i, out var moveType))
+            {
+                moveType = new MoveType((Type)i);
+                _types.Add(i, moveType);
+            }
+
+            return moveType;
         }
 
         private static IEnumerable<Type> GetTypes()

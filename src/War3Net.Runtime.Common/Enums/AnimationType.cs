@@ -39,9 +39,15 @@ namespace War3Net.Runtime.Common.Enums
             Portrait = 10,
         }
 
-        public static AnimationType? GetAnimationType(int i)
+        public static AnimationType GetAnimationType(int i)
         {
-            return _types.TryGetValue(i, out var animationType) ? animationType : null;
+            if (!_types.TryGetValue(i, out var animationType))
+            {
+                animationType = new AnimationType((Type)i);
+                _types.Add(i, animationType);
+            }
+
+            return animationType;
         }
 
         private static IEnumerable<Type> GetTypes()

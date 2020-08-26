@@ -40,9 +40,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             HAS_WATER_SHADOW = 1970497650,
         }
 
-        public static UnitBooleanField? GetUnitBooleanField(int i)
+        public static UnitBooleanField GetUnitBooleanField(int i)
         {
-            return _fields.TryGetValue(i, out var unitBooleanField) ? unitBooleanField : null;
+            if (!_fields.TryGetValue(i, out var unitBooleanField))
+            {
+                unitBooleanField = new UnitBooleanField((Type)i);
+                _fields.Add(i, unitBooleanField);
+            }
+
+            return unitBooleanField;
         }
 
         private static IEnumerable<Type> GetTypes()

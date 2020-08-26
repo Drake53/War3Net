@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             SCALING_VALUE = 1769169761,
         }
 
-        public static ItemRealField? GetItemRealField(int i)
+        public static ItemRealField GetItemRealField(int i)
         {
-            return _fields.TryGetValue(i, out var itemRealField) ? itemRealField : null;
+            if (!_fields.TryGetValue(i, out var itemRealField))
+            {
+                itemRealField = new ItemRealField((Type)i);
+                _fields.Add(i, itemRealField);
+            }
+
+            return itemRealField;
         }
 
         private static IEnumerable<Type> GetTypes()

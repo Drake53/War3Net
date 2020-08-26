@@ -34,9 +34,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             NotEqual = 5,
         }
 
-        public static LimitOp? GetLimitOp(int i)
+        public static LimitOp GetLimitOp(int i)
         {
-            return _events.TryGetValue(i, out var limitOp) ? limitOp : null;
+            if (!_events.TryGetValue(i, out var limitOp))
+            {
+                limitOp = new LimitOp((Type)i);
+                _events.Add(i, limitOp);
+            }
+
+            return limitOp;
         }
 
         private static IEnumerable<Type> GetTypes()

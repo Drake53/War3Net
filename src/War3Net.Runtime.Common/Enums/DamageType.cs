@@ -50,9 +50,15 @@ namespace War3Net.Runtime.Common.Enums
             Universal = 26,
         }
 
-        public static DamageType? GetDamageType(int i)
+        public static DamageType GetDamageType(int i)
         {
-            return _types.TryGetValue(i, out var damageType) ? damageType : null;
+            if (!_types.TryGetValue(i, out var damageType))
+            {
+                damageType = new DamageType((Type)i);
+                _types.Add(i, damageType);
+            }
+
+            return damageType;
         }
 
         private static IEnumerable<Type> GetTypes()

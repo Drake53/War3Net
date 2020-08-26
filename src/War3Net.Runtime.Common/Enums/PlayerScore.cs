@@ -53,9 +53,15 @@ namespace War3Net.Runtime.Common.Enums
             Total = 24,
         }
 
-        public static PlayerScore? GetPlayerScore(int i)
+        public static PlayerScore GetPlayerScore(int i)
         {
-            return _scores.TryGetValue(i, out var playerScore) ? playerScore : null;
+            if (!_scores.TryGetValue(i, out var playerScore))
+            {
+                playerScore = new PlayerScore((Type)i);
+                _scores.Add(i, playerScore);
+            }
+
+            return playerScore;
         }
 
         private static IEnumerable<Type> GetTypes()

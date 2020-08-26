@@ -57,9 +57,15 @@ namespace War3Net.Runtime.Common.Enums
             Reloaded = 1 << 19,
         }
 
-        public static MapFlag? GetMapFlag(int i)
+        public static MapFlag GetMapFlag(int i)
         {
-            return _flags.TryGetValue(i, out var mapFlag) ? mapFlag : null;
+            if (!_flags.TryGetValue(i, out var mapFlag))
+            {
+                mapFlag = new MapFlag((Type)i);
+                _flags.Add(i, mapFlag);
+            }
+
+            return mapFlag;
         }
 
         private static IEnumerable<Type> GetTypes()

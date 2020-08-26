@@ -33,9 +33,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             EFFECT_SOUND_LOOPING = 1634035308,
         }
 
-        public static AbilityStringField? GetAbilityStringField(int i)
+        public static AbilityStringField GetAbilityStringField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityStringField) ? abilityStringField : null;
+            if (!_fields.TryGetValue(i, out var abilityStringField))
+            {
+                abilityStringField = new AbilityStringField((Type)i);
+                _fields.Add(i, abilityStringField);
+            }
+
+            return abilityStringField;
         }
 
         private static IEnumerable<Type> GetTypes()

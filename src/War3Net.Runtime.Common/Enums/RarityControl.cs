@@ -30,9 +30,15 @@ namespace War3Net.Runtime.Common.Enums
             Rare = 1,
         }
 
-        public static RarityControl? GetRarityControl(int i)
+        public static RarityControl GetRarityControl(int i)
         {
-            return _controls.TryGetValue(i, out var rarityControl) ? rarityControl : null;
+            if (!_controls.TryGetValue(i, out var rarityControl))
+            {
+                rarityControl = new RarityControl((Type)i);
+                _controls.Add(i, rarityControl);
+            }
+
+            return rarityControl;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -53,9 +53,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             CustomUIFrame = 310,
         }
 
-        public static GameEvent? GetGameEvent(int i)
+        public static GameEvent GetGameEvent(int i)
         {
-            return _events.TryGetValue(i, out var gameEvent) ? gameEvent : null;
+            if (!_events.TryGetValue(i, out var gameEvent))
+            {
+                gameEvent = new GameEvent((Type)i);
+                _events.Add(i, gameEvent);
+            }
+
+            return gameEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums
             Visible = 1 << 2,
         }
 
-        public static FogState? GetFogState(int i)
+        public static FogState GetFogState(int i)
         {
-            return _states.TryGetValue(i, out var fogState) ? fogState : null;
+            if (!_states.TryGetValue(i, out var fogState))
+            {
+                fogState = new FogState((Type)i);
+                _states.Add(i, fogState);
+            }
+
+            return fogState;
         }
 
         private static IEnumerable<Type> GetTypes()

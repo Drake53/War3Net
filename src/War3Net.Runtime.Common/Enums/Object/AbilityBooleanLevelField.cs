@@ -92,9 +92,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ALLOW_BOUNTY = 1316252980,
         }
 
-        public static AbilityBooleanLevelField? GetAbilityBooleanLevelField(int i)
+        public static AbilityBooleanLevelField GetAbilityBooleanLevelField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityBooleanLevelField) ? abilityBooleanLevelField : null;
+            if (!_fields.TryGetValue(i, out var abilityBooleanLevelField))
+            {
+                abilityBooleanLevelField = new AbilityBooleanLevelField((Type)i);
+                _fields.Add(i, abilityBooleanLevelField);
+            }
+
+            return abilityBooleanLevelField;
         }
 
         private static IEnumerable<Type> GetTypes()

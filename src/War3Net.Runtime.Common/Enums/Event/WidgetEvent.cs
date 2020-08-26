@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             Death = 89,
         }
 
-        public static WidgetEvent? GetWidgetEvent(int i)
+        public static WidgetEvent GetWidgetEvent(int i)
         {
-            return _events.TryGetValue(i, out var widgetEvent) ? widgetEvent : null;
+            if (!_events.TryGetValue(i, out var widgetEvent))
+            {
+                widgetEvent = new WidgetEvent((Type)i);
+                _events.Add(i, widgetEvent);
+            }
+
+            return widgetEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

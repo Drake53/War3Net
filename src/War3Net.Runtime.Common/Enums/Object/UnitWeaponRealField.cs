@@ -42,9 +42,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ATTACK_RANGE = 1969303922,
         }
 
-        public static UnitWeaponRealField? GetUnitWeaponRealField(int i)
+        public static UnitWeaponRealField GetUnitWeaponRealField(int i)
         {
-            return _fields.TryGetValue(i, out var unitWeaponRealField) ? unitWeaponRealField : null;
+            if (!_fields.TryGetValue(i, out var unitWeaponRealField))
+            {
+                unitWeaponRealField = new UnitWeaponRealField((Type)i);
+                _fields.Add(i, unitWeaponRealField);
+            }
+
+            return unitWeaponRealField;
         }
 
         private static IEnumerable<Type> GetTypes()

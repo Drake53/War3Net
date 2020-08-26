@@ -212,9 +212,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             UPGRADE_TYPE = 1231514741,
         }
 
-        public static AbilityIntegerLevelField? GetAbilityIntegerLevelField(int i)
+        public static AbilityIntegerLevelField GetAbilityIntegerLevelField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityIntegerLevelField) ? abilityIntegerLevelField : null;
+            if (!_fields.TryGetValue(i, out var abilityIntegerLevelField))
+            {
+                abilityIntegerLevelField = new AbilityIntegerLevelField((Type)i);
+                _fields.Add(i, abilityIntegerLevelField);
+            }
+
+            return abilityIntegerLevelField;
         }
 
         private static IEnumerable<Type> GetTypes()

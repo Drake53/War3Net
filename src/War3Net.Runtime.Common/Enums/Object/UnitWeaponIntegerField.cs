@@ -36,9 +36,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ATTACK_TARGETS_ALLOWED = 1969303911,
         }
 
-        public static UnitWeaponIntegerField? GetUnitWeaponIntegerField(int i)
+        public static UnitWeaponIntegerField GetUnitWeaponIntegerField(int i)
         {
-            return _fields.TryGetValue(i, out var unitWeaponIntegerField) ? unitWeaponIntegerField : null;
+            if (!_fields.TryGetValue(i, out var unitWeaponIntegerField))
+            {
+                unitWeaponIntegerField = new UnitWeaponIntegerField((Type)i);
+                _fields.Add(i, unitWeaponIntegerField);
+            }
+
+            return unitWeaponIntegerField;
         }
 
         private static IEnumerable<Type> GetTypes()

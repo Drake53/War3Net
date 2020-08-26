@@ -34,9 +34,15 @@ namespace War3Net.Runtime.Common.Enums
             Other = 7,
         }
 
-        public static Race? GetRace(int i)
+        public static Race GetRace(int i)
         {
-            return _races.TryGetValue(i, out var race) ? race : null;
+            if (!_races.TryGetValue(i, out var race))
+            {
+                race = new Race((Type)i);
+                _races.Add(i, race);
+            }
+
+            return race;
         }
 
         private static IEnumerable<Type> GetTypes()

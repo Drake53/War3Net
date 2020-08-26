@@ -33,9 +33,15 @@ namespace War3Net.Runtime.Common.Enums
             Fastest = 4,
         }
 
-        public static GameSpeed? GetGameSpeed(int i)
+        public static GameSpeed GetGameSpeed(int i)
         {
-            return _speeds.TryGetValue(i, out var gameSpeed) ? gameSpeed : null;
+            if (!_speeds.TryGetValue(i, out var gameSpeed))
+            {
+                gameSpeed = new GameSpeed((Type)i);
+                _speeds.Add(i, gameSpeed);
+            }
+
+            return gameSpeed;
         }
 
         private static IEnumerable<Type> GetTypes()

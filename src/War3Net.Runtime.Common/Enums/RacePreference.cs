@@ -36,9 +36,15 @@ namespace War3Net.Runtime.Common.Enums
             UserSelectable = 1 << 6,
         }
 
-        public static RacePreference? GetRacePreference(int i)
+        public static RacePreference GetRacePreference(int i)
         {
-            return _preferences.TryGetValue(i, out var racePreference) ? racePreference : null;
+            if (!_preferences.TryGetValue(i, out var racePreference))
+            {
+                racePreference = new RacePreference((Type)i);
+                _preferences.Add(i, racePreference);
+            }
+
+            return racePreference;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -30,9 +30,15 @@ namespace War3Net.Runtime.Common.Enums
             EffectLooped = 1,
         }
 
-        public static SoundType? GetSoundType(int i)
+        public static SoundType GetSoundType(int i)
         {
-            return _types.TryGetValue(i, out var soundType) ? soundType : null;
+            if (!_types.TryGetValue(i, out var soundType))
+            {
+                soundType = new SoundType((Type)i);
+                _types.Add(i, soundType);
+            }
+
+            return soundType;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -34,9 +34,15 @@ namespace War3Net.Runtime.Common.Enums
             Stone = 5,
         }
 
-        public static ArmorType? GetArmorType(int i)
+        public static ArmorType GetArmorType(int i)
         {
-            return _types.TryGetValue(i, out var armorType) ? armorType : null;
+            if (!_types.TryGetValue(i, out var armorType))
+            {
+                armorType = new ArmorType((Type)i);
+                _types.Add(i, armorType);
+            }
+
+            return armorType;
         }
 
         private static IEnumerable<Type> GetTypes()

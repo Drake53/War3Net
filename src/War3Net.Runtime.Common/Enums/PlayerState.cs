@@ -51,9 +51,15 @@ namespace War3Net.Runtime.Common.Enums
             NoCreepSleep = 25,
         }
 
-        public static PlayerState? GetPlayerState(int i)
+        public static PlayerState GetPlayerState(int i)
         {
-            return _states.TryGetValue(i, out var playerState) ? playerState : null;
+            if (!_states.TryGetValue(i, out var playerState))
+            {
+                playerState = new PlayerState((Type)i);
+                _states.Add(i, playerState);
+            }
+
+            return playerState;
         }
 
         private static IEnumerable<Type> GetTypes()

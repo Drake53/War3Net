@@ -35,9 +35,15 @@ namespace War3Net.Runtime.Common.Enums
             Right = 5,
         }
 
-        public static TextAlignType? GetTextAlignType(int i)
+        public static TextAlignType GetTextAlignType(int i)
         {
-            return _types.TryGetValue(i, out var textAlignType) ? textAlignType : null;
+            if (!_types.TryGetValue(i, out var textAlignType))
+            {
+                textAlignType = new TextAlignType((Type)i);
+                _types.Add(i, textAlignType);
+            }
+
+            return textAlignType;
         }
 
         private static IEnumerable<Type> GetTypes()

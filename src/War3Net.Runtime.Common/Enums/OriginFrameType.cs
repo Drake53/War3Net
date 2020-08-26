@@ -46,9 +46,15 @@ namespace War3Net.Runtime.Common.Enums
             WorldFrame = 17,
         }
 
-        public static OriginFrameType? GetOriginFrameType(int i)
+        public static OriginFrameType GetOriginFrameType(int i)
         {
-            return _types.TryGetValue(i, out var originFrameType) ? originFrameType : null;
+            if (!_types.TryGetValue(i, out var originFrameType))
+            {
+                originFrameType = new OriginFrameType((Type)i);
+                _types.Add(i, originFrameType);
+            }
+
+            return originFrameType;
         }
 
         private static IEnumerable<Type> GetTypes()

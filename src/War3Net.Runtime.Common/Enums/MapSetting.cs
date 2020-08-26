@@ -28,9 +28,15 @@ namespace War3Net.Runtime.Common.Enums
         {
         }
 
-        public static MapSetting? GetMapSetting(int i)
+        public static MapSetting GetMapSetting(int i)
         {
-            return _settings.TryGetValue(i, out var mapSetting) ? mapSetting : null;
+            if (!_settings.TryGetValue(i, out var mapSetting))
+            {
+                mapSetting = new MapSetting((Type)i);
+                _settings.Add(i, mapSetting);
+            }
+
+            return mapSetting;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ARF_MISSILE_ARC = 1634558307,
         }
 
-        public static AbilityRealField? GetAbilityRealField(int i)
+        public static AbilityRealField GetAbilityRealField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityRealField) ? abilityRealField : null;
+            if (!_fields.TryGetValue(i, out var abilityRealField))
+            {
+                abilityRealField = new AbilityRealField((Type)i);
+                _fields.Add(i, abilityRealField);
+            }
+
+            return abilityRealField;
         }
 
         private static IEnumerable<Type> GetTypes()

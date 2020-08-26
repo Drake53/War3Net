@@ -41,9 +41,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             LEVEL_SKIP_REQUIREMENT = 1634497387,
         }
 
-        public static AbilityIntegerField? GetAbilityIntegerField(int i)
+        public static AbilityIntegerField GetAbilityIntegerField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityIntegerField) ? abilityIntegerField : null;
+            if (!_fields.TryGetValue(i, out var abilityIntegerField))
+            {
+                abilityIntegerField = new AbilityIntegerField((Type)i);
+                _fields.Add(i, abilityIntegerField);
+            }
+
+            return abilityIntegerField;
         }
 
         private static IEnumerable<Type> GetTypes()

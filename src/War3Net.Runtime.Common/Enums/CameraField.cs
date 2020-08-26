@@ -39,9 +39,15 @@ namespace War3Net.Runtime.Common.Enums
             LocalRoll = 10,
         }
 
-        public static CameraField? GetCameraField(int i)
+        public static CameraField GetCameraField(int i)
         {
-            return _fields.TryGetValue(i, out var cameraField) ? cameraField : null;
+            if (!_fields.TryGetValue(i, out var cameraField))
+            {
+                cameraField = new CameraField((Type)i);
+                _fields.Add(i, cameraField);
+            }
+
+            return cameraField;
         }
 
         private static IEnumerable<Type> GetTypes()

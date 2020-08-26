@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums
             Right = 3,
         }
 
-        public static MouseButtonType? GetMouseButtonType(int i)
+        public static MouseButtonType GetMouseButtonType(int i)
         {
-            return _types.TryGetValue(i, out var mouseButtonType) ? mouseButtonType : null;
+            if (!_types.TryGetValue(i, out var mouseButtonType))
+            {
+                mouseButtonType = new MouseButtonType((Type)i);
+                _types.Add(i, mouseButtonType);
+            }
+
+            return mouseButtonType;
         }
 
         private static IEnumerable<Type> GetTypes()

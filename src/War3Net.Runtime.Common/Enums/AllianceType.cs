@@ -38,9 +38,15 @@ namespace War3Net.Runtime.Common.Enums
             SharedVisionForced = 9,
         }
 
-        public static AllianceType? GetAllianceType(int i)
+        public static AllianceType GetAllianceType(int i)
         {
-            return _types.TryGetValue(i, out var allianceType) ? allianceType : null;
+            if (!_types.TryGetValue(i, out var allianceType))
+            {
+                allianceType = new AllianceType((Type)i);
+                _types.Add(i, allianceType);
+            }
+
+            return allianceType;
         }
 
         private static IEnumerable<Type> GetTypes()

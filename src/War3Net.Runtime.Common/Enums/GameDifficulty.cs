@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums
             Insane = 3,
         }
 
-        public static GameDifficulty? GetGameDifficulty(int i)
+        public static GameDifficulty GetGameDifficulty(int i)
         {
-            return _difficulties.TryGetValue(i, out var gameDifficulty) ? gameDifficulty : null;
+            if (!_difficulties.TryGetValue(i, out var gameDifficulty))
+            {
+                gameDifficulty = new GameDifficulty((Type)i);
+                _difficulties.Add(i, gameDifficulty);
+            }
+
+            return gameDifficulty;
         }
 
         private static IEnumerable<Type> GetTypes()

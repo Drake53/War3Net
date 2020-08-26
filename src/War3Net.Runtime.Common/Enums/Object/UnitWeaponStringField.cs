@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             ATTACK_PROJECTILE_ART = 1969303917,
         }
 
-        public static UnitWeaponStringField? GetWeaponUnitStringField(int i)
+        public static UnitWeaponStringField GetUnitWeaponStringField(int i)
         {
-            return _fields.TryGetValue(i, out var unitWeaponStringField) ? unitWeaponStringField : null;
+            if (!_fields.TryGetValue(i, out var unitWeaponStringField))
+            {
+                unitWeaponStringField = new UnitWeaponStringField((Type)i);
+                _fields.Add(i, unitWeaponStringField);
+            }
+
+            return unitWeaponStringField;
         }
 
         private static IEnumerable<Type> GetTypes()

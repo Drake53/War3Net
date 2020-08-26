@@ -28,9 +28,15 @@ namespace War3Net.Runtime.Common.Enums
         {
         }
 
-        public static MapVisibility? GetMapVisibility(int i)
+        public static MapVisibility GetMapVisibility(int i)
         {
-            return _visibilities.TryGetValue(i, out var mapVisibility) ? mapVisibility : null;
+            if (!_visibilities.TryGetValue(i, out var mapVisibility))
+            {
+                mapVisibility = new MapVisibility((Type)i);
+                _visibilities.Add(i, mapVisibility);
+            }
+
+            return mapVisibility;
         }
 
         private static IEnumerable<Type> GetTypes()

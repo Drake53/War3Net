@@ -30,9 +30,15 @@ namespace War3Net.Runtime.Common.Enums
             FrozenThrone = 1,
         }
 
-        public static Version? GetVersion(int i)
+        public static Version GetVersion(int i)
         {
-            return _versions.TryGetValue(i, out var version) ? version : null;
+            if (!_versions.TryGetValue(i, out var version))
+            {
+                version = new Version((Type)i);
+                _versions.Add(i, version);
+            }
+
+            return version;
         }
 
         private static IEnumerable<Type> GetTypes()

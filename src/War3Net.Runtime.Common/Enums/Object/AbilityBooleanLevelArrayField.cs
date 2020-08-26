@@ -28,9 +28,15 @@ namespace War3Net.Runtime.Common.Enums.Object
         {
         }
 
-        public static AbilityBooleanLevelArrayField? GetAbilityBooleanLevelArrayField(int i)
+        public static AbilityBooleanLevelArrayField GetAbilityBooleanLevelArrayField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityBooleanLevelArrayField) ? abilityBooleanLevelArrayField : null;
+            if (!_fields.TryGetValue(i, out var abilityBooleanLevelArrayField))
+            {
+                abilityBooleanLevelArrayField = new AbilityBooleanLevelArrayField((Type)i);
+                _fields.Add(i, abilityBooleanLevelArrayField);
+            }
+
+            return abilityBooleanLevelArrayField;
         }
 
         private static IEnumerable<Type> GetTypes()

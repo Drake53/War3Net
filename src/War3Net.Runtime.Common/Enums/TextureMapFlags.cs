@@ -33,9 +33,15 @@ namespace War3Net.Runtime.Common.Enums
             WrapUV = WrapU | WrapV,
         }
 
-        public static TextureMapFlags? GetTextureMapFlags(int i)
+        public static TextureMapFlags GetTextureMapFlags(int i)
         {
-            return _flags.TryGetValue(i, out var textureMapFlags) ? textureMapFlags : null;
+            if (!_flags.TryGetValue(i, out var textureMapFlags))
+            {
+                textureMapFlags = new TextureMapFlags((Type)i);
+                _flags.Add(i, textureMapFlags);
+            }
+
+            return textureMapFlags;
         }
 
         private static IEnumerable<Type> GetTypes()

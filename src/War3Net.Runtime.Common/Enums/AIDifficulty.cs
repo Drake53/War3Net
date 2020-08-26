@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums
             Insane = 2,
         }
 
-        public static AIDifficulty? GetAIDifficulty(int i)
+        public static AIDifficulty GetAIDifficulty(int i)
         {
-            return _difficulties.TryGetValue(i, out var aiDifficulty) ? aiDifficulty : null;
+            if (!_difficulties.TryGetValue(i, out var aiDifficulty))
+            {
+                aiDifficulty = new AIDifficulty((Type)i);
+                _difficulties.Add(i, aiDifficulty);
+            }
+
+            return aiDifficulty;
         }
 
         private static IEnumerable<Type> GetTypes()

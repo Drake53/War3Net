@@ -39,9 +39,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             TINTING_COLOR_ALPHA = 1768120684,
         }
 
-        public static ItemIntegerField? GetItemIntegerField(int i)
+        public static ItemIntegerField GetItemIntegerField(int i)
         {
-            return _fields.TryGetValue(i, out var itemIntegerField) ? itemIntegerField : null;
+            if (!_fields.TryGetValue(i, out var itemIntegerField))
+            {
+                itemIntegerField = new ItemIntegerField((Type)i);
+                _fields.Add(i, itemIntegerField);
+            }
+
+            return itemIntegerField;
         }
 
         private static IEnumerable<Type> GetTypes()

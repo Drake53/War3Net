@@ -36,9 +36,15 @@ namespace War3Net.Runtime.Common.Enums
             None = 7,
         }
 
-        public static DefenseType? GetDefenseType(int i)
+        public static DefenseType GetDefenseType(int i)
         {
-            return _types.TryGetValue(i, out var defenseType) ? defenseType : null;
+            if (!_types.TryGetValue(i, out var defenseType))
+            {
+                defenseType = new DefenseType((Type)i);
+                _types.Add(i, defenseType);
+            }
+
+            return defenseType;
         }
 
         private static IEnumerable<Type> GetTypes()

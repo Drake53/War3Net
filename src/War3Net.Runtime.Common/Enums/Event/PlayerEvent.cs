@@ -55,9 +55,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             KeyUp = 313,
         }
 
-        public static PlayerEvent? GetPlayerEvent(int i)
+        public static PlayerEvent GetPlayerEvent(int i)
         {
-            return _events.TryGetValue(i, out var playerEvent) ? playerEvent : null;
+            if (!_events.TryGetValue(i, out var playerEvent))
+            {
+                playerEvent = new PlayerEvent((Type)i);
+                _events.Add(i, playerEvent);
+            }
+
+            return playerEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

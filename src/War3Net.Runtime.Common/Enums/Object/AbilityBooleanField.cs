@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             CHECK_DEPENDENCIES = 1633904740,
         }
 
-        public static AbilityBooleanField? GetAbilityBooleanField(int i)
+        public static AbilityBooleanField GetAbilityBooleanField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityBooleanField) ? abilityBooleanField : null;
+            if (!_fields.TryGetValue(i, out var abilityBooleanField))
+            {
+                abilityBooleanField = new AbilityBooleanField((Type)i);
+                _fields.Add(i, abilityBooleanField);
+            }
+
+            return abilityBooleanField;
         }
 
         private static IEnumerable<Type> GetTypes()

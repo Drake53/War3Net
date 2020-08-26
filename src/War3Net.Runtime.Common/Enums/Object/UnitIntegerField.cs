@@ -61,9 +61,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             PRIMARY_ATTRIBUTE = 1970303585,
         }
 
-        public static UnitIntegerField? GetUnitIntegerField(int i)
+        public static UnitIntegerField GetUnitIntegerField(int i)
         {
-            return _fields.TryGetValue(i, out var unitIntegerField) ? unitIntegerField : null;
+            if (!_fields.TryGetValue(i, out var unitIntegerField))
+            {
+                unitIntegerField = new UnitIntegerField((Type)i);
+                _fields.Add(i, unitIntegerField);
+            }
+
+            return unitIntegerField;
         }
 
         private static IEnumerable<Type> GetTypes()

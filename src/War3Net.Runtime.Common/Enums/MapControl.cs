@@ -34,9 +34,15 @@ namespace War3Net.Runtime.Common.Enums
             None = 5,
         }
 
-        public static MapControl? GetMapControl(int i)
+        public static MapControl GetMapControl(int i)
         {
-            return _controls.TryGetValue(i, out var mapControl) ? mapControl : null;
+            if (!_controls.TryGetValue(i, out var mapControl))
+            {
+                mapControl = new MapControl((Type)i);
+                _controls.Add(i, mapControl);
+            }
+
+            return mapControl;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             MODEL_USED = 1768319340,
         }
 
-        public static ItemStringField? GetItemStringField(int i)
+        public static ItemStringField GetItemStringField(int i)
         {
-            return _fields.TryGetValue(i, out var itemStringField) ? itemStringField : null;
+            if (!_fields.TryGetValue(i, out var itemStringField))
+            {
+                itemStringField = new ItemStringField((Type)i);
+                _fields.Add(i, itemStringField);
+            }
+
+            return itemStringField;
         }
 
         private static IEnumerable<Type> GetTypes()

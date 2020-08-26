@@ -37,9 +37,15 @@ namespace War3Net.Runtime.Common.Enums
             Any = 8,
         }
 
-        public static ItemType? GetItemType(int i)
+        public static ItemType GetItemType(int i)
         {
-            return _types.TryGetValue(i, out var itemType) ? itemType : null;
+            if (!_types.TryGetValue(i, out var itemType))
+            {
+                itemType = new ItemType((Type)i);
+                _types.Add(i, itemType);
+            }
+
+            return itemType;
         }
 
         private static IEnumerable<Type> GetTypes()

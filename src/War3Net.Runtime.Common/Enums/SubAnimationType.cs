@@ -80,9 +80,15 @@ namespace War3Net.Runtime.Common.Enums
             Berserk = 62,
         }
 
-        public static SubAnimationType? GetSubAnimationType(int i)
+        public static SubAnimationType GetSubAnimationType(int i)
         {
-            return _types.TryGetValue(i, out var subAnimationType) ? subAnimationType : null;
+            if (!_types.TryGetValue(i, out var subAnimationType))
+            {
+                subAnimationType = new SubAnimationType((Type)i);
+                _types.Add(i, subAnimationType);
+            }
+
+            return subAnimationType;
         }
 
         private static IEnumerable<Type> GetTypes()

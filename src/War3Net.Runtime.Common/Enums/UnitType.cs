@@ -61,9 +61,15 @@ namespace War3Net.Runtime.Common.Enums
             MagicImmune = 26,
         }
 
-        public static UnitType? GetUnitType(int i)
+        public static UnitType GetUnitType(int i)
         {
-            return _types.TryGetValue(i, out var unitType) ? unitType : null;
+            if (!_types.TryGetValue(i, out var unitType))
+            {
+                unitType = new UnitType((Type)i);
+                _types.Add(i, unitType);
+            }
+
+            return unitType;
         }
 
         private static IEnumerable<Type> GetTypes()

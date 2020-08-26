@@ -34,9 +34,15 @@ namespace War3Net.Runtime.Common.Enums
             Modulate2x = 5,
         }
 
-        public static BlendMode? GetBlendMode(int i)
+        public static BlendMode GetBlendMode(int i)
         {
-            return _modes.TryGetValue(i, out var blendMode) ? blendMode : null;
+            if (!_modes.TryGetValue(i, out var blendMode))
+            {
+                blendMode = new BlendMode((Type)i);
+                _modes.Add(i, blendMode);
+            }
+
+            return blendMode;
         }
 
         private static IEnumerable<Type> GetTypes()

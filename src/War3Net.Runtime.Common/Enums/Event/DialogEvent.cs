@@ -30,9 +30,15 @@ namespace War3Net.Runtime.Common.Enums.Event
             Click = 91,
         }
 
-        public static DialogEvent? GetDialogEvent(int i)
+        public static DialogEvent GetDialogEvent(int i)
         {
-            return _events.TryGetValue(i, out var dialogEvent) ? dialogEvent : null;
+            if (!_events.TryGetValue(i, out var dialogEvent))
+            {
+                dialogEvent = new DialogEvent((Type)i);
+                _events.Add(i, dialogEvent);
+            }
+
+            return dialogEvent;
         }
 
         private static IEnumerable<Type> GetTypes()

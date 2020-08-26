@@ -29,9 +29,15 @@ namespace War3Net.Runtime.Common.Enums
             TimeOfDay = 2,
         }
 
-        public static RealGameState? GetRealGameState(int i)
+        public static RealGameState GetRealGameState(int i)
         {
-            return _states.TryGetValue(i, out var realGameState) ? realGameState : null;
+            if (!_states.TryGetValue(i, out var realGameState))
+            {
+                realGameState = new RealGameState((Type)i);
+                _states.Add(i, realGameState);
+            }
+
+            return realGameState;
         }
 
         private static IEnumerable<Type> GetTypes()

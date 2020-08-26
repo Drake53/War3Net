@@ -44,9 +44,15 @@ namespace War3Net.Runtime.Common.Enums
             EditboxEnter = 16,
         }
 
-        public static FrameEventType? GetFrameEventType(int i)
+        public static FrameEventType GetFrameEventType(int i)
         {
-            return _types.TryGetValue(i, out var frameEventType) ? frameEventType : null;
+            if (!_types.TryGetValue(i, out var frameEventType))
+            {
+                frameEventType = new FrameEventType((Type)i);
+                _types.Add(i, frameEventType);
+            }
+
+            return frameEventType;
         }
 
         private static IEnumerable<Type> GetTypes()

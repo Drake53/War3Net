@@ -442,9 +442,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             INTERVAL_BETWEEN_PULSES = 1415673141,
         }
 
-        public static AbilityRealLevelField? GetAbilityRealLevelField(int i)
+        public static AbilityRealLevelField GetAbilityRealLevelField(int i)
         {
-            return _fields.TryGetValue(i, out var abilityRealLevelField) ? abilityRealLevelField : null;
+            if (!_fields.TryGetValue(i, out var abilityRealLevelField))
+            {
+                abilityRealLevelField = new AbilityRealLevelField((Type)i);
+                _fields.Add(i, abilityRealLevelField);
+            }
+
+            return abilityRealLevelField;
         }
 
         private static IEnumerable<Type> GetTypes()

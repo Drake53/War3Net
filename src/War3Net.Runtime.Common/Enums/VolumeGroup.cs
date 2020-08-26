@@ -36,9 +36,15 @@ namespace War3Net.Runtime.Common.Enums
             Fire = 7,
         }
 
-        public static VolumeGroup? GetVolumeGroup(int i)
+        public static VolumeGroup GetVolumeGroup(int i)
         {
-            return _groups.TryGetValue(i, out var volumeGroup) ? volumeGroup : null;
+            if (!_groups.TryGetValue(i, out var volumeGroup))
+            {
+                volumeGroup = new VolumeGroup((Type)i);
+                _groups.Add(i, volumeGroup);
+            }
+
+            return volumeGroup;
         }
 
         private static IEnumerable<Type> GetTypes()

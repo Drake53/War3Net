@@ -31,9 +31,15 @@ namespace War3Net.Runtime.Common.Enums
             Left = 2,
         }
 
-        public static PlayerSlotState? GetPlayerSlotState(int i)
+        public static PlayerSlotState GetPlayerSlotState(int i)
         {
-            return _states.TryGetValue(i, out var playerSlotState) ? playerSlotState : null;
+            if (!_states.TryGetValue(i, out var playerSlotState))
+            {
+                playerSlotState = new PlayerSlotState((Type)i);
+                _states.Add(i, playerSlotState);
+            }
+
+            return playerSlotState;
         }
 
         private static IEnumerable<Type> GetTypes()

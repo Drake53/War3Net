@@ -37,9 +37,15 @@ namespace War3Net.Runtime.Common.Enums
             UnItemPlacable = 1 << 8,
         }
 
-        public static PathingFlag? GetPathingFlag(int i)
+        public static PathingFlag GetPathingFlag(int i)
         {
-            return _flags.TryGetValue(i, out var pathingFlag) ? pathingFlag : null;
+            if (!_flags.TryGetValue(i, out var pathingFlag))
+            {
+                pathingFlag = new PathingFlag((Type)i);
+                _flags.Add(i, pathingFlag);
+            }
+
+            return pathingFlag;
         }
 
         private static IEnumerable<Type> GetTypes()

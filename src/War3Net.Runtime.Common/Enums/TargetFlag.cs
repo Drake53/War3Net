@@ -40,9 +40,15 @@ namespace War3Net.Runtime.Common.Enums
             Bridge = 1 << 10,
         }
 
-        public static TargetFlag? GetTargetFlag(int i)
+        public static TargetFlag GetTargetFlag(int i)
         {
-            return _flags.TryGetValue(i, out var targetFlag) ? targetFlag : null;
+            if (!_flags.TryGetValue(i, out var targetFlag))
+            {
+                targetFlag = new TargetFlag((Type)i);
+                _flags.Add(i, targetFlag);
+            }
+
+            return targetFlag;
         }
 
         private static IEnumerable<Type> GetTypes()

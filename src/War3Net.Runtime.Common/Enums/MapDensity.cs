@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums
             Heavy = 3,
         }
 
-        public static MapDensity? GetMapDensity(int i)
+        public static MapDensity GetMapDensity(int i)
         {
-            return _densities.TryGetValue(i, out var mapDensity) ? mapDensity : null;
+            if (!_densities.TryGetValue(i, out var mapDensity))
+            {
+                mapDensity = new MapDensity((Type)i);
+                _densities.Add(i, mapDensity);
+            }
+
+            return mapDensity;
         }
 
         private static IEnumerable<Type> GetTypes()

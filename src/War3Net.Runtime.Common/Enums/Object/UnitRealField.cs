@@ -60,9 +60,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             MINIMUM_ATTACK_RANGE = 1969319278,
         }
 
-        public static UnitRealField? GetUnitRealField(int i)
+        public static UnitRealField GetUnitRealField(int i)
         {
-            return _fields.TryGetValue(i, out var unitRealField) ? unitRealField : null;
+            if (!_fields.TryGetValue(i, out var unitRealField))
+            {
+                unitRealField = new UnitRealField((Type)i);
+                _fields.Add(i, unitRealField);
+            }
+
+            return unitRealField;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -35,9 +35,15 @@ namespace War3Net.Runtime.Common.Enums
             Hero = 6,
         }
 
-        public static AttackType? GetAttackType(int i)
+        public static AttackType GetAttackType(int i)
         {
-            return _types.TryGetValue(i, out var attackType) ? attackType : null;
+            if (!_types.TryGetValue(i, out var attackType))
+            {
+                attackType = new AttackType((Type)i);
+                _types.Add(i, attackType);
+            }
+
+            return attackType;
         }
 
         private static IEnumerable<Type> GetTypes()

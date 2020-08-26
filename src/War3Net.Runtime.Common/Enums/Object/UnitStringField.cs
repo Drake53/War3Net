@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums.Object
             SHADOW_IMAGE_UNIT = 1970497653,
         }
 
-        public static UnitStringField? GetUnitStringField(int i)
+        public static UnitStringField GetUnitStringField(int i)
         {
-            return _fields.TryGetValue(i, out var unitStringField) ? unitStringField : null;
+            if (!_fields.TryGetValue(i, out var unitStringField))
+            {
+                unitStringField = new UnitStringField((Type)i);
+                _fields.Add(i, unitStringField);
+            }
+
+            return unitStringField;
         }
 
         private static IEnumerable<Type> GetTypes()

@@ -32,9 +32,15 @@ namespace War3Net.Runtime.Common.Enums
             MaxMana = 3,
         }
 
-        public static UnitState? GetUnitState(int i)
+        public static UnitState GetUnitState(int i)
         {
-            return _states.TryGetValue(i, out var unitState) ? unitState : null;
+            if (!_states.TryGetValue(i, out var unitState))
+            {
+                unitState = new UnitState((Type)i);
+                _states.Add(i, unitState);
+            }
+
+            return unitState;
         }
 
         private static IEnumerable<Type> GetTypes()
