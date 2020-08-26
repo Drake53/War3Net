@@ -24,6 +24,7 @@ namespace War3Net.Runtime.Common.Enums
             _type = type;
         }
 
+        [Flags]
         public enum Type
         {
             Unwalkable = 1 << 1,
