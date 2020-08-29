@@ -33,21 +33,21 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.CodeAnalysis.Jass]   | War3Net.CodeAnalysis.JASS is a library for parsing, transpiling (to C#), and rendering JASS source files. | [![VCodeJass]][PCodeJass]     |
 | [War3Net.Common]              | Contains some methods used by several other War3Net projects.                                             | [![VCommon]][PCommon]         |
 | [War3Net.Drawing.Blp]         | War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.                             | [![VBlp]][PBlp]               |
-| [War3Net.Drawing.Tga]         | Class library for opening TGA files.                                                                      | [![VTga]][PTga]               |
+| [War3Net.Drawing.Tga]         | Class library for opening TGA files.                                                                      | *Coming soon*                 |
 | [War3Net.IO.Compression]      | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
 | [War3Net.IO.Mpq]              | Class library for opening and creating MPQ files.                                                         | [![VMpq]][PMpq]               |
 | [War3Net.IO.Slk]              | Library for opening and creating files in SLK format.                                                     | [![VSlk]][PSlk]               |
-| [War3Net.Modeling]            | Read and write .mdl and .mdx files.                                                                       | [![VModel]][PModel]           |
-| [War3Net.Rendering]           | Renders Warcraft III models using [Veldrid].                                                              | [![VRender]][PRender]         |
-| [War3Net.Replay]              | Parse replay (.w3g) files.                                                                                | [![VReplay]][PReplay]         |
-| [War3Net.Runtime.Common]      | C# implementation of Warcraft III's backend code.                                                         | [![VRuntime]][PRuntime]       |
-| [War3Net.Runtime.Common.Api]  | API for [War3Net.Runtime.Common], similar to [War3Api.Common].                                            | [![VCommonApi]][PCommonApi]   |
-| [War3Net.Runtime.Lua]         | Uses [NLua] to interact with [War3Net.Runtime.Common.Api].                                                | [![VRuntimeLua]][PRuntimeLua] |
+| [War3Net.Modeling]            | Read and write .mdl and .mdx files.                                                                       | *Coming soon*                 |
+| [War3Net.Rendering]           | Renders Warcraft III models using [Veldrid].                                                              | *Coming soon*                 |
+| [War3Net.Replay]              | Parse replay (.w3g) files.                                                                                | *Coming soon*                 |
+| [War3Net.Runtime.Common]      | C# implementation of Warcraft III's backend code.                                                         | *Coming soon*                 |
+| [War3Net.Runtime.Common.Api]  | API for [War3Net.Runtime.Common], similar to [War3Api.Common].                                            | *Coming soon*                 |
+| [War3Net.Runtime.Lua]         | Uses [NLua] to interact with [War3Net.Runtime.Common.Api].                                                | *Coming soon*                 |
 
 Some of the above projects are based on code from other repositories:
-    - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
-    - *[War3Net.Drawing.Tga]:* [TgaLib](https://github.com/shns/TgaLib)
-    - *[War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
+- *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
+- *[War3Net.Drawing.Tga]:* [TgaLib](https://github.com/shns/TgaLib)
+- *[War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
 ### Contributing
 
