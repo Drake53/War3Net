@@ -1,5 +1,9 @@
 # War3Net.Build Changelog
 
+## v1.3.10
+### Changes
+- Add event OnArchiveBuilding to MapBuilder.
+
 ## v1.3.9
 ### Bugfixes
 - Fix lua global declarations.
