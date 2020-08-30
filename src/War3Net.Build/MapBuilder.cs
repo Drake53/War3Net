@@ -71,6 +71,8 @@ namespace War3Net.Build
             _generateListfile = generateListfile;
         }
 
+        public event EventHandler<ArchiveBuildingEventArgs> OnArchiveBuilding;
+
         public string OutputMapName
         {
             get => _outputMapName;
@@ -319,6 +321,8 @@ namespace War3Net.Build
             }
 
             // Generate .mpq archive file
+            OnArchiveBuilding?.Invoke(this, new ArchiveBuildingEventArgs(mpqFiles));
+
             var outputMap = Path.Combine(compilerOptions.OutputDirectory, _outputMapName);
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
