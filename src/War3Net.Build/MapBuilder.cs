@@ -102,20 +102,6 @@ namespace War3Net.Build
             var diagnostics = new List<Diagnostic>();
             var haveErrorDiagnostic = false;
 
-            BuildResult GenerateResult()
-            {
-                return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
-            }
-
-            void AddDiagnostic(Diagnostic diagnostic)
-            {
-                diagnostics.Add(diagnostic);
-                if (diagnostic.Severity == DiagnosticSeverity.Error)
-                {
-                    haveErrorDiagnostic = true;
-                }
-            }
-
             bool TrySetMapFile<TMapFile>(MapFileHandler<TMapFile> handler, Func<TMapFile> defaultObjectGenerator = null)
             {
                 var fileName = handler.FileName;
@@ -123,19 +109,19 @@ namespace War3Net.Build
                 {
                     mapFile = default;
 
-                    var fileStream = FindFile(fileName);
+                    var fileStream = FindFile(fileName, assetsDirectories);
                     if (fileStream is null)
                     {
                         var required = handler.IsRequired;
                         var requiredString = required ? "required" : "optional";
                         if (required && defaultObjectGenerator is null)
                         {
-                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, fileName, requiredString));
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, fileName, requiredString), diagnostics, ref haveErrorDiagnostic);
                         }
                         else
                         {
                             var severity = required ? DiagnosticSeverity.Warning : DiagnosticSeverity.Info;
-                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, severity, null, null, fileName, requiredString));
+                            AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingMapFile, null, severity, null, null, fileName, requiredString), diagnostics, ref haveErrorDiagnostic);
                             if (required || !compilerOptions.Optimize)
                             {
                                 mapFile = (defaultObjectGenerator ?? handler.GetDefault)();
@@ -153,7 +139,7 @@ namespace War3Net.Build
                             var innerException = e.InnerException;
                             var diagnosticDescriptor = innerException is InvalidDataException ? DiagnosticProvider.InvalidMapFile : DiagnosticProvider.GenericMapFileError;
 
-                            AddDiagnostic(Diagnostic.Create(diagnosticDescriptor, null, fileName, innerException.Message));
+                            AddDiagnostic(Diagnostic.Create(diagnosticDescriptor, null, fileName, innerException.Message), diagnostics, ref haveErrorDiagnostic);
                         }
                     }
                 }
@@ -185,7 +171,7 @@ namespace War3Net.Build
 
             if (!compilerOptions.TargetPatch.HasValue)
             {
-                AddDiagnostic(Diagnostic.Create(CompatibilityDiagnostics.TargetPatchNotSet, null));
+                AddDiagnostic(Diagnostic.Create(CompatibilityDiagnostics.TargetPatchNotSet, null), diagnostics, ref haveErrorDiagnostic);
             }
 
             // Set map files
@@ -204,7 +190,7 @@ namespace War3Net.Build
                 !TrySetMapFile(new MapFileHandler<MapBuffObjectData>()) ||
                 !TrySetMapFile(new MapFileHandler<MapUpgradeObjectData>()))
             {
-                return GenerateResult();
+                return GenerateResult(diagnostics, haveErrorDiagnostic);
             }
 
             // Generate script file
@@ -212,8 +198,8 @@ namespace War3Net.Build
             {
                 if (!Directory.Exists(compilerOptions.SourceDirectory))
                 {
-                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingSourceDirectory, null, compilerOptions.SourceDirectory));
-                    return GenerateResult();
+                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingSourceDirectory, null, compilerOptions.SourceDirectory), diagnostics, ref haveErrorDiagnostic);
+                    return GenerateResult(diagnostics, haveErrorDiagnostic);
                 }
 
                 var compileResult = Compile(compilerOptions, out var path);
@@ -232,42 +218,6 @@ namespace War3Net.Build
                 files.Add((new FileInfo(path).Name, MpqLocale.Neutral), File.OpenRead(path));
             }
 
-            void EnumerateFiles(string directory)
-            {
-                foreach (var (fileName, locale, stream) in FileProvider.EnumerateFiles(directory))
-                {
-                    if (files.ContainsKey((fileName, locale)))
-                    {
-                        stream.Dispose();
-                    }
-                    else
-                    {
-                        files.Add((fileName, locale), stream);
-                    }
-                }
-            }
-
-            Stream FindFile(string searchedFile)
-            {
-                foreach (var assetsDirectory in assetsDirectories)
-                {
-                    if (string.IsNullOrWhiteSpace(assetsDirectory))
-                    {
-                        continue;
-                    }
-
-                    foreach (var (fileName, _, stream) in FileProvider.EnumerateFiles(assetsDirectory))
-                    {
-                        if (fileName == searchedFile)
-                        {
-                            return stream;
-                        }
-                    }
-                }
-
-                return null;
-            }
-
             // Load assets
             foreach (var assetsDirectory in assetsDirectories)
             {
@@ -276,7 +226,7 @@ namespace War3Net.Build
                     continue;
                 }
 
-                EnumerateFiles(assetsDirectory);
+                EnumerateFiles(assetsDirectory, files);
             }
 
             // Load assets from projects
@@ -357,14 +307,14 @@ namespace War3Net.Build
             // Generate warnings
             foreach (var expectedFile in expectedFiles)
             {
-                AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileWithCustomMpqFlags, null, expectedFile, compilerOptions.FileFlags[expectedFile]));
+                AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileWithCustomMpqFlags, null, expectedFile, compilerOptions.FileFlags[expectedFile]), diagnostics, ref haveErrorDiagnostic);
             }
 
             foreach (var pair in haveNeutralLocale)
             {
                 if (!pair.Value)
                 {
-                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileNeutralLocale, null, pair.Key));
+                    AddDiagnostic(Diagnostic.Create(DiagnosticProvider.MissingFileNeutralLocale, null, pair.Key), diagnostics, ref haveErrorDiagnostic);
                 }
             }
 
@@ -373,7 +323,57 @@ namespace War3Net.Build
             MpqArchive.Create(File.Create(outputMap), mpqFiles, blockSize: _blockSize).Dispose();
 
             // TODO: pass compileResult argument
-            return GenerateResult();
+            return GenerateResult(diagnostics, haveErrorDiagnostic);
+        }
+
+        private static Stream FindFile(string searchedFile, string[] assetsDirectories)
+        {
+            foreach (var assetsDirectory in assetsDirectories)
+            {
+                if (string.IsNullOrWhiteSpace(assetsDirectory))
+                {
+                    continue;
+                }
+
+                foreach (var (fileName, _, stream) in FileProvider.EnumerateFiles(assetsDirectory))
+                {
+                    if (fileName == searchedFile)
+                    {
+                        return stream;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static void EnumerateFiles(string directory, Dictionary<(string fileName, MpqLocale locale), Stream> files)
+        {
+            foreach (var (fileName, locale, stream) in FileProvider.EnumerateFiles(directory))
+            {
+                if (files.ContainsKey((fileName, locale)))
+                {
+                    stream.Dispose();
+                }
+                else
+                {
+                    files.Add((fileName, locale), stream);
+                }
+            }
+        }
+
+        private static void AddDiagnostic(Diagnostic diagnostic, List<Diagnostic> diagnostics, ref bool haveErrorDiagnostic)
+        {
+            diagnostics.Add(diagnostic);
+            if (diagnostic.Severity == DiagnosticSeverity.Error)
+            {
+                haveErrorDiagnostic = true;
+            }
+        }
+
+        private static BuildResult GenerateResult(List<Diagnostic> diagnostics, bool haveErrorDiagnostic)
+        {
+            return new BuildResult(!haveErrorDiagnostic, null, diagnostics);
         }
 
         public CompileResult Compile(ScriptCompilerOptions options, out string scriptFilePath)
