@@ -11,6 +11,7 @@ namespace War3Net.Runtime.Common.Rendering
     {
         private readonly bool _affectsPerspectiveMatrix;
 
+        private float _previousValue;
         private float _currentValue;
         private float _targetValue;
         private float _remaining;
@@ -19,24 +20,29 @@ namespace War3Net.Runtime.Common.Rendering
         {
             _affectsPerspectiveMatrix = affectsPerspectiveMatrix;
 
+            _previousValue = value;
             _currentValue = value;
             _targetValue = value;
             _remaining = -1f;
         }
 
-        public float Value => _currentValue;
+        public float Value => _previousValue;
 
         public bool AffectsPerspectiveMatrix => _affectsPerspectiveMatrix;
 
         public void SetTarget(float value, float duration)
         {
-            if (_remaining == 0f)
+            if (duration > 0)
             {
-                _currentValue = _targetValue;
+                _targetValue = value;
+                _remaining = duration;
             }
-
-            _targetValue = value;
-            _remaining = duration >= 0 ? duration : 0;
+            else
+            {
+                _currentValue = value;
+                _targetValue = value;
+                _remaining = -1f;
+            }
         }
 
         public bool Update(float deltaSeconds)
@@ -45,14 +51,20 @@ namespace War3Net.Runtime.Common.Rendering
             {
                 _currentValue = _targetValue;
                 _remaining = -1f;
-                return true;
+                return false;
             }
             else
             {
                 _currentValue += (_targetValue - _currentValue) * (deltaSeconds / _remaining);
                 _remaining -= deltaSeconds;
-                return false;
+                return true;
             }
+        }
+
+        internal float GetNewValue()
+        {
+            _previousValue = _currentValue;
+            return _currentValue;
         }
     }
 }

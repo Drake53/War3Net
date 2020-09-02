@@ -17,6 +17,17 @@ namespace War3Net.Runtime.Common.Rendering
     public sealed class Camera
     {
         private const float DegToRad = MathF.PI / 180f;
+        private const float DefaultZOffset = 0f;
+        private const float DefaultTargetDistance = 1650f;
+        private const float DefaultAngleOfAttack = 304f;
+        private const float DefaultRotation = 90f;
+        private const float DefaultRoll = 0f;
+        private const float DefaultLocalPitch = 0f;
+        private const float DefaultLocalYaw = 0f;
+        private const float DefaultLocalRoll = 0f;
+        private const float DefaultNearZ = 16f;
+        private const float DefaultFarZ = 5000f;
+        private const float DefaultFieldOfView = 70f;
 
         private static Camera _localCamera;
 
@@ -43,17 +54,17 @@ namespace War3Net.Runtime.Common.Rendering
         {
             _positionX = new InternalCameraField(x);
             _positionY = new InternalCameraField(y);
-            _zOffset = new InternalCameraField(0f);
-            _targetDistance = new InternalCameraField(1650f);
-            _angleOfAttack = new InternalCameraField(304f);
-            _rotation = new InternalCameraField(90f);
-            _roll = new InternalCameraField(0f);
-            _localPitch = new InternalCameraField(0f);
-            _localYaw = new InternalCameraField(0f);
-            _localRoll = new InternalCameraField(0f);
-            _nearZ = new InternalCameraField(16f, true);
-            _farZ = new InternalCameraField(5000f, true);
-            _fieldOfView = new InternalCameraField(70f, true);
+            _zOffset = new InternalCameraField(DefaultZOffset);
+            _targetDistance = new InternalCameraField(DefaultTargetDistance);
+            _angleOfAttack = new InternalCameraField(DefaultAngleOfAttack);
+            _rotation = new InternalCameraField(DefaultRotation);
+            _roll = new InternalCameraField(DefaultRoll);
+            _localPitch = new InternalCameraField(DefaultLocalPitch);
+            _localYaw = new InternalCameraField(DefaultLocalYaw);
+            _localRoll = new InternalCameraField(DefaultLocalRoll);
+            _nearZ = new InternalCameraField(DefaultNearZ, true);
+            _farZ = new InternalCameraField(DefaultFarZ, true);
+            _fieldOfView = new InternalCameraField(DefaultFieldOfView, true);
 
             _cameraFieldMappings = GetCameraFieldMappings();
             _updatingFields = new HashSet<InternalCameraField>();
@@ -73,27 +84,7 @@ namespace War3Net.Runtime.Common.Rendering
 
         public float PositionY => _positionY.Value;
 
-        public float ZOffset => _zOffset.Value;
-
-        public float TargetDistance => _targetDistance.Value;
-
-        public float AngleOfAttack => _angleOfAttack.Value;
-
-        public float Rotation => _rotation.Value;
-
-        public float Roll => _roll.Value;
-
-        public float LocalPitch => _localPitch.Value;
-
-        public float LocalYaw => _localYaw.Value;
-
-        public float LocalRoll => _localRoll.Value;
-
-        public float NearZ => _nearZ.Value;
-
-        public float FarZ => _farZ.Value;
-
-        public float FieldOfView => _fieldOfView.Value;
+        public float PositionZ => throw new NotImplementedException();
 
         public float EyeX => _eye.X;
 
@@ -111,21 +102,22 @@ namespace War3Net.Runtime.Common.Rendering
             _localCamera = new Camera(x, y, windowWidth, windowHeight);
         }
 
-        public void PanCamera(float x, float y, float duration)
+        public void Pan(float x, float y, float duration)
         {
-            _positionX.SetTarget(x, duration);
-            _positionY.SetTarget(y, duration);
+            SetField(_positionX, x, duration);
+            SetField(_positionY, y, duration);
+        }
 
-            _updatingFields.Add(_positionX);
-            _updatingFields.Add(_positionY);
+        public float GetField(CameraField cameraField)
+        {
+            return _cameraFieldMappings.TryGetValue(cameraField, out var field) ? field.Value : default;
         }
 
         public void SetField(CameraField cameraField, float value, float duration)
         {
-            if (_cameraFieldMappings.TryGetValue(cameraField, out var internalCameraField))
+            if (_cameraFieldMappings.TryGetValue(cameraField, out var field))
             {
-                internalCameraField.SetTarget(value, duration);
-                _updatingFields.Add(internalCameraField);
+                SetField(field, value, duration);
             }
         }
 
@@ -145,19 +137,21 @@ namespace War3Net.Runtime.Common.Rendering
                     viewMatrixChanged = true;
                 }
 
-                return !field.Update(deltaSeconds);
+                return field.Update(deltaSeconds);
             });
 
             _updatingFields.IntersectWith(newUpdatingFields);
 
             if (viewMatrixChanged)
             {
-                ViewChanged?.Invoke(GetViewMatrix());
+                var viewMatrix = GetViewMatrix();
+                ViewChanged?.Invoke(viewMatrix);
             }
 
             if (perspectiveMatrixChanged)
             {
-                ProjectionChanged?.Invoke(GetPerspectiveMatrix());
+                var perspectiveMatrix = GetPerspectiveMatrix();
+                ProjectionChanged?.Invoke(perspectiveMatrix);
             }
         }
 
@@ -168,20 +162,29 @@ namespace War3Net.Runtime.Common.Rendering
 
         private Matrix4x4 GetViewMatrix()
         {
-            var rotation = Matrix4x4.CreateRotationY(Roll * DegToRad) * Matrix4x4.CreateRotationX(AngleOfAttack * DegToRad) * Matrix4x4.CreateRotationZ((Rotation - 90) * DegToRad);
+            var rotation
+                = Matrix4x4.CreateRotationY(_roll.GetNewValue() * DegToRad)
+                * Matrix4x4.CreateRotationX(_angleOfAttack.GetNewValue() * DegToRad)
+                * Matrix4x4.CreateRotationZ((_rotation.GetNewValue() - 90) * DegToRad);
             var lookDirection = Vector3.Transform(Vector3.UnitY, Quaternion.CreateFromRotationMatrix(rotation));
 
             var locationZ = 0f;
-            var target = new Vector3(PositionX, PositionY, locationZ + ZOffset);
+            var target = new Vector3(_positionX.GetNewValue(), _positionY.GetNewValue(), locationZ + _zOffset.GetNewValue());
 
-            _eye = target - (Vector3.Normalize(lookDirection) * TargetDistance);
+            _eye = target - (Vector3.Normalize(lookDirection) * _targetDistance.GetNewValue());
 
             return Matrix4x4.CreateLookAt(_eye, target, Vector3.UnitZ);
         }
 
         private Matrix4x4 GetPerspectiveMatrix()
         {
-            return Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView * DegToRad, AspectRatio, NearZ, FarZ);
+            return Matrix4x4.CreatePerspectiveFieldOfView(_fieldOfView.GetNewValue() * DegToRad, AspectRatio, _nearZ.GetNewValue(), _farZ.GetNewValue());
+        }
+
+        private void SetField(InternalCameraField field, float value, float duration)
+        {
+            field.SetTarget(value, duration);
+            _updatingFields.Add(field);
         }
 
         private Dictionary<CameraField, InternalCameraField> GetCameraFieldMappings()
