@@ -12,18 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="README.md" />
-    <None Remove="../../LICENSE" />
-    <None Remove="../../stylecop.json" />
-    <Content Include="../../LICENSE">
+    <None Remove="$(MSBuildThisFileDirectory)LICENSE" />
+    <None Remove="$(MSBuildThisFileDirectory)stylecop.json" />
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <AdditionalFiles Include="../../stylecop.json" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
   </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup>
-    <CodeAnalysisRuleSet>../../War3Net.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)War3Net.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 </Project>
