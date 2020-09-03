@@ -15,26 +15,25 @@ namespace War3Net.Runtime.Lua.Tests
     [TestClass]
     public class SecurityTests
     {
-        private static NLua.Lua _luaState;
+        private static NLuaVirtualMachine _vm;
 
         [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
-            _luaState = new NLua.Lua();
-            _luaState.RemoveNonWhitelistedGlobals();
+            _vm = new NLuaVirtualMachine(null, false);
         }
 
         [ClassCleanup]
         public static void ClassClean()
         {
-            _luaState.Dispose();
+            _vm.Dispose();
         }
 
         [DataTestMethod]
         [DynamicData(nameof(GetLuaStdLibGlobals), DynamicDataSourceType.Method)]
         public void TestStdLibGlobals(string identifier, bool accessible)
         {
-            var result = _luaState.DoString($"return pcall(function() return {identifier} end)");
+            var result = _vm.State.DoString($"return pcall(function() return {identifier} end)");
             if ((bool)result[0])
             {
                 Assert.AreEqual(accessible, result[1] != null);
@@ -128,6 +127,8 @@ namespace War3Net.Runtime.Lua.Tests
             yield return new object[] { "package.searchpath", false };
 
             yield return new object[] { "string.dump", false };
+
+            yield return new object[] { "tostringcs", false };
         }
     }
 }
