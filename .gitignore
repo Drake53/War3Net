@@ -340,11 +340,5 @@ ASALocalRun/
 healthchecksdb
 
 # Local Test Data
-/tests/War3Net.Build.Tests/TestData/Local
-/tests/War3Net.CodeAnalysis.Jass.Tests/TestData/Local
-/tests/War3Net.CodeAnalysis.Tests/TestData/Local
-/tests/War3Net.Drawing.Blp.Tests/TestData/Local
-/tests/War3Net.Drawing.Tga.Tests/TestData/Local
-/tests/War3Net.IO.Mpq.Tests/TestData/Local
-/tests/War3Net.IO.Slk.Tests/TestData/Local
-/tests/War3Net.Replay.Tests/TestData/Local
+/tests/*/TestData/Local
+/tests/*/TestData/WebCache
