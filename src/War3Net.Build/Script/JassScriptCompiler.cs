@@ -17,6 +17,7 @@ using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Renderer;
 using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Script
 {
@@ -92,7 +93,7 @@ namespace War3Net.Build.Script
             }
 
             var inputScript = Path.Combine(Options.OutputDirectory, "files.j");
-            using (var inputScriptStream = FileProvider.OpenNewWrite(inputScript))
+            using (var inputScriptStream = FileProvider.CreateFileAndFolder(inputScript))
             {
                 using (var streamWriter = new StreamWriter(inputScriptStream))
                 {
@@ -146,7 +147,7 @@ namespace War3Net.Build.Script
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.j");
-            using (var fileStream = FileProvider.OpenNewWrite(scriptFilePath))
+            using (var fileStream = FileProvider.CreateFileAndFolder(scriptFilePath))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
                 {
@@ -161,7 +162,7 @@ namespace War3Net.Build.Script
 
         private void RenderToFile(string path, IEnumerable<GlobalDeclarationSyntax?> globals)
         {
-            using (var fileStream = FileProvider.OpenNewWrite(path))
+            using (var fileStream = FileProvider.CreateFileAndFolder(path))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {
@@ -187,7 +188,7 @@ namespace War3Net.Build.Script
 
         private void RenderToFile(string path, IEnumerable<FunctionSyntax> functions)
         {
-            using (var fileStream = FileProvider.OpenNewWrite(path))
+            using (var fileStream = FileProvider.CreateFileAndFolder(path))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {

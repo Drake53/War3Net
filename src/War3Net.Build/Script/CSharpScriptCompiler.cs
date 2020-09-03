@@ -16,7 +16,7 @@ using System.Text;
 using CSharpLua;
 using CSharpLua.LuaAst;
 
-using War3Net.Build.Providers;
+using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Script
 {
@@ -127,7 +127,7 @@ namespace War3Net.Build.Script
         public override void CompileSimple(out string scriptFilePath, params string[] additionalSourceFiles)
         {
             scriptFilePath = Path.Combine(Options.OutputDirectory, "war3map.lua");
-            using (var fileStream = FileProvider.OpenNewWrite(scriptFilePath))
+            using (var fileStream = FileProvider.CreateFileAndFolder(scriptFilePath))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true), 1024, true))
                 {
@@ -142,7 +142,7 @@ namespace War3Net.Build.Script
 
         private void RenderToFile(string path, IEnumerable<LuaVariableListDeclarationSyntax?> functions)
         {
-            using (var fileStream = FileProvider.OpenNewWrite(path))
+            using (var fileStream = FileProvider.CreateFileAndFolder(path))
             {
                 using (var writer = new StreamWriter(fileStream, new UTF8Encoding(false, true)))
                 {

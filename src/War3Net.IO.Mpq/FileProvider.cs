@@ -9,13 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build.Providers
+namespace War3Net.IO.Mpq
 {
     public static class FileProvider
     {
-        public static FileStream OpenNewWrite(string path)
+        /// <summary>
+        /// <see cref="File.Create(string)"/>, and <see cref="DirectoryInfo.Create()"/> if needed.
+        /// </summary>
+        public static FileStream CreateFileAndFolder(string path)
         {
             var directory = new FileInfo(path).Directory;
             if (!directory.Exists)
@@ -86,14 +87,6 @@ namespace War3Net.Build.Providers
                     yield return (filePath, locale, File.OpenRead(file));
                 }
             }
-        }
-
-        private static MemoryStream GetArchiveFileStream(MpqArchive archive, string filePath)
-        {
-            var memoryStream = new MemoryStream();
-            archive.OpenFile(filePath).CopyTo(memoryStream);
-            memoryStream.Position = 0;
-            return memoryStream;
         }
     }
 }
