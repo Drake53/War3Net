@@ -31,6 +31,15 @@ namespace War3Net.Build.Core.Tests.Environment
             StreamAssert.AreEqual(original, recreated, true);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetDefaultEnvironmentFiles), DynamicDataSourceType.Method)]
+        public void TestDefaultTileset(string environmentFilePath)
+        {
+            using var fileStream = File.OpenRead(environmentFilePath);
+            var environment = MapEnvironment.Parse(fileStream);
+            Assert.IsTrue(environment.IsDefaultTileset());
+        }
+
         private static IEnumerable<object[]> GetEnvironmentFiles()
         {
             return TestDataProvider.GetDynamicData(
@@ -42,6 +51,14 @@ namespace War3Net.Build.Core.Tests.Environment
                 MapEnvironment.FileName,
                 SearchOption.TopDirectoryOnly,
                 "Maps"));
+        }
+
+        private static IEnumerable<object[]> GetDefaultEnvironmentFiles()
+        {
+            return TestDataProvider.GetDynamicData(
+                MapEnvironment.FileName.GetSearchPattern(),
+                SearchOption.TopDirectoryOnly,
+                Path.Combine("Environment", "Default"));
         }
     }
 }
