@@ -100,7 +100,7 @@ namespace War3Net.Build.Info
                 info._fileFormatVersion = MapInfoFormatVersion.Lua;
                 info._mapVersion = 1;
                 info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
-                info._gameVersion = GamePatchVersionProvider.GetPatchVersion(GamePatch.v1_31_0);
+                info._gameVersion = GamePatchVersionProvider.GetPatchVersion(GamePatch.v1_31_1);
 
                 info._mapName = "Just another Warcraft III map";
                 info._mapAuthor = "Unknown";

@@ -10,7 +10,7 @@ namespace War3Net.Drawing.Blp
     /// <summary>
     /// Indicates the version of the <see cref="BlpFile"/> image format.
     /// </summary>
-    internal enum FileFormatVersion : uint
+    public enum FileFormatVersion : uint
     {
         /// <summary>
         /// Used in Warcraft III beta.

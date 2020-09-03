@@ -211,12 +211,14 @@ namespace War3Net.IO.Mpq
         /// <exception cref="FileNotFoundException"></exception>
         public static Stream OpenRead(MpqArchive archive, string path)
         {
-            static MemoryStream GetArchiveFileStream(MpqArchive archive, string filePath)
+            static Stream GetArchiveFileStream(MpqArchive archive, string filePath)
             {
-                var memoryStream = new MemoryStream(Array.Empty<byte>(), false);
-                archive.OpenFile(filePath).CopyTo(memoryStream);
-                memoryStream.Position = 0;
-                return memoryStream;
+                using var mpqStream = archive.OpenFile(filePath);
+                using var memoryStream = new MemoryStream((int)mpqStream.Length);
+
+                mpqStream.CopyTo(memoryStream);
+
+                return new MemoryStream(memoryStream.ToArray(), false);
             }
 
             if (archive.FileExists(path))
