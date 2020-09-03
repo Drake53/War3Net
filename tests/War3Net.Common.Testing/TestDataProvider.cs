@@ -14,9 +14,9 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using War3Net.Build.Providers;
+using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Tests
+namespace War3Net.Common.Testing
 {
     public static class TestDataProvider
     {
@@ -52,16 +52,19 @@ namespace War3Net.Build.Tests
             {
                 if (Directory.Exists(directory))
                 {
-                    foreach (var searchPattern in _archiveFileExtensions.Select(extension => $"*{extension}"))
+                    foreach (var archiveFile in _archiveFileExtensions.SelectMany(ext => Directory.EnumerateFiles(directory, $"*{ext}", searchOption)))
                     {
-                        foreach (var archive in Directory.EnumerateFiles(directory, searchPattern, searchOption))
+                        using var archive = MpqArchive.Open(archiveFile);
+                        if (archive.FileExists(fileName))
                         {
-                            var file = Path.Combine(archive, fileName);
-                            if (FileProvider.FileExists(file))
-                            {
-                                yield return new[] { file };
-                            }
+                            yield return new[] { Path.Combine(archiveFile, fileName) };
                         }
+
+                        // var file = Path.Combine(archive, fileName);
+                        // if (FileProvider.FileExists(file))
+                        // {
+                        //     yield return new[] { file };
+                        // }
                     }
                 }
             }
