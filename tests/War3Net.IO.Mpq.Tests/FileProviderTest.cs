@@ -10,10 +10,9 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Build.Info;
-using War3Net.Build.Providers;
+using War3Net.Common.Testing;
 
-namespace War3Net.Build.Tests
+namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
     public class FileProviderTest
@@ -51,13 +50,13 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object[]> GetFileProviderFileExistsTestCases()
         {
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "ToDOv0.027.w3n"), true };
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "ToDOv0.027.w3n", CampaignInfo.FileName), true };
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "ToDOv0.027.w3n", "OrcD06.w3x", MapInfo.FileName), true };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "ToDOv0.027.w3n")), true };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "ToDOv0.027.w3n", "war3campaign.w3f")), true };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "ToDOv0.027.w3n", "OrcD06.w3x", "war3map.w3i")), true };
 
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "doesnotexist"), false };
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "ToDOv0.027.w3n", "doesnotexist"), false };
-            yield return new object[] { Path.Combine(TestDataProvider.TestDataFolder, "Campaigns", "ToDOv0.027.w3n", "OrcD06.w3x", "doesnotexist"), false };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "doesnotexist")), false };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "ToDOv0.027.w3n", "doesnotexist")), false };
+            yield return new object[] { TestDataProvider.GetFile(Path.Combine("Campaigns", "ToDOv0.027.w3n", "OrcD06.w3x", "doesnotexist")), false };
         }
     }
 }

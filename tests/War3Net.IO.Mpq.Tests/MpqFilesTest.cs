@@ -11,10 +11,9 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.IO.Mpq;
+using War3Net.Common.Testing;
 
-// TODO: move this to War3Net.IO.Mpq.Tests
-namespace War3Net.Build.Tests
+namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
     public class MpqFilesTest

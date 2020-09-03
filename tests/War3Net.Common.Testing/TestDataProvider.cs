@@ -20,7 +20,7 @@ namespace War3Net.Common.Testing
 {
     public static class TestDataProvider
     {
-        internal const string TestDataFolder = "TestData";
+        internal const string TestDataFolder = @"..\..\..\..\War3Net.Common.Testing\TestData";
         internal const string LocalDataFolder = "Local";
         internal const string WebCacheDataFolder = "WebCache";
 
@@ -30,6 +30,11 @@ namespace War3Net.Common.Testing
         {
             extension = new FileInfo(fileName).Extension;
             return _archiveFileExtensions.Contains(extension);
+        }
+
+        public static string GetFile(string path)
+        {
+            return Path.Combine(TestDataFolder, path);
         }
 
         public static IEnumerable<object[]> GetDynamicData(string searchPattern, SearchOption searchOption, params string[] directories)
