@@ -11,6 +11,10 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if DEBUG
+using System.Collections.Generic;
+#endif
+
 namespace War3Net.Common.Testing
 {
     public static class StreamAssert
@@ -120,6 +124,10 @@ namespace War3Net.Common.Testing
             }
 #endif
 
+#if DEBUG
+            var incorrectBytePositions = new List<int>();
+#endif
+
             for (var bytesRead = 0; bytesRead < lengthToCheck; bytesRead++)
             {
 #if BUFFER_STREAM_DATA
@@ -128,6 +136,10 @@ namespace War3Net.Common.Testing
                 if (s1.ReadByte() != s2.ReadByte())
 #endif
                 {
+#if DEBUG
+                    incorrectBytePositions.Add(bytesRead);
+#endif
+
                     incorrectBytes++;
                     if (incorrectBytes == 1)
                     {
