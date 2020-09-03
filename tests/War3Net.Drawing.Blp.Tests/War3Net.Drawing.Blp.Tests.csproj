@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,16 +14,6 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="War3Net.Drawing.Blp" Version="1.1.0" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'net472'">
-    <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'net472'">
-    <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
 
 </Project>

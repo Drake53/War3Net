@@ -9,10 +9,12 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
     <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.Drawing.Blp" Version="1.1.0" />
     <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
   </ItemGroup>

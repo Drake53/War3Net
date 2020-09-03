@@ -18,13 +18,4 @@
     <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="1.2.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="TestData\**" />
-    <Content Include="TestData\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="TestData\Script\**" />
-  </ItemGroup>
-
 </Project>
