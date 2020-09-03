@@ -49,6 +49,7 @@ namespace War3Net.Runtime.Common.Rendering
         private readonly InternalCameraField _fieldOfView;
 
         private Vector3 _eye;
+        private bool _aspectRatioChanged;
 
         public Camera(float x, float y, uint windowWidth, uint windowHeight)
         {
@@ -92,7 +93,7 @@ namespace War3Net.Runtime.Common.Rendering
 
         public float EyeZ => _eye.Z;
 
-        public static void InitLocalCamera(float x, float y, uint windowWidth, uint windowHeight)
+        public static void InitLocalCamera(float x, float y, uint windowWidth, uint windowHeight, out Matrix4x4 viewMatrix, out Matrix4x4 perspectiveMatrix)
         {
             if (_localCamera != null)
             {
@@ -100,6 +101,9 @@ namespace War3Net.Runtime.Common.Rendering
             }
 
             _localCamera = new Camera(x, y, windowWidth, windowHeight);
+
+            viewMatrix = _localCamera.GetViewMatrix();
+            perspectiveMatrix = _localCamera.GetPerspectiveMatrix();
         }
 
         public void Pan(float x, float y, float duration)
@@ -124,7 +128,7 @@ namespace War3Net.Runtime.Common.Rendering
         public void Update(float deltaSeconds)
         {
             var viewMatrixChanged = false;
-            var perspectiveMatrixChanged = false;
+            var perspectiveMatrixChanged = _aspectRatioChanged;
 
             var newUpdatingFields = _updatingFields.Where(field =>
             {
@@ -158,26 +162,31 @@ namespace War3Net.Runtime.Common.Rendering
         public void UpdateAspectRatio(uint windowWidth, uint windowHeight)
         {
             AspectRatio = (float)windowWidth / windowHeight;
+            _aspectRatioChanged = true;
         }
 
         private Matrix4x4 GetViewMatrix()
         {
             var rotation
-                = Matrix4x4.CreateRotationY(_roll.GetNewValue() * DegToRad)
-                * Matrix4x4.CreateRotationX(_angleOfAttack.GetNewValue() * DegToRad)
-                * Matrix4x4.CreateRotationZ((_rotation.GetNewValue() - 90) * DegToRad);
-            var lookDirection = Vector3.Transform(Vector3.UnitY, Quaternion.CreateFromRotationMatrix(rotation));
+                = Matrix4x4.CreateRotationY(DegToRad * _roll.GetNewValue())
+                * Matrix4x4.CreateRotationX(DegToRad * _angleOfAttack.GetNewValue())
+                * Matrix4x4.CreateRotationZ(DegToRad * (_rotation.GetNewValue() - 90));
+
+            var quaternion = Quaternion.CreateFromRotationMatrix(rotation);
+            var lookDirection = Vector3.Transform(Vector3.UnitY, quaternion);
+            var upVector = Vector3.Transform(Vector3.UnitZ, quaternion);
 
             var locationZ = 0f;
             var target = new Vector3(_positionX.GetNewValue(), _positionY.GetNewValue(), locationZ + _zOffset.GetNewValue());
 
-            _eye = target - (Vector3.Normalize(lookDirection) * _targetDistance.GetNewValue());
+            _eye = target - (lookDirection * _targetDistance.GetNewValue());
 
-            return Matrix4x4.CreateLookAt(_eye, target, Vector3.UnitZ);
+            return Matrix4x4.CreateLookAt(_eye, target, upVector);
         }
 
         private Matrix4x4 GetPerspectiveMatrix()
         {
+            _aspectRatioChanged = false;
             return Matrix4x4.CreatePerspectiveFieldOfView(_fieldOfView.GetNewValue() * DegToRad, AspectRatio, _nearZ.GetNewValue(), _farZ.GetNewValue());
         }
 
