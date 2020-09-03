@@ -129,6 +129,122 @@ namespace War3Net.IO.Mpq
             return new MpqOrphanedFile(mpqStream, mpqStream.Flags);
         }
 
+        public static bool Exists(string path)
+        {
+            if (File.Exists(path))
+            {
+                return true;
+            }
+
+            // Check if file is contained in an mpq archive.
+            var subPath = path;
+            var fullPath = new FileInfo(path).FullName;
+            while (!File.Exists(subPath))
+            {
+                subPath = new FileInfo(subPath).DirectoryName;
+                if (subPath is null)
+                {
+                    return false;
+                }
+            }
+
+            var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var archive = MpqArchive.Open(subPath);
+            return Exists(archive, relativePath);
+        }
+
+        public static bool Exists(MpqArchive archive, string path)
+        {
+            if (archive.FileExists(path))
+            {
+                return true;
+            }
+
+            // Check if file is contained in an mpq archive.
+            var subPath = path;
+            var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
+            while (!archive.FileExists(subPath))
+            {
+                var directoryName = new FileInfo(subPath).DirectoryName;
+                if (directoryName.Length <= ignoreLength)
+                {
+                    return false;
+                }
+
+                subPath = directoryName.Substring(ignoreLength);
+            }
+
+            var relativePath = path.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var subArchiveStream = archive.OpenFile(subPath);
+            using var subArchive = MpqArchive.Open(subArchiveStream);
+            return Exists(subArchive, relativePath);
+        }
+
+        /// <exception cref="FileNotFoundException"></exception>
+        public static Stream OpenRead(string path)
+        {
+            if (File.Exists(path))
+            {
+                return File.OpenRead(path);
+            }
+
+            // Assume file is contained in an mpq archive.
+            var subPath = path;
+            var fullPath = new FileInfo(path).FullName;
+            while (!File.Exists(subPath))
+            {
+                subPath = new FileInfo(subPath).DirectoryName;
+                if (subPath is null)
+                {
+                    throw new FileNotFoundException($"File not found: {path}");
+                }
+            }
+
+            var relativePath = fullPath.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var archive = MpqArchive.Open(subPath);
+            return OpenRead(archive, relativePath);
+        }
+
+        /// <exception cref="FileNotFoundException"></exception>
+        public static Stream OpenRead(MpqArchive archive, string path)
+        {
+            static MemoryStream GetArchiveFileStream(MpqArchive archive, string filePath)
+            {
+                var memoryStream = new MemoryStream(Array.Empty<byte>(), false);
+                archive.OpenFile(filePath).CopyTo(memoryStream);
+                memoryStream.Position = 0;
+                return memoryStream;
+            }
+
+            if (archive.FileExists(path))
+            {
+                return GetArchiveFileStream(archive, path);
+            }
+
+            // Assume file is contained in an mpq archive.
+            var subPath = path;
+            var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
+            while (!archive.FileExists(subPath))
+            {
+                var directoryName = new FileInfo(subPath).DirectoryName;
+                if (directoryName.Length <= ignoreLength)
+                {
+                    throw new FileNotFoundException($"File not found: {path}");
+                }
+
+                subPath = directoryName.Substring(ignoreLength);
+            }
+
+            var relativePath = path.Substring(subPath.Length + (subPath.EndsWith(@"\", StringComparison.Ordinal) ? 0 : 1));
+
+            using var subArchiveStream = archive.OpenFile(subPath);
+            using var subArchive = MpqArchive.Open(subArchiveStream);
+            return GetArchiveFileStream(subArchive, relativePath);
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {
