@@ -21,6 +21,49 @@ namespace War3Net.IO.Mpq.Tests
     {
         private const ushort BlockSize = 3;
 
+        [TestMethod]
+        public void TestWithPreArchiveDataAndNoFiles()
+        {
+            var memoryStream = new MemoryStream();
+            var randomData = new byte[999];
+            memoryStream.Write(randomData, 0, randomData.Length);
+
+            using var a = MpqArchive.Create(memoryStream, Array.Empty<MpqFile>());
+
+            memoryStream.Position = 0;
+            MpqArchive.Open(memoryStream).Dispose();
+        }
+
+        [TestMethod]
+        public void TestWithPreArchiveData()
+        {
+            var memoryStream = new MemoryStream();
+            var randomData = new byte[999];
+            randomData[100] = 99;
+            memoryStream.Write(randomData, 0, randomData.Length);
+
+            var randomFiles = new List<MpqFile>();
+            for (var i = 0; i < 35; i++)
+            {
+                var fileStream = new MemoryStream();
+                fileStream.Write(randomData, 0, randomData.Length);
+                fileStream.Position = 0;
+                randomFiles.Add(MpqFile.New(fileStream, $"file{i}"));
+            }
+
+            using var a = MpqArchive.Create(memoryStream, randomFiles);
+
+            memoryStream.Position = 0;
+            var archive = MpqArchive.Open(memoryStream);
+            foreach (var file in archive.GetMpqFiles())
+            {
+                file.MpqStream.Seek(100, SeekOrigin.Begin);
+                Assert.AreEqual(99, file.MpqStream.ReadByte());
+            }
+
+            archive.Dispose();
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
         [Obsolete("does same as test below, except it doesn't skip noise.png")]
@@ -100,6 +143,11 @@ namespace War3Net.IO.Mpq.Tests
                 {
                     exists = inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex & inputArchive.HashTableMask, out inputEntry);
                 }
+                else if (mpqFile is MpqOrphanedFile orphanedFile)
+                {
+                    // TODO
+                    throw new NotSupportedException();
+                }
                 else
                 {
                     throw new NotImplementedException();
@@ -151,7 +199,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestDeleteFile()
         {
-            const string inputArchivePath = @".\TestArchives\NewLuaMap.w3m";
+            var inputArchivePath = TestDataProvider.GetFile(@"Maps\NewLuaMap.w3m");
             const string fileName = "war3map.lua";
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
@@ -170,7 +218,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestRecreatePKCompressed()
         {
-            const string inputArchivePath = @"TestArchives\PKCompressed.w3x";
+            var inputArchivePath = TestDataProvider.GetFile(@"Maps\PKCompressed.w3x");
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
             using var recreatedArchive = MpqArchive.Create(
@@ -196,10 +244,7 @@ namespace War3Net.IO.Mpq.Tests
 
         private static IEnumerable<object[]> GetTestArchives()
         {
-            foreach (var archive in Directory.EnumerateFiles("TestArchives", "*", SearchOption.TopDirectoryOnly))
-            {
-                yield return new object[] { archive };
-            }
+            return TestDataProvider.GetDynamicData("*", SearchOption.TopDirectoryOnly, "Maps");
         }
 
         private static IEnumerable<object[]> GetTestArchivesAndSettings()
@@ -213,7 +258,7 @@ namespace War3Net.IO.Mpq.Tests
 
         private static IEnumerable<object[]> GetTestFiles()
         {
-            foreach (var file in Directory.EnumerateFiles("TestData", "*", SearchOption.TopDirectoryOnly))
+            foreach (var file in Directory.EnumerateFiles(@"..\..\..\TestData", "*", SearchOption.TopDirectoryOnly))
             {
                 yield return new object[] { file };
             }
@@ -221,7 +266,7 @@ namespace War3Net.IO.Mpq.Tests
 
         private static IEnumerable<object[]> GetTestFilesAndFlags()
         {
-            foreach (var file in Directory.EnumerateFiles("TestData", "*", SearchOption.TopDirectoryOnly))
+            foreach (var file in Directory.EnumerateFiles(@"..\..\..\TestData", "*", SearchOption.TopDirectoryOnly))
             {
                 if (new FileInfo(file).Name == "noise.png")
                 {

@@ -16,8 +16,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.CodeAnalysis.Common;
-
 namespace War3Net.CodeAnalysis.Jass.Tests
 {
     [TestClass]
@@ -44,11 +42,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests
                 OutputKind.DynamicallyLinkedLibrary,
                 "War3Net.CodeAnalysis.CSharp.Output.Test",
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(NativeLuaMemberAttribute).Assembly.Location),
                 MetadataReference.CreateFromFile(Assembly.Load("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a").Location));
 
-            var commonPeStream = new MemoryStream();
-            var commonMetadataStream = new MemoryStream();
+            using var commonPeStream = new MemoryStream();
+            using var commonMetadataStream = new MemoryStream();
+
             var emitOptions = new EmitOptions(false, includePrivateMembers: false);
             var commonEmit = cSharpCompilation.Emit(commonPeStream, metadataPEStream: commonMetadataStream, options: emitOptions);
 

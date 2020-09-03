@@ -20,6 +20,39 @@ namespace War3Net.Build.Core.Tests.Info
     [TestClass]
     public class MapInfoTests
     {
+        [TestMethod]
+        public void TestDefaultMapInfo()
+        {
+            // Get World Editor default info file.
+            using var defaultInfoStream = File.OpenRead(TestDataProvider.GetFile(@"MapFiles\DefaultMapFiles\war3map.w3i"));
+            var defaultMapInfo = MapInfo.Parse(defaultInfoStream, true);
+            defaultInfoStream.Position = 0;
+
+            // Get War3Net default info file.
+            var mapInfo = MapInfo.Default;
+
+            // Update defaults that are different.
+            mapInfo.EditorVersion = 6072;
+            mapInfo.ScriptLanguage = ScriptLanguage.Jass;
+
+            var player0 = mapInfo.GetPlayerData(0);
+            player0.PlayerName = "TRIGSTR_001";
+            player0.StartPosition = defaultMapInfo.GetPlayerData(0).StartPosition;
+            mapInfo.SetPlayerData(player0);
+
+            var team0 = mapInfo.GetForceData(0);
+            team0.ForceName = "TRIGSTR_002";
+            team0.IncludeAllPlayers();
+            mapInfo.SetForceData(team0);
+
+            // Compare files.
+            using var mapInfoStream = new MemoryStream();
+            mapInfo.SerializeTo(mapInfoStream, true);
+            mapInfoStream.Position = 0;
+
+            StreamAssert.AreEqual(defaultInfoStream, mapInfoStream);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetMapInfoData), DynamicDataSourceType.Method)]
         public void TestParseMapInfo(string mapInfoFilePath)

@@ -20,6 +20,34 @@ namespace War3Net.Build.Core.Tests.Environment
     [TestClass]
     public class MapEnvironmentTests
     {
+        [TestMethod]
+        public void TestDefaultMapEnvironment()
+        {
+            // Get World Editor default environment file.
+            using var defaultEnvironmentStream = File.OpenRead(TestDataProvider.GetFile(@"MapFiles\DefaultMapFiles\war3map.w3e"));
+            var defaultMapEnvironment = MapEnvironment.Parse(defaultEnvironmentStream, true);
+            defaultEnvironmentStream.Position = 0;
+
+            // Get War3Net default environment file.
+            var mapEnvironment = MapEnvironment.Default;
+
+            // Update defaults that are different.
+            var tileEnumerator = defaultMapEnvironment.GetEnumerator();
+            foreach (var tile in mapEnvironment)
+            {
+                tileEnumerator.MoveNext();
+                tile.Variation = tileEnumerator.Current.Variation;
+                tile.CliffVariation = tileEnumerator.Current.CliffVariation;
+            }
+
+            // Compare files.
+            using var mapEnvironmentStream = new MemoryStream();
+            mapEnvironment.SerializeTo(mapEnvironmentStream, true);
+            mapEnvironmentStream.Position = 0;
+
+            StreamAssert.AreEqual(defaultEnvironmentStream, mapEnvironmentStream);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetEnvironmentFiles), DynamicDataSourceType.Method)]
         public void TestParseMapEnvironment(string environmentFilePath)

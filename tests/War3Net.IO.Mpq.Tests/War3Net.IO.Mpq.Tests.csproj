@@ -16,11 +16,4 @@
     <PackageReference Include="War3Net.IO.Mpq" Version="1.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="TestArchives\**" />
-    <Content Include="TestArchives\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
