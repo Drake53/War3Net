@@ -280,17 +280,6 @@ namespace War3Net.Drawing.Blp
             }
         }
 
-        [Obsolete]
-        private Bitmap CopyBitmapBits(Bitmap bitmap, int width, int height, byte[] source)
-        {
-            var pixelFormat = _alphaDepth == 0 ? System.Drawing.Imaging.PixelFormat.Format32bppRgb : System.Drawing.Imaging.PixelFormat.Format32bppArgb;
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, pixelFormat);
-            Marshal.Copy(source, 0, bitmapData.Scan0, source.Length);
-            bitmap.UnlockBits(bitmapData);
-
-            return bitmap;
-        }
-
         // Swap red and blue colour channels in a byte array.
         private static void ConvertBetweenRgbAndBgr(byte[] pixelData, int bytesPerPixel)
         {
