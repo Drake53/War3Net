@@ -6,21 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-
-using SkiaSharp;
-
-#if !NETSTANDARD1_3
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
-
-#if !NETSTANDARD
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-#endif
 
 namespace War3Net.Drawing.Blp
 {
@@ -47,7 +39,13 @@ namespace War3Net.Drawing.Blp
         private readonly uint[] _mipMapOffsets; // Offset for every MipMap level. If 0 = no more mitmap level
         private readonly uint[] _mipMapSizes; // Size for every level
         private readonly int _mipMapCount;
-        private readonly SKColor[] _colorPalette; // The color-palette for non-compressed pictures
+
+        // The color-palette for non-compressed pictures
+#if SkiaSharpColorPalette
+        private readonly SKColor[] _colorPalette;
+#else
+        private readonly uint[] _colorPalette;
+#endif
 
         private readonly byte[] _jpgHeaderData; // Shared header when using mipMaps (usually contains markers SOI, DHT, DQT, and a part of SOF0)
 
@@ -95,14 +93,7 @@ namespace War3Net.Drawing.Blp
                     // Should be 0, 1, 4, or 8, and default to 0 if invalid.
                     _alphaDepth = reader.ReadUInt32();
 
-                    if (_formatVersion == FileContent.JPG)
-                    {
-                        if (_alphaDepth != 0 && _alphaDepth != 8)
-                        {
-                            throw new NotSupportedException();
-                        }
-                    }
-                    else
+                    if (_formatVersion != FileContent.JPG)
                     {
                         _colorEncoding = 1;
                     }
@@ -145,106 +136,39 @@ namespace War3Net.Drawing.Blp
                 if (_colorEncoding == 1)
                 {
                     const int paletteSize = 256;
+#if SkiaSharpColorPalette
                     _colorPalette = new SKColor[paletteSize];
+#else
+                    _colorPalette = new uint[paletteSize];
+#endif
 
                     // Reading palette
                     for (var i = 0; i < paletteSize; i++)
                     {
+#if SkiaSharpColorPalette
                         _colorPalette[i] = new SKColor(reader.ReadUInt32());
+#else
+                        _colorPalette[i] = reader.ReadUInt32();
+#endif
                     }
                 }
                 else if (_fileFormatVersion == FileFormatVersion.BLP1 && _formatVersion == FileContent.JPG)
                 {
                     var jpgHeaderSize = reader.ReadUInt32(); // max 624 bytes
-                    _jpgHeaderData = new byte[jpgHeaderSize];
-                    for (var i = 0; i < jpgHeaderSize; i++)
-                    {
-                        _jpgHeaderData[i] = reader.ReadByte();
-                    }
+                    _jpgHeaderData = reader.ReadBytes((int)jpgHeaderSize);
                 }
             }
         }
+
+        public int Width => _width;
+
+        public int Height => _height;
 
         /// <summary>
         /// Gets the amount of MipMaps in this <see cref="BlpFile"/>.
         /// </summary>
         public int MipMapCount => _mipMapCount;
 
-        /// <summary>
-        /// Converts the BLP to a <see cref="SKBitmap"/>.
-        /// </summary>
-        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
-        /// <returns>A new <see cref="SKBitmap"/> instance representing the BLP image.</returns>
-        /// <exception cref="BadImageFormatException">
-        /// Can be thrown when a project targets .NET framework. A possible fix is to add a reference to the <see cref="SkiaSharp"/> package,
-        /// and to add <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp> to a PropertyGroup in the project's .csproj file.
-        /// Note that you may have to clean and rebuild the project for this to work.
-        /// </exception>
-        public SKBitmap GetSKBitmap(int mipMapLevel = 0)
-        {
-            SKBitmap bitmap;
-            byte[] pixelData;
-
-            switch (_formatVersion)
-            {
-                case FileContent.JPG:
-                    bitmap = GetJpgBitmapBytes(mipMapLevel, out pixelData);
-                    Marshal.Copy(pixelData, 0, bitmap.GetPixels(), pixelData.Length);
-
-                    return bitmap;
-
-                case FileContent.Direct:
-                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
-
-                    bitmap = new SKBitmap(width, height);
-                    Marshal.Copy(pixelData, 0, bitmap.GetPixels(), pixelData.Length);
-
-                    return bitmap;
-
-                default:
-                    throw new IndexOutOfRangeException();
-            }
-        }
-
-#if !NETSTANDARD1_3
-        /// <summary>
-        /// Converts the BLP to a <see cref="Bitmap"/>.
-        /// </summary>
-        /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
-        /// <returns>A new <see cref="Bitmap"/> instance representing the BLP image.</returns>
-        /// <exception cref="BadImageFormatException">
-        /// Can be thrown when a project targets .NET framework. A possible fix is to add a reference to the <see cref="SkiaSharp"/> package,
-        /// and to add <PreferredNativeSkiaSharp>x86</PreferredNativeSkiaSharp> to a PropertyGroup in the project's .csproj file.
-        /// Note that you may have to clean and rebuild the project for this to work.
-        /// Another solution is to load the image as <see cref="BitmapSource"/> and convert it to a <see cref="Bitmap"/>.
-        /// </exception>
-        public Bitmap GetBitmap(int mipMapLevel = 0)
-        {
-            Bitmap bitmap;
-            byte[] pixelData;
-
-            switch (_formatVersion)
-            {
-                case FileContent.JPG:
-                    using (var skBitmap = GetJpgBitmapBytes(mipMapLevel, out pixelData))
-                    {
-                        bitmap = new Bitmap(skBitmap.Width, skBitmap.Height);
-                        return CopyBitmapBits(bitmap, skBitmap.Width, skBitmap.Height, pixelData);
-                    }
-
-                case FileContent.Direct:
-                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
-
-                    bitmap = new Bitmap(width, height);
-                    return CopyBitmapBits(bitmap, width, height, pixelData);
-
-                default:
-                    throw new IndexOutOfRangeException();
-            }
-        }
-#endif
-
-#if !NETSTANDARD
         /// <summary>
         /// Converts the BLP to a <see cref="BitmapSource"/>.
         /// </summary>
@@ -275,15 +199,16 @@ namespace War3Net.Drawing.Blp
                     return BitmapSource.Create(bitmap.PixelWidth, bitmap.PixelHeight, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null, pixelData, stride);
 
                 case FileContent.Direct:
-                    pixelData = GetPixels(mipMapLevel, out var width, out var height, _colorEncoding != 3);
+                    var bgra = _colorEncoding != 3;
 
-                    return BitmapSource.Create(width, height, 96d, 96d, GetFormat(), null, pixelData, width * 4);
+                    pixelData = GetPixelsDirect(mipMapLevel, out var width, out var height, bgra);
+
+                    return BitmapSource.Create(width, height, 96d, 96d, bgra ? PixelFormats.Bgra32 : PixelFormats.Rgb24, null, pixelData, width * 4);
 
                 default:
                     throw new IndexOutOfRangeException();
             }
         }
-#endif
 
         /// <summary>
         /// Returns array of pixels in BGRA or RGBA order.
@@ -291,12 +216,32 @@ namespace War3Net.Drawing.Blp
         /// <param name="mipMapLevel">The desired MipMap-Level. If the given level is invalid, the smallest available level is chosen.</param>
         /// <param name="w">Contains the width of the image at the chosen <paramref name="mipMapLevel"/>.</param>
         /// <param name="h">Contains the height of the image at the chosen <paramref name="mipMapLevel"/>.</param>
-        /// <param name="bgra">If true, the returned byte array is in BGRA order. Otherwise, it's in RGBA order.</param>
+        /// <param name="bgra">If true, the returned byte array is in BGRA order. Otherwise, it's in RGBA order. Only works for <see cref="FileContent.Direct"/>.</param>
         /// <returns>A byte array representing the BLP image.</returns>
-        /// <remarks>
-        /// This method should not be used if the BLP's content type is <see cref="FileContent.JPG"/>.
-        /// </remarks>
         public byte[] GetPixels(int mipMapLevel, out int w, out int h, bool bgra = true)
+        {
+            switch (_formatVersion)
+            {
+                case FileContent.JPG: return GetPixelsJPG(mipMapLevel, out w, out h);
+                case FileContent.Direct: return GetPixelsDirect(mipMapLevel, out w, out h, bgra);
+
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+        }
+
+        private byte[] GetPixelsJPG(int mipMapLevel, out int w, out int h)
+        {
+            var bitmapSource = GetBitmapSource(mipMapLevel);
+            w = bitmapSource.PixelWidth;
+            h = bitmapSource.PixelHeight;
+
+            var pixels = new byte[4 * w * h];
+            bitmapSource.CopyPixels(pixels, 4 * w, 0);
+            return pixels;
+        }
+
+        private byte[] GetPixelsDirect(int mipMapLevel, out int w, out int h, bool bgra = true)
         {
             var data = GetPixelsPictureData(mipMapLevel);
 
@@ -330,25 +275,21 @@ namespace War3Net.Drawing.Blp
         {
             if (_baseStream != null)
             {
-#if NETSTANDARD1_3
-                _baseStream.Dispose();
-#else
                 _baseStream.Close();
-#endif
                 _baseStream = null;
             }
         }
 
-#if !NETSTANDARD1_3
-        private static Bitmap CopyBitmapBits(Bitmap bitmap, int width, int height, byte[] source)
+        [Obsolete]
+        private Bitmap CopyBitmapBits(Bitmap bitmap, int width, int height, byte[] source)
         {
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+            var pixelFormat = _alphaDepth == 0 ? System.Drawing.Imaging.PixelFormat.Format32bppRgb : System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, pixelFormat);
             Marshal.Copy(source, 0, bitmapData.Scan0, source.Length);
             bitmap.UnlockBits(bitmapData);
 
             return bitmap;
         }
-#endif
 
         // Swap red and blue colour channels in a byte array.
         private static void ConvertBetweenRgbAndBgr(byte[] pixelData, int bytesPerPixel)
@@ -370,14 +311,6 @@ namespace War3Net.Drawing.Blp
             }
         }
 
-#if !NETSTANDARD
-        private System.Windows.Media.PixelFormat GetFormat()
-        {
-            // where's rgba32...
-            return _colorEncoding == 3 ? PixelFormats.Rgb24 : PixelFormats.Bgra32;
-        }
-#endif
-
         // Gets the entire jpg file contents (which should start with a marker of type SOI, and end with a marker of type EOI).
         private byte[] GetJpegFileBytes(int mipMapLevel)
         {
@@ -390,20 +323,6 @@ namespace War3Net.Drawing.Blp
             return jpgData;
         }
 
-        // Decodes a jpg file.
-        private SKBitmap GetJpgBitmapBytes(int mipMapLevel, out byte[] pixelData)
-        {
-            var jpgData = GetJpegFileBytes(mipMapLevel);
-            var bitmap = SKBitmap.Decode(jpgData);
-
-            pixelData = new byte[bitmap.ByteCount];
-            Marshal.Copy(bitmap.GetPixels(), pixelData, 0, pixelData.Length);
-
-            ConvertBetweenRgbAndBgr(pixelData, bitmap.BytesPerPixel);
-
-            return bitmap;
-        }
-
         // Extracts the palettized Image Data from the given MipMap, and returns a byte array in the 32Bit RGBA-Format.
         private byte[] GetPictureUncompressedByteArray(int w, int h, byte[] data)
         {
@@ -411,10 +330,18 @@ namespace War3Net.Drawing.Blp
             var pic = new byte[length * 4];
             for (var i = 0; i < length; i++)
             {
+#if SkiaSharpColorPalette
                 pic[(i * 4) + 0] = _colorPalette[data[i]].Red;
                 pic[(i * 4) + 1] = _colorPalette[data[i]].Green;
                 pic[(i * 4) + 2] = _colorPalette[data[i]].Blue;
                 pic[(i * 4) + 3] = GetAlpha(data, i, length);
+#else
+                var color = _colorPalette[data[i]];
+                pic[(i * 4) + 0] = (byte)((color >> 0) & 0xFF);
+                pic[(i * 4) + 1] = (byte)((color >> 8) & 0xFF);
+                pic[(i * 4) + 2] = (byte)((color >> 16) & 0xFF);
+                pic[(i * 4) + 3] = GetAlpha(data, i, length);
+#endif
             }
 
             return pic;
