@@ -9,145 +9,128 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 
-using Veldrid;
-
-using War3Net.Drawing.Blp;
-using War3Net.Modeling.Models;
-using War3Net.Rendering.Extensions;
+using War3Net.Modeling;
+using War3Net.Modeling.DataStructures;
+using War3Net.Rendering.DataStructures;
 
 namespace War3Net.Rendering
 {
     public static class ModelLoader
     {
-        public static ModelResources LoadModel(GraphicsDevice graphicsDevice, Model model, params string[] paths)
+        public static LoadedModelResources LoadModel(Stream stream, bool leaveOpen = false)
         {
-            var factory = graphicsDevice.ResourceFactory;
-
-            // Translate and scale vertices so they fit in the window (range -1 to 1).
-            var minX = float.MaxValue;
-            var maxX = float.MinValue;
-            var minY = float.MaxValue;
-            var maxY = float.MinValue;
-            var minZ = float.MaxValue;
-            var maxZ = float.MinValue;
-            foreach (var geoset in model.Geosets)
+            Model model;
+            try
             {
-                minX = MathF.Min(minX, geoset.Vertices.Min(vertex => vertex.X));
-                maxX = MathF.Max(maxX, geoset.Vertices.Max(vertex => vertex.X));
-                minY = MathF.Min(minY, geoset.Vertices.Min(vertex => vertex.Y));
-                maxY = MathF.Max(maxY, geoset.Vertices.Max(vertex => vertex.Y));
-                minZ = MathF.Min(minZ, geoset.Vertices.Min(vertex => vertex.Z));
-                maxZ = MathF.Max(maxZ, geoset.Vertices.Max(vertex => vertex.Z));
-            }
-
-            var translateX = (minX + maxX) / -2;
-            var translateY = (minY + maxY) / -2;
-            var translateZ = ((minZ + maxZ) / -2) + (0.1f - minZ);
-
-            var scaleX = 2 / (maxX - minX);
-            var scaleY = 2 / (maxY - minY);
-            var scale = new[] { scaleX, scaleY }.Min();
-
-            var transform = Matrix4x4.CreateTranslation(translateX, translateY, translateZ) * Matrix4x4.CreateScale(scale);
-
-            var geosetResources = new List<GeosetResources>();
-            foreach (var geoset in model.Geosets)
-            {
-                geosetResources.Add(LoadGeoset(graphicsDevice, geoset));
-            }
-
-            // TODO: support multiple layers
-            var textureFileName = model.Textures[(int)model.Materials[(int)model.Geosets.First().MaterialId].Layers.First().TextureId].FileName;
-            string textureFilePath = null;
-
-            FileInfo textureFileInfo = null;
-            foreach (var path in paths)
-            {
-                if (string.IsNullOrWhiteSpace(path))
+                model = BinaryModelParser.Parse(stream, true);
+                if (!leaveOpen)
                 {
-                    continue;
+                    stream.Dispose();
                 }
+            }
+            catch
+            {
+                stream.Position = 0;
 
-                textureFilePath = Path.Combine(path, textureFileName);
-                textureFileInfo = new FileInfo(textureFilePath);
-                if (textureFileInfo.Exists)
+                try
                 {
-                    break;
+                    model = TextModelParser.ParseModel(stream, leaveOpen);
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidDataException($"Failed to load model: {e}");
                 }
             }
 
-            if (!(textureFileInfo?.Exists ?? false))
+            var vertices = new Vertex[model.Geosets.Length][];
+            var indices = new ushort[model.Geosets.Length][];
+            for (var geosetId = 0; geosetId < model.Geosets.Length; geosetId++)
             {
-                throw new FileNotFoundException(null, textureFileName);
+                var geoset = model.Geosets[geosetId];
+                var geosetVertices = new List<Vertex>();
+                var textureCoordinates = geoset.TextureCoordinateSets.Single().TextureCoordinates;
+                for (var i = 0; i < geoset.Vertices.Length; i++)
+                {
+                    geosetVertices.Add(new Vertex
+                    {
+                        Position = geoset.Vertices[i],
+                        UV = textureCoordinates[i],
+                        VertexGroup = geoset.VertexGroups[i],
+                    });
+                }
+
+                vertices[geosetId] = geosetVertices.ToArray();
+                indices[geosetId] = geoset.Faces;
             }
 
-            var textureFileExtension = textureFileInfo.Extension;
-            Veldrid.Texture texture;
-            if (string.Equals(textureFileExtension, ".blp", StringComparison.OrdinalIgnoreCase))
+            var boneMatrixGroups = new Dictionary<int, uint[][]>();
+            var geosetVertexGroups = new uint[model.Geosets.Length][][];
+            for (var geosetIndex = 0; geosetIndex < model.Geosets.Length; geosetIndex++)
             {
-                using var fileStream = File.OpenRead(textureFilePath);
-                using var blpFile = new BlpFile(fileStream);
+                var geoset = model.Geosets[geosetIndex];
+                var matrixGroupOffset = 0;
+                var vertexGroups = new uint[geoset.MatrixGroups.Length][];
+                for (var matrixGroupIndex = 0; matrixGroupIndex < geoset.MatrixGroups.Length; matrixGroupIndex++)
+                {
+                    var matrixGroupSize = (int)geoset.MatrixGroups[matrixGroupIndex];
+                    var matrixIndices = new uint[matrixGroupSize];
+                    Buffer.BlockCopy(geoset.MatrixIndices, matrixGroupOffset, matrixIndices, 0, matrixGroupSize * sizeof(uint));
+                    vertexGroups[matrixGroupIndex] = matrixIndices;
 
-                var textureData = blpFile.GetPixels(0, out var width, out var height);
-                var textureDescription = TextureDescription.Texture2D((uint)width, (uint)height, /*(uint)blpFile.MipMapCount*/ 1, 1, PixelFormat.B8_G8_R8_A8_UNorm, TextureUsage.Sampled);
+                    matrixGroupOffset += matrixGroupSize * sizeof(uint);
+                }
 
-                texture = factory.CreateTexture(textureDescription);
-                graphicsDevice.UpdateTexture(texture, textureData, 0, 0, 0, (uint)width, (uint)height, 1, 0, 0);
+                boneMatrixGroups.Add(geosetIndex, vertexGroups);
+                geosetVertexGroups[geosetIndex] = vertexGroups;
             }
-            else
+
+            var highestObjectId = 0U;
+            var nodes = new Dictionary<uint, NodeData>();
+            foreach (var modelNode in model.GetNodes())
             {
-                throw new NotSupportedException("Only BLP textures supported.");
+                var node = new NodeData();
+                node.Name = modelNode.Name;
+                node.PivotPoint = model.PivotPoints[(int)modelNode.ObjectId];
+                node.ObjectId = modelNode.ObjectId;
+                node.ParentId = modelNode.ParentId;
+                node.Translations = modelNode.Translations;
+                node.Rotations = modelNode.Rotations;
+                node.Scalings = modelNode.Scalings;
+                nodes.Add(modelNode.ObjectId, node);
+
+                highestObjectId = highestObjectId < node.ObjectId ? node.ObjectId : highestObjectId;
             }
 
-            return new ModelResources
-            {
-                GeosetResources = geosetResources,
-                Texture = texture,
-                Transform = transform,
-            };
-        }
-
-        public static GeosetResources LoadGeoset(GraphicsDevice graphicsDevice, Geoset geoset)
-        {
-            var factory = graphicsDevice.ResourceFactory;
-
-            var vertexUVs = geoset.TextureCoordinateSets.Single().TextureCoordinates;
-            if (vertexUVs.Count != geoset.Normals.Count || vertexUVs.Count != geoset.Vertices.Count)
+            if (highestObjectId != nodes.Count - 1)
             {
                 throw new InvalidDataException();
             }
 
-            var vertexNormals = geoset.Normals;
-            var vertexPositions = geoset.Vertices;
-
-            var vertices = new Vertex[vertexUVs.Count];
-            for (var i = 0; i < vertexUVs.Count; i++)
+            foreach (var node in nodes.Values)
             {
-                vertices[i] = new Vertex
+                if (!node.ParentId.HasValue || node.ParentId.Value == uint.MaxValue)
                 {
-                    UV = vertexUVs[i],
-                    Normal = vertexNormals[i],
-                    Position = vertexPositions[i],
-                };
+                    continue;
+                }
+
+                var parent = nodes[node.ParentId.Value];
+                node.Parent = parent;
+                parent.Children.Add(node);
             }
 
-            var vertexIndices = geoset.Faces.ToArray();
-            var indexCount = (uint)vertexIndices.Length;
-
-            var vertexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertices.Length * Vertex.SizeInBytes, BufferUsage.VertexBuffer));
-            var indexBuffer = factory.CreateBuffer(new BufferDescription((uint)vertexIndices.Length * sizeof(ushort), BufferUsage.IndexBuffer));
-
-            graphicsDevice.UpdateBuffer(vertexBuffer, 0, vertices);
-            graphicsDevice.UpdateBuffer(indexBuffer, 0, vertexIndices);
-
-            return new GeosetResources
+            return new LoadedModelResources
             {
-                VertexIndicesCount = indexCount,
-                PrimitiveTopology = geoset.FaceTypeGroups.Single().ToPrimitiveTopology(),
-                VertexBuffer = vertexBuffer,
-                IndexBuffer = indexBuffer,
+                GeosetCount = vertices.Length,
+                IndexCounts = indices.Select(indices => (uint)indices.Length).ToArray(),
+                Vertices = vertices,
+                Indices = indices,
+                Textures = model.Textures.Select(texture => texture.FileName ?? string.Empty).ToArray(),
+                VertexGroups = geosetVertexGroups,
+                MaterialIds = model.Geosets.Select(geoset => geoset.MaterialId).ToArray(),
+                Nodes = nodes.Values.OrderBy(node => node.ObjectId).ToArray(),
+                Materials = model.Materials,
+                Sequences = model.Sequences,
             };
         }
     }
