@@ -13,13 +13,19 @@ namespace War3Net.Rendering.Extensions
 {
     public static class FilterModeExtensions
     {
+        private static readonly BlendStateDescription None = BlendStateDescription.SingleOverrideBlend;
+        private static readonly BlendStateDescription Transparent = new BlendStateDescription(default, true, BlendStateDescription.SingleAlphaBlend.AttachmentStates);
+        private static readonly BlendStateDescription Blend = BlendStateDescription.SingleAlphaBlend;
+        private static readonly BlendStateDescription Additive = BlendStateDescription.SingleAdditiveBlend;
+
         public static BlendStateDescription ToBlendStateDescription(this FilterMode filterMode)
         {
             return filterMode switch
             {
-                FilterMode.None => BlendStateDescription.SingleOverrideBlend,
-                FilterMode.Blend => BlendStateDescription.SingleAlphaBlend,
-                FilterMode.Additive => BlendStateDescription.SingleAdditiveBlend,
+                FilterMode.None => None,
+                FilterMode.Transparent => Transparent,
+                FilterMode.Blend => Blend,
+                FilterMode.Additive => Additive,
             };
         }
     }
