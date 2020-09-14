@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   
@@ -13,8 +13,8 @@
     <PackageTags>mpq mopaq warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
 
-    <Version>1.0.1</Version>
-    <FileVersion>1.0.1</FileVersion>
+    <Version>1.1.0</Version>
+    <FileVersion>1.1.0</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Compression" Version="1.0.0-preview2" />
+    <PackageReference Include="War3Net.IO.Compression" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

@@ -7,6 +7,11 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(PACK)'=='true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
 
   <PropertyGroup>
     <Owners>Drake53</Owners>

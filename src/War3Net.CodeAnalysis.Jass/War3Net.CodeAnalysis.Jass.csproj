@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,8 +12,8 @@
     <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes>Remove dependency on War3Net.CodeAnalysis.Common package.</PackageReleaseNotes>
 
-    <Version>1.2.1</Version>
-    <FileVersion>1.2.1</FileVersion>
+    <Version>1.2.2</Version>
+    <FileVersion>1.2.2</FileVersion>
     <AssemblyVersion>1.2</AssemblyVersion>
   </PropertyGroup>
 
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.0.2" />
+    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
