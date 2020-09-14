@@ -19,15 +19,7 @@ namespace War3Net.Common.Extensions
                 throw new ArgumentNullException(nameof(dict));
             }
 
-#if NETSTANDARD2_1
             if (!dict.TryAdd(key, value))
-#else
-            if (!dict.ContainsKey(key))
-            {
-                dict.Add(key, value);
-            }
-            else
-#endif
             {
                 dict[key] = value;
             }

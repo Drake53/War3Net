@@ -6,12 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
-
-#if !NETSTANDARD1_3
-using System.Drawing;
-#endif
 
 namespace War3Net.Common.Extensions
 {
@@ -54,7 +51,6 @@ namespace War3Net.Common.Extensions
             return new string(reader.ReadChars(count)).TrimEnd(char.MinValue);
         }
 
-#if !NETSTANDARD1_3
         public static Color ReadColorRgba(this BinaryReader reader)
         {
             var red = reader.ReadByte();
@@ -63,6 +59,5 @@ namespace War3Net.Common.Extensions
             var alpha = reader.ReadByte();
             return Color.FromArgb(alpha, red, green, blue);
         }
-#endif
     }
 }
