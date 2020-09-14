@@ -388,6 +388,10 @@ namespace War3Net.Build.Environment
                 && AreListsEqual(_cliffTypes, GetDefaultCliffTypes().ToArray());
         }
 
+        public IEnumerable<TerrainType> GetTerrainTypes() => _terrainTypes;
+
+        public IEnumerable<CliffType> GetCliffTypes() => _cliffTypes;
+
         public IEnumerator<MapTile> GetEnumerator()
         {
             return ((IEnumerable<MapTile>)_tiles).GetEnumerator();

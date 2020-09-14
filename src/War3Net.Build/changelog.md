@@ -1,5 +1,16 @@
 # War3Net.Build Changelog
 
+## v1.4.0
+### Changes
+- Added GetTerrainTypes and GetCliffTypes methods to MapEnvironment.
+- Added GetGamePatch method to GamePatchVersionProvider.
+- Updated War3Net.IO.Mpq and CSharpLua packages.
+### Bugfixes
+- Fix parse error in war3mapUnits.doo when random data mode is -1.
+### Breaking changes
+- FileProvider class has been moved to War3Net.IO.Mpq namespace.
+- Renamed GamePatchVersionProvider.GetPatchVersion to GetGameVersion.
+
 ## v1.3.10
 ### Changes
 - Add event OnArchiveBuilding to MapBuilder.

@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
 
 using War3Net.Build.Common;
 
@@ -14,7 +15,7 @@ namespace War3Net.Build.Providers
     // https://wow.gamepedia.com/Warcraft_client_builds
     public static class GamePatchVersionProvider
     {
-        public static Version GetPatchVersion(GamePatch gamePatch)
+        public static Version GetGameVersion(GamePatch gamePatch)
         {
             return gamePatch switch
             {
@@ -22,12 +23,12 @@ namespace War3Net.Build.Providers
                 GamePatch.v1_00   => new Version(1,  0, 0,  4448),
                 GamePatch.v1_01   => new Version(1,  1, 0,  4482),
                 GamePatch.v1_01b  => new Version(1,  1, 2,  4483),
-                GamePatch.v1_01c  => new Version(1,  1, 3,     0), // todo
+                GamePatch.v1_01c  => new Version(1,  1, 3,  4484),
                 GamePatch.v1_02   => new Version(1,  2, 0,  4531),
                 GamePatch.v1_02a  => new Version(1,  2, 1,  4563),
                 GamePatch.v1_03   => new Version(1,  3, 0,  4653),
                 GamePatch.v1_04   => new Version(1,  4, 0,  4709),
-                GamePatch.v1_04b  => new Version(1,  4, 2,     0), // todo
+                GamePatch.v1_04b  => new Version(1,  4, 2,  4709),
                 GamePatch.v1_04c  => new Version(1,  4, 3,  4905),
                 GamePatch.v1_05   => new Version(1,  5, 0,  4944),
                 GamePatch.v1_06   => new Version(1,  6, 0,  5551),
@@ -88,7 +89,81 @@ namespace War3Net.Build.Providers
                 GamePatch.v1_32_6 => new Version(1, 32, 6, 15355),
                 GamePatch.v1_32_7 => new Version(1, 32, 7, 15572),
                 GamePatch.v1_32_8 => new Version(1, 32, 8, 15801),
+                // GamePatch.v1_32_9 => new Version(1, 32, 9, ?????),
 #pragma warning restore SA1025 // Code should not contain multiple whitespace in a row
+
+                _ => throw new InvalidEnumArgumentException(nameof(gamePatch), (int)gamePatch, typeof(GamePatch)),
+            };
+        }
+
+        public static GamePatch GetGamePatch(Version gameVersion)
+        {
+            return gameVersion.Major switch
+            {
+                1 => gameVersion.Minor switch
+                {
+                    // TODO: earlier versions
+
+                    28 => gameVersion.Build switch
+                    {
+                        0 => GamePatch.v1_28,
+                        1 => GamePatch.v1_28_1,
+                        2 => GamePatch.v1_28_2,
+                        3 => GamePatch.v1_28_3,
+                        4 => GamePatch.v1_28_4,
+                        5 => GamePatch.v1_28_5,
+
+                        _ => throw new ArgumentOutOfRangeException(nameof(gameVersion)),
+                    },
+
+                    29 => gameVersion.Build switch
+                    {
+                        0 => GamePatch.v1_29_0,
+                        1 => GamePatch.v1_29_1,
+                        2 => GamePatch.v1_29_2,
+
+                        _ => throw new ArgumentOutOfRangeException(nameof(gameVersion)),
+                    },
+
+                    30 => gameVersion.Build switch
+                    {
+                        0 => GamePatch.v1_30_0,
+                        1 => GamePatch.v1_30_1,
+                        2 => GamePatch.v1_30_2,
+                        3 => GamePatch.v1_30_3,
+                        4 => GamePatch.v1_30_4,
+
+                        _ => throw new ArgumentOutOfRangeException(nameof(gameVersion)),
+                    },
+
+                    31 => gameVersion.Build switch
+                    {
+                        0 => GamePatch.v1_31_0,
+                        1 => GamePatch.v1_31_1,
+
+                        _ => throw new ArgumentOutOfRangeException(nameof(gameVersion)),
+                    },
+
+                    32 => gameVersion.Build switch
+                    {
+                        0 => GamePatch.v1_32_0,
+                        1 => GamePatch.v1_32_1,
+                        2 => GamePatch.v1_32_2,
+                        3 => GamePatch.v1_32_3,
+                        4 => GamePatch.v1_32_4,
+                        5 => GamePatch.v1_32_5,
+                        6 => GamePatch.v1_32_6,
+                        7 => GamePatch.v1_32_7,
+                        8 => GamePatch.v1_32_8,
+                        // 9 => GamePatch.v1_32_9,
+
+                        _ => throw new NotSupportedException(),
+                    },
+
+                    _ => throw new NotSupportedException(),
+                },
+
+                _ => throw new NotSupportedException(),
             };
         }
     }
