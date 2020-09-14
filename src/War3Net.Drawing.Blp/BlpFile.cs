@@ -105,7 +105,11 @@ namespace War3Net.Drawing.Blp
 
                 if (_fileFormatVersion != FileFormatVersion.BLP2)
                 {
-                    _extra = reader.ReadUInt32(); // usually 5
+                    // http://www.wc3c.net/tools/specs/
+                    // flag for alpha channel and team colors (usually 3, 4 or 5)
+                    // 3 and 4 means color and alpha information for paletted files
+                    // 5 means only color information, if >=5 on 'unit' textures, it won't show the team color.
+                    _extra = reader.ReadUInt32();
                     _hasMipMaps = reader.ReadUInt32();
                 }
 
