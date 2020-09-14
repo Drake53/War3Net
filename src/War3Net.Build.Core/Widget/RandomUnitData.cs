@@ -104,6 +104,8 @@ namespace War3Net.Build.Widget
 
                         break;
 
+                    case -1: break;
+
                     default: throw new InvalidDataException($"Expected random data mode 0, 1, or 2, but got {data._mode}.");
                 }
             }
