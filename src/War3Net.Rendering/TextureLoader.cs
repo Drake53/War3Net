@@ -14,6 +14,7 @@ using System.Text;
 using Veldrid;
 
 using War3Net.Drawing.Blp;
+using War3Net.Drawing.Tga;
 
 namespace War3Net.Rendering
 {
@@ -97,19 +98,18 @@ namespace War3Net.Rendering
             Stream stream,
             Veldrid.PixelFormat pixelFormat = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm)
         {
-            var tgaFile = TGASharpLib.TGA.FromStream(stream);
+            using var bitmap = new TgaImage(stream, true).GetBitmap();
 
-            var width = (uint)tgaFile.Width;
-            var height = (uint)tgaFile.Height;
+            var width = (uint)bitmap.Width;
+            var height = (uint)bitmap.Height;
 
             var sampledTexture = resourceFactory.CreateTexture(TextureDescription.Texture2D(width, height, 1, 1, pixelFormat, TextureUsage.Sampled));
             var stagingTexture = resourceFactory.CreateTexture(TextureDescription.Texture2D(width, height, 1, 1, pixelFormat, TextureUsage.Staging));
 
-            var bitmap = tgaFile.ToBitmap();
-            var test = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            var byteCount = test.Stride * bitmap.Height;
+            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var byteCount = bitmapData.Stride * bitmap.Height;
             var pixelData = new byte[byteCount];
-            var pointer = test.Scan0;
+            var pointer = bitmapData.Scan0;
             Marshal.Copy(pointer, pixelData, 0, byteCount);
 
             graphicsDevice.UpdateTexture(stagingTexture, pixelData, 0, 0, 0, width, height, 1, 0, 0);
