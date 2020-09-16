@@ -242,9 +242,33 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, MpqHeader.Size);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestArchivesAttributes), DynamicDataSourceType.Method)]
+        public void TestAttributes(string archivePath)
+        {
+            using var archive = MpqArchive.Open(archivePath);
+            Assert.IsTrue(archive.VerifyAttributes());
+        }
+
         private static IEnumerable<object[]> GetTestArchives()
         {
             return TestDataProvider.GetDynamicData("*", SearchOption.TopDirectoryOnly, "Maps");
+        }
+
+        private static IEnumerable<object[]> GetTestArchivesAttributes()
+        {
+            foreach (var archive in GetTestArchives())
+            {
+                using (var mpqArchive = MpqArchive.Open((string)archive[0]))
+                {
+                    if (!mpqArchive.TryAddFilename(Attributes.Key))
+                    {
+                        continue;
+                    }
+                }
+
+                yield return new object[] { archive[0] };
+            }
         }
 
         private static IEnumerable<object[]> GetTestArchivesAndSettings()
