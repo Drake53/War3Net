@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#nullable enable
-
 using System.Collections.Generic;
 
 using War3Net.Build.Providers;
