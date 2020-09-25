@@ -13,6 +13,20 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct Bone : INode
     {
+        public Bone(string name)
+        {
+            GeosetId = default;
+            GeosetAnimationId = default;
+
+            Name = name;
+            ObjectId = default;
+            ParentId = default;
+            Flags = default;
+            Translations = default;
+            Rotations = default;
+            Scalings = default;
+        }
+
         public uint GeosetId { get; set; }
 
         public uint GeosetAnimationId { get; set; }
