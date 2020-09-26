@@ -5,6 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+using System.ComponentModel;
+
 using Veldrid;
 
 using War3Net.Modeling.Enums;
@@ -26,6 +29,12 @@ namespace War3Net.Rendering.Extensions
                 FilterMode.Transparent => Transparent,
                 FilterMode.Blend => Blend,
                 FilterMode.Additive => Additive,
+
+                FilterMode.AddAlpha => throw new NotImplementedException(),
+                FilterMode.Modulate => throw new NotImplementedException(),
+                FilterMode.Modulate2x => throw new NotImplementedException(),
+
+                _ => throw new InvalidEnumArgumentException(nameof(filterMode), (int)filterMode, typeof(FilterMode)),
             };
         }
     }
