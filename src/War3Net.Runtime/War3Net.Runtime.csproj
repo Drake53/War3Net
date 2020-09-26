@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="OptimizedPriorityQueue" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
+    <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.Build.Core" Version="1.4.0" />
+    <!-- TODO: packageref -->
+    <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
+  </ItemGroup>
+
+</Project>
