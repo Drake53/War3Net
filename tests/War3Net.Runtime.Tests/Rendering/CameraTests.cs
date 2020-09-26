@@ -10,10 +10,10 @@ using System.Numerics;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Runtime.Common.Enums;
-using War3Net.Runtime.Common.Rendering;
+using War3Net.Runtime.Enums;
+using War3Net.Runtime.Rendering;
 
-namespace War3Net.Runtime.Common.Tests.Rendering
+namespace War3Net.Runtime.Tests.Rendering
 {
     [TestClass]
     public class CameraTests
