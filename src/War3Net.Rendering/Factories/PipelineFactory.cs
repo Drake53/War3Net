@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 using Veldrid;
 
+using War3Net.Modeling.Enums;
 using War3Net.Rendering.DataStructures;
 using War3Net.Rendering.Extensions;
 
@@ -50,11 +51,13 @@ namespace War3Net.Rendering.Factories
 
         private static CachedPipeline CreateAndCachePipeline(this ResourceFactory resourceFactory, SimplePipelineDescription simplePipelineDescription)
         {
+            var faceCullMode = simplePipelineDescription.LayerShading.HasFlag(LayerShading.TwoSided) ? FaceCullMode.None : FaceCullMode.Back;
+
             var shaderSet = resourceFactory.GetShaderSet(simplePipelineDescription.ShaderSettings);
             var pipelineDescription = new GraphicsPipelineDescription(
                 simplePipelineDescription.FilterMode.ToBlendStateDescription(),
                 DepthStencilStateDescription.DepthOnlyLessEqual,
-                new RasterizerStateDescription(FaceCullMode.Back, PolygonFillMode.Solid, FrontFace.CounterClockwise, true, false),
+                new RasterizerStateDescription(faceCullMode, PolygonFillMode.Solid, FrontFace.CounterClockwise, true, false),
                 simplePipelineDescription.FaceType.ToPrimitiveTopology(),
                 shaderSet.ShaderSetDescription,
                 shaderSet.ResourceLayout,

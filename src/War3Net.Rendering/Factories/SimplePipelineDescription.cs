@@ -17,6 +17,8 @@ namespace War3Net.Rendering.Factories
 
         public FaceType FaceType { get; set; }
 
+        public LayerShading LayerShading { get; set; }
+
         public SimpleShaderDescription ShaderSettings { get; set; }
 
         public OutputDescription OutputDescription { get; set; }
