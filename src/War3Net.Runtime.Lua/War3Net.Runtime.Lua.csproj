@@ -9,12 +9,12 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Blizzard.Api\War3Net.Runtime.Blizzard.Api.csproj" />
+    <ProjectReference Include="..\War3Net.Runtime.Api.Blizzard\War3Net.Runtime.Api.Blizzard.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- todo: packagereferences -->
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Blizzard.Api\War3Net.Runtime.Blizzard.Api.csproj" />
+    <ProjectReference Include="..\War3Net.Runtime.Api.Blizzard\War3Net.Runtime.Api.Blizzard.csproj" />
   </ItemGroup>
 
 </Project>

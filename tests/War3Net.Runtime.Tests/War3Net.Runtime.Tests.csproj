@@ -9,12 +9,12 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Common.Api\War3Net.Runtime.Common.Api.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Common.Api\War3Net.Runtime.Common.Api.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 
 </Project>
