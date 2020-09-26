@@ -40,9 +40,10 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.Modeling]            | Read and write .mdl and .mdx files.                                                                       | *Coming soon*                 |
 | [War3Net.Rendering]           | Renders Warcraft III models using [Veldrid].                                                              | *Coming soon*                 |
 | [War3Net.Replay]              | Parse replay (.w3g) files.                                                                                | *Coming soon*                 |
-| [War3Net.Runtime.Common]      | C# implementation of Warcraft III's backend code.                                                         | *Coming soon*                 |
-| [War3Net.Runtime.Common.Api]  | API for [War3Net.Runtime.Common], similar to [War3Api.Common].                                            | *Coming soon*                 |
-| [War3Net.Runtime.Lua]         | Uses [NLua] to interact with [War3Net.Runtime.Common.Api].                                                | *Coming soon*                 |
+| [War3Net.Runtime]             | C# implementation of Warcraft III's backend code.                                                         | *Coming soon*                 |
+| [War3Net.Runtime.Api.Blizzard]| The Blizzard.j API implemented in C#.                                                                     | *Coming soon*                 |
+| [War3Net.Runtime.Api.Common]  | API for [War3Net.Runtime], similar to [War3Api.Common].                                                   | *Coming soon*                 |
+| [War3Net.Runtime.Lua]         | Uses [NLua] to interact with the runtime APIs.                                                            | *Coming soon*                 |
 
 Some of the above projects are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
@@ -70,6 +71,7 @@ Some of the projects were based off of existing repositories, and may have been 
 [CSharpLua]: https://github.com/Drake53/CSharp.lua
 [NLua]: https://github.com/NLua/NLua
 [Veldrid]: https://github.com/mellinoe/veldrid
+[War3Api.Blizzard]: https://github.com/Drake53/War3Api/tree/master/src/War3Api.Blizzard
 [War3Api.Common]: https://github.com/Drake53/War3Api/tree/master/src/War3Api.Common
 
 [War3Net.Build]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build
@@ -85,8 +87,9 @@ Some of the projects were based off of existing repositories, and may have been 
 [War3Net.Modeling]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Modeling
 [War3Net.Rendering]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Rendering
 [War3Net.Replay]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Replay
-[War3Net.Runtime.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Common
-[War3Net.Runtime.Common.Api]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Common.Api
+[War3Net.Runtime]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime
+[War3Net.Runtime.Api.Blizzard]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Blizzard
+[War3Net.Runtime.Api.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Common
 [War3Net.Runtime.Lua]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Lua
 
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
@@ -102,8 +105,9 @@ Some of the projects were based off of existing repositories, and may have been 
 [PModel]: https://www.nuget.org/packages/War3Net.Modeling
 [PRender]: https://www.nuget.org/packages/War3Net.Rendering
 [PReplay]: https://www.nuget.org/packages/War3Net.Replay
-[PRuntime]: https://www.nuget.org/packages/War3Net.Runtime.Common
-[PCommonApi]: https://www.nuget.org/packages/War3Net.Runtime.Common.Api
+[PRuntime]: https://www.nuget.org/packages/War3Net.Runtime
+[PBlizzardApi]: https://www.nuget.org/packages/War3Net.Runtime.Api.Blizzard
+[PCommonApi]: https://www.nuget.org/packages/War3Net.Runtime.Api.Common
 [PRuntimeLua]: https://www.nuget.org/packages/War3Net.Runtime.Lua
 
 [VBuild]: https://img.shields.io/nuget/v/War3Net.Build.svg
@@ -119,6 +123,7 @@ Some of the projects were based off of existing repositories, and may have been 
 [VModel]: https://img.shields.io/nuget/v/War3Net.Modeling.svg
 [VRender]: https://img.shields.io/nuget/v/War3Net.Rendering.svg
 [VReplay]: https://img.shields.io/nuget/v/War3Net.Replay.svg
-[VRuntime]: https://img.shields.io/nuget/v/War3Net.Runtime.Common.svg
-[VCommonApi]: https://img.shields.io/nuget/v/War3Net.Runtime.Common.Api.svg
+[VRuntime]: https://img.shields.io/nuget/v/War3Net.Runtime.svg
+[VBlizzardApi]: https://img.shields.io/nuget/v/War3Net.Runtime.Api.Blizzard.svg
+[VCommonApi]: https://img.shields.io/nuget/v/War3Net.Runtime.Api.Common.svg
 [VRuntimeLua]: https://img.shields.io/nuget/v/War3Net.Runtime.Lua.svg
