@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 
 // https://github.com/mellinoe/veldrid-samples/blob/master/src/AnimatedMesh/Application/BoneAnimInfo.cs
-namespace War3Net.Rendering.AnimatedMesh
+namespace War3Net.Rendering
 {
     public unsafe struct NodeAnimInfo
     {
