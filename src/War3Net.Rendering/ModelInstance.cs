@@ -5,11 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#nullable enable
-
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -17,7 +17,6 @@ using Veldrid;
 
 using War3Net.Modeling.DataStructures;
 using War3Net.Modeling.Enums;
-using War3Net.Rendering.AnimatedMesh;
 using War3Net.Rendering.DataStructures;
 using War3Net.Rendering.Factories;
 
@@ -25,6 +24,49 @@ namespace War3Net.Rendering
 {
     public sealed class ModelInstance
     {
+        public sealed class ModelBatch
+        {
+            public HashSet<ModelInstance> Models { get; set; }
+
+            public void Draw(CommandList commandList)
+            {
+                var firstModel = Models.FirstOrDefault();
+                if (firstModel is null)
+                {
+                    return;
+                }
+
+                for (var geoset = 0; geoset < firstModel._loadedResources.GeosetCount; geoset++)
+                {
+                    commandList.SetVertexBuffer(0, firstModel._sharedResources.VertexBuffers[geoset]);
+                    commandList.SetIndexBuffer(firstModel._sharedResources.IndexBuffers[geoset], IndexFormat.UInt16);
+
+                    var layerCount = firstModel._loadedResources.Materials[firstModel._loadedResources.MaterialIds[geoset]].Layers.Length;
+                    for (var layer = 0; layer < layerCount; layer++)
+                    {
+                        foreach (var model in Models)
+                        {
+                            commandList.SetPipeline(model._instanceResources.Pipelines[geoset][layer]);
+                            commandList.SetGraphicsResourceSet(0, model._instanceResources.ResourceSets[geoset][layer]);
+
+                            if (model._modelType == ModelType.Sky)
+                            {
+                                var gd = GraphicsProvider.GraphicsDevice;
+                                var depth = gd.IsDepthRangeZeroToOne ? 1f : 0f;
+                                commandList.SetViewport(0, new Viewport(0, 0, gd.SwapchainFramebuffer.Width, gd.SwapchainFramebuffer.Height, depth, depth));
+                                commandList.DrawIndexed(model._loadedResources.IndexCounts[geoset]);
+                                commandList.SetViewport(0, new Viewport(0, 0, gd.SwapchainFramebuffer.Width, gd.SwapchainFramebuffer.Height, 0, 1));
+                            }
+                            else
+                            {
+                                commandList.DrawIndexed(model._loadedResources.IndexCounts[geoset]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private const uint _ushortByteSize = sizeof(ushort);
         private static readonly uint _animatedVertexByteSize = (uint)Unsafe.SizeOf<Vertex>();
 
@@ -32,10 +74,15 @@ namespace War3Net.Rendering
         private static readonly Dictionary<string, TextureView> _cachedTextures = new Dictionary<string, TextureView>();
 
         public static readonly HashSet<ModelInstance> _createdInstances = new HashSet<ModelInstance>();
+        public static readonly Dictionary<CachedModelResources, ModelBatch> _modelBatches = new Dictionary<CachedModelResources, ModelBatch>();
+
+        private readonly int _cameraIndex;
+        private readonly ModelType _modelType;
 
         private LoadedModelResources _loadedResources;
         private SharedModelResources _sharedResources;
         private InstanceModelResources _instanceResources;
+        private ModelBatch _batch;
 
         private Sequence? _sequence;
         private double _previousAnimMilliseconds;
@@ -49,9 +96,40 @@ namespace War3Net.Rendering
         private Matrix4x4 _orientation;
         private Matrix4x4 _scaling;
 
-        public ModelInstance(string modelPath)
+        public ModelInstance(string modelPath, ModelType modelType = ModelType.Default)
         {
+            _modelType = modelType;
+
             CreateResources(modelPath);
+            Init();
+        }
+
+        public ModelInstance(string modelPath, int cameraIndex, ModelType modelType = ModelType.Default)
+        {
+            _cameraIndex = cameraIndex;
+            _modelType = modelType;
+
+            CreateResources(modelPath);
+            Init();
+        }
+
+        public ModelInstance(BasicMesh mesh, ModelType modelType = ModelType.Default)
+        {
+            _modelType = modelType;
+
+            CreateResources(new LoadedModelResources
+            {
+                GeosetCount = 1,
+                IndexCounts = new[] { (uint)mesh.Indices.Count },
+                Vertices = new Vertex[1][] { mesh.Vertices.ToArray() },
+                Indices = new ushort[1][] { mesh.Indices.ToArray() },
+                Textures = mesh.TexturePaths.Select(texture => texture ?? string.Empty).ToArray(),
+                VertexGroups = new uint[1][][] { new uint[1][] { new uint[1] { 0U } } },
+                MaterialIds = new uint[1] { 0U },
+                Nodes = new NodeData[] { new NodeData { Name = "Root", PivotPoint = Vector3.Zero, ObjectId = 0, ParentId = uint.MaxValue } },
+                Materials = new Material[] { new Material { RenderMode = 0, Layers = new[] { new Layer() { TextureId = 0 } } } },
+                Sequences = Array.Empty<Sequence>(),
+            });
             Init();
         }
 
@@ -89,33 +167,28 @@ namespace War3Net.Rendering
 
             _cachedTextures.Clear();
 
-            var resourcesDict = new Dictionary<LoadedModelResources, SharedModelResources>();
-
-            foreach (var cachedResources in _cachedResources.Values)
+            foreach (var modelBatch in _modelBatches)
             {
+                var cachedResources = modelBatch.Key;
                 if (disposeResources)
                 {
                     DisposeSharedResources(cachedResources.SharedResources);
                 }
 
-                cachedResources.SharedResources = CreateSharedResources(cachedResources.LoadedResources);
-                resourcesDict.Add(cachedResources.LoadedResources, cachedResources.SharedResources);
-            }
+                var newSharedResources = CreateSharedResources(cachedResources.LoadedResources);
+                cachedResources.SharedResources = newSharedResources;
 
-            foreach (var modelInstance in _createdInstances)
-            {
-                if (disposeResources)
+                foreach (var model in modelBatch.Value.Models)
                 {
-                    modelInstance.DisposeResources();
+                    if (disposeResources)
+                    {
+                        model.DisposeResources();
+                    }
+
+                    model._sharedResources = newSharedResources;
+                    model._instanceResources = model.CreateInstanceResources();
                 }
-
-                modelInstance._sharedResources = resourcesDict.TryGetValue(modelInstance._loadedResources, out var sharedResourced)
-                    ? sharedResourced
-                    : CreateSharedResources(modelInstance._loadedResources);
-                modelInstance._instanceResources = modelInstance.CreateInstanceResources();
             }
-
-            resourcesDict.Clear();
         }
 
         private static SharedModelResources CreateSharedResources(LoadedModelResources loadedResources)
@@ -207,19 +280,28 @@ namespace War3Net.Rendering
             {
                 _loadedResources = cachedResources.LoadedResources;
                 _sharedResources = cachedResources.SharedResources;
+
+                _batch = _modelBatches[cachedResources];
             }
             else
             {
                 if (modelResources is null)
                 {
-                    using (var modelStream = GraphicsProvider.Path2ModelStream(modelPath))
+                    using (var modelStream = GraphicsProvider.Path2ModelStream(modelPath!))
                     {
                         if (modelStream is null)
                         {
                             throw new FileNotFoundException(modelPath);
                         }
 
-                        _loadedResources = ModelLoader.LoadModel(modelStream);
+                        try
+                        {
+                            _loadedResources = ModelLoader.LoadModel(modelStream);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new InvalidDataException($"Unable to load model: {modelPath}", e);
+                        }
                     }
                 }
                 else
@@ -229,17 +311,28 @@ namespace War3Net.Rendering
 
                 _sharedResources = CreateSharedResources(_loadedResources);
 
+                cachedResources = new CachedModelResources
+                {
+                    LoadedResources = _loadedResources,
+                    SharedResources = _sharedResources,
+                };
+
+                _batch = new ModelBatch
+                {
+                    Models = new HashSet<ModelInstance>(),
+                };
+
+                _modelBatches.Add(cachedResources, _batch);
+
                 if (!string.IsNullOrEmpty(modelPath))
                 {
-                    _cachedResources.Add(modelPath, new CachedModelResources
-                    {
-                        LoadedResources = _loadedResources,
-                        SharedResources = _sharedResources,
-                    });
+                    _cachedResources.Add(modelPath, cachedResources);
                 }
             }
 
             _instanceResources = CreateInstanceResources();
+
+            _batch.Models.Add(this);
         }
 
         private InstanceModelResources CreateInstanceResources()
@@ -257,9 +350,34 @@ namespace War3Net.Rendering
                     NodeAnimInfo.BlittableSize, BufferUsage.UniformBuffer | BufferUsage.Dynamic));
 
                 var material = _loadedResources.Materials[_loadedResources.MaterialIds[geoset]];
-                var layers = material.Layers;
-                var hasFSFlag = material.RenderMode.HasFlag(MaterialRenderMode.FullResolution);
 
+                DeviceBuffer projection, view, world;
+                var modelType = material.RenderMode.HasFlag(MaterialRenderMode.FullResolution) ? ModelType.FullResolution : _modelType;
+                switch (modelType)
+                {
+                    case ModelType.Default:
+                    case ModelType.Sky:
+                        projection = GraphicsProvider.ProjectionBuffer;
+                        view = GraphicsProvider.ViewBuffer;
+                        world = GraphicsProvider.WorldBuffer;
+                        break;
+
+                    case ModelType.FullResolution:
+                        projection = GraphicsProvider.FullResolutionProjectionBuffer;
+                        view = GraphicsProvider.FullResolutionViewBuffer;
+                        world = GraphicsProvider.FullResolutionWorldBuffer;
+                        break;
+
+                    case ModelType.UI:
+                        projection = GraphicsProvider.UIProjectionBuffer;
+                        view = GraphicsProvider.UIViewBuffer;
+                        world = GraphicsProvider.UIWorldBuffer;
+                        break;
+
+                    default: throw new InvalidEnumArgumentException(nameof(modelType), (int)modelType, typeof(ModelType));
+                }
+
+                var layers = material.Layers;
                 instanceResources.Pipelines[geoset] = new Pipeline[layers.Length];
                 instanceResources.ResourceSets[geoset] = new ResourceSet[layers.Length];
 
@@ -267,17 +385,18 @@ namespace War3Net.Rendering
                 {
                     var cachedPipeline = GraphicsProvider.ResourceFactory.GetPipeline(new SimplePipelineDescription
                     {
-                        FilterMode = FilterMode.Blend,
+                        FilterMode = layers[layer].FilterMode,
                         FaceType = FaceType.Triangles,
+                        LayerShading = layers[layer].ShadingFlags,
                         OutputDescription = GraphicsProvider.GraphicsDevice.SwapchainFramebuffer.OutputDescription,
                     });
 
                     instanceResources.Pipelines[geoset][layer] = cachedPipeline.Pipeline;
                     instanceResources.ResourceSets[geoset][layer] = GraphicsProvider.ResourceFactory.CreateResourceSet(new ResourceSetDescription(
                         cachedPipeline.ResourceLayout,
-                        hasFSFlag ? GraphicsProvider.FullScreenProjectionBuffer : GraphicsProvider.ProjectionBuffer,
-                        hasFSFlag ? GraphicsProvider.FullScreenViewBuffer : GraphicsProvider.ViewBuffer,
-                        hasFSFlag ? GraphicsProvider.FullScreenWorldBuffer : GraphicsProvider.WorldBuffer,
+                        projection,
+                        view,
+                        world,
                         instanceResources.TransformationBuffer,
                         instanceResources.NodeBuffers[geoset],
                         _sharedResources.Textures[layers[layer].TextureId],
@@ -321,9 +440,46 @@ namespace War3Net.Rendering
             _createdInstances.Add(this);
         }
 
+        public void Destroy()
+        {
+            _batch.Models.Remove(this);
+            if (_batch.Models.Count == 0)
+            {
+                // DisposeSharedResources(_sharedResources);
+            }
+
+            DisposeResources();
+
+            _createdInstances.Remove(this);
+        }
+
         private void UpdateTransformation()
         {
             _transformation = _scaling * _orientation * _translation;
+        }
+
+        public void SetTranslation(float x, float y, float z)
+        {
+            _translation = Matrix4x4.CreateTranslation(x, y, z);
+            UpdateTransformation();
+        }
+
+        public void SetOrientation(float yaw, float pitch, float roll)
+        {
+            _orientation = CreateRotationMatrix(Quaternion.CreateFromYawPitchRoll(yaw, pitch, roll));
+            UpdateTransformation();
+        }
+
+        public void SetScale(float scale)
+        {
+            _scaling = Matrix4x4.CreateScale(scale);
+            UpdateTransformation();
+        }
+
+        public void SetScale(float scaleX, float scaleY, float scaleZ)
+        {
+            _scaling = Matrix4x4.CreateScale(scaleX, scaleY, scaleZ);
+            UpdateTransformation();
         }
 
         private static Matrix4x4 CreateRotationMatrix(Quaternion q)

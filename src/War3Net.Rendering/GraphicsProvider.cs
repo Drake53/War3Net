@@ -24,11 +24,17 @@ namespace War3Net.Rendering
 
         public static DeviceBuffer ViewBuffer { get; set; }
 
-        public static DeviceBuffer FullScreenWorldBuffer { get; set; }
+        public static DeviceBuffer FullResolutionWorldBuffer { get; set; }
 
-        public static DeviceBuffer FullScreenProjectionBuffer { get; set; }
+        public static DeviceBuffer FullResolutionProjectionBuffer { get; set; }
 
-        public static DeviceBuffer FullScreenViewBuffer { get; set; }
+        public static DeviceBuffer FullResolutionViewBuffer { get; set; }
+
+        public static DeviceBuffer UIWorldBuffer { get; set; }
+
+        public static DeviceBuffer UIProjectionBuffer { get; set; }
+
+        public static DeviceBuffer UIViewBuffer { get; set; }
 
         public static Func<string, Stream> Path2ModelStream { get; set; }
 
