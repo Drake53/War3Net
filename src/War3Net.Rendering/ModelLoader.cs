@@ -11,8 +11,8 @@ using System.IO;
 using System.Linq;
 
 using War3Net.Modeling;
-using War3Net.Modeling.DataStructures;
 using War3Net.Rendering.DataStructures;
+using War3Net.Rendering.Extensions;
 
 namespace War3Net.Rendering
 {
@@ -20,28 +20,9 @@ namespace War3Net.Rendering
     {
         public static LoadedModelResources LoadModel(Stream stream, bool leaveOpen = false)
         {
-            Model model;
-            try
-            {
-                model = BinaryModelParser.Parse(stream, true);
-                if (!leaveOpen)
-                {
-                    stream.Dispose();
-                }
-            }
-            catch
-            {
-                stream.Position = 0;
-
-                try
-                {
-                    model = TextModelParser.ParseModel(stream, leaveOpen);
-                }
-                catch (Exception e)
-                {
-                    throw new InvalidDataException($"Failed to load model: {e}");
-                }
-            }
+            var model = BinaryModelParser.IsBinaryModel(stream)
+                ? BinaryModelParser.Parse(stream, leaveOpen)
+                : TextModelParser.ParseModel(stream, leaveOpen);
 
             var vertices = new Vertex[model.Geosets.Length][];
             var indices = new ushort[model.Geosets.Length][];
@@ -50,18 +31,37 @@ namespace War3Net.Rendering
                 var geoset = model.Geosets[geosetId];
                 var geosetVertices = new List<Vertex>();
                 var textureCoordinates = geoset.TextureCoordinateSets.Single().TextureCoordinates;
+
                 for (var i = 0; i < geoset.Vertices.Length; i++)
                 {
                     geosetVertices.Add(new Vertex
                     {
                         Position = geoset.Vertices[i],
+                        // Normal = geoset.Normals[i],
                         UV = textureCoordinates[i],
                         VertexGroup = geoset.VertexGroups[i],
                     });
                 }
 
                 vertices[geosetId] = geosetVertices.ToArray();
-                indices[geosetId] = geoset.Faces;
+                // indices[geosetId] = geoset.Faces;
+
+                var indicesList = new List<ushort>();
+                if (geoset.FaceGroups.Length != geoset.FaceTypeGroups.Length)
+                {
+                    throw new InvalidDataException();
+                }
+
+                var start = 0;
+                for (var i = 0; i < geoset.FaceGroups.Length; i++)
+                {
+                    var count = (int)geoset.FaceGroups[i];
+                    var end = start + count;
+                    indicesList.AddRange(geoset.Faces[start..end].ToTrianglesIndices(geoset.FaceTypeGroups[i]));
+                    start += count;
+                }
+
+                indices[geosetId] = indicesList.ToArray();
             }
 
             var boneMatrixGroups = new Dictionary<int, uint[][]>();
