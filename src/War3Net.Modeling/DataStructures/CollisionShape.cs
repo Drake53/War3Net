@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct CollisionShape : INode
     {
+        public CollisionShape(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public CollisionShapeType Type { get; set; }
 
         /// <summary>

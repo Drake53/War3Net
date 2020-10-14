@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct EventObject : INode
     {
+        public EventObject(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public uint GlobalSequenceId { get; set; }
 
         public uint[] Tracks { get; set; }

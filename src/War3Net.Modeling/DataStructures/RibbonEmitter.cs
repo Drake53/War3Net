@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct RibbonEmitter : INode
     {
+        public RibbonEmitter(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public float HeightAbove { get; set; }
 
         public float HeightBelow { get; set; }

@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct Light : INode
     {
+        public Light(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public LightType Type { get; set; }
 
         public float AttenuationStart { get; set; }

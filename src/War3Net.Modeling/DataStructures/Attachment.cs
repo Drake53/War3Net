@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct Attachment : INode
     {
+        public Attachment(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public string Path { get; set; }
 
         public uint AttachmentId { get; set; }

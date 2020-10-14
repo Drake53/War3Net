@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct Helper : INode
     {
+        public Helper(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         /// <inheritdoc/>
         public string Name { get; set; }
 

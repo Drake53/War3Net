@@ -13,6 +13,12 @@ namespace War3Net.Modeling.DataStructures
 {
     public struct ParticleEmitter2 : INode
     {
+        public ParticleEmitter2(string name)
+            : this()
+        {
+            Name = name;
+        }
+
         public float Speed { get; set; }
 
         public float Variation { get; set; }
