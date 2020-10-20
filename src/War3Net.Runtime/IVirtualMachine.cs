@@ -5,16 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Reflection;
 
 namespace War3Net.Runtime
 {
-    public interface IVirtualMachine
+    public interface IVirtualMachine : IDisposable
     {
         public void InjectField(FieldInfo fieldInfo);
 
         public void InjectMethod(MethodInfo methodInfo);
 
-        public void Start();
+        public void RunMethod(string methodName);
     }
 }

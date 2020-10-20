@@ -11,28 +11,14 @@ using System.Reflection;
 using NLua;
 
 using War3Net.Build.Common;
-using War3Net.Runtime.Common;
-using War3Net.Runtime.Common.Api;
-
-#if DEBUG
-using Serilog;
-#endif
+using War3Net.Runtime.Api.Blizzard;
+using War3Net.Runtime.Api.Common;
 
 namespace War3Net.Runtime.Lua
 {
-    public sealed class NLuaVirtualMachine : IVirtualMachine, IDisposable
+    public sealed class NLuaVirtualMachine : IVirtualMachine
     {
         private readonly NLua.Lua _luaState;
-
-#if DEBUG
-        static NLuaVirtualMachine()
-        {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.File("NLVM_LOG.TXT", rollingInterval: RollingInterval.Infinite, rollOnFileSizeLimit: false)
-                .CreateLogger();
-        }
-#endif
 
         public NLuaVirtualMachine(GamePatch? gamePatch, string mapScript)
             : this(
@@ -87,16 +73,17 @@ end
                 _luaState.DoString(ErrorFunction, "error function");
             }
 
+#if DEBUG
+            State.RegisterFunction("print", GetType().GetMethod(nameof(LogPrintMessage)));
+#endif
+
             _luaState.RemoveNonWhitelistedGlobals();
 
             if (gamePatch.HasValue)
             {
                 this.InjectCommonApi(gamePatch.Value);
+                this.InjectBlizzardApi(gamePatch.Value);
             }
-
-#if DEBUG
-            State.RegisterFunction("print", GetType().GetMethod(nameof(LogPrintMessage)));
-#endif
 
             _luaState.MaximumRecursion = defaultMaximumRecursion;
 
@@ -120,13 +107,7 @@ end
         /// <inheritdoc/>
         public void InjectField(FieldInfo field)
         {
-            InjectField(field.Name, field.GetValue(null));
-        }
-
-        /// <inheritdoc/>
-        public void InjectField(string fieldName, object value)
-        {
-            _luaState[fieldName] = value;
+            _luaState[field.Name] = field.GetValue(null);
         }
 
         /// <inheritdoc/>
@@ -136,9 +117,9 @@ end
         }
 
         /// <inheritdoc/>
-        public void Start()
+        public void RunMethod(string methodName)
         {
-            ((LuaFunction)_luaState["main"]).Invoke();
+            ((LuaFunction)_luaState[methodName]).Invoke();
         }
 
         public static string UserDataToString(object v)
@@ -149,7 +130,7 @@ end
         public static void LogPrintMessage(string s)
         {
 #if DEBUG
-            Log.Information(s);
+            // Log.Information(s);
 #endif
         }
     }
