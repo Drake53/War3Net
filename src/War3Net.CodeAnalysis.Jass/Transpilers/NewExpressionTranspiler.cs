@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
+using System.Text;
 
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -50,6 +52,21 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             else
             {
                 return newExpressionNode.Expression.Transpile(out @const);
+            }
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void Transpile(this Syntax.NewExpressionSyntax newExpressionNode, ref StringBuilder sb)
+        {
+            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
+
+            newExpressionNode.Expression.Transpile(ref sb);
+            if (newExpressionNode.EmptyExpressionTail is null)
+            {
+                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(ref sb);
+                newExpressionNode.ExpressionTail.ExpressionNode.Transpile(ref sb);
             }
         }
     }

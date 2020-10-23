@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
+using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -57,6 +59,37 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     ?? SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.LiteralExpression(
                             Microsoft.CodeAnalysis.CSharp.SyntaxKind.DefaultLiteralExpression))));
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void TranspileGlobal(this Syntax.VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
+        {
+            _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
+
+            variableDefinitionNode.Transpile(ref sb);
+        }
+
+        public static void TranspileLocal(this Syntax.VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
+        {
+            _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
+
+            sb.Append("local ");
+            variableDefinitionNode.Transpile(ref sb);
+        }
+
+        private static void Transpile(this Syntax.VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
+        {
+            variableDefinitionNode.IdentifierNameNode.TranspileIdentifier(ref sb);
+            if (variableDefinitionNode.EmptyEqualsValueClause is null)
+            {
+                variableDefinitionNode.EqualsValueClause.Transpile(ref sb);
+            }
+            else
+            {
+                sb.Append(" = nil");
+            }
         }
     }
 }

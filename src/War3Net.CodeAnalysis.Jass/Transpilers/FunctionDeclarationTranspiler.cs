@@ -5,10 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
 using System.Linq;
+using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -53,6 +55,20 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 functionName == FilterNativeName || functionName == ConditionNativeName
                 ? functionDeclarationNode.ParameterListReferenceNode.Transpile(TokenTranspileFlags.ReturnBoolFunc)
                 : functionDeclarationNode.ParameterListReferenceNode.Transpile()).ToArray());
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void Transpile(this Syntax.FunctionDeclarationSyntax functionDeclarationNode, ref StringBuilder sb)
+        {
+            _ = functionDeclarationNode ?? throw new ArgumentNullException(nameof(functionDeclarationNode));
+
+            sb.Append("function ");
+            functionDeclarationNode.IdentifierNode.TranspileIdentifier(ref sb);
+            sb.Append('(');
+            functionDeclarationNode.ParameterListReferenceNode.Transpile(ref sb);
+            sb.Append(')');
         }
     }
 }

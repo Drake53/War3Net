@@ -5,10 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -173,6 +175,96 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 {
                     yield return SyntaxFactory.Token(kind).ValueText;
                 }
+            }
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void TranspileIdentifier(this TokenNode tokenNode, ref StringBuilder sb)
+        {
+            if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                sb.Append(tokenNode.ValueText);
+            }
+            else
+            {
+                throw new ArgumentException($"Identifier token must have type {SyntaxTokenType.AlphanumericIdentifier}.");
+            }
+        }
+
+        public static void TranspileUnaryOperator(this TokenNode tokenNode, ref StringBuilder sb)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            switch (tokenNode.TokenType)
+            {
+                case SyntaxTokenType.PlusOperator: sb.Append('+'); break;
+                case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
+                case SyntaxTokenType.NotOperator: sb.Append('~'); break;
+
+                default:
+                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression.");
+            }
+        }
+
+        public static void TranspileBinaryOperator(this TokenNode tokenNode, ref StringBuilder sb)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            switch (tokenNode.TokenType)
+            {
+                case SyntaxTokenType.PlusOperator: sb.Append('+'); break;
+                case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
+                case SyntaxTokenType.MultiplicationOperator: sb.Append('*'); break;
+                case SyntaxTokenType.DivisionOperator: sb.Append('/'); break;
+                case SyntaxTokenType.GreaterThanOperator: sb.Append('>'); break;
+                case SyntaxTokenType.LessThanOperator: sb.Append('<'); break;
+                case SyntaxTokenType.EqualityOperator: sb.Append("=="); break;
+                case SyntaxTokenType.UnequalityOperator: sb.Append("~="); break;
+                case SyntaxTokenType.GreaterOrEqualOperator: sb.Append(">="); break;
+                case SyntaxTokenType.LessOrEqualOperator: sb.Append("<="); break;
+                case SyntaxTokenType.AndOperator: sb.Append("and"); break;
+                case SyntaxTokenType.OrOperator: sb.Append("or"); break;
+
+                default:
+                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a binary expression.");
+            }
+        }
+
+        public static void TranspileExpression(this TokenNode tokenNode, ref StringBuilder sb)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            if (tokenNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                sb.Append(tokenNode.ValueText);
+            }
+            else
+            {
+                sb.Append(tokenNode.GetConstantExpression());
+            }
+        }
+
+        private static string GetConstantExpression(this TokenNode tokenNode)
+        {
+            var text = tokenNode.ValueText;
+            switch (tokenNode.TokenType)
+            {
+                case SyntaxTokenType.DecimalNumber: return text;
+                case SyntaxTokenType.OctalNumber: return "0";
+                case SyntaxTokenType.HexadecimalNumber: return $"0x{text.Substring(text[0] == '$' ? 1 : 2)}";
+                case SyntaxTokenType.FourCCNumber: return text.Length == 4
+                    ? ((int)text[0] << 24 | (int)text[1] << 16 | (int)text[2] << 8 | (int)text[3]).ToString()
+                    : ((int)text[0]).ToString();
+                case SyntaxTokenType.RealNumber: return $"{(text[text.Length - 1] == '.' ? text.Substring(0, text.Length - 1) : text)}";
+                case SyntaxTokenType.TrueKeyword: return "true";
+                case SyntaxTokenType.FalseKeyword: return "false";
+                case SyntaxTokenType.String: return $"\"{text}\"";
+                case SyntaxTokenType.NullKeyword: return "nil";
+
+                default:
+                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an expression.");
             }
         }
     }

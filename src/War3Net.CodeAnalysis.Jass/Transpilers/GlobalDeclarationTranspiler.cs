@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
+using System.Text;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -21,6 +23,17 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             return globalDeclarationNode.ConstantDeclarationNode?.Transpile()
                 ?? globalDeclarationNode.VariableDeclarationNode.Transpile();
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void Transpile(this Syntax.GlobalDeclarationSyntax globalDeclarationNode, ref StringBuilder sb)
+        {
+            _ = globalDeclarationNode ?? throw new ArgumentNullException(nameof(globalDeclarationNode));
+
+            globalDeclarationNode.ConstantDeclarationNode?.Transpile(ref sb);
+            globalDeclarationNode.VariableDeclarationNode?.Transpile(ref sb);
         }
     }
 }

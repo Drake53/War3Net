@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
+using System.ComponentModel;
+using System.Text;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -60,6 +63,59 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                     SyntaxFactory.EqualsValueClause(
                         // use SyntaxFactory.ArrayCreationExpression??
                         SyntaxFactory.ParseExpression($"new {arrayDefinitionNode.TypeNameNode.TypeNameToken.TranspileTypeString()}[{JASS_ARRAY_LIMIT_CONSTANT_NAME}]"))));
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void TranspileGlobal(this Syntax.ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
+        {
+            _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
+
+            arrayDefinitionNode.Transpile(ref sb);
+        }
+
+        public static void TranspileLocal(this Syntax.ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
+        {
+            _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
+
+            sb.Append("local ");
+            arrayDefinitionNode.Transpile(ref sb);
+        }
+
+        private static void Transpile(this Syntax.ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
+        {
+            arrayDefinitionNode.IdentifierNameNode.TranspileIdentifier(ref sb);
+            sb.Append(" = ");
+
+            var tokenType = arrayDefinitionNode.TypeNameNode.TypeNameToken.TokenType;
+            switch (tokenType)
+            {
+                case SyntaxTokenType.HandleKeyword:
+                case SyntaxTokenType.AlphanumericIdentifier:
+                    sb.Append("{}");
+                    break;
+
+                case SyntaxTokenType.IntegerKeyword:
+                    sb.Append("__jarray(0)");
+                    break;
+
+                case SyntaxTokenType.RealKeyword:
+                    sb.Append("__jarray(0.0)");
+                    break;
+
+                case SyntaxTokenType.StringKeyword:
+                    sb.Append("__jarray(\"\")");
+                    break;
+
+                case SyntaxTokenType.BooleanKeyword:
+                    sb.Append("__jarray(false)");
+                    break;
+
+                case SyntaxTokenType.CodeKeyword: throw new NotSupportedException("Code arrays are not supported.");
+
+                default: throw new InvalidEnumArgumentException(nameof(tokenType), (int)tokenType, typeof(SyntaxTokenType));
+            }
         }
     }
 }

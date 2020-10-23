@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable SA1649 // File name should match first type name
 
 using System;
+using System.Text;
 
 namespace War3Net.CodeAnalysis.Jass.Transpilers
 {
@@ -18,6 +20,18 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = binaryOperatorNode ?? throw new ArgumentNullException(nameof(binaryOperatorNode));
 
             return binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperator();
+        }
+    }
+
+    public static partial class JassToLuaTranspiler
+    {
+        public static void Transpile(this Syntax.BinaryOperatorSyntax binaryOperatorNode, ref StringBuilder sb)
+        {
+            _ = binaryOperatorNode ?? throw new ArgumentNullException(nameof(binaryOperatorNode));
+
+            sb.Append(' ');
+            binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperator(ref sb);
+            sb.Append(' ');
         }
     }
 }
