@@ -9,23 +9,18 @@ using System.Collections.Generic;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    internal static class TranspileStringConcatenationHandler
+    public static class TranspileStringConcatenationHandler
     {
+        private static readonly HashSet<string> _functions = new HashSet<string>();
         private static readonly HashSet<string> _globals = new HashSet<string>();
         private static readonly HashSet<string> _locals = new HashSet<string>();
-        private static readonly HashSet<string> _functions = new HashSet<string>();
 
-        internal static bool IsStringVariable(string variableName)
+        public static void RegisterFunctionWithStringReturnType(string variableName)
         {
-            return _globals.Contains(variableName) || _locals.Contains(variableName);
+            _functions.Add(variableName);
         }
 
-        internal static bool IsFunctionStringReturnType(string functionName)
-        {
-            return _functions.Contains(functionName);
-        }
-
-        internal static void RegisterGlobalStringVariable(string variableName)
+        public static void RegisterGlobalStringVariable(string variableName)
         {
             _globals.Add(variableName);
         }
@@ -35,9 +30,14 @@ namespace War3Net.CodeAnalysis.Jass
             _locals.Add(variableName);
         }
 
-        internal static void RegisterFunctionWithStringReturnType(string variableName)
+        internal static bool IsFunctionStringReturnType(string functionName)
         {
-            _functions.Add(variableName);
+            return _functions.Contains(functionName);
+        }
+
+        internal static bool IsStringVariable(string variableName)
+        {
+            return _globals.Contains(variableName) || _locals.Contains(variableName);
         }
 
         internal static void ResetLocalVariables()
