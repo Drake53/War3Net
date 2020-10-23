@@ -208,13 +208,13 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             }
         }
 
-        public static void TranspileBinaryOperator(this TokenNode tokenNode, ref StringBuilder sb)
+        public static void TranspileBinaryOperator(this TokenNode tokenNode, bool isString, ref StringBuilder sb)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
 
             switch (tokenNode.TokenType)
             {
-                case SyntaxTokenType.PlusOperator: sb.Append('+'); break;
+                case SyntaxTokenType.PlusOperator: sb.Append(isString ? ".." : "+"); break;
                 case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
                 case SyntaxTokenType.MultiplicationOperator: sb.Append('*'); break;
                 case SyntaxTokenType.DivisionOperator: sb.Append('/'); break;

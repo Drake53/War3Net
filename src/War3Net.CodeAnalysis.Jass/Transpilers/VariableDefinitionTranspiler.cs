@@ -69,6 +69,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
 
             variableDefinitionNode.Transpile(ref sb);
+
+            if (variableDefinitionNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterGlobalStringVariable(variableDefinitionNode.IdentifierNameNode.ValueText);
+            }
         }
 
         public static void TranspileLocal(this Syntax.VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
@@ -77,6 +82,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             sb.Append("local ");
             variableDefinitionNode.Transpile(ref sb);
+
+            if (variableDefinitionNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterLocalStringVariable(variableDefinitionNode.IdentifierNameNode.ValueText);
+            }
         }
 
         private static void Transpile(this Syntax.VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)

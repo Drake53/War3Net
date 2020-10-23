@@ -64,6 +64,8 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             {
                 function.Transpile(ref sb);
             }
+
+            TranspileStringConcatenationHandler.Reset();
         }
     }
 }

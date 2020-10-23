@@ -69,6 +69,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             sb.Append('(');
             functionDeclarationNode.ParameterListReferenceNode.Transpile(ref sb);
             sb.Append(')');
+
+            if (functionDeclarationNode.ReturnTypeNode.TypeNameNode?.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterFunctionWithStringReturnType(functionDeclarationNode.IdentifierNode.ValueText);
+            }
         }
     }
 }

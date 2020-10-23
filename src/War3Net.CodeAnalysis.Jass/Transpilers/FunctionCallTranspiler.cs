@@ -54,9 +54,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.FunctionCallSyntax functionCallNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.FunctionCallSyntax functionCallNode, ref StringBuilder sb, out bool isString)
         {
             _ = functionCallNode ?? throw new ArgumentNullException(nameof(functionCallNode));
+
+            isString = TranspileStringConcatenationHandler.IsFunctionStringReturnType(functionCallNode.IdentifierNameNode.ValueText);
 
             functionCallNode.IdentifierNameNode.TranspileExpression(ref sb);
             sb.Append('(');

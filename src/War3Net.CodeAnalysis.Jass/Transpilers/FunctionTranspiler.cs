@@ -50,6 +50,8 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             functionNode.StatementListNode.Transpile(ref sb);
             sb.Append("end");
             functionNode.LastLineDelimiterNode.Transpile(ref sb);
+
+            TranspileStringConcatenationHandler.ResetLocalVariables();
         }
     }
 }

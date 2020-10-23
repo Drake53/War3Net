@@ -73,6 +73,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
 
             arrayDefinitionNode.Transpile(ref sb);
+
+            if (arrayDefinitionNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterGlobalStringVariable(arrayDefinitionNode.IdentifierNameNode.ValueText);
+            }
         }
 
         public static void TranspileLocal(this Syntax.ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
@@ -81,6 +86,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             sb.Append("local ");
             arrayDefinitionNode.Transpile(ref sb);
+
+            if (arrayDefinitionNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterLocalStringVariable(arrayDefinitionNode.IdentifierNameNode.ValueText);
+            }
         }
 
         private static void Transpile(this Syntax.ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)

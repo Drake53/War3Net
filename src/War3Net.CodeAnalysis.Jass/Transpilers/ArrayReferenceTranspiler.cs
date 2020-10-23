@@ -45,9 +45,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.ArrayReferenceSyntax arrayReferenceNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.ArrayReferenceSyntax arrayReferenceNode, ref StringBuilder sb, out bool isString)
         {
             _ = arrayReferenceNode ?? throw new ArgumentNullException(nameof(arrayReferenceNode));
+
+            isString = TranspileStringConcatenationHandler.IsStringVariable(arrayReferenceNode.IdentifierNameNode.ValueText);
 
             arrayReferenceNode.IdentifierNameNode.TranspileExpression(ref sb);
             arrayReferenceNode.IndexExpressionNode.Transpile(ref sb);

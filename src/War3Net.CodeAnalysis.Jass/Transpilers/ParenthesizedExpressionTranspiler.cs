@@ -35,12 +35,12 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.ParenthesizedExpressionSyntax parenthesizedExpressionNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.ParenthesizedExpressionSyntax parenthesizedExpressionNode, ref StringBuilder sb, out bool isString)
         {
             _ = parenthesizedExpressionNode ?? throw new ArgumentNullException(nameof(parenthesizedExpressionNode));
 
             sb.Append('(');
-            parenthesizedExpressionNode.ExpressionNode.Transpile(ref sb);
+            parenthesizedExpressionNode.ExpressionNode.Transpile(ref sb, out isString);
             sb.Append(')');
         }
     }

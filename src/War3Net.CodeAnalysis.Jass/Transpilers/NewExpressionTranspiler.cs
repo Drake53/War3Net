@@ -62,10 +62,22 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         {
             _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
 
-            newExpressionNode.Expression.Transpile(ref sb);
+            newExpressionNode.Expression.Transpile(ref sb, out var isString);
             if (newExpressionNode.EmptyExpressionTail is null)
             {
-                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(ref sb);
+                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(isString, ref sb);
+                newExpressionNode.ExpressionTail.ExpressionNode.Transpile(ref sb);
+            }
+        }
+
+        public static void Transpile(this Syntax.NewExpressionSyntax newExpressionNode, ref StringBuilder sb, out bool isString)
+        {
+            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
+
+            newExpressionNode.Expression.Transpile(ref sb, out isString);
+            if (newExpressionNode.EmptyExpressionTail is null)
+            {
+                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(isString, ref sb);
                 newExpressionNode.ExpressionTail.ExpressionNode.Transpile(ref sb);
             }
         }

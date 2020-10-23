@@ -25,12 +25,12 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.BinaryOperatorSyntax binaryOperatorNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.BinaryOperatorSyntax binaryOperatorNode, bool isString, ref StringBuilder sb)
         {
             _ = binaryOperatorNode ?? throw new ArgumentNullException(nameof(binaryOperatorNode));
 
             sb.Append(' ');
-            binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperator(ref sb);
+            binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperator(isString, ref sb);
             sb.Append(' ');
         }
     }

@@ -44,9 +44,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.ConstantExpressionSyntax constantExpressionNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.ConstantExpressionSyntax constantExpressionNode, ref StringBuilder sb, out bool isString)
         {
             _ = constantExpressionNode ?? throw new ArgumentNullException(nameof(constantExpressionNode));
+
+            isString = constantExpressionNode.StringExpressionNode != null;
 
             constantExpressionNode.IntegerExpressionNode?.Transpile(ref sb);
             constantExpressionNode.RealExpressionNode?.TranspileExpression(ref sb);
