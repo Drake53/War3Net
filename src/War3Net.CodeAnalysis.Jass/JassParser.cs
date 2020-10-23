@@ -23,7 +23,18 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static FileSyntax ParseFile(string filePath)
         {
-            var tokenizer = new JassTokenizer(File.ReadAllText(filePath));
+            return ParseString(File.ReadAllText(filePath));
+        }
+
+        public static FileSyntax ParseStream(Stream stream, bool leaveOpen = false)
+        {
+            using var streamReader = new StreamReader(stream, leaveOpen: leaveOpen);
+            return ParseString(streamReader.ReadToEnd());
+        }
+
+        public static FileSyntax ParseString(string text)
+        {
+            var tokenizer = new JassTokenizer(text);
             var parser = new JassParser(tokenizer);
             return parser.Parse();
         }
