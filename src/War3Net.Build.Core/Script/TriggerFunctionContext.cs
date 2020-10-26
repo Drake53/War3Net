@@ -12,6 +12,5 @@ namespace War3Net.Build.Script
         Default,
         Child,
         Parameter,
-        Code,
     }
 }

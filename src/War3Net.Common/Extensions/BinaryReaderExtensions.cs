@@ -51,6 +51,17 @@ namespace War3Net.Common.Extensions
             return new string(reader.ReadChars(count)).TrimEnd(char.MinValue);
         }
 
+        public static bool ReadBool(this BinaryReader reader)
+        {
+            var value = reader.ReadInt32();
+            return value switch
+            {
+                0 => false,
+                1 => true,
+                _ => throw new InvalidDataException($"A 32-bit bool must be either 0 or 1, but got '{value}'."),
+            };
+        }
+
         public static Color ReadColorRgba(this BinaryReader reader)
         {
             var red = reader.ReadByte();
@@ -58,6 +69,18 @@ namespace War3Net.Common.Extensions
             var blue = reader.ReadByte();
             var alpha = reader.ReadByte();
             return Color.FromArgb(alpha, red, green, blue);
+        }
+
+        public static TEnum ReadInt32<TEnum>(this BinaryReader reader)
+            where TEnum : struct, Enum
+        {
+            var result = (object)reader.ReadInt32();
+            if (!Enum.IsDefined(typeof(TEnum), result))
+            {
+                throw new InvalidDataException($"Value '{result}' is not defined for enum of type {typeof(TEnum).Name}.");
+            }
+
+            return (TEnum)result;
         }
     }
 }
