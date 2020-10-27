@@ -166,7 +166,7 @@ namespace War3Net.Build.Script
                                     break;
 
                                 case TriggerItemType.Variable:
-                                    triggers._triggerItems.Add(VariableItemDefinition.Parse(stream, triggers._version, true));
+                                    triggers._triggerItems.Add(TriggerVariableDefinition.Parse(stream, triggers._version, true));
                                     break;
 
                                 case TriggerItemType.UNK2:

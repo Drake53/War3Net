@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="VariableItemDefinition.cs" company="Drake53">
+// <copyright file="TriggerVariableDefinition.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,13 +12,13 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
 {
-    public sealed class VariableItemDefinition : TriggerItem
+    public sealed class TriggerVariableDefinition : TriggerItem
     {
         private int _id;
         private string _name;
         private int _parentId;
 
-        private VariableItemDefinition()
+        private TriggerVariableDefinition()
             : base(TriggerItemType.Variable)
         {
         }
@@ -41,9 +41,9 @@ namespace War3Net.Build.Script
             set => _parentId = value;
         }
 
-        public static VariableItemDefinition Parse(Stream stream, MapTriggersFormatVersion formatVersion, bool leaveOpen)
+        public static TriggerVariableDefinition Parse(Stream stream, MapTriggersFormatVersion formatVersion, bool leaveOpen)
         {
-            var variable = new VariableItemDefinition();
+            var variable = new TriggerVariableDefinition();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 variable._id = reader.ReadInt32();
