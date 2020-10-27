@@ -70,7 +70,7 @@ namespace War3Net.Build.Script
             }
 
             writer.WriteString(_name);
-            writer.Write(_isEnabled ? 1 : 0);
+            writer.WriteBool(_isEnabled);
 
             foreach (var parameter in _parameters)
             {

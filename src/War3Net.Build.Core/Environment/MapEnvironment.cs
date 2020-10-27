@@ -321,7 +321,7 @@ namespace War3Net.Build.Environment
                 writer.Write(HeaderSignature);
                 writer.Write((uint)_version);
                 writer.Write((char)_tileset);
-                writer.Write(IsDefaultTileset() ? 0 : 1);
+                writer.WriteBool(!IsDefaultTileset());
 
                 writer.Write(_terrainTypes.Count);
                 foreach (var terrainType in _terrainTypes)

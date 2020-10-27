@@ -60,13 +60,13 @@ namespace War3Net.Build.Script
             writer.WriteString(_name);
             writer.WriteString(_type);
             writer.Write(_unk);
-            writer.Write(_isArray ? 1 : 0);
+            writer.WriteBool(_isArray);
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
                 writer.Write(_arraySize);
             }
 
-            writer.Write(_isInitialized ? 1 : 0);
+            writer.WriteBool(_isInitialized);
             writer.WriteString(_initialValue);
 
             if (useNewFormat)

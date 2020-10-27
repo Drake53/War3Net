@@ -87,5 +87,13 @@ namespace War3Net.Common.Extensions
                 writer.Write(c);
             }
         }
+
+        /// <summary>
+        /// Writes a four-byte <see cref="bool"/> value to the current stream, with 0 representing <see langword="false"/> and 1 representing <see langword="true"/>.
+        /// </summary>
+        public static void WriteBool(this BinaryWriter writer, bool b)
+        {
+            writer.Write(b ? 1 : 0);
+        }
     }
 }

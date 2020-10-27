@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace War3Net.Common.Extensions
@@ -71,19 +72,43 @@ namespace War3Net.Common.Extensions
             return Color.FromArgb(alpha, red, green, blue);
         }
 
+        public static TEnum ReadChar<TEnum>(this BinaryReader reader)
+            where TEnum : struct, Enum
+        {
+            return ToEnum<TEnum>(reader.ReadChar());
+        }
+
         public static TEnum ReadInt32<TEnum>(this BinaryReader reader)
             where TEnum : struct, Enum
         {
-            var result = (object)reader.ReadInt32();
-            if (!Enum.IsDefined(typeof(TEnum), result))
+            return ToEnum<TEnum>(reader.ReadInt32());
+        }
+
+        private static TEnum ToEnum<TEnum>(int i)
+            where TEnum : struct, Enum
+        {
+            var result = (TEnum)(object)i;
+            if (!Enum.IsDefined(typeof(TEnum), i))
             {
                 var enumName = typeof(TEnum).Name;
-                throw enumName.EndsWith("Version", StringComparison.Ordinal)
-                    ? (Exception)new NotSupportedException($"Unknown version of {enumName}: '{result}'.")
-                    : new InvalidDataException($"Value '{result}' is not defined for enum of type {enumName}.");
+                if (Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null)
+                {
+                    throw enumName.EndsWith("Version", StringComparison.Ordinal)
+                        ? (Exception)new NotSupportedException($"Unknown version of {enumName}: '{i}'.")
+                        : new InvalidDataException($"Value '{i}' is not defined for enum of type {enumName}.");
+                }
+
+                if (i != 0)
+                {
+                    var firstChar = result.ToString().First();
+                    if (char.IsDigit(firstChar) || firstChar == '-')
+                    {
+                        throw new InvalidDataException($"Value '{i}' is not valid for flags enum of type {enumName}.");
+                    }
+                }
             }
 
-            return (TEnum)result;
+            return result;
         }
     }
 }

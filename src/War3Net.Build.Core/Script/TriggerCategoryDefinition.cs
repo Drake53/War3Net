@@ -72,7 +72,7 @@ namespace War3Net.Build.Script
             writer.WriteString(_name);
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
-                writer.Write(_isComment ? 1 : 0);
+                writer.WriteBool(_isComment);
             }
 
             if (useNewFormat)

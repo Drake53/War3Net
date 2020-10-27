@@ -96,7 +96,7 @@ namespace War3Net.Build.Script
             writer.WriteString(_description);
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
-                writer.Write(_isComment ? 1 : 0);
+                writer.WriteBool(_isComment);
             }
 
             if (useNewFormat)
@@ -104,10 +104,10 @@ namespace War3Net.Build.Script
                 writer.Write(_id);
             }
 
-            writer.Write(_isEnabled ? 1 : 0);
-            writer.Write(_isCustomTextTrigger ? 1 : 0);
-            writer.Write(_isInitiallyOn ? 0 : 1);
-            writer.Write(_runOnMapInit ? 1 : 0);
+            writer.WriteBool(_isEnabled);
+            writer.WriteBool(_isCustomTextTrigger);
+            writer.WriteBool(!_isInitiallyOn);
+            writer.WriteBool(_runOnMapInit);
             writer.Write(_parentId);
 
             writer.Write(_functions.Count);
