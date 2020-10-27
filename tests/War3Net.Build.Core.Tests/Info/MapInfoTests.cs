@@ -57,11 +57,63 @@ namespace War3Net.Build.Core.Tests.Info
         [DynamicData(nameof(GetMapInfoData), DynamicDataSourceType.Method)]
         public void TestParseMapInfo(string mapInfoFilePath)
         {
-            using var original = FileProvider.GetFile(mapInfoFilePath);
-            using var recreated = new MemoryStream();
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
 
-            MapInfo.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV8), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV8(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV10), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV10(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV11), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV11(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV15), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV15(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV23), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV23(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV24), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV24(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV26), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV26(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetMapInfoDataV27), DynamicDataSourceType.Method)]
+        public void TestParseMapInfoV27(string mapInfoFilePath)
+        {
+            TestParseMapInfoInternal(mapInfoFilePath);
         }
 
         [DataTestMethod]
@@ -96,6 +148,15 @@ namespace War3Net.Build.Core.Tests.Info
             Assert.AreEqual(expectSupportedModes, mapInfo.SupportedModes);
         }
 
+        private static void TestParseMapInfoInternal(string mapInfoFilePath)
+        {
+            using var original = FileProvider.GetFile(mapInfoFilePath);
+            using var recreated = new MemoryStream();
+
+            MapInfo.Parse(original, true).SerializeTo(recreated, true);
+            StreamAssert.AreEqual(original, recreated, true);
+        }
+
         private static IEnumerable<object[]> GetMapInfoData()
         {
             return TestDataProvider.GetDynamicData(
@@ -108,6 +169,30 @@ namespace War3Net.Build.Core.Tests.Info
                 SearchOption.TopDirectoryOnly,
                 "Maps"));
         }
+
+        private static IEnumerable<object[]> GetMapInfoDataFolder(string versionFolder)
+        {
+            return TestDataProvider.GetDynamicArchiveData(
+                MapInfo.FileName,
+                SearchOption.TopDirectoryOnly,
+                Path.Combine("Maps", versionFolder));
+        }
+
+        private static IEnumerable<object[]> GetMapInfoDataV8() => GetMapInfoDataFolder("8");
+
+        private static IEnumerable<object[]> GetMapInfoDataV10() => GetMapInfoDataFolder("10");
+
+        private static IEnumerable<object[]> GetMapInfoDataV11() => GetMapInfoDataFolder("11");
+
+        private static IEnumerable<object[]> GetMapInfoDataV15() => GetMapInfoDataFolder("15");
+
+        private static IEnumerable<object[]> GetMapInfoDataV23() => GetMapInfoDataFolder("23");
+
+        private static IEnumerable<object[]> GetMapInfoDataV24() => GetMapInfoDataFolder("24");
+
+        private static IEnumerable<object[]> GetMapInfoDataV26() => GetMapInfoDataFolder("26");
+
+        private static IEnumerable<object[]> GetMapInfoDataV27() => GetMapInfoDataFolder("27");
 
         private static IEnumerable<object[]> GetMapInfoDataGameDataSet()
         {
