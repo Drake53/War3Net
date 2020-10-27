@@ -342,3 +342,6 @@ healthchecksdb
 # Local Test Data
 /tests/*/TestData/Local
 /tests/*/TestData/WebCache
+
+# Resources Designer Files
+/src/War3Net.Build.Core/Script/DefaultTriggerData.Designer.cs

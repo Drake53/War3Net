@@ -15,6 +15,8 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerData
     {
+        private static readonly Lazy<TriggerData> _defaultTriggerData = new Lazy<TriggerData>(() => ParseText(DefaultTriggerData.TriggerData));
+
         private readonly Dictionary<string, string[]> _triggerEvents;
         private readonly Dictionary<string, string[]> _triggerConditions;
         private readonly Dictionary<string, string[]> _triggerActions;
@@ -28,17 +30,23 @@ namespace War3Net.Build.Script
             _triggerCalls = new Dictionary<string, string[]>();
         }
 
-        public static TriggerData Default
+        public static TriggerData Default => _defaultTriggerData.Value;
+
+        public static TriggerData ParseFile(string filePath) => ParseStream(File.OpenRead(filePath));
+
+        public static TriggerData ParseText(string text)
         {
-            get
+            var stream = new MemoryStream();
+            using (var writer = new StreamWriter(stream, leaveOpen: true))
             {
-                throw new NotImplementedException();
+                writer.Write(text);
             }
+
+            stream.Position = 0;
+            return ParseStream(stream);
         }
 
-        public static TriggerData Parse(string filePath) => Parse(File.OpenRead(filePath));
-
-        public static TriggerData Parse(Stream stream, bool leaveOpen = false)
+        public static TriggerData ParseStream(Stream stream, bool leaveOpen = false)
         {
             var result = new TriggerData();
 
@@ -71,6 +79,11 @@ namespace War3Net.Build.Script
                     continue;
                 }
 
+                if (line.StartsWith('_'))
+                {
+                    continue;
+                }
+
                 if (target != null)
                 {
                     var split = line.Split('=');
@@ -79,14 +92,8 @@ namespace War3Net.Build.Script
                         split = line.Split('-');
                         if (split.Length != 2)
                         {
-                            throw new InvalidDataException();
+                            throw new InvalidDataException(line);
                         }
-                    }
-
-                    var functionName = split[0];
-                    if (functionName.StartsWith('_'))
-                    {
-                        continue;
                     }
 
                     var values = split[1].Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -101,7 +108,7 @@ namespace War3Net.Build.Script
                         parameters = Array.Empty<string>();
                     }
 
-                    target.Add(functionName, parameters);
+                    target.Add(split[0], parameters);
                 }
             }
 
