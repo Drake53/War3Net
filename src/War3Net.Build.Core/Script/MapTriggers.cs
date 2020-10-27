@@ -22,8 +22,9 @@ namespace War3Net.Build.Script
     {
         public const string FileName = "war3map.wtg";
 
+        internal static readonly int FileFormatHeader = "WTG!".FromRawcode();
+
         private const int NewFormatId = unchecked((int)0x80000004);
-        private static readonly int FileFormatHeader = "WTG!".FromRawcode();
 
         private readonly List<TriggerItem> _triggerItems;
         private readonly List<VariableDefinition> _variables;
@@ -84,56 +85,58 @@ namespace War3Net.Build.Script
                         triggers._version = reader.ReadInt32<MapTriggersFormatVersion>();
                         triggers._newFormat = true;
 
-                        var countRootCategory = reader.ReadInt32();
+                        var triggerItemCounts = new Dictionary<TriggerItemType, int>();
+
+                        triggerItemCounts[TriggerItemType.RootCategory] = reader.ReadInt32();
                         var countDeletedRootCategory = reader.ReadInt32();
                         for (var i = 0; i < countDeletedRootCategory; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.RootCategory, true));
                         }
 
-                        var countUNK2 = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.UNK2] = reader.ReadInt32();
                         var countDeletedUNK2 = reader.ReadInt32();
                         for (var i = 0; i < countDeletedUNK2; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.UNK2, true));
                         }
 
-                        var countCategory = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.Category] = reader.ReadInt32();
                         var countDeletedCategory = reader.ReadInt32();
                         for (var i = 0; i < countDeletedCategory; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Category, true));
                         }
 
-                        var countGui = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.Gui] = reader.ReadInt32();
                         var countDeletedGui = reader.ReadInt32();
                         for (var i = 0; i < countDeletedGui; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Gui, true));
                         }
 
-                        var countComment = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.Comment] = reader.ReadInt32();
                         var countDeletedComment = reader.ReadInt32();
                         for (var i = 0; i < countDeletedComment; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Comment, true));
                         }
 
-                        var countScript = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.Script] = reader.ReadInt32();
                         var countDeletedScript = reader.ReadInt32();
                         for (var i = 0; i < countDeletedScript; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Script, true));
                         }
 
-                        var countVariable = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.Variable] = reader.ReadInt32();
                         var countDeletedVariable = reader.ReadInt32();
                         for (var i = 0; i < countDeletedVariable; i++)
                         {
                             triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Variable, true));
                         }
 
-                        var countUNK128 = reader.ReadInt32();
+                        triggerItemCounts[TriggerItemType.UNK128] = reader.ReadInt32();
                         var countDeletedUNK128 = reader.ReadInt32();
                         for (var i = 0; i < countDeletedUNK128; i++)
                         {
@@ -175,6 +178,21 @@ namespace War3Net.Build.Script
 
                                 default:
                                     throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(TriggerItemType));
+                            }
+                        }
+
+                        foreach (TriggerItemType type in Enum.GetValues(typeof(TriggerItemType)))
+                        {
+                            var count = triggers._triggerItems.Count(item => item.ItemType == type);
+                            if (count > triggerItemCounts[type])
+                            {
+                                throw new InvalidDataException($"Expected {triggerItemCounts[type]} trigger items of type {type}, but got {count}.");
+                            }
+
+                            while (count < triggerItemCounts[type])
+                            {
+                                triggers._triggerItems.Add(new DeletedTriggerItem(type));
+                                count++;
                             }
                         }
                     }
@@ -234,9 +252,8 @@ namespace War3Net.Build.Script
                     writer.Write(NewFormatId);
                     writer.Write((int)_version);
 
-                    for (var i = 1; i <= 128; i <<= 1)
+                    foreach (TriggerItemType type in Enum.GetValues(typeof(TriggerItemType)))
                     {
-                        var type = (TriggerItemType)i;
                         writer.Write(_triggerItems.Count(item => item.ItemType == type));
 
                         var deletedItems = _triggerItems.Where(item => item is DeletedTriggerItem && item.ItemType == type && item.Id != -1).ToList();
