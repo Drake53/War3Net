@@ -14,6 +14,8 @@ using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Drawing.Blp
 {
     /// <summary>
@@ -62,23 +64,14 @@ namespace War3Net.Drawing.Blp
             using (var reader = new BinaryReader(_baseStream, Encoding.ASCII, true))
             {
                 // Checking for correct Magic-Code
-                _fileFormatVersion = (FileFormatVersion)reader.ReadUInt32();
-                if (!Enum.IsDefined(typeof(FileFormatVersion), _fileFormatVersion))
-                {
-                    throw new Exception("Invalid BLP Format.");
-                }
-
+                _fileFormatVersion = reader.ReadInt32<FileFormatVersion>();
                 if (_fileFormatVersion == FileFormatVersion.BLP0)
                 {
                     throw new NotSupportedException("Unable to open BLP0 file.");
                 }
 
                 // Reading type
-                _formatVersion = (FileContent)reader.ReadUInt32();
-                if (!Enum.IsDefined(typeof(FileContent), _formatVersion))
-                {
-                    throw new Exception("Invalid content type.");
-                }
+                _formatVersion = reader.ReadInt32<FileContent>();
 
                 if (_fileFormatVersion == FileFormatVersion.BLP2)
                 {
@@ -100,8 +93,8 @@ namespace War3Net.Drawing.Blp
                 }
 
                 // Reading width and height
-                _width = (int)reader.ReadUInt32();
-                _height = (int)reader.ReadUInt32();
+                _width = reader.ReadInt32();
+                _height = reader.ReadInt32();
 
                 if (_fileFormatVersion != FileFormatVersion.BLP2)
                 {
