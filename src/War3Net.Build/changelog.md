@@ -1,5 +1,12 @@
 # War3Net.Build Changelog
 
+## v1.5.0
+### Changes
+- Support parsing and serializing .wtg files.
+- Support additional format versions of .w3i files.
+- Update target framework from .NET Standard to .NET Core.
+- Include 1.32.9 in GamePatch enum.
+
 ## v1.4.0
 ### Changes
 - Added GetTerrainTypes and GetCliffTypes methods to MapEnvironment.

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Compression" Version="1.0.0-preview2" />
+    <PackageReference Include="War3Net.IO.Compression" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

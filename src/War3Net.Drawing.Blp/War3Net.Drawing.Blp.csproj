@@ -12,8 +12,8 @@
     <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp</PackageProjectUrl>
     <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
 
-    <Version>2.0.0</Version>
-    <FileVersion>2.0.0</FileVersion>
+    <Version>2.0.1</Version>
+    <FileVersion>2.0.1</FileVersion>
     <AssemblyVersion>2.0</AssemblyVersion>
   </PropertyGroup>
 
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="0.2.0" />
+    <PackageReference Include="War3Net.Common" Version="0.3.0" />
   </ItemGroup>
 
 </Project>

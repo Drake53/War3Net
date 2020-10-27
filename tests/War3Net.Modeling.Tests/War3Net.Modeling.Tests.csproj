@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Drawing.Blp" Version="1.1.0" />
+    <PackageReference Include="War3Net.Drawing.Blp" Version="2.0.1" />
     <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
   </ItemGroup>

@@ -12,8 +12,8 @@
     <PackageTags>compression huffman adpcm pklib zlib bzip2 warcraft3 warcraft-iii</PackageTags>
     <PackageReleaseNotes>Fixed bug in PKLib decompression.</PackageReleaseNotes>
 
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.1</Version>
+    <FileVersion>1.0.1</FileVersion>
     <AssemblyVersion>1</AssemblyVersion>
   </PropertyGroup>
 
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="0.2.0" />
+    <PackageReference Include="War3Net.Common" Version="0.3.0" />
   </ItemGroup>
 
 </Project>
