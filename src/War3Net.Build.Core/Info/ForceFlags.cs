@@ -14,7 +14,7 @@ namespace War3Net.Build.Info
     {
         Allied = 0x01,
         AlliedVictory = 0x02,
-        // 0x04
+        UNK4 = 0x04,
         ShareVision = 0x08,
         ShareUnitControl = 0x10,
         ShareAdvancedUnitControl = 0x20,

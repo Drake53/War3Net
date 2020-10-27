@@ -43,7 +43,7 @@ namespace War3Net.Build.Info
         private string _recommendedPlayers;
 
         private Quadrilateral _cameraBounds;
-        private RectangleMargins _cameraBoundsComplements;
+        private RectangleMargins? _cameraBoundsComplements;
         private int _playableMapAreaWidth;
         private int _playableMapAreaHeight;
 
@@ -81,6 +81,15 @@ namespace War3Net.Build.Info
         private SupportedModes _supportedModes; // Reforged (1.32)
         private GameDataVersion _gameDataVersion; // Reforged (1.32)
 
+        // v8 values
+        private float _unk1;
+        private int _unk2;
+        private float _unk3;
+        private float _unk4;
+        private float _unk5;
+        private int _unk6;
+        private int _unk7;
+
         internal MapInfo()
         {
             _playerData = new List<PlayerData>();
@@ -99,7 +108,7 @@ namespace War3Net.Build.Info
 
                 info._fileFormatVersion = MapInfoFormatVersion.Lua;
                 info._mapVersion = 1;
-                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
+                info._editorVersion = "W3N1".FromRawcode(); // War3Net.Build v1.x
                 info._gameVersion = GamePatchVersionProvider.GetGameVersion(GamePatch.v1_31_1);
 
                 info._mapName = "Just another Warcraft III map";
@@ -250,7 +259,7 @@ namespace War3Net.Build.Info
             set => _cameraBounds = value;
         }
 
-        public RectangleMargins CameraBoundsComplements
+        public RectangleMargins? CameraBoundsComplements
         {
             get => _cameraBoundsComplements;
             set => _cameraBoundsComplements = value;
@@ -581,22 +590,20 @@ namespace War3Net.Build.Info
                 var info = new MapInfo();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    info._fileFormatVersion = (MapInfoFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(MapInfoFormatVersion), info._fileFormatVersion))
+                    info._fileFormatVersion = reader.ReadInt32<MapInfoFormatVersion>();
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.RoC)
                     {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {info._fileFormatVersion}");
-                    }
+                        info._mapVersion = reader.ReadInt32();
+                        info._editorVersion = reader.ReadInt32();
 
-                    info._mapVersion = reader.ReadInt32();
-                    info._editorVersion = reader.ReadInt32();
-
-                    if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
-                    {
-                        info._gameVersion = new Version(
-                            reader.ReadInt32(),
-                            reader.ReadInt32(),
-                            reader.ReadInt32(),
-                            reader.ReadInt32());
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v27)
+                        {
+                            info._gameVersion = new Version(
+                                reader.ReadInt32(),
+                                reader.ReadInt32(),
+                                reader.ReadInt32(),
+                                reader.ReadInt32());
+                        }
                     }
 
                     info._mapName = reader.ReadChars();
@@ -604,65 +611,108 @@ namespace War3Net.Build.Info
                     info._mapDescription = reader.ReadChars();
                     info._recommendedPlayers = reader.ReadChars();
 
+                    if (info._fileFormatVersion == MapInfoFormatVersion.v8)
+                    {
+                        info._unk1 = reader.ReadSingle();
+                        info._unk2 = reader.ReadInt32();
+                        info._unk3 = reader.ReadSingle();
+                        info._unk4 = reader.ReadSingle();
+                        info._unk5 = reader.ReadSingle();
+                        info._unk6 = reader.ReadInt32();
+                    }
+
                     info._cameraBounds = Quadrilateral.Parse(stream, true);
-                    info._cameraBoundsComplements = RectangleMargins.Parse(stream, true);
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
+                    {
+                        info._cameraBoundsComplements = RectangleMargins.Parse(stream, true);
+                    }
+
                     info._playableMapAreaWidth = reader.ReadInt32();
                     info._playableMapAreaHeight = reader.ReadInt32();
 
-                    info._mapFlags = (MapFlags)reader.ReadInt32();
-                    info._tileset = (Tileset)reader.ReadChar();
-
-                    if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
+                    if (info._fileFormatVersion == MapInfoFormatVersion.v8)
                     {
-                        info._campaignBackgroundNumber = reader.ReadInt32();
+                        info._unk7 = reader.ReadInt32();
                     }
-                    else
+
+                    info._mapFlags = reader.ReadInt32<MapFlags>();
+                    info._tileset = reader.ReadChar<Tileset>();
+
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.v23)
                     {
                         info._loadingScreenBackgroundNumber = reader.ReadInt32();
                         info._loadingScreenPath = reader.ReadChars();
                     }
-
-                    info._loadingScreenText = reader.ReadChars();
-                    info._loadingScreenTitle = reader.ReadChars();
-                    info._loadingScreenSubtitle = reader.ReadChars();
-
-                    if (info._fileFormatVersion == MapInfoFormatVersion.RoC)
+                    else if (info._fileFormatVersion >= MapInfoFormatVersion.RoC)
                     {
-                        info._loadingScreenNumber = reader.ReadInt32();
+                        info._campaignBackgroundNumber = reader.ReadInt32();
                     }
-                    else
+                    else if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
                     {
-                        info._gameDataSet = (GameDataSet)reader.ReadInt32();
-                        info._prologueScreenPath = reader.ReadChars();
+                        info._loadingScreenPath = reader.ReadChars();
                     }
 
-                    info._prologueScreenText = reader.ReadChars();
-                    info._prologueScreenTitle = reader.ReadChars();
-                    info._prologueScreenSubtitle = reader.ReadChars();
-
-                    if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                    if (info._fileFormatVersion >= MapInfoFormatVersion.v10)
                     {
-                        info._fogStyle = (FogStyle)reader.ReadInt32();
-                        info._fogStartZ = reader.ReadSingle();
-                        info._fogEndZ = reader.ReadSingle();
-                        info._fogDensity = reader.ReadSingle();
-                        info._fogColor = reader.ReadColorRgba();
+                        info._loadingScreenText = reader.ReadChars();
+                        info._loadingScreenTitle = reader.ReadChars();
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
+                        {
+                            info._loadingScreenSubtitle = reader.ReadChars();
+                        }
 
-                        info._globalWeather = (WeatherType)reader.ReadInt32();
-                        info._soundEnvironment = reader.ReadChars();
-                        info._lightEnvironment = (Tileset)reader.ReadChar();
-                        info._waterTintingColor = reader.ReadColorRgba();
-                    }
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v23)
+                        {
+                            info._gameDataSet = reader.ReadInt32<GameDataSet>();
+                            info._prologueScreenPath = reader.ReadChars();
+                        }
+                        else if (info._fileFormatVersion >= MapInfoFormatVersion.RoC)
+                        {
+                            info._loadingScreenNumber = reader.ReadInt32();
+                        }
+                        else if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
+                        {
+                            info._prologueScreenPath = reader.ReadChars();
+                        }
 
-                    if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
-                    {
-                        info._scriptLanguage = (ScriptLanguage)reader.ReadInt32();
-                    }
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v11)
+                        {
+                            info._prologueScreenText = reader.ReadChars();
+                            info._prologueScreenTitle = reader.ReadChars();
+                            if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
+                            {
+                                info._prologueScreenSubtitle = reader.ReadChars();
+                            }
+                        }
 
-                    if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
-                    {
-                        info._supportedModes = (SupportedModes)reader.ReadInt32();
-                        info._gameDataVersion = (GameDataVersion)reader.ReadInt32();
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v23)
+                        {
+                            info._fogStyle = reader.ReadInt32<FogStyle>();
+                            info._fogStartZ = reader.ReadSingle();
+                            info._fogEndZ = reader.ReadSingle();
+                            info._fogDensity = reader.ReadSingle();
+                            info._fogColor = reader.ReadColorRgba();
+
+                            if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                            {
+                                info._globalWeather = reader.ReadInt32<WeatherType>();
+                            }
+
+                            info._soundEnvironment = reader.ReadChars();
+                            info._lightEnvironment = reader.ReadChar<Tileset>();
+                            info._waterTintingColor = reader.ReadColorRgba();
+                        }
+
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.Lua)
+                        {
+                            info._scriptLanguage = reader.ReadInt32<ScriptLanguage>();
+                        }
+
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.Reforged)
+                        {
+                            info._supportedModes = reader.ReadInt32<SupportedModes>();
+                            info._gameDataVersion = reader.ReadInt32<GameDataVersion>();
+                        }
                     }
 
                     var playerDataCount = reader.ReadInt32();
@@ -699,18 +749,29 @@ namespace War3Net.Build.Info
                             info._techData.Add(TechData.Parse(stream, true));
                         }
 
-                        var randomUnitTableCount = reader.ReadInt32();
-                        for (var i = 0; i < randomUnitTableCount; i++)
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v15)
                         {
-                            info._unitTables.Add(RandomUnitTable.Parse(stream, true));
+                            var randomUnitTableCount = reader.ReadInt32();
+                            for (var i = 0; i < randomUnitTableCount; i++)
+                            {
+                                info._unitTables.Add(RandomUnitTable.Parse(stream, true));
+                            }
                         }
 
-                        if (info._fileFormatVersion >= MapInfoFormatVersion.Tft)
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v24)
                         {
                             var randomItemTableCount = reader.ReadInt32();
                             for (var i = 0; i < randomItemTableCount; i++)
                             {
                                 info._itemTables.Add(RandomItemTable.Parse(stream, true));
+                            }
+                        }
+
+                        if (info._fileFormatVersion >= MapInfoFormatVersion.v26 && info._fileFormatVersion < MapInfoFormatVersion.Lua)
+                        {
+                            if (reader.ReadInt32() != 0)
+                            {
+                                throw new InvalidDataException();
                             }
                         }
                     }
@@ -739,7 +800,7 @@ namespace War3Net.Build.Info
 
         public void SerializeTo(Stream stream, bool leaveOpen = false)
         {
-            if (_fileFormatVersion >= MapInfoFormatVersion.Lua && _gameVersion is null)
+            if (_fileFormatVersion >= MapInfoFormatVersion.v27 && _gameVersion is null)
             {
                 throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(GameVersion)} is null.");
             }
@@ -749,7 +810,7 @@ namespace War3Net.Build.Info
                 throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBounds)} is null.");
             }
 
-            if (_cameraBoundsComplements is null)
+            if (_fileFormatVersion >= MapInfoFormatVersion.v15 && _cameraBoundsComplements is null)
             {
                 throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBoundsComplements)} is null.");
             }
@@ -757,15 +818,19 @@ namespace War3Net.Build.Info
             using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 writer.Write((int)_fileFormatVersion);
-                writer.Write(_mapVersion);
-                writer.Write(_editorVersion);
 
-                if (_fileFormatVersion >= MapInfoFormatVersion.Lua)
+                if (_fileFormatVersion >= MapInfoFormatVersion.RoC)
                 {
-                    writer.Write(_gameVersion.Major);
-                    writer.Write(_gameVersion.Minor);
-                    writer.Write(_gameVersion.Build);
-                    writer.Write(_gameVersion.Revision);
+                    writer.Write(_mapVersion);
+                    writer.Write(_editorVersion);
+
+                    if (_fileFormatVersion >= MapInfoFormatVersion.v27)
+                    {
+                        writer.Write(_gameVersion.Major);
+                        writer.Write(_gameVersion.Minor);
+                        writer.Write(_gameVersion.Build);
+                        writer.Write(_gameVersion.Revision);
+                    }
                 }
 
                 writer.WriteString(_mapName);
@@ -773,72 +838,115 @@ namespace War3Net.Build.Info
                 writer.WriteString(_mapDescription);
                 writer.WriteString(_recommendedPlayers);
 
+                if (_fileFormatVersion == MapInfoFormatVersion.v8)
+                {
+                    writer.Write(_unk1);
+                    writer.Write(_unk2);
+                    writer.Write(_unk3);
+                    writer.Write(_unk4);
+                    writer.Write(_unk5);
+                    writer.Write(_unk6);
+                }
+
                 _cameraBounds.WriteTo(writer);
-                _cameraBoundsComplements.WriteTo(writer);
+                if (_fileFormatVersion >= MapInfoFormatVersion.v15)
+                {
+                    _cameraBoundsComplements!.WriteTo(writer);
+                }
+
                 writer.Write(_playableMapAreaWidth);
                 writer.Write(_playableMapAreaHeight);
+
+                if (_fileFormatVersion == MapInfoFormatVersion.v8)
+                {
+                    writer.Write(_unk7);
+                }
 
                 writer.Write((int)_mapFlags);
                 writer.Write((char)_tileset);
 
-                if (_fileFormatVersion == MapInfoFormatVersion.RoC)
-                {
-                    writer.Write(_campaignBackgroundNumber);
-                }
-                else
+                if (_fileFormatVersion >= MapInfoFormatVersion.v23)
                 {
                     writer.Write(_loadingScreenBackgroundNumber);
                     writer.WriteString(_loadingScreenPath);
                 }
-
-                writer.WriteString(_loadingScreenText);
-                writer.WriteString(_loadingScreenTitle);
-                writer.WriteString(_loadingScreenSubtitle);
-
-                if (_fileFormatVersion == MapInfoFormatVersion.RoC)
+                else if (_fileFormatVersion >= MapInfoFormatVersion.RoC)
                 {
-                    writer.Write(_loadingScreenNumber);
+                    writer.Write(_campaignBackgroundNumber);
                 }
-                else
+                else if (_fileFormatVersion >= MapInfoFormatVersion.v15)
                 {
-                    writer.Write((int)_gameDataSet);
-                    writer.WriteString(_prologueScreenPath);
+                    writer.WriteString(_loadingScreenPath);
                 }
 
-                writer.WriteString(_prologueScreenText);
-                writer.WriteString(_prologueScreenTitle);
-                writer.WriteString(_prologueScreenSubtitle);
-
-                if (_fileFormatVersion >= MapInfoFormatVersion.Tft)
+                if (_fileFormatVersion >= MapInfoFormatVersion.v10)
                 {
-                    writer.Write((int)_fogStyle);
-                    writer.Write(_fogStartZ);
-                    writer.Write(_fogEndZ);
-                    writer.Write(_fogDensity);
-                    writer.Write(_fogColor.R);
-                    writer.Write(_fogColor.G);
-                    writer.Write(_fogColor.B);
-                    writer.Write(_fogColor.A);
+                    writer.WriteString(_loadingScreenText);
+                    writer.WriteString(_loadingScreenTitle);
+                    if (_fileFormatVersion >= MapInfoFormatVersion.v15)
+                    {
+                        writer.WriteString(_loadingScreenSubtitle);
+                    }
 
-                    writer.Write((int)_globalWeather);
-                    writer.WriteString(_soundEnvironment);
-                    writer.Write((char)_lightEnvironment);
+                    if (_fileFormatVersion >= MapInfoFormatVersion.v23)
+                    {
+                        writer.Write((int)_gameDataSet);
+                        writer.WriteString(_prologueScreenPath);
+                    }
+                    else if (_fileFormatVersion >= MapInfoFormatVersion.RoC)
+                    {
+                        writer.Write(_loadingScreenNumber);
+                    }
+                    else if (_fileFormatVersion >= MapInfoFormatVersion.v15)
+                    {
+                        writer.WriteString(_prologueScreenPath);
+                    }
 
-                    writer.Write(_waterTintingColor.R);
-                    writer.Write(_waterTintingColor.G);
-                    writer.Write(_waterTintingColor.B);
-                    writer.Write(_waterTintingColor.A);
-                }
+                    if (_fileFormatVersion >= MapInfoFormatVersion.v11)
+                    {
+                        writer.WriteString(_prologueScreenText);
+                        writer.WriteString(_prologueScreenTitle);
+                        if (_fileFormatVersion >= MapInfoFormatVersion.v15)
+                        {
+                            writer.WriteString(_prologueScreenSubtitle);
+                        }
+                    }
 
-                if (_fileFormatVersion >= MapInfoFormatVersion.Lua)
-                {
-                    writer.Write((int)_scriptLanguage);
-                }
+                    if (_fileFormatVersion >= MapInfoFormatVersion.v23)
+                    {
+                        writer.Write((int)_fogStyle);
+                        writer.Write(_fogStartZ);
+                        writer.Write(_fogEndZ);
+                        writer.Write(_fogDensity);
+                        writer.Write(_fogColor.R);
+                        writer.Write(_fogColor.G);
+                        writer.Write(_fogColor.B);
+                        writer.Write(_fogColor.A);
 
-                if (_fileFormatVersion >= MapInfoFormatVersion.Reforged)
-                {
-                    writer.Write((int)_supportedModes);
-                    writer.Write((int)_gameDataVersion);
+                        if (_fileFormatVersion >= MapInfoFormatVersion.Tft)
+                        {
+                            writer.Write((int)_globalWeather);
+                        }
+
+                        writer.WriteString(_soundEnvironment);
+                        writer.Write((char)_lightEnvironment);
+
+                        writer.Write(_waterTintingColor.R);
+                        writer.Write(_waterTintingColor.G);
+                        writer.Write(_waterTintingColor.B);
+                        writer.Write(_waterTintingColor.A);
+                    }
+
+                    if (_fileFormatVersion >= MapInfoFormatVersion.Lua)
+                    {
+                        writer.Write((int)_scriptLanguage);
+                    }
+
+                    if (_fileFormatVersion >= MapInfoFormatVersion.Reforged)
+                    {
+                        writer.Write((int)_supportedModes);
+                        writer.Write((int)_gameDataVersion);
+                    }
                 }
 
                 writer.Write(_playerData.Count);
@@ -876,19 +984,27 @@ namespace War3Net.Build.Info
                     data.WriteTo(writer);
                 }
 
-                writer.Write(_unitTables.Count);
-                foreach (var table in _unitTables)
+                if (_fileFormatVersion >= MapInfoFormatVersion.v15)
                 {
-                    table.WriteTo(writer);
+                    writer.Write(_unitTables.Count);
+                    foreach (var table in _unitTables)
+                    {
+                        table.WriteTo(writer);
+                    }
                 }
 
-                if (_fileFormatVersion >= MapInfoFormatVersion.Tft)
+                if (_fileFormatVersion >= MapInfoFormatVersion.v24)
                 {
                     writer.Write(_itemTables.Count);
                     foreach (var table in _itemTables)
                     {
                         table.WriteTo(writer);
                     }
+                }
+
+                if (_fileFormatVersion >= MapInfoFormatVersion.v26 && _fileFormatVersion < MapInfoFormatVersion.Lua)
+                {
+                    writer.Write(0);
                 }
             }
         }
