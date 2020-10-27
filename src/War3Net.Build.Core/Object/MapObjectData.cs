@@ -5,9 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Text;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
@@ -105,46 +106,15 @@ namespace War3Net.Build.Object
                 var data = new MapObjectData();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    data._fileFormatVersion = (ObjectDataFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(ObjectDataFormatVersion), data._fileFormatVersion))
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {data._fileFormatVersion}");
-                    }
+                    data._fileFormatVersion = reader.ReadInt32<ObjectDataFormatVersion>();
 
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._unitData = MapUnitObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._itemData = MapItemObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._destructableData = MapDestructableObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._doodadData = MapDoodadObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._abilityData = MapAbilityObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._buffData = MapBuffObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._upgradeData = MapUpgradeObjectData.Parse(stream, true);
-                    }
+                    data._unitData = reader.ReadBool() ? MapUnitObjectData.Parse(stream, true) : null;
+                    data._itemData = reader.ReadBool() ? MapItemObjectData.Parse(stream, true) : null;
+                    data._destructableData = reader.ReadBool() ? MapDestructableObjectData.Parse(stream, true) : null;
+                    data._doodadData = reader.ReadBool() ? MapDoodadObjectData.Parse(stream, true) : null;
+                    data._abilityData = reader.ReadBool() ? MapAbilityObjectData.Parse(stream, true) : null;
+                    data._buffData = reader.ReadBool() ? MapBuffObjectData.Parse(stream, true) : null;
+                    data._upgradeData = reader.ReadBool() ? MapUpgradeObjectData.Parse(stream, true) : null;
                 }
 
                 return data;

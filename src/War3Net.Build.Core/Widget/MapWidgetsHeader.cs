@@ -5,9 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Text;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
@@ -47,18 +48,8 @@ namespace War3Net.Build.Widget
                     throw new InvalidDataException($"Expected file header signature at the start of a .doo file.");
                 }
 
-                header._version = (MapWidgetsVersion)reader.ReadUInt32();
-                if (!Enum.IsDefined(typeof(MapWidgetsVersion), header._version))
-                {
-                    throw new NotSupportedException($"Version {header._version} for .doo files is not supported.");
-                }
-
-                header._subVersion = (MapWidgetsSubVersion)reader.ReadUInt32();
-                if (!Enum.IsDefined(typeof(MapWidgetsSubVersion), header._subVersion))
-                {
-                    throw new NotSupportedException($"Subversion {header._subVersion} is not supported.");
-                }
-
+                header._version = reader.ReadInt32<MapWidgetsVersion>();
+                header._subVersion = reader.ReadInt32<MapWidgetsSubVersion>();
                 header._dataCount = reader.ReadUInt32();
             }
 

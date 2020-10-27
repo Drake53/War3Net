@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Audio
 {
     public sealed class MapSounds : IEnumerable<Sound>
@@ -57,13 +59,9 @@ namespace War3Net.Build.Audio
                 var mapSounds = new MapSounds();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    mapSounds._version = (MapSoundsFormatVersion)reader.ReadUInt32();
-                    if (mapSounds._version < MapSoundsFormatVersion.Normal || mapSounds._version > LatestVersion)
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapSounds._version}");
-                    }
+                    mapSounds._version = reader.ReadInt32<MapSoundsFormatVersion>();
 
-                    var soundCount = reader.ReadUInt32();
+                    var soundCount = reader.ReadInt32();
                     for (var i = 0; i < soundCount; i++)
                     {
                         var sound = Sound.Parse(stream, mapSounds._version, true);

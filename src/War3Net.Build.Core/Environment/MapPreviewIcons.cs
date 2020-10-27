@@ -14,6 +14,7 @@ using System.Text;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
@@ -97,7 +98,7 @@ namespace War3Net.Build.Environment
                 var data = new MapPreviewIcons();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    data._version = (MapPreviewIconsFormatVersion)reader.ReadInt32();
+                    data._version = reader.ReadInt32<MapPreviewIconsFormatVersion>();
 
                     var iconCount = reader.ReadInt32();
                     for (var i = 0; i < iconCount; i++)

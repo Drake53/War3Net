@@ -5,9 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Text;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
@@ -105,46 +106,15 @@ namespace War3Net.Build.Object
                 var data = new CampaignObjectData();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    data._fileFormatVersion = (ObjectDataFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(ObjectDataFormatVersion), data._fileFormatVersion))
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {data._fileFormatVersion}");
-                    }
+                    data._fileFormatVersion = reader.ReadInt32<ObjectDataFormatVersion>();
 
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._unitData = CampaignUnitObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._itemData = CampaignItemObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._destructableData = CampaignDestructableObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._doodadData = CampaignDoodadObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._abilityData = CampaignAbilityObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._buffData = CampaignBuffObjectData.Parse(stream, true);
-                    }
-
-                    if (reader.ReadInt32() != 0)
-                    {
-                        data._upgradeData = CampaignUpgradeObjectData.Parse(stream, true);
-                    }
+                    data._unitData = reader.ReadBool() ? CampaignUnitObjectData.Parse(stream, true) : null;
+                    data._itemData = reader.ReadBool() ? CampaignItemObjectData.Parse(stream, true) : null;
+                    data._destructableData = reader.ReadBool() ? CampaignDestructableObjectData.Parse(stream, true) : null;
+                    data._doodadData = reader.ReadBool() ? CampaignDoodadObjectData.Parse(stream, true) : null;
+                    data._abilityData = reader.ReadBool() ? CampaignAbilityObjectData.Parse(stream, true) : null;
+                    data._buffData = reader.ReadBool() ? CampaignBuffObjectData.Parse(stream, true) : null;
+                    data._upgradeData = reader.ReadBool() ? CampaignUpgradeObjectData.Parse(stream, true) : null;
                 }
 
                 return data;

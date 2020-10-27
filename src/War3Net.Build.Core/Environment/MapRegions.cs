@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Environment
 {
     public sealed class MapRegions : IEnumerable<Region>
@@ -52,11 +54,7 @@ namespace War3Net.Build.Environment
                 var mapRegions = new MapRegions();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    mapRegions._version = (MapRegionsFormatVersion)reader.ReadUInt32();
-                    if (mapRegions._version != LatestVersion)
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {mapRegions._version}");
-                    }
+                    mapRegions._version = reader.ReadInt32<MapRegionsFormatVersion>();
 
                     var regionCount = reader.ReadUInt32();
                     for (var i = 0; i < regionCount; i++)

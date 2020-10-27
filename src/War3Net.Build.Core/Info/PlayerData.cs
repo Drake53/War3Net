@@ -175,9 +175,9 @@ namespace War3Net.Build.Info
         internal static void ReadFrom(BinaryReader reader, PlayerData data)
         {
             data._playerNumber = reader.ReadInt32();
-            data._playerController = (PlayerController)reader.ReadInt32();
-            data._playerRace = (PlayerRace)reader.ReadInt32();
-            data._playerFlags = (PlayerFlags)reader.ReadInt32();
+            data._playerController = reader.ReadInt32<PlayerController>();
+            data._playerRace = reader.ReadInt32<PlayerRace>();
+            data._playerFlags = reader.ReadInt32<PlayerFlags>();
             data._playerName = reader.ReadChars();
             data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
 

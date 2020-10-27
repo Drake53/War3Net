@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -216,12 +215,7 @@ namespace War3Net.Build.Info
                 var info = new CampaignInfo();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    info._fileFormatVersion = (CampaignInfoFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(CampaignInfoFormatVersion), info._fileFormatVersion))
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {info._fileFormatVersion}");
-                    }
-
+                    info._fileFormatVersion = reader.ReadInt32<CampaignInfoFormatVersion>();
                     info._campaignVersion = reader.ReadInt32();
                     info._editorVersion = reader.ReadInt32();
 
@@ -230,7 +224,7 @@ namespace War3Net.Build.Info
                     info._campaignAuthor = reader.ReadChars();
                     info._campaignDescription = reader.ReadChars();
 
-                    info._campaignFlags = (CampaignFlags)reader.ReadInt32();
+                    info._campaignFlags = reader.ReadInt32<CampaignFlags>();
 
                     info._campaignBackgroundNumber = reader.ReadInt32();
                     info._backgroundScreenPath = reader.ReadChars();
@@ -239,13 +233,13 @@ namespace War3Net.Build.Info
                     info._ambientSoundNumber = reader.ReadInt32();
                     info._ambientSoundPath = reader.ReadChars();
 
-                    info._fogStyle = (FogStyle)reader.ReadInt32();
+                    info._fogStyle = reader.ReadInt32<FogStyle>();
                     info._fogStartZ = reader.ReadSingle();
                     info._fogEndZ = reader.ReadSingle();
                     info._fogDensity = reader.ReadSingle();
                     info._fogColor = reader.ReadColorRgba();
 
-                    info._race = (CampaignRace)reader.ReadInt32();
+                    info._race = reader.ReadInt32<CampaignRace>();
 
                     var mapCount = reader.ReadInt32();
                     for (var i = 0; i < mapCount; i++)

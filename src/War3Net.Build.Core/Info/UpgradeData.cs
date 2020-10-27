@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Text;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Info
 {
     public sealed class UpgradeData
@@ -55,7 +57,7 @@ namespace War3Net.Build.Info
                 data._playersMask = reader.ReadInt32();
                 data._upgradeId = reader.ReadChars(4);
                 data._upgradeLevel = reader.ReadInt32();
-                data._availability = (UpgradeAvailability)reader.ReadInt32();
+                data._availability = reader.ReadInt32<UpgradeAvailability>();
             }
 
             return data;

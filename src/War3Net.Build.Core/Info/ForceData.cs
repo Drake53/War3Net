@@ -36,7 +36,7 @@ namespace War3Net.Build.Info
             var data = new ForceData();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                data._forceFlags = (ForceFlags)reader.ReadInt32();
+                data._forceFlags = reader.ReadInt32<ForceFlags>();
                 data._playersMask = reader.ReadInt32();
                 data._forceName = reader.ReadChars();
             }

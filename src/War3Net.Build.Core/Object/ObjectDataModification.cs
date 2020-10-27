@@ -185,7 +185,7 @@ namespace War3Net.Build.Object
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 data._id = reader.ReadInt32();
-                data._type = (ObjectDataType)reader.ReadInt32();
+                data._type = reader.ReadInt32<ObjectDataType>();
 
                 if (readLevelData)
                 {

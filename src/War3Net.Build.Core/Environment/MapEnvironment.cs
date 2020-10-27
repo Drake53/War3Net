@@ -15,6 +15,7 @@ using System.Text;
 using War3Net.Build.Common;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
@@ -261,11 +262,7 @@ namespace War3Net.Build.Environment
                         throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
                     }
 
-                    environment._version = (MapEnvironmentFormatVersion)reader.ReadUInt32();
-                    if (environment._version != LatestVersion)
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {environment._version}");
-                    }
+                    environment._version = reader.ReadInt32<MapEnvironmentFormatVersion>();
 
                     environment._tileset = (Tileset)reader.ReadChar();
                     /*var customTileset =*/ reader.ReadUInt32();
@@ -273,13 +270,13 @@ namespace War3Net.Build.Environment
                     var terrainTypeCount = reader.ReadUInt32();
                     for (var i = 0; i < terrainTypeCount; i++)
                     {
-                        environment._terrainTypes.Add((TerrainType)reader.ReadUInt32());
+                        environment._terrainTypes.Add(reader.ReadInt32<TerrainType>());
                     }
 
                     var cliffTypeCount = reader.ReadUInt32();
                     for (var i = 0; i < cliffTypeCount; i++)
                     {
-                        environment._cliffTypes.Add((CliffType)reader.ReadUInt32());
+                        environment._cliffTypes.Add(reader.ReadInt32<CliffType>());
                     }
 
                     environment._width = reader.ReadUInt32();

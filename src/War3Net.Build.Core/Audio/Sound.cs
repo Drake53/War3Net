@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -156,7 +155,7 @@ namespace War3Net.Build.Audio
                 sound._variableName = reader.ReadChars();
                 sound._filePath = reader.ReadChars();
                 sound._eaxSetting = reader.ReadChars();
-                sound._flags = (SoundFlags)reader.ReadInt32();
+                sound._flags = reader.ReadInt32<SoundFlags>();
 
                 sound._fadeInRate = reader.ReadInt32();
                 sound._fadeOutRate = reader.ReadInt32();
@@ -167,11 +166,7 @@ namespace War3Net.Build.Audio
                 sound._pitchVariance = reader.ReadSingle();
                 sound._priority = reader.ReadInt32();
 
-                sound._channel = (SoundChannel)reader.ReadInt32();
-                if (!Enum.IsDefined(typeof(SoundChannel), sound._channel))
-                {
-                    throw new InvalidDataException($"Unknown sound channel: {sound._channel}");
-                }
+                sound._channel = reader.ReadInt32<SoundChannel>();
 
                 sound._minDistance = reader.ReadSingle();
                 sound._maxDistance = reader.ReadSingle();

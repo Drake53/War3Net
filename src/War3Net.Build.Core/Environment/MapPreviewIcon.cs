@@ -9,6 +9,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Environment
 {
     public sealed class MapPreviewIcon
@@ -51,7 +53,7 @@ namespace War3Net.Build.Environment
             var iconData = new MapPreviewIcon();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
-                iconData._iconType = (MapPreviewIconType)reader.ReadInt32();
+                iconData._iconType = reader.ReadInt32<MapPreviewIconType>();
                 iconData._x = (byte)reader.ReadInt32();
                 iconData._y = (byte)reader.ReadInt32();
                 iconData._color = Color.FromArgb(reader.ReadInt32());

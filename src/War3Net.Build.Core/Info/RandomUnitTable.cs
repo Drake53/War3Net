@@ -44,7 +44,7 @@ namespace War3Net.Build.Info
                 var positionCount = reader.ReadInt32(); // amount of columns
                 for (var x = 0; x < positionCount; x++)
                 {
-                    table._positionTypes.Add((WidgetType)reader.ReadInt32());
+                    table._positionTypes.Add(reader.ReadInt32<WidgetType>());
                 }
 
                 var setCount = reader.ReadInt32(); // amount of rows

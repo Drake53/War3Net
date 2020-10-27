@@ -77,7 +77,10 @@ namespace War3Net.Common.Extensions
             var result = (object)reader.ReadInt32();
             if (!Enum.IsDefined(typeof(TEnum), result))
             {
-                throw new InvalidDataException($"Value '{result}' is not defined for enum of type {typeof(TEnum).Name}.");
+                var enumName = typeof(TEnum).Name;
+                throw enumName.EndsWith("Version", StringComparison.Ordinal)
+                    ? (Exception)new NotSupportedException($"Unknown version of {enumName}: '{result}'.")
+                    : new InvalidDataException($"Value '{result}' is not defined for enum of type {enumName}.");
             }
 
             return (TEnum)result;

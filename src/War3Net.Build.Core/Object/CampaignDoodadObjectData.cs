@@ -5,11 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
@@ -58,11 +59,7 @@ namespace War3Net.Build.Object
                 var data = new CampaignDoodadObjectData();
                 using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
                 {
-                    data._fileFormatVersion = (ObjectDataFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(ObjectDataFormatVersion), data._fileFormatVersion))
-                    {
-                        throw new NotSupportedException($"Unknown version of '{FileName}': {data._fileFormatVersion}");
-                    }
+                    data._fileFormatVersion = reader.ReadInt32<ObjectDataFormatVersion>();
 
                     var baseModificationCount = reader.ReadInt32();
                     for (var i = 0; i < baseModificationCount; i++)
