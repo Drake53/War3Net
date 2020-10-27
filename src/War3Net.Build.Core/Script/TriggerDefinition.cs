@@ -75,15 +75,15 @@ namespace War3Net.Build.Script
                 trigger._runOnMapInit = reader.ReadBool();
                 trigger._parentId = reader.ReadInt32();
 
-                var ecaCount = reader.ReadInt32();
-                if (trigger._isCustomTextTrigger && ecaCount > 0)
+                var guiFunctionCount = reader.ReadInt32();
+                if (trigger._isCustomTextTrigger && guiFunctionCount > 0)
                 {
-                    throw new InvalidDataException();
+                    throw new InvalidDataException($"Custom text trigger should not have any GUI functions.");
                 }
 
-                for (var j = 0; j < ecaCount; j++)
+                for (var j = 0; j < guiFunctionCount; j++)
                 {
-                    trigger._functions.Add(TriggerFunction.Parse(stream, triggerData, formatVersion, TriggerFunctionContext.Default, true));
+                    trigger._functions.Add(TriggerFunction.Parse(stream, triggerData, formatVersion, false, true));
                 }
             }
 

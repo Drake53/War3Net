@@ -75,5 +75,10 @@ namespace War3Net.Build.Script
                 writer.Write(_parentId);
             }
         }
+
+        public override string ToString()
+        {
+            return $"{_type} {_name}{(_isArray ? $"[{(_arraySize > 0 ? $"{_arraySize}" : string.Empty)}]" : string.Empty)}{(_isInitialized ? $" = {_initialValue}" : string.Empty)}";
+        }
     }
 }

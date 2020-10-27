@@ -19,7 +19,7 @@ namespace War3Net.Build.Script
         private readonly List<TriggerFunction> _nestedFunctions;
 
         private TriggerFunctionType _type;
-        private int? _branch;
+        private int _branch;
         private string _name;
         private bool _isEnabled;
 
@@ -29,23 +29,15 @@ namespace War3Net.Build.Script
             _nestedFunctions = new List<TriggerFunction>();
         }
 
-        public static TriggerFunction Parse(Stream stream, TriggerData triggerData, MapTriggersFormatVersion formatVersion, TriggerFunctionContext context, bool leaveOpen)
+        public static TriggerFunction Parse(Stream stream, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool isChildFunction, bool leaveOpen)
         {
             var function = new TriggerFunction();
             using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
             {
                 function._type = reader.ReadInt32<TriggerFunctionType>();
-                if (context == TriggerFunctionContext.Child)
-                {
-                    function._branch = reader.ReadInt32();
-                }
-
+                function._branch = isChildFunction ? reader.ReadInt32() : -1;
                 function._name = reader.ReadChars();
                 function._isEnabled = reader.ReadBool();
-                if (!function._isEnabled && context == TriggerFunctionContext.Parameter)
-                {
-                    throw new InvalidDataException();
-                }
 
                 var parameterCount = triggerData.GetParameterCount(function._type, function._name);
                 for (var i = 0; i < parameterCount; i++)
@@ -58,14 +50,9 @@ namespace War3Net.Build.Script
                     var nestedfunctionCount = reader.ReadInt32();
                     if (nestedfunctionCount > 0)
                     {
-                        if (context == TriggerFunctionContext.Parameter)
-                        {
-                            throw new InvalidDataException();
-                        }
-
                         for (var i = 0; i < nestedfunctionCount; i++)
                         {
-                            function._nestedFunctions.Add(Parse(stream, triggerData, formatVersion, TriggerFunctionContext.Child, true));
+                            function._nestedFunctions.Add(Parse(stream, triggerData, formatVersion, true, true));
                         }
                     }
                 }
@@ -77,9 +64,9 @@ namespace War3Net.Build.Script
         public void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion)
         {
             writer.Write((int)_type);
-            if (_branch.HasValue)
+            if (_branch != -1)
             {
-                writer.Write(_branch.Value);
+                writer.Write(_branch);
             }
 
             writer.WriteString(_name);
@@ -98,6 +85,11 @@ namespace War3Net.Build.Script
                     nestedFunction.WriteTo(writer, formatVersion);
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{_name}({string.Join(", ", _parameters)})";
         }
     }
 }

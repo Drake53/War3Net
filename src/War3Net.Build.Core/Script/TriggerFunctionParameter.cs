@@ -32,10 +32,10 @@ namespace War3Net.Build.Script
                 {
                     if (parameter._type != TriggerFunctionParameterType.Function)
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Function}' to have a function.");
                     }
 
-                    parameter._function = TriggerFunction.Parse(stream, triggerData, formatVersion, TriggerFunctionContext.Parameter, true);
+                    parameter._function = TriggerFunction.Parse(stream, triggerData, formatVersion, false, true);
                 }
 
                 var haveArrayIndexer = reader.ReadBool();
@@ -43,7 +43,7 @@ namespace War3Net.Build.Script
                 {
                     if (parameter._type != TriggerFunctionParameterType.Variable)
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Variable}' to have an array indexer.");
                     }
 
                     parameter._arrayIndexer = Parse(stream, triggerData, formatVersion, true);
@@ -63,6 +63,18 @@ namespace War3Net.Build.Script
 
             writer.Write(_arrayIndexer is null ? 0 : 1);
             _arrayIndexer?.WriteTo(writer, formatVersion);
+        }
+
+        public override string ToString()
+        {
+            return _type switch
+            {
+                TriggerFunctionParameterType.Preset => _value,
+                TriggerFunctionParameterType.Variable => $"{_value}{(_arrayIndexer is null ? string.Empty : $"[{_arrayIndexer}]")}",
+                TriggerFunctionParameterType.Function => _function?.ToString() ?? $"{_value}()",
+                TriggerFunctionParameterType.String => $"\"{_value}\"",
+                TriggerFunctionParameterType.Undefined => $"{{{_type}}}",
+            };
         }
     }
 }

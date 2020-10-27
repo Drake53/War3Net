@@ -70,7 +70,7 @@ namespace War3Net.Build.Script
                     var header = reader.ReadInt32();
                     if (header != FileFormatHeader)
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException($"Expected file header signature at the start of .wtg file.");
                     }
 
                     triggers._version = (MapTriggersFormatVersion)reader.ReadInt32();

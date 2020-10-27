@@ -99,7 +99,10 @@ namespace War3Net.Build.Script
                     var values = split[1].Split(',', StringSplitOptions.RemoveEmptyEntries);
                     if (values.Length - argumentsOffset < 0)
                     {
-                        throw new InvalidDataException();
+                        throw new InvalidDataException(
+                            argumentsOffset > 1
+                            ? $"Expected at least {argumentsOffset} arguments, but only got {values.Length}."
+                            : "Expected at least one argument, but got none.");
                     }
 
                     var parameters = values.Skip(argumentsOffset).ToArray();
