@@ -10,7 +10,7 @@ namespace War3Net.Drawing.Blp
     /// <summary>
     /// Indicates the file format of the image(s) embedded in the <see cref="BlpFile"/>.
     /// </summary>
-    internal enum FileContent : uint
+    internal enum FileContent
     {
         /// <summary>
         /// JPEG Compression (JFIF formatted).
