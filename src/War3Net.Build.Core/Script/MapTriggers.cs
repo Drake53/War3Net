@@ -288,13 +288,11 @@ namespace War3Net.Build.Script
                 {
                     writer.Write((int)_version);
 
-                    writer.Write(_triggerItems.Count(item => item is TriggerCategoryDefinition));
-                    foreach (var triggerItem in _triggerItems)
+                    var triggerCategories = _triggerItems.Where(item => item is TriggerCategoryDefinition && item.ItemType != TriggerItemType.RootCategory).ToArray();
+                    writer.Write(triggerCategories.Length);
+                    foreach (var triggerCategory in triggerCategories)
                     {
-                        if (triggerItem is TriggerCategoryDefinition)
-                        {
-                            triggerItem.WriteTo(writer, _version, false);
-                        }
+                        triggerCategory.WriteTo(writer, _version, false);
                     }
 
                     writer.Write(_gameVersion);
@@ -305,13 +303,11 @@ namespace War3Net.Build.Script
                         variable.WriteTo(writer, _version, false);
                     }
 
-                    writer.Write(_triggerItems.Count(item => item is TriggerDefinition));
-                    foreach (var triggerItem in _triggerItems)
+                    var triggers = _triggerItems.Where(item => item is TriggerDefinition).ToArray();
+                    writer.Write(triggers.Length);
+                    foreach (var trigger in triggers)
                     {
-                        if (triggerItem is TriggerDefinition)
-                        {
-                            triggerItem.WriteTo(writer, _version, false);
-                        }
+                        trigger.WriteTo(writer, _version, false);
                     }
                 }
             }
