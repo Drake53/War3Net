@@ -40,6 +40,12 @@ namespace War3Net.Build.Script
             set => _version = value;
         }
 
+        public bool UseNewFormat
+        {
+            get => _newFormat;
+            set => _newFormat = value;
+        }
+
         public static MapCustomTextTriggers Parse(Stream stream, bool leaveOpen = false)
         {
             try
