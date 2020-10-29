@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -49,15 +47,56 @@ namespace NuGetPackageUploader
             var updateableProjects = new HashSet<string>();
             var handledProjects = new HashSet<string>();
 
+            var knownLatestVersions = new Dictionary<string, NuGetVersion>();
+            var uploadablePackageFilePaths = new Dictionary<string, HashSet<string>>(); // from local feed to online feed
+
             while (true)
             {
-                var knownLatestVersions = new Dictionary<string, NuGetVersion>();
                 var knownLatestFeedVersions = new Dictionary<string, NuGetVersion>();
                 var moveablePackageFilePaths = new Dictionary<string, HashSet<string>>(); // from release folder to local feed
-                var uploadablePackageFilePaths = new Dictionary<string, HashSet<string>>(); // from local feed to online feed
                 var anyBuildFailed = false;
+                var anyProjectSkipped = false;
 
+                // Prevent build fails by only checking projects without dependencies on other (unhandled) projects.
+                var checkableProjectFolders = new HashSet<string>();
                 foreach (var war3netProjectFolder in war3netProjectFolders)
+                {
+                    var projectName = new DirectoryInfo(war3netProjectFolder).Name;
+                    if (handledProjects.Contains(projectName))
+                    {
+                        continue;
+                    }
+
+                    var projectFilePath = Path.Combine(war3netProjectFolder, $"{projectName}.csproj");
+                    var project = CSharpLua.ProjectHelper.ParseProject(projectFilePath, "Release");
+
+                    // Project reference(s) indicates that this project relies on at least one other project that is not ready to be packaged, so skip it.
+                    // Since Cake ignores debug/release condition, search for duplicate projectreferences to be sure the projectreference exists in release configuration.
+                    if (project.ProjectReferences.GroupBy(project => project.Name).Any(grouping => grouping.Count() > 1))
+                    {
+                        continue;
+                    }
+
+                    if (project.PackageReferences.All(packageReference =>
+                    {
+                        // Only care about War3Net projects (that NuGetPackageUploader is responsible for, so exception for War3Net.CSharpLua).
+                        if (packageReference.Name.StartsWith("War3Net", StringComparison.Ordinal))
+                        {
+                            return handledProjects.Contains(packageReference.Name) || string.Equals(packageReference.Name, "War3Net.CSharpLua", StringComparison.Ordinal);
+                        }
+
+                        return true;
+                    }))
+                    {
+                        checkableProjectFolders.Add(war3netProjectFolder);
+                    }
+                    else
+                    {
+                        anyProjectSkipped = true;
+                    }
+                }
+
+                foreach (var war3netProjectFolder in checkableProjectFolders)
                 {
                     var projectName = new DirectoryInfo(war3netProjectFolder).Name;
                     if (handledProjects.Contains(projectName))
@@ -209,7 +248,17 @@ namespace NuGetPackageUploader
                             }
                         }
 
-                        uploadablePackageFilePaths.Add(projectName, uploadablePackages);
+                        if (uploadablePackages.Any())
+                        {
+                            if (uploadablePackageFilePaths.TryGetValue(projectName, out var set))
+                            {
+                                set.UnionWith(uploadablePackages);
+                            }
+                            else
+                            {
+                                uploadablePackageFilePaths[projectName] = uploadablePackages;
+                            }
+                        }
                     }
 
                     if (knownLatestVersion != null)
@@ -233,6 +282,19 @@ namespace NuGetPackageUploader
                         Console.WriteLine(updateableProject);
                     }
 
+                    Console.WriteLine();
+
+                    // 'dotnet pack' not deterministic, so byte-by-byte comparison can incorrectly detect if changes were made to a project.
+                    Console.WriteLine("Ignore version increment requirement? (Y/N)");
+
+                    var key = Console.ReadKey().Key;
+                    if (key == ConsoleKey.Y)
+                    {
+                        handledProjects.UnionWith(updateableProjects);
+                        updateableProjects.Clear();
+                    }
+
+                    Console.WriteLine();
                     Console.WriteLine();
                 }
 
@@ -333,6 +395,7 @@ namespace NuGetPackageUploader
                 var anyPackageMoved = false;
                 foreach (var pair in moveablePackageFilePaths)
                 {
+                    var uploadablePackages = new HashSet<string>();
                     var projectName = pair.Key;
                     foreach (var moveablePackageFilePath in pair.Value)
                     {
@@ -362,23 +425,39 @@ namespace NuGetPackageUploader
                                 File.Copy(symbolsFilePath, Path.Combine(LocalNuGetFeedDirectory, projectName, symbolsFileName));
                             }
 
+                            uploadablePackages.Add(moveablePackageFilePath);
+
                             anyPackageMoved = true;
                         }
 
                         Console.WriteLine();
                     }
+
+                    if (uploadablePackages.Any())
+                    {
+                        if (uploadablePackageFilePaths.TryGetValue(projectName, out var set))
+                        {
+                            set.UnionWith(uploadablePackages);
+                        }
+                        else
+                        {
+                            uploadablePackageFilePaths[projectName] = uploadablePackages;
+                        }
+                    }
                 }
 
                 Console.WriteLine();
 
-                if (anyBuildFailed || ApiKey is null)
+                if (anyBuildFailed || anyProjectSkipped || ApiKey is null)
                 {
-                    Console.WriteLine("Uploading packages disabled because some builds failed, and/or API-key has not been set.");
+                    if (anyBuildFailed) Console.WriteLine("Uploading packages disabled because some builds failed.");
+                    if (anyProjectSkipped) Console.WriteLine("Uploading packages disabled because some projects were skipped.");
+                    if (ApiKey is null) Console.WriteLine("Uploading packages disabled API-key has not been set.");
 
-                    if (anyPackageMoved)
+                    if (anyPackageMoved || anyProjectSkipped)
                     {
                         Console.WriteLine();
-                        Console.WriteLine("One or more packages have been moved to the local feed, so the program will restart.");
+                        Console.WriteLine("Restarting...");
                         Console.WriteLine();
                         Console.WriteLine();
                         Console.WriteLine();
@@ -387,6 +466,10 @@ namespace NuGetPackageUploader
                     }
                     else
                     {
+                        Console.WriteLine();
+                        Console.WriteLine("No packages were moved and no projects were skipped, so the program will now exit.");
+                        Console.WriteLine();
+
                         break;
                     }
                 }
