@@ -13,7 +13,8 @@ namespace War3Net.Common.Extensions
 {
     public static class BinaryWriterExtensions
     {
-        public static void WriteString(this BinaryWriter writer, string? s)
+        /// <param name="endWithNullChar">Set this to <see langword="false"/> when writing a length-prefixed string.</param>
+        public static void WriteString(this BinaryWriter writer, string? s, bool endWithNullChar = true)
         {
             if (writer is null)
             {
@@ -24,7 +25,7 @@ namespace War3Net.Common.Extensions
             var endsWithNullChar = false;
             foreach (var c in s ?? string.Empty)
             {
-                if (endsWithNullChar)
+                if (endsWithNullChar && c != char.MinValue)
                 {
                     throw new ArgumentException("String is not allowed to contain \0, unless it is the last character.", nameof(s));
                 }
@@ -60,7 +61,7 @@ namespace War3Net.Common.Extensions
                 throw new ArgumentException("Expected surrogate pair.", nameof(s));
             }
 
-            if (!endsWithNullChar)
+            if (!endsWithNullChar && endWithNullChar)
             {
                 writer.Write(char.MinValue);
             }
