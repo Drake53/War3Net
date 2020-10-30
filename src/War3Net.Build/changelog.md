@@ -1,4 +1,18 @@
-# War3Net.Build Changelog
+# War3Net.Build(.Core) Changelog
+
+## v1.5.3
+### Changes
+- Add UseNewFormat property to MapCustomTextTriggers.
+
+## v1.5.2
+### Changes
+- Support parsing and serializing .wct files.
+
+## v1.5.1
+### Changes
+- Add SoundFlags.UNK16 flag.
+### Bugfixes
+- Fix MapTriggers serializer for old format could serialize TriggerItemType.RootCategory items.
 
 ## v1.5.0
 ### Changes

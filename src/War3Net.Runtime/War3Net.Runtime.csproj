@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build.Core" Version="1.4.0" />
+    <PackageReference Include="War3Net.Build.Core" Version="1.5.3" />
     <!-- TODO: packageref -->
     <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
   </ItemGroup>
