@@ -201,7 +201,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             {
                 case SyntaxTokenType.PlusOperator: sb.Append('+'); break;
                 case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
-                case SyntaxTokenType.NotOperator: sb.Append("not"); break;
+                case SyntaxTokenType.NotOperator: sb.Append("not "); break;
 
                 default:
                     throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression.");

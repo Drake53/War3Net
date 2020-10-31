@@ -42,6 +42,11 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
 
             typeReferenceNode.TypeReferenceNameToken.TranspileIdentifier(ref sb);
+
+            if (typeReferenceNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
+            {
+                TranspileStringConcatenationHandler.RegisterLocalStringVariable(typeReferenceNode.TypeReferenceNameToken.ValueText);
+            }
         }
     }
 }

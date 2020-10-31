@@ -52,7 +52,9 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
             isString = TranspileStringConcatenationHandler.IsStringVariable(arrayReferenceNode.IdentifierNameNode.ValueText);
 
             arrayReferenceNode.IdentifierNameNode.TranspileExpression(ref sb);
+            sb.Append('[');
             arrayReferenceNode.IndexExpressionNode.Transpile(ref sb);
+            sb.Append(']');
         }
     }
 }
