@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
         private const string AntiReservedKeywordConflictPrefix = "@";
 
         // TODO: use SyntaxFacts.IsValidIdentifier for alphanumeric tokens
-        private static Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
+        private static readonly Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
 
         public static TypeSyntax TranspileType(this TokenNode tokenNode, TokenTranspileFlags flags = (TokenTranspileFlags)0)
         {
@@ -181,11 +181,17 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
+        private const string AntiReservedKeywordConflictPrefix = "_";
+
+        private static readonly Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
+
         public static void TranspileIdentifier(this TokenNode tokenNode, ref StringBuilder sb)
         {
             if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
             {
-                sb.Append(tokenNode.ValueText);
+                sb.Append(_reservedKeywords.Value.Contains(tokenNode.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
+                    : tokenNode.ValueText);
             }
             else
             {
@@ -238,7 +244,9 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
             if (tokenNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
             {
-                sb.Append(tokenNode.ValueText);
+                sb.Append(_reservedKeywords.Value.Contains(tokenNode.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
+                    : tokenNode.ValueText);
             }
             else
             {
@@ -266,6 +274,31 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 default:
                     throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an expression.");
             }
+        }
+
+        private static IEnumerable<string> GetReservedKeywords()
+        {
+            yield return @"and";
+            yield return @"break";
+            yield return @"do";
+            yield return @"else";
+            yield return @"elseif";
+            yield return @"end";
+            yield return @"false";
+            yield return @"for";
+            yield return @"function";
+            yield return @"if";
+            yield return @"in";
+            yield return @"local";
+            yield return @"nil";
+            yield return @"not";
+            yield return @"or";
+            yield return @"repeat";
+            yield return @"return";
+            yield return @"then";
+            yield return @"true";
+            yield return @"until";
+            yield return @"while";
         }
     }
 }

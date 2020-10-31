@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
 
     public static partial class JassToLuaTranspiler
     {
-        public static void Transpile(this Syntax.FileSyntax fileNode, ref StringBuilder sb)
+        public static void Transpile(this Syntax.FileSyntax fileNode, ref StringBuilder sb, bool resetStringConcatenationHandler = true)
         {
             _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
 
@@ -65,7 +65,10 @@ namespace War3Net.CodeAnalysis.Jass.Transpilers
                 function.Transpile(ref sb);
             }
 
-            TranspileStringConcatenationHandler.Reset();
+            if (resetStringConcatenationHandler)
+            {
+                TranspileStringConcatenationHandler.Reset();
+            }
         }
     }
 }
