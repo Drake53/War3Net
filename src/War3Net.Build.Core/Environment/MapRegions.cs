@@ -20,9 +20,12 @@ namespace War3Net.Build.Environment
         public const string FileName = "war3map.w3r";
         public const MapRegionsFormatVersion LatestVersion = MapRegionsFormatVersion.Normal;
 
+        private static readonly int ProtectionMagicNumber = "FUCK".FromRawcode();
+
         private readonly List<Region> _regions;
 
         private MapRegionsFormatVersion _version;
+        private bool _protected;
 
         public MapRegions(params Region[] regions)
         {
@@ -57,9 +60,20 @@ namespace War3Net.Build.Environment
                     mapRegions._version = reader.ReadInt32<MapRegionsFormatVersion>();
 
                     var regionCount = reader.ReadUInt32();
-                    for (var i = 0; i < regionCount; i++)
+                    if (stream.Length == 8)
                     {
-                        mapRegions._regions.Add(Region.Parse(stream, true));
+                        mapRegions._protected = regionCount == ProtectionMagicNumber;
+                        if (!mapRegions._protected && regionCount != 0)
+                        {
+                            throw new InvalidDataException($"Expected zero regions, but got {regionCount}.");
+                        }
+                    }
+                    else
+                    {
+                        for (var i = 0; i < regionCount; i++)
+                        {
+                            mapRegions._regions.Add(Region.Parse(stream, true));
+                        }
                     }
                 }
 
@@ -90,10 +104,17 @@ namespace War3Net.Build.Environment
             {
                 writer.Write((uint)_version);
 
-                writer.Write(_regions.Count);
-                foreach (var region in _regions)
+                if (_protected)
                 {
-                    region.WriteTo(writer);
+                    writer.Write(ProtectionMagicNumber);
+                }
+                else
+                {
+                    writer.Write(_regions.Count);
+                    foreach (var region in _regions)
+                    {
+                        region.WriteTo(writer);
+                    }
                 }
             }
         }
