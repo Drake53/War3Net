@@ -5,18 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-#if NETCOREAPP3_0
-using System.Diagnostics.CodeAnalysis;
-#endif
 
 namespace War3Net.IO.Mpq
 {
@@ -208,6 +203,11 @@ namespace War3Net.IO.Mpq
         public MpqHeader Header => _mpqHeader;
 
         /// <summary>
+        /// Gets the size of the <see cref="HashTable"/>.
+        /// </summary>
+        public uint HashTableSize => _hashTable.Size;
+
+        /// <summary>
         /// Gets the size of the <see cref="BlockTable"/>.
         /// </summary>
         public int Count => (int)_blockTable.Size;
@@ -221,8 +221,6 @@ namespace War3Net.IO.Mpq
         /// Gets the length (in bytes) of blocks in compressed files.
         /// </summary>
         internal int BlockSize => _blockSize;
-
-        internal uint HashTableSize => _hashTable.Size;
 
         internal uint HashTableMask => _hashTable.Mask;
 
@@ -461,10 +459,7 @@ namespace War3Net.IO.Mpq
 
         public bool TryGetEntryFromHashTable(
             uint hashTableIndex,
-#if NETCOREAPP3_0
-            [NotNullWhen(true)]
-#endif
-            out MpqEntry? mpqEntry)
+            [NotNullWhen(true)] out MpqEntry? mpqEntry)
         {
             if (hashTableIndex >= _hashTable.Size)
             {
@@ -681,10 +676,7 @@ namespace War3Net.IO.Mpq
 
         private static bool TryLocateMpqHeader(
             Stream sourceStream,
-#if NETCOREAPP3_0
-            [NotNullWhen(true)]
-#endif
-            out MpqHeader? mpqHeader,
+            [NotNullWhen(true)] out MpqHeader? mpqHeader,
             out long headerOffset)
         {
             sourceStream.Seek(0, SeekOrigin.Begin);
