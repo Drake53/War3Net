@@ -104,9 +104,9 @@ namespace War3Net.Build.Script
             }
         }
 
-        public static void Serialize(MapCustomTextTriggers mapTriggers, Stream stream, bool leaveOpen = false)
+        public static void Serialize(MapCustomTextTriggers mapCustomTextTriggers, Stream stream, bool leaveOpen = false)
         {
-            mapTriggers.SerializeTo(stream, leaveOpen);
+            mapCustomTextTriggers.SerializeTo(stream, leaveOpen);
         }
 
         public void SerializeTo(Stream stream, bool leaveOpen = false)
