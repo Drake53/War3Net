@@ -27,7 +27,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)War3Net.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>8.0</LangVersion>
+    <AnalysisLevel>5</AnalysisLevel>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 </Project>

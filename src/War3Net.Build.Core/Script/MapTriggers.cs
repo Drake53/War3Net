@@ -272,7 +272,7 @@ namespace War3Net.Build.Script
                         variable.WriteTo(writer, _version, true);
                     }
 
-                    writer.Write(_triggerItems.Count(item => !(item is DeletedTriggerItem)));
+                    writer.Write(_triggerItems.Count(item => item is not DeletedTriggerItem));
                     foreach (var triggerItem in _triggerItems)
                     {
                         if (triggerItem is DeletedTriggerItem)

@@ -58,10 +58,10 @@ namespace War3Net.Build.Script
             writer.Write((int)_type);
             writer.WriteString(_value);
 
-            writer.WriteBool(!(_function is null));
+            writer.WriteBool(_function is not null);
             _function?.WriteTo(writer, formatVersion);
 
-            writer.WriteBool(!(_arrayIndexer is null));
+            writer.WriteBool(_arrayIndexer is not null);
             _arrayIndexer?.WriteTo(writer, formatVersion);
         }
 

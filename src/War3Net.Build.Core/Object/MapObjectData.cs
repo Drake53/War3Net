@@ -144,25 +144,25 @@ namespace War3Net.Build.Object
             {
                 writer.Write((int)_fileFormatVersion);
 
-                writer.WriteBool(!(_unitData is null));
+                writer.WriteBool(_unitData is not null);
                 _unitData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_itemData is null));
+                writer.WriteBool(_itemData is not null);
                 _itemData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_destructableData is null));
+                writer.WriteBool(_destructableData is not null);
                 _destructableData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_doodadData is null));
+                writer.WriteBool(_doodadData is not null);
                 _doodadData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_abilityData is null));
+                writer.WriteBool(_abilityData is not null);
                 _abilityData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_buffData is null));
+                writer.WriteBool(_buffData is not null);
                 _buffData?.SerializeTo(stream, true);
 
-                writer.WriteBool(!(_upgradeData is null));
+                writer.WriteBool(_upgradeData is not null);
                 _upgradeData?.SerializeTo(stream, true);
             }
         }

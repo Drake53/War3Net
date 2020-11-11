@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass
         public static MemberDeclarationSyntax GetNamespaceDeclaration(string identifier, params ClassDeclarationSyntax[] classDeclarations)
         {
             return identifier is null
-                ? (MemberDeclarationSyntax)(classDeclarations.Length == 1 ? classDeclarations[0] : throw new System.Exception())
+                ? (classDeclarations.Length == 1 ? classDeclarations[0] : throw new Exception())
                 : SyntaxFactory.NamespaceDeclaration(
                     SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(identifier)),
                     default,

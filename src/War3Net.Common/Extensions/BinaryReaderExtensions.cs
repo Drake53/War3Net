@@ -94,7 +94,7 @@ namespace War3Net.Common.Extensions
                 if (Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null)
                 {
                     throw enumName.EndsWith("Version", StringComparison.Ordinal)
-                        ? (Exception)new NotSupportedException($"Unknown version of {enumName}: '{i}'.")
+                        ? new NotSupportedException($"Unknown version of {enumName}: '{i}'.")
                         : new InvalidDataException($"Value '{i}' is not defined for enum of type {enumName}.");
                 }
 

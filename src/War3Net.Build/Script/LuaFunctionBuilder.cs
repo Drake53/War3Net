@@ -129,7 +129,7 @@ namespace War3Net.Build.Script
 
         public override LuaStatementSyntax GenerateElseClause(LuaStatementSyntax ifStatement, LuaExpressionSyntax condition, params LuaStatementSyntax[] elseBody)
         {
-            if (!(ifStatement is LuaIfStatementSyntax ifNode))
+            if (ifStatement is not LuaIfStatementSyntax ifNode)
             {
                 throw new ArgumentException($"{nameof(ifStatement)} must be of type {nameof(LuaIfStatementSyntax)}.", nameof(ifStatement));
             }

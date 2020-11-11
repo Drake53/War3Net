@@ -107,7 +107,7 @@ namespace War3Net.Build
             bool TrySetMapFile<TMapFile>(MapFileHandler<TMapFile> handler, Func<TMapFile> defaultObjectGenerator = null)
             {
                 var fileName = handler.FileName;
-                if (!(compilerOptions.GetMapFile(fileName) is TMapFile mapFile))
+                if (compilerOptions.GetMapFile(fileName) is not TMapFile mapFile)
                 {
                     mapFile = default;
 
