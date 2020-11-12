@@ -6,13 +6,14 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace War3Net.IO.Mpq
 {
-    public sealed class MpqArchiveBuilder
+    public sealed class MpqArchiveBuilder : IEnumerable<MpqFile>
     {
         private readonly ushort _originalHashTableSize;
         private readonly List<MpqFile> _originalFiles;
@@ -63,10 +64,16 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private void SaveTo(Stream stream)
+        public void SaveTo(Stream stream, bool leaveOpen = false)
         {
-            MpqArchive.Create(stream, GetMpqFiles().ToArray(), _originalHashTableSize).Dispose();
+            MpqArchive.Create(stream, GetMpqFiles().ToArray(), _originalHashTableSize, leaveOpen: leaveOpen).Dispose();
         }
+
+        /// <inheritdoc/>
+        public IEnumerator<MpqFile> GetEnumerator() => GetMpqFiles().GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => GetMpqFiles().GetEnumerator();
 
         private IEnumerable<MpqFile> GetMpqFiles()
         {

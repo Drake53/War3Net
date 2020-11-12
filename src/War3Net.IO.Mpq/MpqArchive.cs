@@ -38,7 +38,7 @@ namespace War3Net.IO.Mpq
         private readonly HashTable _hashTable;
         private readonly BlockTable _blockTable;
 
-        private bool _isStreamOwner = true;
+        private bool _isStreamOwner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqArchive"/> class.
@@ -49,6 +49,7 @@ namespace War3Net.IO.Mpq
         /// <exception cref="MpqParserException">Thrown when the <see cref="MpqHeader"/> could not be found, or when the MPQ format version is not 0.</exception>
         public MpqArchive(Stream sourceStream, bool loadListfile = false)
         {
+            _isStreamOwner = true;
             _baseStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
 
             if (!TryLocateMpqHeader(_baseStream, out var mpqHeader, out _headerOffset))
@@ -85,9 +86,11 @@ namespace War3Net.IO.Mpq
         /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
         /// <param name="writeArchiveFirst">If true, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.</param>
+        /// <param name="leaveOpen">If <see langword="false"/>, the given <paramref name="sourceStream"/> will be disposed when the <see cref="MpqArchive"/> is disposed.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public MpqArchive(Stream? sourceStream, IEnumerable<MpqFile> inputFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true)
+        public MpqArchive(Stream? sourceStream, IEnumerable<MpqFile> inputFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true, bool leaveOpen = false)
         {
+            _isStreamOwner = !leaveOpen;
             _baseStream = AlignStream(sourceStream);
 
             _headerOffset = _baseStream.Position;
@@ -295,7 +298,7 @@ namespace War3Net.IO.Mpq
                 throw new IOException($"Failed to create a {nameof(FileStream)} at {path}", exception);
             }
 
-            return Create(fileStream, mpqFiles, hashTableSize, blockSize);
+            return Create(fileStream, mpqFiles, hashTableSize, blockSize, false);
         }
 
         /// <summary>
@@ -305,11 +308,12 @@ namespace War3Net.IO.Mpq
         /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
         /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
         /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <param name="leaveOpen">If <see langword="false"/>, the given <paramref name="sourceStream"/> will be disposed when the <see cref="MpqArchive"/> is disposed.</param>
         /// <returns>An <see cref="MpqArchive"/> that is created.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public static MpqArchive Create(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
+        public static MpqArchive Create(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool leaveOpen = false)
         {
-            return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize);
+            return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize, leaveOpen: leaveOpen);
         }
 
         /// <summary>
@@ -327,7 +331,7 @@ namespace War3Net.IO.Mpq
         /// Repairs corrupted values in an <see cref="MpqArchive"/>.
         /// </summary>
         /// <param name="sourceStream">The stream containing the archive that needs to be repaired.</param>
-        /// <param name="leaveOpen">If false, the given <paramref name="sourceStream"/> will be disposed at the end of this method.</param>
+        /// <param name="leaveOpen">If <see langword="false"/>, the given <paramref name="sourceStream"/> will be disposed at the end of this method.</param>
         /// <returns>A stream containing the repaired archive.</returns>
         public static MemoryStream Restore(Stream sourceStream, bool leaveOpen = false)
         {
