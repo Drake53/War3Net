@@ -33,7 +33,7 @@ namespace War3Net.IO.Mpq
 
         public ulong Name => _name.Value;
 
-        internal MpqStream MpqStream => _mpqStream;
+        public MpqStream MpqStream => _mpqStream;
 
         public MpqFileFlags TargetFlags
         {
