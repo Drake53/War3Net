@@ -45,9 +45,14 @@ namespace War3Net.IO.Mpq
             _modifiedFiles.Add(file);
         }
 
+        public void RemoveFile(ulong hashedFileName)
+        {
+            _removedFiles.Add(hashedFileName);
+        }
+
         public void RemoveFile(string fileName)
         {
-            _removedFiles.Add(MpqHash.GetHashedFileName(fileName));
+            RemoveFile(MpqHash.GetHashedFileName(fileName));
         }
 
         public void SaveTo(string fileName)
