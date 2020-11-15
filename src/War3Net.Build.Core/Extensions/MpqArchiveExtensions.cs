@@ -48,7 +48,6 @@ namespace War3Net.Build.Extensions
             archive.AddFilename(CampaignDestructableObjectData.FileName);
             archive.AddFilename(CampaignDoodadObjectData.FileName);
             archive.AddFilename(CampaignItemObjectData.FileName);
-            archive.AddFilename(CampaignObjectData.FileName);
             archive.AddFilename(CampaignUnitObjectData.FileName);
             archive.AddFilename(CampaignUpgradeObjectData.FileName);
             archive.AddFilename(MapAbilityObjectData.FileName);
@@ -56,10 +55,10 @@ namespace War3Net.Build.Extensions
             archive.AddFilename(MapDestructableObjectData.FileName);
             archive.AddFilename(MapDoodadObjectData.FileName);
             archive.AddFilename(MapItemObjectData.FileName);
-            archive.AddFilename(MapObjectData.FileName);
             archive.AddFilename(MapUnitObjectData.FileName);
             archive.AddFilename(MapUpgradeObjectData.FileName);
 
+            archive.AddFilename(CampaignTriggerStrings.FileName);
             archive.AddFilename(MapCustomTextTriggers.FileName);
             archive.AddFilename(MapTriggers.FileName);
             archive.AddFilename(MapTriggerStrings.FileName);
