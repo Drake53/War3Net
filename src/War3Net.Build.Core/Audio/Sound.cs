@@ -7,7 +7,6 @@
 
 using System.IO;
 using System.Numerics;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -15,237 +14,135 @@ namespace War3Net.Build.Audio
 {
     public sealed class Sound
     {
-        private string _variableName;
-        private string _soundName; // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
-        private string _filePath;
-        private string _eaxSetting; // TODO: enum?
-
-        private SoundFlags _flags;
-
-        private int _fadeInRate;
-        private int _fadeOutRate;
-        private int _volume;
-        private float _pitch;
-
-        private float _pitchVariance; // used when RANDOMPITCH flag is set
-        private int _priority;
-
-        private SoundChannel _channel;
-        private float _minDistance;
-        private float _maxDistance;
-        private float _distanceCutoff;
-
-        private float _coneInside;
-        private float _coneOutside;
-        private int _coneOutsideVolume;
-        private Vector3 _coneOrientation;
-
-        public string Name
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sound"/> class.
+        /// </summary>
+        public Sound()
         {
-            get => _variableName;
-            set => _variableName = value;
         }
 
-        public string SoundName
+        internal Sound(BinaryReader reader, MapSoundsFormatVersion formatVersion)
         {
-            get => _soundName;
-            set => _soundName = value;
+            ReadFrom(reader, formatVersion);
         }
 
-        public string FilePath
+        public string Name { get; set; }
+
+        public string FilePath { get; set; }
+
+        // TODO: enum?
+        public string EaxSetting { get; set; }
+
+        public SoundFlags Flags { get; set; }
+
+        public int FadeInRate { get; set; }
+
+        public int FadeOutRate { get; set; }
+
+        public int Volume { get; set; }
+
+        public float Pitch { get; set; }
+
+        // used when RANDOMPITCH flag is set
+        public float PitchVariance { get; set; }
+
+        public int Priority { get; set; }
+
+        public SoundChannel Channel { get; set; }
+
+        public float MinDistance { get; set; }
+
+        public float MaxDistance { get; set; }
+
+        public float DistanceCutoff { get; set; }
+
+        public float ConeAngleInside { get; set; }
+
+        public float ConeAngleOutside { get; set; }
+
+        public int ConeOutsideVolume { get; set; }
+
+        public Vector3 ConeOrientation { get; set; }
+
+        // TODO: reforged properties
+
+        // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
+        public string SoundName { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapSoundsFormatVersion formatVersion)
         {
-            get => _filePath;
-            set => _filePath = value;
-        }
-
-        public string EaxSetting
-        {
-            get => _eaxSetting;
-            set => _eaxSetting = value;
-        }
-
-        public SoundFlags Flags
-        {
-            get => _flags;
-            set => _flags = value;
-        }
-
-        public int FadeInRate
-        {
-            get => _fadeInRate;
-            set => _fadeInRate = value;
-        }
-
-        public int FadeOutRate
-        {
-            get => _fadeOutRate;
-            set => _fadeOutRate = value;
-        }
-
-        public int Volume
-        {
-            get => _volume;
-            set => _volume = value;
-        }
-
-        public float Pitch
-        {
-            get => _pitch;
-            set => _pitch = value;
-        }
-
-        public SoundChannel Channel
-        {
-            get => _channel;
-            set => _channel = value;
-        }
-
-        public float MinDistance
-        {
-            get => _minDistance;
-            set => _minDistance = value;
-        }
-
-        public float MaxDistance
-        {
-            get => _maxDistance;
-            set => _maxDistance = value;
-        }
-
-        public float DistanceCutoff
-        {
-            get => _distanceCutoff;
-            set => _distanceCutoff = value;
-        }
-
-        public float ConeAngleInside
-        {
-            get => _coneInside;
-            set => _coneInside = value;
-        }
-
-        public float ConeAngleOutside
-        {
-            get => _coneOutside;
-            set => _coneOutside = value;
-        }
-
-        public int ConeOutsideVolume
-        {
-            get => _coneOutsideVolume;
-            set => _coneOutsideVolume = value;
-        }
-
-        public Vector3 ConeOrientation
-        {
-            get => _coneOrientation;
-            set => _coneOrientation = value;
-        }
-
-        public static Sound Parse(Stream stream, bool leaveOpen)
-        {
-            return Parse(stream, MapSoundsFormatVersion.Normal, leaveOpen);
-        }
-
-        public static Sound Parse(Stream stream, MapSoundsFormatVersion formatVersion, bool leaveOpen)
-        {
-            var sound = new Sound();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                sound._variableName = reader.ReadChars();
-                sound._filePath = reader.ReadChars();
-                sound._eaxSetting = reader.ReadChars();
-                sound._flags = reader.ReadInt32<SoundFlags>();
-
-                sound._fadeInRate = reader.ReadInt32();
-                sound._fadeOutRate = reader.ReadInt32();
-
-                sound._volume = reader.ReadInt32();
-                sound._pitch = reader.ReadSingle();
-
-                sound._pitchVariance = reader.ReadSingle();
-                sound._priority = reader.ReadInt32();
-
-                sound._channel = reader.ReadInt32<SoundChannel>();
-
-                sound._minDistance = reader.ReadSingle();
-                sound._maxDistance = reader.ReadSingle();
-                sound._distanceCutoff = reader.ReadSingle();
-
-                sound._coneInside = reader.ReadSingle();
-                sound._coneOutside = reader.ReadSingle();
-                sound._coneOutsideVolume = reader.ReadInt32();
-                sound._coneOrientation = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-
-                if (formatVersion >= MapSoundsFormatVersion.Reforged)
-                {
-                    var repeatVariableName = reader.ReadChars();
-                    sound._soundName = reader.ReadChars();
-                    var repeatSoundPath = reader.ReadChars();
-
-                    if (repeatVariableName != sound.Name || repeatSoundPath != sound.FilePath)
-                    {
-                        throw new InvalidDataException($"Expected sound's {nameof(sound.Name)} and {nameof(sound.FilePath)} to be repeated.");
-                    }
-
-                    var unk2 = reader.ReadInt32();
-                    var unk3 = reader.ReadByte();
-                    var unk4 = reader.ReadInt32();
-                    var unk5 = reader.ReadByte();
-                    var unk6 = reader.ReadInt32();
-                    var unk7 = reader.ReadInt32();
-
-                    if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
-                    {
-                        var unk8 = reader.ReadInt32();
-                    }
-                }
-            }
-
-            return sound;
-        }
-
-        public void SerializeTo(Stream stream, MapSoundsFormatVersion formatVersion, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer, formatVersion);
-            }
-        }
-
-        public void WriteTo(BinaryWriter writer, MapSoundsFormatVersion formatVersion)
-        {
-            writer.WriteString(_variableName);
-            writer.WriteString(_filePath);
-            writer.WriteString(_eaxSetting);
-            writer.Write((int)_flags);
-
-            writer.Write(_fadeInRate);
-            writer.Write(_fadeOutRate);
-            writer.Write(_volume);
-            writer.Write(_pitch);
-
-            writer.Write(_pitchVariance);
-            writer.Write(_priority);
-
-            writer.Write((int)_channel);
-            writer.Write(_minDistance);
-            writer.Write(_maxDistance);
-            writer.Write(_distanceCutoff);
-
-            writer.Write(_coneInside);
-            writer.Write(_coneOutside);
-            writer.Write(_coneOutsideVolume);
-            writer.Write(_coneOrientation.X);
-            writer.Write(_coneOrientation.Y);
-            writer.Write(_coneOrientation.Z);
+            Name = reader.ReadChars();
+            FilePath = reader.ReadChars();
+            EaxSetting = reader.ReadChars();
+            Flags = reader.ReadInt32<SoundFlags>();
+            FadeInRate = reader.ReadInt32();
+            FadeOutRate = reader.ReadInt32();
+            Volume = reader.ReadInt32();
+            Pitch = reader.ReadSingle();
+            PitchVariance = reader.ReadSingle();
+            Priority = reader.ReadInt32();
+            Channel = reader.ReadInt32<SoundChannel>();
+            MinDistance = reader.ReadSingle();
+            MaxDistance = reader.ReadSingle();
+            DistanceCutoff = reader.ReadSingle();
+            ConeAngleInside = reader.ReadSingle();
+            ConeAngleOutside = reader.ReadSingle();
+            ConeOutsideVolume = reader.ReadInt32();
+            ConeOrientation = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
             if (formatVersion >= MapSoundsFormatVersion.Reforged)
             {
-                // Write reforged sound data.
-                writer.WriteString(_variableName);
-                writer.WriteString(_soundName);
-                writer.WriteString(_filePath);
+                var repeatVariableName = reader.ReadChars();
+                SoundName = reader.ReadChars();
+                var repeatSoundPath = reader.ReadChars();
+
+                if (repeatVariableName != Name || repeatSoundPath != FilePath)
+                {
+                    throw new InvalidDataException($"Expected sound's {nameof(Name)} and {nameof(FilePath)} to be repeated.");
+                }
+
+                var unk2 = reader.ReadInt32();
+                var unk3 = reader.ReadByte();
+                var unk4 = reader.ReadInt32();
+                var unk5 = reader.ReadByte();
+                var unk6 = reader.ReadInt32();
+                var unk7 = reader.ReadInt32();
+
+                if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
+                {
+                    var unk8 = reader.ReadInt32();
+                }
+            }
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapSoundsFormatVersion formatVersion)
+        {
+            writer.WriteString(Name);
+            writer.WriteString(FilePath);
+            writer.WriteString(EaxSetting);
+            writer.Write((int)Flags);
+            writer.Write(FadeInRate);
+            writer.Write(FadeOutRate);
+            writer.Write(Volume);
+            writer.Write(Pitch);
+            writer.Write(PitchVariance);
+            writer.Write(Priority);
+            writer.Write((int)Channel);
+            writer.Write(MinDistance);
+            writer.Write(MaxDistance);
+            writer.Write(DistanceCutoff);
+            writer.Write(ConeAngleInside);
+            writer.Write(ConeAngleOutside);
+            writer.Write(ConeOutsideVolume);
+            writer.Write(ConeOrientation.X);
+            writer.Write(ConeOrientation.Y);
+            writer.Write(ConeOrientation.Z);
+
+            if (formatVersion >= MapSoundsFormatVersion.Reforged)
+            {
+                writer.WriteString(Name);
+                writer.WriteString(SoundName);
+                writer.WriteString(FilePath);
 
                 writer.Write(-1);
                 writer.Write((byte)0);

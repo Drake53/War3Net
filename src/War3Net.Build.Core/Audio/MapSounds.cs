@@ -5,124 +5,56 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Audio
 {
-    public sealed class MapSounds : IEnumerable<Sound>
+    public sealed class MapSounds
     {
         public const string FileName = "war3map.w3s";
-        public const MapSoundsFormatVersion LatestVersion = MapSoundsFormatVersion.ReforgedV3;
 
-        private readonly List<Sound> _sounds;
-
-        private MapSoundsFormatVersion _version;
-
-        public MapSounds(params Sound[] sounds)
-            : this(LatestVersion, sounds)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapSounds"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public MapSounds(MapSoundsFormatVersion formatVersion)
         {
+            FormatVersion = formatVersion;
         }
 
-        public MapSounds(MapSoundsFormatVersion version, params Sound[] sounds)
+        internal MapSounds(BinaryReader reader)
         {
-            _sounds = new List<Sound>(sounds);
-            _version = version;
+            ReadFrom(reader);
         }
 
-        private MapSounds()
+        public MapSoundsFormatVersion FormatVersion { get; set; }
+
+        public List<Sound> Sounds { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            _sounds = new List<Sound>();
-        }
+            FormatVersion = reader.ReadInt32<MapSoundsFormatVersion>();
 
-        public static MapSounds Default => new MapSounds(Array.Empty<Sound>());
-
-        public static bool IsRequired => false;
-
-        public MapSoundsFormatVersion FormatVersion
-        {
-            get => _version;
-            set => _version = value;
-        }
-
-        public int Count => _sounds.Count;
-
-        public static MapSounds Parse(Stream stream, bool leaveOpen = false)
-        {
-            try
+            nint soundCount = reader.ReadInt32();
+            for (nint i = 0; i < soundCount; i++)
             {
-                var mapSounds = new MapSounds();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-                {
-                    mapSounds._version = reader.ReadInt32<MapSoundsFormatVersion>();
-
-                    var soundCount = reader.ReadInt32();
-                    for (var i = 0; i < soundCount; i++)
-                    {
-                        var sound = Sound.Parse(stream, mapSounds._version, true);
-                        mapSounds._sounds.Add(sound);
-                    }
-                }
-
-                return mapSounds;
-            }
-            catch (DecoderFallbackException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
+                Sounds.Add(reader.ReadSound(FormatVersion));
             }
         }
 
-        public static void Serialize(MapSounds mapSounds, Stream stream, bool leaveOpen = false)
+        internal void WriteTo(BinaryWriter writer)
         {
-            mapSounds.SerializeTo(stream, leaveOpen);
-        }
+            writer.Write((int)FormatVersion);
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            writer.Write(Sounds.Count);
+            foreach (var sound in Sounds)
             {
-                writer.Write((uint)_version);
-
-                writer.Write(_sounds.Count);
-                foreach (var sound in _sounds)
-                {
-                    sound.WriteTo(writer, _version);
-                }
+                writer.Write(sound, FormatVersion);
             }
-        }
-
-        public Sound GetSound(int index)
-        {
-            return _sounds[index];
-        }
-
-        public void SetSounds(params Sound[] sounds)
-        {
-            _sounds.Clear();
-            _sounds.AddRange(sounds);
-        }
-
-        public IEnumerator<Sound> GetEnumerator()
-        {
-            return ((IEnumerable<Sound>)_sounds).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<Sound>)_sounds).GetEnumerator();
         }
     }
 }
