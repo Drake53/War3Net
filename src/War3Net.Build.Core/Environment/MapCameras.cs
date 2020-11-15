@@ -6,129 +6,75 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapCameras : IEnumerable<Camera>
+    public sealed class MapCameras
     {
         public const string FileName = "war3map.w3c";
-        public const MapCamerasFormatVersion LatestVersion = MapCamerasFormatVersion.Normal;
 
-        private readonly List<Camera> _cameras;
-
-        private MapCamerasFormatVersion _version;
-        private bool _newFormat;
-
-        public MapCameras(params Camera[] cameras)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapCameras"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public MapCameras(MapCamerasFormatVersion formatVersion)
         {
-            _cameras = new List<Camera>(cameras);
-            _version = LatestVersion;
-            _newFormat = true;
+            FormatVersion = formatVersion;
         }
 
-        private MapCameras()
+        internal MapCameras(BinaryReader reader)
         {
-            _cameras = new List<Camera>();
+            ReadFrom(reader);
         }
 
-        public static MapCameras Default = new MapCameras(Array.Empty<Camera>());
+        public MapCamerasFormatVersion FormatVersion { get; set; }
 
-        public static bool IsRequired => false;
+        public bool UseNewFormat { get; set; }
 
-        public MapCamerasFormatVersion FormatVersion
+        public List<Camera> Cameras { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            get => _version;
-            set => _version = value;
-        }
+            FormatVersion = reader.ReadInt32<MapCamerasFormatVersion>();
+            UseNewFormat = true;
 
-        public bool UseNewFormat
-        {
-            get => _newFormat;
-            set => _newFormat = value;
-        }
-
-        public int Count => _cameras.Count;
-
-        public static MapCameras Parse(Stream stream, bool leaveOpen = false)
-        {
+            nint cameraCount = reader.ReadInt32();
+            var oldStreamPosition = reader.BaseStream.Position;
             try
             {
-                var mapCameras = new MapCameras();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+                for (nint i = 0; i < cameraCount; i++)
                 {
-                    mapCameras._version = reader.ReadInt32<MapCamerasFormatVersion>();
-                    mapCameras._newFormat = true;
-
-                    var cameraCount = reader.ReadUInt32();
-                    try
-                    {
-                        for (var i = 0; i < cameraCount; i++)
-                        {
-                            mapCameras._cameras.Add(Camera.Parse(stream, true, true));
-                        }
-                    }
-                    catch
-                    {
-                        stream.Position = 8;
-
-                        mapCameras._newFormat = false;
-                        mapCameras._cameras.Clear();
-                        for (var i = 0; i < cameraCount; i++)
-                        {
-                            mapCameras._cameras.Add(Camera.Parse(stream, false, true));
-                        }
-                    }
+                    Cameras.Add(reader.ReadCamera(FormatVersion, UseNewFormat));
                 }
-
-                return mapCameras;
             }
-            catch (DecoderFallbackException e)
+            catch (Exception e) when (e is DecoderFallbackException || e is EndOfStreamException || e is InvalidDataException)
             {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+                reader.BaseStream.Position = oldStreamPosition;
 
-        public static void Serialize(MapCameras mapCameras, Stream stream, bool leaveOpen = false)
-        {
-            mapCameras.SerializeTo(stream, leaveOpen);
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                writer.Write((uint)_version);
-
-                writer.Write(_cameras.Count);
-                foreach (var camera in _cameras)
+                UseNewFormat = false;
+                Cameras.Clear();
+                for (nint i = 0; i < cameraCount; i++)
                 {
-                    camera.WriteTo(writer, _newFormat);
+                    Cameras.Add(reader.ReadCamera(FormatVersion, UseNewFormat));
                 }
             }
         }
 
-        public IEnumerator<Camera> GetEnumerator()
+        internal void WriteTo(BinaryWriter writer)
         {
-            return ((IEnumerable<Camera>)_cameras).GetEnumerator();
-        }
+            writer.Write((uint)FormatVersion);
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_cameras).GetEnumerator();
+            writer.Write(Cameras.Count);
+            foreach (var camera in Cameras)
+            {
+                writer.Write(camera, FormatVersion, UseNewFormat);
+            }
         }
     }
 }

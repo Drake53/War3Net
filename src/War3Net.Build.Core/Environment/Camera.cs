@@ -7,7 +7,6 @@
 
 using System.IO;
 using System.Numerics;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -15,81 +14,91 @@ namespace War3Net.Build.Environment
 {
     public sealed class Camera
     {
-        private Vector2 _targetPosition;
-        private float _zOffset;
-        private float _rotation;
-        private float _angleOfAttack;
-        private float _targetDistance;
-        private float _roll;
-        private float _fieldOfView;
-        private float _farClippingPlane;
-        private float _nearClippingPlane;
-        private float _localPitch;
-        private float _localYaw;
-        private float _localRoll;
-        private string _name;
-
-        public static Camera Parse(Stream stream, bool useNewFormat, bool leaveOpen)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class.
+        /// </summary>
+        public Camera()
         {
-            var camera = new Camera();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                camera._targetPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-                camera._zOffset = reader.ReadSingle();
-                camera._rotation = reader.ReadSingle();
-                camera._angleOfAttack = reader.ReadSingle();
-                camera._targetDistance = reader.ReadSingle();
-                camera._roll = reader.ReadSingle();
-                camera._fieldOfView = reader.ReadSingle();
-                camera._farClippingPlane = reader.ReadSingle();
-                camera._nearClippingPlane = reader.ReadSingle();
-
-                if (useNewFormat)
-                {
-                    camera._localPitch = reader.ReadSingle();
-                    camera._localYaw = reader.ReadSingle();
-                    camera._localRoll = reader.ReadSingle();
-                }
-
-                camera._name = reader.ReadChars();
-                if (string.IsNullOrWhiteSpace(camera._name))
-                {
-                    throw new InvalidDataException($"Camera name must contain at least one non-whitespace character.");
-                }
-            }
-
-            return camera;
         }
 
-        public void SerializeTo(Stream stream, bool useNewFormat, bool leaveOpen = false)
+        internal Camera(BinaryReader reader, MapCamerasFormatVersion formatVersion, bool useNewFormat)
         {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer, useNewFormat);
-            }
+            ReadFrom(reader, formatVersion, useNewFormat);
         }
 
-        public void WriteTo(BinaryWriter writer, bool useNewFormat)
+        public Vector2 TargetPosition { get; set; }
+
+        public float ZOffset { get; set; }
+
+        public float Rotation { get; set; }
+
+        public float AngleOfAttack { get; set; }
+
+        public float TargetDistance { get; set; }
+
+        public float Roll { get; set; }
+
+        public float FieldOfView { get; set; }
+
+        public float FarClippingPlane { get; set; }
+
+        public float NearClippingPlane { get; set; }
+
+        public float LocalPitch { get; set; }
+
+        public float LocalYaw { get; set; }
+
+        public float LocalRoll { get; set; }
+
+        public string Name { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapCamerasFormatVersion formatVersion, bool useNewFormat)
         {
-            writer.Write(_targetPosition.X);
-            writer.Write(_targetPosition.Y);
-            writer.Write(_zOffset);
-            writer.Write(_rotation);
-            writer.Write(_angleOfAttack);
-            writer.Write(_targetDistance);
-            writer.Write(_roll);
-            writer.Write(_fieldOfView);
-            writer.Write(_farClippingPlane);
-            writer.Write(_nearClippingPlane);
+            TargetPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            ZOffset = reader.ReadSingle();
+            Rotation = reader.ReadSingle();
+            AngleOfAttack = reader.ReadSingle();
+            TargetDistance = reader.ReadSingle();
+            Roll = reader.ReadSingle();
+            FieldOfView = reader.ReadSingle();
+            FarClippingPlane = reader.ReadSingle();
+            NearClippingPlane = reader.ReadSingle();
 
             if (useNewFormat)
             {
-                writer.Write(_localPitch);
-                writer.Write(_localYaw);
-                writer.Write(_localRoll);
+                LocalPitch = reader.ReadSingle();
+                LocalYaw = reader.ReadSingle();
+                LocalRoll = reader.ReadSingle();
             }
 
-            writer.WriteString(_name);
+            Name = reader.ReadChars();
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                throw new InvalidDataException($"Camera name must contain at least one non-whitespace character.");
+            }
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapCamerasFormatVersion formatVersion, bool useNewFormat)
+        {
+            writer.Write(TargetPosition.X);
+            writer.Write(TargetPosition.Y);
+            writer.Write(ZOffset);
+            writer.Write(Rotation);
+            writer.Write(AngleOfAttack);
+            writer.Write(TargetDistance);
+            writer.Write(Roll);
+            writer.Write(FieldOfView);
+            writer.Write(FarClippingPlane);
+            writer.Write(NearClippingPlane);
+
+            if (useNewFormat)
+            {
+                writer.Write(LocalPitch);
+                writer.Write(LocalYaw);
+                writer.Write(LocalRoll);
+            }
+
+            writer.WriteString(Name);
         }
     }
 }
