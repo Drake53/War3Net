@@ -7,7 +7,6 @@
 
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -15,67 +14,40 @@ namespace War3Net.Build.Environment
 {
     public sealed class MapPreviewIcon
     {
-        private MapPreviewIconType _iconType;
-        private byte _x;
-        private byte _y;
-        private Color _color;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapPreviewIcon"/> class.
+        /// </summary>
         public MapPreviewIcon()
         {
         }
 
-        public MapPreviewIconType IconType
+        internal MapPreviewIcon(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
         {
-            get => _iconType;
-            set => _iconType = value;
+            ReadFrom(reader, formatVersion);
         }
 
-        public byte X
+        public MapPreviewIconType IconType { get; set; }
+
+        public byte X { get; set; }
+
+        public byte Y { get; set; }
+
+        public Color Color { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
         {
-            get => _x;
-            set => _x = value;
+            IconType = reader.ReadInt32<MapPreviewIconType>();
+            X = (byte)reader.ReadInt32();
+            Y = (byte)reader.ReadInt32();
+            Color = Color.FromArgb(reader.ReadInt32());
         }
 
-        public byte Y
+        public void WriteTo(BinaryWriter writer, MapPreviewIconsFormatVersion formatVersion)
         {
-            get => _y;
-            set => _y = value;
-        }
-
-        public Color Color
-        {
-            get => _color;
-            set => _color = value;
-        }
-
-        public static MapPreviewIcon Parse(Stream stream, bool leaveOpen = false)
-        {
-            var iconData = new MapPreviewIcon();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                iconData._iconType = reader.ReadInt32<MapPreviewIconType>();
-                iconData._x = (byte)reader.ReadInt32();
-                iconData._y = (byte)reader.ReadInt32();
-                iconData._color = Color.FromArgb(reader.ReadInt32());
-            }
-
-            return iconData;
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer);
-            }
-        }
-
-        public void WriteTo(BinaryWriter writer)
-        {
-            writer.Write((int)_iconType);
-            writer.Write((int)_x);
-            writer.Write((int)_y);
-            writer.Write(_color.ToArgb());
+            writer.Write((int)IconType);
+            writer.Write((int)X);
+            writer.Write((int)Y);
+            writer.Write(Color.ToArgb());
         }
     }
 }
