@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -14,37 +13,32 @@ namespace War3Net.Build.Info
 {
     public sealed class CampaignMap
     {
-        private string _unk;
-        private string _mapFilePath;
-
-        public string Unk
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CampaignMap"/> class.
+        /// </summary>
+        public CampaignMap()
         {
-            get => _unk;
-            set => _unk = value;
         }
 
-        public string MapFilePath
+        internal CampaignMap(BinaryReader reader, CampaignInfoFormatVersion formatVersion)
         {
-            get => _mapFilePath;
-            set => _mapFilePath = value;
+            ReadFrom(reader, formatVersion);
         }
 
-        public static CampaignMap Parse(Stream stream, bool leaveOpen = false)
-        {
-            var data = new CampaignMap();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                data._unk = reader.ReadChars();
-                data._mapFilePath = reader.ReadChars();
-            }
+        public string Unk { get; set; }
 
-            return data;
+        public string MapFilePath { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, CampaignInfoFormatVersion formatVersion)
+        {
+            Unk = reader.ReadChars();
+            MapFilePath = reader.ReadChars();
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal void WriteTo(BinaryWriter writer, CampaignInfoFormatVersion formatVersion)
         {
-            writer.WriteString(_unk);
-            writer.WriteString(_mapFilePath);
+            writer.WriteString(Unk);
+            writer.WriteString(MapFilePath);
         }
     }
 }

@@ -8,8 +8,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
@@ -18,330 +18,130 @@ namespace War3Net.Build.Info
     {
         public const string FileName = "war3campaign.w3f";
 
-        private readonly List<CampaignMapButton> _mapButtons;
-        private readonly List<CampaignMap> _maps;
-
-        private CampaignInfoFormatVersion _fileFormatVersion;
-        private int _campaignVersion;
-        private int _editorVersion;
-
-        private string _campaignName;
-        private string _campaignDifficulty;
-        private string _campaignAuthor;
-        private string _campaignDescription;
-
-        private CampaignFlags _campaignFlags;
-
-        private int _campaignBackgroundNumber;
-        private string _backgroundScreenPath;
-        private string _minimapPath;
-
-        private int _ambientSoundNumber;
-        private string _ambientSoundPath;
-
-        private FogStyle _fogStyle;
-        private float _fogStartZ;
-        private float _fogEndZ;
-        private float _fogDensity;
-        private Color _fogColor;
-
-        private CampaignRace _race;
-
-        internal CampaignInfo()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CampaignInfo"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public CampaignInfo(CampaignInfoFormatVersion formatVersion)
         {
-            _mapButtons = new List<CampaignMapButton>();
-            _maps = new List<CampaignMap>();
+            FormatVersion = formatVersion;
         }
 
-        public static CampaignInfo Default
+        internal CampaignInfo(BinaryReader reader)
         {
-            get
+            ReadFrom(reader);
+        }
+
+        public CampaignInfoFormatVersion FormatVersion { get; set; }
+
+        public int CampaignVersion { get; set; }
+
+        public int EditorVersion { get; set; }
+
+        public string CampaignName { get; set; }
+
+        public string CampaignDifficulty { get; set; }
+
+        public string CampaignAuthor { get; set; }
+
+        public string CampaignDescription { get; set; }
+
+        public CampaignFlags CampaignFlags { get; set; }
+
+        public int CampaignBackgroundNumber { get; set; }
+
+        public string BackgroundScreenPath { get; set; }
+
+        public string MinimapPath { get; set; }
+
+        public int AmbientSoundNumber { get; set; }
+
+        public string AmbientSoundPath { get; set; }
+
+        public FogStyle FogStyle { get; set; }
+
+        public float FogStartZ { get; set; }
+
+        public float FogEndZ { get; set; }
+
+        public float FogDensity { get; set; }
+
+        public Color FogColor { get; set; }
+
+        public CampaignRace Race { get; set; }
+
+        public List<CampaignMapButton> MapButtons { get; init; } = new();
+
+        public List<CampaignMap> Maps { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
+        {
+            FormatVersion = reader.ReadInt32<CampaignInfoFormatVersion>();
+            CampaignVersion = reader.ReadInt32();
+            EditorVersion = reader.ReadInt32();
+            CampaignName = reader.ReadChars();
+            CampaignDifficulty = reader.ReadChars();
+            CampaignAuthor = reader.ReadChars();
+            CampaignDescription = reader.ReadChars();
+            CampaignFlags = reader.ReadInt32<CampaignFlags>();
+            CampaignBackgroundNumber = reader.ReadInt32();
+            BackgroundScreenPath = reader.ReadChars();
+            MinimapPath = reader.ReadChars();
+            AmbientSoundNumber = reader.ReadInt32();
+            AmbientSoundPath = reader.ReadChars();
+            FogStyle = reader.ReadInt32<FogStyle>();
+            FogStartZ = reader.ReadSingle();
+            FogEndZ = reader.ReadSingle();
+            FogDensity = reader.ReadSingle();
+            FogColor = reader.ReadColorRgba();
+            Race = reader.ReadInt32<CampaignRace>();
+
+            nint mapCount = reader.ReadInt32();
+            for (nint i = 0; i < mapCount; i++)
             {
-                var info = new CampaignInfo();
+                MapButtons.Add(reader.ReadCampaignMapButton(FormatVersion));
+            }
 
-                info._fileFormatVersion = CampaignInfoFormatVersion.Normal;
-                info._campaignVersion = 1;
-                info._editorVersion = 0x314E3357; // [W]ar[3][N]et.Build v[1].x
-
-                info._campaignName = "Just another Warcraft III campaign";
-                info._campaignDifficulty = "Normal";
-                info._campaignAuthor = "Unknown";
-                info._campaignDescription = "Nondescript";
-
-                info._campaignFlags = 0;
-
-                info._campaignBackgroundNumber = -1;
-                info._backgroundScreenPath = string.Empty;
-                info._minimapPath = string.Empty;
-                info._ambientSoundNumber = -1;
-                info._ambientSoundPath = string.Empty;
-
-                info._fogStyle = (FogStyle)(-1);
-                info._fogStartZ = 0f;
-                info._fogEndZ = 0f;
-                info._fogDensity = 0f;
-                info._fogColor = Color.Black;
-
-                info._race = CampaignRace.Human;
-
-                return info;
+            nint mapOrderCount = reader.ReadInt32();
+            for (nint i = 0; i < mapOrderCount; i++)
+            {
+                Maps.Add(reader.ReadCampaignMap(FormatVersion));
             }
         }
 
-        public static bool IsRequired => true;
-
-        public CampaignInfoFormatVersion FormatVersion
+        internal void WriteTo(BinaryWriter writer)
         {
-            get => _fileFormatVersion;
-            set => _fileFormatVersion = value;
-        }
+            writer.Write((int)FormatVersion);
+            writer.Write(CampaignVersion);
+            writer.Write(EditorVersion);
+            writer.WriteString(CampaignName);
+            writer.WriteString(CampaignDifficulty);
+            writer.WriteString(CampaignAuthor);
+            writer.WriteString(CampaignDescription);
+            writer.Write((int)CampaignFlags);
+            writer.Write(CampaignBackgroundNumber);
+            writer.WriteString(BackgroundScreenPath);
+            writer.WriteString(MinimapPath);
+            writer.Write(AmbientSoundNumber);
+            writer.WriteString(AmbientSoundPath);
+            writer.Write((int)FogStyle);
+            writer.Write(FogStartZ);
+            writer.Write(FogEndZ);
+            writer.Write(FogDensity);
+            writer.Write(FogColor.ToArgb());
+            writer.Write((int)Race);
 
-        public int CampaignVersion
-        {
-            get => _campaignVersion;
-            set => _campaignVersion = value;
-        }
-
-        public int EditorVersion
-        {
-            get => _editorVersion;
-            set => _editorVersion = value;
-        }
-
-        public string CampaignName
-        {
-            get => _campaignName;
-            set => _campaignName = value;
-        }
-
-        public string CampaignDifficulty
-        {
-            get => _campaignDifficulty;
-            set => _campaignDifficulty = value;
-        }
-
-        public string CampaignAuthor
-        {
-            get => _campaignAuthor;
-            set => _campaignAuthor = value;
-        }
-
-        public string CampaignDescription
-        {
-            get => _campaignDescription;
-            set => _campaignDescription = value;
-        }
-
-        public CampaignFlags CampaignFlags
-        {
-            get => _campaignFlags;
-            set => _campaignFlags = value;
-        }
-
-        public int CampaignBackgroundNumber
-        {
-            get => _campaignBackgroundNumber;
-            set => _campaignBackgroundNumber = value;
-        }
-
-        public string BackgroundScreenPath
-        {
-            get => _backgroundScreenPath;
-            set => _backgroundScreenPath = value;
-        }
-
-        public string MinimapPath
-        {
-            get => _minimapPath;
-            set => _minimapPath = value;
-        }
-
-        public int AmbientSoundNumber
-        {
-            get => _ambientSoundNumber;
-            set => _ambientSoundNumber = value;
-        }
-
-        public string AmbientSoundPath
-        {
-            get => _ambientSoundPath;
-            set => _ambientSoundPath = value;
-        }
-
-        public FogStyle FogStyle
-        {
-            get => _fogStyle;
-            set => _fogStyle = value;
-        }
-
-        public float FogStartZ
-        {
-            get => _fogStartZ;
-            set => _fogStartZ = value;
-        }
-
-        public float FogEndZ
-        {
-            get => _fogEndZ;
-            set => _fogEndZ = value;
-        }
-
-        public float FogDensity
-        {
-            get => _fogDensity;
-            set => _fogDensity = value;
-        }
-
-        public Color FogColor
-        {
-            get => _fogColor;
-            set => _fogColor = value;
-        }
-
-        public CampaignRace Race
-        {
-            get => _race;
-            set => _race = value;
-        }
-
-        public int MapButtonCount => _mapButtons.Count;
-
-        public int MapCount => _maps.Count;
-
-        public static CampaignInfo Parse(Stream stream, bool leaveOpen = false)
-        {
-            try
+            writer.Write(MapButtons.Count);
+            foreach (var mapButton in MapButtons)
             {
-                var info = new CampaignInfo();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-                {
-                    info._fileFormatVersion = reader.ReadInt32<CampaignInfoFormatVersion>();
-                    info._campaignVersion = reader.ReadInt32();
-                    info._editorVersion = reader.ReadInt32();
-
-                    info._campaignName = reader.ReadChars();
-                    info._campaignDifficulty = reader.ReadChars();
-                    info._campaignAuthor = reader.ReadChars();
-                    info._campaignDescription = reader.ReadChars();
-
-                    info._campaignFlags = reader.ReadInt32<CampaignFlags>();
-
-                    info._campaignBackgroundNumber = reader.ReadInt32();
-                    info._backgroundScreenPath = reader.ReadChars();
-                    info._minimapPath = reader.ReadChars();
-
-                    info._ambientSoundNumber = reader.ReadInt32();
-                    info._ambientSoundPath = reader.ReadChars();
-
-                    info._fogStyle = reader.ReadInt32<FogStyle>();
-                    info._fogStartZ = reader.ReadSingle();
-                    info._fogEndZ = reader.ReadSingle();
-                    info._fogDensity = reader.ReadSingle();
-                    info._fogColor = reader.ReadColorRgba();
-
-                    info._race = reader.ReadInt32<CampaignRace>();
-
-                    var mapCount = reader.ReadInt32();
-                    for (var i = 0; i < mapCount; i++)
-                    {
-                        info._mapButtons.Add(CampaignMapButton.Parse(stream, true));
-                    }
-
-                    var mapOrderCount = reader.ReadInt32();
-                    for (var i = 0; i < mapOrderCount; i++)
-                    {
-                        info._maps.Add(CampaignMap.Parse(stream, true));
-                    }
-                }
-
-                return info;
+                writer.Write(mapButton, FormatVersion);
             }
-            catch (DecoderFallbackException e)
+
+            writer.Write(Maps.Count);
+            foreach (var map in Maps)
             {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
+                writer.Write(map, FormatVersion);
             }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public static void Serialize(CampaignInfo campaignInfo, Stream stream, bool leaveOpen = false)
-        {
-            campaignInfo.SerializeTo(stream, leaveOpen);
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                writer.Write((int)_fileFormatVersion);
-                writer.Write(_campaignVersion);
-                writer.Write(_editorVersion);
-
-                writer.WriteString(_campaignName);
-                writer.WriteString(_campaignDifficulty);
-                writer.WriteString(_campaignAuthor);
-                writer.WriteString(_campaignDescription);
-
-                writer.Write((int)_campaignFlags);
-
-                writer.Write(_campaignBackgroundNumber);
-                writer.WriteString(_backgroundScreenPath);
-                writer.WriteString(_minimapPath);
-
-                writer.Write(_ambientSoundNumber);
-                writer.WriteString(_ambientSoundPath);
-
-                writer.Write((int)_fogStyle);
-                writer.Write(_fogStartZ);
-                writer.Write(_fogEndZ);
-                writer.Write(_fogDensity);
-                writer.Write(_fogColor.R);
-                writer.Write(_fogColor.G);
-                writer.Write(_fogColor.B);
-                writer.Write(_fogColor.A);
-
-                writer.Write((int)_race);
-
-                writer.Write(_mapButtons.Count);
-                foreach (var map in _mapButtons)
-                {
-                    map.WriteTo(writer);
-                }
-
-                writer.Write(_maps.Count);
-                foreach (var mapOrder in _maps)
-                {
-                    mapOrder.WriteTo(writer);
-                }
-            }
-        }
-
-        public CampaignMapButton GetMapButton(int index)
-        {
-            return _mapButtons[index];
-        }
-
-        public void SetMapButtons(params CampaignMapButton[] buttons)
-        {
-            _mapButtons.Clear();
-            _mapButtons.AddRange(buttons);
-        }
-
-        public CampaignMap GetMap(int index)
-        {
-            return _maps[index];
-        }
-
-        public void SetMaps(params CampaignMap[] maps)
-        {
-            _maps.Clear();
-            _maps.AddRange(maps);
         }
     }
 }
