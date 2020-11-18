@@ -7,7 +7,6 @@
 
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -15,90 +14,68 @@ namespace War3Net.Build.Environment
 {
     public sealed class Region
     {
-        private float _left;
-        private float _bottom;
-        private float _right;
-        private float _top;
-
-        private string _name;
-        private int _creationNumber;
-
-        private char[] _weatherId;
-        private string _ambientSound;
-
-        private Color _color;
-
-        public float Left => _left;
-
-        public float Bottom => _bottom;
-
-        public float Right => _right;
-
-        public float Top => _top;
-
-        public float Width => _right - _left;
-
-        public float Height => _top - _bottom;
-
-        public float CenterX => 0.5f * (_left + _right);
-
-        public float CenterY => 0.5f * (_top + _bottom);
-
-        public string Name => _name;
-
-        public int CreationNumber => _creationNumber;
-
-        public string WeatherId => new string(_weatherId);
-
-        public string AmbientSound => _ambientSound;
-
-        public static Region Parse(Stream stream, bool leaveOpen)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Region"/> class.
+        /// </summary>
+        public Region()
         {
-            var region = new Region();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                region._left = reader.ReadSingle();
-                region._bottom = reader.ReadSingle();
-                region._right = reader.ReadSingle();
-                region._top = reader.ReadSingle();
-
-                region._name = reader.ReadChars();
-                region._creationNumber = reader.ReadInt32();
-
-                region._weatherId = reader.ReadChars(4);
-                region._ambientSound = reader.ReadChars();
-
-                region._color = Color.FromArgb(reader.ReadInt32());
-            }
-
-            return region;
         }
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
+        internal Region(BinaryReader reader, MapRegionsFormatVersion formatVersion)
         {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer);
-            }
+            ReadFrom(reader, formatVersion);
         }
 
-        public void WriteTo(BinaryWriter writer)
+        public float Left { get; set; }
+
+        public float Bottom { get; set; }
+
+        public float Right { get; set; }
+
+        public float Top { get; set; }
+
+        public string Name { get; set; }
+
+        public int CreationNumber { get; set; }
+
+        public int WeatherId { get; set; }
+
+        public string AmbientSound { get; set; }
+
+        public Color Color { get; set; }
+
+        public float Width => Right - Left;
+
+        public float Height => Top - Bottom;
+
+        public float CenterX => 0.5f * (Left + Right);
+
+        public float CenterY => 0.5f * (Top + Bottom);
+
+        internal void ReadFrom(BinaryReader reader, MapRegionsFormatVersion formatVersion)
         {
-            writer.Write(_left);
-            writer.Write(_bottom);
-            writer.Write(_right);
-            writer.Write(_top);
+            Left = reader.ReadSingle();
+            Bottom = reader.ReadSingle();
+            Right = reader.ReadSingle();
+            Top = reader.ReadSingle();
+            Name = reader.ReadChars();
+            CreationNumber = reader.ReadInt32();
+            WeatherId = reader.ReadInt32();
+            AmbientSound = reader.ReadChars();
+            Color = Color.FromArgb(reader.ReadInt32());
+        }
 
-            writer.WriteString(_name);
-            writer.Write(_creationNumber);
-
-            writer.Write(_weatherId);
-            writer.WriteString(_ambientSound);
-
-            writer.Write(_color.B);
-            writer.Write(_color.G);
-            writer.Write(_color.R);
-            writer.Write(_color.A);
+        internal void WriteTo(BinaryWriter writer, MapRegionsFormatVersion formatVersion)
+        {
+            writer.Write(Left);
+            writer.Write(Bottom);
+            writer.Write(Right);
+            writer.Write(Top);
+            writer.WriteString(Name);
+            writer.Write(CreationNumber);
+            writer.Write(WeatherId);
+            writer.WriteString(AmbientSound);
+            writer.Write(Color.ToArgb());
         }
     }
 }
