@@ -7,92 +7,68 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
     public sealed class RandomUnitTable
     {
-        private readonly List<WidgetType> _positionTypes;
-        private readonly List<RandomUnitSet> _sets;
-
-        private int _tableNumber;
-        private string _tableName;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RandomUnitTable"/> class.
+        /// </summary>
         public RandomUnitTable()
         {
-            _positionTypes = new List<WidgetType>();
-            _sets = new List<RandomUnitSet>();
         }
 
-        public int Index => _tableNumber;
-
-        public int Positions => _positionTypes.Count;
-
-        public int UnitSetCount => _sets.Count;
-
-        public static RandomUnitTable Parse(Stream stream, bool leaveOpen = false)
+        internal RandomUnitTable(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            var table = new RandomUnitTable();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                table._tableNumber = reader.ReadInt32();
-                table._tableName = reader.ReadChars();
-
-                var positionCount = reader.ReadInt32(); // amount of columns
-                for (var x = 0; x < positionCount; x++)
-                {
-                    table._positionTypes.Add(reader.ReadInt32<WidgetType>());
-                }
-
-                var setCount = reader.ReadInt32(); // amount of rows
-                for (var y = 0; y < setCount; y++)
-                {
-                    var set = new RandomUnitSet(reader.ReadInt32());
-                    for (var x = 0; x < positionCount; x++)
-                    {
-                        set.AddId(reader.ReadChars(4));
-                    }
-
-                    table._sets.Add(set);
-                }
-            }
-
-            return table;
+            ReadFrom(reader, formatVersion);
         }
 
-        public void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(_tableNumber);
-            writer.WriteString(_tableName);
+        public int Index { get; set; }
 
-            writer.Write(_positionTypes.Count);
-            foreach (var positionType in _positionTypes)
+        public string Name { get; set; }
+
+        public List<WidgetType> Types { get; init; } = new();
+
+        public List<RandomUnitSet> UnitSets { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            Index = reader.ReadInt32();
+            Name = reader.ReadChars();
+
+            nint typeCount = reader.ReadInt32(); // amount of columns
+            for (nint x = 0; x < typeCount; x++)
             {
-                writer.Write((int)positionType);
+                Types.Add(reader.ReadInt32<WidgetType>());
             }
 
-            writer.Write(_sets.Count);
-            foreach (var set in _sets)
+            nint unitSetCount = reader.ReadInt32(); // amount of rows
+            for (nint y = 0; y < unitSetCount; y++)
             {
-                writer.Write(set.Chance);
-                foreach (var id in set)
-                {
-                    writer.Write(id);
-                }
+                UnitSets.Add(reader.ReadRandomUnitSet(formatVersion, (int)typeCount));
             }
         }
 
-        public WidgetType GetType(int position)
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
         {
-            return _positionTypes[position];
-        }
+            writer.Write(Index);
+            writer.WriteString(Name);
 
-        public RandomUnitSet GetSet(int setIndex)
-        {
-            return setIndex < _sets.Count ? _sets[setIndex] : null;
+            writer.Write(Types.Count);
+            foreach (var type in Types)
+            {
+                writer.Write((int)type);
+            }
+
+            writer.Write(UnitSets.Count);
+            foreach (var unitSet in UnitSets)
+            {
+                writer.Write(unitSet, formatVersion);
+            }
         }
     }
 }

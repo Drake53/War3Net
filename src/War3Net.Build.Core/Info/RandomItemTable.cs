@@ -5,102 +5,57 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
+using War3Net.Build.Common;
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
-    public sealed class RandomItemTable : IEnumerable<RandomItemSet>
+    public sealed class RandomItemTable
     {
-        private readonly List<RandomItemSet> _sets;
-
-        private int _tableNumber;
-        private string _tableName;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RandomItemTable"/> class.
+        /// </summary>
         public RandomItemTable()
         {
-            _sets = new List<RandomItemSet>();
         }
 
-        public int Index => _tableNumber;
-
-        public int ItemSetCount => _sets.Count;
-
-        public IEnumerable<(int chance, string id)>[] ItemSets
+        internal RandomItemTable(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            get
-            {
-                var itemSetCount = ItemSetCount;
-                var itemSets = new IEnumerable<(int chance, string id)>[itemSetCount];
-                for (var i = 0; i < itemSetCount; i++)
-                {
-                    itemSets[i] = _sets[i].Select(itemSet => (itemSet.Item1, new string(itemSet.Item2)));
-                }
+            ReadFrom(reader, formatVersion);
+        }
 
-                return itemSets;
+        public int Index { get; set; }
+
+        public string Name { get; set; }
+
+        public List<RandomItemSet> ItemSets { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            Index = reader.ReadInt32();
+            Name = reader.ReadChars();
+
+            nint itemSetCount = reader.ReadInt32();
+            for (nint i = 0; i < itemSetCount; i++)
+            {
+                ItemSets.Add(reader.ReadRandomItemSet(formatVersion));
             }
         }
 
-        public static RandomItemTable Parse(Stream stream, bool leaveOpen = false)
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
         {
-            var table = new RandomItemTable();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+            writer.Write(Index);
+            writer.WriteString(Name);
+
+            writer.Write(ItemSets.Count);
+            foreach (var itemSet in ItemSets)
             {
-                table._tableNumber = reader.ReadInt32();
-                table._tableName = reader.ReadChars();
-
-                var setCount = reader.ReadInt32();
-                for (var i = 0; i < setCount; i++)
-                {
-                    var set = new RandomItemSet();
-                    var setSize = reader.ReadInt32();
-                    for (var j = 0; j < setSize; j++)
-                    {
-                        set.AddItem(reader.ReadInt32(), reader.ReadChars(4));
-                    }
-
-                    table._sets.Add(set);
-                }
+                writer.Write(itemSet, formatVersion);
             }
-
-            return table;
-        }
-
-        public void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(_tableNumber);
-            writer.WriteString(_tableName);
-
-            writer.Write(_sets.Count);
-            foreach (var set in _sets)
-            {
-                writer.Write(set.Size);
-                foreach (var (chance, id) in set)
-                {
-                    writer.Write(chance);
-                    writer.Write(id);
-                }
-            }
-        }
-
-        public RandomItemSet GetSet(int setIndex)
-        {
-            return _sets[setIndex];
-        }
-
-        public IEnumerator<RandomItemSet> GetEnumerator()
-        {
-            return ((IEnumerable<RandomItemSet>)_sets).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<RandomItemSet>)_sets).GetEnumerator();
         }
     }
 }

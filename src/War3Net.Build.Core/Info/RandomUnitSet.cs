@@ -5,42 +5,45 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 
 namespace War3Net.Build.Info
 {
-    public sealed class RandomUnitSet : IEnumerable<char[]>
+    public sealed class RandomUnitSet
     {
-        private readonly int _chance;
-        private readonly List<char[]> _unitIds;
-
-        public RandomUnitSet(int chance)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RandomUnitSet"/> class.
+        /// </summary>
+        public RandomUnitSet()
         {
-            _chance = chance;
-            _unitIds = new List<char[]>();
         }
 
-        public int Chance => _chance;
-
-        public void AddId(char[] id)
+        internal RandomUnitSet(BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize)
         {
-            _unitIds.Add(id);
+            UnitIds = new int[setSize];
+            ReadFrom(reader, formatVersion);
         }
 
-        public char[] GetId(int index)
+        public int Chance { get; set; }
+
+        public int[] UnitIds { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            return _unitIds[index];
+            Chance = reader.ReadInt32();
+            for (nint i = 0; i < UnitIds.Length; i++)
+            {
+                UnitIds[i] = reader.ReadInt32();
+            }
         }
 
-        public IEnumerator<char[]> GetEnumerator()
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
         {
-            return ((IEnumerable<char[]>)_unitIds).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<char[]>)_unitIds).GetEnumerator();
+            writer.Write(Chance);
+            for (nint i = 0; i < UnitIds.Length; i++)
+            {
+                writer.Write(UnitIds[i]);
+            }
         }
     }
 }
