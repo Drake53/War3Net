@@ -5,83 +5,46 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Common;
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
     public sealed class ForceData
     {
-        private ForceFlags _forceFlags;
-        private int _playersMask;
-        private string _forceName;
-
-        public ForceFlags ForceFlags
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ForceData"/> class.
+        /// </summary>
+        public ForceData()
         {
-            get => _forceFlags;
-            set => _forceFlags = value;
         }
 
-        public string ForceName
+        internal ForceData(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            get => _forceName;
-            set => _forceName = value;
+            ReadFrom(reader, formatVersion);
         }
 
-        public static ForceData Parse(Stream stream, bool leaveOpen = false)
-        {
-            var data = new ForceData();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                data._forceFlags = reader.ReadInt32<ForceFlags>();
-                data._playersMask = reader.ReadInt32();
-                data._forceName = reader.ReadChars();
-            }
+        public ForceFlags Flags { get; set; }
 
-            return data;
+        public Bitmask32 Players { get; set; }
+
+        public string Name { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            Flags = reader.ReadInt32<ForceFlags>();
+            Players = reader.ReadBitmask32();
+            Name = reader.ReadChars();
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
         {
-            writer.Write((int)_forceFlags);
-            writer.Write(_playersMask);
-            writer.WriteString(_forceName);
-        }
-
-        public bool ContainsPlayer(int playerIndex)
-        {
-            // Note: if the player slot is unused, this usually returns true.
-            return (_playersMask & (1 << playerIndex)) != 0;
-        }
-
-        public IEnumerable<int> GetPlayers()
-        {
-            const int MaxPlayerSlots = 24;
-
-            for (var index = 0; index < MaxPlayerSlots; index++)
-            {
-                if (ContainsPlayer(index))
-                {
-                    yield return index;
-                }
-            }
-        }
-
-        public void SetPlayers(params PlayerData[] players)
-        {
-            _playersMask = 0;
-            foreach (var player in players)
-            {
-                _playersMask |= (1 << player.PlayerNumber);
-            }
-        }
-
-        public void IncludeAllPlayers()
-        {
-            _playersMask = -1;
+            writer.Write((int)Flags);
+            writer.Write(Players);
+            writer.WriteString(Name);
         }
     }
 }

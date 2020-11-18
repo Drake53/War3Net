@@ -5,66 +5,41 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
-using System.Text;
+
+using War3Net.Build.Common;
+using War3Net.Build.Extensions;
 
 namespace War3Net.Build.Info
 {
     public sealed class TechData
     {
-        private int _playersMask;
-        private char[] _techId;
-
-        private TechData()
-        {
-        }
-
-        public TechData(string id, int playersMask = -1)
-            : this()
-        {
-            if (id is null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            if (id.Length != 4)
-            {
-                throw new ArgumentException("Upgrade id must be 4 characters long.", nameof(id));
-            }
-
-            _playersMask = playersMask;
-            _techId = new[] { id[0], id[1], id[2], id[3] };
-        }
-
-        public string Id => new string(_techId);
-
         /// <summary>
-        /// Gets a value indicating whether the tech is an ability, or it is an item or unit.
+        /// Initializes a new instance of the <see cref="TechData"/> class.
         /// </summary>
-        public bool IsAbility => _techId[0] == 'A';
-
-        public static TechData Parse(Stream stream, bool leaveOpen = false)
+        public TechData()
         {
-            var data = new TechData();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                data._playersMask = reader.ReadInt32();
-                data._techId = reader.ReadChars(4);
-            }
-
-            return data;
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal TechData(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            writer.Write(_playersMask);
-            writer.Write(_techId);
+            ReadFrom(reader, formatVersion);
         }
 
-        public bool AppliesToPlayer(int playerIndex)
+        public Bitmask32 Players { get; set; }
+
+        public int Id { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            return (_playersMask & (1 << playerIndex)) != 0;
+            Players = reader.ReadBitmask32();
+            Id = reader.ReadInt32();
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
+        {
+            writer.Write(Players);
+            writer.Write(Id);
         }
     }
 }

@@ -5,11 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Text;
+using System.Numerics;
 
 using War3Net.Common.Extensions;
 
@@ -17,173 +14,73 @@ namespace War3Net.Build.Info
 {
     public class PlayerData
     {
-        private int _playerNumber;
-        private PlayerController _playerController;
-        private PlayerRace _playerRace;
-        private PlayerFlags _playerFlags;
-        private string _playerName;
-        private PointF _startPosition;
-        private int _allyLowPriorityFlags;
-        private int _allyHighPriorityFlags;
-
-        internal PlayerData()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerData"/> class.
+        /// </summary>
+        public PlayerData()
         {
         }
 
-        public int PlayerNumber
+        internal PlayerData(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            get => _playerNumber;
-            set => _playerNumber = value;
+            ReadFrom(reader, formatVersion);
         }
 
-        public PlayerController PlayerController
-        {
-            get => _playerController;
-            set => _playerController = value;
-        }
+        public int Id { get; set; }
 
-        public PlayerRace PlayerRace
-        {
-            get => _playerRace;
-            set => _playerRace = value;
-        }
+        public PlayerController Controller { get; set; }
 
-        public bool FixedStartPosition
-        {
-            get => _playerFlags.HasFlag(PlayerFlags.FixedStartPosition);
-            set => _playerFlags = value ? _playerFlags | PlayerFlags.FixedStartPosition : _playerFlags & ~PlayerFlags.FixedStartPosition;
-        }
+        public PlayerRace Race { get; set; }
 
-        public bool IsRaceSelectable
-        {
-            get => _playerFlags.HasFlag(PlayerFlags.RaceSelectable);
-            set => _playerFlags = value ? _playerFlags | PlayerFlags.RaceSelectable : _playerFlags & ~PlayerFlags.RaceSelectable;
-        }
+        public PlayerFlags Flags { get; set; }
 
-        public string PlayerName
-        {
-            get => _playerName;
-            set => _playerName = value;
-        }
+        public string Name { get; set; }
 
-        public PointF StartPosition
-        {
-            get => _startPosition;
-            set => _startPosition = value;
-        }
+        public Vector2 StartPosition { get; set; }
 
-        public static PlayerData Create(bool isReforged = false)
-        {
-            return isReforged ? new ReforgedPlayerData() : new PlayerData();
-        }
+        public int AllyLowPriorityFlags { get; set; }
 
-        public static PlayerData Create(int playerNumber, bool isReforged = false)
-        {
-            var data = Create(isReforged);
-            data._playerNumber = playerNumber;
-            data._playerName = $"Player {playerNumber + 1}";
-            return data;
-        }
+        public int AllyHighPriorityFlags { get; set; }
 
-        public static PlayerData Create(PlayerData original, bool includeReforgedData)
+        public int Unk1 { get; set; }
+
+        public int Unk2 { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
-            if (original is null)
+            Id = reader.ReadInt32();
+            Controller = reader.ReadInt32<PlayerController>();
+            Race = reader.ReadInt32<PlayerRace>();
+            Flags = reader.ReadInt32<PlayerFlags>();
+            Name = reader.ReadChars();
+            StartPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            AllyLowPriorityFlags = reader.ReadInt32();
+            AllyHighPriorityFlags = reader.ReadInt32();
+
+            if (formatVersion >= MapInfoFormatVersion.Reforged)
             {
-                throw new ArgumentNullException(nameof(original));
-            }
-
-            PlayerData copy;
-            if (includeReforgedData && original is ReforgedPlayerData reforgedOriginal)
-            {
-                var reforgedCopy = new ReforgedPlayerData();
-                reforgedCopy.Unk0 = reforgedOriginal.Unk0;
-                reforgedCopy.Unk1 = reforgedOriginal.Unk1;
-                copy = reforgedCopy;
-            }
-            else if (!includeReforgedData)
-            {
-                copy = new PlayerData();
-            }
-            else
-            {
-                throw new ArgumentException("Unable to create a copy with reforged data, when the original object did not contain reforged data.");
-            }
-
-            copy._playerNumber = original._playerNumber;
-            copy._playerController = original._playerController;
-            copy._playerRace = original._playerRace;
-            copy._playerFlags = original._playerFlags;
-            copy._playerName = original._playerName;
-            copy._startPosition = original._startPosition;
-            copy._allyLowPriorityFlags = original._allyLowPriorityFlags;
-            copy._allyHighPriorityFlags = original._allyHighPriorityFlags;
-
-            return copy;
-        }
-
-        public static PlayerData Parse(Stream stream, bool leaveOpen = false)
-        {
-            var data = new PlayerData();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                ReadFrom(reader, data);
-            }
-
-            return data;
-        }
-
-        public virtual void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(_playerNumber);
-            writer.Write((int)_playerController);
-            writer.Write((int)_playerRace);
-            writer.Write((int)_playerFlags);
-            writer.WriteString(_playerName);
-            writer.Write(_startPosition.X);
-            writer.Write(_startPosition.Y);
-            writer.Write(_allyLowPriorityFlags);
-            writer.Write(_allyHighPriorityFlags);
-        }
-
-        public bool HasLowPriorityFlag(int otherPlayerIndex)
-        {
-            return (_allyLowPriorityFlags & (1 << otherPlayerIndex)) != 0;
-        }
-
-        public bool HasHighPriorityFlag(int otherPlayerIndex)
-        {
-            return (_allyHighPriorityFlags & (1 << otherPlayerIndex)) != 0;
-        }
-
-        public IEnumerable<(int index, bool highPriority)> GetStartLocationPriorities()
-        {
-            const int MaxPlayerSlots = 24;
-
-            for (var index = 0; index < MaxPlayerSlots; index++)
-            {
-                if (HasLowPriorityFlag(index))
-                {
-                    yield return (index, false);
-                }
-                else if (HasHighPriorityFlag(index))
-                {
-                    yield return (index, true);
-                }
+                Unk1 = reader.ReadInt32();
+                Unk2 = reader.ReadInt32();
             }
         }
 
-        internal static void ReadFrom(BinaryReader reader, PlayerData data)
+        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
         {
-            data._playerNumber = reader.ReadInt32();
-            data._playerController = reader.ReadInt32<PlayerController>();
-            data._playerRace = reader.ReadInt32<PlayerRace>();
-            data._playerFlags = reader.ReadInt32<PlayerFlags>();
-            data._playerName = reader.ReadChars();
-            data._startPosition = new PointF(reader.ReadSingle(), reader.ReadSingle());
+            writer.Write(Id);
+            writer.Write((int)Controller);
+            writer.Write((int)Race);
+            writer.Write((int)Flags);
+            writer.WriteString(Name);
+            writer.Write(StartPosition.X);
+            writer.Write(StartPosition.Y);
+            writer.Write(AllyLowPriorityFlags);
+            writer.Write(AllyHighPriorityFlags);
 
-            // Note: if _playerController is Computer, these values sometimes appear somewhat random.
-            data._allyLowPriorityFlags = reader.ReadInt32();
-            data._allyHighPriorityFlags = reader.ReadInt32();
+            if (formatVersion >= MapInfoFormatVersion.Reforged)
+            {
+                writer.Write(Unk1);
+                writer.Write(Unk2);
+            }
         }
     }
 }
