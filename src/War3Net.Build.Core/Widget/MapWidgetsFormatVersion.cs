@@ -9,8 +9,7 @@ namespace War3Net.Build.Widget
 {
     public enum MapWidgetsFormatVersion
     {
-        Roc,
-        Tft,
-        Reforged,
+        RoC = 7,
+        TFT = 8,
     }
 }

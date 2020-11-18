@@ -5,139 +5,82 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+
+using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
-    public sealed class MapUnits : IEnumerable<MapUnitData>
+    public sealed class MapUnits
     {
         public const string FileName = "war3mapUnits.doo";
 
-        private readonly List<MapUnitData> _units;
+        public static readonly int FileFormatSignature = "W3do".FromRawcode();
 
-        private MapWidgetsHeader _header;
-
-        public MapUnits(IEnumerable<MapUnitData> units)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapUnits"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        /// <param name="subVersion"></param>
+        public MapUnits(MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion)
         {
-            _units = new List<MapUnitData>(units);
-            _header = MapWidgetsHeader.GetDefault((uint)_units.Count);
+            FormatVersion = formatVersion;
+            SubVersion = subVersion;
         }
 
-        public MapUnits(params MapUnitData[] units)
+        internal MapUnits(BinaryReader reader)
         {
-            _units = new List<MapUnitData>(units);
-            _header = MapWidgetsHeader.GetDefault((uint)_units.Count);
+            ReadFrom(reader);
         }
 
-        private MapUnits()
+        public MapWidgetsFormatVersion FormatVersion { get; set; }
+
+        public MapWidgetsSubVersion SubVersion { get; set; }
+
+        public bool UseNewFormat { get; set; }
+
+        public List<UnitData> Units { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            _units = new List<MapUnitData>();
-        }
-
-        public static MapUnits Default => new MapUnits(Array.Empty<MapUnitData>());
-
-        public static bool IsRequired => false;
-
-        public MapWidgetsFormatVersion FormatVersion
-        {
-            get
+            if (reader.ReadInt32() != FileFormatSignature)
             {
-                return this.All(unit => string.IsNullOrEmpty(unit.Skin))
-                    ? _header.UseTftParser ? MapWidgetsFormatVersion.Tft : MapWidgetsFormatVersion.Roc
-                    : MapWidgetsFormatVersion.Reforged;
+                throw new InvalidDataException($"Expected file header signature at the start of a .doo file.");
             }
 
-            set
+            FormatVersion = reader.ReadInt32<MapWidgetsFormatVersion>();
+            SubVersion = reader.ReadInt32<MapWidgetsSubVersion>();
+
+            nint unitCount = reader.ReadInt32();
+            if (unitCount > 0)
             {
-                var haveSkin = value == MapWidgetsFormatVersion.Reforged;
-                foreach (var unit in _units)
-                {
-                    unit.Skin = haveSkin ? unit.TypeId : null;
-                }
+                Units.Add(reader.ReadMapUnitData(FormatVersion, SubVersion, out var useNewFormat));
+                UseNewFormat = useNewFormat;
 
-                if (value == MapWidgetsFormatVersion.Roc)
+                for (nint i = 1; i < unitCount; i++)
                 {
-                    _header.Version = MapWidgetsVersion.RoC;
-                    _header.SubVersion = MapWidgetsSubVersion.V9;
-                }
-                else
-                {
-                    _header.Version = MapWidgetsVersion.TFT;
-                    _header.SubVersion = MapWidgetsSubVersion.V11;
-                }
-            }
-        }
-
-        public int Count => _units.Count;
-
-        public static MapUnits Parse(Stream stream, bool leaveOpen = false)
-        {
-            try
-            {
-                var data = new MapUnits();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-                {
-                    data._header = MapWidgetsHeader.Parse(stream, true);
-                    var unitParser = data._header.UseTftParser
-                        ? (Func<Stream, bool, MapUnitData>)MapUnitData.ParseTft
-                        : MapUnitData.Parse;
-
-                    for (var i = 0; i < data._header.DataCount; i++)
+                    Units.Add(reader.ReadMapUnitData(FormatVersion, SubVersion, out useNewFormat));
+                    if (useNewFormat != UseNewFormat)
                     {
-                        data._units.Add(unitParser(stream, true));
+                        throw new InvalidDataException();
                     }
                 }
-
-                return data;
-            }
-            catch (DecoderFallbackException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
             }
         }
 
-        public static void Serialize(MapUnits mapUnits, Stream stream, bool leaveOpen = false)
+        internal void WriteTo(BinaryWriter writer)
         {
-            mapUnits.SerializeTo(stream, leaveOpen);
-        }
+            writer.Write(FileFormatSignature);
+            writer.Write((int)FormatVersion);
+            writer.Write((int)SubVersion);
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            writer.Write(Units.Count);
+            foreach (var unit in Units)
             {
-                writer.Write(MapWidgetsHeader.HeaderSignature);
-                writer.Write((uint)_header.Version);
-                writer.Write((uint)_header.SubVersion);
-
-                writer.Write(_units.Count);
-                foreach (var unit in _units)
-                {
-                    unit.WriteTo(writer, _header.UseTftParser);
-                }
+                writer.Write(unit, FormatVersion, SubVersion, UseNewFormat);
             }
-        }
-
-        public IEnumerator<MapUnitData> GetEnumerator()
-        {
-            return ((IEnumerable<MapUnitData>)_units).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<MapUnitData>)_units).GetEnumerator();
         }
     }
 }

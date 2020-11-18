@@ -6,40 +6,43 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
     public sealed class ModifiedAbilityData
     {
-        private char[] _abilityId;
-        private int _isAutocastActive;
-        private int _heroAbilityLevel;
-
-        public string Id => new string(_abilityId);
-
-        public bool IsActive => _isAutocastActive != 0;
-
-        public int Level => /*_isHeroAbility ?*/ _heroAbilityLevel /*: 0*/;
-
-        public static ModifiedAbilityData Parse(Stream stream, bool leaveOpen = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModifiedAbilityData"/> class.
+        /// </summary>
+        public ModifiedAbilityData()
         {
-            var data = new ModifiedAbilityData();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                data._abilityId = reader.ReadChars(4);
-                data._isAutocastActive = reader.ReadInt32();
-                data._heroAbilityLevel = reader.ReadInt32();
-            }
-
-            return data;
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal ModifiedAbilityData(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
-            writer.Write(_abilityId);
-            writer.Write(_isAutocastActive);
-            writer.Write(_heroAbilityLevel);
+            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
+        }
+
+        public int AbilityId { get; set; }
+
+        public bool IsAutocastActive { get; set; }
+
+        public int HeroAbilityLevel { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        {
+            AbilityId = reader.ReadInt32();
+            IsAutocastActive = reader.ReadBool();
+            HeroAbilityLevel = reader.ReadInt32();
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        {
+            writer.Write(AbilityId);
+            writer.WriteBool(IsAutocastActive);
+            writer.Write(HeroAbilityLevel);
         }
     }
 }

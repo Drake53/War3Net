@@ -5,169 +5,102 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+
+using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
-    public sealed class MapDoodads : IEnumerable<MapDoodadData>
+    public sealed class MapDoodads
     {
         public const string FileName = "war3map.doo";
 
-        private readonly List<MapDoodadData> _doodads;
-        private readonly List<MapSpecialDoodadData> _specialDoodads;
+        public static readonly int FileFormatSignature = "W3do".FromRawcode();
 
-        private MapWidgetsHeader _header;
-
-        public MapDoodads(IEnumerable<MapDoodadData> doodads)
-            : this(doodads, Array.Empty<MapSpecialDoodadData>())
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapDoodads"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        /// <param name="subVersion"></param>
+        public MapDoodads(MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion)
         {
+            FormatVersion = formatVersion;
+            SubVersion = subVersion;
         }
 
-        public MapDoodads(IEnumerable<MapDoodadData> doodads, IEnumerable<MapSpecialDoodadData> specialDoodads)
+        internal MapDoodads(BinaryReader reader)
         {
-            _doodads = new List<MapDoodadData>(doodads);
-            _specialDoodads = new List<MapSpecialDoodadData>(specialDoodads);
-            _header = MapWidgetsHeader.GetDefault((uint)_doodads.Count);
+            ReadFrom(reader);
         }
 
-        public MapDoodads(params MapDoodadData[] doodads)
+        public MapWidgetsFormatVersion FormatVersion { get; set; }
+
+        public MapWidgetsSubVersion SubVersion { get; set; }
+
+        public bool UseNewFormat { get; set; }
+
+        public List<DoodadData> Doodads { get; init; } = new();
+
+        public SpecialDoodadVersion SpecialDoodadVersion { get; set; }
+
+        public List<SpecialDoodadData> SpecialDoodads { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            _doodads = new List<MapDoodadData>(doodads);
-            _specialDoodads = new List<MapSpecialDoodadData>();
-            _header = MapWidgetsHeader.GetDefault((uint)_doodads.Count);
-        }
-
-        private MapDoodads()
-        {
-            _doodads = new List<MapDoodadData>();
-            _specialDoodads = new List<MapSpecialDoodadData>();
-        }
-
-        public static MapDoodads Default => new MapDoodads(Array.Empty<MapDoodadData>());
-
-        public static bool IsRequired => false;
-
-        public MapWidgetsFormatVersion FormatVersion
-        {
-            get
+            if (reader.ReadInt32() != FileFormatSignature)
             {
-                return this.All(doodad => string.IsNullOrEmpty(doodad.Skin))
-                    ? _header.UseTftParser ? MapWidgetsFormatVersion.Tft : MapWidgetsFormatVersion.Roc
-                    : MapWidgetsFormatVersion.Reforged;
+                throw new InvalidDataException($"Expected file header signature at the start of a .doo file.");
             }
 
-            set
+            FormatVersion = reader.ReadInt32<MapWidgetsFormatVersion>();
+            SubVersion = reader.ReadInt32<MapWidgetsSubVersion>();
+
+            nint doodadCount = reader.ReadInt32();
+            if (doodadCount > 0)
             {
-                var haveSkin = value == MapWidgetsFormatVersion.Reforged;
-                foreach (var doodad in _doodads)
+                Doodads.Add(reader.ReadMapDoodadData(FormatVersion, SubVersion, out var useNewFormat));
+                UseNewFormat = useNewFormat;
+
+                for (nint i = 1; i < doodadCount; i++)
                 {
-                    doodad.Skin = haveSkin ? doodad.TypeId : null;
-                }
-
-                if (value == MapWidgetsFormatVersion.Roc)
-                {
-                    _header.Version = MapWidgetsVersion.RoC;
-                    _header.SubVersion = MapWidgetsSubVersion.V9;
-                }
-                else
-                {
-                    _header.Version = MapWidgetsVersion.TFT;
-                    _header.SubVersion = MapWidgetsSubVersion.V11;
-                }
-            }
-        }
-
-        public int Count => _doodads.Count;
-
-        public static MapDoodads Parse(Stream stream, bool leaveOpen = false)
-        {
-            try
-            {
-                var data = new MapDoodads();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-                {
-                    data._header = MapWidgetsHeader.Parse(stream, true);
-                    Func<Stream, bool, MapDoodadData> doodadParser = data._header.Version switch
+                    Doodads.Add(reader.ReadMapDoodadData(FormatVersion, SubVersion, out useNewFormat));
+                    if (useNewFormat != UseNewFormat)
                     {
-                        MapWidgetsVersion.RoC => MapDoodadData.Parse,
-                        MapWidgetsVersion.TFT => MapDoodadData.ParseTft,
-                    };
-
-                    for (var i = 0; i < data._header.DataCount; i++)
-                    {
-                        data._doodads.Add(doodadParser(stream, true));
-                    }
-
-                    var specialDoodadsVersion = reader.ReadInt32();
-                    if (specialDoodadsVersion != 0)
-                    {
-                        throw new NotSupportedException($"Unknown special doodads version: {specialDoodadsVersion}.");
-                    }
-
-                    var specialDoodads = reader.ReadInt32();
-                    for (var i = 0; i < specialDoodads; i++)
-                    {
-                        data._specialDoodads.Add(MapSpecialDoodadData.Parse(stream, true));
+                        throw new InvalidDataException();
                     }
                 }
+            }
 
-                return data;
-            }
-            catch (DecoderFallbackException e)
+            SpecialDoodadVersion = reader.ReadInt32<SpecialDoodadVersion>();
+
+            nint specialDoodads = reader.ReadInt32();
+            for (nint i = 0; i < specialDoodads; i++)
             {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
+                SpecialDoodads.Add(reader.ReadMapSpecialDoodadData(FormatVersion, SubVersion, SpecialDoodadVersion));
             }
         }
 
-        public static void Serialize(MapDoodads mapDoodads, Stream stream, bool leaveOpen = false)
+        internal void WriteTo(BinaryWriter writer)
         {
-            mapDoodads.SerializeTo(stream, leaveOpen);
-        }
+            writer.Write(FileFormatSignature);
+            writer.Write((int)FormatVersion);
+            writer.Write((int)SubVersion);
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            writer.Write(Doodads.Count);
+            foreach (var doodad in Doodads)
             {
-                writer.Write(MapWidgetsHeader.HeaderSignature);
-                writer.Write((uint)_header.Version);
-                writer.Write((uint)_header.SubVersion);
-
-                writer.Write(_doodads.Count);
-                foreach (var doodad in _doodads)
-                {
-                    doodad.WriteTo(writer, _header.UseTftParser);
-                }
-
-                writer.Write(0); // specialDoodadVersion
-                writer.Write(_specialDoodads.Count);
-                foreach (var doodad in _specialDoodads)
-                {
-                    doodad.WriteTo(writer);
-                }
+                writer.Write(doodad, FormatVersion, SubVersion, UseNewFormat);
             }
-        }
 
-        public IEnumerator<MapDoodadData> GetEnumerator()
-        {
-            return ((IEnumerable<MapDoodadData>)_doodads).GetEnumerator();
-        }
+            writer.Write((int)SpecialDoodadVersion);
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<MapDoodadData>)_doodads).GetEnumerator();
+            writer.Write(SpecialDoodads.Count);
+            foreach (var specialDoodad in SpecialDoodads)
+            {
+                writer.Write(specialDoodad, FormatVersion, SubVersion, SpecialDoodadVersion);
+            }
         }
     }
 }

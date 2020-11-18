@@ -6,35 +6,39 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 namespace War3Net.Build.Widget
 {
     public sealed class InventoryItemData
     {
-        private int _slot;
-        private char[] _itemId;
-
-        public int Slot => _slot;
-
-        public string Id => new string(_itemId);
-
-        public static InventoryItemData Parse(Stream stream, bool leaveOpen = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventoryItemData"/> class.
+        /// </summary>
+        public InventoryItemData()
         {
-            var data = new InventoryItemData();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                data._slot = reader.ReadInt32(); // 0-indexed
-                data._itemId = reader.ReadChars(4); // 0x00000000 == none
-            }
-
-            return data;
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal InventoryItemData(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
-            writer.Write(_slot);
-            writer.Write(_itemId);
+            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
+        }
+
+        // 0-indexed
+        public int Slot { get; set; }
+
+        // 0x00000000 == none
+        public int ItemId { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        {
+            Slot = reader.ReadInt32();
+            ItemId = reader.ReadInt32();
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        {
+            writer.Write(Slot);
+            writer.Write(ItemId);
         }
     }
 }
