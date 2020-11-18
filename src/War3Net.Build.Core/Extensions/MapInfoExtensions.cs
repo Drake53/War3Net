@@ -23,7 +23,7 @@ namespace War3Net.Build.Extensions
                 writer.Write(0);
                 writer.WriteString(mapInfo.MapName);
                 writer.Write((int)mapInfo.MapFlags);
-                writer.Write(mapInfo.PlayerDataCount);
+                writer.Write(mapInfo.Players.Count);
 
                 if (signData != null && signData.Length == 256)
                 {

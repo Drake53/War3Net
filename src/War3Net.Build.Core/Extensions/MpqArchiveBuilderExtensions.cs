@@ -7,6 +7,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using War3Net.Build.Info;
 using War3Net.IO.Mpq;
@@ -24,7 +25,8 @@ namespace War3Net.Build.Extensions
             var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
-                var campaignInfo = CampaignInfo.Parse(campaignInfoFile.MpqStream, true);
+                using var reader = new BinaryReader(campaignInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
                 mpqArchiveBuilder.SaveWithPreArchiveData(stream, campaignInfo, leaveOpen);
             }
@@ -33,7 +35,8 @@ namespace War3Net.Build.Extensions
                 var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
-                    var mapInfo = MapInfo.Parse(mapInfoFile.MpqStream, true);
+                    using var reader = new BinaryReader(mapInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                    var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
                     mpqArchiveBuilder.SaveWithPreArchiveData(stream, mapInfo, leaveOpen);
                 }

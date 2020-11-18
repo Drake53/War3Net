@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
@@ -77,9 +78,9 @@ namespace War3Net.Build.Extensions
 
             if (archive.IsCampaignArchive(out var campaignInfo))
             {
-                for (var i = 0; i < campaignInfo.MapCount; i++)
+                for (var i = 0; i < campaignInfo.Maps.Count; i++)
                 {
-                    archive.AddFilename(campaignInfo.GetMap(i).MapFilePath);
+                    archive.AddFilename(campaignInfo.Maps[i].MapFilePath);
                 }
             }
         }
@@ -89,7 +90,8 @@ namespace War3Net.Build.Extensions
             if (archive.TryAddFilename(CampaignInfo.FileName))
             {
                 using var campaignInfoFileStream = archive.OpenFile(CampaignInfo.FileName);
-                campaignInfo = CampaignInfo.Parse(campaignInfoFileStream);
+                using var reader = new BinaryReader(campaignInfoFileStream);
+                campaignInfo = reader.ReadCampaignInfo();
                 return true;
             }
 
