@@ -10,6 +10,7 @@ using System.IO;
 using System.Numerics;
 
 using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
@@ -76,7 +77,7 @@ namespace War3Net.Build.Widget
 
         public List<ModifiedAbilityData> AbilityData { get; init; } = new();
 
-        public RandomUnitData RandomData { get; set; }
+        public RandomUnitData? RandomData { get; set; }
 
         public int CustomPlayerColorId { get; set; } = -1;
 
@@ -138,7 +139,15 @@ namespace War3Net.Build.Widget
                 AbilityData.Add(reader.ReadModifiedAbilityData(formatVersion, subVersion, useNewFormat));
             }
 
-            RandomData = reader.ReadRandomUnitData(formatVersion, subVersion, useNewFormat);
+            var randomDataMode = reader.ReadInt32<RandomUnitDataMode>();
+            RandomData = randomDataMode switch
+            {
+                RandomUnitDataMode.Any => reader.ReadRandomUnitNeutral(formatVersion, subVersion, useNewFormat),
+                RandomUnitDataMode.GlobalTable => reader.ReadRandomUnitGlobalTable(formatVersion, subVersion, useNewFormat),
+                RandomUnitDataMode.CustomTable => reader.ReadRandomUnitCustomTable(formatVersion, subVersion, useNewFormat),
+                _ => null,
+            };
+
             CustomPlayerColorId = reader.ReadInt32();
             WaygateDestinationRegionId = reader.ReadInt32();
             CreationNumber = reader.ReadInt32();
@@ -202,7 +211,20 @@ namespace War3Net.Build.Widget
                 writer.Write(ability, formatVersion, subVersion, useNewFormat);
             }
 
-            writer.Write(RandomData, formatVersion, subVersion, useNewFormat);
+            var mode = RandomData switch
+            {
+                RandomUnitAny => RandomUnitDataMode.Any,
+                RandomUnitGlobalTable => RandomUnitDataMode.GlobalTable,
+                RandomUnitCustomTable => RandomUnitDataMode.CustomTable,
+                _ => RandomUnitDataMode.None,
+            };
+
+            writer.Write((int)mode);
+            if (RandomData is not null)
+            {
+                writer.Write(RandomData, formatVersion, subVersion, useNewFormat);
+            }
+
             writer.Write(CustomPlayerColorId);
             writer.Write(WaygateDestinationRegionId);
             writer.Write(CreationNumber);

@@ -1,16 +1,17 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="RandomUnitData.cs" company="Drake53">
+// <copyright file="RandomUnitDataMode.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Widget
 {
-    public abstract class RandomUnitData
+    public enum RandomUnitDataMode
     {
-        internal abstract void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat);
+        None = -1,
+        Any = 0,
+        GlobalTable = 1,
+        CustomTable = 2,
     }
 }
