@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -14,71 +13,74 @@ namespace War3Net.Build.Script
 {
     public sealed class VariableDefinition
     {
-        private string _name;
-        private string _type;
-        private int _unk;
-        private bool _isArray;
-        private int _arraySize;
-        private bool _isInitialized;
-        private string _initialValue;
-        private int _id;
-        private int _parentId;
-
-        private VariableDefinition()
+        internal VariableDefinition(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
         }
 
-        public static VariableDefinition Parse(Stream stream, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool leaveOpen)
-        {
-            var variable = new VariableDefinition();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                variable._name = reader.ReadChars();
-                variable._type = reader.ReadChars();
-                variable._unk = reader.ReadInt32();
-                variable._isArray = reader.ReadBool();
-                if (formatVersion >= MapTriggersFormatVersion.Tft)
-                {
-                    variable._arraySize = reader.ReadInt32();
-                }
+        public string Name { get; set; }
 
-                variable._isInitialized = reader.ReadBool();
-                variable._initialValue = reader.ReadChars();
+        public string Type { get; set; }
 
-                if (useNewFormat)
-                {
-                    variable._id = reader.ReadInt32();
-                    variable._parentId = reader.ReadInt32();
-                }
-            }
+        public int Unk { get; set; }
 
-            return variable;
-        }
+        public bool IsArray { get; set; }
 
-        public void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
-        {
-            writer.WriteString(_name);
-            writer.WriteString(_type);
-            writer.Write(_unk);
-            writer.WriteBool(_isArray);
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
-            {
-                writer.Write(_arraySize);
-            }
+        public int ArraySize { get; set; }
 
-            writer.WriteBool(_isInitialized);
-            writer.WriteString(_initialValue);
+        public bool IsInitialized { get; set; }
 
-            if (useNewFormat)
-            {
-                writer.Write(_id);
-                writer.Write(_parentId);
-            }
-        }
+        public string InitialValue { get; set; }
+
+        public int Id { get; set; }
+
+        public int ParentId { get; set; }
 
         public override string ToString()
         {
-            return $"{_type} {_name}{(_isArray ? $"[{(_arraySize > 0 ? $"{_arraySize}" : string.Empty)}]" : string.Empty)}{(_isInitialized ? $" = {_initialValue}" : string.Empty)}";
+            return $"{Type} {Name}{(IsArray ? $"[{(ArraySize > 0 ? $"{ArraySize}" : string.Empty)}]" : string.Empty)}{(IsInitialized ? $" = {InitialValue}" : string.Empty)}";
+        }
+
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        {
+            Name = reader.ReadChars();
+            Type = reader.ReadChars();
+            Unk = reader.ReadInt32();
+            IsArray = reader.ReadBool();
+            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            {
+                ArraySize = reader.ReadInt32();
+            }
+
+            IsInitialized = reader.ReadBool();
+            InitialValue = reader.ReadChars();
+
+            if (useNewFormat)
+            {
+                Id = reader.ReadInt32();
+                ParentId = reader.ReadInt32();
+            }
+        }
+
+        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        {
+            writer.WriteString(Name);
+            writer.WriteString(Type);
+            writer.Write(Unk);
+            writer.WriteBool(IsArray);
+            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            {
+                writer.Write(ArraySize);
+            }
+
+            writer.WriteBool(IsInitialized);
+            writer.WriteString(InitialValue);
+
+            if (useNewFormat)
+            {
+                writer.Write(Id);
+                writer.Write(ParentId);
+            }
         }
     }
 }

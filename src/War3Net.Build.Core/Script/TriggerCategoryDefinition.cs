@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -14,71 +13,50 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerCategoryDefinition : TriggerItem
     {
-        private int _id;
-        private string _name;
-        private bool _isComment;
-        private int _unk;
-        private int _parentId;
-
-        private TriggerCategoryDefinition(TriggerItemType type)
-            : base(type)
+        internal TriggerCategoryDefinition(TriggerItemType triggerItemType = TriggerItemType.Category)
+            : base(triggerItemType)
         {
         }
 
-        public override string Name
+        internal TriggerCategoryDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+            : base(triggerItemType)
         {
-            get => _name;
-            set => _name = value;
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
         }
 
-        public override int Id
+        public bool IsComment { get; set; }
+
+        public int Unk { get; set; }
+
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            get => _id;
-            set => _id = value;
-        }
-
-        public override int ParentId
-        {
-            get => _parentId;
-            set => _parentId = value;
-        }
-
-        public static TriggerCategoryDefinition Parse(Stream stream, MapTriggersFormatVersion formatVersion, TriggerItemType? type, bool leaveOpen)
-        {
-            var useNewFormat = type != null;
-            var triggerCategory = new TriggerCategoryDefinition(type ?? TriggerItemType.Category);
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                triggerCategory._id = reader.ReadInt32();
-                triggerCategory._name = reader.ReadChars();
-                if (formatVersion >= MapTriggersFormatVersion.Tft)
-                {
-                    triggerCategory._isComment = reader.ReadBool();
-                }
-
-                if (useNewFormat)
-                {
-                    triggerCategory._unk = reader.ReadInt32();
-                    triggerCategory._parentId = reader.ReadInt32();
-                }
-            }
-
-            return triggerCategory;
-        }
-
-        public override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
-        {
-            writer.Write(_id);
-            writer.WriteString(_name);
+            Id = reader.ReadInt32();
+            Name = reader.ReadChars();
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
-                writer.WriteBool(_isComment);
+                IsComment = reader.ReadBool();
             }
 
             if (useNewFormat)
             {
-                writer.Write(_unk);
-                writer.Write(_parentId);
+                Unk = reader.ReadInt32();
+                ParentId = reader.ReadInt32();
+            }
+        }
+
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        {
+            writer.Write(Id);
+            writer.WriteString(Name);
+            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            {
+                writer.WriteBool(IsComment);
+            }
+
+            if (useNewFormat)
+            {
+                writer.Write(Unk);
+                writer.Write(ParentId);
             }
         }
     }

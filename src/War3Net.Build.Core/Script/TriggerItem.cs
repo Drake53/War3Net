@@ -11,23 +11,19 @@ namespace War3Net.Build.Script
 {
     public abstract class TriggerItem
     {
-        private readonly TriggerItemType _type;
-
-        internal TriggerItem(TriggerItemType type)
+        internal TriggerItem(TriggerItemType triggerItemType)
         {
-            _type = type;
+            Type = triggerItemType;
         }
 
-        public TriggerItemType ItemType => _type;
+        public TriggerItemType Type { get; private init; }
 
-        public abstract string Name { get; set; }
+        public string Name { get; set; }
 
-        public abstract int Id { get; set; }
+        public int Id { get; set; }
 
-        public abstract int ParentId { get; set; }
+        public int ParentId { get; set; }
 
-        public abstract void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat);
-
-        public override string ToString() => Name;
+        internal abstract void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat);
     }
 }

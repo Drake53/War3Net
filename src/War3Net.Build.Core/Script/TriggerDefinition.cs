@@ -7,113 +7,95 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
 {
     public sealed class TriggerDefinition : TriggerItem
     {
-        private readonly List<TriggerFunction> _functions;
-
-        private string _name;
-        private string _description;
-        private bool _isComment;
-        private int _id;
-        private bool _isEnabled;
-        private bool _isCustomTextTrigger;
-        private bool _isInitiallyOn;
-        private bool _runOnMapInit;
-        private int _parentId;
-
-        private TriggerDefinition(TriggerItemType type)
-            : base(type)
+        internal TriggerDefinition(TriggerItemType triggerItemType = TriggerItemType.Gui)
+            : base(triggerItemType)
         {
-            _functions = new List<TriggerFunction>();
         }
 
-        public override string Name
+        internal TriggerDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+            : base(triggerItemType)
         {
-            get => _name;
-            set => _name = value;
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
         }
 
-        public override int Id
+        public string Description { get; set; }
+
+        public bool IsComment { get; set; }
+
+        public bool IsEnabled { get; set; }
+
+        public bool IsCustomTextTrigger { get; set; }
+
+        public bool IsInitiallyOn { get; set; }
+
+        public bool RunOnMapInit { get; set; }
+
+        public List<TriggerFunction> Functions { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            get => _id;
-            set => _id = value;
-        }
-
-        public override int ParentId
-        {
-            get => _parentId;
-            set => _parentId = value;
-        }
-
-        public static TriggerDefinition Parse(Stream stream, TriggerData triggerData, MapTriggersFormatVersion formatVersion, TriggerItemType? type, bool leaveOpen)
-        {
-            var useNewFormat = type != null;
-            var trigger = new TriggerDefinition(type ?? TriggerItemType.Gui);
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                trigger._name = reader.ReadChars();
-                trigger._description = reader.ReadChars();
-                if (formatVersion >= MapTriggersFormatVersion.Tft)
-                {
-                    trigger._isComment = reader.ReadBool();
-                }
-
-                if (useNewFormat)
-                {
-                    trigger._id = reader.ReadInt32();
-                }
-
-                trigger._isEnabled = reader.ReadBool();
-                trigger._isCustomTextTrigger = reader.ReadBool();
-                trigger._isInitiallyOn = !reader.ReadBool();
-                trigger._runOnMapInit = reader.ReadBool();
-                trigger._parentId = reader.ReadInt32();
-
-                var guiFunctionCount = reader.ReadInt32();
-                if (trigger._isCustomTextTrigger && guiFunctionCount > 0)
-                {
-                    throw new InvalidDataException($"Custom text trigger should not have any GUI functions.");
-                }
-
-                for (var j = 0; j < guiFunctionCount; j++)
-                {
-                    trigger._functions.Add(TriggerFunction.Parse(stream, triggerData, formatVersion, false, true));
-                }
-            }
-
-            return trigger;
-        }
-
-        public override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
-        {
-            writer.WriteString(_name);
-            writer.WriteString(_description);
+            Name = reader.ReadChars();
+            Description = reader.ReadChars();
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
-                writer.WriteBool(_isComment);
+                IsComment = reader.ReadBool();
             }
 
             if (useNewFormat)
             {
-                writer.Write(_id);
+                Id = reader.ReadInt32();
             }
 
-            writer.WriteBool(_isEnabled);
-            writer.WriteBool(_isCustomTextTrigger);
-            writer.WriteBool(!_isInitiallyOn);
-            writer.WriteBool(_runOnMapInit);
-            writer.Write(_parentId);
+            IsEnabled = reader.ReadBool();
+            IsCustomTextTrigger = reader.ReadBool();
+            IsInitiallyOn = !reader.ReadBool();
+            RunOnMapInit = reader.ReadBool();
+            ParentId = reader.ReadInt32();
 
-            writer.Write(_functions.Count);
-            foreach (var function in _functions)
+            nint guiFunctionCount = reader.ReadInt32();
+            if (IsCustomTextTrigger && guiFunctionCount > 0)
             {
-                function.WriteTo(writer, formatVersion);
+                throw new InvalidDataException($"Custom text trigger should not have any GUI functions.");
+            }
+
+            for (nint i = 0; i < guiFunctionCount; i++)
+            {
+                Functions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, useNewFormat, false));
+            }
+        }
+
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        {
+            writer.WriteString(Name);
+            writer.WriteString(Description);
+            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            {
+                writer.WriteBool(IsComment);
+            }
+
+            if (useNewFormat)
+            {
+                writer.Write(Id);
+            }
+
+            writer.WriteBool(IsEnabled);
+            writer.WriteBool(IsCustomTextTrigger);
+            writer.WriteBool(!IsInitiallyOn);
+            writer.WriteBool(RunOnMapInit);
+            writer.Write(ParentId);
+
+            writer.Write(Functions.Count);
+            foreach (var function in Functions)
+            {
+                writer.Write(function, formatVersion, useNewFormat);
             }
         }
     }

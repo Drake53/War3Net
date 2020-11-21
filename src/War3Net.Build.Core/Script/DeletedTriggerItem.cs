@@ -5,56 +5,36 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
-using System.Text;
 
 namespace War3Net.Build.Script
 {
     public sealed class DeletedTriggerItem : TriggerItem
     {
-        private int _id;
-
-        internal DeletedTriggerItem(TriggerItemType type)
-            : base(type)
+        internal DeletedTriggerItem(TriggerItemType triggerItemType)
+            : base(triggerItemType)
         {
-            _id = -1;
         }
 
-        public override string Name
+        internal DeletedTriggerItem(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+            : base(triggerItemType)
         {
-            get => "<DELETED>";
-            set => throw new NotSupportedException();
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
         }
 
-        public override int Id
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            get => _id;
-            set => _id = value;
+            Id = reader.ReadInt32();
+
+            Name = "<DELETED>";
+            ParentId = -1;
         }
 
-        public override int ParentId
-        {
-            get => -1;
-            set => throw new NotSupportedException();
-        }
-
-        public static DeletedTriggerItem Parse(Stream stream, TriggerItemType type, bool leaveOpen)
-        {
-            var item = new DeletedTriggerItem(type);
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                item._id = reader.ReadInt32();
-            }
-
-            return item;
-        }
-
-        public override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
             if (useNewFormat)
             {
-                writer.Write(_id);
+                writer.Write(Id);
             }
         }
     }

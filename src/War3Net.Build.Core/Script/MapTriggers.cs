@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
@@ -22,293 +22,206 @@ namespace War3Net.Build.Script
     {
         public const string FileName = "war3map.wtg";
 
-        internal static readonly int FileFormatHeader = "WTG!".FromRawcode();
+        public static readonly int FileFormatSignature = "WTG!".FromRawcode();
 
         private const int NewFormatId = unchecked((int)0x80000004);
 
-        private readonly List<TriggerItem> _triggerItems;
-        private readonly List<VariableDefinition> _variables;
-
-        private MapTriggersFormatVersion _version;
-        private bool _newFormat;
-        private int _gameVersion;
-
-        private MapTriggers()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapTriggers"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public MapTriggers(MapTriggersFormatVersion formatVersion)
         {
-            _triggerItems = new List<TriggerItem>();
-            _variables = new List<VariableDefinition>();
+            FormatVersion = formatVersion;
         }
 
-        public static bool IsRequired => false;
-
-        public MapTriggersFormatVersion FormatVersion
+        internal MapTriggers(BinaryReader reader, TriggerData triggerData)
         {
-            get => _version;
-            set => _version = value;
+            ReadFrom(reader, triggerData);
         }
 
-        public bool UseNewFormat
-        {
-            get => _newFormat;
-            set => _newFormat = value;
-        }
+        public MapTriggersFormatVersion FormatVersion { get; set; }
 
-        public int GameVersion
-        {
-            get => _gameVersion;
-            set => _gameVersion = value;
-        }
+        public bool UseNewFormat { get; set; }
 
-        public static MapTriggers Parse(Stream stream, bool leaveOpen = false) => Parse(stream, TriggerData.Default, leaveOpen);
+        public int GameVersion { get; set; }
 
-        public static MapTriggers Parse(Stream stream, TriggerData triggerData, bool leaveOpen = false)
+        public List<VariableDefinition> Variables { get; init; } = new();
+
+        public List<TriggerItem> TriggerItems { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData)
         {
-            try
+            var header = reader.ReadInt32();
+            if (header != FileFormatSignature)
             {
-                var triggers = new MapTriggers();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+                throw new InvalidDataException($"Expected file header signature at the start of .wtg file.");
+            }
+
+            FormatVersion = (MapTriggersFormatVersion)reader.ReadInt32();
+            if (!Enum.IsDefined(typeof(MapTriggersFormatVersion), FormatVersion))
+            {
+                if ((int)FormatVersion != NewFormatId)
                 {
-                    var header = reader.ReadInt32();
-                    if (header != FileFormatHeader)
+                    throw new NotSupportedException($"Unknown version of '{FileName}': {FormatVersion}");
+                }
+
+                FormatVersion = reader.ReadInt32<MapTriggersFormatVersion>();
+                UseNewFormat = true;
+
+                var triggerItemCounts = new Dictionary<TriggerItemType, int>();
+                foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
+                {
+                    triggerItemCounts[triggerItemType] = reader.ReadInt32();
+                    nint deletedTriggerItemCount = reader.ReadInt32();
+                    for (nint i = 0; i < deletedTriggerItemCount; i++)
                     {
-                        throw new InvalidDataException($"Expected file header signature at the start of .wtg file.");
-                    }
-
-                    triggers._version = (MapTriggersFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(MapTriggersFormatVersion), triggers._version))
-                    {
-                        if ((int)triggers._version != NewFormatId)
-                        {
-                            throw new NotSupportedException($"Unknown version of '{FileName}': {triggers._version}");
-                        }
-
-                        triggers._version = reader.ReadInt32<MapTriggersFormatVersion>();
-                        triggers._newFormat = true;
-
-                        var triggerItemCounts = new Dictionary<TriggerItemType, int>();
-
-                        triggerItemCounts[TriggerItemType.RootCategory] = reader.ReadInt32();
-                        var countDeletedRootCategory = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedRootCategory; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.RootCategory, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.UNK2] = reader.ReadInt32();
-                        var countDeletedUNK2 = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedUNK2; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.UNK2, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.Category] = reader.ReadInt32();
-                        var countDeletedCategory = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedCategory; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Category, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.Gui] = reader.ReadInt32();
-                        var countDeletedGui = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedGui; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Gui, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.Comment] = reader.ReadInt32();
-                        var countDeletedComment = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedComment; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Comment, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.Script] = reader.ReadInt32();
-                        var countDeletedScript = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedScript; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Script, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.Variable] = reader.ReadInt32();
-                        var countDeletedVariable = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedVariable; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.Variable, true));
-                        }
-
-                        triggerItemCounts[TriggerItemType.UNK128] = reader.ReadInt32();
-                        var countDeletedUNK128 = reader.ReadInt32();
-                        for (var i = 0; i < countDeletedUNK128; i++)
-                        {
-                            triggers._triggerItems.Add(DeletedTriggerItem.Parse(stream, TriggerItemType.UNK128, true));
-                        }
-
-                        triggers._gameVersion = reader.ReadInt32();
-
-                        var variableDefinitionCount = reader.ReadInt32();
-                        for (var i = 0; i < variableDefinitionCount; i++)
-                        {
-                            triggers._variables.Add(VariableDefinition.Parse(stream, triggers._version, true, true));
-                        }
-
-                        var itemCount = reader.ReadInt32();
-                        for (var i = 0; i < itemCount; i++)
-                        {
-                            var type = reader.ReadInt32<TriggerItemType>();
-                            switch (type)
-                            {
-                                case TriggerItemType.RootCategory:
-                                case TriggerItemType.Category:
-                                    triggers._triggerItems.Add(TriggerCategoryDefinition.Parse(stream, triggers._version, type, true));
-                                    break;
-
-                                case TriggerItemType.Gui:
-                                case TriggerItemType.Comment:
-                                case TriggerItemType.Script:
-                                    triggers._triggerItems.Add(TriggerDefinition.Parse(stream, triggerData, triggers._version, type, true));
-                                    break;
-
-                                case TriggerItemType.Variable:
-                                    triggers._triggerItems.Add(TriggerVariableDefinition.Parse(stream, triggers._version, true));
-                                    break;
-
-                                case TriggerItemType.UNK2:
-                                case TriggerItemType.UNK128:
-                                    throw new NotSupportedException();
-
-                                default:
-                                    throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(TriggerItemType));
-                            }
-                        }
-
-                        foreach (TriggerItemType type in Enum.GetValues(typeof(TriggerItemType)))
-                        {
-                            var count = triggers._triggerItems.Count(item => item.ItemType == type);
-                            if (count > triggerItemCounts[type])
-                            {
-                                throw new InvalidDataException($"Expected {triggerItemCounts[type]} trigger items of type {type}, but got {count}.");
-                            }
-
-                            while (count < triggerItemCounts[type])
-                            {
-                                triggers._triggerItems.Add(new DeletedTriggerItem(type));
-                                count++;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var triggerCategoryDefinitionCount = reader.ReadInt32();
-                        for (var i = 0; i < triggerCategoryDefinitionCount; i++)
-                        {
-                            triggers._triggerItems.Add(TriggerCategoryDefinition.Parse(stream, triggers._version, null, true));
-                        }
-
-                        triggers._gameVersion = reader.ReadInt32();
-
-                        var variableDefinitionCount = reader.ReadInt32();
-                        for (var i = 0; i < variableDefinitionCount; i++)
-                        {
-                            triggers._variables.Add(VariableDefinition.Parse(stream, triggers._version, false, true));
-                        }
-
-                        var triggerDefinitionCount = reader.ReadInt32();
-                        for (var i = 0; i < triggerDefinitionCount; i++)
-                        {
-                            triggers._triggerItems.Add(TriggerDefinition.Parse(stream, triggerData, triggers._version, null, true));
-                        }
+                        TriggerItems.Add(reader.ReadDeletedTriggerItem(triggerItemType, triggerData, FormatVersion, UseNewFormat));
                     }
                 }
 
-                return triggers;
-            }
-            catch (DecoderFallbackException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+                GameVersion = reader.ReadInt32();
 
-        public static void Serialize(MapTriggers mapTriggers, Stream stream, bool leaveOpen = false)
-        {
-            mapTriggers.SerializeTo(stream, leaveOpen);
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                writer.Write(FileFormatHeader);
-
-                if (_newFormat)
+                nint variableDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < variableDefinitionCount; i++)
                 {
-                    writer.Write(NewFormatId);
-                    writer.Write((int)_version);
+                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, UseNewFormat));
+                }
 
-                    foreach (TriggerItemType type in Enum.GetValues(typeof(TriggerItemType)))
+                nint triggerItemCount = reader.ReadInt32();
+                for (nint i = 0; i < triggerItemCount; i++)
+                {
+                    var triggerItemType = reader.ReadInt32<TriggerItemType>();
+                    switch (triggerItemType)
                     {
-                        writer.Write(_triggerItems.Count(item => item.ItemType == type));
+                        case TriggerItemType.RootCategory:
+                        case TriggerItemType.Category:
+                            TriggerItems.Add(reader.ReadTriggerCategoryDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            break;
 
-                        var deletedItems = _triggerItems.Where(item => item is DeletedTriggerItem && item.ItemType == type && item.Id != -1).ToList();
-                        writer.Write(deletedItems.Count);
-                        foreach (var deletedItem in deletedItems)
-                        {
-                            deletedItem.WriteTo(writer, _version, true);
-                        }
-                    }
+                        case TriggerItemType.Gui:
+                        case TriggerItemType.Comment:
+                        case TriggerItemType.Script:
+                            TriggerItems.Add(reader.ReadTriggerDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            break;
 
-                    writer.Write(_gameVersion);
+                        case TriggerItemType.Variable:
+                            TriggerItems.Add(reader.ReadTriggerVariableDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            break;
 
-                    writer.Write(_variables.Count);
-                    foreach (var variable in _variables)
-                    {
-                        variable.WriteTo(writer, _version, true);
-                    }
+                        case TriggerItemType.UNK2:
+                        case TriggerItemType.UNK128:
+                            throw new NotSupportedException();
 
-                    writer.Write(_triggerItems.Count(item => item is not DeletedTriggerItem));
-                    foreach (var triggerItem in _triggerItems)
-                    {
-                        if (triggerItem is DeletedTriggerItem)
-                        {
-                            continue;
-                        }
-
-                        writer.Write((int)triggerItem.ItemType);
-                        triggerItem.WriteTo(writer, _version, true);
+                        default:
+                            throw new InvalidEnumArgumentException(nameof(triggerItemType), (int)triggerItemType, typeof(TriggerItemType));
                     }
                 }
-                else
+
+                foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
                 {
-                    writer.Write((int)_version);
-
-                    var triggerCategories = _triggerItems.Where(item => item is TriggerCategoryDefinition && item.ItemType != TriggerItemType.RootCategory).ToArray();
-                    writer.Write(triggerCategories.Length);
-                    foreach (var triggerCategory in triggerCategories)
+                    var count = TriggerItems.Count(item => item.Type == triggerItemType);
+                    if (count > triggerItemCounts[triggerItemType])
                     {
-                        triggerCategory.WriteTo(writer, _version, false);
+                        throw new InvalidDataException($"Expected {triggerItemCounts[triggerItemType]} trigger items of type {triggerItemType}, but got {count}.");
                     }
 
-                    writer.Write(_gameVersion);
-
-                    writer.Write(_variables.Count);
-                    foreach (var variable in _variables)
+                    while (count < triggerItemCounts[triggerItemType])
                     {
-                        variable.WriteTo(writer, _version, false);
+                        TriggerItems.Add(new DeletedTriggerItem(triggerItemType));
+                        count++;
+                    }
+                }
+            }
+            else
+            {
+                nint triggerCategoryDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < triggerCategoryDefinitionCount; i++)
+                {
+                    TriggerItems.Add(reader.ReadTriggerCategoryDefinition(TriggerItemType.Category, triggerData, FormatVersion, UseNewFormat));
+                }
+
+                GameVersion = reader.ReadInt32();
+
+                nint variableDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < variableDefinitionCount; i++)
+                {
+                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, UseNewFormat));
+                }
+
+                nint triggerDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < triggerDefinitionCount; i++)
+                {
+                    TriggerItems.Add(reader.ReadTriggerDefinition(TriggerItemType.Gui, triggerData, FormatVersion, UseNewFormat));
+                }
+            }
+        }
+
+        internal void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(FileFormatSignature);
+
+            if (UseNewFormat)
+            {
+                writer.Write(NewFormatId);
+                writer.Write((int)FormatVersion);
+
+                foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
+                {
+                    writer.Write(TriggerItems.Count(item => item.Type == triggerItemType));
+
+                    var deletedItems = TriggerItems.Where(item => item is DeletedTriggerItem && item.Type == triggerItemType && item.Id != -1).ToList();
+                    writer.Write(deletedItems.Count);
+                    foreach (var deletedItem in deletedItems)
+                    {
+                        deletedItem.WriteTo(writer, FormatVersion, true);
+                    }
+                }
+
+                writer.Write(GameVersion);
+
+                writer.Write(Variables.Count);
+                foreach (var variable in Variables)
+                {
+                    variable.WriteTo(writer, FormatVersion, true);
+                }
+
+                writer.Write(TriggerItems.Count(item => item is not DeletedTriggerItem));
+                foreach (var triggerItem in TriggerItems)
+                {
+                    if (triggerItem is DeletedTriggerItem)
+                    {
+                        continue;
                     }
 
-                    var triggers = _triggerItems.Where(item => item is TriggerDefinition).ToArray();
-                    writer.Write(triggers.Length);
-                    foreach (var trigger in triggers)
-                    {
-                        trigger.WriteTo(writer, _version, false);
-                    }
+                    writer.Write((int)triggerItem.Type);
+                    triggerItem.WriteTo(writer, FormatVersion, true);
+                }
+            }
+            else
+            {
+                writer.Write((int)FormatVersion);
+
+                var triggerCategories = TriggerItems.Where(item => item is TriggerCategoryDefinition && item.Type != TriggerItemType.RootCategory).ToArray();
+                writer.Write(triggerCategories.Length);
+                foreach (var triggerCategory in triggerCategories)
+                {
+                    triggerCategory.WriteTo(writer, FormatVersion, false);
+                }
+
+                writer.Write(GameVersion);
+
+                writer.Write(Variables.Count);
+                foreach (var variable in Variables)
+                {
+                    variable.WriteTo(writer, FormatVersion, false);
+                }
+
+                var triggers = TriggerItems.Where(item => item is TriggerDefinition).ToArray();
+                writer.Write(triggers.Length);
+                foreach (var trigger in triggers)
+                {
+                    trigger.WriteTo(writer, FormatVersion, false);
                 }
             }
         }

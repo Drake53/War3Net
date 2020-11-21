@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 using War3Net.Common.Extensions;
 
@@ -14,51 +13,29 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerVariableDefinition : TriggerItem
     {
-        private int _id;
-        private string _name;
-        private int _parentId;
-
-        private TriggerVariableDefinition()
-            : base(TriggerItemType.Variable)
+        internal TriggerVariableDefinition(TriggerItemType triggerItemType = TriggerItemType.Variable)
+            : base(triggerItemType)
         {
         }
 
-        public override string Name
+        internal TriggerVariableDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+            : base(triggerItemType)
         {
-            get => _name;
-            set => _name = value;
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
         }
 
-        public override int Id
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            get => _id;
-            set => _id = value;
+            Id = reader.ReadInt32();
+            Name = reader.ReadChars();
+            ParentId = reader.ReadInt32();
         }
 
-        public override int ParentId
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            get => _parentId;
-            set => _parentId = value;
-        }
-
-        public static TriggerVariableDefinition Parse(Stream stream, MapTriggersFormatVersion formatVersion, bool leaveOpen)
-        {
-            var variable = new TriggerVariableDefinition();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                variable._id = reader.ReadInt32();
-                variable._name = reader.ReadChars();
-                variable._parentId = reader.ReadInt32();
-            }
-
-            return variable;
-        }
-
-        public override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
-        {
-            writer.Write(_id);
-            writer.WriteString(_name);
-            writer.Write(_parentId);
+            writer.Write(Id);
+            writer.WriteString(Name);
+            writer.Write(ParentId);
         }
     }
 }

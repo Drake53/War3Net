@@ -7,89 +7,97 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
 {
     public sealed class TriggerFunction
     {
-        private readonly List<TriggerFunctionParameter> _parameters;
-        private readonly List<TriggerFunction> _nestedFunctions;
-
-        private TriggerFunctionType _type;
-        private int _branch;
-        private string _name;
-        private bool _isEnabled;
-
-        private TriggerFunction()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggerFunction"/> class.
+        /// </summary>
+        public TriggerFunction()
         {
-            _parameters = new List<TriggerFunctionParameter>();
-            _nestedFunctions = new List<TriggerFunction>();
         }
 
-        public static TriggerFunction Parse(Stream stream, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool isChildFunction, bool leaveOpen)
+        internal TriggerFunction(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction)
         {
-            var function = new TriggerFunction();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                function._type = reader.ReadInt32<TriggerFunctionType>();
-                function._branch = isChildFunction ? reader.ReadInt32() : -1;
-                function._name = reader.ReadChars();
-                function._isEnabled = reader.ReadBool();
-
-                var parameterCount = triggerData.GetParameterCount(function._type, function._name);
-                for (var i = 0; i < parameterCount; i++)
-                {
-                    function._parameters.Add(TriggerFunctionParameter.Parse(stream, triggerData, formatVersion, true));
-                }
-
-                if (formatVersion >= MapTriggersFormatVersion.Tft)
-                {
-                    var nestedfunctionCount = reader.ReadInt32();
-                    if (nestedfunctionCount > 0)
-                    {
-                        for (var i = 0; i < nestedfunctionCount; i++)
-                        {
-                            function._nestedFunctions.Add(Parse(stream, triggerData, formatVersion, true, true));
-                        }
-                    }
-                }
-            }
-
-            return function;
+            ReadFrom(reader, triggerData, formatVersion, useNewFormat, isChildFunction);
         }
 
-        public void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion)
+        public TriggerFunctionType Type { get; set; }
+
+        public int Branch { get; set; } = -1;
+
+        public string Name { get; set; }
+
+        public bool IsEnabled { get; set; }
+
+        public List<TriggerFunctionParameter> Parameters { get; init; } = new();
+
+        public List<TriggerFunction> ChildFunctions { get; init; } = new();
+
+        public override string ToString()
         {
-            writer.Write((int)_type);
-            if (_branch != -1)
+            return $"{Name}({string.Join(", ", Parameters)})";
+        }
+
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction)
+        {
+            Type = reader.ReadInt32<TriggerFunctionType>();
+            if (isChildFunction)
             {
-                writer.Write(_branch);
+                Branch = reader.ReadInt32();
             }
 
-            writer.WriteString(_name);
-            writer.WriteBool(_isEnabled);
+            Name = reader.ReadChars();
+            IsEnabled = reader.ReadBool();
 
-            foreach (var parameter in _parameters)
+            var parameterCount = triggerData.GetParameterCount(Type, Name);
+            for (var i = 0; i < parameterCount; i++)
             {
-                parameter.WriteTo(writer, formatVersion);
+                Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, useNewFormat));
             }
 
             if (formatVersion >= MapTriggersFormatVersion.Tft)
             {
-                writer.Write(_nestedFunctions.Count);
-                foreach (var nestedFunction in _nestedFunctions)
+                var nestedfunctionCount = reader.ReadInt32();
+                if (nestedfunctionCount > 0)
                 {
-                    nestedFunction.WriteTo(writer, formatVersion);
+                    for (var i = 0; i < nestedfunctionCount; i++)
+                    {
+                        ChildFunctions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, useNewFormat, true));
+                    }
                 }
             }
         }
 
-        public override string ToString()
+        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
         {
-            return $"{_name}({string.Join(", ", _parameters)})";
+            writer.Write((int)Type);
+            if (Branch != -1)
+            {
+                writer.Write(Branch);
+            }
+
+            writer.WriteString(Name);
+            writer.WriteBool(IsEnabled);
+
+            foreach (var parameter in Parameters)
+            {
+                writer.Write(parameter, formatVersion, useNewFormat);
+            }
+
+            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            {
+                writer.Write(ChildFunctions.Count);
+                foreach (var childFunction in ChildFunctions)
+                {
+                    writer.Write(childFunction, formatVersion, useNewFormat);
+                }
+            }
         }
     }
 }
