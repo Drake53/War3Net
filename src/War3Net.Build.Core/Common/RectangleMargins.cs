@@ -6,75 +6,46 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 
 namespace War3Net.Build.Common
 {
     public sealed class RectangleMargins
     {
-        private int _left;
-        private int _right;
-        private int _bottom;
-        private int _top;
-
         public RectangleMargins(int left, int right, int bottom, int top)
         {
-            _left = left;
-            _right = right;
-            _bottom = bottom;
-            _top = top;
+            Left = left;
+            Right = right;
+            Bottom = bottom;
+            Top = top;
         }
 
-        public int Left
+        internal RectangleMargins(BinaryReader reader)
         {
-            get => _left;
-            set => _left = value;
+            ReadFrom(reader);
         }
 
-        public int Right
+        public int Left { get; set; }
+
+        public int Right { get; set; }
+
+        public int Bottom { get; set; }
+
+        public int Top { get; set; }
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            get => _right;
-            set => _right = value;
+            Left = reader.ReadInt32();
+            Right = reader.ReadInt32();
+            Bottom = reader.ReadInt32();
+            Top = reader.ReadInt32();
         }
 
-        public int Bottom
+        internal void WriteTo(BinaryWriter writer)
         {
-            get => _bottom;
-            set => _bottom = value;
-        }
-
-        public int Top
-        {
-            get => _top;
-            set => _top = value;
-        }
-
-        public static RectangleMargins Parse(Stream stream, bool leaveOpen = false)
-        {
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                return new RectangleMargins(
-                    reader.ReadInt32(),
-                    reader.ReadInt32(),
-                    reader.ReadInt32(),
-                    reader.ReadInt32());
-            }
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = true)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer);
-            }
-        }
-
-        public void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(_left);
-            writer.Write(_right);
-            writer.Write(_bottom);
-            writer.Write(_top);
+            writer.Write(Left);
+            writer.Write(Right);
+            writer.Write(Bottom);
+            writer.Write(Top);
         }
     }
 }

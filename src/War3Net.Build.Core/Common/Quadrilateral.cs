@@ -5,85 +5,68 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Drawing;
 using System.IO;
-using System.Text;
+using System.Numerics;
 
 namespace War3Net.Build.Common
 {
     public sealed class Quadrilateral
     {
-        private PointF _bottomleft;
-        private PointF _topright;
-        private PointF _topleft;
-        private PointF _bottomright;
-
         public Quadrilateral(float left, float right, float top, float bottom)
         {
-            _bottomleft = new PointF(left, bottom);
-            _topright = new PointF(right, top);
-            _topleft = new PointF(left, top);
-            _bottomright = new PointF(right, bottom);
+            BottomLeft = new Vector2(left, bottom);
+            TopRight = new Vector2(right, top);
+            TopLeft = new Vector2(left, top);
+            BottomRight = new Vector2(right, bottom);
         }
 
         public Quadrilateral(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
         {
-            _bottomleft = new PointF(x1, y1);
-            _topright = new PointF(x2, y2);
-            _topleft = new PointF(x3, y3);
-            _bottomright = new PointF(x4, y4);
+            BottomLeft = new Vector2(x1, y1);
+            TopRight = new Vector2(x2, y2);
+            TopLeft = new Vector2(x3, y3);
+            BottomRight = new Vector2(x4, y4);
         }
 
-        public Quadrilateral(PointF bottomleft, PointF topright, PointF topleft, PointF bottomright)
+        public Quadrilateral(Vector2 bottomLeft, Vector2 topRight, Vector2 topLeft, Vector2 bottomRight)
         {
-            _bottomleft = bottomleft;
-            _topright = topright;
-            _topleft = topleft;
-            _bottomright = bottomright;
+            BottomLeft = bottomLeft;
+            TopRight = topRight;
+            TopLeft = topLeft;
+            BottomRight = bottomRight;
         }
 
-        public PointF BottomLeft => _bottomleft;
-
-        public PointF TopRight => _topright;
-
-        public PointF TopLeft => _topleft;
-
-        public PointF BottomRight => _bottomright;
-
-        public static Quadrilateral Parse(Stream stream, bool leaveOpen = false)
+        internal Quadrilateral(BinaryReader reader)
         {
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                return new Quadrilateral(
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle());
-            }
+            ReadFrom(reader);
         }
 
-        public void SerializeTo(Stream stream, bool leaveOpen = true)
+        public Vector2 BottomLeft { get; set; }
+
+        public Vector2 TopRight { get; set; }
+
+        public Vector2 TopLeft { get; set; }
+
+        public Vector2 BottomRight { get; set; }
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                WriteTo(writer);
-            }
+            BottomLeft = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            TopRight = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            TopLeft = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            BottomRight = new Vector2(reader.ReadSingle(), reader.ReadSingle());
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal void WriteTo(BinaryWriter writer)
         {
-            writer.Write(_bottomleft.X);
-            writer.Write(_bottomleft.Y);
-            writer.Write(_topright.X);
-            writer.Write(_topright.Y);
-            writer.Write(_topleft.X);
-            writer.Write(_topleft.Y);
-            writer.Write(_bottomright.X);
-            writer.Write(_bottomright.Y);
+            writer.Write(BottomLeft.X);
+            writer.Write(BottomLeft.Y);
+            writer.Write(TopRight.X);
+            writer.Write(TopRight.Y);
+            writer.Write(TopLeft.X);
+            writer.Write(TopLeft.Y);
+            writer.Write(BottomRight.X);
+            writer.Write(BottomRight.Y);
         }
     }
 }
