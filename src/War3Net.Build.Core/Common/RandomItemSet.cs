@@ -28,7 +28,7 @@ namespace War3Net.Build.Common
             ReadFrom(reader, formatVersion);
         }
 
-        internal RandomItemSet(BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        internal RandomItemSet(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
@@ -44,7 +44,7 @@ namespace War3Net.Build.Common
             }
         }
 
-        internal void ReadFrom(BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             nint itemCount = reader.ReadInt32();
             for (nint i = 0; i < itemCount; i++)
@@ -62,7 +62,7 @@ namespace War3Net.Build.Common
             }
         }
 
-        internal void WriteTo(BinaryWriter writer, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             writer.Write(Items.Count);
             foreach (var item in Items)
