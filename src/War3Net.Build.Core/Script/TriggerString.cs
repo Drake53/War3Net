@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapTriggerString.cs" company="Drake53">
+// <copyright file="TriggerString.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,36 +10,34 @@ using System.IO;
 
 namespace War3Net.Build.Script
 {
-    public sealed class MapTriggerString
+    public sealed class TriggerString
     {
-        private uint _emptyLines;
-        private uint _keyLength;
-        private uint _key;
-        private string? _comment;
-        private string? _value;
-
-        private MapTriggerString()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggerString"/> class.
+        /// </summary>
+        public TriggerString()
         {
         }
 
-        public uint Key => _key;
-
-        public string? Comment => _comment;
-
-        public string? Value => _value;
-
-        public static MapTriggerString Parse(Stream stream, bool leaveOpen)
+        internal TriggerString(StreamReader reader)
         {
-            using (var reader = new StreamReader(stream, leaveOpen: leaveOpen))
-            {
-                return ReadFrom(reader);
-            }
+            ReadFrom(reader);
         }
 
-        public static MapTriggerString ReadFrom(StreamReader reader)
-        {
-            var triggerString = new MapTriggerString();
+        // Amount of blank lines before "STRING".
+        public uint EmptyLineCount { get; set; }
 
+        public uint Key { get; set; }
+
+        public uint KeyPrecision { get; set; }
+
+        // Text between "STRING" and the opening brace.
+        public string? Comment { get; set; }
+
+        public string? Value { get; set; }
+
+        internal void ReadFrom(StreamReader reader)
+        {
             while (true)
             {
                 var line = reader.ReadLine();
@@ -52,8 +50,8 @@ namespace War3Net.Build.Script
                 {
                     // Read key
                     var keyString = line[7..].Trim();
-                    triggerString._keyLength = (uint)keyString.Length;
-                    triggerString._key = uint.TryParse(keyString, out var result) ? result : 0;
+                    Key = uint.TryParse(keyString, out var result) ? result : 0;
+                    KeyPrecision = (uint)keyString.Length;
 
                     // Read comment
                     var isFirstLine = true;
@@ -64,16 +62,16 @@ namespace War3Net.Build.Script
                         {
                             break;
                         }
-                        else if (line.StartsWith("//", StringComparison.Ordinal) || triggerString._comment is not null)
+                        else if (line.StartsWith("//", StringComparison.Ordinal) || Comment is not null)
                         {
                             if (isFirstLine)
                             {
-                                triggerString._comment = line[2..];
+                                Comment = line[2..];
                                 isFirstLine = false;
                             }
                             else
                             {
-                                triggerString._comment += $"\r\n{line}";
+                                Comment += $"\r\n{line}";
                             }
                         }
                         else
@@ -94,12 +92,12 @@ namespace War3Net.Build.Script
 
                         if (isFirstLine)
                         {
-                            triggerString._value = line;
+                            Value = line;
                             isFirstLine = false;
                         }
                         else
                         {
-                            triggerString._value += $"\r\n{line}";
+                            Value += $"\r\n{line}";
                         }
                     }
 
@@ -107,30 +105,28 @@ namespace War3Net.Build.Script
                 }
                 else
                 {
-                    triggerString._emptyLines++;
+                    EmptyLineCount++;
                 }
             }
-
-            return triggerString;
         }
 
-        public void WriteTo(StreamWriter writer)
+        internal void WriteTo(StreamWriter writer)
         {
-            for (var i = 0; i < _emptyLines; i++)
+            for (nuint i = 0; i < EmptyLineCount; i++)
             {
                 writer.WriteLine();
             }
 
-            if (_value is not null)
+            if (Value is not null)
             {
-                writer.WriteLine($"STRING {_key.ToString($"D{_keyLength}")}");
-                if (_comment is not null)
+                writer.WriteLine($"STRING {Key.ToString($"D{KeyPrecision}")}");
+                if (Comment is not null)
                 {
-                    writer.WriteLine($"//{_comment}");
+                    writer.WriteLine($"//{Comment}");
                 }
 
                 writer.WriteLine("{");
-                writer.WriteLine(_value);
+                writer.WriteLine(Value);
                 writer.WriteLine("}");
             }
         }
