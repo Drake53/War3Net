@@ -5,7 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
+using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -16,54 +16,33 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return new NewExpressionSyntax(
                 new ExpressionSyntax(
                     new FunctionCallSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, identifier), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisOpenSymbol), 0),
-                        new EmptyNode(0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
-                new EmptyNode(0));
+                        Token(SyntaxTokenType.AlphanumericIdentifier, identifier),
+                        Token(SyntaxTokenType.ParenthesisOpenSymbol),
+                        Empty(),
+                        Token(SyntaxTokenType.ParenthesisCloseSymbol))),
+                Empty());
+        }
+
+        public static NewExpressionSyntax InvocationExpression(string identifier, ArgumentListSyntax argumentList)
+        {
+            return new NewExpressionSyntax(
+                new ExpressionSyntax(
+                    new FunctionCallSyntax(
+                        Token(SyntaxTokenType.AlphanumericIdentifier, identifier),
+                        Token(SyntaxTokenType.ParenthesisOpenSymbol),
+                        argumentList,
+                        Token(SyntaxTokenType.ParenthesisCloseSymbol))),
+                Empty());
         }
 
         public static NewExpressionSyntax InvocationExpression(string identifier, NewExpressionSyntax argument)
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new FunctionCallSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, identifier), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisOpenSymbol), 0),
-                        new ArgumentListSyntax(
-                            argument,
-                            new ArgumentListTailSyntax(new EmptyNode(0))),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
-                new EmptyNode(0));
-        }
-
-        public static NewExpressionSyntax InvocationExpression(string identifier, ArgumentListSyntax arguments)
-        {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new FunctionCallSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, identifier), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisOpenSymbol), 0),
-                        arguments,
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
-                new EmptyNode(0));
+            return InvocationExpression(identifier, ArgumentList(argument));
         }
 
         public static NewExpressionSyntax InvocationExpression(string identifier, params NewExpressionSyntax[] arguments)
         {
-            if (arguments.Length == 0)
-            {
-                return InvocationExpression(identifier);
-            }
-
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new FunctionCallSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, identifier), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisOpenSymbol), 0),
-                        ArgumentList(arguments),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.ParenthesisCloseSymbol), 0))),
-                new EmptyNode(0));
+            return arguments.Any() ? InvocationExpression(identifier, ArgumentList(arguments)) : InvocationExpression(identifier);
         }
     }
 }

@@ -5,9 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
 using System;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -15,120 +15,65 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static NewExpressionSyntax ConstantExpression(int integer)
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new IntegerSyntax(
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.DecimalNumber, integer.ToString()), 0)))),
-                new EmptyNode(0));
+            return new ConstantExpressionSyntax(new IntegerSyntax(Token(SyntaxTokenType.DecimalNumber, integer.ToString()))).ToNewExpressionSyntax();
         }
 
         public static NewExpressionSyntax ConstantExpression(bool boolean)
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new BooleanSyntax(
-                            new TokenNode(
-                                new SyntaxToken(boolean ? SyntaxTokenType.TrueKeyword : SyntaxTokenType.FalseKeyword), 0)))),
-                new EmptyNode(0));
+            return new ConstantExpressionSyntax(new BooleanSyntax(Token(boolean ? SyntaxTokenType.TrueKeyword : SyntaxTokenType.FalseKeyword))).ToNewExpressionSyntax();
         }
 
-        public static NewExpressionSyntax ConstantExpression(string expression)
+        public static NewExpressionSyntax ConstantExpression(string? expression)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 return NullExpression();
             }
-            else if (string.IsNullOrEmpty(expression))
-            {
-                return new NewExpressionSyntax(
-                    new ExpressionSyntax(
-                        new ConstantExpressionSyntax(
-                            new StringSyntax(
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.DoubleQuotes), 0),
-                                new EmptyNode(0),
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.DoubleQuotes), 0)))),
-                    new EmptyNode(0));
-            }
-            else
-            {
-                return new NewExpressionSyntax(
-                    new ExpressionSyntax(
-                        new ConstantExpressionSyntax(
-                            new StringSyntax(
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.DoubleQuotes), 0),
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.String, expression), 0),
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.DoubleQuotes), 0)))),
-                    new EmptyNode(0));
-            }
+
+            var @string = string.IsNullOrEmpty(expression)
+                ? new StringSyntax(Token(SyntaxTokenType.DoubleQuotes), Empty(), Token(SyntaxTokenType.DoubleQuotes))
+                : new StringSyntax(Token(SyntaxTokenType.DoubleQuotes), Token(SyntaxTokenType.String, expression), Token(SyntaxTokenType.DoubleQuotes));
+
+            return new ConstantExpressionSyntax(@string).ToNewExpressionSyntax();
         }
 
-        public static NewExpressionSyntax ConstantExpression(float real)
+        public static NewExpressionSyntax ConstantExpression(float real, int precision = 1)
         {
+            if (precision != 1)
+            {
+                throw new NotImplementedException();
+            }
+
             var isPositive = real >= 0f;
             var isIntegral = real % 1 == 0f;
-            var realString = $"{(isPositive ? real : -real)}{(isIntegral ? "." : string.Empty)}";
+            var realString = $"{(isPositive ? real : -real)}{(isIntegral ? ".0" : string.Empty)}";
 
-            var expr = new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.RealNumber, realString), 0))),
-                new EmptyNode(0));
-
-            return isPositive
-                ? expr
-                : new NewExpressionSyntax(
-                    new ExpressionSyntax(
-                        new UnaryExpressionSyntax(
-                            new UnaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.MinusOperator), 0)),
-                            expr)),
-                    new EmptyNode(0));
-        }
-
-        /*public*/ static NewExpressionSyntax ConstantExpression(float real, int decimalPlaces)
-        {
-            var isPositive = real >= 0f;
-            var realString = $"{(isPositive ? real : -real).ToString()}{(decimalPlaces == 0 ? "." : string.Empty)}";
-
-            throw new NotImplementedException();
-
-            var expr = new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.RealNumber, realString), 0))),
-                new EmptyNode(0));
-
-            return isPositive
-                ? expr
-                : new NewExpressionSyntax(
-                    new ExpressionSyntax(
-                        new UnaryExpressionSyntax(
-                            new UnaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.MinusOperator), 0)),
-                            expr)),
-                    new EmptyNode(0));
+            var expr = new ConstantExpressionSyntax(Token(SyntaxTokenType.RealNumber, realString)).ToNewExpressionSyntax();
+            return isPositive ? expr : UnaryExpression(expr, SyntaxTokenType.MinusOperator);
         }
 
         public static NewExpressionSyntax FourCCExpression(string value)
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new IntegerSyntax(
-                            new FourCCIntegerSyntax(
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.SingleQuote), 0),
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.FourCCNumber, value), 0),
-                                new TokenNode(new SyntaxToken(SyntaxTokenType.SingleQuote), 0))))),
-                new EmptyNode(0));
+            return new ConstantExpressionSyntax(new IntegerSyntax(new FourCCIntegerSyntax(
+                Token(SyntaxTokenType.SingleQuote),
+                Token(SyntaxTokenType.FourCCNumber, value),
+                Token(SyntaxTokenType.SingleQuote))))
+                .ToNewExpressionSyntax();
+        }
+
+        public static NewExpressionSyntax FourCCExpression(int value)
+        {
+            return FourCCExpression(value.ToRawcode());
         }
 
         public static NewExpressionSyntax NullExpression()
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new ConstantExpressionSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.NullKeyword), 0))),
-                new EmptyNode(0));
+            return new ConstantExpressionSyntax(Token(SyntaxTokenType.NullKeyword)).ToNewExpressionSyntax();
+        }
+
+        private static NewExpressionSyntax ToNewExpressionSyntax(this ConstantExpressionSyntax constantExpression)
+        {
+            return new NewExpressionSyntax(new ExpressionSyntax(constantExpression), Empty());
         }
     }
 }

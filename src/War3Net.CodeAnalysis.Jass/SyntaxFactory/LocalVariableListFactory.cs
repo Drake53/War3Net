@@ -5,9 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
-using System;
+using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -15,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static LocalVariableListSyntax LocalVariableList(params LocalVariableDeclarationSyntax[] locals)
         {
-            return new LocalVariableListSyntax(locals);
+            return locals.Any() ? new LocalVariableListSyntax(locals) : new LocalVariableListSyntax(Empty());
         }
     }
 }

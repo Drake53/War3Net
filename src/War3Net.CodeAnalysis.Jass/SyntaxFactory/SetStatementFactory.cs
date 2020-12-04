@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public static partial class JassSyntaxFactory
@@ -16,11 +14,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return new NewStatementSyntax(
                 new StatementSyntax(
                     new SetStatementSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.SetKeyword), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, variableName), 0),
-                        new EmptyNode(0),
+                        Token(SyntaxTokenType.SetKeyword),
+                        Token(SyntaxTokenType.AlphanumericIdentifier, variableName),
+                        Empty(),
                         equalsValueClause)),
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
+                Newlines());
         }
 
         public static NewStatementSyntax SetStatement(string variableName, NewExpressionSyntax arrayIndex, EqualsValueClauseSyntax equalsValueClause)
@@ -28,14 +26,21 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return new NewStatementSyntax(
                 new StatementSyntax(
                     new SetStatementSyntax(
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.SetKeyword), 0),
-                        new TokenNode(new SyntaxToken(SyntaxTokenType.AlphanumericIdentifier, variableName), 0),
-                        new BracketedExpressionSyntax(
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.SquareBracketOpenSymbol), 0),
-                            arrayIndex,
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.SquareBracketCloseSymbol), 0)),
+                        Token(SyntaxTokenType.SetKeyword),
+                        Token(SyntaxTokenType.AlphanumericIdentifier, variableName),
+                        BracketedExpression(arrayIndex),
                         equalsValueClause)),
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
+                Newlines());
+        }
+
+        public static NewStatementSyntax SetStatement(string variableName, NewExpressionSyntax equalsValueExpression)
+        {
+            return SetStatement(variableName, EqualsValueClause(equalsValueExpression));
+        }
+
+        public static NewStatementSyntax SetStatement(string variableName, NewExpressionSyntax arrayIndex, NewExpressionSyntax equalsValueExpression)
+        {
+            return SetStatement(variableName, arrayIndex, EqualsValueClause(equalsValueExpression));
         }
     }
 }

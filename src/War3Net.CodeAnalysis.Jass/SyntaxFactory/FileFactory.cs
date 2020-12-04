@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,47 +15,40 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static FileSyntax File(params NewDeclarationSyntax[] declarations)
         {
-            return new FileSyntax(
-                new EmptyNode(0),
-                new DeclarationListSyntax(declarations),
-                new FunctionListSyntax(new EmptyNode(0)),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndOfFile), 0));
-        }
-
-        public static FileSyntax File(params FunctionSyntax[] functions)
-        {
-            return new FileSyntax(
-                new EmptyNode(0),
-                new DeclarationListSyntax(new EmptyNode(0)),
-                new FunctionListSyntax(functions),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndOfFile), 0));
+            return File(declarations, Array.Empty<FunctionSyntax>());
         }
 
         public static FileSyntax File(IEnumerable<NewDeclarationSyntax> declarations)
         {
-            return new FileSyntax(
-                new EmptyNode(0),
-                new DeclarationListSyntax(declarations.ToArray()),
-                new FunctionListSyntax(new EmptyNode(0)),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndOfFile), 0));
+            return File(declarations, Array.Empty<FunctionSyntax>());
+        }
+
+        public static FileSyntax File(params FunctionSyntax[] functions)
+        {
+            return File(Array.Empty<NewDeclarationSyntax>(), functions);
         }
 
         public static FileSyntax File(IEnumerable<FunctionSyntax> functions)
         {
-            return new FileSyntax(
-                new EmptyNode(0),
-                new DeclarationListSyntax(new EmptyNode(0)),
-                new FunctionListSyntax(functions.ToArray()),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndOfFile), 0));
+            return File(Array.Empty<NewDeclarationSyntax>(), functions);
         }
 
         public static FileSyntax File(IEnumerable<NewDeclarationSyntax> declarations, IEnumerable<FunctionSyntax> functions)
         {
             return new FileSyntax(
-                new EmptyNode(0),
+                Empty(),
                 new DeclarationListSyntax(declarations.ToArray()),
                 new FunctionListSyntax(functions.ToArray()),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndOfFile), 0));
+                Token(SyntaxTokenType.EndOfFile));
+        }
+
+        public static FileSyntax File(LineDelimiterSyntax header, IEnumerable<NewDeclarationSyntax> declarations, IEnumerable<FunctionSyntax> functions)
+        {
+            return new FileSyntax(
+                header,
+                new DeclarationListSyntax(declarations.ToArray()),
+                new FunctionListSyntax(functions.ToArray()),
+                Token(SyntaxTokenType.EndOfFile));
         }
     }
 }

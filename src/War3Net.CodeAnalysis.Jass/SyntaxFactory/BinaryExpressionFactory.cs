@@ -5,28 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public static partial class JassSyntaxFactory
     {
-        public static NewExpressionSyntax BinaryAdditionExpression(NewExpressionSyntax expr1, NewExpressionSyntax expr2)
+        public static NewExpressionSyntax BinaryAdditionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
         {
-            return new NewExpressionSyntax(
-                expr1.Expression,
-                new BinaryExpressionTailSyntax(
-                    new BinaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.PlusOperator), 0)),
-                    expr2));
+            return BinaryExpression(left, right, SyntaxTokenType.PlusOperator);
         }
 
-        public static NewExpressionSyntax BinarySubtractionExpression(NewExpressionSyntax expr1, NewExpressionSyntax expr2)
+        public static NewExpressionSyntax BinarySubtractionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.MinusOperator);
+        }
+
+        public static NewExpressionSyntax BinaryMultiplicationExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.MultiplicationOperator);
+        }
+
+        public static NewExpressionSyntax BinaryDivisionExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.DivisionOperator);
+        }
+
+        public static NewExpressionSyntax BinaryEqualsExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.EqualityOperator);
+        }
+
+        public static NewExpressionSyntax BinaryNotEqualsExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.UnequalityOperator);
+        }
+
+        public static NewExpressionSyntax BinaryAndExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.AndOperator);
+        }
+
+        public static NewExpressionSyntax BinaryOrExpression(NewExpressionSyntax left, NewExpressionSyntax right)
+        {
+            return BinaryExpression(left, right, SyntaxTokenType.OrOperator);
+        }
+
+        private static NewExpressionSyntax BinaryExpression(NewExpressionSyntax left, NewExpressionSyntax right, SyntaxTokenType @operator)
         {
             return new NewExpressionSyntax(
-                expr1.Expression,
-                new BinaryExpressionTailSyntax(
-                    new BinaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.MinusOperator), 0)),
-                    expr2));
+                left.Expression,
+                new BinaryExpressionTailSyntax(new BinaryOperatorSyntax(Token(@operator)), right));
         }
     }
 }

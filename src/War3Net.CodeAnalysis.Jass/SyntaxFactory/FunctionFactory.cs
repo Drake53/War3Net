@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,28 +14,22 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, params NewStatementSyntax[] statements)
         {
-            return new FunctionSyntax(
-                new EmptyNode(0),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.FunctionKeyword), 0),
-                functionDeclaration,
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))),
-                new LocalVariableListSyntax(new EmptyNode(0)),
-                new StatementListSyntax(statements),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndfunctionKeyword), 0),
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
+            return Function(functionDeclaration, LocalVariableList(), StatementList(statements));
+        }
+
+        public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, LineDelimiterSyntax afterDeclaration, params NewStatementSyntax[] statements)
+        {
+            return Function(functionDeclaration, LocalVariableList(), StatementList(statements), afterDeclaration);
         }
 
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, LocalVariableListSyntax locals, params NewStatementSyntax[] statements)
         {
-            return new FunctionSyntax(
-                new EmptyNode(0),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.FunctionKeyword), 0),
-                functionDeclaration,
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))),
-                locals,
-                new StatementListSyntax(statements),
-                new TokenNode(new SyntaxToken(SyntaxTokenType.EndfunctionKeyword), 0),
-                new LineDelimiterSyntax(new EndOfLineSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.NewlineSymbol), 0))));
+            return Function(functionDeclaration, locals, StatementList(statements));
+        }
+
+        public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, LineDelimiterSyntax afterDeclaration, LocalVariableListSyntax locals, params NewStatementSyntax[] statements)
+        {
+            return Function(functionDeclaration, locals, StatementList(statements), afterDeclaration);
         }
 
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, IEnumerable<NewStatementSyntax> statements)
@@ -48,6 +40,24 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, IEnumerable<LocalVariableDeclarationSyntax> localDeclarations, IEnumerable<NewStatementSyntax> statements)
         {
             return Function(functionDeclaration, LocalVariableList(localDeclarations.ToArray()), statements.ToArray());
+        }
+
+        private static FunctionSyntax Function(
+            FunctionDeclarationSyntax functionDeclaration,
+            LocalVariableListSyntax locals,
+            StatementListSyntax statements,
+            LineDelimiterSyntax? afterDeclaration = null,
+            LineDelimiterSyntax? afterFunction = null)
+        {
+            return new FunctionSyntax(
+                Empty(),
+                Token(SyntaxTokenType.FunctionKeyword),
+                functionDeclaration,
+                afterDeclaration ?? Newlines(),
+                locals,
+                statements,
+                Token(SyntaxTokenType.EndfunctionKeyword),
+                afterFunction ?? Newlines(2));
         }
     }
 }

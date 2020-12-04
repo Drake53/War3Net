@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
+using System;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
@@ -17,21 +16,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             if (expressions.Length == 0)
             {
-                throw new System.Exception();
+                throw new ArgumentException("Array must contain at least one element.", nameof(expressions));
             }
 
-            if (expressions.Length == 1)
-            {
-                return new ArgumentListSyntax(expressions[0], new ArgumentListTailSyntax(new EmptyNode(0)));
-            }
+            var tail = expressions.Length == 1
+                ? new ArgumentListTailSyntax(Empty())
+                : new ArgumentListTailSyntax(expressions.Skip(1).Select(expr => new CommaSeparatedExpressionSyntax(Token(SyntaxTokenType.Comma), expr)).ToArray());
 
-            return new ArgumentListSyntax(
-                expressions[0],
-                new ArgumentListTailSyntax(
-                    expressions.Skip(1).Select(
-                        expr => new CommaSeparatedExpressionSyntax(
-                            new TokenNode(new SyntaxToken(SyntaxTokenType.Comma), 0),
-                            expr)).ToArray()));
+            return new ArgumentListSyntax(expressions[0], tail);
         }
     }
 }

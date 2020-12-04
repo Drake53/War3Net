@@ -5,32 +5,33 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1649 // File name should match first type name
-
-using System;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public static partial class JassSyntaxFactory
     {
         public static NewExpressionSyntax UnaryPlusExpression(NewExpressionSyntax expression)
         {
-            return new NewExpressionSyntax(
-                new ExpressionSyntax(
-                    new UnaryExpressionSyntax(
-                        new UnaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.PlusOperator), 0)),
-                        expression)),
-                new EmptyNode(0));
+            return UnaryExpression(expression, SyntaxTokenType.PlusOperator);
         }
 
         public static NewExpressionSyntax UnaryMinusExpression(NewExpressionSyntax expression)
         {
+            return UnaryExpression(expression, SyntaxTokenType.MinusOperator);
+        }
+
+        public static NewExpressionSyntax UnaryNotExpression(NewExpressionSyntax expression)
+        {
+            return UnaryExpression(expression, SyntaxTokenType.NotOperator);
+        }
+
+        private static NewExpressionSyntax UnaryExpression(NewExpressionSyntax expression, SyntaxTokenType @operator)
+        {
             return new NewExpressionSyntax(
                 new ExpressionSyntax(
                     new UnaryExpressionSyntax(
-                        new UnaryOperatorSyntax(new TokenNode(new SyntaxToken(SyntaxTokenType.MinusOperator), 0)),
+                        new UnaryOperatorSyntax(Token(@operator)),
                         expression)),
-                new EmptyNode(0));
+                Empty());
         }
     }
 }
