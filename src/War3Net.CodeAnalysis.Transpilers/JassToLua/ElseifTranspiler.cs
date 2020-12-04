@@ -1,0 +1,35 @@
+﻿// ------------------------------------------------------------------------------
+// <copyright file="ElseifTranspiler.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Text;
+
+using War3Net.CodeAnalysis.Jass.Syntax;
+
+namespace War3Net.CodeAnalysis.Transpilers
+{
+    public static partial class JassToLuaTranspiler
+    {
+        public static void Transpile(this ElseifSyntax elseifNode, ref StringBuilder sb)
+        {
+            _ = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
+
+            sb.Append("elseif ");
+            elseifNode.ConditionExpressionNode.Transpile(ref sb);
+            sb.AppendLine(" then");
+            elseifNode.StatementListNode.Transpile(ref sb);
+            if (elseifNode.EmptyElseClauseNode is null)
+            {
+                elseifNode.ElseClauseNode.Transpile(ref sb);
+            }
+            else
+            {
+                sb.Append("end");
+            }
+        }
+    }
+}
