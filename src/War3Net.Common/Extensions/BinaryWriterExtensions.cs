@@ -96,5 +96,34 @@ namespace War3Net.Common.Extensions
         {
             writer.Write(b ? 1 : 0);
         }
+
+        public static void WriteInt24(this BinaryWriter writer, int value)
+        {
+            if (value >= 1 << 23 || value < -(1 << 23))
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            if (value < 0)
+            {
+                value += 1 << 24;
+            }
+
+            writer.Write((byte)(value & 0xFF));
+            writer.Write((byte)((value >> 8) & 0xFF));
+            writer.Write((byte)(value >> 16));
+        }
+
+        public static void WriteUInt24(this BinaryWriter writer, uint value)
+        {
+            if (value >= 1 << 24)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            writer.Write((byte)(value & 0xFF));
+            writer.Write((byte)((value >> 8) & 0xFF));
+            writer.Write((byte)(value >> 16));
+        }
     }
 }

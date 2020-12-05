@@ -72,6 +72,25 @@ namespace War3Net.Common.Extensions
             return Color.FromArgb(alpha, red, green, blue);
         }
 
+        public static int ReadInt24(this BinaryReader reader)
+        {
+            var bytes = reader.ReadBytes(3);
+            var unsignedValue = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16);
+            return unsignedValue >= 1 << 23 ? unsignedValue - (1 << 24) : unsignedValue;
+        }
+
+        public static uint ReadUInt24(this BinaryReader reader)
+        {
+            var bytes = reader.ReadBytes(3);
+            return (uint)(bytes[0] | (bytes[1] << 8) | (bytes[2] << 16));
+        }
+
+        public static TEnum ReadByte<TEnum>(this BinaryReader reader)
+            where TEnum : struct, Enum
+        {
+            return ToEnum<TEnum>(reader.ReadByte());
+        }
+
         public static TEnum ReadChar<TEnum>(this BinaryReader reader)
             where TEnum : struct, Enum
         {

@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Drawing;
+
 namespace War3Net.Common.Extensions
 {
     public static class Int32Extensions
@@ -18,6 +20,15 @@ namespace War3Net.Common.Extensions
                 (char)((value & 0x00FF0000) >> 16),
                 (char)((value & 0xFF000000) >> 24),
             });
+        }
+
+        public static Color ToRgbaColor(this int i)
+        {
+            return Color.FromArgb(
+                (int)((i & 0xFF000000) >> 24),
+                i & 0x000000FF,
+                (i & 0x0000FF00) >> 8,
+                (i & 0x00FF0000) >> 16);
         }
     }
 }
