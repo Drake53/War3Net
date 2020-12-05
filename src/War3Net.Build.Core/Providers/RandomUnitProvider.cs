@@ -5,21 +5,24 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Providers
 {
     public static class RandomUnitProvider
     {
         // use -1 for 'any level'
-        public static char[] GetRandomUnitTypeCode(int level)
+        public static int GetRandomUnitTypeCode(int level)
         {
-            return new[] { 'Y', 'Y', 'U', (char)(level + 48) };
+            return $"YYU{(char)('0' + level)}".FromRawcode();
         }
 
-        public static bool IsRandomUnit(char[] code, out int level)
+        public static bool IsRandomUnit(int code, out int level)
         {
-            if (code[0] == 'Y' && code[1] == 'Y' && code[2] == 'U')
+            var codeString = code.ToRawcode();
+            if (codeString[0] == 'Y' && codeString[1] == 'Y' && codeString[2] == 'U')
             {
-                level = code[3] - 48;
+                level = codeString[3] - '0';
                 return true;
             }
 
