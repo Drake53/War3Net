@@ -8,6 +8,8 @@
 using System.IO;
 using System.Numerics;
 
+using War3Net.Build.Common;
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
@@ -38,9 +40,9 @@ namespace War3Net.Build.Info
 
         public Vector2 StartPosition { get; set; }
 
-        public int AllyLowPriorityFlags { get; set; }
+        public Bitmask32 AllyLowPriorityFlags { get; set; }
 
-        public int AllyHighPriorityFlags { get; set; }
+        public Bitmask32 AllyHighPriorityFlags { get; set; }
 
         public int Unk1 { get; set; }
 
@@ -54,8 +56,8 @@ namespace War3Net.Build.Info
             Flags = reader.ReadInt32<PlayerFlags>();
             Name = reader.ReadChars();
             StartPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-            AllyLowPriorityFlags = reader.ReadInt32();
-            AllyHighPriorityFlags = reader.ReadInt32();
+            AllyLowPriorityFlags = reader.ReadBitmask32();
+            AllyHighPriorityFlags = reader.ReadBitmask32();
 
             if (formatVersion >= MapInfoFormatVersion.Reforged)
             {
