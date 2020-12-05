@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 
 namespace War3Net.Build.Environment
 {
@@ -32,6 +31,11 @@ namespace War3Net.Build.Environment
         /// </summary>
         public MapTile()
         {
+        }
+
+        internal MapTile(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
         }
 
         public float Height
@@ -106,22 +110,16 @@ namespace War3Net.Build.Environment
             set => _cliffData = (value >= 0 && value <= 0x0F) ? (byte)((value << 4) | (_cliffData & 0x0F)) : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        public static MapTile Parse(Stream stream, bool leaveOpen = false)
+        internal void ReadFrom(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
         {
-            var tile = new MapTile();
-            using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                tile._heightData = reader.ReadUInt16();
-                tile._waterDataAndEdgeFlag = reader.ReadUInt16();
-                tile._textureDataAndFlags = reader.ReadByte();
-                tile._variationData = reader.ReadByte();
-                tile._cliffData = reader.ReadByte();
-            }
-
-            return tile;
+            _heightData = reader.ReadUInt16();
+            _waterDataAndEdgeFlag = reader.ReadUInt16();
+            _textureDataAndFlags = reader.ReadByte();
+            _variationData = reader.ReadByte();
+            _cliffData = reader.ReadByte();
         }
 
-        public void WriteTo(BinaryWriter writer)
+        internal void WriteTo(BinaryWriter writer, MapEnvironmentFormatVersion formatVersion)
         {
             writer.Write(_heightData);
             writer.Write(_waterDataAndEdgeFlag);

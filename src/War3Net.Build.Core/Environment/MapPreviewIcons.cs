@@ -33,7 +33,7 @@ namespace War3Net.Build.Environment
 
         public MapPreviewIconsFormatVersion FormatVersion { get; set; }
 
-        public List<MapPreviewIcon> Icons { get; set; } = new();
+        public List<MapPreviewIcon> Icons { get; init; } = new();
 
         internal void ReadFrom(BinaryReader reader)
         {

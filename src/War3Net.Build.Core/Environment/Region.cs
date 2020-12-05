@@ -38,7 +38,7 @@ namespace War3Net.Build.Environment
 
         public int CreationNumber { get; set; }
 
-        public int WeatherId { get; set; }
+        public WeatherType WeatherType { get; set; }
 
         public string AmbientSound { get; set; }
 
@@ -60,7 +60,7 @@ namespace War3Net.Build.Environment
             Top = reader.ReadSingle();
             Name = reader.ReadChars();
             CreationNumber = reader.ReadInt32();
-            WeatherId = reader.ReadInt32();
+            WeatherType = reader.ReadInt32<WeatherType>();
             AmbientSound = reader.ReadChars();
             Color = Color.FromArgb(reader.ReadInt32());
         }
@@ -73,7 +73,7 @@ namespace War3Net.Build.Environment
             writer.Write(Top);
             writer.WriteString(Name);
             writer.Write(CreationNumber);
-            writer.Write(WeatherId);
+            writer.Write((int)WeatherType);
             writer.WriteString(AmbientSound);
             writer.Write(Color.ToArgb());
         }

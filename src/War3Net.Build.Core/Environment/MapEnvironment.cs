@@ -5,398 +5,143 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using War3Net.Build.Common;
-using War3Net.Build.Info;
+using War3Net.Build.Extensions;
 using War3Net.Build.Providers;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapEnvironment : IEnumerable<MapTile>
+    public sealed class MapEnvironment
     {
         public const string FileName = "war3map.w3e";
-        public const uint HeaderSignature = 0x21453357; // "W3E!"
-        public const MapEnvironmentFormatVersion LatestVersion = MapEnvironmentFormatVersion.Normal;
 
-        private const int DefaultCliffLevel = 2;
-        private const int TerrainTypeLimit = 16;
+        public static readonly int FileFormatSignature = "W3E!".FromRawcode();
 
-        private readonly List<TerrainType> _terrainTypes;
-        private readonly List<CliffType> _cliffTypes;
-        private readonly List<MapTile> _tiles;
-
-        private Tileset _tileset;
-        private MapEnvironmentFormatVersion _version;
-
-        private uint _width;
-        private uint _height;
-        private float _left;
-        private float _bottom;
-
-        public MapEnvironment(MapInfo mapInfo)
-            : this(mapInfo.Tileset, mapInfo)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapEnvironment"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public MapEnvironment(MapEnvironmentFormatVersion formatVersion)
         {
+            FormatVersion = formatVersion;
         }
 
-        public MapEnvironment(Tileset tileset, MapInfo mapInfo)
-            : this(
-                  tileset,
-                  (uint)(mapInfo.PlayableMapAreaWidth + mapInfo.CameraBoundsComplements.Left + mapInfo.CameraBoundsComplements.Right + 1),
-                  (uint)(mapInfo.PlayableMapAreaHeight + mapInfo.CameraBoundsComplements.Bottom + mapInfo.CameraBoundsComplements.Top + 1),
-                  DefaultCliffLevel,
-                  mapInfo.CameraBoundsComplements)
+        internal MapEnvironment(BinaryReader reader)
         {
+            ReadFrom(reader);
         }
 
-        public MapEnvironment(Tileset tileset, uint width, uint height)
-            : this(tileset, width, height, DefaultCliffLevel)
-        {
-        }
+        public MapEnvironmentFormatVersion FormatVersion { get; set; }
 
-        public MapEnvironment(Tileset tileset, uint width, uint height, int cliffLevel)
-            : this(tileset, width, height, cliffLevel, new RectangleMargins(6, 6, 4, 8))
-        {
-        }
+        public Tileset Tileset { get; set; }
 
-        public MapEnvironment(Tileset tileset, uint width, uint height, RectangleMargins cameraBoundsComplements)
-            : this(tileset, width, height, DefaultCliffLevel, cameraBoundsComplements)
-        {
-        }
+        public List<TerrainType> TerrainTypes { get; init; } = new();
 
-        public MapEnvironment(Tileset tileset, uint width, uint height, int cliffLevel, RectangleMargins cameraBoundsComplements)
-            : this()
-        {
-            if (!Enum.IsDefined(typeof(Tileset), tileset))
-            {
-                throw new ArgumentOutOfRangeException(nameof(tileset));
-            }
+        public List<CliffType> CliffTypes { get; init; } = new();
 
-            var maxx = width - 1;
-            if ((maxx % 32) != 0 || width == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(width));
-            }
+        public uint Width { get; set; }
 
-            var maxy = height - 1;
-            if ((maxy % 32) != 0 || height == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(height));
-            }
+        public uint Height { get; set; }
 
-            if (cameraBoundsComplements is null)
-            {
-                throw new ArgumentNullException(nameof(cameraBoundsComplements));
-            }
+        public float Left { get; set; }
 
-            _tileset = tileset;
-            _version = LatestVersion;
-            _width = width;
-            _height = height;
-            _left = MapWidth / -2f;
-            _bottom = MapHeight / -2f;
+        public float Bottom { get; set; }
 
-            _terrainTypes = GetDefaultTerrainTypes().ToList();
-            _cliffTypes = GetDefaultCliffTypes().ToList();
-
-            var edgeLeft = cameraBoundsComplements.Left;
-            var edgeRight = maxx - cameraBoundsComplements.Right;
-            var edgeBottom = cameraBoundsComplements.Bottom;
-            var edgeTop = maxy - cameraBoundsComplements.Top;
-            for (var y = 0; y < _width; y++)
-            {
-                for (var x = 0; x < _height; x++)
-                {
-                    var tile = new MapTile();
-
-                    tile.CliffLevel = cliffLevel;
-                    tile.CliffTexture = 15;
-                    tile.CliffVariation = 0;
-
-                    tile.Height = 0;
-                    tile.IsBlighted = false;
-                    tile.IsBoundary = false;
-                    tile.IsEdgeTile = x != maxx && y != maxy && (x < edgeLeft || x >= edgeRight || y < edgeBottom || y >= edgeTop);
-                    tile.IsRamp = false;
-                    tile.IsWater = false;
-                    tile.Texture = 0;
-                    tile.Variation = 0;
-                    tile.WaterHeight = 0;
-
-                    _tiles.Add(tile);
-                }
-            }
-        }
-
-        public MapEnvironment(Tileset tileset, IEnumerable<TerrainType> terrainTypes, MapTile[,] mapTiles)
-            : this()
-        {
-            _tileset = tileset;
-            _terrainTypes = new List<TerrainType>(terrainTypes);
-            _cliffTypes = GetDefaultCliffTypes().ToList();
-
-            if (_terrainTypes.Count == 0)
-            {
-                _terrainTypes.AddRange(GetDefaultTerrainTypes());
-            }
-            else if (_terrainTypes.Count > TerrainTypeLimit)
-            {
-                throw new ArgumentException($"Cannot store more than {TerrainTypeLimit} terraintypes.", nameof(terrainTypes));
-            }
-            else
-            {
-                foreach (var terrainType in terrainTypes)
-                {
-                    if (!Enum.IsDefined(typeof(TerrainType), terrainType))
-                    {
-                        throw new ArgumentException($"Unknown terraintype: {terrainType}", nameof(terrainTypes));
-                    }
-                }
-            }
-
-            var width = mapTiles.GetLength(0);
-            var height = mapTiles.GetLength(1);
-
-            static uint RoundUpSize(int size)
-            {
-                return 1 + ((uint)((size + 30) / 32) * 32);
-            }
-
-            _version = LatestVersion;
-            _width = RoundUpSize(width);
-            _height = RoundUpSize(height);
-            _left = 0;
-            _bottom = 0;
-
-            for (var y = 0; y < _width; y++)
-            {
-                for (var x = 0; x < _height; x++)
-                {
-                    if (x < width && y < height)
-                    {
-                        _tiles.Add(mapTiles[x, y]);
-                        continue;
-                    }
-
-                    var tile = new MapTile();
-
-                    tile.CliffLevel = DefaultCliffLevel;
-                    tile.CliffTexture = 15;
-                    tile.CliffVariation = 0;
-
-                    tile.Height = 0;
-                    tile.IsBlighted = false;
-                    tile.IsBoundary = false;
-                    tile.IsEdgeTile = false;
-                    tile.IsRamp = false;
-                    tile.IsWater = false;
-                    tile.Texture = 0;
-                    tile.Variation = 0;
-                    tile.WaterHeight = 0;
-
-                    _tiles.Add(tile);
-                }
-            }
-        }
-
-        private MapEnvironment()
-        {
-            _terrainTypes = new List<TerrainType>();
-            _cliffTypes = new List<CliffType>();
-            _tiles = new List<MapTile>();
-        }
-
-        public static MapEnvironment Default => new MapEnvironment(Tileset.LordaeronSummer, 65, 65, DefaultCliffLevel);
-
-        public static bool IsRequired => true;
-
-        public MapEnvironmentFormatVersion FormatVersion
-        {
-            get => _version;
-            set => _version = value;
-        }
-
-        public float Left
-        {
-            get => _left;
-            set => _left = value;
-        }
+        public List<MapTile> TerrainTiles { get; init; } = new();
 
         public float Right
         {
-            get => _left + MapWidth;
-            set => _left = value - MapWidth;
+            get => Left + MapWidth;
+            set => Left = value - MapWidth;
         }
 
         public float Top
         {
-            get => _bottom + MapHeight;
-            set => _bottom = value - MapHeight;
+            get => Bottom + MapHeight;
+            set => Bottom = value - MapHeight;
         }
 
-        public float Bottom
-        {
-            get => _bottom;
-            set => _bottom = value;
-        }
+        public float MapWidth => MapTile.TileWidth * (Width - 1);
 
-        public float MapWidth => MapTile.TileWidth * (_width - 1);
-
-        public float MapHeight => MapTile.TileHeight * (_height - 1);
-
-        public static MapEnvironment Parse(Stream stream, bool leaveOpen = false)
-        {
-            try
-            {
-                var environment = new MapEnvironment();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
-                {
-                    if (reader.ReadUInt32() != HeaderSignature)
-                    {
-                        throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
-                    }
-
-                    environment._version = reader.ReadInt32<MapEnvironmentFormatVersion>();
-
-                    environment._tileset = (Tileset)reader.ReadChar();
-                    /*var customTileset =*/ reader.ReadUInt32();
-
-                    var terrainTypeCount = reader.ReadUInt32();
-                    for (var i = 0; i < terrainTypeCount; i++)
-                    {
-                        environment._terrainTypes.Add(reader.ReadInt32<TerrainType>());
-                    }
-
-                    var cliffTypeCount = reader.ReadUInt32();
-                    for (var i = 0; i < cliffTypeCount; i++)
-                    {
-                        environment._cliffTypes.Add(reader.ReadInt32<CliffType>());
-                    }
-
-                    environment._width = reader.ReadUInt32();
-                    environment._height = reader.ReadUInt32();
-                    environment._left = reader.ReadSingle();
-                    environment._bottom = reader.ReadSingle();
-
-                    for (var y = 0; y < environment._width; y++)
-                    {
-                        for (var x = 0; x < environment._height; x++)
-                        {
-                            environment._tiles.Add(MapTile.Parse(stream, true));
-                        }
-                    }
-                }
-
-                return environment;
-            }
-            catch (DecoderFallbackException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public static void Serialize(MapEnvironment mapEnvironment, Stream stream, bool leaveOpen = false)
-        {
-            mapEnvironment.SerializeTo(stream, leaveOpen);
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                writer.Write(HeaderSignature);
-                writer.Write((uint)_version);
-                writer.Write((char)_tileset);
-                writer.WriteBool(!IsDefaultTileset());
-
-                writer.Write(_terrainTypes.Count);
-                foreach (var terrainType in _terrainTypes)
-                {
-                    writer.Write((uint)terrainType);
-                }
-
-                writer.Write(_cliffTypes.Count);
-                foreach (var cliffType in _cliffTypes)
-                {
-                    writer.Write((uint)cliffType);
-                }
-
-                writer.Write(_width);
-                writer.Write(_height);
-                writer.Write(_left);
-                writer.Write(_bottom);
-
-                foreach (var tile in _tiles)
-                {
-                    tile.WriteTo(writer);
-                }
-            }
-        }
-
-        public void ReplaceTiles(TerrainType oldType, TerrainType newType, bool swapBoth = false)
-        {
-            if (oldType == newType)
-            {
-                return;
-            }
-
-            var oldIndex = _terrainTypes.IndexOf(oldType);
-            if (oldIndex == -1)
-            {
-                throw new ArgumentException($"{oldType} is not part of the tileset.");
-            }
-
-            var newIndex = _terrainTypes.IndexOf(newType);
-            if (newIndex == -1)
-            {
-                throw new ArgumentException($"{newType} is not part of the tileset.");
-            }
-
-            foreach (var tile in _tiles)
-            {
-                if (tile.Texture == oldIndex)
-                {
-                    tile.Texture = newIndex;
-                }
-                else if (swapBoth && tile.Texture == newIndex)
-                {
-                    tile.Texture = oldIndex;
-                }
-            }
-        }
+        public float MapHeight => MapTile.TileHeight * (Height - 1);
 
         public bool IsDefaultTileset()
         {
-            return AreListsEqual(_terrainTypes, GetDefaultTerrainTypes().ToArray())
-                && AreListsEqual(_cliffTypes, GetDefaultCliffTypes().ToArray());
+            return AreListsEqual(TerrainTypes, TerrainTypeProvider.GetTerrainTypes(Tileset).ToArray())
+                && AreListsEqual(CliffTypes, TerrainTypeProvider.GetCliffTypes(Tileset).ToArray());
         }
 
-        public IEnumerable<TerrainType> GetTerrainTypes() => _terrainTypes;
-
-        public IEnumerable<CliffType> GetCliffTypes() => _cliffTypes;
-
-        public IEnumerator<MapTile> GetEnumerator()
+        internal void ReadFrom(BinaryReader reader)
         {
-            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
+            if (reader.ReadInt32() != FileFormatSignature)
+            {
+                throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
+            }
+
+            FormatVersion = reader.ReadInt32<MapEnvironmentFormatVersion>();
+            Tileset = (Tileset)reader.ReadChar();
+            var isCustomTileset = reader.ReadBool();
+
+            nint terrainTypeCount = reader.ReadInt32();
+            for (nint i = 0; i < terrainTypeCount; i++)
+            {
+                TerrainTypes.Add(reader.ReadInt32<TerrainType>());
+            }
+
+            nint cliffTypeCount = reader.ReadInt32();
+            for (nint i = 0; i < cliffTypeCount; i++)
+            {
+                CliffTypes.Add(reader.ReadInt32<CliffType>());
+            }
+
+            Width = reader.ReadUInt32();
+            Height = reader.ReadUInt32();
+            Left = reader.ReadSingle();
+            Bottom = reader.ReadSingle();
+
+            for (nint y = 0; y < Width; y++)
+            {
+                for (nint x = 0; x < Height; x++)
+                {
+                    TerrainTiles.Add(reader.ReadTerrainTile(FormatVersion));
+                }
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        internal void WriteTo(BinaryWriter writer)
         {
-            return ((IEnumerable<MapTile>)_tiles).GetEnumerator();
+            writer.Write(FileFormatSignature);
+            writer.Write((uint)FormatVersion);
+            writer.Write((char)Tileset);
+            writer.WriteBool(!IsDefaultTileset());
+
+            writer.Write(TerrainTypes.Count);
+            foreach (var terrainType in TerrainTypes)
+            {
+                writer.Write((uint)terrainType);
+            }
+
+            writer.Write(CliffTypes.Count);
+            foreach (var cliffType in CliffTypes)
+            {
+                writer.Write((uint)cliffType);
+            }
+
+            writer.Write(Width);
+            writer.Write(Height);
+            writer.Write(Left);
+            writer.Write(Bottom);
+
+            foreach (var terrainTile in TerrainTiles)
+            {
+                writer.Write(terrainTile, FormatVersion);
+            }
         }
 
         private static bool AreListsEqual(IList list1, IList list2)
@@ -409,23 +154,13 @@ namespace War3Net.Build.Environment
 
             for (var i = 0; i < count; i++)
             {
-                if (!list1[i].Equals(list2[i]))
+                if (!Equals(list1[i], list2[i]))
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        private IEnumerable<TerrainType> GetDefaultTerrainTypes()
-        {
-            return TerrainTypeProvider.GetTerrainTypes(_tileset);
-        }
-
-        private IEnumerable<CliffType> GetDefaultCliffTypes()
-        {
-            return TerrainTypeProvider.GetCliffTypes(_tileset);
         }
     }
 }

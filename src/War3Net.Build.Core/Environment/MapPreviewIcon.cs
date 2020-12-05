@@ -42,7 +42,7 @@ namespace War3Net.Build.Environment
             Color = Color.FromArgb(reader.ReadInt32());
         }
 
-        public void WriteTo(BinaryWriter writer, MapPreviewIconsFormatVersion formatVersion)
+        internal void WriteTo(BinaryWriter writer, MapPreviewIconsFormatVersion formatVersion)
         {
             writer.Write((int)IconType);
             writer.Write((int)X);

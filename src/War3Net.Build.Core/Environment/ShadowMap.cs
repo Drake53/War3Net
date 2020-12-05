@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace War3Net.Build.Environment
 {
@@ -15,45 +14,29 @@ namespace War3Net.Build.Environment
     {
         public const string FileName = "war3map.shd";
 
-        // True = 0xff, false = 0x00
-        private readonly List<byte> _cells;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShadowMap"/> class.
+        /// </summary>
         public ShadowMap()
         {
-            _cells = new List<byte>();
         }
 
-        public static ShadowMap Parse(Stream stream, bool leaveOpen = false)
+        internal ShadowMap(BinaryReader reader)
         {
-            var shadowMap = new ShadowMap();
-            while (true)
-            {
-                var read = stream.ReadByte();
-                if (read == -1)
-                {
-                    break;
-                }
-
-                shadowMap._cells.Add((byte)read);
-            }
-
-            if (!leaveOpen)
-            {
-                stream.Dispose();
-            }
-
-            return shadowMap;
+            ReadFrom(reader);
         }
 
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
+        // True = 0xff, false = 0x00
+        public List<byte> Cells { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
         {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
-            {
-                foreach (var cell in _cells)
-                {
-                    writer.Write(cell);
-                }
-            }
+            Cells.AddRange(reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position)));
+        }
+
+        internal void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(Cells.ToArray());
         }
     }
 }
