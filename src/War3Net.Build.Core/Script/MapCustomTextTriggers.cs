@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
@@ -20,136 +21,91 @@ namespace War3Net.Build.Script
 
         private const int NewFormatId = unchecked((int)0x80000004);
 
-        private readonly List<string> _customTextTriggers;
-
-        private MapCustomTextTriggersFormatVersion _version;
-        private bool _newFormat;
-        private string _rootTriggerComment;
-        private string _rootTriggerText;
-
-        private MapCustomTextTriggers()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapCustomTextTriggers"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        /// <param name="encoding"></param>
+        public MapCustomTextTriggers(MapCustomTextTriggersFormatVersion formatVersion)
         {
-            _customTextTriggers = new List<string>();
+            FormatVersion = formatVersion;
         }
 
-        public static bool IsRequired => false;
-
-        public MapCustomTextTriggersFormatVersion FormatVersion
+        internal MapCustomTextTriggers(BinaryReader reader, Encoding encoding)
         {
-            get => _version;
-            set => _version = value;
+            ReadFrom(reader, encoding);
         }
 
-        public bool UseNewFormat
-        {
-            get => _newFormat;
-            set => _newFormat = value;
-        }
+        public MapCustomTextTriggersFormatVersion FormatVersion { get; set; }
 
-        public static MapCustomTextTriggers Parse(Stream stream, bool leaveOpen = false)
+        public bool UseNewFormat { get; set; }
+
+        public string GlobalCustomScriptComment { get; set; }
+
+        public CustomTextTrigger GlobalCustomScriptCode { get; set; }
+
+        public List<CustomTextTrigger> CustomTextTriggers { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader, Encoding encoding)
         {
-            try
+            FormatVersion = (MapCustomTextTriggersFormatVersion)reader.ReadInt32();
+            if (!Enum.IsDefined(typeof(MapCustomTextTriggersFormatVersion), FormatVersion))
             {
-                var triggers = new MapCustomTextTriggers();
-                using (var reader = new BinaryReader(stream, new UTF8Encoding(false, true), leaveOpen))
+                if ((int)FormatVersion != NewFormatId)
                 {
-                    triggers._version = (MapCustomTextTriggersFormatVersion)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(MapCustomTextTriggersFormatVersion), triggers._version))
-                    {
-                        if ((int)triggers._version != NewFormatId)
-                        {
-                            throw new NotSupportedException($"Unknown version of '{FileName}': {triggers._version}");
-                        }
-
-                        triggers._version = reader.ReadInt32<MapCustomTextTriggersFormatVersion>();
-                        triggers._newFormat = true;
-                    }
-
-                    if (triggers._version >= MapCustomTextTriggersFormatVersion.Tft)
-                    {
-                        triggers._rootTriggerComment = reader.ReadChars();
-                        triggers._rootTriggerText = ParseCustomTextTriggerText(reader);
-                    }
-
-                    if (triggers._newFormat)
-                    {
-                        while (stream.Position < stream.Length)
-                        {
-                            triggers._customTextTriggers.Add(ParseCustomTextTriggerText(reader));
-                        }
-                    }
-                    else
-                    {
-                        var count = reader.ReadInt32();
-                        for (var i = 0; i < count; i++)
-                        {
-                            triggers._customTextTriggers.Add(ParseCustomTextTriggerText(reader));
-                        }
-                    }
+                    throw new NotSupportedException($"Unknown version of '{FileName}': {FormatVersion}");
                 }
 
-                return triggers;
+                FormatVersion = reader.ReadInt32<MapCustomTextTriggersFormatVersion>();
+                UseNewFormat = true;
             }
-            catch (DecoderFallbackException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file contains invalid characters.", e);
-            }
-            catch (EndOfStreamException e)
-            {
-                throw new InvalidDataException($"The '{FileName}' file is missing data, or its data is invalid.", e);
-            }
-            catch
-            {
-                throw;
-            }
-        }
 
-        public static void Serialize(MapCustomTextTriggers mapCustomTextTriggers, Stream stream, bool leaveOpen = false)
-        {
-            mapCustomTextTriggers.SerializeTo(stream, leaveOpen);
-        }
-
-        public void SerializeTo(Stream stream, bool leaveOpen = false)
-        {
-            using (var writer = new BinaryWriter(stream, new UTF8Encoding(false, true), leaveOpen))
+            if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
             {
-                if (_newFormat)
+                GlobalCustomScriptComment = reader.ReadChars();
+                GlobalCustomScriptCode = reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat);
+            }
+
+            if (UseNewFormat)
+            {
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    writer.Write(NewFormatId);
+                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat));
                 }
-
-                writer.Write((int)_version);
-                if (_version >= MapCustomTextTriggersFormatVersion.Tft)
+            }
+            else
+            {
+                nint customTextTriggerCount = reader.ReadInt32();
+                for (nint i = 0; i < customTextTriggerCount; i++)
                 {
-                    writer.WriteString(_rootTriggerComment);
-                    writer.Write(Encoding.UTF8.GetBytes(_rootTriggerText).Length);
-                    writer.WriteString(_rootTriggerText, false);
-                }
-
-                if (!_newFormat)
-                {
-                    writer.Write(_customTextTriggers.Count);
-                }
-
-                for (var i = 0; i < _customTextTriggers.Count; i++)
-                {
-                    var triggerText = _customTextTriggers[i];
-                    writer.Write(Encoding.UTF8.GetBytes(triggerText).Length);
-                    writer.WriteString(triggerText, false);
+                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat));
                 }
             }
         }
 
-        private static string ParseCustomTextTriggerText(BinaryReader reader)
+        internal void WriteTo(BinaryWriter writer, Encoding encoding)
         {
-            var length = reader.ReadInt32();
-            if (length == 0)
+            if (UseNewFormat)
             {
-                return string.Empty;
+                writer.Write(NewFormatId);
             }
 
-            var bytes = reader.ReadBytes(length);
-            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            writer.Write((int)FormatVersion);
+            if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
+            {
+                writer.WriteString(GlobalCustomScriptComment);
+                writer.Write(GlobalCustomScriptCode, encoding, FormatVersion, UseNewFormat);
+            }
+
+            if (!UseNewFormat)
+            {
+                writer.Write(CustomTextTriggers.Count);
+            }
+
+            foreach (var customTextTrigger in CustomTextTriggers)
+            {
+                writer.Write(customTextTrigger, encoding, FormatVersion, UseNewFormat);
+            }
         }
     }
 }
