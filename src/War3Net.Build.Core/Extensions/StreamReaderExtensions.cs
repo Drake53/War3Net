@@ -15,6 +15,6 @@ namespace War3Net.Build.Extensions
     {
         public static TriggerStrings ReadTriggerStrings(this StreamReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignTriggerStrings(reader) : new MapTriggerStrings(reader);
 
-        public static MapTriggerString ReadTriggerString(this StreamReader reader) => new MapTriggerString(reader);
+        public static TriggerString ReadTriggerString(this StreamReader reader) => new TriggerString(reader);
     }
 }

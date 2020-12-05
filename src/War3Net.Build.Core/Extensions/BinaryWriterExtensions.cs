@@ -8,9 +8,12 @@
 #pragma warning disable SA1600
 
 using System.IO;
+using System.Text;
 
 using War3Net.Build.Audio;
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -23,6 +26,20 @@ namespace War3Net.Build.Extensions
         public static void Write(this BinaryWriter writer, MapSounds mapSounds) => mapSounds.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, Sound sound, MapSoundsFormatVersion formatVersion) => sound.WriteTo(writer, formatVersion);
+
+        public static void Write(this BinaryWriter writer, Bitmask32 bitmask) => bitmask.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, Quadrilateral quadrilateral) => quadrilateral.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, RandomItemSet randomItemSet, MapInfoFormatVersion formatVersion) => randomItemSet.WriteTo(writer, formatVersion);
+
+        public static void Write(this BinaryWriter writer, RandomItemSet randomItemSet, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSet.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+
+        public static void Write(this BinaryWriter writer, RandomItemSetItem randomItemSetItem, MapInfoFormatVersion formatVersion) => randomItemSetItem.WriteTo(writer, formatVersion);
+
+        public static void Write(this BinaryWriter writer, RandomItemSetItem randomItemSetItem, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSetItem.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+
+        public static void Write(this BinaryWriter writer, RectangleMargins rectangleMargins) => rectangleMargins.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, MapCameras mapCameras) => mapCameras.WriteTo(writer);
 
@@ -66,8 +83,6 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, RandomUnitSet randomUnitSet, MapInfoFormatVersion formatVersion) => randomUnitSet.WriteTo(writer, formatVersion);
 
-        public static void Write(this BinaryWriter writer, RandomItemSet randomItemSet, MapInfoFormatVersion formatVersion) => randomItemSet.WriteTo(writer, formatVersion);
-
         public static void Write(this BinaryWriter writer, ObjectData objectData) => objectData.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, AbilityObjectData abilityObjectData) => abilityObjectData.WriteTo(writer);
@@ -96,9 +111,9 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, VariationObjectDataModification variationObjectDataModification, ObjectDataFormatVersion formatVersion) => variationObjectDataModification.WriteTo(writer, formatVersion);
 
-        public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers) => mapCustomTextTriggers.WriteTo(writer);
+        public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers, Encoding encoding) => mapCustomTextTriggers.WriteTo(writer, encoding);
 
-        public static void Write(this BinaryWriter writer, CustomTextTrigger customTextTrigger, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => customTextTrigger.WriteTo(writer, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, CustomTextTrigger customTextTrigger, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => customTextTrigger.WriteTo(writer, encoding, formatVersion, useNewFormat);
 
         public static void Write(this BinaryWriter writer, MapTriggers mapTriggers) => mapTriggers.WriteTo(writer);
 
@@ -112,18 +127,24 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, MapDoodads mapDoodads) => mapDoodads.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, MapDoodadData mapDoodadData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => mapDoodadData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, DoodadData mapDoodadData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => mapDoodadData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this BinaryWriter writer, MapSpecialDoodadData mapSpecialDoodadData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => mapSpecialDoodadData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, SpecialDoodadData mapSpecialDoodadData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, SpecialDoodadVersion specialDoodadVersion) => mapSpecialDoodadData.WriteTo(writer, formatVersion, subVersion, specialDoodadVersion);
 
         public static void Write(this BinaryWriter writer, MapUnits mapUnits) => mapUnits.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, MapUnitData mapUnitData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => mapUnitData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, UnitData mapUnitData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => mapUnitData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this BinaryWriter writer, DroppedItemSetData droppedItemSetData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => droppedItemSetData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, InventoryItemData inventoryItemData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => inventoryItemData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this BinaryWriter writer, InventoryItemData inventoryItemData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => inventoryItemData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, ModifiedAbilityData modifiedAbilityData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => modifiedAbilityData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this BinaryWriter writer, ModifiedAbilityData modifiedAbilityData, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => modifiedAbilityData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, RandomUnitData randomUnitData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomUnitData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+
+        public static void Write(this BinaryWriter writer, RandomUnitTableUnit randomUnitTableUnit, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomUnitTableUnit.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+
+        public static void Write(this BinaryWriter writer, ImportedFiles importedFiles) => importedFiles.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, ImportedFile importedFile, ImportedFilesFormatVersion formatVersion) => importedFile.WriteTo(writer, formatVersion);
     }
 }

@@ -8,9 +8,12 @@
 #pragma warning disable SA1600
 
 using System.IO;
+using System.Text;
 
 using War3Net.Build.Audio;
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -23,6 +26,20 @@ namespace War3Net.Build.Extensions
         public static MapSounds ReadMapSounds(this BinaryReader reader) => new MapSounds(reader);
 
         public static Sound ReadSound(this BinaryReader reader, MapSoundsFormatVersion formatVersion) => new Sound(reader, formatVersion);
+
+        public static Bitmask32 ReadBitmask32(this BinaryReader reader) => new Bitmask32(reader);
+
+        public static Quadrilateral ReadQuadrilateral(this BinaryReader reader) => new Quadrilateral(reader);
+
+        public static RandomItemSet ReadRandomItemSet(this BinaryReader reader, MapInfoFormatVersion formatVersion) => new RandomItemSet(reader, formatVersion);
+
+        public static RandomItemSet ReadRandomItemSet(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomItemSet(reader, formatVersion, subVersion, useNewFormat);
+
+        public static RandomItemSetItem ReadRandomItemSetItem(this BinaryReader reader, MapInfoFormatVersion formatVersion) => new RandomItemSetItem(reader, formatVersion);
+
+        public static RandomItemSetItem ReadRandomItemSetItem(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomItemSetItem(reader, formatVersion, subVersion, useNewFormat);
+
+        public static RectangleMargins ReadRectangleMargins(this BinaryReader reader) => new RectangleMargins(reader);
 
         public static MapCameras ReadMapCameras(this BinaryReader reader) => new MapCameras(reader);
 
@@ -64,9 +81,7 @@ namespace War3Net.Build.Extensions
 
         public static RandomItemTable ReadRandomItemTable(this BinaryReader reader, MapInfoFormatVersion formatVersion) => new RandomItemTable(reader, formatVersion);
 
-        public static RandomUnitSet ReadRandomUnitSet(this BinaryReader reader, MapInfoFormatVersion formatVersion) => new RandomUnitSet(reader, formatVersion);
-
-        public static RandomItemSet ReadRandomItemSet(this BinaryReader reader, MapInfoFormatVersion formatVersion) => new RandomItemSet(reader, formatVersion);
+        public static RandomUnitSet ReadRandomUnitSet(this BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize) => new RandomUnitSet(reader, formatVersion, setSize);
 
         public static ObjectData ReadObjectData(this BinaryReader reader, bool fromCampaign = false) => new ObjectData(reader, fromCampaign);
 
@@ -96,40 +111,50 @@ namespace War3Net.Build.Extensions
 
         public static VariationObjectDataModification ReadVariationObjectDataModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new VariationObjectDataModification(reader, formatVersion);
 
-        public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader) => new MapCustomTextTriggers(reader);
+        public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader, Encoding encoding) => new MapCustomTextTriggers(reader, encoding);
 
-        public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => new CustomTextTrigger(reader, formatVersion, useNewFormat);
+        public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => new CustomTextTrigger(reader, encoding, formatVersion, useNewFormat);
 
         public static MapTriggers ReadMapTriggers(this BinaryReader reader, TriggerData triggerData) => new MapTriggers(reader, triggerData);
 
-        public static DeletedTriggerItem ReadDeletedTriggerItem(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new DeletedTriggerItem(reader, triggerData, formatVersion, useNewFormat);
+        public static DeletedTriggerItem ReadDeletedTriggerItem(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new DeletedTriggerItem(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
 
-        public static TriggerCategoryDefinition ReadTriggerCategoryDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerCategoryDefinition(reader, triggerData, formatVersion, useNewFormat);
+        public static TriggerCategoryDefinition ReadTriggerCategoryDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerCategoryDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
 
-        public static TriggerDefinition ReadTriggerDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerDefinition(reader, triggerData, formatVersion, useNewFormat);
+        public static TriggerDefinition ReadTriggerDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
 
-        public static TriggerVariableDefinition ReadTriggerVariableDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerVariableDefinition(reader, triggerData, formatVersion, useNewFormat);
+        public static TriggerVariableDefinition ReadTriggerVariableDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerVariableDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
 
         public static VariableDefinition ReadVariableDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new VariableDefinition(reader, triggerData, formatVersion, useNewFormat);
 
-        public static TriggerFunction ReadTriggerFunction(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerFunction(reader, triggerData, formatVersion, useNewFormat);
+        public static TriggerFunction ReadTriggerFunction(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction) => new TriggerFunction(reader, triggerData, formatVersion, useNewFormat, isChildFunction);
 
         public static TriggerFunctionParameter ReadTriggerFunctionParameter(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerFunctionParameter(reader, triggerData, formatVersion, useNewFormat);
 
         public static MapDoodads ReadMapDoodads(this BinaryReader reader) => new MapDoodads(reader);
 
-        public static MapDoodadData ReadMapDoodadData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new MapDoodadData(reader, formatVersion, subVersion, useNewFormat);
+        public static DoodadData ReadMapDoodadData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, out bool useNewFormat) => new DoodadData(reader, formatVersion, subVersion, out useNewFormat);
 
-        public static MapSpecialDoodadData ReadMapSpecialDoodadData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new MapSpecialDoodadData(reader, formatVersion, subVersion, useNewFormat);
+        public static SpecialDoodadData ReadMapSpecialDoodadData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, SpecialDoodadVersion specialDoodadVersion) => new SpecialDoodadData(reader, formatVersion, subVersion, specialDoodadVersion);
 
         public static MapUnits ReadMapUnits(this BinaryReader reader) => new MapUnits(reader);
 
-        public static MapUnitData ReadMapUnitData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new MapUnitData(reader, formatVersion, subVersion, useNewFormat);
+        public static UnitData ReadMapUnitData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, out bool useNewFormat) => new UnitData(reader, formatVersion, subVersion, out useNewFormat);
 
-        public static DroppedItemSetData ReadDroppedItemSetData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new DroppedItemSetData(reader, formatVersion, subVersion, useNewFormat);
+        public static InventoryItemData ReadInventoryItemData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new InventoryItemData(reader, formatVersion, subVersion, useNewFormat);
 
-        public static InventoryItemData ReadInventoryItemData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new InventoryItemData(reader, formatVersion, subVersion, useNewFormat);
+        public static ModifiedAbilityData ReadModifiedAbilityData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new ModifiedAbilityData(reader, formatVersion, subVersion, useNewFormat);
 
-        public static ModifiedAbilityData ReadModifiedAbilityData(this BinaryReader reader, MapWidgetsVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new ModifiedAbilityData(reader, formatVersion, subVersion, useNewFormat);
+        public static RandomUnitAny ReadRandomUnitNeutral(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitAny(reader, formatVersion, subVersion, useNewFormat);
+
+        public static RandomUnitGlobalTable ReadRandomUnitGlobalTable(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitGlobalTable(reader, formatVersion, subVersion, useNewFormat);
+
+        public static RandomUnitCustomTable ReadRandomUnitCustomTable(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitCustomTable(reader, formatVersion, subVersion, useNewFormat);
+
+        public static RandomUnitTableUnit ReadRandomUnitTableUnit(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitTableUnit(reader, formatVersion, subVersion, useNewFormat);
+
+        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignImportedFiles(reader) : new MapImportedFiles(reader);
+
+        public static ImportedFile ReadImportedFile(this BinaryReader reader, ImportedFilesFormatVersion formatVersion) => new ImportedFile(reader, formatVersion);
     }
 }
