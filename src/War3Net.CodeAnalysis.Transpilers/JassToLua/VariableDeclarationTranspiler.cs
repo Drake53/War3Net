@@ -8,12 +8,15 @@
 using System;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void TranspileGlobal(this VariableDeclarationSyntax variableDeclarationNode, ref StringBuilder sb)
         {
             _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
@@ -22,12 +25,25 @@ namespace War3Net.CodeAnalysis.Transpilers
             variableDeclarationNode.ArrayDefinitionNode?.TranspileGlobal(ref sb);
         }
 
+        [Obsolete]
         public static void TranspileLocal(this VariableDeclarationSyntax variableDeclarationNode, ref StringBuilder sb)
         {
             _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
 
             variableDeclarationNode.VariableDefinitionNode?.TranspileLocal(ref sb);
             variableDeclarationNode.ArrayDefinitionNode?.TranspileLocal(ref sb);
+        }
+
+        public static LuaVariableListDeclarationSyntax TranspileToLua(this VariableDeclarationSyntax variableDeclarationNode, bool isLocalDeclaration)
+        {
+            _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
+
+            var declarator = variableDeclarationNode.VariableDefinitionNode?.TranspileToLua() ?? variableDeclarationNode.ArrayDefinitionNode.TranspileToLua();
+            declarator.IsLocalDeclaration = isLocalDeclaration;
+
+            var declaration = new LuaVariableListDeclarationSyntax();
+            declaration.Variables.Add(declarator);
+            return declaration;
         }
     }
 }

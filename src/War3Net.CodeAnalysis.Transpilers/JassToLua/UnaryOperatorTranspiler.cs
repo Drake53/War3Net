@@ -14,11 +14,19 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this UnaryOperatorSyntax unaryOperatorNode, ref StringBuilder sb)
         {
             _ = unaryOperatorNode ?? throw new ArgumentNullException(nameof(unaryOperatorNode));
 
             unaryOperatorNode.UnaryOperatorToken.TranspileUnaryOperator(ref sb);
+        }
+
+        public static string TranspileToLua(this UnaryOperatorSyntax unaryOperatorNode)
+        {
+            _ = unaryOperatorNode ?? throw new ArgumentNullException(nameof(unaryOperatorNode));
+
+            return unaryOperatorNode.UnaryOperatorToken.TranspileUnaryOperatorToLua();
         }
     }
 }

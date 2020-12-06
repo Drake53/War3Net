@@ -6,7 +6,11 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
+using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -14,6 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this ParameterListReferenceSyntax parameterListReferenceNode, ref StringBuilder sb)
         {
             _ = parameterListReferenceNode ?? throw new ArgumentNullException(nameof(parameterListReferenceNode));
@@ -32,6 +37,13 @@ namespace War3Net.CodeAnalysis.Transpilers
 
                 parameterNode.Transpile(ref sb);
             }
+        }
+
+        public static IEnumerable<LuaIdentifierNameSyntax> TranspileToLua(this ParameterListReferenceSyntax parameterListReferenceNode)
+        {
+            _ = parameterListReferenceNode ?? throw new ArgumentNullException(nameof(parameterListReferenceNode));
+
+            return parameterListReferenceNode.Select(parameterNode => parameterNode.TranspileToLua());
         }
     }
 }

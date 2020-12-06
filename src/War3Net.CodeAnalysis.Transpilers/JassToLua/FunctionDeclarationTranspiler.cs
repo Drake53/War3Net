@@ -15,6 +15,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this FunctionDeclarationSyntax functionDeclarationNode, ref StringBuilder sb)
         {
             _ = functionDeclarationNode ?? throw new ArgumentNullException(nameof(functionDeclarationNode));

@@ -6,7 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Text;
+
+using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -14,6 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this FileSyntax fileNode, ref StringBuilder sb, bool resetStringConcatenationHandler = true)
         {
             _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
@@ -32,6 +36,22 @@ namespace War3Net.CodeAnalysis.Transpilers
             {
                 TranspileStringConcatenationHandler.Reset();
             }
+        }
+
+        public static LuaCompilationUnitSyntax TranspileToLua(this FileSyntax fileNode, bool resetStringConcatenationHandler = true)
+        {
+            _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
+
+            var compilationUnit = new LuaCompilationUnitSyntax(hasGeneratedMark: false);
+            compilationUnit.Statements.AddRange(fileNode.DeclarationList.TranspileToLua());
+            compilationUnit.Statements.AddRange(fileNode.FunctionList.SelectMany(function => function.TranspileToLua()));
+
+            if (resetStringConcatenationHandler)
+            {
+                TranspileStringConcatenationHandler.Reset();
+            }
+
+            return compilationUnit;
         }
     }
 }

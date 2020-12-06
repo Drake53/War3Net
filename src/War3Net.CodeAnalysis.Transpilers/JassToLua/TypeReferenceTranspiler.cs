@@ -8,6 +8,8 @@
 using System;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -15,6 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this TypeReferenceSyntax typeReferenceNode, ref StringBuilder sb)
         {
             _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
@@ -25,6 +28,13 @@ namespace War3Net.CodeAnalysis.Transpilers
             {
                 TranspileStringConcatenationHandler.RegisterLocalStringVariable(typeReferenceNode.TypeReferenceNameToken.ValueText);
             }
+        }
+
+        public static LuaIdentifierNameSyntax TranspileToLua(this TypeReferenceSyntax typeReferenceNode)
+        {
+            _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
+
+            return typeReferenceNode.TypeReferenceNameToken.TranspileIdentifierToLua();
         }
     }
 }

@@ -8,18 +8,29 @@
 using System;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this GlobalDeclarationSyntax globalDeclarationNode, ref StringBuilder sb)
         {
             _ = globalDeclarationNode ?? throw new ArgumentNullException(nameof(globalDeclarationNode));
 
             globalDeclarationNode.ConstantDeclarationNode?.Transpile(ref sb);
             globalDeclarationNode.VariableDeclarationNode?.Transpile(ref sb);
+        }
+
+        public static LuaVariableListDeclarationSyntax TranspileToLua(this GlobalDeclarationSyntax globalDeclarationNode)
+        {
+            _ = globalDeclarationNode ?? throw new ArgumentNullException(nameof(globalDeclarationNode));
+
+            return globalDeclarationNode.ConstantDeclarationNode?.TranspileToLua()
+                ?? globalDeclarationNode.VariableDeclarationNode.TranspileToLua();
         }
     }
 }

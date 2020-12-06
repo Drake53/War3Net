@@ -14,6 +14,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this ElseClauseSyntax elseClauseNode, ref StringBuilder sb)
         {
             _ = elseClauseNode ?? throw new ArgumentNullException(nameof(elseClauseNode));

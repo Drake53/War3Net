@@ -21,6 +21,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         private static readonly Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
 
+        [Obsolete]
         public static void TranspileIdentifier(this TokenNode tokenNode, ref StringBuilder sb)
         {
             if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
@@ -35,21 +36,58 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        public static LuaIdentifierNameSyntax TranspileIdentifierToLua(this TokenNode tokenNode)
+        {
+            if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                return _reservedKeywords.Value.Contains(tokenNode.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
+                    : tokenNode.ValueText;
+            }
+            else
+            {
+                throw new ArgumentException($"Identifier token must have type {SyntaxTokenType.AlphanumericIdentifier}.");
+            }
+        }
+
+        [Obsolete]
         public static void TranspileUnaryOperator(this TokenNode tokenNode, ref StringBuilder sb)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
 
             switch (tokenNode.TokenType)
             {
-                case SyntaxTokenType.PlusOperator: sb.Append('+'); break;
-                case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
-                case SyntaxTokenType.NotOperator: sb.Append("not "); break;
+                case SyntaxTokenType.PlusOperator:
+                    sb.Append('+');
+                    break;
+                case SyntaxTokenType.MinusOperator:
+                    sb.Append('-');
+                    break;
+                case SyntaxTokenType.NotOperator:
+                    sb.Append("not ");
+                    break;
 
                 default:
                     throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression.");
             }
         }
 
+        public static string TranspileUnaryOperatorToLua(this TokenNode tokenNode)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            return tokenNode.TokenType switch
+            {
+                SyntaxTokenType.PlusOperator => LuaSyntaxNode.Tokens.Plus,
+                SyntaxTokenType.MinusOperator => LuaSyntaxNode.Tokens.Sub,
+                SyntaxTokenType.NotOperator => LuaSyntaxNode.Keyword.Not,
+
+                // todo: invalidenumargexc
+                _ => throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression."),
+            };
+        }
+
+        [Obsolete]
         public static void TranspileBinaryOperator(this TokenNode tokenNode, bool isString, ref StringBuilder sb)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
@@ -74,6 +112,31 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        public static string TranspileBinaryOperatorToLua(this TokenNode tokenNode, bool isString)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            return tokenNode.TokenType switch
+            {
+                SyntaxTokenType.PlusOperator => isString ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
+                SyntaxTokenType.MinusOperator => LuaSyntaxNode.Tokens.Sub,
+                SyntaxTokenType.MultiplicationOperator => LuaSyntaxNode.Tokens.Multiply,
+                SyntaxTokenType.DivisionOperator => LuaSyntaxNode.Tokens.Div, // todo: integerdiv?
+                SyntaxTokenType.GreaterThanOperator => ">",
+                SyntaxTokenType.LessThanOperator => "<",
+                SyntaxTokenType.EqualityOperator => LuaSyntaxNode.Tokens.EqualsEquals,
+                SyntaxTokenType.UnequalityOperator => LuaSyntaxNode.Tokens.NotEquals,
+                SyntaxTokenType.GreaterOrEqualOperator => ">=",
+                SyntaxTokenType.LessOrEqualOperator => "<=",
+                SyntaxTokenType.AndOperator => LuaSyntaxNode.Keyword.And,
+                SyntaxTokenType.OrOperator => LuaSyntaxNode.Keyword.Or,
+
+                // todo: invalidenumargexc
+                _ => throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a binary expression."),
+            };
+        }
+
+        [Obsolete]
         public static void TranspileExpression(this TokenNode tokenNode, ref StringBuilder sb)
         {
             _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
@@ -87,6 +150,22 @@ namespace War3Net.CodeAnalysis.Transpilers
             else
             {
                 sb.Append(tokenNode.GetConstantExpression());
+            }
+        }
+
+        public static LuaExpressionSyntax TranspileExpressionToLua(this TokenNode tokenNode)
+        {
+            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+
+            if (tokenNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                return _reservedKeywords.Value.Contains(tokenNode.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
+                    : tokenNode.ValueText;
+            }
+            else
+            {
+                return tokenNode.GetConstantExpression();
             }
         }
 

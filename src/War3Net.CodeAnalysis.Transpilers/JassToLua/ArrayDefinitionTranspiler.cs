@@ -9,6 +9,8 @@ using System;
 using System.ComponentModel;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -16,6 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void TranspileGlobal(this ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
         {
             _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
@@ -28,6 +31,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        [Obsolete]
         public static void TranspileLocal(this ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
         {
             _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
@@ -41,6 +45,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        [Obsolete]
         private static void Transpile(this ArrayDefinitionSyntax arrayDefinitionNode, ref StringBuilder sb)
         {
             arrayDefinitionNode.IdentifierNameNode.TranspileIdentifier(ref sb);
@@ -74,6 +79,22 @@ namespace War3Net.CodeAnalysis.Transpilers
 
                 default: throw new InvalidEnumArgumentException(nameof(tokenType), (int)tokenType, typeof(SyntaxTokenType));
             }
+        }
+
+        public static LuaVariableDeclaratorSyntax TranspileToLua(this ArrayDefinitionSyntax arrayDefinitionNode)
+        {
+            _ = arrayDefinitionNode ?? throw new ArgumentNullException(nameof(arrayDefinitionNode));
+
+            LuaExpressionSyntax equalsValueExpression = arrayDefinitionNode.TypeNameNode.TypeNameToken.TokenType switch
+            {
+                SyntaxTokenType.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", 0),
+                SyntaxTokenType.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", 0f),
+                SyntaxTokenType.StringKeyword => new LuaInvocationExpressionSyntax("__jarray", string.Empty),
+                SyntaxTokenType.BooleanKeyword => new LuaInvocationExpressionSyntax("__jarray", LuaIdentifierLiteralExpressionSyntax.False),
+                _ => new LuaTableExpression(),
+            };
+
+            return new LuaVariableDeclaratorSyntax(arrayDefinitionNode.IdentifierNameNode.TranspileIdentifierToLua(), equalsValueExpression);
         }
     }
 }

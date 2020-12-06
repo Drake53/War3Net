@@ -8,12 +8,15 @@
 using System;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this ElseifSyntax elseifNode, ref StringBuilder sb)
         {
             _ = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
@@ -30,6 +33,16 @@ namespace War3Net.CodeAnalysis.Transpilers
             {
                 sb.Append("end");
             }
+        }
+
+        public static LuaElseIfStatementSyntax TranspileToLua(this ElseifSyntax elseifNode)
+        {
+            _ = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
+
+            var elseif = new LuaElseIfStatementSyntax(elseifNode.ConditionExpressionNode.TranspileToLua());
+            elseif.Body.Statements.AddRange(elseifNode.StatementListNode.TranspileToLua());
+
+            return elseif;
         }
     }
 }

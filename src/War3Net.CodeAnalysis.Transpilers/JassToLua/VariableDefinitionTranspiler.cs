@@ -8,6 +8,8 @@
 using System;
 using System.Text;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -15,6 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void TranspileGlobal(this VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
         {
             _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
@@ -27,6 +30,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        [Obsolete]
         public static void TranspileLocal(this VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
         {
             _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
@@ -40,6 +44,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
+        [Obsolete]
         private static void Transpile(this VariableDefinitionSyntax variableDefinitionNode, ref StringBuilder sb)
         {
             variableDefinitionNode.IdentifierNameNode.TranspileIdentifier(ref sb);
@@ -51,6 +56,15 @@ namespace War3Net.CodeAnalysis.Transpilers
             {
                 sb.Append(" = nil");
             }
+        }
+
+        public static LuaVariableDeclaratorSyntax TranspileToLua(this VariableDefinitionSyntax variableDefinitionNode)
+        {
+            _ = variableDefinitionNode ?? throw new ArgumentNullException(nameof(variableDefinitionNode));
+
+            return variableDefinitionNode.EqualsValueClause is null
+                ? new LuaVariableDeclaratorSyntax(variableDefinitionNode.IdentifierNameNode.TranspileIdentifierToLua())
+                : new LuaVariableDeclaratorSyntax(variableDefinitionNode.IdentifierNameNode.TranspileIdentifierToLua(), variableDefinitionNode.EqualsValueClause.TranspileToLua());
         }
     }
 }

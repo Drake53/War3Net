@@ -14,7 +14,15 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public static partial class JassToLuaTranspiler
     {
+        [Obsolete]
         public static void Transpile(this TypeIdentifierSyntax typeIdentifierNode, ref StringBuilder sb)
+        {
+            // _ = typeIdentifierNode ?? throw new ArgumentNullException(nameof(typeIdentifierNode));
+
+            throw new NotSupportedException();
+        }
+
+        public static void TranspileToLua(this TypeIdentifierSyntax typeIdentifierNode)
         {
             // _ = typeIdentifierNode ?? throw new ArgumentNullException(nameof(typeIdentifierNode));
 
