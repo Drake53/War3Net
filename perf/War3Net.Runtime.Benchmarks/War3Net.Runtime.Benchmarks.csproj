@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Lua\War3Net.Runtime.Lua.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Lua\War3Net.Runtime.Lua.csproj" />
+    <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

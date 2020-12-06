@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.1.165" />
-    <PackageReference Include="MessagePackAnalyzer" Version="2.1.165" />
+    <PackageReference Include="MessagePack" Version="2.2.60" />
+    <PackageReference Include="MessagePackAnalyzer" Version="2.2.60" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Compression" Version="1.0.1" />
+    <PackageReference Include="War3Net.IO.Compression" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
