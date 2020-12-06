@@ -44,11 +44,7 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static void TestParseMapTriggers(string mapTriggersFilePath)
         {
-            using var original = FileProvider.GetFile(mapTriggersFilePath);
-            using var recreated = new MemoryStream();
-
-            MapTriggers.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(mapTriggersFilePath, typeof(MapTriggers), additionalReadParameters: TriggerData.Default);
         }
 
         private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.RoC);
@@ -66,7 +62,7 @@ namespace War3Net.Build.Core.Tests.Script
 
                 if (original.Length >= 8)
                 {
-                    if (reader.ReadInt32() == MapTriggers.FileFormatHeader)
+                    if (reader.ReadInt32() == MapTriggers.FileFormatSignature)
                     {
                         var actualVersion = (MapTriggersFormatVersion?)reader.ReadInt32();
                         if (!Enum.IsDefined(typeof(MapTriggersFormatVersion), actualVersion))
@@ -92,7 +88,7 @@ namespace War3Net.Build.Core.Tests.Script
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapTriggers.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

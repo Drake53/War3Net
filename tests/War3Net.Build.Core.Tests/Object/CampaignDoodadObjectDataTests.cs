@@ -11,10 +11,11 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Extensions;
+using War3Net.Build.Object;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Object
+namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class CampaignDoodadObjectDataTests
@@ -23,11 +24,7 @@ namespace War3Net.Build.Object
         [DynamicData(nameof(GetCampaignDoodadObjectData), DynamicDataSourceType.Method)]
         public void TestParseCampaignDoodadObjectData(string campaignDoodadObjectDataFilePath)
         {
-            using var original = FileProvider.GetFile(campaignDoodadObjectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            CampaignDoodadObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true, true);
+            ParseTestHelper.RunBinaryRWTest(campaignDoodadObjectDataFilePath, typeof(CampaignDoodadObjectData), nameof(BinaryReaderExtensions.ReadDoodadObjectData), true);
         }
 
         private static IEnumerable<object[]> GetCampaignDoodadObjectData()
@@ -39,7 +36,7 @@ namespace War3Net.Build.Object
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 CampaignDoodadObjectData.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Campaigns"));
         }
     }

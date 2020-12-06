@@ -11,10 +11,11 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Extensions;
+using War3Net.Build.Object;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Object
+namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class MapDestructableObjectDataTests
@@ -23,11 +24,7 @@ namespace War3Net.Build.Object
         [DynamicData(nameof(GetMapDestructableObjectData), DynamicDataSourceType.Method)]
         public void TestParseMapDestructableObjectData(string mapDestructableObjectDataFilePath)
         {
-            using var original = FileProvider.GetFile(mapDestructableObjectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            MapDestructableObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true, true);
+            ParseTestHelper.RunBinaryRWTest(mapDestructableObjectDataFilePath, typeof(MapDestructableObjectData), nameof(BinaryReaderExtensions.ReadDestructableObjectData), false);
         }
 
         private static IEnumerable<object[]> GetMapDestructableObjectData()
@@ -39,7 +36,7 @@ namespace War3Net.Build.Object
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapDestructableObjectData.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

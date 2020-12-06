@@ -11,10 +11,11 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Extensions;
+using War3Net.Build.Object;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Object
+namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class MapUpgradeObjectDataTests
@@ -23,11 +24,7 @@ namespace War3Net.Build.Object
         [DynamicData(nameof(GetMapUpgradeObjectData), DynamicDataSourceType.Method)]
         public void TestParseMapUpgradeObjectData(string mapUpgradeObjectDataFilePath)
         {
-            using var original = FileProvider.GetFile(mapUpgradeObjectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            MapUpgradeObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true, true);
+            ParseTestHelper.RunBinaryRWTest(mapUpgradeObjectDataFilePath, typeof(MapUpgradeObjectData), nameof(BinaryReaderExtensions.ReadUpgradeObjectData), false);
         }
 
         private static IEnumerable<object[]> GetMapUpgradeObjectData()
@@ -39,7 +36,7 @@ namespace War3Net.Build.Object
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapUpgradeObjectData.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

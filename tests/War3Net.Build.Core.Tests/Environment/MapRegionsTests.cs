@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Environment
         [DynamicData(nameof(GetRegionFiles), DynamicDataSourceType.Method)]
         public void TestParseMapRegions(string regionsFilePath)
         {
-            using var original = FileProvider.GetFile(regionsFilePath);
-            using var recreated = new MemoryStream();
-
-            MapRegions.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(regionsFilePath, typeof(MapRegions));
         }
 
         private static IEnumerable<object[]> GetRegionFiles()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Environment
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapRegions.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

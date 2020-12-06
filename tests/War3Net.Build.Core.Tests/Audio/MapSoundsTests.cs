@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Audio;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Audio
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Audio
         [DynamicData(nameof(GetDefaultAudioFiles), DynamicDataSourceType.Method)]
         public void TestParseMapAudio(string mapSoundsFilePath)
         {
-            using var original = FileProvider.GetFile(mapSoundsFilePath);
-            using var recreated = new MemoryStream();
-
-            MapSounds.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(mapSoundsFilePath, typeof(MapSounds));
         }
 
         private static IEnumerable<object[]> GetDefaultAudioFiles()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Audio
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapSounds.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

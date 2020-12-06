@@ -11,10 +11,11 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Extensions;
+using War3Net.Build.Object;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Object
+namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class CampaignAbilityObjectDataTests
@@ -23,11 +24,7 @@ namespace War3Net.Build.Object
         [DynamicData(nameof(GetCampaignAbilityObjectData), DynamicDataSourceType.Method)]
         public void TestParseCampaignAbilityObjectData(string campaignAbilityObjectDataFilePath)
         {
-            using var original = FileProvider.GetFile(campaignAbilityObjectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            CampaignAbilityObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true, true);
+            ParseTestHelper.RunBinaryRWTest(campaignAbilityObjectDataFilePath, typeof(CampaignAbilityObjectData), nameof(BinaryReaderExtensions.ReadAbilityObjectData), true);
         }
 
         private static IEnumerable<object[]> GetCampaignAbilityObjectData()
@@ -39,7 +36,7 @@ namespace War3Net.Build.Object
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 CampaignAbilityObjectData.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Campaigns"));
         }
     }

@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Environment
         [DynamicData(nameof(GetPathingMapFiles), DynamicDataSourceType.Method)]
         public void TestParsePathingMap(string pathingMapFile)
         {
-            using var original = FileProvider.GetFile(pathingMapFile);
-            using var recreated = new MemoryStream();
-
-            PathingMap.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(pathingMapFile, typeof(PathingMap));
         }
 
         private static IEnumerable<object[]> GetPathingMapFiles()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Environment
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 PathingMap.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

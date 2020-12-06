@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Environment
         [DynamicData(nameof(GetCameraFiles), DynamicDataSourceType.Method)]
         public void TestParseMapCameras(string camerasFilePath)
         {
-            using var original = FileProvider.GetFile(camerasFilePath);
-            using var recreated = new MemoryStream();
-
-            MapCameras.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(camerasFilePath, typeof(MapCameras));
         }
 
         private static IEnumerable<object[]> GetCameraFiles()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Environment
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapCameras.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

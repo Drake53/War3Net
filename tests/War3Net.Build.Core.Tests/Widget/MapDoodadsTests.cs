@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Widget;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Widget
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Widget
         [DynamicData(nameof(GetMapDoodadsData), DynamicDataSourceType.Method)]
         public void TestParseMapDoodads(string mapDoodadsFilePath)
         {
-            using var original = FileProvider.GetFile(mapDoodadsFilePath);
-            using var recreated = new MemoryStream();
-
-            MapDoodads.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(mapDoodadsFilePath, typeof(MapDoodads));
         }
 
         private static IEnumerable<object[]> GetMapDoodadsData()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Widget
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapDoodads.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

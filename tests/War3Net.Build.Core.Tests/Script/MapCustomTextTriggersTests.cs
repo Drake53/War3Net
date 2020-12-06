@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -44,11 +45,7 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static void TestParseMapCustomTextTriggers(string mapCustomTextTriggersFilePath)
         {
-            using var original = FileProvider.GetFile(mapCustomTextTriggersFilePath);
-            using var recreated = new MemoryStream();
-
-            MapCustomTextTriggers.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(mapCustomTextTriggersFilePath, typeof(MapCustomTextTriggers), additionalReadParameters: new object[] { Encoding.UTF8 }, additionalWriteParameters: new object[] { Encoding.UTF8 });
         }
 
         private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.RoC);
@@ -89,7 +86,7 @@ namespace War3Net.Build.Core.Tests.Script
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapCustomTextTriggers.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }

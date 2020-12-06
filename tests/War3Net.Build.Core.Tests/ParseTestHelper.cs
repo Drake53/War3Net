@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,44 +20,72 @@ namespace War3Net.Build.Core.Tests
 {
     internal static class ParseTestHelper
     {
-        internal static void RunBinaryRWTest(string filePath, Type type, string? readMethodName = null, params object[] additionalReadParameters)
+        internal static void RunBinaryRWTest(
+            string filePath,
+            Type type,
+            string? readMethodName = null,
+            params object?[]? additionalReadParameters)
         {
-            using var expectedStream = FileProvider.GetFile(filePath);
-            using var reader = new BinaryReader(expectedStream);
+            RunBinaryRWTest(filePath, type, readMethodName, additionalReadParameters);
+        }
 
-            using var actualStream = new MemoryStream();
-            using var writer = new BinaryWriter(actualStream);
-
+        internal static void RunBinaryRWTest(
+            string filePath,
+            Type type,
+            string? readMethodName = null,
+            object?[]? additionalReadParameters = null,
+            object?[]? additionalWriteParameters = null)
+        {
             var readMethod = typeof(BinaryReaderExtensions).GetMethod(readMethodName ?? $"Read{type.Name}");
             Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
 
-            var writeMethod = typeof(BinaryWriterExtensions).GetMethod("Write", new[] { typeof(BinaryWriter), type });
+            var expectedTypes = new[] { typeof(BinaryWriter), type };
+            if (additionalWriteParameters is not null)
+            {
+                expectedTypes = expectedTypes.Concat(additionalWriteParameters.Select(p => p.GetType())).ToArray();
+            }
+
+            var writeMethod = typeof(BinaryWriterExtensions).GetMethod(nameof(BinaryWriter.Write), expectedTypes);
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
-            var parsedFile = readMethod!.Invoke(null, new[] { reader }.Concat(additionalReadParameters).ToArray());
-            var recreatedFile = writeMethod!.Invoke(null, new[] { writer, parsedFile });
+            using var expectedStream = FileProvider.GetFile(filePath);
+            using var reader = new BinaryReader(expectedStream);
+            var parsedFile = readMethod!.Invoke(null, new object?[] { reader }.Concat(additionalReadParameters ?? Array.Empty<object?[]>()).ToArray());
+            Assert.AreEqual(type, parsedFile.GetType());
+
+            using var actualStream = new MemoryStream();
+            using var writer = new BinaryWriter(actualStream);
+            writeMethod!.Invoke(null, new object?[] { writer, parsedFile }.Concat(additionalWriteParameters ?? Array.Empty<object?[]>()).ToArray());
+            writer.Flush();
 
             StreamAssert.AreEqual(expectedStream, actualStream, true);
         }
 
-        internal static void RunStreamRWTest(string filePath, Type type, string? readMethodName = null, params object[] additionalReadParameters)
+        internal static void RunStreamRWTest(
+            string filePath,
+            Type type,
+            Encoding? encoding = null,
+            string? readMethodName = null,
+            string writeMethodName = nameof(StreamWriter.Write),
+            params object[] additionalReadParameters)
         {
-            using var expectedStream = FileProvider.GetFile(filePath);
-            using var reader = new StreamReader(expectedStream);
-
-            using var actualStream = new MemoryStream();
-            using var writer = new StreamWriter(actualStream);
-
             var readMethod = typeof(StreamReaderExtensions).GetMethod(readMethodName ?? $"Read{type.Name}");
             Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
 
-            var writeMethod = typeof(StreamWriterExtensions).GetMethod("Write", new[] { typeof(StreamWriter), type });
+            var writeMethod = typeof(StreamWriterExtensions).GetMethod(writeMethodName, new[] { typeof(StreamWriter), type });
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
+            using var expectedStream = FileProvider.GetFile(filePath);
+            using var reader = new StreamReader(expectedStream, encoding ?? new UTF8Encoding(false, true));
             var parsedFile = readMethod!.Invoke(null, new[] { reader }.Concat(additionalReadParameters).ToArray());
-            var recreatedFile = writeMethod!.Invoke(null, new[] { writer, parsedFile });
+            Assert.AreEqual(type, parsedFile.GetType());
 
-            StreamAssert.AreEqual(expectedStream, actualStream, true);
+            using var actualStream = new MemoryStream();
+            using var writer = new StreamWriter(actualStream, reader.CurrentEncoding);
+            writeMethod!.Invoke(null, new[] { writer, parsedFile });
+            writer.Flush();
+
+            StreamAssert.AreEqualText(expectedStream, actualStream, true);
         }
     }
 }

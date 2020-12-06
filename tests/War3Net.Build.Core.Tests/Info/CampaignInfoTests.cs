@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Info
 {
@@ -24,11 +23,7 @@ namespace War3Net.Build.Core.Tests.Info
         [DynamicData(nameof(GetCampaignInfoData), DynamicDataSourceType.Method)]
         public void TestParseCampaignInfo(string campaignInfoFilePath)
         {
-            using var original = FileProvider.GetFile(campaignInfoFilePath);
-            using var recreated = new MemoryStream();
-
-            CampaignInfo.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(campaignInfoFilePath, typeof(CampaignInfo));
         }
 
         private static IEnumerable<object[]> GetCampaignInfoData()
@@ -40,7 +35,7 @@ namespace War3Net.Build.Core.Tests.Info
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 CampaignInfo.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Campaigns"));
         }
     }

@@ -11,10 +11,11 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Extensions;
+using War3Net.Build.Object;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
-namespace War3Net.Build.Object
+namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class CampaignDestructableObjectDataTests
@@ -23,11 +24,7 @@ namespace War3Net.Build.Object
         [DynamicData(nameof(GetCampaignDestructableObjectData), DynamicDataSourceType.Method)]
         public void TestParseCampaignDestructableObjectData(string campaignDestructableObjectDataFilePath)
         {
-            using var original = FileProvider.GetFile(campaignDestructableObjectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            CampaignDestructableObjectData.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true, true);
+            ParseTestHelper.RunBinaryRWTest(campaignDestructableObjectDataFilePath, typeof(CampaignDestructableObjectData), nameof(BinaryReaderExtensions.ReadDestructableObjectData), true);
         }
 
         private static IEnumerable<object[]> GetCampaignDestructableObjectData()
@@ -39,7 +36,7 @@ namespace War3Net.Build.Object
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 CampaignDestructableObjectData.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Campaigns"));
         }
     }
