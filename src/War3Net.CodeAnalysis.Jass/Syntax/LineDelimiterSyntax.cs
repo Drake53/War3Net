@@ -22,6 +22,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _lines = new List<EndOfLineSyntax>(nodes);
         }
 
+        public List<EndOfLineSyntax> Lines => _lines;
+
         public IEnumerator<EndOfLineSyntax> GetEnumerator()
         {
             return ((IEnumerable<EndOfLineSyntax>)_lines).GetEnumerator();

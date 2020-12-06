@@ -25,7 +25,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                         StatementList(ifBody),
                         Empty(),
                         Token(SyntaxTokenType.EndifKeyword))),
-                Newlines());
+                Newlines(2));
         }
 
         public static NewStatementSyntax IfStatement(NewExpressionSyntax condition, ElseClauseSyntax elseClause, params NewStatementSyntax[] ifBody)
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                         StatementList(ifBody),
                         elseClause,
                         Token(SyntaxTokenType.EndifKeyword))),
-                Newlines());
+                Newlines(2));
         }
 
         public static NewStatementSyntax IfStatement(params (NewExpressionSyntax condition, NewStatementSyntax[] body)[] ifElseifBlocks)
