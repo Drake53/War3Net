@@ -66,7 +66,12 @@ namespace War3Net.IO.Mpq
 
         public void SaveTo(Stream stream, bool leaveOpen = false)
         {
-            MpqArchive.Create(stream, GetMpqFiles().ToArray(), _originalHashTableSize, leaveOpen: leaveOpen).Dispose();
+            var options = new MpqArchiveCreateOptions
+            {
+                HashTableSize = _originalHashTableSize,
+            };
+
+            MpqArchive.Create(stream, GetMpqFiles().ToArray(), options, leaveOpen).Dispose();
         }
 
         /// <inheritdoc/>
@@ -79,7 +84,7 @@ namespace War3Net.IO.Mpq
         {
             return _modifiedFiles.Concat(_originalFiles.Where(originalFile =>
                 !_removedFiles.Contains(originalFile.Name) &&
-                !_modifiedFiles.Where(modifiedFile => modifiedFile.IsSameAs(originalFile)).Any()));
+                !_modifiedFiles.Where(modifiedFile => modifiedFile.Equals(originalFile)).Any()));
         }
     }
 }

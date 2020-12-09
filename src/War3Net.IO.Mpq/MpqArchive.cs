@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using War3Net.IO.Mpq.Extensions;
+
 namespace War3Net.IO.Mpq
 {
     /// <summary>
@@ -20,11 +22,6 @@ namespace War3Net.IO.Mpq
     /// </summary>
     public sealed class MpqArchive : IDisposable, IEnumerable<MpqEntry>
     {
-        /// <summary>
-        /// Default value for an <see cref="MpqArchive"/>'s blocksize.
-        /// </summary>
-        public const ushort DefaultBlockSize = 3;
-
         // The MPQ header will always start at an offset aligned to 512 bytes.
         private const int PreArchiveAlignBytes = 0x200;
         private const int BlockSizeModifier = 0x200;
@@ -83,24 +80,85 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="sourceStream">The <see cref="Stream"/> containing pre-archive data. Can be null.</param>
         /// <param name="inputFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
-        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
-        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
-        /// <param name="writeArchiveFirst">If true, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.</param>
+        /// <param name="createOptions"></param>
         /// <param name="leaveOpen">If <see langword="false"/>, the given <paramref name="sourceStream"/> will be disposed when the <see cref="MpqArchive"/> is disposed.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public MpqArchive(Stream? sourceStream, IEnumerable<MpqFile> inputFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool writeArchiveFirst = true, bool leaveOpen = false)
+        public MpqArchive(Stream? sourceStream, IEnumerable<MpqFile> inputFiles, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
         {
+            if (inputFiles is null)
+            {
+                throw new ArgumentNullException(nameof(inputFiles));
+            }
+
+            if (createOptions is null)
+            {
+                throw new ArgumentNullException(nameof(createOptions));
+            }
+
             _isStreamOwner = !leaveOpen;
             _baseStream = AlignStream(sourceStream);
 
             _headerOffset = _baseStream.Position;
-            _blockSize = BlockSizeModifier << blockSize;
-            _archiveFollowsHeader = writeArchiveFirst;
+            _blockSize = BlockSizeModifier << createOptions.BlockSize;
+            _archiveFollowsHeader = createOptions.WriteArchiveFirst;
 
-            var mpqFiles = inputFiles?.Where(mpqFile => !(mpqFile is MpqOrphanedFile)).ToList() ?? throw new ArgumentNullException(nameof(inputFiles));
+            var haveListFile = false;
+            var haveAttributes = false;
+            var mpqFiles = new HashSet<MpqFile>(MpqFileComparer.Default);
+            foreach (var mpqFile in inputFiles)
+            {
+                if (mpqFile is MpqOrphanedFile)
+                {
+                    continue;
+                }
+
+                if (mpqFile.Name == MpqHash.GetHashedFileName(ListFile.FileName))
+                {
+                    if (createOptions.ListFileCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        haveListFile = true;
+                    }
+                }
+
+                if (mpqFile.Name == MpqHash.GetHashedFileName(Attributes.FileName))
+                {
+                    if (createOptions.AttributesCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        haveAttributes = true;
+                    }
+                }
+
+                if (!mpqFiles.Add(mpqFile))
+                {
+                    // todo: logging?
+                }
+            }
+
             var fileCount = (uint)mpqFiles.Count;
 
-            _hashTable = new HashTable(Math.Max(hashTableSize ?? fileCount * 8, fileCount));
+            var wantGenerateListFile = !haveListFile && createOptions.ListFileCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
+            var listFile = wantGenerateListFile ? new ListFile() : null;
+            if (wantGenerateListFile)
+            {
+                fileCount++;
+            }
+
+            var wantGenerateAttributes = !haveAttributes && createOptions.AttributesCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
+            var attributes = wantGenerateAttributes ? new Attributes(createOptions) : null;
+            if (wantGenerateAttributes)
+            {
+                fileCount++;
+            }
+
+            _hashTable = new HashTable(Math.Max(createOptions.HashTableSize ?? fileCount * 8, fileCount));
             _blockTable = new BlockTable();
 
             using (var writer = new BinaryWriter(_baseStream, new UTF8Encoding(false, true), true))
@@ -114,6 +172,54 @@ namespace War3Net.IO.Mpq
 
                 // var gaps = new List<(long Start, long Length)>();
                 var endOfStream = _baseStream.Position;
+
+
+                void InsertMpqFile(MpqFile mpqFile, bool updateEndOfStream, bool allowMultiple = true)
+                {
+                    if (listFile is not null && mpqFile is MpqKnownFile knownFile)
+                    {
+                        listFile.FileNames.Add(knownFile.FileName);
+                    }
+
+                    mpqFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
+                    var hashTableEntries = _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
+                    if (!allowMultiple && hashTableEntries > 1)
+                    {
+                        throw new Exception();
+                    }
+
+                    var crc32 = 0;
+                    if (attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32) && allowMultiple)
+                    {
+                        mpqFile.MpqStream.Position = 0;
+                        crc32 = new Ionic.Crc.CRC32().GetCrc32(mpqFile.MpqStream);
+                    }
+
+                    for (var i = 0; i < hashTableEntries; i++)
+                    {
+                        _blockTable.Add(mpqEntry);
+                        if (attributes is not null)
+                        {
+                            if (attributes.Flags.HasFlag(AttributesFlags.Crc32))
+                            {
+                                attributes.Crc32s.Add(crc32);
+                            }
+
+                            if (attributes.Flags.HasFlag(AttributesFlags.DateTime))
+                            {
+                                attributes.DateTimes.Add(DateTime.Now);
+                            }
+                        }
+                    }
+
+                    mpqFile.Dispose();
+
+                    fileIndex += hashTableEntries;
+                    if (updateEndOfStream)
+                    {
+                        endOfStream = _baseStream.Position;
+                    }
+                }
 
                 // Find files that cannot be decrypted, and need to have a specific position in the archive, because that position is used to calculate the encryption seed.
                 var mpqFixedPositionFiles = mpqFiles.Where(mpqFile => mpqFile.IsFilePositionFixed).OrderBy(mpqFile => mpqFile.MpqStream.FilePosition).ToArray();
@@ -139,22 +245,11 @@ namespace War3Net.IO.Mpq
                             writer.Seek((int)gapSize, SeekOrigin.Current);
                         }
 
-                        mpqFixedPositionFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
-                        var hashTableEntries = _hashTable.Add(mpqHash, mpqFixedPositionFile.HashIndex, mpqFixedPositionFile.HashCollisions);
-                        for (var i = 0; i < hashTableEntries; i++)
-                        {
-                            _blockTable.Add(mpqEntry);
-                        }
-
-                        mpqFixedPositionFile.Dispose();
-
-                        fileIndex += hashTableEntries;
-                        endOfStream = _baseStream.Position;
+                        InsertMpqFile(mpqFixedPositionFile, true);
                     }
                 }
 
-                mpqFiles.RemoveAll(mpqFile => mpqFile.IsFilePositionFixed);
-                foreach (var mpqFile in mpqFiles)
+                foreach (var mpqFile in mpqFiles.Where(mpqFile => !mpqFile.IsFilePositionFixed))
                 {
                     // TODO: insert files into the gaps
                     // need to know compressed size of file first, and if file is also encrypted with blockoffsetadjustedkey, encryption needs to happen after gap selection
@@ -165,20 +260,41 @@ namespace War3Net.IO.Mpq
                     var selectedGap = false;
                     _baseStream.Position = selectedPosition;
 
-                    mpqFile.AddToArchive(this, fileIndex, out var mpqEntry, out var mpqHash);
-                    var hashTableEntries = _hashTable.Add(mpqHash, mpqFile.HashIndex, mpqFile.HashCollisions);
-                    for (var i = 0; i < hashTableEntries; i++)
+                    InsertMpqFile(mpqFile, !selectedGap);
+                }
+
+                if (listFile is not null)
+                {
+                    _baseStream.Position = endOfStream;
+
+                    using var listFileStream = new MemoryStream();
+                    using var listFileWriter = new StreamWriter(listFileStream);
+                    listFileWriter.WriteListFile(listFile);
+                    listFileWriter.Flush();
+
+                    InsertMpqFile(MpqFile.New(listFileStream, ListFile.FileName), true);
+                }
+
+                if (attributes is not null)
+                {
+                    _baseStream.Position = endOfStream;
+
+                    if (attributes.Flags.HasFlag(AttributesFlags.Crc32))
                     {
-                        _blockTable.Add(mpqEntry);
+                        attributes.Crc32s.Add(0);
                     }
 
-                    mpqFile.Dispose();
-
-                    fileIndex += hashTableEntries;
-                    if (!selectedGap)
+                    if (attributes.Flags.HasFlag(AttributesFlags.DateTime))
                     {
-                        endOfStream = _baseStream.Position;
+                        attributes.DateTimes.Add(DateTime.Now);
                     }
+
+                    using var attributesStream = new MemoryStream();
+                    using var attributesWriter = new BinaryWriter(attributesStream);
+                    attributesWriter.Write(attributes);
+                    attributesWriter.Flush();
+
+                    InsertMpqFile(MpqFile.New(attributesStream, Attributes.FileName), true, false);
                 }
 
                 _baseStream.Position = endOfStream;
@@ -195,7 +311,7 @@ namespace War3Net.IO.Mpq
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, blockSize, _archiveFollowsHeader);
+                _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, createOptions.BlockSize, _archiveFollowsHeader);
                 _mpqHeader.WriteTo(writer);
             }
         }
@@ -281,11 +397,10 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="path">The path and name of the <see cref="MpqArchive"/> to create.</param>
         /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
-        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
-        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <param name="createOptions"></param>
         /// <returns>An <see cref="MpqArchive"/> created as a new file at the specified <paramref name="path"/>.</returns>
         /// <exception cref="IOException">Thrown when unable to create a <see cref="FileStream"/> from the given <paramref name="path"/>.</exception>
-        public static MpqArchive Create(string path, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize)
+        public static MpqArchive Create(string path, IEnumerable<MpqFile> mpqFiles, MpqArchiveCreateOptions createOptions)
         {
             FileStream fileStream;
 
@@ -298,7 +413,7 @@ namespace War3Net.IO.Mpq
                 throw new IOException($"Failed to create a {nameof(FileStream)} at {path}", exception);
             }
 
-            return Create(fileStream, mpqFiles, hashTableSize, blockSize, false);
+            return Create(fileStream, mpqFiles, createOptions, false);
         }
 
         /// <summary>
@@ -306,14 +421,13 @@ namespace War3Net.IO.Mpq
         /// </summary>
         /// <param name="sourceStream">The <see cref="Stream"/> containing pre-archive data. Can be null.</param>
         /// <param name="mpqFiles">The <see cref="MpqFile"/>s that should be added to the archive.</param>
-        /// <param name="hashTableSize">The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.</param>
-        /// <param name="blockSize">The size of blocks in compressed files, which is used to enable seeking.</param>
+        /// <param name="createOptions"></param>
         /// <param name="leaveOpen">If <see langword="false"/>, the given <paramref name="sourceStream"/> will be disposed when the <see cref="MpqArchive"/> is disposed.</param>
         /// <returns>An <see cref="MpqArchive"/> that is created.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="mpqFiles"/> collection is null.</exception>
-        public static MpqArchive Create(Stream? sourceStream, ICollection<MpqFile> mpqFiles, ushort? hashTableSize = null, ushort blockSize = DefaultBlockSize, bool leaveOpen = false)
+        public static MpqArchive Create(Stream? sourceStream, IEnumerable<MpqFile> mpqFiles, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
         {
-            return new MpqArchive(sourceStream, mpqFiles, hashTableSize, blockSize, leaveOpen: leaveOpen);
+            return new MpqArchive(sourceStream, mpqFiles, createOptions, leaveOpen);
         }
 
         /// <summary>
@@ -520,12 +634,12 @@ namespace War3Net.IO.Mpq
         /// <returns>True if a <see cref="ListFile"/> exists, false otherwise.</returns>
         public bool AddListfileFilenames()
         {
-            if (!TryAddFilename(ListFile.Key))
+            if (!TryAddFilename(ListFile.FileName))
             {
                 return false;
             }
 
-            using (Stream s = OpenFile(ListFile.Key))
+            using (Stream s = OpenFile(ListFile.FileName))
             {
                 AddFilenames(s);
             }

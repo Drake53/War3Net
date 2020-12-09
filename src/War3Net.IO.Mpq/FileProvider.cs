@@ -55,7 +55,7 @@ namespace War3Net.IO.Mpq
             {
                 // Assume file at path is an mpq archive.
                 var archive = MpqArchive.Open(path);
-                var listfile = archive.OpenFile(ListFile.Key);
+                var listfile = archive.OpenFile(ListFile.FileName);
 
                 using (var reader = new StreamReader(listfile))
                 {
