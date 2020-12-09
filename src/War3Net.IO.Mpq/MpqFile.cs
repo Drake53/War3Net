@@ -10,7 +10,7 @@ using System.IO;
 
 namespace War3Net.IO.Mpq
 {
-    public abstract class MpqFile : IDisposable
+    public abstract class MpqFile : IDisposable, IComparable, IComparable<MpqFile>, IEquatable<MpqFile>
     {
         private readonly ulong? _name;
         private readonly MpqStream _mpqStream;
@@ -31,7 +31,7 @@ namespace War3Net.IO.Mpq
             _compressionType = MpqCompressionType.ZLib;
         }
 
-        public ulong Name => _name.Value;
+        public ulong Name => _name.GetValueOrDefault(default(ulong));
 
         public MpqStream MpqStream => _mpqStream;
 
@@ -256,11 +256,24 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        public bool IsSameAs(MpqFile other)
+        public int CompareTo(object? value)
         {
-            return _name.HasValue && other._name.HasValue
-                ? _name.Value == other._name.Value && _locale == other._locale
-                : false;
+            return MpqFileComparer.Default.Compare(this, value);
+        }
+
+        public int CompareTo(MpqFile? mpqFile)
+        {
+            return MpqFileComparer.Default.Compare(this, mpqFile);
+        }
+
+        public bool Equals(MpqFile? other)
+        {
+            return MpqFileComparer.Default.Equals(this, other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_name, _locale);
         }
 
         internal void AddToArchive(MpqArchive mpqArchive, uint index, out MpqEntry mpqEntry, out MpqHash mpqHash)
