@@ -6,65 +6,112 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.IO.Mpq
 {
-    public static class Attributes
+    public sealed class Attributes
     {
-        public const string Key = "(attributes)";
+        public const string FileName = "(attributes)";
 
-        public static bool VerifyAttributes(this MpqArchive archive)
+        internal Attributes(MpqArchiveCreateOptions mpqArchiveCreateOptions)
         {
-            if (archive.TryAddFilename(Key))
+            Unk = 100;
+            Flags = mpqArchiveCreateOptions.AttributesFlags;
+        }
+
+        internal Attributes(BinaryReader reader)
+        {
+            ReadFrom(reader);
+        }
+
+        public int Unk { get; set; }
+
+        public AttributesFlags Flags { get; set; }
+
+        public List<int> Crc32s { get; init; } = new();
+
+        public List<DateTime> DateTimes { get; init; } = new();
+
+        internal void ReadFrom(BinaryReader reader)
+        {
+            Unk = reader.ReadInt32();
+            if (Unk != 100)
             {
-                using var attributesStream = archive.OpenFile(Key);
-                using var reader = new BinaryReader(attributesStream);
+                throw new InvalidDataException();
+            }
 
-                var unk = reader.ReadUInt32();
-                if (unk != 100)
+            Flags = reader.ReadInt32<AttributesFlags>();
+
+            var bytesPerMpqFile = 0;
+
+            var hasCrc32 = Flags.HasFlag(AttributesFlags.Crc32);
+            if (hasCrc32)
+            {
+                bytesPerMpqFile += 4;
+            }
+
+            var hasDateTime = Flags.HasFlag(AttributesFlags.DateTime);
+            if (hasDateTime)
+            {
+                bytesPerMpqFile += 8;
+            }
+
+            var remainingBytes = reader.BaseStream.Length - reader.BaseStream.Position;
+            if (bytesPerMpqFile > 0)
+            {
+                if ((remainingBytes % bytesPerMpqFile) != 0)
                 {
                     throw new InvalidDataException();
                 }
 
-                var dataFlags = reader.ReadUInt32();
-                if (dataFlags <= 0 || dataFlags >= 4)
-                {
-                    throw new InvalidDataException();
-                }
+                nint fileCount = (int)remainingBytes / bytesPerMpqFile;
 
-                // CRC32
-                if ((dataFlags & 0x1) != 0)
+                if (hasCrc32)
                 {
-                    foreach (var mpqEntry in archive)
+                    for (nint i = 0; i < fileCount; i++)
                     {
-                        using var mpqEntryStream = archive.OpenFile(mpqEntry);
-
-                        var expected = mpqEntry.Filename == Key ? 0 : new Ionic.Crc.CRC32().GetCrc32(mpqEntryStream);
-                        var actual = reader.ReadInt32();
-                        if (actual != expected)
-                        {
-                            return false;
-                        }
+                        Crc32s.Add(reader.ReadInt32());
                     }
                 }
 
-                // DateTime
-                if ((dataFlags & 0x2) != 0)
+                if (hasDateTime)
                 {
-                    foreach (var mpqEntry in archive)
+                    for (nint i = 0; i < fileCount; i++)
                     {
-                        var dateTime = new DateTime(reader.ReadInt64(), DateTimeKind.Unspecified);
+                        DateTimes.Add(new DateTime(reader.ReadInt64(), DateTimeKind.Unspecified));
                     }
                 }
+            }
+            else if (remainingBytes > 0)
+            {
+                throw new InvalidDataException();
+            }
+        }
 
-                if (attributesStream.Position < attributesStream.Length)
+        internal void WriteTo(BinaryWriter writer)
+        {
+            writer.Write(Unk);
+            writer.Write((int)Flags);
+
+            if (Flags.HasFlag(AttributesFlags.Crc32))
+            {
+                foreach (var crc32 in Crc32s)
                 {
-                    throw new InvalidDataException();
+                    writer.Write(crc32);
                 }
             }
 
-            return true;
+            if (Flags.HasFlag(AttributesFlags.DateTime))
+            {
+                foreach (var dateTime in DateTimes)
+                {
+                    writer.Write(dateTime.Ticks);
+                }
+            }
         }
     }
 }
