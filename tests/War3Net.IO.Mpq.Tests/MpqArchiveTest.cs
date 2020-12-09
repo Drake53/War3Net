@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Common.Testing;
+using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq.Tests
 {
@@ -28,7 +29,7 @@ namespace War3Net.IO.Mpq.Tests
             var randomData = new byte[999];
             memoryStream.Write(randomData, 0, randomData.Length);
 
-            using var a = MpqArchive.Create(memoryStream, Array.Empty<MpqFile>());
+            using var a = MpqArchive.Create(memoryStream, Array.Empty<MpqFile>(), new MpqArchiveCreateOptions());
 
             memoryStream.Position = 0;
             MpqArchive.Open(memoryStream).Dispose();
@@ -51,7 +52,7 @@ namespace War3Net.IO.Mpq.Tests
                 randomFiles.Add(MpqFile.New(fileStream, $"file{i}"));
             }
 
-            using var a = MpqArchive.Create(memoryStream, randomFiles);
+            using var a = MpqArchive.Create(memoryStream, randomFiles, new MpqArchiveCreateOptions() { ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
 
             memoryStream.Position = 0;
             var archive = MpqArchive.Open(memoryStream);
@@ -71,7 +72,7 @@ namespace War3Net.IO.Mpq.Tests
         {
             var fileStream = File.OpenRead(filename);
             var mpqFile = MpqFile.New(fileStream, filename, true);
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile });
+            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions());
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
@@ -86,7 +87,7 @@ namespace War3Net.IO.Mpq.Tests
             var fileStream = File.OpenRead(filename);
             var mpqFile = MpqFile.New(fileStream, filename, true);
             mpqFile.TargetFlags = flags;
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
+            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(filename);
@@ -102,7 +103,7 @@ namespace War3Net.IO.Mpq.Tests
 
             var mpqFile = MpqFile.New(null, FileName);
             mpqFile.TargetFlags = flags;
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, blockSize: BlockSize);
+            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
 
             var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(FileName);
@@ -115,13 +116,13 @@ namespace War3Net.IO.Mpq.Tests
         public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
         {
             using var inputArchive = MpqArchive.Open(inputArchivePath, loadListFile);
-            if (loadListFile && !inputArchive.FileExists(ListFile.Key))
+            if (loadListFile && !inputArchive.FileExists(ListFile.FileName))
             {
                 return;
             }
 
             var mpqFiles = inputArchive.GetMpqFiles().ToArray();
-            using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles, blockSize: inputArchive.Header.BlockSize);
+            using var recreatedArchive = MpqArchive.Create((Stream?)null, mpqFiles, new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
 
             // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
             // TODO: fix assumption of how recreated blocktable's entries are laid out relative to input mpqFiles array? (aka: replace the 'offset' variable)
@@ -146,7 +147,7 @@ namespace War3Net.IO.Mpq.Tests
                 else if (mpqFile is MpqOrphanedFile orphanedFile)
                 {
                     // TODO
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("found orphaned mpqfile");
                 }
                 else
                 {
@@ -181,7 +182,7 @@ namespace War3Net.IO.Mpq.Tests
                         using var inputStream = inputArchive.OpenFile(inputEntry);
                         using var recreatedStream = recreatedArchive.OpenFile(recreatedEntry);
 
-                        StreamAssert.AreEqual(inputStream, recreatedStream);
+                        StreamAssert.AreEqual(inputStream, recreatedStream, mpqFile is MpqKnownFile known ? known.FileName : "<unknown file>");
                     }
                 }
                 else
@@ -206,10 +207,10 @@ namespace War3Net.IO.Mpq.Tests
             var newFile = MpqFile.New(null, fileName);
 
             var mpqFiles = inputArchive.GetMpqFiles();
-            var oldFile = mpqFiles.FirstOrDefault(file => file.IsSameAs(newFile)) ?? throw new FileNotFoundException($"File not found: {fileName}");
+            var oldFile = mpqFiles.FirstOrDefault(file => file.Equals(newFile)) ?? throw new FileNotFoundException($"File not found: {fileName}");
             var newFiles = mpqFiles.Select(file => ReferenceEquals(file, oldFile) ? newFile : file).ToArray();
 
-            using var outputArchive = MpqArchive.Create((Stream?)null, newFiles, (ushort)inputArchive.Header.HashTableSize, inputArchive.Header.BlockSize);
+            using var outputArchive = MpqArchive.Create((Stream?)null, newFiles, new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, AttributesFlags = AttributesFlags.DateTime | AttributesFlags.Crc32 });
 
             Assert.IsTrue(outputArchive.FileExists(fileName, out var entryIndex));
             Assert.AreEqual(0U, outputArchive[entryIndex].FileSize);
@@ -221,20 +222,17 @@ namespace War3Net.IO.Mpq.Tests
             var inputArchivePath = TestDataProvider.GetFile(@"Maps\PKCompressed.w3x");
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
-            using var recreatedArchive = MpqArchive.Create(
-                (Stream?)null,
-                inputArchive.GetMpqFiles().ToArray(),
-                (ushort)inputArchive.Header.HashTableSize,
-                inputArchive.Header.BlockSize);
+            using var recreatedArchive = MpqArchive.Create((Stream?)null, inputArchive.GetMpqFiles().ToArray(), new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
 
             for (var i = 0; i < inputArchive.Header.BlockTableSize; i++)
             {
                 inputArchive.BaseStream.Position = inputArchive[i].FilePosition;
                 recreatedArchive.BaseStream.Position = recreatedArchive[i].FilePosition;
 
-                var size1 = inputArchive[i].CompressedSize;
-                var size2 = recreatedArchive[i].CompressedSize;
-                StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
+                // var size1 = inputArchive[i].CompressedSize;
+                // var size2 = recreatedArchive[i].CompressedSize;
+                // StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, size1 > size2 ? size1 : size2);
+                StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream);
             }
 
             inputArchive.BaseStream.Position = 0;
@@ -261,7 +259,7 @@ namespace War3Net.IO.Mpq.Tests
             {
                 using (var mpqArchive = MpqArchive.Open((string)archive[0]))
                 {
-                    if (!mpqArchive.TryAddFilename(Attributes.Key))
+                    if (!mpqArchive.TryAddFilename(Attributes.FileName))
                     {
                         continue;
                     }
