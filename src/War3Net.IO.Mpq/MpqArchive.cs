@@ -272,7 +272,9 @@ namespace War3Net.IO.Mpq
                     listFileWriter.WriteListFile(listFile);
                     listFileWriter.Flush();
 
-                    InsertMpqFile(MpqFile.New(listFileStream, ListFile.FileName), true);
+                    using var listFileMpqFile = MpqFile.New(listFileStream, ListFile.FileName);
+                    listFileMpqFile.TargetFlags = MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey;
+                    InsertMpqFile(listFileMpqFile, true);
                 }
 
                 if (attributes is not null)
@@ -294,7 +296,9 @@ namespace War3Net.IO.Mpq
                     attributesWriter.Write(attributes);
                     attributesWriter.Flush();
 
-                    InsertMpqFile(MpqFile.New(attributesStream, Attributes.FileName), true, false);
+                    using var attributesMpqFile = MpqFile.New(attributesStream, Attributes.FileName);
+                    attributesMpqFile.TargetFlags = MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey;
+                    InsertMpqFile(attributesMpqFile, true, false);
                 }
 
                 _baseStream.Position = endOfStream;

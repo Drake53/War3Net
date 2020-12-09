@@ -15,14 +15,14 @@ namespace War3Net.IO.Mpq
 {
     public sealed class MpqArchiveBuilder : IEnumerable<MpqFile>
     {
-        private readonly ushort _originalHashTableSize;
+        private readonly ushort? _originalHashTableSize;
         private readonly List<MpqFile> _originalFiles;
         private readonly List<MpqFile> _modifiedFiles;
         private readonly List<ulong> _removedFiles;
 
         public MpqArchiveBuilder()
         {
-            _originalHashTableSize = 0;
+            _originalHashTableSize = null;
             _originalFiles = new List<MpqFile>();
             _modifiedFiles = new List<MpqFile>();
             _removedFiles = new List<ulong>();
@@ -44,6 +44,12 @@ namespace War3Net.IO.Mpq
         public void AddFile(MpqFile file)
         {
             _modifiedFiles.Add(file);
+        }
+
+        public void AddFile(MpqFile file, MpqFileFlags targetFlags)
+        {
+            file.TargetFlags = targetFlags;
+            AddFile(file);
         }
 
         public void RemoveFile(ulong hashedFileName)
@@ -69,6 +75,7 @@ namespace War3Net.IO.Mpq
             var options = new MpqArchiveCreateOptions
             {
                 HashTableSize = _originalHashTableSize,
+                AttributesFlags = AttributesFlags.Crc32,
             };
 
             MpqArchive.Create(stream, GetMpqFiles().ToArray(), options, leaveOpen).Dispose();
