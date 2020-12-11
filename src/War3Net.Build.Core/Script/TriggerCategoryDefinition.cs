@@ -18,17 +18,17 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal TriggerCategoryDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal TriggerCategoryDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
             : base(triggerItemType)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
+            ReadFrom(reader, triggerData, formatVersion, subVersion);
         }
 
         public bool IsComment { get; set; }
 
         public int Unk { get; set; }
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Id = reader.ReadInt32();
             Name = reader.ReadChars();
@@ -37,14 +37,14 @@ namespace War3Net.Build.Script
                 IsComment = reader.ReadBool();
             }
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 Unk = reader.ReadInt32();
                 ParentId = reader.ReadInt32();
             }
         }
 
-        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.Write(Id);
             writer.WriteString(Name);
@@ -53,7 +53,7 @@ namespace War3Net.Build.Script
                 writer.WriteBool(IsComment);
             }
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 writer.Write(Unk);
                 writer.Write(ParentId);

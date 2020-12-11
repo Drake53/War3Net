@@ -113,17 +113,17 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers, Encoding encoding) => mapCustomTextTriggers.WriteTo(writer, encoding);
 
-        public static void Write(this BinaryWriter writer, CustomTextTrigger customTextTrigger, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => customTextTrigger.WriteTo(writer, encoding, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, CustomTextTrigger customTextTrigger, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => customTextTrigger.WriteTo(writer, encoding, formatVersion, subVersion);
 
         public static void Write(this BinaryWriter writer, MapTriggers mapTriggers) => mapTriggers.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, TriggerItem triggerItem, MapTriggersFormatVersion formatVersion, bool useNewFormat) => triggerItem.WriteTo(writer, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, TriggerItem triggerItem, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => triggerItem.WriteTo(writer, formatVersion, subVersion);
 
-        public static void Write(this BinaryWriter writer, VariableDefinition variableDefinition, MapTriggersFormatVersion formatVersion, bool useNewFormat) => variableDefinition.WriteTo(writer, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, VariableDefinition variableDefinition, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => variableDefinition.WriteTo(writer, formatVersion, subVersion);
 
-        public static void Write(this BinaryWriter writer, TriggerFunction triggerFunction, MapTriggersFormatVersion formatVersion, bool useNewFormat) => triggerFunction.WriteTo(writer, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, TriggerFunction triggerFunction, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => triggerFunction.WriteTo(writer, formatVersion, subVersion);
 
-        public static void Write(this BinaryWriter writer, TriggerFunctionParameter triggerFunctionParameter, MapTriggersFormatVersion formatVersion, bool useNewFormat) => triggerFunctionParameter.WriteTo(writer, formatVersion, useNewFormat);
+        public static void Write(this BinaryWriter writer, TriggerFunctionParameter triggerFunctionParameter, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => triggerFunctionParameter.WriteTo(writer, formatVersion, subVersion);
 
         public static void Write(this BinaryWriter writer, MapDoodads mapDoodads) => mapDoodads.WriteTo(writer);
 

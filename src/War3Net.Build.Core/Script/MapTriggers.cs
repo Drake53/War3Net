@@ -24,8 +24,6 @@ namespace War3Net.Build.Script
 
         public static readonly int FileFormatSignature = "WTG!".FromRawcode();
 
-        private const int NewFormatId = unchecked((int)0x80000004);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MapTriggers"/> class.
         /// </summary>
@@ -42,7 +40,7 @@ namespace War3Net.Build.Script
 
         public MapTriggersFormatVersion FormatVersion { get; set; }
 
-        public bool UseNewFormat { get; set; }
+        public MapTriggersSubVersion? SubVersion { get; set; }
 
         public int GameVersion { get; set; }
 
@@ -58,16 +56,36 @@ namespace War3Net.Build.Script
                 throw new InvalidDataException($"Expected file header signature at the start of .wtg file.");
             }
 
-            FormatVersion = (MapTriggersFormatVersion)reader.ReadInt32();
-            if (!Enum.IsDefined(typeof(MapTriggersFormatVersion), FormatVersion))
+            var version = reader.ReadInt32();
+            if (Enum.IsDefined(typeof(MapTriggersFormatVersion), version))
             {
-                if ((int)FormatVersion != NewFormatId)
+                FormatVersion = (MapTriggersFormatVersion)version;
+                SubVersion = null;
+
+                nint triggerCategoryDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < triggerCategoryDefinitionCount; i++)
                 {
-                    throw new NotSupportedException($"Unknown version of '{FileName}': {FormatVersion}");
+                    TriggerItems.Add(reader.ReadTriggerCategoryDefinition(TriggerItemType.Category, triggerData, FormatVersion, SubVersion));
                 }
 
+                GameVersion = reader.ReadInt32();
+
+                nint variableDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < variableDefinitionCount; i++)
+                {
+                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, SubVersion));
+                }
+
+                nint triggerDefinitionCount = reader.ReadInt32();
+                for (nint i = 0; i < triggerDefinitionCount; i++)
+                {
+                    TriggerItems.Add(reader.ReadTriggerDefinition(TriggerItemType.Gui, triggerData, FormatVersion, SubVersion));
+                }
+            }
+            else if (Enum.IsDefined(typeof(MapTriggersSubVersion), version))
+            {
                 FormatVersion = reader.ReadInt32<MapTriggersFormatVersion>();
-                UseNewFormat = true;
+                SubVersion = (MapTriggersSubVersion)version;
 
                 var triggerItemCounts = new Dictionary<TriggerItemType, int>();
                 foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
@@ -76,7 +94,7 @@ namespace War3Net.Build.Script
                     nint deletedTriggerItemCount = reader.ReadInt32();
                     for (nint i = 0; i < deletedTriggerItemCount; i++)
                     {
-                        TriggerItems.Add(reader.ReadDeletedTriggerItem(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                        TriggerItems.Add(reader.ReadDeletedTriggerItem(triggerItemType, triggerData, FormatVersion, SubVersion));
                     }
                 }
 
@@ -85,7 +103,7 @@ namespace War3Net.Build.Script
                 nint variableDefinitionCount = reader.ReadInt32();
                 for (nint i = 0; i < variableDefinitionCount; i++)
                 {
-                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, UseNewFormat));
+                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, SubVersion));
                 }
 
                 nint triggerItemCount = reader.ReadInt32();
@@ -96,17 +114,17 @@ namespace War3Net.Build.Script
                     {
                         case TriggerItemType.RootCategory:
                         case TriggerItemType.Category:
-                            TriggerItems.Add(reader.ReadTriggerCategoryDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            TriggerItems.Add(reader.ReadTriggerCategoryDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.Gui:
                         case TriggerItemType.Comment:
                         case TriggerItemType.Script:
-                            TriggerItems.Add(reader.ReadTriggerDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            TriggerItems.Add(reader.ReadTriggerDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.Variable:
-                            TriggerItems.Add(reader.ReadTriggerVariableDefinition(triggerItemType, triggerData, FormatVersion, UseNewFormat));
+                            TriggerItems.Add(reader.ReadTriggerVariableDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.UNK2:
@@ -135,25 +153,7 @@ namespace War3Net.Build.Script
             }
             else
             {
-                nint triggerCategoryDefinitionCount = reader.ReadInt32();
-                for (nint i = 0; i < triggerCategoryDefinitionCount; i++)
-                {
-                    TriggerItems.Add(reader.ReadTriggerCategoryDefinition(TriggerItemType.Category, triggerData, FormatVersion, UseNewFormat));
-                }
-
-                GameVersion = reader.ReadInt32();
-
-                nint variableDefinitionCount = reader.ReadInt32();
-                for (nint i = 0; i < variableDefinitionCount; i++)
-                {
-                    Variables.Add(reader.ReadVariableDefinition(triggerData, FormatVersion, UseNewFormat));
-                }
-
-                nint triggerDefinitionCount = reader.ReadInt32();
-                for (nint i = 0; i < triggerDefinitionCount; i++)
-                {
-                    TriggerItems.Add(reader.ReadTriggerDefinition(TriggerItemType.Gui, triggerData, FormatVersion, UseNewFormat));
-                }
+                throw new NotSupportedException($"Unknown version of '{FileName}': {version}");
             }
         }
 
@@ -161,9 +161,35 @@ namespace War3Net.Build.Script
         {
             writer.Write(FileFormatSignature);
 
-            if (UseNewFormat)
+            if (SubVersion is null)
             {
-                writer.Write(NewFormatId);
+                writer.Write((int)FormatVersion);
+
+                var triggerCategories = TriggerItems.Where(item => item is TriggerCategoryDefinition && item.Type != TriggerItemType.RootCategory).ToArray();
+                writer.Write(triggerCategories.Length);
+                foreach (var triggerCategory in triggerCategories)
+                {
+                    triggerCategory.WriteTo(writer, FormatVersion, SubVersion);
+                }
+
+                writer.Write(GameVersion);
+
+                writer.Write(Variables.Count);
+                foreach (var variable in Variables)
+                {
+                    variable.WriteTo(writer, FormatVersion, SubVersion);
+                }
+
+                var triggers = TriggerItems.Where(item => item is TriggerDefinition).ToArray();
+                writer.Write(triggers.Length);
+                foreach (var trigger in triggers)
+                {
+                    trigger.WriteTo(writer, FormatVersion, SubVersion);
+                }
+            }
+            else
+            {
+                writer.Write((int)SubVersion);
                 writer.Write((int)FormatVersion);
 
                 foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
@@ -174,7 +200,7 @@ namespace War3Net.Build.Script
                     writer.Write(deletedItems.Count);
                     foreach (var deletedItem in deletedItems)
                     {
-                        deletedItem.WriteTo(writer, FormatVersion, true);
+                        deletedItem.WriteTo(writer, FormatVersion, SubVersion);
                     }
                 }
 
@@ -183,7 +209,7 @@ namespace War3Net.Build.Script
                 writer.Write(Variables.Count);
                 foreach (var variable in Variables)
                 {
-                    variable.WriteTo(writer, FormatVersion, true);
+                    variable.WriteTo(writer, FormatVersion, SubVersion);
                 }
 
                 writer.Write(TriggerItems.Count(item => item is not DeletedTriggerItem));
@@ -195,33 +221,7 @@ namespace War3Net.Build.Script
                     }
 
                     writer.Write((int)triggerItem.Type);
-                    triggerItem.WriteTo(writer, FormatVersion, true);
-                }
-            }
-            else
-            {
-                writer.Write((int)FormatVersion);
-
-                var triggerCategories = TriggerItems.Where(item => item is TriggerCategoryDefinition && item.Type != TriggerItemType.RootCategory).ToArray();
-                writer.Write(triggerCategories.Length);
-                foreach (var triggerCategory in triggerCategories)
-                {
-                    triggerCategory.WriteTo(writer, FormatVersion, false);
-                }
-
-                writer.Write(GameVersion);
-
-                writer.Write(Variables.Count);
-                foreach (var variable in Variables)
-                {
-                    variable.WriteTo(writer, FormatVersion, false);
-                }
-
-                var triggers = TriggerItems.Where(item => item is TriggerDefinition).ToArray();
-                writer.Write(triggers.Length);
-                foreach (var trigger in triggers)
-                {
-                    trigger.WriteTo(writer, FormatVersion, false);
+                    triggerItem.WriteTo(writer, FormatVersion, SubVersion);
                 }
             }
         }

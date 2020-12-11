@@ -20,10 +20,10 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal TriggerDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal TriggerDefinition(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
             : base(triggerItemType)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
+            ReadFrom(reader, triggerData, formatVersion, subVersion);
         }
 
         public string Description { get; set; }
@@ -40,7 +40,7 @@ namespace War3Net.Build.Script
 
         public List<TriggerFunction> Functions { get; init; } = new();
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Name = reader.ReadChars();
             Description = reader.ReadChars();
@@ -49,7 +49,7 @@ namespace War3Net.Build.Script
                 IsComment = reader.ReadBool();
             }
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 Id = reader.ReadInt32();
             }
@@ -68,11 +68,11 @@ namespace War3Net.Build.Script
 
             for (nint i = 0; i < guiFunctionCount; i++)
             {
-                Functions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, useNewFormat, false));
+                Functions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, subVersion, false));
             }
         }
 
-        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.WriteString(Name);
             writer.WriteString(Description);
@@ -81,7 +81,7 @@ namespace War3Net.Build.Script
                 writer.WriteBool(IsComment);
             }
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 writer.Write(Id);
             }
@@ -95,7 +95,7 @@ namespace War3Net.Build.Script
             writer.Write(Functions.Count);
             foreach (var function in Functions)
             {
-                writer.Write(function, formatVersion, useNewFormat);
+                writer.Write(function, formatVersion, subVersion);
             }
         }
     }

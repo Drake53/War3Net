@@ -22,9 +22,9 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal TriggerFunction(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction)
+        internal TriggerFunction(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat, isChildFunction);
+            ReadFrom(reader, triggerData, formatVersion, subVersion, isChildFunction);
         }
 
         public TriggerFunctionType Type { get; set; }
@@ -44,7 +44,7 @@ namespace War3Net.Build.Script
             return $"{Name}({string.Join(", ", Parameters)})";
         }
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
             Type = reader.ReadInt32<TriggerFunctionType>();
             if (isChildFunction)
@@ -58,7 +58,7 @@ namespace War3Net.Build.Script
             var parameterCount = triggerData.GetParameterCount(Type, Name);
             for (var i = 0; i < parameterCount; i++)
             {
-                Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, useNewFormat));
+                Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, subVersion));
             }
 
             if (formatVersion >= MapTriggersFormatVersion.Tft)
@@ -68,13 +68,13 @@ namespace War3Net.Build.Script
                 {
                     for (var i = 0; i < nestedfunctionCount; i++)
                     {
-                        ChildFunctions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, useNewFormat, true));
+                        ChildFunctions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, subVersion, true));
                     }
                 }
             }
         }
 
-        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.Write((int)Type);
             if (Branch != -1)
@@ -87,7 +87,7 @@ namespace War3Net.Build.Script
 
             foreach (var parameter in Parameters)
             {
-                writer.Write(parameter, formatVersion, useNewFormat);
+                writer.Write(parameter, formatVersion, subVersion);
             }
 
             if (formatVersion >= MapTriggersFormatVersion.Tft)
@@ -95,7 +95,7 @@ namespace War3Net.Build.Script
                 writer.Write(ChildFunctions.Count);
                 foreach (var childFunction in ChildFunctions)
                 {
-                    writer.Write(childFunction, formatVersion, useNewFormat);
+                    writer.Write(childFunction, formatVersion, subVersion);
                 }
             }
         }

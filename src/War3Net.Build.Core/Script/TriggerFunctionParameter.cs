@@ -21,9 +21,9 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal TriggerFunctionParameter(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal TriggerFunctionParameter(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
+            ReadFrom(reader, triggerData, formatVersion, subVersion);
         }
 
         public TriggerFunctionParameterType Type { get; set; }
@@ -46,7 +46,7 @@ namespace War3Net.Build.Script
             };
         }
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Type = reader.ReadInt32<TriggerFunctionParameterType>();
             Value = reader.ReadChars();
@@ -59,7 +59,7 @@ namespace War3Net.Build.Script
                     throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Function}' to have a function.");
                 }
 
-                Function = reader.ReadTriggerFunction(triggerData, formatVersion, useNewFormat, false);
+                Function = reader.ReadTriggerFunction(triggerData, formatVersion, subVersion, false);
             }
 
             var haveArrayIndexer = reader.ReadBool();
@@ -70,20 +70,20 @@ namespace War3Net.Build.Script
                     throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Variable}' to have an array indexer.");
                 }
 
-                ArrayIndexer = reader.ReadTriggerFunctionParameter(triggerData, formatVersion, useNewFormat);
+                ArrayIndexer = reader.ReadTriggerFunctionParameter(triggerData, formatVersion, subVersion);
             }
         }
 
-        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.Write((int)Type);
             writer.WriteString(Value);
 
             writer.WriteBool(Function is not null);
-            Function?.WriteTo(writer, formatVersion, useNewFormat);
+            Function?.WriteTo(writer, formatVersion, subVersion);
 
             writer.WriteBool(ArrayIndexer is not null);
-            ArrayIndexer?.WriteTo(writer, formatVersion, useNewFormat);
+            ArrayIndexer?.WriteTo(writer, formatVersion, subVersion);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace War3Net.Build.Script
 {
     public sealed class VariableDefinition
     {
-        internal VariableDefinition(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal VariableDefinition(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
+            ReadFrom(reader, triggerData, formatVersion, subVersion);
         }
 
         public string Name { get; set; }
@@ -41,7 +41,7 @@ namespace War3Net.Build.Script
             return $"{Type} {Name}{(IsArray ? $"[{(ArraySize > 0 ? $"{ArraySize}" : string.Empty)}]" : string.Empty)}{(IsInitialized ? $" = {InitialValue}" : string.Empty)}";
         }
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Name = reader.ReadChars();
             Type = reader.ReadChars();
@@ -55,14 +55,14 @@ namespace War3Net.Build.Script
             IsInitialized = reader.ReadBool();
             InitialValue = reader.ReadChars();
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 Id = reader.ReadInt32();
                 ParentId = reader.ReadInt32();
             }
         }
 
-        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.WriteString(Name);
             writer.WriteString(Type);
@@ -76,7 +76,7 @@ namespace War3Net.Build.Script
             writer.WriteBool(IsInitialized);
             writer.WriteString(InitialValue);
 
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 writer.Write(Id);
                 writer.Write(ParentId);

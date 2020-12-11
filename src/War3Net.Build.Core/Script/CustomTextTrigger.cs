@@ -21,14 +21,14 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal CustomTextTrigger(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal CustomTextTrigger(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
-            ReadFrom(reader, encoding, formatVersion, useNewFormat);
+            ReadFrom(reader, encoding, formatVersion, subVersion);
         }
 
         public string Code { get; set; }
 
-        internal void ReadFrom(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
             var length = reader.ReadInt32();
             if (length == 0)
@@ -42,7 +42,7 @@ namespace War3Net.Build.Script
             }
         }
 
-        internal void WriteTo(BinaryWriter writer, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void WriteTo(BinaryWriter writer, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
             writer.Write(encoding.GetBytes(Code).Length);
             writer.WriteString(Code, false);

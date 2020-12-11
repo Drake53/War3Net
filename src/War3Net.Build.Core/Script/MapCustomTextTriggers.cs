@@ -19,8 +19,6 @@ namespace War3Net.Build.Script
     {
         public const string FileName = "war3map.wct";
 
-        private const int NewFormatId = unchecked((int)0x80000004);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MapCustomTextTriggers"/> class.
         /// </summary>
@@ -38,7 +36,7 @@ namespace War3Net.Build.Script
 
         public MapCustomTextTriggersFormatVersion FormatVersion { get; set; }
 
-        public bool UseNewFormat { get; set; }
+        public MapCustomTextTriggersSubVersion? SubVersion { get; set; }
 
         public string GlobalCustomScriptComment { get; set; }
 
@@ -48,63 +46,67 @@ namespace War3Net.Build.Script
 
         internal void ReadFrom(BinaryReader reader, Encoding encoding)
         {
-            FormatVersion = (MapCustomTextTriggersFormatVersion)reader.ReadInt32();
-            if (!Enum.IsDefined(typeof(MapCustomTextTriggersFormatVersion), FormatVersion))
+            var version = reader.ReadInt32();
+            if (Enum.IsDefined(typeof(MapCustomTextTriggersFormatVersion), version))
             {
-                if ((int)FormatVersion != NewFormatId)
-                {
-                    throw new NotSupportedException($"Unknown version of '{FileName}': {FormatVersion}");
-                }
-
+                FormatVersion = (MapCustomTextTriggersFormatVersion)version;
+                SubVersion = null;
+            }
+            else if (Enum.IsDefined(typeof(MapCustomTextTriggersSubVersion), version))
+            {
                 FormatVersion = reader.ReadInt32<MapCustomTextTriggersFormatVersion>();
-                UseNewFormat = true;
+                SubVersion = (MapCustomTextTriggersSubVersion)version;
+            }
+            else
+            {
+                throw new NotSupportedException($"Unknown version of '{FileName}': {version}");
             }
 
             if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
             {
                 GlobalCustomScriptComment = reader.ReadChars();
-                GlobalCustomScriptCode = reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat);
+                GlobalCustomScriptCode = reader.ReadCustomTextTrigger(encoding, FormatVersion, SubVersion);
             }
 
-            if (UseNewFormat)
-            {
-                while (reader.BaseStream.Position < reader.BaseStream.Length)
-                {
-                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat));
-                }
-            }
-            else
+            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.NewBETA)
             {
                 nint customTextTriggerCount = reader.ReadInt32();
                 for (nint i = 0; i < customTextTriggerCount; i++)
                 {
-                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, UseNewFormat));
+                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, SubVersion));
+                }
+            }
+            else
+            {
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    CustomTextTriggers.Add(reader.ReadCustomTextTrigger(encoding, FormatVersion, SubVersion));
                 }
             }
         }
 
         internal void WriteTo(BinaryWriter writer, Encoding encoding)
         {
-            if (UseNewFormat)
+            if (SubVersion is not null)
             {
-                writer.Write(NewFormatId);
+                writer.Write((int)SubVersion);
             }
 
             writer.Write((int)FormatVersion);
             if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
             {
                 writer.WriteString(GlobalCustomScriptComment);
-                writer.Write(GlobalCustomScriptCode, encoding, FormatVersion, UseNewFormat);
+                writer.Write(GlobalCustomScriptCode, encoding, FormatVersion, SubVersion);
             }
 
-            if (!UseNewFormat)
+            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.NewBETA)
             {
                 writer.Write(CustomTextTriggers.Count);
             }
 
             foreach (var customTextTrigger in CustomTextTriggers)
             {
-                writer.Write(customTextTrigger, encoding, FormatVersion, UseNewFormat);
+                writer.Write(customTextTrigger, encoding, FormatVersion, SubVersion);
             }
         }
     }

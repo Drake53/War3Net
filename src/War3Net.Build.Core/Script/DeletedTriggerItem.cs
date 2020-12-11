@@ -16,13 +16,13 @@ namespace War3Net.Build.Script
         {
         }
 
-        internal DeletedTriggerItem(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal DeletedTriggerItem(BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
             : base(triggerItemType)
         {
-            ReadFrom(reader, triggerData, formatVersion, useNewFormat);
+            ReadFrom(reader, triggerData, formatVersion, subVersion);
         }
 
-        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Id = reader.ReadInt32();
 
@@ -30,9 +30,9 @@ namespace War3Net.Build.Script
             ParentId = -1;
         }
 
-        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat)
+        internal override void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            if (useNewFormat)
+            if (subVersion is not null)
             {
                 writer.Write(Id);
             }

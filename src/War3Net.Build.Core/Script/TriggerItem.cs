@@ -24,6 +24,6 @@ namespace War3Net.Build.Script
 
         public int ParentId { get; set; }
 
-        internal abstract void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, bool useNewFormat);
+        internal abstract void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion);
     }
 }

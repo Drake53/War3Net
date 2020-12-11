@@ -22,8 +22,8 @@ namespace War3Net.Build.Extensions
     {
         public static void DiscoverFileNames(this MpqArchive archive)
         {
-            archive.AddFilename(Attributes.Key);
-            archive.AddFilename(ListFile.Key);
+            archive.AddFilename(Attributes.FileName);
+            archive.AddFilename(ListFile.FileName);
             archive.AddFilename(@"(signature)");
             archive.AddFilename(@"(user data)");
 

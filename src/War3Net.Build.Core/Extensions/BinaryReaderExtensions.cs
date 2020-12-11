@@ -99,6 +99,34 @@ namespace War3Net.Build.Extensions
 
         public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignUpgradeObjectData(reader) : new MapUpgradeObjectData(reader);
 
+        public static CampaignAbilityObjectData ReadCampaignAbilityObjectData(this BinaryReader reader) => new CampaignAbilityObjectData(reader);
+
+        public static CampaignBuffObjectData ReadCampaignBuffObjectData(this BinaryReader reader) => new CampaignBuffObjectData(reader);
+
+        public static CampaignDestructableObjectData ReadCampaignDestructableObjectData(this BinaryReader reader) => new CampaignDestructableObjectData(reader);
+
+        public static CampaignDoodadObjectData ReadCampaignDoodadObjectData(this BinaryReader reader) => new CampaignDoodadObjectData(reader);
+
+        public static CampaignItemObjectData ReadCampaignItemObjectData(this BinaryReader reader) => new CampaignItemObjectData(reader);
+
+        public static CampaignUnitObjectData ReadCampaignUnitObjectData(this BinaryReader reader) => new CampaignUnitObjectData(reader);
+
+        public static CampaignUpgradeObjectData ReadCampaignUpgradeObjectData(this BinaryReader reader) => new CampaignUpgradeObjectData(reader);
+
+        public static MapAbilityObjectData ReadMapAbilityObjectData(this BinaryReader reader) => new MapAbilityObjectData(reader);
+
+        public static MapBuffObjectData ReadMapBuffObjectData(this BinaryReader reader) => new MapBuffObjectData(reader);
+
+        public static MapDestructableObjectData ReadMapDestructableObjectData(this BinaryReader reader) => new MapDestructableObjectData(reader);
+
+        public static MapDoodadObjectData ReadMapDoodadObjectData(this BinaryReader reader) => new MapDoodadObjectData(reader);
+
+        public static MapItemObjectData ReadMapItemObjectData(this BinaryReader reader) => new MapItemObjectData(reader);
+
+        public static MapUnitObjectData ReadMapUnitObjectData(this BinaryReader reader) => new MapUnitObjectData(reader);
+
+        public static MapUpgradeObjectData ReadMapUpgradeObjectData(this BinaryReader reader) => new MapUpgradeObjectData(reader);
+
         public static LevelObjectModification ReadLevelObjectModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new LevelObjectModification(reader, formatVersion);
 
         public static LevelObjectDataModification ReadLevelObjectDataModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new LevelObjectDataModification(reader, formatVersion);
@@ -113,23 +141,23 @@ namespace War3Net.Build.Extensions
 
         public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader, Encoding encoding) => new MapCustomTextTriggers(reader, encoding);
 
-        public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, bool useNewFormat) => new CustomTextTrigger(reader, encoding, formatVersion, useNewFormat);
+        public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => new CustomTextTrigger(reader, encoding, formatVersion, subVersion);
 
         public static MapTriggers ReadMapTriggers(this BinaryReader reader, TriggerData triggerData) => new MapTriggers(reader, triggerData);
 
-        public static DeletedTriggerItem ReadDeletedTriggerItem(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new DeletedTriggerItem(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
+        public static DeletedTriggerItem ReadDeletedTriggerItem(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new DeletedTriggerItem(reader, triggerItemType, triggerData, formatVersion, subVersion);
 
-        public static TriggerCategoryDefinition ReadTriggerCategoryDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerCategoryDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
+        public static TriggerCategoryDefinition ReadTriggerCategoryDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerCategoryDefinition(reader, triggerItemType, triggerData, formatVersion, subVersion);
 
-        public static TriggerDefinition ReadTriggerDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
+        public static TriggerDefinition ReadTriggerDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerDefinition(reader, triggerItemType, triggerData, formatVersion, subVersion);
 
-        public static TriggerVariableDefinition ReadTriggerVariableDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerVariableDefinition(reader, triggerItemType, triggerData, formatVersion, useNewFormat);
+        public static TriggerVariableDefinition ReadTriggerVariableDefinition(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerVariableDefinition(reader, triggerItemType, triggerData, formatVersion, subVersion);
 
-        public static VariableDefinition ReadVariableDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new VariableDefinition(reader, triggerData, formatVersion, useNewFormat);
+        public static VariableDefinition ReadVariableDefinition(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new VariableDefinition(reader, triggerData, formatVersion, subVersion);
 
-        public static TriggerFunction ReadTriggerFunction(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat, bool isChildFunction) => new TriggerFunction(reader, triggerData, formatVersion, useNewFormat, isChildFunction);
+        public static TriggerFunction ReadTriggerFunction(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction) => new TriggerFunction(reader, triggerData, formatVersion, subVersion, isChildFunction);
 
-        public static TriggerFunctionParameter ReadTriggerFunctionParameter(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, bool useNewFormat) => new TriggerFunctionParameter(reader, triggerData, formatVersion, useNewFormat);
+        public static TriggerFunctionParameter ReadTriggerFunctionParameter(this BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerFunctionParameter(reader, triggerData, formatVersion, subVersion);
 
         public static MapDoodads ReadMapDoodads(this BinaryReader reader) => new MapDoodads(reader);
 
