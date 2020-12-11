@@ -26,7 +26,7 @@ namespace War3Net.Build.Core.Tests
             string? readMethodName = null,
             params object?[]? additionalReadParameters)
         {
-            RunBinaryRWTest(filePath, type, readMethodName, additionalReadParameters);
+            RunBinaryRWTest(filePath, type, readMethodName, additionalReadParameters, null);
         }
 
         internal static void RunBinaryRWTest(
@@ -36,16 +36,22 @@ namespace War3Net.Build.Core.Tests
             object?[]? additionalReadParameters = null,
             object?[]? additionalWriteParameters = null)
         {
-            var readMethod = typeof(BinaryReaderExtensions).GetMethod(readMethodName ?? $"Read{type.Name}");
-            Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
-
-            var expectedTypes = new[] { typeof(BinaryWriter), type };
-            if (additionalWriteParameters is not null)
+            var expectedReadTypes = new[] { typeof(BinaryReader) };
+            if (additionalReadParameters is not null)
             {
-                expectedTypes = expectedTypes.Concat(additionalWriteParameters.Select(p => p.GetType())).ToArray();
+                expectedReadTypes = expectedReadTypes.Concat(additionalReadParameters.Select(p => p.GetType())).ToArray();
             }
 
-            var writeMethod = typeof(BinaryWriterExtensions).GetMethod(nameof(BinaryWriter.Write), expectedTypes);
+            var readMethod = typeof(BinaryReaderExtensions).GetMethod(readMethodName ?? $"Read{type.Name}", expectedReadTypes);
+            Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
+
+            var expectedWriteTypes = new[] { typeof(BinaryWriter), type };
+            if (additionalWriteParameters is not null)
+            {
+                expectedWriteTypes = expectedWriteTypes.Concat(additionalWriteParameters.Select(p => p.GetType())).ToArray();
+            }
+
+            var writeMethod = typeof(BinaryWriterExtensions).GetMethod(nameof(BinaryWriter.Write), expectedWriteTypes);
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
             using var expectedStream = FileProvider.GetFile(filePath);
