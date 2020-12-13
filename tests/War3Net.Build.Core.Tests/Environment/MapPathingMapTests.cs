@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="PathingMapTests.cs" company="Drake53">
+// <copyright file="MapPathingMapTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,24 +17,24 @@ using War3Net.Common.Testing;
 namespace War3Net.Build.Core.Tests.Environment
 {
     [TestClass]
-    public class PathingMapTests
+    public class MapPathingMapTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetPathingMapFiles), DynamicDataSourceType.Method)]
-        public void TestParsePathingMap(string pathingMapFile)
+        [DynamicData(nameof(GetMapPathingMapFiles), DynamicDataSourceType.Method)]
+        public void TestParseMapPathingMap(string mapPathingMapFile)
         {
-            ParseTestHelper.RunBinaryRWTest(pathingMapFile, typeof(PathingMap));
+            ParseTestHelper.RunBinaryRWTest(mapPathingMapFile, typeof(MapPathingMap));
         }
 
-        private static IEnumerable<object[]> GetPathingMapFiles()
+        private static IEnumerable<object[]> GetMapPathingMapFiles()
         {
             return TestDataProvider.GetDynamicData(
-                PathingMap.FileName.GetSearchPattern(),
+                MapPathingMap.FileName.GetSearchPattern(),
                 SearchOption.AllDirectories,
                 Path.Combine("Pathing"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                PathingMap.FileName,
+                MapPathingMap.FileName,
                 SearchOption.AllDirectories,
                 "Maps"));
         }

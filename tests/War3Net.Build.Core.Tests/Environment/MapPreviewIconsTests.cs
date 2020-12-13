@@ -12,10 +12,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.Build.Info;
-using War3Net.Build.Widget;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -26,47 +23,30 @@ namespace War3Net.Build.Core.Tests.Environment
         [DynamicData(nameof(GetMapPreviewIconsFiles), DynamicDataSourceType.Method)]
         public void TestParseMapPreviewIcons(string iconsFilePath)
         {
-            using var original = FileProvider.GetFile(iconsFilePath);
-            using var recreated = new MemoryStream();
-
-            MapPreviewIcons.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(iconsFilePath, typeof(MapPreviewIcons));
         }
 
         [DataTestMethod]
         [DynamicData(nameof(GetMapPreviewIconsMapFolders), DynamicDataSourceType.Method)]
-        public void TestGenerateMapPreviewIcons(string inputFolder)
+        public void TestGenerateMapPreviewIcons(string mapFolder)
         {
-            var mapInfo = MapInfo.Parse(File.OpenRead(Path.Combine(inputFolder, MapInfo.FileName)));
-            var mapEnvironment = MapEnvironment.Parse(File.OpenRead(Path.Combine(inputFolder, MapEnvironment.FileName)));
-            var mapUnits = MapUnits.Parse(File.OpenRead(Path.Combine(inputFolder, MapUnits.FileName)));
+            var map = Map.Open(mapFolder);
 
-            var expected = MapPreviewIcons.Parse(File.OpenRead(Path.Combine(inputFolder, MapPreviewIcons.FileName)));
-            var actual = new MapPreviewIcons(mapInfo, mapEnvironment, mapUnits);
+            var expected = map.PreviewIcons;
+            var actual = MapFileFactory.PreviewIcons(map);
 
-            var expectedEnumerator = expected.GetEnumerator();
-            var actualEnumerator = actual.GetEnumerator();
-            while (true)
+            Assert.AreEqual(expected.Icons.Count, actual.Icons.Count);
+
+            for (var i = 0; i < expected.Icons.Count; i++)
             {
-                if (expectedEnumerator.MoveNext() & actualEnumerator.MoveNext())
-                {
-                    var expectedIcon = expectedEnumerator.Current;
-                    var actualIcon = actualEnumerator.Current;
+                var expectedIcon = expected.Icons[i];
+                var actualIcon = actual.Icons[i];
 
-                    const int delta = 1;
-                    Assert.AreEqual(expectedIcon.IconType, actualIcon.IconType);
-                    Assert.AreEqual(expectedIcon.X, actualIcon.X, delta);
-                    Assert.AreEqual(expectedIcon.Y, actualIcon.Y, delta);
-                    Assert.AreEqual(expectedIcon.Color.ToArgb(), actualIcon.Color.ToArgb());
-                }
-                else if (expectedEnumerator.Current != null || actualEnumerator.Current != null)
-                {
-                    Assert.Fail("Expected and actual icon count are not the same.");
-                }
-                else
-                {
-                    break;
-                }
+                const int delta = 1;
+                Assert.AreEqual(expectedIcon.IconType, actualIcon.IconType);
+                Assert.AreEqual(expectedIcon.X, actualIcon.X, delta);
+                Assert.AreEqual(expectedIcon.Y, actualIcon.Y, delta);
+                Assert.AreEqual(expectedIcon.Color.ToArgb(), actualIcon.Color.ToArgb());
             }
         }
 
@@ -79,14 +59,14 @@ namespace War3Net.Build.Core.Tests.Environment
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapPreviewIcons.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
 
         private static IEnumerable<object[]> GetMapPreviewIconsMapFolders()
         {
-            yield return new[] { @".\TestData\MapFiles\TestIcons1" };
-            yield return new[] { @".\TestData\MapFiles\TestIcons2" };
+            yield return new[] { TestDataProvider.GetFile(@"MapFiles\TestIcons1") };
+            yield return new[] { TestDataProvider.GetFile(@"MapFiles\TestIcons2") };
         }
     }
 }
