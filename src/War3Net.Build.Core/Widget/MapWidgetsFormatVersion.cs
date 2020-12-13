@@ -9,6 +9,7 @@ namespace War3Net.Build.Widget
 {
     public enum MapWidgetsFormatVersion
     {
+        RoCBETA = 6,
         RoC = 7,
         TFT = 8,
     }

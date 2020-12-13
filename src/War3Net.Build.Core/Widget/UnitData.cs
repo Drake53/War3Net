@@ -120,7 +120,7 @@ namespace War3Net.Build.Widget
             TargetAcquisition = reader.ReadSingle();
 
             HeroLevel = reader.ReadInt32();
-            if (formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11)
+            if ((formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11) || subVersion == MapWidgetsSubVersion.V10)
             {
                 HeroStrength = reader.ReadInt32();
                 HeroAgility = reader.ReadInt32();
@@ -148,9 +148,12 @@ namespace War3Net.Build.Widget
                 _ => null,
             };
 
-            CustomPlayerColorId = reader.ReadInt32();
-            WaygateDestinationRegionId = reader.ReadInt32();
-            CreationNumber = reader.ReadInt32();
+            if (formatVersion > MapWidgetsFormatVersion.RoCBETA && subVersion > MapWidgetsSubVersion.V7)
+            {
+                CustomPlayerColorId = reader.ReadInt32();
+                WaygateDestinationRegionId = reader.ReadInt32();
+                CreationNumber = reader.ReadInt32();
+            }
         }
 
         internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
@@ -192,7 +195,7 @@ namespace War3Net.Build.Widget
             writer.Write(TargetAcquisition);
 
             writer.Write(HeroLevel);
-            if (formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11)
+            if ((formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11) || subVersion == MapWidgetsSubVersion.V10)
             {
                 writer.Write(HeroStrength);
                 writer.Write(HeroAgility);
@@ -225,9 +228,12 @@ namespace War3Net.Build.Widget
                 writer.Write(RandomData, formatVersion, subVersion, useNewFormat);
             }
 
-            writer.Write(CustomPlayerColorId);
-            writer.Write(WaygateDestinationRegionId);
-            writer.Write(CreationNumber);
+            if (formatVersion > MapWidgetsFormatVersion.RoCBETA && subVersion > MapWidgetsSubVersion.V7)
+            {
+                writer.Write(CustomPlayerColorId);
+                writer.Write(WaygateDestinationRegionId);
+                writer.Write(CreationNumber);
+            }
         }
     }
 }

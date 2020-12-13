@@ -43,10 +43,13 @@ namespace War3Net.Build.Widget
             useNewFormat = reader.PeekChar() >= 0x20;
             SkinId = useNewFormat ? reader.ReadInt32() : TypeId;
 
-            State = (DoodadState)reader.ReadByte();
-            if ((int)State >= 8)
+            if (formatVersion > MapWidgetsFormatVersion.RoCBETA)
             {
-                throw new InvalidDataException($"Invalid doodad state: {State}.");
+                State = (DoodadState)reader.ReadByte();
+                if ((int)State >= 8)
+                {
+                    throw new InvalidDataException($"Invalid doodad state: {State}.");
+                }
             }
 
             Life = reader.ReadByte();
@@ -82,7 +85,11 @@ namespace War3Net.Build.Widget
                 writer.Write(SkinId);
             }
 
-            writer.Write((byte)State);
+            if (formatVersion > MapWidgetsFormatVersion.RoCBETA)
+            {
+                writer.Write((byte)State);
+            }
+
             writer.Write(Life);
 
             if (formatVersion == MapWidgetsFormatVersion.TFT)
