@@ -15,8 +15,9 @@ namespace War3Net.Build.Import
 {
     public abstract class ImportedFiles
     {
-        internal ImportedFiles()
+        internal ImportedFiles(ImportedFilesFormatVersion formatVersion)
         {
+            FormatVersion = formatVersion;
         }
 
         internal ImportedFiles(BinaryReader reader)

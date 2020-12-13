@@ -16,7 +16,9 @@ namespace War3Net.Build.Import
         /// <summary>
         /// Initializes a new instance of the <see cref="CampaignImportedFiles"/> class.
         /// </summary>
-        public CampaignImportedFiles()
+        /// <param name="formatVersion"></param>
+        public CampaignImportedFiles(ImportedFilesFormatVersion formatVersion)
+            : base(formatVersion)
         {
         }
 

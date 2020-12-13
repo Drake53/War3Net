@@ -16,7 +16,9 @@ namespace War3Net.Build.Import
         /// <summary>
         /// Initializes a new instance of the <see cref="MapImportedFiles"/> class.
         /// </summary>
-        public MapImportedFiles()
+        /// <param name="formatVersion"></param>
+        public MapImportedFiles(ImportedFilesFormatVersion formatVersion)
+            : base(formatVersion)
         {
         }
 
