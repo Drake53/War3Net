@@ -43,13 +43,18 @@ namespace War3Net.IO.Mpq
 
         public void AddFile(MpqFile file)
         {
-            _modifiedFiles.Add(file);
+            AddFile(file, MpqFileFlags.Exists | MpqFileFlags.CompressedMulti);
         }
 
         public void AddFile(MpqFile file, MpqFileFlags targetFlags)
         {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             file.TargetFlags = targetFlags;
-            AddFile(file);
+            _modifiedFiles.Add(file);
         }
 
         public void RemoveFile(ulong hashedFileName)
@@ -70,15 +75,34 @@ namespace War3Net.IO.Mpq
             }
         }
 
+        public void SaveTo(string fileName, MpqArchiveCreateOptions createOptions)
+        {
+            using (var stream = File.Create(fileName))
+            {
+                SaveTo(stream, createOptions);
+            }
+        }
+
         public void SaveTo(Stream stream, bool leaveOpen = false)
         {
-            var options = new MpqArchiveCreateOptions
+            var createOptions = new MpqArchiveCreateOptions
             {
                 HashTableSize = _originalHashTableSize,
                 AttributesFlags = AttributesFlags.Crc32,
             };
 
-            MpqArchive.Create(stream, GetMpqFiles().ToArray(), options, leaveOpen).Dispose();
+            MpqArchive.Create(stream, GetMpqFiles().ToArray(), createOptions, leaveOpen).Dispose();
+        }
+
+        public void SaveTo(Stream stream, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
+        {
+            if (createOptions is null)
+            {
+                throw new ArgumentNullException(nameof(createOptions));
+            }
+
+            createOptions.HashTableSize ??= _originalHashTableSize;
+            MpqArchive.Create(stream, GetMpqFiles().ToArray(), createOptions, leaveOpen).Dispose();
         }
 
         /// <inheritdoc/>

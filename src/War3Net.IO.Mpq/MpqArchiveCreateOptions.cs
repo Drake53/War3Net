@@ -27,22 +27,22 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// The size of blocks in compressed files, which is used to enable seeking.
         /// </summary>
-        public ushort BlockSize { get; init; }
+        public ushort BlockSize { get; set; }
 
         /// <summary>
         /// The desired size of the <see cref="BlockTable"/>. Larger size decreases the likelihood of hash collisions.
         /// </summary>
-        public ushort? HashTableSize { get; init; }
+        public ushort? HashTableSize { get; set; }
 
         /// <summary>
         /// If <see langword="true"/>, the archive files will be positioned directly after the header. Otherwise, the hashtable and blocktable will come first.
         /// </summary>
-        public bool WriteArchiveFirst { get; init; }
+        public bool WriteArchiveFirst { get; set; }
 
-        public AttributesFlags AttributesFlags { get; init; }
+        public AttributesFlags AttributesFlags { get; set; }
 
-        public MpqFileCreateMode AttributesCreateMode { get; init; }
+        public MpqFileCreateMode AttributesCreateMode { get; set; }
 
-        public MpqFileCreateMode ListFileCreateMode { get; init; }
+        public MpqFileCreateMode ListFileCreateMode { get; set; }
     }
 }
