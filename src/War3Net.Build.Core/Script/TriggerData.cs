@@ -120,6 +120,16 @@ namespace War3Net.Build.Script
 
         public int GetParameterCount(TriggerFunctionType functionType, string functionName)
         {
+            return GetParameters(functionType, functionName).Length;
+        }
+
+        public string GetParameterType(TriggerFunctionType functionType, string functionName, int parameterIndex)
+        {
+            return GetParameters(functionType, functionName)[parameterIndex];
+        }
+
+        public string[] GetParameters(TriggerFunctionType functionType, string functionName)
+        {
             var target = functionType switch
             {
                 TriggerFunctionType.Event => _triggerEvents,
@@ -136,7 +146,7 @@ namespace War3Net.Build.Script
             }
 
             return target.TryGetValue(functionName, out var parameters)
-                ? parameters.Length
+                ? parameters
                 : throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
         }
     }
