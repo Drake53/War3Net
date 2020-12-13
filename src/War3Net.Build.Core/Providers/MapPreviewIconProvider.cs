@@ -16,15 +16,15 @@ namespace War3Net.Build.Providers
 {
     public static class MapPreviewIconProvider
     {
-        private static readonly Dictionary<int, MapPreviewIconType> _iconTypes = GetIconTypesDictionary();
+        private static readonly Dictionary<int, PreviewIconType> _iconTypes = GetIconTypesDictionary();
         private static readonly List<Color> _playerColors = GetPlayerColorsList();
 
-        public static bool TryGetIcon(int unitTypeId, int ownerId, out MapPreviewIconType iconType, out Color color)
+        public static bool TryGetIcon(int unitTypeId, int ownerId, out PreviewIconType iconType, out Color color)
         {
             color = Color.FromArgb(-1);
             if (_iconTypes.TryGetValue(unitTypeId, out iconType))
             {
-                if (iconType == MapPreviewIconType.PlayerStartLocation)
+                if (iconType == PreviewIconType.PlayerStartLocation)
                 {
                     color = _playerColors[ownerId];
                 }
@@ -35,24 +35,24 @@ namespace War3Net.Build.Providers
             return false;
         }
 
-        private static Dictionary<int, MapPreviewIconType> GetIconTypesDictionary()
+        private static Dictionary<int, PreviewIconType> GetIconTypesDictionary()
         {
-            return new Dictionary<int, MapPreviewIconType>()
+            return new Dictionary<int, PreviewIconType>()
             {
-                { "ugol".FromRawcode(), MapPreviewIconType.GoldMine },
-                { "egol".FromRawcode(), MapPreviewIconType.GoldMine },
-                { "ngol".FromRawcode(), MapPreviewIconType.GoldMine },
-                { "ngme".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nfoh".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nmoo".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "ngad".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nwgt".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "ndrr".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nmer".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "ntav".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nmrk".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "nshp".FromRawcode(), MapPreviewIconType.NeutralBuilding },
-                { "sloc".FromRawcode(), MapPreviewIconType.PlayerStartLocation },
+                { "ugol".FromRawcode(), PreviewIconType.GoldMine },
+                { "egol".FromRawcode(), PreviewIconType.GoldMine },
+                { "ngol".FromRawcode(), PreviewIconType.GoldMine },
+                { "ngme".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nfoh".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nmoo".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "ngad".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nwgt".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "ndrr".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nmer".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "ntav".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nmrk".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "nshp".FromRawcode(), PreviewIconType.NeutralBuilding },
+                { "sloc".FromRawcode(), PreviewIconType.PlayerStartLocation },
             };
         }
 
