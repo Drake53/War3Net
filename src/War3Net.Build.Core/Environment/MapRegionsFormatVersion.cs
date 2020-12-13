@@ -9,6 +9,8 @@ namespace War3Net.Build.Environment
 {
     public enum MapRegionsFormatVersion
     {
+        v2 = 2,
+        v3 = 3,
         Normal = 5,
     }
 }
