@@ -25,6 +25,11 @@ namespace War3Net.Build.Environment
         /// </summary>
         L_Grass = ('C' << 0) | ('L' << 8) | ('g' << 16) | ('r' << 24),
 
+        /// <summary>
+        /// Lordaeron Summer - UNKNOWN ('CLno').
+        /// </summary>
+        L_Unknown = ('C' << 0) | ('L' << 8) | ('n' << 16) | ('o' << 24),
+
         /// =================================== \\\
         /// <see cref="Tileset.LordaeronFall"/> \\\
         /// =================================== \\\

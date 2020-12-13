@@ -218,23 +218,39 @@ namespace War3Net.Build.Providers
             }
         }
 
-        public static IEnumerable<CliffType> GetCliffTypes(Tileset tileset)
+        public static IEnumerable<CliffType> GetCliffTypes(Tileset tileset, bool legacy = false)
         {
             switch (tileset)
             {
                 case Tileset.LordaeronSummer:
                     yield return CliffType.L_Dirt;
                     yield return CliffType.L_Grass;
+                    if (legacy)
+                    {
+                        yield return CliffType.L_Unknown;
+                    }
                     yield break;
 
                 case Tileset.LordaeronFall:
+                    if (legacy)
+                    {
+                        yield return CliffType.L_Dirt;
+                    }
                     yield return CliffType.F_Dirt;
                     yield return CliffType.F_Grass;
                     yield break;
 
                 case Tileset.LordaeronWinter:
-                    yield return CliffType.W_Grass;
-                    yield return CliffType.W_Snow;
+                    if (legacy)
+                    {
+                        yield return CliffType.W_Snow;
+                        yield return CliffType.W_Grass;
+                    }
+                    else
+                    {
+                        yield return CliffType.W_Grass;
+                        yield return CliffType.W_Snow;
+                    }
                     yield break;
 
                 case Tileset.Barrens:
