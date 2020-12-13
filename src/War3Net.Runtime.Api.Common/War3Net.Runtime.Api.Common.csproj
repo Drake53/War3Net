@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\War3Net.Runtime\War3Net.Runtime.csproj" />
+    <ProjectReference Include="..\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- todo: packagereferences -->
-    <ProjectReference Include="..\War3Net.Runtime\War3Net.Runtime.csproj" />
+    <ProjectReference Include="..\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
   </ItemGroup>
 
 </Project>
