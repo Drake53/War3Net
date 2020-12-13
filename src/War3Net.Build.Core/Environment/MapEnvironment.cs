@@ -67,9 +67,9 @@ namespace War3Net.Build.Environment
             set => Bottom = value - MapHeight;
         }
 
-        public float MapWidth => TerrainTile.TileWidth * (Width - 1);
+        public float MapWidth => TerrainTile.TileWidth * Width;
 
-        public float MapHeight => TerrainTile.TileHeight * (Height - 1);
+        public float MapHeight => TerrainTile.TileHeight * Height;
 
         public bool IsDefaultTileset()
         {
@@ -100,14 +100,14 @@ namespace War3Net.Build.Environment
                 CliffTypes.Add(reader.ReadInt32<CliffType>());
             }
 
-            Width = reader.ReadUInt32();
-            Height = reader.ReadUInt32();
+            Width = reader.ReadUInt32() - 1;
+            Height = reader.ReadUInt32() - 1;
             Left = reader.ReadSingle();
             Bottom = reader.ReadSingle();
 
-            for (nint y = 0; y < Width; y++)
+            for (nint y = 0; y <= Width; y++)
             {
-                for (nint x = 0; x < Height; x++)
+                for (nint x = 0; x <= Height; x++)
                 {
                     TerrainTiles.Add(reader.ReadTerrainTile(FormatVersion));
                 }
@@ -133,8 +133,8 @@ namespace War3Net.Build.Environment
                 writer.Write((uint)cliffType);
             }
 
-            writer.Write(Width);
-            writer.Write(Height);
+            writer.Write(Width + 1);
+            writer.Write(Height + 1);
             writer.Write(Left);
             writer.Write(Bottom);
 
