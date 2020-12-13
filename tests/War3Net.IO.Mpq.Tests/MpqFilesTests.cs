@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqFilesTest.cs" company="Drake53">
+// <copyright file="MpqFilesTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,7 +16,7 @@ using War3Net.Common.Testing;
 namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
-    public class MpqFilesTest
+    public class MpqFilesTests
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]

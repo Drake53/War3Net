@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="FileProviderTest.cs" company="Drake53">
+// <copyright file="FileProviderTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -15,7 +15,7 @@ using War3Net.Common.Testing;
 namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
-    public class FileProviderTest
+    public class FileProviderTests
     {
         [DataTestMethod]
         [DynamicData(nameof(GetFileProviderFileExistsTestCases), DynamicDataSourceType.Method)]

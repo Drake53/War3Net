@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqArchiveTest.cs" company="Drake53">
+// <copyright file="MpqArchiveTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,7 +18,7 @@ using War3Net.IO.Mpq.Extensions;
 namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
-    public class MpqArchiveTest
+    public class MpqArchiveTests
     {
         private const ushort BlockSize = 3;
 
