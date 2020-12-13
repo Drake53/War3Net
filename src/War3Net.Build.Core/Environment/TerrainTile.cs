@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapTile.cs" company="Drake53">
+// <copyright file="TerrainTile.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,7 +10,7 @@ using System.IO;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapTile
+    public sealed class TerrainTile
     {
         public const int TileWidth = 128;
         public const int TileHeight = 128;
@@ -27,13 +27,13 @@ namespace War3Net.Build.Environment
         private byte _cliffData;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MapTile"/> class.
+        /// Initializes a new instance of the <see cref="TerrainTile"/> class.
         /// </summary>
-        public MapTile()
+        public TerrainTile()
         {
         }
 
-        internal MapTile(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
+        internal TerrainTile(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
         {
             ReadFrom(reader, formatVersion);
         }

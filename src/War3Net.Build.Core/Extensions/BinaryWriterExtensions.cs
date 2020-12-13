@@ -47,19 +47,19 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, MapEnvironment mapEnvironment) => mapEnvironment.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, MapTile mapTile, MapEnvironmentFormatVersion formatVersion) => mapTile.WriteTo(writer, formatVersion);
+        public static void Write(this BinaryWriter writer, TerrainTile terrainTile, MapEnvironmentFormatVersion formatVersion) => terrainTile.WriteTo(writer, formatVersion);
 
         public static void Write(this BinaryWriter writer, MapPreviewIcons mapPreviewIcons) => mapPreviewIcons.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, MapPreviewIcon mapPreviewIcon, MapPreviewIconsFormatVersion formatVersion) => mapPreviewIcon.WriteTo(writer, formatVersion);
+        public static void Write(this BinaryWriter writer, PreviewIcon previewIcon, MapPreviewIconsFormatVersion formatVersion) => previewIcon.WriteTo(writer, formatVersion);
 
         public static void Write(this BinaryWriter writer, MapRegions mapRegions) => mapRegions.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, Region region, MapRegionsFormatVersion formatVersion) => region.WriteTo(writer, formatVersion);
 
-        public static void Write(this BinaryWriter writer, PathingMap pathingMap) => pathingMap.WriteTo(writer);
+        public static void Write(this BinaryWriter writer, MapPathingMap mapPathingMap) => mapPathingMap.WriteTo(writer);
 
-        public static void Write(this BinaryWriter writer, ShadowMap shadowMap) => shadowMap.WriteTo(writer);
+        public static void Write(this BinaryWriter writer, MapShadowMap mapShadowMap) => mapShadowMap.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, CampaignInfo campaignInfo) => campaignInfo.WriteTo(writer);
 

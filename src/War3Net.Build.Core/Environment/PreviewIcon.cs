@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapPreviewIcon.cs" company="Drake53">
+// <copyright file="PreviewIcon.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,21 +12,21 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapPreviewIcon
+    public sealed class PreviewIcon
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MapPreviewIcon"/> class.
+        /// Initializes a new instance of the <see cref="PreviewIcon"/> class.
         /// </summary>
-        public MapPreviewIcon()
+        public PreviewIcon()
         {
         }
 
-        internal MapPreviewIcon(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
+        internal PreviewIcon(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
         {
             ReadFrom(reader, formatVersion);
         }
 
-        public MapPreviewIconType IconType { get; set; }
+        public PreviewIconType IconType { get; set; }
 
         public byte X { get; set; }
 
@@ -36,7 +36,7 @@ namespace War3Net.Build.Environment
 
         internal void ReadFrom(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
         {
-            IconType = reader.ReadInt32<MapPreviewIconType>();
+            IconType = reader.ReadInt32<PreviewIconType>();
             X = (byte)reader.ReadInt32();
             Y = (byte)reader.ReadInt32();
             Color = Color.FromArgb(reader.ReadInt32());

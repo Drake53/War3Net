@@ -47,19 +47,19 @@ namespace War3Net.Build.Extensions
 
         public static MapEnvironment ReadMapEnvironment(this BinaryReader reader) => new MapEnvironment(reader);
 
-        public static MapTile ReadTerrainTile(this BinaryReader reader, MapEnvironmentFormatVersion formatVersion) => new MapTile(reader, formatVersion);
+        public static TerrainTile ReadTerrainTile(this BinaryReader reader, MapEnvironmentFormatVersion formatVersion) => new TerrainTile(reader, formatVersion);
 
         public static MapPreviewIcons ReadMapPreviewIcons(this BinaryReader reader) => new MapPreviewIcons(reader);
 
-        public static MapPreviewIcon ReadMapPreviewIcon(this BinaryReader reader, MapPreviewIconsFormatVersion formatVersion) => new MapPreviewIcon(reader, formatVersion);
+        public static PreviewIcon ReadPreviewIcon(this BinaryReader reader, MapPreviewIconsFormatVersion formatVersion) => new PreviewIcon(reader, formatVersion);
 
         public static MapRegions ReadMapRegions(this BinaryReader reader) => new MapRegions(reader);
 
         public static Region ReadRegion(this BinaryReader reader, MapRegionsFormatVersion formatVersion) => new Region(reader, formatVersion);
 
-        public static PathingMap ReadPathingMap(this BinaryReader reader) => new PathingMap(reader);
+        public static MapPathingMap ReadMapPathingMap(this BinaryReader reader) => new MapPathingMap(reader);
 
-        public static ShadowMap ReadShadowMap(this BinaryReader reader) => new ShadowMap(reader);
+        public static MapShadowMap ReadMapShadowMap(this BinaryReader reader) => new MapShadowMap(reader);
 
         public static CampaignInfo ReadCampaignInfo(this BinaryReader reader) => new CampaignInfo(reader);
 
@@ -85,19 +85,19 @@ namespace War3Net.Build.Extensions
 
         public static ObjectData ReadObjectData(this BinaryReader reader, bool fromCampaign = false) => new ObjectData(reader, fromCampaign);
 
-        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignAbilityObjectData(reader) : new MapAbilityObjectData(reader);
+        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignAbilityObjectData() : reader.ReadMapAbilityObjectData();
 
-        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignBuffObjectData(reader) : new MapBuffObjectData(reader);
+        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignBuffObjectData() : reader.ReadMapBuffObjectData();
 
-        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignDestructableObjectData(reader) : new MapDestructableObjectData(reader);
+        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignDestructableObjectData() : reader.ReadMapDestructableObjectData();
 
-        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignDoodadObjectData(reader) : new MapDoodadObjectData(reader);
+        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignDoodadObjectData() : reader.ReadMapDoodadObjectData();
 
-        public static ItemObjectData ReadItemObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignItemObjectData(reader) : new MapItemObjectData(reader);
+        public static ItemObjectData ReadItemObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignItemObjectData() : reader.ReadMapItemObjectData();
 
-        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignUnitObjectData(reader) : new MapUnitObjectData(reader);
+        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignUnitObjectData() : reader.ReadMapUnitObjectData();
 
-        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignUpgradeObjectData(reader) : new MapUpgradeObjectData(reader);
+        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignUpgradeObjectData() : reader.ReadMapUpgradeObjectData();
 
         public static CampaignAbilityObjectData ReadCampaignAbilityObjectData(this BinaryReader reader) => new CampaignAbilityObjectData(reader);
 

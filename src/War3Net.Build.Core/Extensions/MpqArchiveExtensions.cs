@@ -31,10 +31,10 @@ namespace War3Net.Build.Extensions
 
             archive.AddFilename(MapCameras.FileName);
             archive.AddFilename(MapEnvironment.FileName);
+            archive.AddFilename(MapPathingMap.FileName);
             archive.AddFilename(MapPreviewIcons.FileName);
             archive.AddFilename(MapRegions.FileName);
-            archive.AddFilename(PathingMap.FileName);
-            archive.AddFilename(ShadowMap.FileName);
+            archive.AddFilename(MapShadowMap.FileName);
             archive.AddFilename(@"war3mapMap.blp");
             archive.AddFilename(@"war3mapMap.tga");
             archive.AddFilename(@"war3mapPath.tga");

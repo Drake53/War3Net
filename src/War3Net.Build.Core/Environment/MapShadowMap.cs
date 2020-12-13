@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="ShadowMap.cs" company="Drake53">
+// <copyright file="MapShadowMap.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,18 +10,18 @@ using System.IO;
 
 namespace War3Net.Build.Environment
 {
-    public class ShadowMap
+    public class MapShadowMap
     {
         public const string FileName = "war3map.shd";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShadowMap"/> class.
+        /// Initializes a new instance of the <see cref="MapShadowMap"/> class.
         /// </summary>
-        public ShadowMap()
+        public MapShadowMap()
         {
         }
 
-        internal ShadowMap(BinaryReader reader)
+        internal MapShadowMap(BinaryReader reader)
         {
             ReadFrom(reader);
         }

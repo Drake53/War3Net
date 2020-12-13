@@ -53,7 +53,7 @@ namespace War3Net.Build.Environment
 
         public float Bottom { get; set; }
 
-        public List<MapTile> TerrainTiles { get; init; } = new();
+        public List<TerrainTile> TerrainTiles { get; init; } = new();
 
         public float Right
         {
@@ -67,9 +67,9 @@ namespace War3Net.Build.Environment
             set => Bottom = value - MapHeight;
         }
 
-        public float MapWidth => MapTile.TileWidth * (Width - 1);
+        public float MapWidth => TerrainTile.TileWidth * (Width - 1);
 
-        public float MapHeight => MapTile.TileHeight * (Height - 1);
+        public float MapHeight => TerrainTile.TileHeight * (Height - 1);
 
         public bool IsDefaultTileset()
         {
