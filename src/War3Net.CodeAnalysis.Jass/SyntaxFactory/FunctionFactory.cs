@@ -40,7 +40,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public static FunctionSyntax Function(FunctionDeclarationSyntax functionDeclaration, IEnumerable<LocalVariableDeclarationSyntax> localDeclarations, IEnumerable<NewStatementSyntax> statements)
         {
             var locals = LocalVariableList(localDeclarations.ToArray());
-            locals.Last().LineDelimiterNode.Lines.Add(Newline());
+            if (locals.Any())
+            {
+                locals.Last().LineDelimiterNode.Lines.Add(Newline());
+            }
+
             return Function(functionDeclaration, locals, statements.ToArray());
         }
 
