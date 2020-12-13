@@ -32,7 +32,7 @@ namespace War3Net.Build.Script
                 Strings.Add(reader.ReadTriggerString());
             }
 
-            _encoding = reader.CurrentEncoding;
+            // _encoding = reader.CurrentEncoding;
         }
 
         internal void WriteTo(StreamWriter writer)
