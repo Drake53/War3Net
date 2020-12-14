@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using War3Net.Build.Common;
 using War3Net.Build.Environment;
@@ -331,6 +332,18 @@ namespace War3Net.Build.Providers
                 default:
                     yield break;
             }
+        }
+
+        public static TerrainType GetDefaultTerrainType(Tileset tileset)
+        {
+            return tileset switch
+            {
+                Tileset.LordaeronSummer => TerrainType.L_Dirt,
+
+                // TODO
+
+                _ => throw new InvalidEnumArgumentException(nameof(tileset), (int)tileset, typeof(Tileset)),
+            };
         }
     }
 }

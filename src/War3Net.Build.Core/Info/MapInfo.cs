@@ -42,15 +42,15 @@ namespace War3Net.Build.Info
 
         public int EditorVersion { get; set; }
 
-        public Version GameVersion { get; set; }
+        public Version? GameVersion { get; set; }
 
-        public string MapName { get; set; }
+        public string? MapName { get; set; }
 
-        public string MapAuthor { get; set; }
+        public string? MapAuthor { get; set; }
 
-        public string MapDescription { get; set; }
+        public string? MapDescription { get; set; }
 
-        public string RecommendedPlayers { get; set; }
+        public string? RecommendedPlayers { get; set; }
 
         public float Unk1 { get; set; }
 
@@ -85,26 +85,26 @@ namespace War3Net.Build.Info
 
         public int LoadingScreenBackgroundNumber { get; set; }
 
-        public string LoadingScreenPath { get; set; }
+        public string? LoadingScreenPath { get; set; }
 
-        public string LoadingScreenText { get; set; }
+        public string? LoadingScreenText { get; set; }
 
-        public string LoadingScreenTitle { get; set; }
+        public string? LoadingScreenTitle { get; set; }
 
-        public string LoadingScreenSubtitle { get; set; }
+        public string? LoadingScreenSubtitle { get; set; }
 
         // RoC
         public int LoadingScreenNumber { get; set; }
 
         public GameDataSet GameDataSet { get; set; }
 
-        public string PrologueScreenPath { get; set; }
+        public string? PrologueScreenPath { get; set; }
 
-        public string PrologueScreenText { get; set; }
+        public string? PrologueScreenText { get; set; }
 
-        public string PrologueScreenTitle { get; set; }
+        public string? PrologueScreenTitle { get; set; }
 
-        public string PrologueScreenSubtitle { get; set; }
+        public string? PrologueScreenSubtitle { get; set; }
 
         public FogStyle FogStyle { get; set; }
 
@@ -118,7 +118,7 @@ namespace War3Net.Build.Info
 
         public WeatherType GlobalWeather { get; set; }
 
-        public string SoundEnvironment { get; set; }
+        public string? SoundEnvironment { get; set; }
 
         public Tileset LightEnvironment { get; set; }
 
@@ -141,9 +141,9 @@ namespace War3Net.Build.Info
 
         public List<TechData> TechData { get; init; } = new();
 
-        public List<RandomUnitTable> RandomUnitTables { get; init; } = new();
+        public List<RandomUnitTable>? RandomUnitTables { get; init; } = new();
 
-        public List<RandomItemTable> RandomItemTables { get; init; } = new();
+        public List<RandomItemTable>? RandomItemTables { get; init; } = new();
 
         internal void ReadFrom(BinaryReader reader)
         {

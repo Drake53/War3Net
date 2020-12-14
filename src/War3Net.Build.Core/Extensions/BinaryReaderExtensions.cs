@@ -83,21 +83,21 @@ namespace War3Net.Build.Extensions
 
         public static RandomUnitSet ReadRandomUnitSet(this BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize) => new RandomUnitSet(reader, formatVersion, setSize);
 
-        public static ObjectData ReadObjectData(this BinaryReader reader, bool fromCampaign = false) => new ObjectData(reader, fromCampaign);
+        public static ObjectData ReadObjectData(this BinaryReader reader, bool fromCampaign) => new ObjectData(reader, fromCampaign);
 
-        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignAbilityObjectData() : reader.ReadMapAbilityObjectData();
+        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignAbilityObjectData() : reader.ReadMapAbilityObjectData();
 
-        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignBuffObjectData() : reader.ReadMapBuffObjectData();
+        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignBuffObjectData() : reader.ReadMapBuffObjectData();
 
-        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignDestructableObjectData() : reader.ReadMapDestructableObjectData();
+        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignDestructableObjectData() : reader.ReadMapDestructableObjectData();
 
-        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignDoodadObjectData() : reader.ReadMapDoodadObjectData();
+        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignDoodadObjectData() : reader.ReadMapDoodadObjectData();
 
-        public static ItemObjectData ReadItemObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignItemObjectData() : reader.ReadMapItemObjectData();
+        public static ItemObjectData ReadItemObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignItemObjectData() : reader.ReadMapItemObjectData();
 
-        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignUnitObjectData() : reader.ReadMapUnitObjectData();
+        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignUnitObjectData() : reader.ReadMapUnitObjectData();
 
-        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? reader.ReadCampaignUpgradeObjectData() : reader.ReadMapUpgradeObjectData();
+        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignUpgradeObjectData() : reader.ReadMapUpgradeObjectData();
 
         public static CampaignAbilityObjectData ReadCampaignAbilityObjectData(this BinaryReader reader) => new CampaignAbilityObjectData(reader);
 
@@ -143,6 +143,8 @@ namespace War3Net.Build.Extensions
 
         public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => new CustomTextTrigger(reader, encoding, formatVersion, subVersion);
 
+        public static MapTriggers ReadMapTriggers(this BinaryReader reader) => reader.ReadMapTriggers(TriggerData.Default);
+
         public static MapTriggers ReadMapTriggers(this BinaryReader reader, TriggerData triggerData) => new MapTriggers(reader, triggerData);
 
         public static DeletedTriggerItem ReadDeletedTriggerItem(this BinaryReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new DeletedTriggerItem(reader, triggerItemType, triggerData, formatVersion, subVersion);
@@ -181,7 +183,7 @@ namespace War3Net.Build.Extensions
 
         public static RandomUnitTableUnit ReadRandomUnitTableUnit(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitTableUnit(reader, formatVersion, subVersion, useNewFormat);
 
-        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign = false) => fromCampaign ? new CampaignImportedFiles(reader) : new MapImportedFiles(reader);
+        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign) => fromCampaign ? new CampaignImportedFiles(reader) : new MapImportedFiles(reader);
 
         public static ImportedFile ReadImportedFile(this BinaryReader reader, ImportedFilesFormatVersion formatVersion) => new ImportedFile(reader, formatVersion);
     }

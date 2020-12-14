@@ -26,7 +26,7 @@ namespace War3Net.Build.Script
             ReadFrom(reader, encoding, formatVersion, subVersion);
         }
 
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         internal void ReadFrom(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
@@ -44,7 +44,7 @@ namespace War3Net.Build.Script
 
         internal void WriteTo(BinaryWriter writer, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
-            writer.Write(encoding.GetBytes(Code).Length);
+            writer.Write(encoding.GetBytes(Code ?? string.Empty).Length);
             writer.WriteString(Code, false);
         }
     }

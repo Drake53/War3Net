@@ -25,6 +25,9 @@ namespace War3Net.Build.Widget
             ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
+        /// <summary>
+        /// Set to -1 for any level.
+        /// </summary>
         public int Level { get; set; }
 
         public ItemClass Class { get; set; }
