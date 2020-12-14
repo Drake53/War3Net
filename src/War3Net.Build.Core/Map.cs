@@ -6,7 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using War3Net.Build.Audio;
@@ -89,49 +92,49 @@ namespace War3Net.Build
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapAbilityObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                AbilityObjectData = reader.ReadAbilityObjectData(false);
+                AbilityObjectData = reader.ReadMapAbilityObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapBuffObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapBuffObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                BuffObjectData = reader.ReadBuffObjectData(false);
+                BuffObjectData = reader.ReadMapBuffObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapDestructableObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapDestructableObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                DestructableObjectData = reader.ReadDestructableObjectData(false);
+                DestructableObjectData = reader.ReadMapDestructableObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapDoodadObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapDoodadObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                DoodadObjectData = reader.ReadDoodadObjectData(false);
+                DoodadObjectData = reader.ReadMapDoodadObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapItemObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapItemObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                ItemObjectData = reader.ReadItemObjectData(false);
+                ItemObjectData = reader.ReadMapItemObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapUnitObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapUnitObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                UnitObjectData = reader.ReadUnitObjectData(false);
+                UnitObjectData = reader.ReadMapUnitObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapUpgradeObjectData.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapUpgradeObjectData.FileName));
                 using var reader = new BinaryReader(fileStream);
-                UpgradeObjectData = reader.ReadUpgradeObjectData(false);
+                UpgradeObjectData = reader.ReadMapUpgradeObjectData();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapCustomTextTriggers.FileName)))
@@ -152,7 +155,7 @@ namespace War3Net.Build
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapTriggerStrings.FileName));
                 using var reader = new StreamReader(fileStream);
-                TriggerStrings = reader.ReadTriggerStrings(false);
+                TriggerStrings = reader.ReadMapTriggerStrings();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapDoodads.FileName)))
@@ -363,7 +366,7 @@ namespace War3Net.Build
             }
             else
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Could not find a file or folder at the specified path.");
             }
         }
 
