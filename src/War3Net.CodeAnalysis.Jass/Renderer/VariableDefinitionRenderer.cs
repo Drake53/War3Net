@@ -7,8 +7,6 @@
 
 #pragma warning disable SA1649 // File name should match first type name
 
-using System.IO;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Renderer

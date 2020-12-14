@@ -43,6 +43,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 SyntaxTokenType.IntegerKeyword,
                 SyntaxTokenType.HandleKeyword,
                 SyntaxTokenType.StringKeyword,
+                // todo: SyntaxTokenType.CodeKeyword?
             };
         }
     }

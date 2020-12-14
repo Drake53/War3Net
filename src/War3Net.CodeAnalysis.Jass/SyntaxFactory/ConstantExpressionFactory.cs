@@ -37,16 +37,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return new ConstantExpressionSyntax(@string).ToNewExpressionSyntax();
         }
 
-        public static NewExpressionSyntax ConstantExpression(float real, int precision = 1)
+        public static NewExpressionSyntax ConstantExpression(float real, int precision = 3)
         {
-            if (precision != 1)
-            {
-                throw new NotImplementedException();
-            }
-
             var isPositive = real >= 0f;
-            var isIntegral = real % 1 == 0f;
-            var realString = $"{(isPositive ? real : -real)}{(isIntegral ? ".0" : string.Empty)}";
+            var realString = $"{(isPositive ? real : -real).ToString($"F{precision}")}";
 
             var expr = new ConstantExpressionSyntax(Token(SyntaxTokenType.RealNumber, realString)).ToNewExpressionSyntax();
             return isPositive ? expr : UnaryExpression(expr, SyntaxTokenType.MinusOperator);

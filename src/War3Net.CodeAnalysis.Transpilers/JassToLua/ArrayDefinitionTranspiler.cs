@@ -87,8 +87,8 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             LuaExpressionSyntax equalsValueExpression = arrayDefinitionNode.TypeNameNode.TypeNameToken.TokenType switch
             {
-                SyntaxTokenType.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", 0),
-                SyntaxTokenType.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", 0f),
+                SyntaxTokenType.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", default(int)),
+                SyntaxTokenType.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", default(float)),
                 SyntaxTokenType.StringKeyword => new LuaInvocationExpressionSyntax("__jarray", string.Empty),
                 SyntaxTokenType.BooleanKeyword => new LuaInvocationExpressionSyntax("__jarray", LuaIdentifierLiteralExpressionSyntax.False),
                 _ => new LuaTableExpression(),

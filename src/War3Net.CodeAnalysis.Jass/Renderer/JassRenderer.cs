@@ -63,6 +63,11 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             Write(" ");
         }
 
+        private void WriteSpaces(int amount)
+        {
+            Write(new string(' ', amount));
+        }
+
         private void Write(string s)
         {
             if (!_currentLineIndented)
