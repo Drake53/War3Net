@@ -2,19 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
+    <Version>$(War3NetDrawingBlpVersion)</Version>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53, Xalcon</Authors>
-
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp</PackageProjectUrl>
-    <PackageTags>blp warcraft3 warcraft-iii</PackageTags>
-
-    <Version>2.0.1</Version>
-    <FileVersion>2.0.1</FileVersion>
-    <AssemblyVersion>2.0</AssemblyVersion>
+    <PackageTags>blp;warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -22,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="0.3.2" />
+    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
   </ItemGroup>
 
 </Project>

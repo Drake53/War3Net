@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build.Core" Version="1.7.2" />
+    <PackageReference Include="War3Net.Build.Core" Version="$(War3NetBuildCoreVersion)" />
   </ItemGroup>
 
 </Project>

@@ -12,23 +12,48 @@
   <ItemGroup Condition="'$(PACK)'=='true'">
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="README.md" />
-    <None Remove="$(MSBuildThisFileDirectory)LICENSE" />
-    <None Remove="$(MSBuildThisFileDirectory)stylecop.json" />
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <Content Include="$(MSBuildThisFileDirectory)LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
   </ItemGroup>
-  <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
+  <ItemGroup>
+    <None Remove="README.md" />
+    <None Remove="$(MSBuildThisFileDirectory)LICENSE" />
+    <None Remove="$(MSBuildThisFileDirectory)stylecop.json" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(PACK)'!='true'">
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <AnalysisLevel>5</AnalysisLevel>
   </PropertyGroup>
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)War3Net.ruleset</CodeAnalysisRuleSet>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-    <AnalysisLevel>5</AnalysisLevel>
+    <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <War3NetBuildVersion>1.7.0</War3NetBuildVersion>
+    <War3NetBuildCoreVersion>1.7.2</War3NetBuildCoreVersion>
+    <War3NetCodeAnalysisJassVersion>2.1.0</War3NetCodeAnalysisJassVersion>
+    <War3NetCoreAnalysisTranspilersVersion>0.1.0</War3NetCoreAnalysisTranspilersVersion>
+    <War3NetCommonVersion>0.3.2</War3NetCommonVersion>
+    <War3NetDrawingBlpVersion>2.0.1</War3NetDrawingBlpVersion>
+    <War3NetDrawingTgaVersion>1.0.0</War3NetDrawingTgaVersion>
+    <War3NetIOCompressionVersion>1.0.2</War3NetIOCompressionVersion>
+    <War3NetIOMpqVersion>1.2.2</War3NetIOMpqVersion>
+    <War3NetIOSlkVersion>0.1.1</War3NetIOSlkVersion>
+    <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
+    <!--
+    <War3NetRenderingVersion></War3NetRenderingVersion>
+    <War3NetReplayVersion></War3NetReplayVersion>
+    <War3NetRuntimeVersion></War3NetRuntimeVersion>
+    <War3NetRuntimeApiBlizzardVersion></War3NetRuntimeApiBlizzardVersion>
+    <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
+    <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
+    -->
+    <War3NetCSharpLuaVersion>1.7.0</War3NetCSharpLuaVersion>
+    <War3NetCSharpLuaCoreSystemVersion>1.7.0</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>

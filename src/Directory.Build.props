@@ -15,13 +15,17 @@
 
   <PropertyGroup>
     <Owners>Drake53</Owners>
+    <Authors>Drake53 and Contributors</Authors>
     <Copyright>Copyright (c) Drake53 and Contributors</Copyright>
+    
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
+    <PackageReleaseNotes>https://github.com/Drake53/War3Net/tree/master/docs/changelogs</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
   </PropertyGroup>
 

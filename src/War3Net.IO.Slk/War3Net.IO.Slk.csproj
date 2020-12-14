@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetIOSlkVersion)</Version>
   </PropertyGroup>
   
   <PropertyGroup>
-    <Authors>Drake53</Authors>
-
     <Description>Library for opening and creating files in SLK format.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Slk</PackageProjectUrl>
-    <PackageTags>slk sylk warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-
-    <Version>0.1.1</Version>
-    <FileVersion>0.1.1</FileVersion>
-    <AssemblyVersion>0.1</AssemblyVersion>
+    <PackageTags>slk;warcraft3</PackageTags>
   </PropertyGroup>
 
 </Project>

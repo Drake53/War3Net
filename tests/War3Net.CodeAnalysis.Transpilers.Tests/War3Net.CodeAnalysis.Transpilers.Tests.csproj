@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: packagereference -->
-    <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.Transpilers\War3Net.CodeAnalysis.Transpilers.csproj" />
+    <PackageReference Include="War3Net.CodeAnalysis.Transpilers" Version="$(War3NetCodeAnalysisTranspilersVersion)" />
   </ItemGroup>
 
 </Project>

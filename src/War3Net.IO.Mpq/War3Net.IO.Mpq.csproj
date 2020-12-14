@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetIOMpqVersion)</Version>
   </PropertyGroup>
   
   <PropertyGroup>
-    <Authors>Drake53, Foole, Ladislav Zezula</Authors>
-
     <Description>Library for opening and creating files in MPQ format.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq</PackageProjectUrl>
-    <PackageTags>mpq mopaq warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-
-    <Version>1.2.2</Version>
-    <FileVersion>1.2.2</FileVersion>
-    <AssemblyVersion>1</AssemblyVersion>
+    <PackageTags>mpq;warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -22,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Compression" Version="1.0.2" />
+    <PackageReference Include="War3Net.IO.Compression" Version="$(War3NetIOCompressionVersion)" />
   </ItemGroup>
 
 </Project>

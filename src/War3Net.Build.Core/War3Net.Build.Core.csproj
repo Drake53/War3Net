@@ -2,29 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetBuildCoreVersion)</Version>
+    <RootNamespace>War3Net.Build</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53</Authors>
-    <RootNamespace>War3Net.Build</RootNamespace>
-
     <Description>Parsers and serializers for war3map files.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build.Core</PackageProjectUrl>
-    <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-
-    <Version>1.7.2</Version>
-    <FileVersion>1.7.2</FileVersion>
-    <AssemblyVersion>1</AssemblyVersion>
+    <PackageTags>warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
     <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Mpq" Version="1.2.2" />
+    <PackageReference Include="War3Net.IO.Mpq" Version="$(War3NetIOMpqVersion)" />
   </ItemGroup>
 
   <ItemGroup>

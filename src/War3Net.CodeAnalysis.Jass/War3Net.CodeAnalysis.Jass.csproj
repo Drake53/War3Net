@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetCodeAnalysisJassVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53</Authors>
-
     <Description>War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass</PackageProjectUrl>
-    <PackageTags>jass csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-
-    <Version>2.1.0</Version>
-    <FileVersion>2.1.0</FileVersion>
-    <AssemblyVersion>2</AssemblyVersion>
+    <PackageTags>jass;warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -22,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.CSharp" Version="1.2.0" />
-    <PackageReference Include="War3Net.Common" Version="0.3.2" />
+    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
   </ItemGroup>
 
 </Project>

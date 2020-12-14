@@ -2,18 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetDrawingTgaVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53, shns</Authors>
-
     <Description>War3Net.Drawing.Tga is a library for reading files with the ".tga" extension.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Tga</PackageProjectUrl>
-    <PackageTags>tga targa warcraft3 warcraft-iii</PackageTags>
-
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
-    <AssemblyVersion>1</AssemblyVersion>
+    <PackageTags>tga;warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

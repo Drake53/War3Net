@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetCommonVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53</Authors>
-
     <Description>Contains some methods used by several other War3Net projects.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.Common</PackageProjectUrl>
-    <PackageTags>csharp warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-
-    <Version>0.3.2</Version>
-    <FileVersion>0.3.2</FileVersion>
-    <AssemblyVersion>0.3</AssemblyVersion>
+    <PackageTags>warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

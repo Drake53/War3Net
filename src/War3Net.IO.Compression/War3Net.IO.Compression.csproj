@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetIOCompressionVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53, Foole</Authors>
-
     <Description>Decompression and compression algorithms for compression methods commonly used in MPQ archives.</Description>
-    <PackageProjectUrl>https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Compression</PackageProjectUrl>
-    <PackageTags>compression huffman adpcm pklib zlib bzip2 warcraft3 warcraft-iii</PackageTags>
-    <PackageReleaseNotes>Fixed bug in PKLib decompression.</PackageReleaseNotes>
-
-    <Version>1.0.2</Version>
-    <FileVersion>1.0.2</FileVersion>
-    <AssemblyVersion>1</AssemblyVersion>
+    <PackageTags>compression;huffman;adpcm;pklib;zlib;bzip2;warcraft3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="0.3.2" />
+    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
   </ItemGroup>
 
 </Project>
