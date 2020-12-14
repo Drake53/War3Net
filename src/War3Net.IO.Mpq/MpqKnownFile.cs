@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.IO.Mpq.Extensions;
+
 namespace War3Net.IO.Mpq
 {
     public sealed class MpqKnownFile : MpqFile
@@ -15,7 +17,7 @@ namespace War3Net.IO.Mpq
         /// Initializes a new instance of the <see cref="MpqKnownFile"/> class.
         /// </summary>
         internal MpqKnownFile(string fileName, MpqStream mpqStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen = false)
-            : base(MpqHash.GetHashedFileName(fileName), mpqStream, flags, locale, leaveOpen)
+            : base(fileName.GetStringHash(), mpqStream, flags, locale, leaveOpen)
         {
             _fileName = fileName;
         }

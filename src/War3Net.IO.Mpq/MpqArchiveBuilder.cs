@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using War3Net.IO.Mpq.Extensions;
+
 namespace War3Net.IO.Mpq
 {
     public sealed class MpqArchiveBuilder : IEnumerable<MpqFile>
@@ -64,7 +66,7 @@ namespace War3Net.IO.Mpq
 
         public void RemoveFile(string fileName)
         {
-            RemoveFile(MpqHash.GetHashedFileName(fileName));
+            RemoveFile(fileName.GetStringHash());
         }
 
         public void SaveTo(string fileName)
@@ -113,9 +115,7 @@ namespace War3Net.IO.Mpq
 
         private IEnumerable<MpqFile> GetMpqFiles()
         {
-            return _modifiedFiles.Concat(_originalFiles.Where(originalFile =>
-                !_removedFiles.Contains(originalFile.Name) &&
-                !_modifiedFiles.Where(modifiedFile => modifiedFile.Equals(originalFile)).Any()));
+            return _modifiedFiles.Concat(_originalFiles).Where(mpqFile => !_removedFiles.Contains(mpqFile.Name));
         }
     }
 }

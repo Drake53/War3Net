@@ -102,6 +102,9 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << createOptions.BlockSize;
             _archiveFollowsHeader = createOptions.WriteArchiveFirst;
 
+            var listFileName = ListFile.FileName.GetStringHash();
+            var attributesName = Attributes.FileName.GetStringHash();
+
             var haveListFile = false;
             var haveAttributes = false;
             var mpqFiles = new HashSet<MpqFile>(MpqFileComparer.Default);
@@ -112,7 +115,7 @@ namespace War3Net.IO.Mpq
                     continue;
                 }
 
-                if (mpqFile.Name == MpqHash.GetHashedFileName(ListFile.FileName))
+                if (mpqFile.Name == listFileName)
                 {
                     if (createOptions.ListFileCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
                     {
@@ -124,7 +127,7 @@ namespace War3Net.IO.Mpq
                     }
                 }
 
-                if (mpqFile.Name == MpqHash.GetHashedFileName(Attributes.FileName))
+                if (mpqFile.Name == attributesName)
                 {
                     if (createOptions.AttributesCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
                     {
@@ -866,7 +869,7 @@ namespace War3Net.IO.Mpq
             }
 
             index &= _mpqHeader.HashTableSize - 1;
-            var name = MpqHash.GetHashedFileName(filename);
+            var name = filename.GetStringHash();
 
             for (var i = index; i < _hashTable.Size; ++i)
             {
@@ -898,7 +901,7 @@ namespace War3Net.IO.Mpq
             }
 
             index &= _mpqHeader.HashTableSize - 1;
-            var name = MpqHash.GetHashedFileName(filename);
+            var name = filename.GetStringHash();
 
             var foundAnyHash = false;
 
