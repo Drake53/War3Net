@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- TODO: PackageReference instead of ProjectReference -->
+    <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
+    <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -83,6 +83,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "perf", "perf", "{A43B6E7E-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Drawing.Blp.Benchmarks", "perf\War3Net.Drawing.Blp.Benchmarks\War3Net.Drawing.Blp.Benchmarks.csproj", "{B69FBE66-5A00-4ECA-92C9-DEC996655F4E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Modeling.Benchmarks", "perf\War3Net.Modeling.Benchmarks\War3Net.Modeling.Benchmarks.csproj", "{A3C35C70-B08C-4673-8120-A3D31B7F81CE}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "War3Net.Runtime.Benchmarks", "perf\War3Net.Runtime.Benchmarks\War3Net.Runtime.Benchmarks.csproj", "{020F9BD0-FE06-4575-8952-82090673A0DD}"
 EndProject
 
@@ -91,6 +93,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua", "submodules\CSharp.lua\CSharp.lua\CSharp.lua.csproj", "{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.lua.CoreSystem", "submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj", "{E1533516-FE29-4F48-A402-4308E8CC3882}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastMDX", "submodules\FastMDX\FastMDX\FastMDX.csproj", "{81EC1CD4-62F5-4657-8901-CA2AA18D026C}"
 EndProject
 
 Global
@@ -281,6 +285,11 @@ Global
 		{B69FBE66-5A00-4ECA-92C9-DEC996655F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B69FBE66-5A00-4ECA-92C9-DEC996655F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B69FBE66-5A00-4ECA-92C9-DEC996655F4E}.Release|Any CPU.Build.0 = Release|Any CPU
+# War3Net.Modeling.Benchmarks
+		{A3C35C70-B08C-4673-8120-A3D31B7F81CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C35C70-B08C-4673-8120-A3D31B7F81CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C35C70-B08C-4673-8120-A3D31B7F81CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C35C70-B08C-4673-8120-A3D31B7F81CE}.Release|Any CPU.Build.0 = Release|Any CPU
 # War3Net.Runtime.Benchmarks
 		{020F9BD0-FE06-4575-8952-82090673A0DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{020F9BD0-FE06-4575-8952-82090673A0DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -298,6 +307,11 @@ Global
 		{E1533516-FE29-4F48-A402-4308E8CC3882}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1533516-FE29-4F48-A402-4308E8CC3882}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1533516-FE29-4F48-A402-4308E8CC3882}.Release|Any CPU.Build.0 = Release|Any CPU
+# FastMDX
+		{81EC1CD4-62F5-4657-8901-CA2AA18D026C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81EC1CD4-62F5-4657-8901-CA2AA18D026C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81EC1CD4-62F5-4657-8901-CA2AA18D026C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81EC1CD4-62F5-4657-8901-CA2AA18D026C}.Release|Any CPU.Build.0 = Release|Any CPU
 
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
@@ -344,11 +358,13 @@ Global
 
 # perf
 		{B69FBE66-5A00-4ECA-92C9-DEC996655F4E} = {A43B6E7E-5DCB-4CC4-9FB5-51F9FC3A69E9}
+		{A3C35C70-B08C-4673-8120-A3D31B7F81CE} = {A43B6E7E-5DCB-4CC4-9FB5-51F9FC3A69E9}
 		{020F9BD0-FE06-4575-8952-82090673A0DD} = {A43B6E7E-5DCB-4CC4-9FB5-51F9FC3A69E9}
 
 # submodules
 		{95DF76BF-DA2D-4AC0-84F6-C3A7C7E36448} = {F40BB975-CDB3-46FC-B152-B9F107CD3476}
 		{E1533516-FE29-4F48-A402-4308E8CC3882} = {F40BB975-CDB3-46FC-B152-B9F107CD3476}
+		{81EC1CD4-62F5-4657-8901-CA2AA18D026C} = {F40BB975-CDB3-46FC-B152-B9F107CD3476}
 
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
