@@ -34,7 +34,6 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
 | [War3Net.Common]                  | Contains some methods used by several other War3Net projects.                                             | [![VCommon]][PCommon]         |
 | [War3Net.Drawing.Blp]             | War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.                             | [![VBlp]][PBlp]               |
-| [War3Net.Drawing.Tga]             | Class library for opening TGA files.                                                                      | *Coming soon*                 |
 | [War3Net.IO.Compression]          | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
 | [War3Net.IO.Mpq]                  | Class library for opening and creating MPQ files.                                                         | [![VMpq]][PMpq]               |
 | [War3Net.IO.Slk]                  | Library for opening and creating files in SLK format.                                                     | [![VSlk]][PSlk]               |
@@ -48,7 +47,6 @@ War3Net is a collection of libraries for Warcraft III modding.
 
 Some of the above projects are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
-- *[War3Net.Drawing.Tga]:* [TgaLib](https://github.com/shns/TgaLib)
 - *[War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
 ### Contributing
@@ -61,9 +59,7 @@ Some of the above projects are based on code from other repositories:
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
 War3Net is licenced under the [MIT](LICENSE) license.
-Some of the projects were based off of existing repositories, and may have been modified to better support Warcraft III modding use-cases.
-
-[War3Net.Build] and [War3Net.CodeAnalysis.Transpilers] depend on [CSharpLua], which is lincensed under the [Apache-2.0](https://github.com/Drake53/CSharp.lua/blob/master/LICENSE) license.
+Projects from NuGet packages and submodules may have a different license.
 
 
 
@@ -82,7 +78,6 @@ Some of the projects were based off of existing repositories, and may have been 
 [War3Net.CodeAnalysis.Transpilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Transpilers
 [War3Net.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Common
 [War3Net.Drawing.Blp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp
-[War3Net.Drawing.Tga]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Tga
 [War3Net.IO.Compression]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Compression
 [War3Net.IO.Mpq]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq
 [War3Net.IO.Slk]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Slk
@@ -101,7 +96,6 @@ Some of the projects were based off of existing repositories, and may have been 
 [PCodeTrans]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Transpilers
 [PCommon]: https://www.nuget.org/packages/War3Net.Common
 [PBlp]: https://www.nuget.org/packages/War3Net.Drawing.Blp
-[PTga]: https://www.nuget.org/packages/War3Net.Drawing.Tga
 [PCompress]: https://www.nuget.org/packages/War3Net.IO.Compression
 [PMpq]: https://www.nuget.org/packages/War3Net.IO.Mpq
 [PSlk]: https://www.nuget.org/packages/War3Net.IO.Slk
@@ -120,7 +114,6 @@ Some of the projects were based off of existing repositories, and may have been 
 [VCodeTrans]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Transpilers.svg
 [VCommon]: https://img.shields.io/nuget/v/War3Net.Common.svg
 [VBlp]: https://img.shields.io/nuget/v/War3Net.Drawing.Blp.svg
-[VTga]: https://img.shields.io/nuget/v/War3Net.Drawing.Tga.svg
 [VCompress]: https://img.shields.io/nuget/v/War3Net.IO.Compression.svg
 [VMpq]: https://img.shields.io/nuget/v/War3Net.IO.Mpq.svg
 [VSlk]: https://img.shields.io/nuget/v/War3Net.IO.Slk.svg
