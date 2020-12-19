@@ -17,12 +17,4 @@
     <ProjectReference Include="..\..\src\War3Net.Replay\War3Net.Replay.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- TODO: move testdata to common.testing -->
-    <None Remove="TestData\**" />
-    <Content Include="TestData\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

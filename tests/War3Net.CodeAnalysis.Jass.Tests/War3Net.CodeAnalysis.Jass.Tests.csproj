@@ -16,18 +16,4 @@
     <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="TestData\**" />
-    <Content Include="TestData\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="TestOutput\**" />
-    <Content Include="TestOutput\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
