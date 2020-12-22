@@ -130,6 +130,7 @@ namespace War3Net.CodeAnalysis.Jass
                     buffer.Append((char)reader.Read());
                 }
 
+                yield return new SyntaxToken(SyntaxTokenType.NewlineSymbol);
                 yield return new SyntaxToken(SyntaxTokenType.EndOfFile);
             }
         }
