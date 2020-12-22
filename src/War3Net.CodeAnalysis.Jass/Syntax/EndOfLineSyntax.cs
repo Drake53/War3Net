@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class EndOfLineSyntax : SyntaxNode
     {
-        private readonly CommentSyntax _comment;
-        private readonly TokenNode _newline;
+        private readonly CommentSyntax? _comment;
+        private readonly TokenNode? _newline;
 
         public EndOfLineSyntax(CommentSyntax commentNode)
             : base(commentNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _newline = newlineNode ?? throw new ArgumentNullException(nameof(newlineNode));
         }
 
-        public CommentSyntax Comment => _comment;
+        public CommentSyntax? Comment => _comment;
 
-        public TokenNode NewlineToken => _newline;
+        public TokenNode? NewlineToken => _newline;
 
         internal sealed class Parser : AlternativeParser
         {

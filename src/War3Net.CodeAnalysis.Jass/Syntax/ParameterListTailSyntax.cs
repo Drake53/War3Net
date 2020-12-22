@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ParameterListTailSyntax : SyntaxNode, IEnumerable<TypeReferenceSyntax>
     {
-        private readonly List<CommaSeparatedTypeReferenceSyntax> _types;
-        private readonly EmptyNode _empty;
+        private readonly List<CommaSeparatedTypeReferenceSyntax>? _types;
+        private readonly EmptyNode? _empty;
 
         public ParameterListTailSyntax(params CommaSeparatedTypeReferenceSyntax[] typeReferenceNodes)
             : base(typeReferenceNodes)
@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<TypeReferenceSyntax> GetEnumerator()
         {
-            if (_empty is null)
+            if (_types is not null)
             {
                 return _types.Select(node => node.TypeReferenceNode).GetEnumerator();
             }
@@ -44,7 +44,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            if (_empty is null)
+            if (_types is not null)
             {
                 return _types.Select(node => node.TypeReferenceNode).GetEnumerator();
             }

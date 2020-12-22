@@ -12,8 +12,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     [Obsolete("Don't make subclasses for what is essentially an optional parser. (use new OptionalParser(BinaryExpressionTailSyntax.Parser.Get))", true)]
     public sealed class ExpressionTailSyntax : SyntaxNode
     {
-        private readonly BinaryExpressionTailSyntax _expression;
-        private readonly EmptyNode _empty;
+        private readonly BinaryExpressionTailSyntax? _expression;
+        private readonly EmptyNode? _empty;
 
         public ExpressionTailSyntax(BinaryExpressionTailSyntax expressionNode)
             : base(expressionNode)

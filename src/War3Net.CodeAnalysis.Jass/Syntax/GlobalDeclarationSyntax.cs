@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class GlobalDeclarationSyntax : SyntaxNode
     {
-        private readonly GlobalConstantDeclarationSyntax _const;
-        private readonly GlobalVariableDeclarationSyntax _var;
+        private readonly GlobalConstantDeclarationSyntax? _const;
+        private readonly GlobalVariableDeclarationSyntax? _var;
 
         public GlobalDeclarationSyntax(GlobalConstantDeclarationSyntax constantGlobalNode)
             : base(constantGlobalNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _var = variableGlobalNode ?? throw new ArgumentNullException(nameof(variableGlobalNode));
         }
 
-        public GlobalConstantDeclarationSyntax ConstantDeclarationNode => _const;
+        public GlobalConstantDeclarationSyntax? ConstantDeclarationNode => _const;
 
-        public GlobalVariableDeclarationSyntax VariableDeclarationNode => _var;
+        public GlobalVariableDeclarationSyntax? VariableDeclarationNode => _var;
 
         internal sealed class Parser : AlternativeParser
         {

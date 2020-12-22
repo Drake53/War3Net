@@ -13,8 +13,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public sealed class ReturnStatementSyntax : SyntaxNode
     {
         private readonly TokenNode _return;
-        private readonly NewExpressionSyntax _expression;
-        private readonly EmptyNode _empty;
+        private readonly NewExpressionSyntax? _expression;
+        private readonly EmptyNode? _empty;
 
         public ReturnStatementSyntax(TokenNode returnNode, NewExpressionSyntax expressionNode)
             : base(returnNode, expressionNode)
@@ -32,9 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode ReturnKeywordToken => _return;
 
-        public NewExpressionSyntax ExpressionNode => _expression;
-
-        public EmptyNode EmptyExpressionNode => _empty;
+        public NewExpressionSyntax? ExpressionNode => _expression;
 
         internal sealed class Parser : SequenceParser
         {

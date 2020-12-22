@@ -13,8 +13,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public sealed class StringSyntax : SyntaxNode
     {
         private readonly TokenNode _open;
-        private readonly TokenNode _string;
-        private readonly EmptyNode _empty;
+        private readonly TokenNode? _string;
+        private readonly EmptyNode? _empty;
         private readonly TokenNode _close;
 
         public StringSyntax(TokenNode openNode, TokenNode stringNode, TokenNode closeNode)
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode StartStringSymbol => _open;
 
-        public TokenNode StringNode => _string;
+        public TokenNode? StringNode => _string;
 
         public TokenNode EndStringSymbol => _close;
 

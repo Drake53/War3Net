@@ -13,8 +13,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public sealed class CommentSyntax : SyntaxNode
     {
         private readonly TokenNode _slashes;
-        private readonly TokenNode _comment;
-        private readonly EmptyNode _emptyComment;
+        private readonly TokenNode? _comment;
+        private readonly EmptyNode? _emptyComment;
         private readonly TokenNode _newline;
 
         public CommentSyntax(TokenNode slashesNode, TokenNode commentNode, TokenNode newlineNode)
@@ -35,9 +35,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode DoubleForwardSlashToken => _slashes;
 
-        public TokenNode CommentNode => _comment;
-
-        public EmptyNode EmptyCommentNode => _emptyComment;
+        public TokenNode? CommentNode => _comment;
 
         public TokenNode NewlineToken => _newline;
 

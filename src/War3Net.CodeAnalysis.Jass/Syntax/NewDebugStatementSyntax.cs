@@ -11,10 +11,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class NewDebugStatementSyntax : SyntaxNode
     {
-        private readonly SetStatementSyntax _set;
-        private readonly CallStatementSyntax _call;
-        private readonly IfStatementSyntax _if;
-        private readonly LoopStatementSyntax _loop;
+        private readonly SetStatementSyntax? _set;
+        private readonly CallStatementSyntax? _call;
+        private readonly IfStatementSyntax? _if;
+        private readonly LoopStatementSyntax? _loop;
 
         public NewDebugStatementSyntax(SetStatementSyntax setStatementNode)
             : base(setStatementNode)

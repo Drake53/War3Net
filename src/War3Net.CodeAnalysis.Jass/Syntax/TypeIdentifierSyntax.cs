@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class TypeIdentifierSyntax : SyntaxNode
     {
-        private readonly TokenNode _nothing;
-        private readonly TypeSyntax _type;
+        private readonly TokenNode? _nothing;
+        private readonly TypeSyntax? _type;
 
         public TypeIdentifierSyntax(TokenNode nothingNode)
             : base(nothingNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _type = typeNode ?? throw new ArgumentNullException(nameof(typeNode));
         }
 
-        public TokenNode NothingKeywordToken => _nothing;
+        public TokenNode? NothingKeywordToken => _nothing;
 
-        public TypeSyntax TypeNameNode => _type;
+        public TypeSyntax? TypeNameNode => _type;
 
         internal sealed class Parser : AlternativeParser
         {

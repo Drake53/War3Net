@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         private readonly TokenNode _set;
         private readonly TokenNode _id;
-        private readonly BracketedExpressionSyntax _indexer;
-        private readonly EmptyNode _empty;
+        private readonly BracketedExpressionSyntax? _indexer;
+        private readonly EmptyNode? _empty;
         private readonly EqualsValueClauseSyntax _assExpr;
 
         public SetStatementSyntax(TokenNode setNode, TokenNode idNode, BracketedExpressionSyntax arrayIndexerNode, EqualsValueClauseSyntax equalsValueClauseNode)
@@ -40,9 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode IdentifierNameNode => _id;
 
-        public BracketedExpressionSyntax ArrayIndexerNode => _indexer;
-
-        public EmptyNode EmptyArrayIndexerNode => _empty;
+        public BracketedExpressionSyntax? ArrayIndexerNode => _indexer;
 
         public EqualsValueClauseSyntax EqualsValueClauseNode => _assExpr;
 

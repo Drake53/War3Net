@@ -11,9 +11,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class DeclarationSyntax : SyntaxNode
     {
-        private readonly TypeDefinitionSyntax _type;
-        private readonly GlobalsBlockSyntax _globals;
-        private readonly NativeFunctionDeclarationSyntax _native;
+        private readonly TypeDefinitionSyntax? _type;
+        private readonly GlobalsBlockSyntax? _globals;
+        private readonly NativeFunctionDeclarationSyntax? _native;
 
         public DeclarationSyntax(TypeDefinitionSyntax typeDefinitionNode)
             : base(typeDefinitionNode)
@@ -33,11 +33,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _native = nativeFunctionNode ?? throw new ArgumentNullException(nameof(nativeFunctionNode));
         }
 
-        public TypeDefinitionSyntax TypeDefinition => _type;
+        public TypeDefinitionSyntax? TypeDefinition => _type;
 
-        public GlobalsBlockSyntax GlobalsBlock => _globals;
+        public GlobalsBlockSyntax? GlobalsBlock => _globals;
 
-        public NativeFunctionDeclarationSyntax NativeFunctionDeclaration => _native;
+        public NativeFunctionDeclarationSyntax? NativeFunctionDeclaration => _native;
 
         internal sealed class Parser : AlternativeParser
         {

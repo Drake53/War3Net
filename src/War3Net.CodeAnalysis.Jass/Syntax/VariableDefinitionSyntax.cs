@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         private readonly TypeSyntax _type;
         private readonly TokenNode _id;
-        private readonly EqualsValueClauseSyntax _assExpr;
-        private readonly EmptyNode _empty;
+        private readonly EqualsValueClauseSyntax? _assExpr;
+        private readonly EmptyNode? _empty;
 
         public VariableDefinitionSyntax(TypeSyntax typeNode, TokenNode idNode, EqualsValueClauseSyntax assignmentExpressionNode)
             : base(typeNode, idNode, assignmentExpressionNode)
@@ -37,9 +37,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode IdentifierNameNode => _id;
 
-        public EqualsValueClauseSyntax EqualsValueClause => _assExpr;
-
-        public EmptyNode EmptyEqualsValueClause => _empty;
+        public EqualsValueClauseSyntax? EqualsValueClause => _assExpr;
 
         internal sealed class Parser : SequenceParser
         {

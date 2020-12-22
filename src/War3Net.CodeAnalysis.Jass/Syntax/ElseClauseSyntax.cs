@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ElseClauseSyntax : SyntaxNode
     {
-        private readonly ElseifSyntax _elseif;
-        private readonly ElseSyntax _else;
+        private readonly ElseifSyntax? _elseif;
+        private readonly ElseSyntax? _else;
 
         public ElseClauseSyntax(ElseifSyntax elseifNode)
             : base(elseifNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _else = elseNode ?? throw new ArgumentNullException(nameof(elseNode));
         }
 
-        public ElseifSyntax ElseifNode => _elseif;
+        public ElseifSyntax? ElseifNode => _elseif;
 
-        public ElseSyntax ElseNode => _else;
+        public ElseSyntax? ElseNode => _else;
 
         internal sealed class Parser : AlternativeParser
         {

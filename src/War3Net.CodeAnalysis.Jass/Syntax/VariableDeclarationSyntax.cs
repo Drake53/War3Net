@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class VariableDeclarationSyntax : SyntaxNode
     {
-        private readonly VariableDefinitionSyntax _var;
-        private readonly ArrayDefinitionSyntax _array;
+        private readonly VariableDefinitionSyntax? _var;
+        private readonly ArrayDefinitionSyntax? _array;
 
         public VariableDeclarationSyntax(VariableDefinitionSyntax variableNode)
             : base(variableNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _array = arrayNode ?? throw new ArgumentNullException(nameof(arrayNode));
         }
 
-        public VariableDefinitionSyntax VariableDefinitionNode => _var;
+        public VariableDefinitionSyntax? VariableDefinitionNode => _var;
 
-        public ArrayDefinitionSyntax ArrayDefinitionNode => _array;
+        public ArrayDefinitionSyntax? ArrayDefinitionNode => _array;
 
         internal sealed class Parser : AlternativeParser
         {

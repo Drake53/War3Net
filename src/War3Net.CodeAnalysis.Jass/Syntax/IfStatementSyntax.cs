@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _then;
         private readonly LineDelimiterSyntax _eol;
         private readonly StatementListSyntax _statements;
-        private readonly ElseClauseSyntax _elseClause;
-        private readonly EmptyNode _emptyElseClause;
+        private readonly ElseClauseSyntax? _elseClause;
+        private readonly EmptyNode? _emptyElseClause;
         private readonly TokenNode _endif;
 
         public IfStatementSyntax(TokenNode ifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementListNode, ElseClauseSyntax elseClauseNode, TokenNode endifNode)
@@ -55,9 +55,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public StatementListSyntax StatementListNode => _statements;
 
-        public ElseClauseSyntax ElseClauseNode => _elseClause;
-
-        public EmptyNode EmptyElseClauseNode => _emptyElseClause;
+        public ElseClauseSyntax? ElseClauseNode => _elseClause;
 
         public TokenNode EndifKeywordToken => _endif;
 

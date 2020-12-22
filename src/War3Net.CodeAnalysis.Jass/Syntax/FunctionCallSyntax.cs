@@ -15,8 +15,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         private readonly TokenNode _id;
         private readonly TokenNode _open;
-        private readonly ArgumentListSyntax _args;
-        private readonly EmptyNode _emptyArgs;
+        private readonly ArgumentListSyntax? _args;
+        private readonly EmptyNode? _emptyArgs;
         private readonly TokenNode _close;
 
         public FunctionCallSyntax(TokenNode idNode, TokenNode openParensNode, ArgumentListSyntax argumentListNode, TokenNode closeParensNode)
@@ -41,9 +41,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public TokenNode OpenParenthesisSymbol => _open;
 
-        public ArgumentListSyntax ArgumentListNode => _args;
-
-        public EmptyNode EmptyArgumentListNode => _emptyArgs;
+        public ArgumentListSyntax? ArgumentListNode => _args;
 
         public TokenNode CloseParenthesisSymbol => _close;
 

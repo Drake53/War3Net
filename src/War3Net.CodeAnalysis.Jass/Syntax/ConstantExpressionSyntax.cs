@@ -11,11 +11,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ConstantExpressionSyntax : SyntaxNode
     {
-        private readonly IntegerSyntax _integer;
-        private readonly TokenNode _real;
-        private readonly BooleanSyntax _boolean;
-        private readonly StringSyntax _string;
-        private readonly TokenNode _null;
+        private readonly IntegerSyntax? _integer;
+        private readonly TokenNode? _real;
+        private readonly BooleanSyntax? _boolean;
+        private readonly StringSyntax? _string;
+        private readonly TokenNode? _null;
 
         public ConstantExpressionSyntax(IntegerSyntax integerNode)
             : base(integerNode)
@@ -48,15 +48,15 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public IntegerSyntax IntegerExpressionNode => _integer;
+        public IntegerSyntax? IntegerExpressionNode => _integer;
 
-        public TokenNode RealExpressionNode => _real;
+        public TokenNode? RealExpressionNode => _real;
 
-        public BooleanSyntax BooleanExpressionNode => _boolean;
+        public BooleanSyntax? BooleanExpressionNode => _boolean;
 
-        public StringSyntax StringExpressionNode => _string;
+        public StringSyntax? StringExpressionNode => _string;
 
-        public TokenNode NullExpressionNode => _null;
+        public TokenNode? NullExpressionNode => _null;
 
         internal sealed class Parser : AlternativeParser
         {

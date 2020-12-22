@@ -18,8 +18,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         private readonly TokenNode _then;
         private readonly LineDelimiterSyntax _eol;
         private readonly StatementListSyntax _statements;
-        private readonly ElseClauseSyntax _elseClause;
-        private readonly EmptyNode _emptyElseClause;
+        private readonly ElseClauseSyntax? _elseClause;
+        private readonly EmptyNode? _emptyElseClause;
 
         public ElseifSyntax(TokenNode elseifNode, NewExpressionSyntax expressionNode, TokenNode thenNode, LineDelimiterSyntax eolNode, StatementListSyntax statementsNode, ElseClauseSyntax elseClauseNode)
             : base(elseifNode, expressionNode, thenNode, eolNode, statementsNode, elseClauseNode)
@@ -53,9 +53,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public StatementListSyntax StatementListNode => _statements;
 
-        public ElseClauseSyntax ElseClauseNode => _elseClause;
-
-        public EmptyNode EmptyElseClauseNode => _emptyElseClause;
+        public ElseClauseSyntax? ElseClauseNode => _elseClause;
 
         internal sealed class Parser : SequenceParser
         {

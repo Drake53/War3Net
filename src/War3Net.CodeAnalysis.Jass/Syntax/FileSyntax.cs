@@ -12,8 +12,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class FileSyntax : SyntaxNode
     {
-        private readonly LineDelimiterSyntax _eol;
-        private readonly EmptyNode _empty;
+        private readonly LineDelimiterSyntax? _eol;
+        private readonly EmptyNode? _empty;
         private readonly DeclarationListSyntax _declrs;
         private readonly FunctionListSyntax _functions;
         private readonly TokenNode _eof;
@@ -36,9 +36,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _eof = endOfFileNode ?? throw new ArgumentNullException(nameof(endOfFileNode));
         }
 
-        public LineDelimiterSyntax StartFileLineDelimiter => _eol;
-
-        public EmptyNode StartFileEmpty => _empty;
+        public LineDelimiterSyntax? StartFileLineDelimiter => _eol;
 
         public DeclarationListSyntax DeclarationList => _declrs;
 

@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ArgumentListTailSyntax : SyntaxNode, IEnumerable<NewExpressionSyntax>
     {
-        private readonly List<CommaSeparatedExpressionSyntax> _exprs;
-        private readonly EmptyNode _empty;
+        private readonly List<CommaSeparatedExpressionSyntax>? _exprs;
+        private readonly EmptyNode? _empty;
 
         public ArgumentListTailSyntax(params CommaSeparatedExpressionSyntax[] expressionNodes)
             : base(expressionNodes)
@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<NewExpressionSyntax> GetEnumerator()
         {
-            return (_empty is null
+            return (_exprs is not null
                 ? _exprs.Select(node => node.ExpressionNode)
                 : Enumerable.Empty<NewExpressionSyntax>())
                 .GetEnumerator();
@@ -42,7 +42,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_exprs is not null
                 ? _exprs.Select(node => node.ExpressionNode)
                 : Enumerable.Empty<NewExpressionSyntax>())
                 .GetEnumerator();

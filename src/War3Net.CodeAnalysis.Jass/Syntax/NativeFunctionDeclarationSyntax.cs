@@ -12,8 +12,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class NativeFunctionDeclarationSyntax : SyntaxNode
     {
-        private readonly TokenNode _constant;
-        private readonly EmptyNode _empty;
+        private readonly TokenNode? _constant;
+        private readonly EmptyNode? _empty;
         private readonly TokenNode _native;
         private readonly FunctionDeclarationSyntax _declr;
 
@@ -33,9 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _declr = functionDeclarationNode ?? throw new ArgumentNullException(nameof(functionDeclarationNode));
         }
 
-        public TokenNode ConstantToken => _constant;
-
-        public EmptyNode NonConstantNode => _empty;
+        public TokenNode? ConstantToken => _constant;
 
         public TokenNode NativeKeywordToken => _native;
 

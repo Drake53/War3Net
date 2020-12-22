@@ -13,8 +13,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public sealed class NewExpressionSyntax : SyntaxNode
     {
         private readonly ExpressionSyntax _expression;
-        private readonly BinaryExpressionTailSyntax _tail;
-        private readonly EmptyNode _empty;
+        private readonly BinaryExpressionTailSyntax? _tail;
+        private readonly EmptyNode? _empty;
 
         public NewExpressionSyntax(ExpressionSyntax expressionNode, BinaryExpressionTailSyntax expressionTailNode)
             : base(expressionNode, expressionTailNode)
@@ -32,9 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public ExpressionSyntax Expression => _expression;
 
-        public BinaryExpressionTailSyntax ExpressionTail => _tail;
-
-        public EmptyNode EmptyExpressionTail => _empty;
+        public BinaryExpressionTailSyntax? ExpressionTail => _tail;
 
         internal sealed class Parser : SequenceParser
         {

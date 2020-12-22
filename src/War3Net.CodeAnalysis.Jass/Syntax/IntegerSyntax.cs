@@ -11,8 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class IntegerSyntax : SyntaxNode
     {
-        private readonly TokenNode _token;
-        private readonly FourCCIntegerSyntax _fourCC;
+        private readonly TokenNode? _token;
+        private readonly FourCCIntegerSyntax? _fourCC;
 
         public IntegerSyntax(TokenNode tokenNode)
             : base(tokenNode)
@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _fourCC = fourCCIntegerNode ?? throw new ArgumentNullException(nameof(fourCCIntegerNode));
         }
 
-        public TokenNode IntegerToken => _token;
+        public TokenNode? IntegerToken => _token;
 
-        public FourCCIntegerSyntax FourCCIntegerNode => _fourCC;
+        public FourCCIntegerSyntax? FourCCIntegerNode => _fourCC;
 
         internal sealed class Parser : AlternativeParser
         {

@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class GlobalsDeclarationListSyntax : SyntaxNode, IEnumerable<GlobalDeclarationSyntax>
     {
-        private readonly List<GlobalDeclarationSyntax> _globals;
-        private readonly EmptyNode _empty;
+        private readonly List<GlobalDeclarationSyntax>? _globals;
+        private readonly EmptyNode? _empty;
 
         public GlobalsDeclarationListSyntax(params GlobalDeclarationSyntax[] globalDeclarationNodes)
             : base(globalDeclarationNodes)
@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public IEnumerator<GlobalDeclarationSyntax> GetEnumerator()
         {
             // TODO: use this format for all ienum syntax classes?
-            return (_empty is null
+            return (_globals is not null
                 ? _globals
                 : Enumerable.Empty<GlobalDeclarationSyntax>())
                 .GetEnumerator();
@@ -41,7 +41,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_globals is not null
                 ? _globals
                 : Enumerable.Empty<GlobalDeclarationSyntax>())
                 .GetEnumerator();

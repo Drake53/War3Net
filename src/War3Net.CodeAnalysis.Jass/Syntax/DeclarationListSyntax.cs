@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class DeclarationListSyntax : SyntaxNode, IEnumerable<NewDeclarationSyntax>
     {
-        private readonly List<NewDeclarationSyntax> _declrs;
-        private readonly EmptyNode _empty;
+        private readonly List<NewDeclarationSyntax>? _declrs;
+        private readonly EmptyNode? _empty;
 
         public DeclarationListSyntax(params NewDeclarationSyntax[] declarationNodes)
             : base(declarationNodes)
@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<NewDeclarationSyntax> GetEnumerator()
         {
-            return (_empty is null
+            return (_declrs is not null
                 ? _declrs
                 : Enumerable.Empty<NewDeclarationSyntax>())
                 .GetEnumerator();
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_declrs is not null
                 ? _declrs
                 : Enumerable.Empty<NewDeclarationSyntax>())
                 .GetEnumerator();

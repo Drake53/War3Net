@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class StatementListSyntax : SyntaxNode, IEnumerable<NewStatementSyntax>
     {
-        private readonly List<NewStatementSyntax> _statements;
-        private readonly EmptyNode _empty;
+        private readonly List<NewStatementSyntax>? _statements;
+        private readonly EmptyNode? _empty;
 
         public StatementListSyntax(params NewStatementSyntax[] nodes)
             : base(nodes)
@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<NewStatementSyntax> GetEnumerator()
         {
-            return (_empty is null
+            return (_statements is not null
                 ? _statements
                 : Enumerable.Empty<NewStatementSyntax>())
                 .GetEnumerator();
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_statements is not null
                 ? _statements
                 : Enumerable.Empty<NewStatementSyntax>())
                 .GetEnumerator();

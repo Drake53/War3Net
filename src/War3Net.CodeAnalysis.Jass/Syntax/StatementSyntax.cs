@@ -11,13 +11,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class StatementSyntax : SyntaxNode
     {
-        private readonly SetStatementSyntax _set;
-        private readonly CallStatementSyntax _call;
-        private readonly IfStatementSyntax _if;
-        private readonly LoopStatementSyntax _loop;
-        private readonly ExitStatementSyntax _exit;
-        private readonly ReturnStatementSyntax _return;
-        private readonly DebugStatementSyntax _debug;
+        private readonly SetStatementSyntax? _set;
+        private readonly CallStatementSyntax? _call;
+        private readonly IfStatementSyntax? _if;
+        private readonly LoopStatementSyntax? _loop;
+        private readonly ExitStatementSyntax? _exit;
+        private readonly ReturnStatementSyntax? _return;
+        private readonly DebugStatementSyntax? _debug;
 
         public StatementSyntax(SetStatementSyntax setStatementNode)
             : base(setStatementNode)
@@ -61,19 +61,19 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _debug = debugStatementNode ?? throw new ArgumentNullException(nameof(debugStatementNode));
         }
 
-        public SetStatementSyntax SetStatementNode => _set;
+        public SetStatementSyntax? SetStatementNode => _set;
 
-        public CallStatementSyntax CallStatementNode => _call;
+        public CallStatementSyntax? CallStatementNode => _call;
 
-        public IfStatementSyntax IfStatementNode => _if;
+        public IfStatementSyntax? IfStatementNode => _if;
 
-        public LoopStatementSyntax LoopStatementNode => _loop;
+        public LoopStatementSyntax? LoopStatementNode => _loop;
 
-        public ExitStatementSyntax ExitStatementNode => _exit;
+        public ExitStatementSyntax? ExitStatementNode => _exit;
 
-        public ReturnStatementSyntax ReturnStatementNode => _return;
+        public ReturnStatementSyntax? ReturnStatementNode => _return;
 
-        public DebugStatementSyntax DebugStatementNode => _debug;
+        public DebugStatementSyntax? DebugStatementNode => _debug;
 
         internal sealed class Parser : AlternativeParser
         {

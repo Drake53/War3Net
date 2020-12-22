@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class FunctionListSyntax : SyntaxNode, IEnumerable<FunctionSyntax>
     {
-        private readonly List<FunctionSyntax> _funcs;
-        private readonly EmptyNode _empty;
+        private readonly List<FunctionSyntax>? _funcs;
+        private readonly EmptyNode? _empty;
 
         public FunctionListSyntax(params FunctionSyntax[] declarationNodes)
             : base(declarationNodes)
@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<FunctionSyntax> GetEnumerator()
         {
-            return (_empty is null
+            return (_funcs is not null
                 ? _funcs
                 : Enumerable.Empty<FunctionSyntax>())
                 .GetEnumerator();
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_funcs is not null
                 ? _funcs
                 : Enumerable.Empty<FunctionSyntax>())
                 .GetEnumerator();

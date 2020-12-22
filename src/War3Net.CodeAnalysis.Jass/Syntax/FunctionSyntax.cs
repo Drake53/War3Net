@@ -12,8 +12,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class FunctionSyntax : SyntaxNode
     {
-        private readonly TokenNode _constant;
-        private readonly EmptyNode _empty;
+        private readonly TokenNode? _constant;
+        private readonly EmptyNode? _empty;
         private readonly TokenNode _function;
         private readonly FunctionDeclarationSyntax _declr;
         private readonly LineDelimiterSyntax _eol1;
@@ -48,7 +48,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _eol2 = eolNode2 ?? throw new ArgumentNullException(nameof(eolNode2));
         }
 
-        public TokenNode ConstantKeywordToken => _constant;
+        public TokenNode? ConstantKeywordToken => _constant;
 
         public TokenNode FunctionKeywordToken => _function;
 

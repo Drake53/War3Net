@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ParameterListReferenceSyntax : SyntaxNode, IEnumerable<TypeReferenceSyntax>
     {
-        private readonly TokenNode _nothing;
-        private readonly ParameterListSyntax _params;
+        private readonly TokenNode? _nothing;
+        private readonly ParameterListSyntax? _params;
 
         public ParameterListReferenceSyntax(TokenNode nothingNode)
             : base(nothingNode)
@@ -29,9 +29,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _params = parameterListNode ?? throw new ArgumentNullException(nameof(parameterListNode));
         }
 
-        public TokenNode NothingKeywordToken => _nothing;
+        public TokenNode? NothingKeywordToken => _nothing;
 
-        public ParameterListSyntax ParameterListNode => _params;
+        public ParameterListSyntax? ParameterListNode => _params;
 
         public IEnumerator<TypeReferenceSyntax> GetEnumerator()
         {

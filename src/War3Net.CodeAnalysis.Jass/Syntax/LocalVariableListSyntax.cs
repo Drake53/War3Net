@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class LocalVariableListSyntax : SyntaxNode, IEnumerable<LocalVariableDeclarationSyntax>
     {
-        private readonly List<LocalVariableDeclarationSyntax> _locals;
-        private readonly EmptyNode _empty;
+        private readonly List<LocalVariableDeclarationSyntax>? _locals;
+        private readonly EmptyNode? _empty;
 
         public LocalVariableListSyntax(params LocalVariableDeclarationSyntax[] localDeclarationNodes)
             : base(localDeclarationNodes)
@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IEnumerator<LocalVariableDeclarationSyntax> GetEnumerator()
         {
-            return (_empty is null
+            return (_locals is not null
                 ? _locals
                 : Enumerable.Empty<LocalVariableDeclarationSyntax>())
                 .GetEnumerator();
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (_empty is null
+            return (_locals is not null
                 ? _locals
                 : Enumerable.Empty<LocalVariableDeclarationSyntax>())
                 .GetEnumerator();

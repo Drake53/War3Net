@@ -11,13 +11,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public sealed class ExpressionSyntax : SyntaxNode
     {
-        private readonly UnaryExpressionSyntax _unaryExpr;
-        private readonly FunctionCallSyntax _funcCall;
-        private readonly ArrayReferenceSyntax _array;
-        private readonly FunctionReferenceSyntax _funcRef;
-        private readonly TokenNode _id;
-        private readonly ConstantExpressionSyntax _constant;
-        private readonly ParenthesizedExpressionSyntax _parensExpr;
+        private readonly UnaryExpressionSyntax? _unaryExpr;
+        private readonly FunctionCallSyntax? _funcCall;
+        private readonly ArrayReferenceSyntax? _array;
+        private readonly FunctionReferenceSyntax? _funcRef;
+        private readonly TokenNode? _id;
+        private readonly ConstantExpressionSyntax? _constant;
+        private readonly ParenthesizedExpressionSyntax? _parensExpr;
 
         public ExpressionSyntax(UnaryExpressionSyntax unaryExpressionNode)
             : base(unaryExpressionNode)
@@ -61,19 +61,19 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             _parensExpr = parenthesizedExpressionNode ?? throw new ArgumentNullException(nameof(parenthesizedExpressionNode));
         }
 
-        public UnaryExpressionSyntax UnaryExpression => _unaryExpr;
+        public UnaryExpressionSyntax? UnaryExpression => _unaryExpr;
 
-        public FunctionCallSyntax FunctionCall => _funcCall;
+        public FunctionCallSyntax? FunctionCall => _funcCall;
 
-        public ArrayReferenceSyntax ArrayReference => _array;
+        public ArrayReferenceSyntax? ArrayReference => _array;
 
-        public FunctionReferenceSyntax FunctionReference => _funcRef;
+        public FunctionReferenceSyntax? FunctionReference => _funcRef;
 
-        public TokenNode Identifier => _id;
+        public TokenNode? Identifier => _id;
 
-        public ConstantExpressionSyntax ConstantExpression => _constant;
+        public ConstantExpressionSyntax? ConstantExpression => _constant;
 
-        public ParenthesizedExpressionSyntax ParenthesizedExpressionSyntax => _parensExpr;
+        public ParenthesizedExpressionSyntax? ParenthesizedExpressionSyntax => _parensExpr;
 
         internal sealed class Parser : AlternativeParser
         {
