@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -14,35 +13,17 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this ElseifSyntax elseifNode, ref StringBuilder sb)
+        public LuaElseIfStatementSyntax Transpile(ElseifSyntax elseif)
         {
-            _ = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
+            _ = elseif ?? throw new ArgumentNullException(nameof(elseif));
 
-            sb.Append("elseif ");
-            elseifNode.ConditionExpressionNode.Transpile(ref sb);
-            sb.AppendLine(" then");
-            elseifNode.StatementListNode.Transpile(ref sb);
-            if (elseifNode.EmptyElseClauseNode is null)
-            {
-                elseifNode.ElseClauseNode.Transpile(ref sb);
-            }
-            else
-            {
-                sb.Append("end");
-            }
-        }
+            var elseifStatement = new LuaElseIfStatementSyntax(Transpile(elseif.ConditionExpressionNode));
+            elseifStatement.Body.Statements.AddRange(Transpile(elseif.LineDelimiterNode));
+            elseifStatement.Body.Statements.AddRange(Transpile(elseif.StatementListNode));
 
-        public static LuaElseIfStatementSyntax TranspileToLua(this ElseifSyntax elseifNode)
-        {
-            _ = elseifNode ?? throw new ArgumentNullException(nameof(elseifNode));
-
-            var elseif = new LuaElseIfStatementSyntax(elseifNode.ConditionExpressionNode.TranspileToLua());
-            elseif.Body.Statements.AddRange(elseifNode.StatementListNode.TranspileToLua());
-
-            return elseif;
+            return elseifStatement;
         }
     }
 }

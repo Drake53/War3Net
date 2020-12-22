@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -14,23 +13,13 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this BracketedExpressionSyntax bracketedExpressionNode, ref StringBuilder sb)
+        public LuaExpressionSyntax Transpile(BracketedExpressionSyntax bracketedExpression)
         {
-            _ = bracketedExpressionNode ?? throw new ArgumentNullException(nameof(bracketedExpressionNode));
+            _ = bracketedExpression ?? throw new ArgumentNullException(nameof(bracketedExpression));
 
-            sb.Append('[');
-            bracketedExpressionNode.ExpressionNode.Transpile(ref sb);
-            sb.Append(']');
-        }
-
-        public static LuaExpressionSyntax TranspileToLua(this BracketedExpressionSyntax bracketedExpressionNode)
-        {
-            _ = bracketedExpressionNode ?? throw new ArgumentNullException(nameof(bracketedExpressionNode));
-
-            return bracketedExpressionNode.ExpressionNode.TranspileToLua();
+            return Transpile(bracketedExpression.ExpressionNode);
         }
     }
 }

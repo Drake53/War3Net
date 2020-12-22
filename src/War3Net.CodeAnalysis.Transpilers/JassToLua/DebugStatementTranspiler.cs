@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,19 +14,15 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this DebugStatementSyntax debugStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("debugStatement")]
+        public LuaStatementSyntax? Transpile(DebugStatementSyntax? debugStatement)
         {
-            _ = debugStatementNode ?? throw new ArgumentNullException(nameof(debugStatementNode));
-
-            // TODO: implement
-        }
-
-        public static LuaStatementSyntax TranspileToLua(this DebugStatementSyntax debugStatementNode)
-        {
-            _ = debugStatementNode ?? throw new ArgumentNullException(nameof(debugStatementNode));
+            if (debugStatement is null)
+            {
+                return null;
+            }
 
             throw new NotImplementedException();
         }

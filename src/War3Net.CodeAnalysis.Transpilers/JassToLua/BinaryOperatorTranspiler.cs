@@ -6,31 +6,19 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
-using CSharpLua.LuaAst;
-
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this BinaryOperatorSyntax binaryOperatorNode, bool isString, ref StringBuilder sb)
+        public string Transpile(BinaryOperatorSyntax binaryOperator, SyntaxTokenType left, SyntaxTokenType right)
         {
-            _ = binaryOperatorNode ?? throw new ArgumentNullException(nameof(binaryOperatorNode));
+            _ = binaryOperator ?? throw new ArgumentNullException(nameof(binaryOperator));
 
-            sb.Append(' ');
-            binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperator(isString, ref sb);
-            sb.Append(' ');
-        }
-
-        public static string TranspileToLua(this BinaryOperatorSyntax binaryOperatorNode, bool isString)
-        {
-            _ = binaryOperatorNode ?? throw new ArgumentNullException(nameof(binaryOperatorNode));
-
-            return binaryOperatorNode.BinaryOperatorToken.TranspileBinaryOperatorToLua(isString);
+            return TranspileBinaryOperator(binaryOperator.BinaryOperatorToken, left, right);
         }
     }
 }

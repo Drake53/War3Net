@@ -5,44 +5,32 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this FunctionCallSyntax functionCallNode, ref StringBuilder sb, out bool isString)
+        [return: NotNullIfNotNull("functionCall")]
+        public LuaExpressionSyntax? Transpile(FunctionCallSyntax? functionCall, out SyntaxTokenType expressionType)
         {
-            _ = functionCallNode ?? throw new ArgumentNullException(nameof(functionCallNode));
-
-            isString = TranspileStringConcatenationHandler.IsFunctionStringReturnType(functionCallNode.IdentifierNameNode.ValueText);
-
-            functionCallNode.IdentifierNameNode.TranspileExpression(ref sb);
-            sb.Append('(');
-            if (functionCallNode.EmptyArgumentListNode is null)
+            if (functionCall is null)
             {
-                functionCallNode.ArgumentListNode.Transpile(ref sb);
+                expressionType = SyntaxTokenType.NullKeyword;
+                return null;
             }
 
-            sb.Append(')');
-        }
+            expressionType = GetFunctionReturnType(functionCall.IdentifierNameNode.ValueText);
 
-        public static LuaExpressionSyntax TranspileToLua(this FunctionCallSyntax functionCallNode, out bool isString)
-        {
-            _ = functionCallNode ?? throw new ArgumentNullException(nameof(functionCallNode));
-
-            isString = TranspileStringConcatenationHandler.IsFunctionStringReturnType(functionCallNode.IdentifierNameNode.ValueText);
-
-            var invocation = new LuaInvocationExpressionSyntax(functionCallNode.IdentifierNameNode.TranspileExpressionToLua());
-            if (functionCallNode.ArgumentListNode is not null)
+            var invocation = new LuaInvocationExpressionSyntax(TranspileExpression(functionCall.IdentifierNameNode));
+            if (functionCall.ArgumentListNode is not null)
             {
-                invocation.AddArguments(functionCallNode.ArgumentListNode.TranspileToLua());
+                invocation.AddArguments(Transpile(functionCall.ArgumentListNode));
             }
 
             return invocation;

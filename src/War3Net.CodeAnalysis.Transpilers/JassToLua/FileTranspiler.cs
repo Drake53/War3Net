@@ -7,7 +7,6 @@
 
 using System;
 using System.Linq;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -15,41 +14,20 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this FileSyntax fileNode, ref StringBuilder sb, bool resetStringConcatenationHandler = true)
+        public LuaCompilationUnitSyntax Transpile(FileSyntax file)
         {
-            _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
-
-            foreach (var declaration in fileNode.DeclarationList)
-            {
-                declaration.Transpile(ref sb);
-            }
-
-            foreach (var function in fileNode.FunctionList)
-            {
-                function.Transpile(ref sb);
-            }
-
-            if (resetStringConcatenationHandler)
-            {
-                TranspileStringConcatenationHandler.Reset();
-            }
-        }
-
-        public static LuaCompilationUnitSyntax TranspileToLua(this FileSyntax fileNode, bool resetStringConcatenationHandler = true)
-        {
-            _ = fileNode ?? throw new ArgumentNullException(nameof(fileNode));
+            _ = file ?? throw new ArgumentNullException(nameof(file));
 
             var compilationUnit = new LuaCompilationUnitSyntax(hasGeneratedMark: false);
-            compilationUnit.Statements.AddRange(fileNode.DeclarationList.TranspileToLua());
-            compilationUnit.Statements.AddRange(fileNode.FunctionList.SelectMany(function => function.TranspileToLua()));
-
-            if (resetStringConcatenationHandler)
+            if (file.StartFileLineDelimiter is not null)
             {
-                TranspileStringConcatenationHandler.Reset();
+                compilationUnit.Statements.AddRange(Transpile(file.StartFileLineDelimiter));
             }
+
+            compilationUnit.Statements.AddRange(Transpile(file.DeclarationList));
+            compilationUnit.Statements.AddRange(file.FunctionList.SelectMany(function => Transpile(function)));
 
             return compilationUnit;
         }

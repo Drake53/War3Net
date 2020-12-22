@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,48 +14,40 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this IfStatementSyntax ifStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("ifStatement")]
+        public LuaStatementSyntax? Transpile(IfStatementSyntax? ifStatement)
         {
-            _ = ifStatementNode ?? throw new ArgumentNullException(nameof(ifStatementNode));
-
-            sb.Append("if ");
-            ifStatementNode.ConditionExpressionNode.Transpile(ref sb);
-            sb.Append(" then");
-            sb.AppendLine();
-            ifStatementNode.StatementListNode.Transpile(ref sb);
-            if (ifStatementNode.EmptyElseClauseNode is null)
+            if (ifStatement is null)
             {
-                ifStatementNode.ElseClauseNode.Transpile(ref sb);
+                return null;
             }
-            else
+
+            var statement = new LuaIfStatementSyntax(Transpile(ifStatement.ConditionExpressionNode));
+            statement.Body.Statements.AddRange(Transpile(ifStatement.LineDelimiterNode));
+            statement.Body.Statements.AddRange(Transpile(ifStatement.StatementListNode));
+
+            var elseClause = ifStatement.ElseClauseNode;
+            while (elseClause is not null)
             {
-                sb.Append("end");
-            }
-        }
-
-        public static LuaIfStatementSyntax TranspileToLua(this IfStatementSyntax ifStatementNode)
-        {
-            _ = ifStatementNode ?? throw new ArgumentNullException(nameof(ifStatementNode));
-
-            var ifStatement = new LuaIfStatementSyntax(ifStatementNode.ConditionExpressionNode.TranspileToLua());
-            ifStatement.Body.Statements.AddRange(ifStatementNode.StatementListNode.TranspileToLua());
-
-            if (ifStatementNode.ElseClauseNode is not null)
-            {
-                if (ifStatementNode.ElseClauseNode.ElseifNode is not null)
+                if (elseClause.ElseifNode is not null)
                 {
-                    ifStatement.ElseIfStatements.Add(ifStatementNode.ElseClauseNode.ElseifNode.TranspileToLua());
+                    statement.ElseIfStatements.Add(Transpile(elseClause.ElseifNode));
+                    elseClause = elseClause.ElseifNode.ElseClauseNode;
+                }
+                else if (elseClause.ElseNode is not null)
+                {
+                    statement.Else = Transpile(elseClause.ElseNode);
+                    break;
                 }
                 else
                 {
-                    ifStatement.Else = ifStatementNode.ElseClauseNode.ElseNode.TranspileToLua();
+                    throw new ArgumentNullException(nameof(ifStatement));
                 }
             }
 
-            return ifStatement;
+            return statement;
         }
     }
 }

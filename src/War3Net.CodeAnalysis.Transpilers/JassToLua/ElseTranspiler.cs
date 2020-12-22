@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -14,24 +13,15 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this ElseSyntax elseNode, ref StringBuilder sb)
+        public LuaElseClauseSyntax Transpile(ElseSyntax @else)
         {
-            _ = elseNode ?? throw new ArgumentNullException(nameof(elseNode));
-
-            sb.AppendLine("else");
-            elseNode.StatementListNode.Transpile(ref sb);
-            sb.Append("end");
-        }
-
-        public static LuaElseClauseSyntax TranspileToLua(this ElseSyntax elseNode)
-        {
-            _ = elseNode ?? throw new ArgumentNullException(nameof(elseNode));
+            _ = @else ?? throw new ArgumentNullException(nameof(@else));
 
             var elseClause = new LuaElseClauseSyntax();
-            elseClause.Body.Statements.AddRange(elseNode.StatementListNode.TranspileToLua());
+            elseClause.Body.Statements.AddRange(Transpile(@else.LineDelimiterNode));
+            elseClause.Body.Statements.AddRange(Transpile(@else.StatementListNode));
 
             return elseClause;
         }

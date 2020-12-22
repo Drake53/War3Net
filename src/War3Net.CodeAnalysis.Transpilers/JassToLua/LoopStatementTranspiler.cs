@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,25 +13,19 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this LoopStatementSyntax loopStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("loopStatement")]
+        public LuaStatementSyntax? Transpile(LoopStatementSyntax? loopStatement)
         {
-            _ = loopStatementNode ?? throw new ArgumentNullException(nameof(loopStatementNode));
-
-            sb.AppendLine("while (true)");
-            sb.AppendLine("do");
-            loopStatementNode.StatementListNode.Transpile(ref sb);
-            sb.Append("end");
-        }
-
-        public static LuaWhileStatementSyntax TranspileToLua(this LoopStatementSyntax loopStatementNode)
-        {
-            _ = loopStatementNode ?? throw new ArgumentNullException(nameof(loopStatementNode));
+            if (loopStatement is null)
+            {
+                return null;
+            }
 
             var whileStatement = new LuaWhileStatementSyntax(LuaIdentifierLiteralExpressionSyntax.True);
-            whileStatement.Body.Statements.AddRange(loopStatementNode.StatementListNode.TranspileToLua());
+            whileStatement.Body.Statements.AddRange(Transpile(loopStatement.LineDelimiterNode));
+            whileStatement.Body.Statements.AddRange(Transpile(loopStatement.StatementListNode));
 
             return whileStatement;
         }

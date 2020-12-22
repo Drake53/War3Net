@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Linq;
 
 using CSharpLua.LuaAst;
 
@@ -14,36 +14,31 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void TranspileGlobal(this VariableDeclarationSyntax variableDeclarationNode, ref StringBuilder sb)
+        public LuaLocalDeclarationStatementSyntax Transpile(VariableDeclarationSyntax variableDeclaration, bool isLocalDeclaration)
         {
-            _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
-
-            variableDeclarationNode.VariableDefinitionNode?.TranspileGlobal(ref sb);
-            variableDeclarationNode.ArrayDefinitionNode?.TranspileGlobal(ref sb);
-        }
-
-        [Obsolete]
-        public static void TranspileLocal(this VariableDeclarationSyntax variableDeclarationNode, ref StringBuilder sb)
-        {
-            _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
-
-            variableDeclarationNode.VariableDefinitionNode?.TranspileLocal(ref sb);
-            variableDeclarationNode.ArrayDefinitionNode?.TranspileLocal(ref sb);
-        }
-
-        public static LuaVariableListDeclarationSyntax TranspileToLua(this VariableDeclarationSyntax variableDeclarationNode, bool isLocalDeclaration)
-        {
-            _ = variableDeclarationNode ?? throw new ArgumentNullException(nameof(variableDeclarationNode));
-
-            var declarator = variableDeclarationNode.VariableDefinitionNode?.TranspileToLua() ?? variableDeclarationNode.ArrayDefinitionNode.TranspileToLua();
-            declarator.IsLocalDeclaration = isLocalDeclaration;
+            _ = variableDeclaration ?? throw new ArgumentNullException(nameof(variableDeclaration));
 
             var declaration = new LuaVariableListDeclarationSyntax();
-            declaration.Variables.Add(declarator);
-            return declaration;
+            if (variableDeclaration.ArrayDefinitionNode is not null)
+            {
+                declaration.Variables.Add(Transpile(variableDeclaration.ArrayDefinitionNode));
+                RegisterVariableType(variableDeclaration.ArrayDefinitionNode, isLocalDeclaration);
+            }
+            else if (variableDeclaration.VariableDefinitionNode is not null)
+            {
+                declaration.Variables.Add(Transpile(variableDeclaration.VariableDefinitionNode));
+                RegisterVariableType(variableDeclaration.VariableDefinitionNode, isLocalDeclaration);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(variableDeclaration));
+            }
+
+            declaration.Variables.Single().IsLocalDeclaration = isLocalDeclaration;
+
+            return new LuaLocalDeclarationStatementSyntax(declaration);
         }
     }
 }

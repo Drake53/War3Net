@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="LocalVariableListTranspiler.cs" company="Drake53">
+// <copyright file="LocalVariableDeclarationTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,11 +17,11 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public IEnumerable<LuaStatementSyntax> Transpile(LocalVariableListSyntax localVariableList)
+        public IEnumerable<LuaStatementSyntax> Transpile(LocalVariableDeclarationSyntax localVariableDeclaration)
         {
-            _ = localVariableList ?? throw new ArgumentNullException(nameof(localVariableList));
+            _ = localVariableDeclaration ?? throw new ArgumentNullException(nameof(localVariableDeclaration));
 
-            return localVariableList.SelectMany(localVariable => Transpile(localVariable));
+            return new LuaStatementSyntax[] { Transpile(localVariableDeclaration.VariableDeclarationNode, true) }.Concat(Transpile(localVariableDeclaration.LineDelimiterNode));
         }
     }
 }

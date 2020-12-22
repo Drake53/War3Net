@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -14,22 +13,13 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this EqualsValueClauseSyntax equalsValueClauseNode, ref StringBuilder sb)
+        public LuaExpressionSyntax Transpile(EqualsValueClauseSyntax equalsValueClause)
         {
-            _ = equalsValueClauseNode ?? throw new ArgumentNullException(nameof(equalsValueClauseNode));
+            _ = equalsValueClause ?? throw new ArgumentNullException(nameof(equalsValueClause));
 
-            sb.Append(" = ");
-            equalsValueClauseNode.ValueNode.Transpile(ref sb);
-        }
-
-        public static LuaExpressionSyntax TranspileToLua(this EqualsValueClauseSyntax equalsValueClauseNode)
-        {
-            _ = equalsValueClauseNode ?? throw new ArgumentNullException(nameof(equalsValueClauseNode));
-
-            return equalsValueClauseNode.ValueNode.TranspileToLua();
+            return Transpile(equalsValueClause.ValueNode);
         }
     }
 }

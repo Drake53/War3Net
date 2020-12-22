@@ -5,30 +5,29 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this FunctionReferenceSyntax functionReferenceNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("functionReference")]
+        public LuaExpressionSyntax? Transpile(FunctionReferenceSyntax? functionReference, out SyntaxTokenType expressionType)
         {
-            _ = functionReferenceNode ?? throw new ArgumentNullException(nameof(functionReferenceNode));
+            if (functionReference is null)
+            {
+                expressionType = SyntaxTokenType.NullKeyword;
+                return null;
+            }
 
-            functionReferenceNode.IdentifierNameNode.TranspileExpression(ref sb);
-        }
+            expressionType = SyntaxTokenType.CodeKeyword;
 
-        public static LuaExpressionSyntax TranspileToLua(this FunctionReferenceSyntax functionReferenceNode)
-        {
-            _ = functionReferenceNode ?? throw new ArgumentNullException(nameof(functionReferenceNode));
-
-            return functionReferenceNode.IdentifierNameNode.TranspileExpressionToLua();
+            return TranspileExpression(functionReference.IdentifierNameNode);
         }
     }
 }

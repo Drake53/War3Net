@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 using CSharpLua.LuaAst;
 
@@ -14,23 +14,15 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this GlobalDeclarationSyntax globalDeclarationNode, ref StringBuilder sb)
+        public IEnumerable<LuaStatementSyntax> Transpile(GlobalDeclarationSyntax globalDeclaration)
         {
-            _ = globalDeclarationNode ?? throw new ArgumentNullException(nameof(globalDeclarationNode));
+            _ = globalDeclaration ?? throw new ArgumentNullException(nameof(globalDeclaration));
 
-            globalDeclarationNode.ConstantDeclarationNode?.Transpile(ref sb);
-            globalDeclarationNode.VariableDeclarationNode?.Transpile(ref sb);
-        }
-
-        public static LuaVariableListDeclarationSyntax TranspileToLua(this GlobalDeclarationSyntax globalDeclarationNode)
-        {
-            _ = globalDeclarationNode ?? throw new ArgumentNullException(nameof(globalDeclarationNode));
-
-            return globalDeclarationNode.ConstantDeclarationNode?.TranspileToLua()
-                ?? globalDeclarationNode.VariableDeclarationNode.TranspileToLua();
+            return globalDeclaration.VariableDeclarationNode is null
+                ? Transpile(globalDeclaration.ConstantDeclarationNode)
+                : Transpile(globalDeclaration.VariableDeclarationNode);
         }
     }
 }

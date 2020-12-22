@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -14,33 +13,20 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this StatementSyntax statementNode, ref StringBuilder sb)
+        public LuaStatementSyntax Transpile(StatementSyntax statement)
         {
-            _ = statementNode ?? throw new ArgumentNullException(nameof(statementNode));
+            _ = statement ?? throw new ArgumentNullException(nameof(statement));
 
-            statementNode.SetStatementNode?.Transpile(ref sb);
-            statementNode.CallStatementNode?.Transpile(ref sb);
-            statementNode.IfStatementNode?.Transpile(ref sb);
-            statementNode.LoopStatementNode?.Transpile(ref sb);
-            statementNode.ExitStatementNode?.Transpile(ref sb);
-            statementNode.ReturnStatementNode?.Transpile(ref sb);
-            statementNode.DebugStatementNode?.Transpile(ref sb);
-        }
-
-        public static LuaStatementSyntax TranspileToLua(this StatementSyntax statementNode)
-        {
-            _ = statementNode ?? throw new ArgumentNullException(nameof(statementNode));
-
-            return statementNode.SetStatementNode?.TranspileToLua()
-                ?? statementNode.CallStatementNode?.TranspileToLua()
-                ?? statementNode.IfStatementNode?.TranspileToLua()
-                ?? statementNode.LoopStatementNode?.TranspileToLua()
-                ?? statementNode.ExitStatementNode?.TranspileToLua()
-                ?? statementNode.ReturnStatementNode?.TranspileToLua()
-                ?? statementNode.DebugStatementNode.TranspileToLua();
+            return Transpile(statement.SetStatementNode)
+                ?? Transpile(statement.CallStatementNode)
+                ?? Transpile(statement.IfStatementNode)
+                ?? Transpile(statement.LoopStatementNode)
+                ?? Transpile(statement.ExitStatementNode)
+                ?? Transpile(statement.ReturnStatementNode)
+                ?? Transpile(statement.DebugStatementNode)
+                ?? throw new ArgumentNullException(nameof(statement));
         }
     }
 }

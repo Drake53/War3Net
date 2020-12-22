@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,30 +13,22 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this CallStatementSyntax callStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("callStatement")]
+        public LuaStatementSyntax? Transpile(CallStatementSyntax? callStatement)
         {
-            _ = callStatementNode ?? throw new ArgumentNullException(nameof(callStatementNode));
-
-            callStatementNode.IdentifierNameNode.TranspileExpression(ref sb);
-            sb.Append('(');
-            if (callStatementNode.EmptyArgumentListNode is null)
+            if (callStatement is null)
             {
-                callStatementNode.ArgumentListNode.Transpile(ref sb);
+                return null;
             }
 
-            sb.Append(')');
-        }
+            var expression = TranspileExpression(callStatement.IdentifierNameNode);
+            var invocation = callStatement.ArgumentListNode is null
+                ? new LuaInvocationExpressionSyntax(expression)
+                : new LuaInvocationExpressionSyntax(expression, Transpile(callStatement.ArgumentListNode));
 
-        public static LuaExpressionStatementSyntax TranspileToLua(this CallStatementSyntax callStatementNode)
-        {
-            _ = callStatementNode ?? throw new ArgumentNullException(nameof(callStatementNode));
-
-            return new LuaExpressionStatementSyntax(new LuaInvocationExpressionSyntax(
-                callStatementNode.IdentifierNameNode.TranspileExpressionToLua(),
-                callStatementNode.ArgumentListNode?.TranspileToLua() ?? Array.Empty<LuaExpressionSyntax>()));
+            return new LuaExpressionStatementSyntax(invocation);
         }
     }
 }

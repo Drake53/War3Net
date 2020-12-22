@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,31 +13,21 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this SetStatementSyntax setStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("setStatement")]
+        public LuaStatementSyntax? Transpile(SetStatementSyntax? setStatement)
         {
-            _ = setStatementNode ?? throw new ArgumentNullException(nameof(setStatementNode));
-
-            setStatementNode.IdentifierNameNode.TranspileExpression(ref sb);
-            if (setStatementNode.EmptyArrayIndexerNode is null)
+            if (setStatement is null)
             {
-                setStatementNode.ArrayIndexerNode.Transpile(ref sb);
+                return null;
             }
 
-            setStatementNode.EqualsValueClauseNode.Transpile(ref sb);
-        }
+            var left = setStatement.ArrayIndexerNode is null
+                ? TranspileExpression(setStatement.IdentifierNameNode)
+                : new LuaTableIndexAccessExpressionSyntax(TranspileExpression(setStatement.IdentifierNameNode), Transpile(setStatement.ArrayIndexerNode));
 
-        public static LuaStatementSyntax TranspileToLua(this SetStatementSyntax setStatementNode)
-        {
-            _ = setStatementNode ?? throw new ArgumentNullException(nameof(setStatementNode));
-
-            var left = setStatementNode.ArrayIndexerNode is null
-                ? setStatementNode.IdentifierNameNode.TranspileExpressionToLua()
-                : new LuaTableIndexAccessExpressionSyntax(setStatementNode.IdentifierNameNode.TranspileExpressionToLua(), setStatementNode.ArrayIndexerNode.TranspileToLua());
-
-            return new LuaExpressionStatementSyntax(new LuaAssignmentExpressionSyntax(left, setStatementNode.EqualsValueClauseNode.TranspileToLua()));
+            return new LuaExpressionStatementSyntax(new LuaAssignmentExpressionSyntax(left, Transpile(setStatement.EqualsValueClauseNode)));
         }
     }
 }

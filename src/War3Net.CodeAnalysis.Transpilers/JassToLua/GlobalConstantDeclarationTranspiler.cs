@@ -6,7 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 
 using CSharpLua.LuaAst;
 
@@ -14,29 +15,22 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this GlobalConstantDeclarationSyntax globalConstantDeclarationNode, ref StringBuilder sb)
+        public IEnumerable<LuaStatementSyntax> Transpile(GlobalConstantDeclarationSyntax globalConstantDeclaration)
         {
-            _ = globalConstantDeclarationNode ?? throw new ArgumentNullException(nameof(globalConstantDeclarationNode));
-
-            globalConstantDeclarationNode.IdentifierNameNode.TranspileIdentifier(ref sb);
-            globalConstantDeclarationNode.EqualsValueClause.Transpile(ref sb);
-            globalConstantDeclarationNode.LineDelimiterNode.Transpile(ref sb);
-        }
-
-        public static LuaVariableListDeclarationSyntax TranspileToLua(this GlobalConstantDeclarationSyntax globalConstantDeclarationNode)
-        {
-            _ = globalConstantDeclarationNode ?? throw new ArgumentNullException(nameof(globalConstantDeclarationNode));
+            _ = globalConstantDeclaration ?? throw new ArgumentNullException(nameof(globalConstantDeclaration));
 
             var variableList = new LuaVariableListDeclarationSyntax();
             var declarator = new LuaVariableDeclaratorSyntax(
-                globalConstantDeclarationNode.IdentifierNameNode.TranspileIdentifierToLua(),
-                globalConstantDeclarationNode.EqualsValueClause.TranspileToLua());
-            variableList.Variables.Add(declarator);
+                TranspileIdentifier(globalConstantDeclaration.IdentifierNameNode),
+                Transpile(globalConstantDeclaration.EqualsValueClause));
 
-            return variableList;
+            declarator.IsLocalDeclaration = false;
+            variableList.Variables.Add(declarator);
+            RegisterGlobalVariableType(globalConstantDeclaration);
+
+            return new LuaStatementSyntax[] { new LuaLocalDeclarationStatementSyntax(variableList) }.Concat(Transpile(globalConstantDeclaration.LineDelimiterNode));
         }
     }
 }

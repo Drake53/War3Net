@@ -6,31 +6,37 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this IntegerSyntax integerNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("integer")]
+        public LuaExpressionSyntax? Transpile(IntegerSyntax? integer)
         {
-            _ = integerNode ?? throw new ArgumentNullException(nameof(integerNode));
+            if (integer is null)
+            {
+                return null;
+            }
 
-            integerNode.FourCCIntegerNode?.Transpile(ref sb);
-            integerNode.IntegerToken?.TranspileExpression(ref sb);
-        }
-
-        public static LuaExpressionSyntax TranspileToLua(this IntegerSyntax integerNode)
-        {
-            _ = integerNode ?? throw new ArgumentNullException(nameof(integerNode));
-
-            return integerNode.FourCCIntegerNode?.TranspileToLua()
-                ?? integerNode.IntegerToken.TranspileExpressionToLua();
+            if (integer.FourCCIntegerNode is not null)
+            {
+                return Transpile(integer.FourCCIntegerNode);
+            }
+            else if (integer.IntegerToken is not null)
+            {
+                return TranspileExpression(integer.IntegerToken);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(integer));
+            }
         }
     }
 }

@@ -5,39 +5,31 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this ArrayReferenceSyntax arrayReferenceNode, ref StringBuilder sb, out bool isString)
+        [return: NotNullIfNotNull("arrayReference")]
+        public LuaExpressionSyntax? Transpile(ArrayReferenceSyntax? arrayReference, out SyntaxTokenType expressionType)
         {
-            _ = arrayReferenceNode ?? throw new ArgumentNullException(nameof(arrayReferenceNode));
+            if (arrayReference is null)
+            {
+                expressionType = SyntaxTokenType.NullKeyword;
+                return null;
+            }
 
-            isString = TranspileStringConcatenationHandler.IsStringVariable(arrayReferenceNode.IdentifierNameNode.ValueText);
-
-            arrayReferenceNode.IdentifierNameNode.TranspileExpression(ref sb);
-            sb.Append('[');
-            arrayReferenceNode.IndexExpressionNode.Transpile(ref sb);
-            sb.Append(']');
-        }
-
-        public static LuaExpressionSyntax TranspileToLua(this ArrayReferenceSyntax arrayReferenceNode, out bool isString)
-        {
-            _ = arrayReferenceNode ?? throw new ArgumentNullException(nameof(arrayReferenceNode));
-
-            isString = TranspileStringConcatenationHandler.IsStringVariable(arrayReferenceNode.IdentifierNameNode.ValueText);
+            expressionType = GetVariableType(arrayReference.IdentifierNameNode.ValueText);
 
             return new LuaTableIndexAccessExpressionSyntax(
-                arrayReferenceNode.IdentifierNameNode.TranspileIdentifierToLua(),
-                arrayReferenceNode.IndexExpressionNode.TranspileToLua());
+                TranspileIdentifier(arrayReference.IdentifierNameNode),
+                Transpile(arrayReference.IndexExpressionNode));
         }
     }
 }

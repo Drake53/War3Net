@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
@@ -16,24 +15,13 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this GlobalsBlockSyntax globalsBlockNode, ref StringBuilder sb)
+        public IEnumerable<LuaStatementSyntax> Transpile(GlobalsBlockSyntax globalsBlock)
         {
-            _ = globalsBlockNode ?? throw new ArgumentNullException(nameof(globalsBlockNode));
+            _ = globalsBlock ?? throw new ArgumentNullException(nameof(globalsBlock));
 
-            foreach (var declaration in globalsBlockNode.GlobalDeclarationListNode)
-            {
-                declaration.Transpile(ref sb);
-            }
-        }
-
-        public static IEnumerable<LuaStatementSyntax> TranspileToLua(this GlobalsBlockSyntax globalsBlockNode)
-        {
-            _ = globalsBlockNode ?? throw new ArgumentNullException(nameof(globalsBlockNode));
-
-            return globalsBlockNode.GlobalDeclarationListNode.Select(declaration => new LuaLocalDeclarationStatementSyntax(declaration.TranspileToLua()));
+            return Transpile(globalsBlock.LineDelimiterNode).Concat(globalsBlock.GlobalDeclarationListNode.SelectMany(declaration => Transpile(declaration)));
         }
     }
 }

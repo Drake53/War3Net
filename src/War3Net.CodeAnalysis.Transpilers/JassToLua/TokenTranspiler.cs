@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -15,20 +15,19 @@ using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
         private const string AntiReservedKeywordConflictPrefix = "_";
 
         private static readonly Lazy<HashSet<string>> _reservedKeywords = new Lazy<HashSet<string>>(() => new HashSet<string>(GetReservedKeywords()));
 
-        [Obsolete]
-        public static void TranspileIdentifier(this TokenNode tokenNode, ref StringBuilder sb)
+        public LuaIdentifierNameSyntax TranspileIdentifier(TokenNode token)
         {
-            if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
+            if ((token?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
             {
-                sb.Append(_reservedKeywords.Value.Contains(tokenNode.ValueText)
-                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
-                    : tokenNode.ValueText);
+                return _reservedKeywords.Value.Contains(token.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{token.ValueText}"
+                    : token.ValueText;
             }
             else
             {
@@ -36,92 +35,31 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
         }
 
-        public static LuaIdentifierNameSyntax TranspileIdentifierToLua(this TokenNode tokenNode)
+        public string TranspileUnaryOperator(TokenNode token)
         {
-            if ((tokenNode?.TokenType ?? SyntaxTokenType.Undefined) == SyntaxTokenType.AlphanumericIdentifier)
-            {
-                return _reservedKeywords.Value.Contains(tokenNode.ValueText)
-                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
-                    : tokenNode.ValueText;
-            }
-            else
-            {
-                throw new ArgumentException($"Identifier token must have type {SyntaxTokenType.AlphanumericIdentifier}.");
-            }
-        }
+            _ = token ?? throw new ArgumentNullException(nameof(token));
 
-        [Obsolete]
-        public static void TranspileUnaryOperator(this TokenNode tokenNode, ref StringBuilder sb)
-        {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
-
-            switch (tokenNode.TokenType)
-            {
-                case SyntaxTokenType.PlusOperator:
-                    sb.Append('+');
-                    break;
-                case SyntaxTokenType.MinusOperator:
-                    sb.Append('-');
-                    break;
-                case SyntaxTokenType.NotOperator:
-                    sb.Append("not ");
-                    break;
-
-                default:
-                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression.");
-            }
-        }
-
-        public static string TranspileUnaryOperatorToLua(this TokenNode tokenNode)
-        {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
-
-            return tokenNode.TokenType switch
+            return token.TokenType switch
             {
                 SyntaxTokenType.PlusOperator => LuaSyntaxNode.Tokens.Plus,
                 SyntaxTokenType.MinusOperator => LuaSyntaxNode.Tokens.Sub,
                 SyntaxTokenType.NotOperator => LuaSyntaxNode.Keyword.Not,
 
                 // todo: invalidenumargexc
-                _ => throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a unary expression."),
+                _ => throw new ArgumentException($"Cannot transpile token of type {token.TokenType} to an operator of a unary expression."),
             };
         }
 
-        [Obsolete]
-        public static void TranspileBinaryOperator(this TokenNode tokenNode, bool isString, ref StringBuilder sb)
+        public string TranspileBinaryOperator(TokenNode token, SyntaxTokenType left, SyntaxTokenType right)
         {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+            _ = token ?? throw new ArgumentNullException(nameof(token));
 
-            switch (tokenNode.TokenType)
+            return token.TokenType switch
             {
-                case SyntaxTokenType.PlusOperator: sb.Append(isString ? ".." : "+"); break;
-                case SyntaxTokenType.MinusOperator: sb.Append('-'); break;
-                case SyntaxTokenType.MultiplicationOperator: sb.Append('*'); break;
-                case SyntaxTokenType.DivisionOperator: sb.Append('/'); break;
-                case SyntaxTokenType.GreaterThanOperator: sb.Append('>'); break;
-                case SyntaxTokenType.LessThanOperator: sb.Append('<'); break;
-                case SyntaxTokenType.EqualityOperator: sb.Append("=="); break;
-                case SyntaxTokenType.UnequalityOperator: sb.Append("~="); break;
-                case SyntaxTokenType.GreaterOrEqualOperator: sb.Append(">="); break;
-                case SyntaxTokenType.LessOrEqualOperator: sb.Append("<="); break;
-                case SyntaxTokenType.AndOperator: sb.Append("and"); break;
-                case SyntaxTokenType.OrOperator: sb.Append("or"); break;
-
-                default:
-                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a binary expression.");
-            }
-        }
-
-        public static string TranspileBinaryOperatorToLua(this TokenNode tokenNode, bool isString)
-        {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
-
-            return tokenNode.TokenType switch
-            {
-                SyntaxTokenType.PlusOperator => isString ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
+                SyntaxTokenType.PlusOperator => left == SyntaxTokenType.StringKeyword || right == SyntaxTokenType.StringKeyword ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
                 SyntaxTokenType.MinusOperator => LuaSyntaxNode.Tokens.Sub,
                 SyntaxTokenType.MultiplicationOperator => LuaSyntaxNode.Tokens.Multiply,
-                SyntaxTokenType.DivisionOperator => LuaSyntaxNode.Tokens.Div, // todo: integerdiv?
+                SyntaxTokenType.DivisionOperator => left == SyntaxTokenType.IntegerKeyword && right == SyntaxTokenType.IntegerKeyword ? LuaSyntaxNode.Tokens.IntegerDiv : LuaSyntaxNode.Tokens.Div,
                 SyntaxTokenType.GreaterThanOperator => ">",
                 SyntaxTokenType.LessThanOperator => "<",
                 SyntaxTokenType.EqualityOperator => LuaSyntaxNode.Tokens.EqualsEquals,
@@ -132,47 +70,48 @@ namespace War3Net.CodeAnalysis.Transpilers
                 SyntaxTokenType.OrOperator => LuaSyntaxNode.Keyword.Or,
 
                 // todo: invalidenumargexc
-                _ => throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an operator of a binary expression."),
+                _ => throw new ArgumentException($"Cannot transpile token of type {token.TokenType} to an operator of a binary expression."),
             };
         }
 
-        [Obsolete]
-        public static void TranspileExpression(this TokenNode tokenNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("token")]
+        public LuaExpressionSyntax? TranspileExpression(TokenNode? token)
         {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
-
-            if (tokenNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
+            if (token is null)
             {
-                sb.Append(_reservedKeywords.Value.Contains(tokenNode.ValueText)
-                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
-                    : tokenNode.ValueText);
+                return null;
+            }
+
+            if (token.TokenType == SyntaxTokenType.AlphanumericIdentifier)
+            {
+                return _reservedKeywords.Value.Contains(token.ValueText)
+                    ? $"{AntiReservedKeywordConflictPrefix}{token.ValueText}"
+                    : token.ValueText;
             }
             else
             {
-                sb.Append(tokenNode.GetConstantExpression());
+                return GetConstantExpression(token);
             }
         }
 
-        public static LuaExpressionSyntax TranspileExpressionToLua(this TokenNode tokenNode)
+        [return: NotNullIfNotNull("token")]
+        public LuaExpressionSyntax? TranspileExpression(TokenNode? token, out SyntaxTokenType expressionType)
         {
-            _ = tokenNode ?? throw new ArgumentNullException(nameof(tokenNode));
+            if (token is null)
+            {
+                expressionType = SyntaxTokenType.NullKeyword;
+                return null;
+            }
 
-            if (tokenNode.TokenType == SyntaxTokenType.AlphanumericIdentifier)
-            {
-                return _reservedKeywords.Value.Contains(tokenNode.ValueText)
-                    ? $"{AntiReservedKeywordConflictPrefix}{tokenNode.ValueText}"
-                    : tokenNode.ValueText;
-            }
-            else
-            {
-                return tokenNode.GetConstantExpression();
-            }
+            expressionType = GetVariableType(token.ValueText);
+
+            return TranspileExpression(token);
         }
 
-        private static string GetConstantExpression(this TokenNode tokenNode)
+        private string GetConstantExpression(TokenNode token)
         {
-            var text = tokenNode.ValueText;
-            switch (tokenNode.TokenType)
+            var text = token.ValueText;
+            switch (token.TokenType)
             {
                 case SyntaxTokenType.DecimalNumber: return text;
                 case SyntaxTokenType.OctalNumber: return "0";
@@ -183,11 +122,11 @@ namespace War3Net.CodeAnalysis.Transpilers
                 case SyntaxTokenType.RealNumber: return $"{(text[text.Length - 1] == '.' ? text.Substring(0, text.Length - 1) : text)}";
                 case SyntaxTokenType.TrueKeyword: return "true";
                 case SyntaxTokenType.FalseKeyword: return "false";
-                case SyntaxTokenType.String: return $"\"{text}\"";
+                case SyntaxTokenType.String: return $"\"{text.Replace("\r", @"\r").Replace("\n", @"\n")}\"";
                 case SyntaxTokenType.NullKeyword: return "nil";
 
                 default:
-                    throw new ArgumentException($"Cannot transpile token of type {tokenNode.TokenType} to an expression.");
+                    throw new ArgumentException($"Cannot transpile token of type {token.TokenType} to an expression.");
             }
         }
 

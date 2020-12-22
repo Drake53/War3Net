@@ -6,72 +6,55 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this NewExpressionSyntax newExpressionNode, ref StringBuilder sb)
+        public LuaExpressionSyntax Transpile(NewExpressionSyntax newExpression)
         {
-            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
+            _ = newExpression ?? throw new ArgumentNullException(nameof(newExpression));
 
-            newExpressionNode.Expression.Transpile(ref sb, out var isString);
-            if (newExpressionNode.EmptyExpressionTail is null)
-            {
-                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(isString, ref sb);
-                newExpressionNode.ExpressionTail.ExpressionNode.Transpile(ref sb);
-            }
-        }
-
-        [Obsolete]
-        public static void Transpile(this NewExpressionSyntax newExpressionNode, ref StringBuilder sb, out bool isString)
-        {
-            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
-
-            newExpressionNode.Expression.Transpile(ref sb, out isString);
-            if (newExpressionNode.EmptyExpressionTail is null)
-            {
-                newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(isString, ref sb);
-                newExpressionNode.ExpressionTail.ExpressionNode.Transpile(ref sb);
-            }
-        }
-
-        public static LuaExpressionSyntax TranspileToLua(this NewExpressionSyntax newExpressionNode)
-        {
-            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
-
-            var left = newExpressionNode.Expression.TranspileToLua(out var isString);
-            if (newExpressionNode.ExpressionTail is null)
+            var left = Transpile(newExpression.Expression, out var leftExpressionType);
+            if (newExpression.ExpressionTail is null)
             {
                 return left;
             }
 
-            var right = newExpressionNode.ExpressionTail.ExpressionNode.TranspileToLua(out var rightIsString);
-            isString = isString || rightIsString;
+            var right = Transpile(newExpression.ExpressionTail.ExpressionNode, out var rightExpressionType);
 
-            return new LuaBinaryExpressionSyntax(left, newExpressionNode.ExpressionTail.BinaryOperatorNode.TranspileToLua(isString), right);
+            return new LuaBinaryExpressionSyntax(left, Transpile(newExpression.ExpressionTail.BinaryOperatorNode, leftExpressionType, rightExpressionType), right);
         }
 
-        public static LuaExpressionSyntax TranspileToLua(this NewExpressionSyntax newExpressionNode, out bool isString)
+        public LuaExpressionSyntax Transpile(NewExpressionSyntax newExpression, out SyntaxTokenType expressionType)
         {
-            _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
+            _ = newExpression ?? throw new ArgumentNullException(nameof(newExpression));
 
-            var left = newExpressionNode.Expression.TranspileToLua(out isString);
-            if (newExpressionNode.ExpressionTail is null)
+            var left = Transpile(newExpression.Expression, out expressionType);
+            if (newExpression.ExpressionTail is null)
             {
                 return left;
             }
 
-            var right = newExpressionNode.ExpressionTail.ExpressionNode.TranspileToLua(out var rightIsString);
-            isString = isString || rightIsString;
+            var right = Transpile(newExpression.ExpressionTail.ExpressionNode, out var rightExpressionType);
+            if (rightExpressionType != expressionType)
+            {
+                if (rightExpressionType == SyntaxTokenType.StringKeyword)
+                {
+                    expressionType = SyntaxTokenType.StringKeyword;
+                }
+                else if (expressionType != SyntaxTokenType.StringKeyword && rightExpressionType == SyntaxTokenType.RealKeyword)
+                {
+                    expressionType = SyntaxTokenType.RealKeyword;
+                }
+            }
 
-            return new LuaBinaryExpressionSyntax(left, newExpressionNode.ExpressionTail.BinaryOperatorNode.TranspileToLua(isString), right);
+            return new LuaBinaryExpressionSyntax(left, Transpile(newExpression.ExpressionTail.BinaryOperatorNode, expressionType, rightExpressionType), right);
         }
     }
 }

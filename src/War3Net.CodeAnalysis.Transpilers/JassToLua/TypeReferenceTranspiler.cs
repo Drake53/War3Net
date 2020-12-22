@@ -6,35 +6,22 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using CSharpLua.LuaAst;
 
-using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this TypeReferenceSyntax typeReferenceNode, ref StringBuilder sb)
+        public LuaIdentifierNameSyntax Transpile(TypeReferenceSyntax typeReference)
         {
-            _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
+            _ = typeReference ?? throw new ArgumentNullException(nameof(typeReference));
 
-            typeReferenceNode.TypeReferenceNameToken.TranspileIdentifier(ref sb);
+            RegisterLocalVariableType(typeReference);
 
-            if (typeReferenceNode.TypeNameNode.TypeNameToken.TokenType == SyntaxTokenType.StringKeyword)
-            {
-                TranspileStringConcatenationHandler.RegisterLocalStringVariable(typeReferenceNode.TypeReferenceNameToken.ValueText);
-            }
-        }
-
-        public static LuaIdentifierNameSyntax TranspileToLua(this TypeReferenceSyntax typeReferenceNode)
-        {
-            _ = typeReferenceNode ?? throw new ArgumentNullException(nameof(typeReferenceNode));
-
-            return typeReferenceNode.TypeReferenceNameToken.TranspileIdentifierToLua();
+            return TranspileIdentifier(typeReference.TypeReferenceNameToken);
         }
     }
 }

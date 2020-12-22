@@ -1,11 +1,13 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="EndOfLineTranspiler.cs" company="Drake53">
+// <copyright file="NewStatementTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using CSharpLua.LuaAst;
 
@@ -15,11 +17,11 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public LuaStatementSyntax Transpile(EndOfLineSyntax endOfLine)
+        public IEnumerable<LuaStatementSyntax> Transpile(NewStatementSyntax newStatement)
         {
-            _ = endOfLine ?? throw new ArgumentNullException(nameof(endOfLine));
+            _ = newStatement ?? throw new ArgumentNullException(nameof(newStatement));
 
-            return endOfLine.Comment is null ? LuaBlankLinesStatement.One : Transpile(endOfLine.Comment);
+            return new[] { Transpile(newStatement.StatementNode) }.Concat(Transpile(newStatement.LineDelimiterNode));
         }
     }
 }

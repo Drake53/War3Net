@@ -5,8 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 using CSharpLua.LuaAst;
 
@@ -14,31 +13,19 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
-    public static partial class JassToLuaTranspiler
+    public partial class JassToLuaTranspiler
     {
-        [Obsolete]
-        public static void Transpile(this ReturnStatementSyntax returnStatementNode, ref StringBuilder sb)
+        [return: NotNullIfNotNull("returnStatement")]
+        public LuaStatementSyntax? Transpile(ReturnStatementSyntax? returnStatement)
         {
-            _ = returnStatementNode ?? throw new ArgumentNullException(nameof(returnStatementNode));
-
-            if (returnStatementNode.EmptyExpressionNode is null)
+            if (returnStatement is null)
             {
-                sb.Append("return ");
-                returnStatementNode.ExpressionNode?.Transpile(ref sb);
+                return null;
             }
-            else
-            {
-                sb.Append("return");
-            }
-        }
 
-        public static LuaReturnStatementSyntax TranspileToLua(this ReturnStatementSyntax returnStatementNode)
-        {
-            _ = returnStatementNode ?? throw new ArgumentNullException(nameof(returnStatementNode));
-
-            return returnStatementNode.ExpressionNode is null
+            return returnStatement.ExpressionNode is null
                 ? new LuaReturnStatementSyntax()
-                : new LuaReturnStatementSyntax(returnStatementNode.ExpressionNode.TranspileToLua());
+                : new LuaReturnStatementSyntax(Transpile(returnStatement.ExpressionNode));
         }
     }
 }
