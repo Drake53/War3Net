@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 elseifNode.ConditionExpressionNode.Transpile(),
                 SyntaxFactory.Block(elseifNode.StatementListNode.Transpile()));
 
-            return elseifNode.EmptyElseClauseNode is null
+            return elseifNode.ElseClauseNode is not null
                 ? ifStatement.WithElse(elseifNode.ElseClauseNode.Transpile())
                 : ifStatement;
         }

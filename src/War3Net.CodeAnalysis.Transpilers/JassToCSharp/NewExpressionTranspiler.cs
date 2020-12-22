@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
 
-            if (newExpressionNode.EmptyExpressionTail is null)
+            if (newExpressionNode.ExpressionTail is not null)
             {
                 return SyntaxFactory.BinaryExpression(
                     newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(),
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             _ = newExpressionNode ?? throw new ArgumentNullException(nameof(newExpressionNode));
 
-            if (newExpressionNode.EmptyExpressionTail is null)
+            if (newExpressionNode.ExpressionTail is not null)
             {
                 var binaryExpression = SyntaxFactory.BinaryExpression(
                     newExpressionNode.ExpressionTail.BinaryOperatorNode.Transpile(),

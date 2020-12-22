@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             var functionCall = SyntaxFactory.InvocationExpression(
                 functionCallNode.IdentifierNameNode.TranspileExpression());
 
-            if (functionCallNode.EmptyArgumentListNode is null)
+            if (functionCallNode.ArgumentListNode is not null)
             {
                 return functionCall.AddArgumentListArguments(functionCallNode.ArgumentListNode.Transpile().ToArray());
             }
@@ -39,7 +39,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             var functionCall = SyntaxFactory.InvocationExpression(
                 functionCallNode.IdentifierNameNode.TranspileExpression());
 
-            if (functionCallNode.EmptyArgumentListNode is null)
+            if (functionCallNode.ArgumentListNode is not null)
             {
                 return functionCall.AddArgumentListArguments(functionCallNode.ArgumentListNode.Transpile().ToArray());
             }

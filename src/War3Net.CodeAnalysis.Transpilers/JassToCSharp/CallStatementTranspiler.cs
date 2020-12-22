@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             var invocation = SyntaxFactory.InvocationExpression(
                     callStatementNode.IdentifierNameNode.TranspileExpression());
 
-            if (callStatementNode.EmptyArgumentListNode is null)
+            if (callStatementNode.ArgumentListNode is not null)
             {
                 invocation = invocation.AddArgumentListArguments(
                     callStatementNode.ArgumentListNode.Transpile().ToArray());
