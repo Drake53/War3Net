@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             WriteSpace();
             Render(callStatement.IdentifierNameNode);
             Render(callStatement.OpenParenthesisSymbol);
-            if (callStatement.EmptyArgumentListNode is null)
+            if (callStatement.ArgumentListNode is not null)
             {
                 Render(callStatement.ArgumentListNode);
             }

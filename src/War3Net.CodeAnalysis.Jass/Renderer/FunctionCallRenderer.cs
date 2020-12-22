@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         {
             Render(functionCall.IdentifierNameNode);
             Render(functionCall.OpenParenthesisSymbol);
-            if (functionCall.EmptyArgumentListNode is null)
+            if (functionCall.ArgumentListNode is not null)
             {
                 Render(functionCall.ArgumentListNode);
             }

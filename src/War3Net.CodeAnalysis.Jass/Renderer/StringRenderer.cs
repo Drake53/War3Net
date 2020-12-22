@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         public void Render(StringSyntax @string)
         {
             Render(@string.StartStringSymbol);
-            if (@string.StringNode != null)
+            if (@string.StringNode is not null)
             {
                 Render(@string.StringNode);
             }

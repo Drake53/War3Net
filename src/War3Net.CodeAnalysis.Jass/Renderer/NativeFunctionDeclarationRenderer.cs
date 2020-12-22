@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         public void Render(NativeFunctionDeclarationSyntax nativeFunctionDeclaration)
         {
-            if (nativeFunctionDeclaration.NonConstantNode is null)
+            if (nativeFunctionDeclaration.ConstantToken is not null)
             {
                 Render(nativeFunctionDeclaration.ConstantToken);
                 WriteSpace();

@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         public void Render(NewExpressionSyntax newExpression)
         {
             Render(newExpression.Expression);
-            if (newExpression.EmptyExpressionTail is null)
+            if (newExpression.ExpressionTail is not null)
             {
                 Render(newExpression.ExpressionTail);
             }

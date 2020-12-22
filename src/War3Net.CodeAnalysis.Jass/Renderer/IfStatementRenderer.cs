@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             Render(ifStatement.LineDelimiterNode, true);
             Render(ifStatement.StatementListNode);
             Outdent();
-            if (ifStatement.EmptyElseClauseNode is null)
+            if (ifStatement.ElseClauseNode is not null)
             {
                 Render(ifStatement.ElseClauseNode);
             }

@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             Render(setStatement.SetKeywordToken);
             WriteSpace();
             Render(setStatement.IdentifierNameNode);
-            if (setStatement.EmptyArrayIndexerNode is null)
+            if (setStatement.ArrayIndexerNode is not null)
             {
                 Render(setStatement.ArrayIndexerNode);
             }

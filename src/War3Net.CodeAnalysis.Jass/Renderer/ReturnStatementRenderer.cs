@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
         public void Render(ReturnStatementSyntax returnStatement)
         {
             Render(returnStatement.ReturnKeywordToken);
-            if (returnStatement.EmptyExpressionNode is null)
+            if (returnStatement.ExpressionNode is not null)
             {
                 WriteSpace();
                 Render(returnStatement.ExpressionNode);

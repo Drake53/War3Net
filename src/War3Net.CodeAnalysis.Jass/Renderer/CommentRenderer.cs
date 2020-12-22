@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             if (_options.Comments)
             {
                 Render(comment.DoubleForwardSlashToken);
-                if (comment.EmptyCommentNode is null)
+                if (comment.CommentNode is not null)
                 {
                     Render(comment.CommentNode);
                 }

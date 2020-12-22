@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
     {
         public void Render(FileSyntax file)
         {
-            if (file.StartFileEmpty is null)
+            if (file.StartFileLineDelimiter is not null)
             {
                 Render(file.StartFileLineDelimiter);
             }

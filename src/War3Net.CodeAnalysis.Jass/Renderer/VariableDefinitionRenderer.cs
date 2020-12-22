@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass.Renderer
             Render(variableDefinition.TypeNameNode);
             WriteSpace();
             Render(variableDefinition.IdentifierNameNode);
-            if (variableDefinition.EmptyEqualsValueClause is null)
+            if (variableDefinition.EqualsValueClause is not null)
             {
                 Render(variableDefinition.EqualsValueClause);
             }
