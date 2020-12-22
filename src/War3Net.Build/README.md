@@ -24,11 +24,8 @@ options.BlizzardJPath = "path\\to\\Blizzard.j";
 
 https://github.com/Drake53/War3Net/network/dependencies
 
-War3Net.Build targets [.NET Standard 2.1](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.1.md).
-Additionally, the following NuGet packages are referenced:
-
-- [War3Net.CodeAnalysis.Jass](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass)
-- [War3Net.Common](https://www.nuget.org/packages/War3Net.Common)
-- [War3Net.IO.Mpq](https://www.nuget.org/packages/War3Net.IO.Mpq)
-- [War3Net.CSharpLua](https://www.nuget.org/packages/War3Net.CSharpLua)
+NuGet packages:
 - [War3Api.Blizzard](https://www.nuget.org/packages/War3Api.Blizzard)
+- [War3Net.Build.Core](https://www.nuget.org/packages/War3Net.Build.Core)
+- [War3Net.CodeAnalysis.Jass](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass)
+- [War3Net.CSharpLua](https://www.nuget.org/packages/War3Net.CSharpLua)
