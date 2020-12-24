@@ -26,7 +26,12 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
             else
             {
-                // TypeDefinition and NativeFunctionDeclaration are not supported.
+                if (declaration.NativeFunctionDeclaration is not null)
+                {
+                    RegisterFunctionReturnType(declaration.NativeFunctionDeclaration.FunctionDeclarationNode);
+                }
+
+                // TypeDefinition and NativeFunctionDeclaration cannot be transpiled to lua.
                 return Array.Empty<LuaStatementSyntax>();
             }
         }
