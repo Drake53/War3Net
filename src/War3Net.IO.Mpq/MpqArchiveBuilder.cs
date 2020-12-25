@@ -91,6 +91,8 @@ namespace War3Net.IO.Mpq
             {
                 HashTableSize = _originalHashTableSize,
                 AttributesFlags = AttributesFlags.Crc32,
+                AttributesCreateMode = _removedFiles.Contains(Attributes.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite,
+                ListFileCreateMode = _removedFiles.Contains(ListFile.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite,
             };
 
             MpqArchive.Create(stream, GetMpqFiles().ToArray(), createOptions, leaveOpen).Dispose();
