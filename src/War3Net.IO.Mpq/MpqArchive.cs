@@ -549,29 +549,59 @@ namespace War3Net.IO.Mpq
             return memoryStream;
         }
 
-        internal bool TryGetEntryFromHashTable(
-            uint hashTableIndex,
-            [NotNullWhen(true)] out MpqEntry? mpqEntry)
+        /// <summary>
+        /// Searches the <see cref="MpqArchive"/> for files with the given <paramref name="fileName"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
+        /// </summary>
+        /// <param name="fileName">The name for which to check if any corresponding files exist.</param>
+        /// <returns>The amount of files in the <see cref="BlockTable"/> with the given <paramref name="fileName"/>.</returns>
+        public int AddFileName(string fileName)
         {
-            if (hashTableIndex >= _hashTable.Size)
+            if (fileName is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(hashTableIndex));
+                throw new ArgumentNullException(nameof(fileName));
             }
 
-            var mpqHash = _hashTable[hashTableIndex];
-            if (mpqHash.IsEmpty)
+            var hashes = GetHashEntries(fileName);
+            var fileIndicesFound = new HashSet<uint>();
+            foreach (var hash in hashes)
             {
-                throw new ArgumentException($"The {nameof(MpqHash)} at the given index is empty.", nameof(hashTableIndex));
+                if (fileIndicesFound.Add(hash.BlockIndex))
+                {
+                    _blockTable[hash.BlockIndex].FileName = fileName;
+                }
             }
 
-            if (mpqHash.IsDeleted)
-            {
-                mpqEntry = null;
-                return false;
-            }
+            return fileIndicesFound.Count;
+        }
 
-            mpqEntry = _blockTable[mpqHash.BlockIndex];
-            return true;
+        /// <summary>
+        /// Searches the <see cref="MpqArchive"/> for files with any of the given <paramref name="fileNames"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
+        /// </summary>
+        /// <param name="fileNames">The names for which to check if any corresponding files exist.</param>
+        /// <returns>The amount of files in the <see cref="BlockTable"/> with any of the given <paramref name="fileNames"/>.</returns>
+        public int AddFileNames(params string[] fileNames)
+        {
+            return fileNames.Sum(fileName => AddFileName(fileName));
+        }
+
+        /// <summary>
+        /// Searches the <see cref="MpqArchive"/> for files with any of the given <paramref name="fileNames"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
+        /// </summary>
+        /// <param name="fileNames">The names for which to check if any corresponding files exist.</param>
+        /// <returns>The amount of files in the <see cref="BlockTable"/> with any of the given <paramref name="fileNames"/>.</returns>
+        public int AddFileNames(IEnumerable<string> fileNames)
+        {
+            return fileNames.Sum(fileName => AddFileName(fileName));
+        }
+
+        /// <summary>
+        /// Tries to find mpq entries corresponding to the given <paramref name="fileName"/>.
+        /// </summary>
+        /// <param name="fileName">The name for which to check if a corresponding <see cref="MpqEntry"/> exists.</param>
+        /// <returns><see langword="true"/> if any file with the given <paramref name="fileName"/> exists, <see langword="false"/> otherwise.</returns>
+        public bool FileExists(string? fileName)
+        {
+            return !string.IsNullOrEmpty(fileName) && AddFileName(fileName) > 0;
         }
 
         /// <summary>
@@ -629,61 +659,6 @@ namespace War3Net.IO.Mpq
 
             stream = null;
             return false;
-        }
-
-        /// <summary>
-        /// Searches the <see cref="MpqArchive"/> for files with the given <paramref name="fileName"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
-        /// </summary>
-        /// <param name="fileName">The name for which to check if any corresponding files exist.</param>
-        /// <returns>The amount of files in the <see cref="BlockTable"/> with the given <paramref name="fileName"/>.</returns>
-        public int AddFileName(string fileName)
-        {
-            if (fileName is null)
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
-
-            var hashes = GetHashEntries(fileName);
-            var fileIndicesFound = new HashSet<uint>();
-            foreach (var hash in hashes)
-            {
-                if (fileIndicesFound.Add(hash.BlockIndex))
-                {
-                    _blockTable[hash.BlockIndex].FileName = fileName;
-                }
-            }
-
-            return fileIndicesFound.Count;
-        }
-
-        /// <summary>
-        /// Searches the <see cref="MpqArchive"/> for files with any of the given <paramref name="fileNames"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
-        /// </summary>
-        /// <param name="fileNames">The names for which to check if any corresponding files exist.</param>
-        /// <returns>The amount of files in the <see cref="BlockTable"/> with any of the given <paramref name="fileNames"/>.</returns>
-        public int AddFileNames(params string[] fileNames)
-        {
-            return fileNames.Sum(fileName => AddFileName(fileName));
-        }
-
-        /// <summary>
-        /// Searches the <see cref="MpqArchive"/> for files with any of the given <paramref name="fileNames"/>, and sets the <see cref="MpqEntry.FileName"/> if it was not known before.
-        /// </summary>
-        /// <param name="fileNames">The names for which to check if any corresponding files exist.</param>
-        /// <returns>The amount of files in the <see cref="BlockTable"/> with any of the given <paramref name="fileNames"/>.</returns>
-        public int AddFileNames(IEnumerable<string> fileNames)
-        {
-            return fileNames.Sum(fileName => AddFileName(fileName));
-        }
-
-        /// <summary>
-        /// Tries to find mpq entries corresponding to the given <paramref name="fileName"/>.
-        /// </summary>
-        /// <param name="fileName">The name for which to check if a corresponding <see cref="MpqEntry"/> exists.</param>
-        /// <returns><see langword="true"/> if any file with the given <paramref name="fileName"/> exists, <see langword="false"/> otherwise.</returns>
-        public bool FileExists(string? fileName)
-        {
-            return !string.IsNullOrEmpty(fileName) && AddFileName(fileName) > 0;
         }
 
         public IEnumerable<MpqEntry> GetMpqEntries(string fileName, MpqLocale? locale = null, bool orderByBlockIndex = true)
@@ -769,6 +744,31 @@ namespace War3Net.IO.Mpq
 
         /// <inheritdoc/>
         IEnumerator<MpqEntry> IEnumerable<MpqEntry>.GetEnumerator() => (_blockTable as IEnumerable<MpqEntry>).GetEnumerator();
+
+        internal bool TryGetEntryFromHashTable(
+            uint hashTableIndex,
+            [NotNullWhen(true)] out MpqEntry? mpqEntry)
+        {
+            if (hashTableIndex >= _hashTable.Size)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hashTableIndex));
+            }
+
+            var mpqHash = _hashTable[hashTableIndex];
+            if (mpqHash.IsEmpty)
+            {
+                throw new ArgumentException($"The {nameof(MpqHash)} at the given index is empty.", nameof(hashTableIndex));
+            }
+
+            if (mpqHash.IsDeleted)
+            {
+                mpqEntry = null;
+                return false;
+            }
+
+            mpqEntry = _blockTable[mpqHash.BlockIndex];
+            return true;
+        }
 
         private static bool TryLocateMpqHeader(
             Stream sourceStream,
