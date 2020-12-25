@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace War3Net.Build.Providers
@@ -15,7 +16,8 @@ namespace War3Net.Build.Providers
         /// <summary>
         /// Modified <see cref="System.Text.RegularExpressions.Regex.Escape(string)"/> to only escape \\, \n, \r, \t, and \f.
         /// </summary>
-        public static string GetEscapedString(string input)
+        [return: NotNullIfNotNull("input")]
+        public static string? GetEscapedString(string? input)
         {
             if (input is null)
             {

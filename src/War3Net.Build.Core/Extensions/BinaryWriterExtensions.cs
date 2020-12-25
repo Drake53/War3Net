@@ -49,6 +49,8 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, TerrainTile terrainTile, MapEnvironmentFormatVersion formatVersion) => terrainTile.WriteTo(writer, formatVersion);
 
+        public static void Write(this BinaryWriter writer, MapPathingMap mapPathingMap) => mapPathingMap.WriteTo(writer);
+
         public static void Write(this BinaryWriter writer, MapPreviewIcons mapPreviewIcons) => mapPreviewIcons.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, PreviewIcon previewIcon, MapPreviewIconsFormatVersion formatVersion) => previewIcon.WriteTo(writer, formatVersion);
@@ -57,9 +59,11 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, Region region, MapRegionsFormatVersion formatVersion) => region.WriteTo(writer, formatVersion);
 
-        public static void Write(this BinaryWriter writer, MapPathingMap mapPathingMap) => mapPathingMap.WriteTo(writer);
-
         public static void Write(this BinaryWriter writer, MapShadowMap mapShadowMap) => mapShadowMap.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, ImportedFiles importedFiles) => importedFiles.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, ImportedFile importedFile, ImportedFilesFormatVersion formatVersion) => importedFile.WriteTo(writer, formatVersion);
 
         public static void Write(this BinaryWriter writer, CampaignInfo campaignInfo) => campaignInfo.WriteTo(writer);
 
@@ -142,9 +146,5 @@ namespace War3Net.Build.Extensions
         public static void Write(this BinaryWriter writer, RandomUnitData randomUnitData, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomUnitData.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
         public static void Write(this BinaryWriter writer, RandomUnitTableUnit randomUnitTableUnit, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomUnitTableUnit.WriteTo(writer, formatVersion, subVersion, useNewFormat);
-
-        public static void Write(this BinaryWriter writer, ImportedFiles importedFiles) => importedFiles.WriteTo(writer);
-
-        public static void Write(this BinaryWriter writer, ImportedFile importedFile, ImportedFilesFormatVersion formatVersion) => importedFile.WriteTo(writer, formatVersion);
     }
 }

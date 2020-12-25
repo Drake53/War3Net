@@ -87,9 +87,8 @@ namespace War3Net.Build.Extensions
 
         public static bool IsCampaignArchive(this MpqArchive archive, [NotNullWhen(true)] out CampaignInfo? campaignInfo)
         {
-            if (archive.TryAddFileName(CampaignInfo.FileName))
+            if (archive.TryOpenFile(CampaignInfo.FileName, out var campaignInfoFileStream))
             {
-                using var campaignInfoFileStream = archive.OpenFile(CampaignInfo.FileName);
                 using var reader = new BinaryReader(campaignInfoFileStream);
                 campaignInfo = reader.ReadCampaignInfo();
                 return true;

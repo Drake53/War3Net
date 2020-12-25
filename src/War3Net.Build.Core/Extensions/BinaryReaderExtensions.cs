@@ -49,6 +49,8 @@ namespace War3Net.Build.Extensions
 
         public static TerrainTile ReadTerrainTile(this BinaryReader reader, MapEnvironmentFormatVersion formatVersion) => new TerrainTile(reader, formatVersion);
 
+        public static MapPathingMap ReadMapPathingMap(this BinaryReader reader) => new MapPathingMap(reader);
+
         public static MapPreviewIcons ReadMapPreviewIcons(this BinaryReader reader) => new MapPreviewIcons(reader);
 
         public static PreviewIcon ReadPreviewIcon(this BinaryReader reader, MapPreviewIconsFormatVersion formatVersion) => new PreviewIcon(reader, formatVersion);
@@ -57,9 +59,15 @@ namespace War3Net.Build.Extensions
 
         public static Region ReadRegion(this BinaryReader reader, MapRegionsFormatVersion formatVersion) => new Region(reader, formatVersion);
 
-        public static MapPathingMap ReadMapPathingMap(this BinaryReader reader) => new MapPathingMap(reader);
-
         public static MapShadowMap ReadMapShadowMap(this BinaryReader reader) => new MapShadowMap(reader);
+
+        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignImportedFiles() : reader.ReadMapImportedFiles();
+
+        public static CampaignImportedFiles ReadCampaignImportedFiles(this BinaryReader reader) => new CampaignImportedFiles(reader);
+
+        public static MapImportedFiles ReadMapImportedFiles(this BinaryReader reader) => new MapImportedFiles(reader);
+
+        public static ImportedFile ReadImportedFile(this BinaryReader reader, ImportedFilesFormatVersion formatVersion) => new ImportedFile(reader, formatVersion);
 
         public static CampaignInfo ReadCampaignInfo(this BinaryReader reader) => new CampaignInfo(reader);
 
@@ -182,9 +190,5 @@ namespace War3Net.Build.Extensions
         public static RandomUnitCustomTable ReadRandomUnitCustomTable(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitCustomTable(reader, formatVersion, subVersion, useNewFormat);
 
         public static RandomUnitTableUnit ReadRandomUnitTableUnit(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomUnitTableUnit(reader, formatVersion, subVersion, useNewFormat);
-
-        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign) => fromCampaign ? new CampaignImportedFiles(reader) : new MapImportedFiles(reader);
-
-        public static ImportedFile ReadImportedFile(this BinaryReader reader, ImportedFilesFormatVersion formatVersion) => new ImportedFile(reader, formatVersion);
     }
 }
