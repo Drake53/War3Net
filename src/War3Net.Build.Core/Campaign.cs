@@ -9,6 +9,7 @@ using System;
 using System.IO;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -32,6 +33,13 @@ namespace War3Net.Build
             using var infoStream = MpqFile.OpenRead(campaignArchive, CampaignInfo.FileName);
             using var infoReader = new BinaryReader(infoStream);
             Info = infoReader.ReadCampaignInfo();
+
+            if (MpqFile.Exists(campaignArchive, CampaignImportedFiles.FileName))
+            {
+                using var fileStream = MpqFile.OpenRead(campaignArchive, CampaignImportedFiles.FileName);
+                using var reader = new BinaryReader(fileStream);
+                ImportedFiles = reader.ReadCampaignImportedFiles();
+            }
 
             if (MpqFile.Exists(campaignArchive, CampaignAbilityObjectData.FileName))
             {
@@ -89,6 +97,8 @@ namespace War3Net.Build
                 TriggerStrings = reader.ReadCampaignTriggerStrings();
             }
         }
+
+        public CampaignImportedFiles? ImportedFiles { get; set; }
 
         public CampaignInfo Info { get; set; }
 

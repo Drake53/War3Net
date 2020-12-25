@@ -6,15 +6,14 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -45,6 +44,27 @@ namespace War3Net.Build
             using var environmentStream = File.OpenRead(Path.Combine(mapFolder, MapEnvironment.FileName));
             using var environmentReader = new BinaryReader(environmentStream);
             Environment = environmentReader.ReadMapEnvironment();
+
+            var extension = Info.ScriptLanguage switch
+            {
+                ScriptLanguage.Jass => ".j",
+                ScriptLanguage.Lua => ".lua",
+                _ => throw new InvalidEnumArgumentException(nameof(Info.ScriptLanguage), (int)Info.ScriptLanguage, typeof(ScriptLanguage)),
+            };
+
+            var scriptFileName = $"war3map{extension}";
+            if (File.Exists(Path.Combine(mapFolder, scriptFileName)))
+            {
+                Script = File.ReadAllText(Path.Combine(mapFolder, scriptFileName));
+            }
+            else if (File.Exists(Path.Combine(mapFolder, "scripts", scriptFileName)))
+            {
+                Script = File.ReadAllText(Path.Combine(mapFolder, "scripts", scriptFileName));
+            }
+            else
+            {
+                throw new FileNotFoundException($"Cannot find {Info.ScriptLanguage} map script.");
+            }
 
             if (File.Exists(Path.Combine(mapFolder, MapSounds.FileName)))
             {
@@ -86,6 +106,13 @@ namespace War3Net.Build
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapShadowMap.FileName));
                 using var reader = new BinaryReader(fileStream);
                 ShadowMap = reader.ReadMapShadowMap();
+            }
+
+            if (File.Exists(Path.Combine(mapFolder, MapImportedFiles.FileName)))
+            {
+                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapImportedFiles.FileName));
+                using var reader = new BinaryReader(fileStream);
+                ImportedFiles = reader.ReadMapImportedFiles();
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapAbilityObjectData.FileName)))
@@ -183,6 +210,30 @@ namespace War3Net.Build
             using var environmentReader = new BinaryReader(environmentStream);
             Environment = environmentReader.ReadMapEnvironment();
 
+            var extension = Info.ScriptLanguage switch
+            {
+                ScriptLanguage.Jass => ".j",
+                ScriptLanguage.Lua => ".lua",
+                _ => throw new InvalidEnumArgumentException(nameof(Info.ScriptLanguage), (int)Info.ScriptLanguage, typeof(ScriptLanguage)),
+            };
+
+            if (MpqFile.Exists(mapArchive, $"war3map{extension}"))
+            {
+                using var scriptStream = MpqFile.OpenRead(mapArchive, $"war3map{extension}");
+                using var scriptReader = new StreamReader(scriptStream);
+                Script = scriptReader.ReadToEnd();
+            }
+            else if (MpqFile.Exists(mapArchive, $@"scripts\war3map{extension}"))
+            {
+                using var scriptStream = MpqFile.OpenRead(mapArchive, $@"scripts\war3map{extension}");
+                using var scriptReader = new StreamReader(scriptStream);
+                Script = scriptReader.ReadToEnd();
+            }
+            else
+            {
+                throw new FileNotFoundException($"Cannot find {Info.ScriptLanguage} map script.");
+            }
+
             if (MpqFile.Exists(mapArchive, MapSounds.FileName))
             {
                 using var fileStream = MpqFile.OpenRead(mapArchive, MapSounds.FileName);
@@ -223,6 +274,13 @@ namespace War3Net.Build
                 using var fileStream = MpqFile.OpenRead(mapArchive, MapShadowMap.FileName);
                 using var reader = new BinaryReader(fileStream);
                 ShadowMap = reader.ReadMapShadowMap();
+            }
+
+            if (MpqFile.Exists(mapArchive, MapImportedFiles.FileName))
+            {
+                using var fileStream = MpqFile.OpenRead(mapArchive, MapImportedFiles.FileName);
+                using var reader = new BinaryReader(fileStream);
+                ImportedFiles = reader.ReadMapImportedFiles();
             }
 
             if (MpqFile.Exists(mapArchive, MapAbilityObjectData.FileName))
@@ -324,6 +382,8 @@ namespace War3Net.Build
 
         public MapShadowMap? ShadowMap { get; set; }
 
+        public MapImportedFiles? ImportedFiles { get; set; }
+
         public MapInfo Info { get; set; }
 
         public AbilityObjectData? AbilityObjectData { get; set; }
@@ -341,6 +401,8 @@ namespace War3Net.Build
         public UpgradeObjectData? UpgradeObjectData { get; set; }
 
         public MapCustomTextTriggers? CustomTextTriggers { get; set; }
+
+        public string Script { get; set; }
 
         public MapTriggers? Triggers { get; set; }
 
