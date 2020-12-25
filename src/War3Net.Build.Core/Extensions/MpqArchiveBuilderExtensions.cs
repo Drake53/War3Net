@@ -47,16 +47,56 @@ namespace War3Net.Build.Extensions
             }
         }
 
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
+        {
+            var mpqFiles = mpqArchiveBuilder.ToArray();
+            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            if (campaignInfoFile is not null)
+            {
+                using var reader = new BinaryReader(campaignInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                var campaignInfo = reader.ReadCampaignInfo();
+                campaignInfoFile.MpqStream.Position = 0;
+                mpqArchiveBuilder.SaveWithPreArchiveData(stream, createOptions, campaignInfo, leaveOpen);
+            }
+            else
+            {
+                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                if (mapInfoFile is not null)
+                {
+                    using var reader = new BinaryReader(mapInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                    var mapInfo = reader.ReadMapInfo();
+                    mapInfoFile.MpqStream.Position = 0;
+                    mpqArchiveBuilder.SaveWithPreArchiveData(stream, createOptions, mapInfo, leaveOpen);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Unable to find {CampaignInfo.FileName} or {MapInfo.FileName} file to use as source for pre-archive data.");
+                }
+            }
+        }
+
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
         }
 
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, bool leaveOpen = false)
+        {
+            campaignInfo.WriteArchiveHeaderToStream(stream);
+            mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
+        }
+
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, bool leaveOpen = false)
         {
             mapInfo.WriteArchiveHeaderToStream(stream);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
+        }
+
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, bool leaveOpen = false)
+        {
+            mapInfo.WriteArchiveHeaderToStream(stream);
+            mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
         }
     }
 }
