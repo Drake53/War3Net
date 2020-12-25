@@ -6,12 +6,11 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
 using War3Net.IO.Mpq.Extensions;
-
-using System.Diagnostics.CodeAnalysis;
 
 namespace War3Net.IO.Mpq
 {

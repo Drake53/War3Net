@@ -54,24 +54,22 @@ namespace War3Net.IO.Mpq
             if (File.Exists(path))
             {
                 // Assume file at path is an mpq archive.
-                var archive = MpqArchive.Open(path);
-                var listFile = archive.OpenFile(ListFile.FileName);
-
-                using (var reader = new StreamReader(listFile))
+                using var archive = MpqArchive.Open(path);
+                using var listFileStream = archive.OpenFile(ListFile.FileName);
+                using var reader = new StreamReader(listFileStream);
+                while (!reader.EndOfStream)
                 {
-                    while (!reader.EndOfStream)
+                    var fileName = reader.ReadLine();
+                    var memoryStream = new MemoryStream();
+
+                    using (var mpqStream = archive.OpenFile(fileName))
                     {
-                        var fileName = reader.ReadLine();
-                        var memoryStream = new MemoryStream();
-
-                        archive.OpenFile(fileName).CopyTo(memoryStream);
-                        memoryStream.Position = 0;
-
-                        yield return (fileName, MpqLocale.Neutral, memoryStream);
+                        mpqStream.CopyTo(memoryStream);
                     }
-                }
 
-                archive.Dispose();
+                    memoryStream.Position = 0;
+                    yield return (fileName, MpqLocale.Neutral, memoryStream);
+                }
             }
             else if (Directory.Exists(path))
             {

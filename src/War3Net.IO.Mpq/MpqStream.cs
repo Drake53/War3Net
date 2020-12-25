@@ -160,12 +160,12 @@ namespace War3Net.IO.Mpq
 
                         if (_blockPositions[0] != blockpossize)
                         {
-                            throw new MpqParserException("Decryption failed");
+                            throw new MpqParserException($"Decryption failed{(string.IsNullOrEmpty(entry.FileName) ? string.Empty : $" for '{entry.FileName}'")} (block position 0).");
                         }
 
                         if (_blockPositions[1] > maxOffset1)
                         {
-                            throw new MpqParserException("Decryption failed");
+                            throw new MpqParserException($"Decryption failed{(string.IsNullOrEmpty(entry.FileName) ? string.Empty : $" for '{entry.FileName}'")} (block position 1).");
                         }
                     }
                 }
@@ -641,7 +641,7 @@ namespace War3Net.IO.Mpq
             {
                 if (toread > expectedLength)
                 {
-                    throw new MpqParserException("Block's compressed data is larger than decompressed, so it should have been stored in uncompressed format.");
+                    // throw new MpqParserException("Block's compressed data is larger than decompressed, so it should have been stored in uncompressed format.");
                 }
 
                 data = _flags.HasFlag(MpqFileFlags.CompressedPK)

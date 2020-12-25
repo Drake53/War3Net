@@ -84,7 +84,7 @@ namespace War3Net.IO.Mpq
 
         internal static string NormalizeString(string input)
         {
-            return input.ToUpper();
+            return input.ToUpperInvariant();
         }
 
         internal static byte[] EncryptStream(Stream stream, uint seed1, int offset, int length)
