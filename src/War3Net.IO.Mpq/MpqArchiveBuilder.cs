@@ -37,7 +37,7 @@ namespace War3Net.IO.Mpq
                 throw new ArgumentNullException(nameof(originalMpqArchive));
             }
 
-            _originalHashTableSize = (ushort)originalMpqArchive.HashTableSize;
+            _originalHashTableSize = (ushort)originalMpqArchive.HashTable.Size;
             _originalFiles = new List<MpqFile>(originalMpqArchive.GetMpqFiles());
             _modifiedFiles = new List<MpqFile>();
             _removedFiles = new List<ulong>();

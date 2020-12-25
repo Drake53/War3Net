@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using War3Net.IO.Mpq.Extensions;
+
 namespace War3Net.IO.Mpq
 {
     public static class FileProvider
@@ -55,20 +57,21 @@ namespace War3Net.IO.Mpq
             {
                 // Assume file at path is an mpq archive.
                 using var archive = MpqArchive.Open(path);
-                using var listFileStream = archive.OpenFile(ListFile.FileName);
-                using var reader = new StreamReader(listFileStream);
-                while (!reader.EndOfStream)
+                if (archive.TryOpenFile(ListFile.FileName, out var listFileStream))
                 {
-                    var fileName = reader.ReadLine();
-                    var memoryStream = new MemoryStream();
-
-                    using (var mpqStream = archive.OpenFile(fileName))
+                    using var reader = new StreamReader(listFileStream);
+                    var listFile = reader.ReadListFile();
+                    foreach (var fileName in listFile.FileNames)
                     {
-                        mpqStream.CopyTo(memoryStream);
-                    }
+                        var memoryStream = new MemoryStream();
+                        using (var mpqStream = archive.OpenFile(fileName))
+                        {
+                            mpqStream.CopyTo(memoryStream);
+                        }
 
-                    memoryStream.Position = 0;
-                    yield return (fileName, MpqLocale.Neutral, memoryStream);
+                        memoryStream.Position = 0;
+                        yield return (fileName, MpqLocale.Neutral, memoryStream);
+                    }
                 }
             }
             else if (Directory.Exists(path))

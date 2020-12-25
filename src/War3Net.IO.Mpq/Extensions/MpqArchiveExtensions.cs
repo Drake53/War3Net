@@ -15,12 +15,11 @@ namespace War3Net.IO.Mpq.Extensions
         /// <exception cref="ArgumentException">Thrown when the <see cref="MpqArchive"/> does not contain an <see cref="Attributes"/> file.</exception>
         public static bool VerifyAttributes(this MpqArchive archive)
         {
-            if (!archive.TryAddFileName(Attributes.FileName))
+            if (!archive.TryOpenFile(Attributes.FileName, out var attributesStream))
             {
                 throw new ArgumentException($"The archive must contain an {Attributes.FileName} file.", nameof(archive));
             }
 
-            using var attributesStream = archive.OpenFile(Attributes.FileName);
             using var reader = new BinaryReader(attributesStream);
 
             var attributes = reader.ReadAttributes();
