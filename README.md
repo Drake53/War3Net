@@ -47,7 +47,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 
 Some of the above projects are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
-- *[War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
+- *[War3Net.IO.Compression] and [War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
 ### Contributing
 
