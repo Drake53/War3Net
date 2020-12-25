@@ -15,7 +15,7 @@ namespace War3Net.IO.Mpq.Extensions
         /// <exception cref="ArgumentException">Thrown when the <see cref="MpqArchive"/> does not contain an <see cref="Attributes"/> file.</exception>
         public static bool VerifyAttributes(this MpqArchive archive)
         {
-            if (!archive.TryAddFilename(Attributes.FileName))
+            if (!archive.TryAddFileName(Attributes.FileName))
             {
                 throw new ArgumentException($"The archive must contain an {Attributes.FileName} file.", nameof(archive));
             }
@@ -34,7 +34,7 @@ namespace War3Net.IO.Mpq.Extensions
                 {
                     using var mpqEntryStream = archive.OpenFile(mpqEntry);
 
-                    var crc32 = mpqEntry.Filename == Attributes.FileName ? 0 : new Ionic.Crc.CRC32().GetCrc32(mpqEntryStream);
+                    var crc32 = mpqEntry.FileName == Attributes.FileName ? 0 : new Ionic.Crc.CRC32().GetCrc32(mpqEntryStream);
                     if (crc32 != attributes.Crc32s[count])
                     {
                         return false;

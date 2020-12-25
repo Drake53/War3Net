@@ -22,72 +22,72 @@ namespace War3Net.Build.Extensions
     {
         public static void DiscoverFileNames(this MpqArchive archive)
         {
-            archive.AddFilename(Attributes.FileName);
-            archive.AddFilename(ListFile.FileName);
-            archive.AddFilename(@"(signature)");
-            archive.AddFilename(@"(user data)");
+            archive.AddFileName(Attributes.FileName);
+            archive.AddFileName(ListFile.FileName);
+            archive.AddFileName(@"(signature)");
+            archive.AddFileName(@"(user data)");
 
-            archive.AddFilename(MapSounds.FileName);
+            archive.AddFileName(MapSounds.FileName);
 
-            archive.AddFilename(MapCameras.FileName);
-            archive.AddFilename(MapEnvironment.FileName);
-            archive.AddFilename(MapPathingMap.FileName);
-            archive.AddFilename(MapPreviewIcons.FileName);
-            archive.AddFilename(MapRegions.FileName);
-            archive.AddFilename(MapShadowMap.FileName);
-            archive.AddFilename(@"war3mapMap.blp");
-            archive.AddFilename(@"war3mapMap.tga");
-            archive.AddFilename(@"war3mapPath.tga");
-            archive.AddFilename(@"war3mapPreview.blp");
-            archive.AddFilename(@"war3mapPreview.tga");
+            archive.AddFileName(MapCameras.FileName);
+            archive.AddFileName(MapEnvironment.FileName);
+            archive.AddFileName(MapPathingMap.FileName);
+            archive.AddFileName(MapPreviewIcons.FileName);
+            archive.AddFileName(MapRegions.FileName);
+            archive.AddFileName(MapShadowMap.FileName);
+            archive.AddFileName(@"war3mapMap.blp");
+            archive.AddFileName(@"war3mapMap.tga");
+            archive.AddFileName(@"war3mapPath.tga");
+            archive.AddFileName(@"war3mapPreview.blp");
+            archive.AddFileName(@"war3mapPreview.tga");
 
-            archive.AddFilename(CampaignInfo.FileName);
-            archive.AddFilename(MapInfo.FileName);
+            archive.AddFileName(CampaignInfo.FileName);
+            archive.AddFileName(MapInfo.FileName);
 
-            archive.AddFilename(CampaignAbilityObjectData.FileName);
-            archive.AddFilename(CampaignBuffObjectData.FileName);
-            archive.AddFilename(CampaignDestructableObjectData.FileName);
-            archive.AddFilename(CampaignDoodadObjectData.FileName);
-            archive.AddFilename(CampaignItemObjectData.FileName);
-            archive.AddFilename(CampaignUnitObjectData.FileName);
-            archive.AddFilename(CampaignUpgradeObjectData.FileName);
-            archive.AddFilename(MapAbilityObjectData.FileName);
-            archive.AddFilename(MapBuffObjectData.FileName);
-            archive.AddFilename(MapDestructableObjectData.FileName);
-            archive.AddFilename(MapDoodadObjectData.FileName);
-            archive.AddFilename(MapItemObjectData.FileName);
-            archive.AddFilename(MapUnitObjectData.FileName);
-            archive.AddFilename(MapUpgradeObjectData.FileName);
+            archive.AddFileName(CampaignAbilityObjectData.FileName);
+            archive.AddFileName(CampaignBuffObjectData.FileName);
+            archive.AddFileName(CampaignDestructableObjectData.FileName);
+            archive.AddFileName(CampaignDoodadObjectData.FileName);
+            archive.AddFileName(CampaignItemObjectData.FileName);
+            archive.AddFileName(CampaignUnitObjectData.FileName);
+            archive.AddFileName(CampaignUpgradeObjectData.FileName);
+            archive.AddFileName(MapAbilityObjectData.FileName);
+            archive.AddFileName(MapBuffObjectData.FileName);
+            archive.AddFileName(MapDestructableObjectData.FileName);
+            archive.AddFileName(MapDoodadObjectData.FileName);
+            archive.AddFileName(MapItemObjectData.FileName);
+            archive.AddFileName(MapUnitObjectData.FileName);
+            archive.AddFileName(MapUpgradeObjectData.FileName);
 
-            archive.AddFilename(CampaignTriggerStrings.FileName);
-            archive.AddFilename(MapCustomTextTriggers.FileName);
-            archive.AddFilename(MapTriggers.FileName);
-            archive.AddFilename(MapTriggerStrings.FileName);
-            archive.AddFilename(@"scripts\war3map.j");
-            archive.AddFilename(@"war3map.j");
-            archive.AddFilename(@"war3map.lua");
+            archive.AddFileName(CampaignTriggerStrings.FileName);
+            archive.AddFileName(MapCustomTextTriggers.FileName);
+            archive.AddFileName(MapTriggers.FileName);
+            archive.AddFileName(MapTriggerStrings.FileName);
+            archive.AddFileName(@"scripts\war3map.j");
+            archive.AddFileName(@"war3map.j");
+            archive.AddFileName(@"war3map.lua");
 
-            archive.AddFilename(MapDoodads.FileName);
-            archive.AddFilename(MapUnits.FileName);
+            archive.AddFileName(MapDoodads.FileName);
+            archive.AddFileName(MapUnits.FileName);
 
-            archive.AddFilename(@"conversation.json");
-            archive.AddFilename(@"war3mapExtra.txt");
-            archive.AddFilename(@"war3mapMisc.txt");
-            archive.AddFilename(@"war3mapSkin.txt");
-            archive.AddFilename(@"war3map.imp");
+            archive.AddFileName(@"conversation.json");
+            archive.AddFileName(@"war3mapExtra.txt");
+            archive.AddFileName(@"war3mapMisc.txt");
+            archive.AddFileName(@"war3mapSkin.txt");
+            archive.AddFileName(@"war3map.imp");
 
             if (archive.IsCampaignArchive(out var campaignInfo))
             {
                 for (var i = 0; i < campaignInfo.Maps.Count; i++)
                 {
-                    archive.AddFilename(campaignInfo.Maps[i].MapFilePath);
+                    archive.AddFileName(campaignInfo.Maps[i].MapFilePath);
                 }
             }
         }
 
         public static bool IsCampaignArchive(this MpqArchive archive, [NotNullWhen(true)] out CampaignInfo? campaignInfo)
         {
-            if (archive.TryAddFilename(CampaignInfo.FileName))
+            if (archive.TryAddFileName(CampaignInfo.FileName))
             {
                 using var campaignInfoFileStream = archive.OpenFile(CampaignInfo.FileName);
                 using var reader = new BinaryReader(campaignInfoFileStream);

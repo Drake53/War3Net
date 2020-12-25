@@ -9,9 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-#if NETCOREAPP3_0
 using System.Diagnostics.CodeAnalysis;
-#endif
 
 namespace War3Net.IO.Mpq
 {
@@ -31,7 +29,7 @@ namespace War3Net.IO.Mpq
         private readonly uint _headerOffset;
         private readonly uint _fileOffset;
 
-        private string? _filename;
+        private string? _fileName;
 
         private uint _encryptionSeed;
         private uint _baseEncryptionSeed;
@@ -39,22 +37,22 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqEntry"/> class.
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="fileName"></param>
         /// <param name="headerOffset">The containing <see cref="MpqArchive"/>'s header offset.</param>
         /// <param name="fileOffset">The file's position in the archive, relative to the header offset.</param>
         /// <param name="compressedSize">The compressed size of the file.</param>
         /// <param name="fileSize">The uncompressed size of the file.</param>
         /// <param name="flags">The file's <see cref="MpqFileFlags"/>.</param>
-        internal MpqEntry(string? filename, uint headerOffset, uint fileOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
+        internal MpqEntry(string? fileName, uint headerOffset, uint fileOffset, uint compressedSize, uint fileSize, MpqFileFlags flags)
         {
             _headerOffset = headerOffset;
             _fileOffset = fileOffset;
-            _filename = filename;
+            _fileName = fileName;
             _compressedSize = compressedSize;
             _fileSize = fileSize;
             _flags = flags;
 
-            if (filename != null)
+            if (fileName != null)
             {
                 UpdateEncryptionSeed();
             }
@@ -91,15 +89,13 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Gets the filename of the file in the archive.
         /// </summary>
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
-        public string? Filename
+        public string? FileName
         {
-            get => _filename;
+            get => _fileName;
             internal set
             {
-                _filename = value;
+                _fileName = value;
                 UpdateEncryptionSeed();
             }
         }
@@ -149,7 +145,7 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override string ToString()
         {
-            return Filename ?? (_flags == 0 ? "(Deleted file)" : $"Unknown file @ {FilePosition}");
+            return FileName ?? (_flags == 0 ? "(Deleted file)" : $"Unknown file @ {FilePosition}");
         }
 
         public void SerializeTo(Stream stream)
@@ -187,14 +183,14 @@ namespace War3Net.IO.Mpq
             return (adjustedSeed ^ fileSize) - fileOffset;
         }
 
-        internal static uint CalculateEncryptionSeed(string? filename)
+        internal static uint CalculateEncryptionSeed(string? fileName)
         {
-            return CalculateEncryptionSeed(filename, out var encryptionSeed) ? encryptionSeed : 0;
+            return CalculateEncryptionSeed(fileName, out var encryptionSeed) ? encryptionSeed : 0;
         }
 
-        internal static bool CalculateEncryptionSeed(string? filename, out uint encryptionSeed)
+        internal static bool CalculateEncryptionSeed(string? fileName, out uint encryptionSeed)
         {
-            if (filename != null && StormBuffer.TryGetHashString(Path.GetFileName(filename), 0x300, out encryptionSeed))
+            if (fileName != null && StormBuffer.TryGetHashString(Path.GetFileName(fileName), 0x300, out encryptionSeed))
             {
                 return true;
             }
@@ -203,15 +199,15 @@ namespace War3Net.IO.Mpq
             return false;
         }
 
-        internal static uint CalculateEncryptionSeed(string? filename, uint fileOffset, uint fileSize, MpqFileFlags flags)
+        internal static uint CalculateEncryptionSeed(string? fileName, uint fileOffset, uint fileSize, MpqFileFlags flags)
         {
-            if (filename is null)
+            if (fileName is null)
             {
                 return 0;
             }
 
             var blockOffsetAdjusted = flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
-            var seed = CalculateEncryptionSeed(filename);
+            var seed = CalculateEncryptionSeed(fileName);
             if (blockOffsetAdjusted)
             {
                 seed = AdjustEncryptionSeed(seed, (uint)fileOffset, fileSize);
@@ -259,8 +255,8 @@ namespace War3Net.IO.Mpq
 
         private void UpdateEncryptionSeed()
         {
-            _encryptionSeed = CalculateEncryptionSeed(_filename, _fileOffset, _fileSize, _flags);
-            _baseEncryptionSeed = CalculateEncryptionSeed(_filename);
+            _encryptionSeed = CalculateEncryptionSeed(_fileName, _fileOffset, _fileSize, _flags);
+            _baseEncryptionSeed = CalculateEncryptionSeed(_fileName);
         }
     }
 }

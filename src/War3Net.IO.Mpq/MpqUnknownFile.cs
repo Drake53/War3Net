@@ -46,7 +46,7 @@ namespace War3Net.IO.Mpq
 
         protected override uint? EncryptionSeed => _encryptionSeed;
 
-        public MpqKnownFile TryAsKnownFile(string filename)
+        public MpqKnownFile TryAsKnownFile(string fileName)
         {
             // TODO: if filename matches Name, return MpqKnownFile, otherwise return null
             throw new NotImplementedException();
