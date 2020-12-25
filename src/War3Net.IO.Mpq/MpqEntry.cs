@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Linq;
 
+using War3Net.IO.Mpq.Extensions;
+
 using System.Diagnostics.CodeAnalysis;
 
 namespace War3Net.IO.Mpq
@@ -190,7 +192,8 @@ namespace War3Net.IO.Mpq
 
         internal static bool CalculateEncryptionSeed(string? fileName, out uint encryptionSeed)
         {
-            if (fileName != null && StormBuffer.TryGetHashString(Path.GetFileName(fileName), 0x300, out encryptionSeed))
+            var name = fileName.GetFileName();
+            if (!string.IsNullOrEmpty(name) && StormBuffer.TryGetHashString(name, 0x300, out encryptionSeed))
             {
                 return true;
             }
