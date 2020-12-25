@@ -107,27 +107,7 @@ namespace War3Net.Common.Extensions
             where TEnum : struct, Enum
         {
             var result = (TEnum)(object)i;
-            if (!Enum.IsDefined(typeof(TEnum), i))
-            {
-                var enumName = typeof(TEnum).Name;
-                if (Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null)
-                {
-                    throw enumName.EndsWith("Version", StringComparison.Ordinal)
-                        ? new NotSupportedException($"Unknown version of {enumName}: '{i}'.")
-                        : new InvalidDataException($"Value '{i}' is not defined for enum of type {enumName}.");
-                }
-
-                if (i != 0)
-                {
-                    var firstChar = result.ToString().First();
-                    if (char.IsDigit(firstChar) || firstChar == '-')
-                    {
-                        throw new InvalidDataException($"Value '{i}' is not valid for flags enum of type {enumName}.");
-                    }
-                }
-            }
-
-            return result;
+            return result.IsDefined() ? result : throw new InvalidDataException($"Value '{i}' is not defined for enum of type {typeof(TEnum).Name}.");
         }
     }
 }
