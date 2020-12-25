@@ -8,9 +8,7 @@
 #pragma warning disable SA1600
 #pragma warning disable SA1611
 
-#if NETCOREAPP3_0
 using System.Diagnostics.CodeAnalysis;
-#endif
 
 namespace War3Net.IO.Compression
 {
@@ -39,29 +37,19 @@ namespace War3Net.IO.Compression
 
         internal int Weight { get => _weight; set => _weight = value; }
 
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
         internal LinkedNode? Next { get => _next; set => _next = value; }
 
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
         internal LinkedNode? Prev { get => _prev; set => _prev = value; }
 
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
         internal LinkedNode? Parent { get => _parent; set => _parent = value; }
 
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
         internal LinkedNode? Child0 { get => _child0; set => _child0 = value; }
 
-#if NETCOREAPP3_0
         [DisallowNull]
-#endif
         internal LinkedNode? Child1 => _child0?._prev;
 
         // TODO: This would be more efficient as a member of the other class
