@@ -10,6 +10,10 @@
     <PackageTags>jass;warcraft3</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Pidgin" Version="2.5.0" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
   </ItemGroup>
