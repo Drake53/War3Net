@@ -22,7 +22,7 @@ namespace War3Net.IO.Mpq
         /// </summary>
         internal const string TableKey = "(block table)";
 
-        private readonly List<MpqEntry> _entries;
+        internal readonly List<MpqEntry> _entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockTable"/> class.

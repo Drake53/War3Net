@@ -109,6 +109,8 @@ namespace War3Net.IO.Mpq
             var listFileName = ListFile.FileName.GetStringHash();
             var attributesName = Attributes.FileName.GetStringHash();
 
+            var listFileCreateMode = createOptions.ListFileCreateMode.GetValueOrDefault(MpqFileCreateMode.Overwrite);
+            var attributesCreateMode = createOptions.AttributesCreateMode.GetValueOrDefault(MpqFileCreateMode.Overwrite);
             var haveListFile = false;
             var haveAttributes = false;
             var mpqFiles = new HashSet<MpqFile>(MpqFileComparer.Default);
@@ -121,7 +123,7 @@ namespace War3Net.IO.Mpq
 
                 if (mpqFile.Name == listFileName)
                 {
-                    if (createOptions.ListFileCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
+                    if (listFileCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
                     {
                         continue;
                     }
@@ -133,7 +135,7 @@ namespace War3Net.IO.Mpq
 
                 if (mpqFile.Name == attributesName)
                 {
-                    if (createOptions.AttributesCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
+                    if (attributesCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
                     {
                         continue;
                     }
@@ -151,14 +153,14 @@ namespace War3Net.IO.Mpq
 
             var fileCount = (uint)mpqFiles.Count;
 
-            var wantGenerateListFile = !haveListFile && createOptions.ListFileCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
+            var wantGenerateListFile = !haveListFile && listFileCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
             var listFile = wantGenerateListFile ? new ListFile() : null;
             if (wantGenerateListFile)
             {
                 fileCount++;
             }
 
-            var wantGenerateAttributes = !haveAttributes && createOptions.AttributesCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
+            var wantGenerateAttributes = !haveAttributes && attributesCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
             var attributes = wantGenerateAttributes ? new Attributes(createOptions) : null;
             if (wantGenerateAttributes)
             {

@@ -20,7 +20,7 @@ namespace War3Net.IO.Mpq
         /// </summary>
         internal const string TableKey = "(hash table)";
 
-        private readonly MpqHash[] _hashes;
+        internal readonly MpqHash[] _hashes;
         private readonly uint _mask;
 
         /// <summary>

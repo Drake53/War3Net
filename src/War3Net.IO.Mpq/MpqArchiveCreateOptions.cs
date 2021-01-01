@@ -20,8 +20,8 @@ namespace War3Net.IO.Mpq
             HashTableSize = null;
             WriteArchiveFirst = true;
             AttributesFlags = AttributesFlags.Crc32 | AttributesFlags.DateTime;
-            AttributesCreateMode = MpqFileCreateMode.Overwrite;
-            ListFileCreateMode = MpqFileCreateMode.Overwrite;
+            AttributesCreateMode = null;
+            ListFileCreateMode = null;
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace War3Net.IO.Mpq
 
         public AttributesFlags AttributesFlags { get; set; }
 
-        public MpqFileCreateMode AttributesCreateMode { get; set; }
+        public MpqFileCreateMode? AttributesCreateMode { get; set; }
 
-        public MpqFileCreateMode ListFileCreateMode { get; set; }
+        public MpqFileCreateMode? ListFileCreateMode { get; set; }
     }
 }

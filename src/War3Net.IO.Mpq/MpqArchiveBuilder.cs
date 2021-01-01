@@ -69,6 +69,28 @@ namespace War3Net.IO.Mpq
             RemoveFile(fileName.GetStringHash());
         }
 
+        public void RemoveFile(MpqArchive mpqArchive, int blockIndex)
+        {
+            foreach (var mpqHash in mpqArchive.HashTable._hashes)
+            {
+                if (mpqHash.BlockIndex == blockIndex)
+                {
+                    RemoveFile(mpqHash.Name);
+                }
+            }
+        }
+
+        public void RemoveFile(MpqArchive mpqArchive, MpqEntry mpqEntry)
+        {
+            var blockIndex = mpqArchive.BlockTable._entries.IndexOf(mpqEntry);
+            if (blockIndex == -1)
+            {
+                throw new ArgumentException("The given mpq entry could not be found in the archive.", nameof(mpqEntry));
+            }
+
+            RemoveFile(mpqArchive, blockIndex);
+        }
+
         public void SaveTo(string fileName)
         {
             using (var stream = File.Create(fileName))
@@ -91,11 +113,9 @@ namespace War3Net.IO.Mpq
             {
                 HashTableSize = _originalHashTableSize,
                 AttributesFlags = AttributesFlags.Crc32,
-                AttributesCreateMode = _removedFiles.Contains(Attributes.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite,
-                ListFileCreateMode = _removedFiles.Contains(ListFile.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite,
             };
 
-            MpqArchive.Create(stream, GetMpqFiles().ToArray(), createOptions, leaveOpen).Dispose();
+            SaveTo(stream, createOptions, leaveOpen);
         }
 
         public void SaveTo(Stream stream, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
@@ -103,6 +123,16 @@ namespace War3Net.IO.Mpq
             if (createOptions is null)
             {
                 throw new ArgumentNullException(nameof(createOptions));
+            }
+
+            if (!createOptions.ListFileCreateMode.HasValue)
+            {
+                createOptions.ListFileCreateMode = _removedFiles.Contains(ListFile.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite;
+            }
+
+            if (!createOptions.AttributesCreateMode.HasValue)
+            {
+                createOptions.AttributesCreateMode = _removedFiles.Contains(Attributes.FileName.GetStringHash()) ? MpqFileCreateMode.Prune : MpqFileCreateMode.Overwrite;
             }
 
             createOptions.HashTableSize ??= _originalHashTableSize;
