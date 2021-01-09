@@ -15,7 +15,7 @@ using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
 {
-    public sealed class MpqArchiveBuilder : IEnumerable<MpqFile>
+    public class MpqArchiveBuilder : IEnumerable<MpqFile>
     {
         private readonly ushort? _originalHashTableSize;
         private readonly List<MpqFile> _originalFiles;
@@ -42,6 +42,12 @@ namespace War3Net.IO.Mpq
             _modifiedFiles = new List<MpqFile>();
             _removedFiles = new List<ulong>();
         }
+
+        public IReadOnlyList<MpqFile> OriginalFiles => _originalFiles.AsReadOnly();
+
+        public IReadOnlyList<MpqFile> ModifiedFiles => _modifiedFiles.AsReadOnly();
+
+        public IReadOnlyList<ulong> RemovedFiles => _removedFiles.AsReadOnly();
 
         public void AddFile(MpqFile file)
         {
@@ -145,7 +151,7 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetMpqFiles().GetEnumerator();
 
-        private IEnumerable<MpqFile> GetMpqFiles()
+        protected virtual IEnumerable<MpqFile> GetMpqFiles()
         {
             return _modifiedFiles.Concat(_originalFiles).Where(mpqFile => !_removedFiles.Contains(mpqFile.Name));
         }
