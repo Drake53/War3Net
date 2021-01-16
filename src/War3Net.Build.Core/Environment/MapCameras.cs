@@ -23,9 +23,10 @@ namespace War3Net.Build.Environment
         /// Initializes a new instance of the <see cref="MapCameras"/> class.
         /// </summary>
         /// <param name="formatVersion"></param>
-        public MapCameras(MapCamerasFormatVersion formatVersion)
+        public MapCameras(MapCamerasFormatVersion formatVersion, bool useNewFormat)
         {
             FormatVersion = formatVersion;
+            UseNewFormat = useNewFormat;
         }
 
         internal MapCameras(BinaryReader reader)
@@ -68,7 +69,7 @@ namespace War3Net.Build.Environment
 
         internal void WriteTo(BinaryWriter writer)
         {
-            writer.Write((uint)FormatVersion);
+            writer.Write((int)FormatVersion);
 
             writer.Write(Cameras.Count);
             foreach (var camera in Cameras)

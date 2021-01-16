@@ -28,9 +28,11 @@ namespace War3Net.Build.Script
         /// Initializes a new instance of the <see cref="MapTriggers"/> class.
         /// </summary>
         /// <param name="formatVersion"></param>
-        public MapTriggers(MapTriggersFormatVersion formatVersion)
+        /// <param name="subVersion"></param>
+        public MapTriggers(MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             FormatVersion = formatVersion;
+            SubVersion = subVersion;
         }
 
         internal MapTriggers(BinaryReader reader, TriggerData triggerData)
@@ -169,7 +171,7 @@ namespace War3Net.Build.Script
                 writer.Write(triggerCategories.Length);
                 foreach (var triggerCategory in triggerCategories)
                 {
-                    triggerCategory.WriteTo(writer, FormatVersion, SubVersion);
+                    writer.Write(triggerCategory, FormatVersion, SubVersion);
                 }
 
                 writer.Write(GameVersion);
@@ -177,14 +179,14 @@ namespace War3Net.Build.Script
                 writer.Write(Variables.Count);
                 foreach (var variable in Variables)
                 {
-                    variable.WriteTo(writer, FormatVersion, SubVersion);
+                    writer.Write(variable, FormatVersion, SubVersion);
                 }
 
                 var triggers = TriggerItems.Where(item => item is TriggerDefinition).ToArray();
                 writer.Write(triggers.Length);
                 foreach (var trigger in triggers)
                 {
-                    trigger.WriteTo(writer, FormatVersion, SubVersion);
+                    writer.Write(trigger, FormatVersion, SubVersion);
                 }
             }
             else
@@ -200,7 +202,7 @@ namespace War3Net.Build.Script
                     writer.Write(deletedItems.Count);
                     foreach (var deletedItem in deletedItems)
                     {
-                        deletedItem.WriteTo(writer, FormatVersion, SubVersion);
+                        writer.Write(deletedItem, FormatVersion, SubVersion);
                     }
                 }
 
@@ -209,7 +211,7 @@ namespace War3Net.Build.Script
                 writer.Write(Variables.Count);
                 foreach (var variable in Variables)
                 {
-                    variable.WriteTo(writer, FormatVersion, SubVersion);
+                    writer.Write(variable, FormatVersion, SubVersion);
                 }
 
                 writer.Write(TriggerItems.Count(item => item is not DeletedTriggerItem));
@@ -221,7 +223,7 @@ namespace War3Net.Build.Script
                     }
 
                     writer.Write((int)triggerItem.Type);
-                    triggerItem.WriteTo(writer, FormatVersion, SubVersion);
+                    writer.Write(triggerItem, FormatVersion, SubVersion);
                 }
             }
         }

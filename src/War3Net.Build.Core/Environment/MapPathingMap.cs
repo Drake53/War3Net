@@ -54,9 +54,9 @@ namespace War3Net.Build.Environment
             Width = reader.ReadUInt32();
             Height = reader.ReadUInt32();
 
-            for (var y = 0; y < Height; y++)
+            for (nuint y = 0; y < Height; y++)
             {
-                for (var x = 0; x < Width; x++)
+                for (nuint x = 0; x < Width; x++)
                 {
                     Cells.Add((PathingType)reader.ReadByte());
                 }

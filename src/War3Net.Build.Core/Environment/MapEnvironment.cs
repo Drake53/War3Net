@@ -117,20 +117,20 @@ namespace War3Net.Build.Environment
         internal void WriteTo(BinaryWriter writer)
         {
             writer.Write(FileFormatSignature);
-            writer.Write((uint)FormatVersion);
+            writer.Write((int)FormatVersion);
             writer.Write((char)Tileset);
             writer.WriteBool(!IsDefaultTileset());
 
             writer.Write(TerrainTypes.Count);
             foreach (var terrainType in TerrainTypes)
             {
-                writer.Write((uint)terrainType);
+                writer.Write((int)terrainType);
             }
 
             writer.Write(CliffTypes.Count);
             foreach (var cliffType in CliffTypes)
             {
-                writer.Write((uint)cliffType);
+                writer.Write((int)cliffType);
             }
 
             writer.Write(Width + 1);

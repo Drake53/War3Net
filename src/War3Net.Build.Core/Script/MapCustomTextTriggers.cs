@@ -23,10 +23,11 @@ namespace War3Net.Build.Script
         /// Initializes a new instance of the <see cref="MapCustomTextTriggers"/> class.
         /// </summary>
         /// <param name="formatVersion"></param>
-        /// <param name="encoding"></param>
-        public MapCustomTextTriggers(MapCustomTextTriggersFormatVersion formatVersion)
+        /// <param name="subVersion"></param>
+        public MapCustomTextTriggers(MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
             FormatVersion = formatVersion;
+            SubVersion = subVersion;
         }
 
         internal MapCustomTextTriggers(BinaryReader reader, Encoding encoding)

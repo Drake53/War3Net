@@ -24,10 +24,12 @@ namespace War3Net.Build.Widget
         /// </summary>
         /// <param name="formatVersion"></param>
         /// <param name="subVersion"></param>
-        public MapUnits(MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion)
+        /// <param name="useNewFormat"></param>
+        public MapUnits(MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             FormatVersion = formatVersion;
             SubVersion = subVersion;
+            UseNewFormat = useNewFormat;
         }
 
         internal MapUnits(BinaryReader reader)

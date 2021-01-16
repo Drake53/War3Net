@@ -56,7 +56,7 @@ namespace War3Net.Build.Script
             IsEnabled = reader.ReadBool();
 
             var parameterCount = triggerData.GetParameterCount(Type, Name);
-            for (var i = 0; i < parameterCount; i++)
+            for (nint i = 0; i < parameterCount; i++)
             {
                 Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, subVersion));
             }
@@ -66,7 +66,7 @@ namespace War3Net.Build.Script
                 var nestedfunctionCount = reader.ReadInt32();
                 if (nestedfunctionCount > 0)
                 {
-                    for (var i = 0; i < nestedfunctionCount; i++)
+                    for (nint i = 0; i < nestedfunctionCount; i++)
                     {
                         ChildFunctions.Add(reader.ReadTriggerFunction(triggerData, formatVersion, subVersion, true));
                     }
