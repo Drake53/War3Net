@@ -32,25 +32,5 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 Token(SyntaxTokenType.AlphanumericIdentifier, variableName),
                 EqualsValueClause(equalsValueExpression)));
         }
-
-        public static LocalVariableDeclarationSyntax LocalVariableDeclaration(TypeSyntax typeNode, string variableName)
-        {
-            return LocalVariableDeclaration(VariableDeclaration(typeNode, variableName));
-        }
-
-        public static LocalVariableDeclarationSyntax LocalVariableDeclaration(TypeSyntax typeNode, string variableName, EqualsValueClauseSyntax equalsValue)
-        {
-            return LocalVariableDeclaration(VariableDeclaration(typeNode, variableName, equalsValue));
-        }
-
-        public static LocalVariableDeclarationSyntax LocalVariableDeclaration(TypeSyntax typeNode, string variableName, NewExpressionSyntax equalsValueExpression)
-        {
-            return LocalVariableDeclaration(VariableDeclaration(typeNode, variableName, equalsValueExpression));
-        }
-
-        public static LocalVariableDeclarationSyntax LocalVariableDeclaration(VariableDeclarationSyntax variableDeclaration, LineDelimiterSyntax? lineDelimiter = null)
-        {
-            return new LocalVariableDeclarationSyntax(Token(SyntaxTokenType.LocalKeyword), variableDeclaration, lineDelimiter ?? Newlines());
-        }
     }
 }

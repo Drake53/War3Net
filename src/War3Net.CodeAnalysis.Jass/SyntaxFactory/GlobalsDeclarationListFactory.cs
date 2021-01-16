@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="GlobalDeclarationListFactory.cs" company="Drake53">
+// <copyright file="GlobalsDeclarationListFactory.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
