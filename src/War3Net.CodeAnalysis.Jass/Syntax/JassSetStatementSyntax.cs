@@ -44,7 +44,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return Indexer is null
                 ? $"{JassKeyword.Set} {IdentifierName} {Value}"
-                : $"{JassKeyword.Set} {IdentifierName}{JassSymbol.SquareBracketOpen}{Indexer}{JassSymbol.SquareBracketClose} {Value}";
+                : $"{JassKeyword.Set} {IdentifierName}{JassSymbol.LeftSquareBracket}{Indexer}{JassSymbol.RightSquareBracket} {Value}";
         }
     }
 }
