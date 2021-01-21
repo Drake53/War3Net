@@ -18,7 +18,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public string Name { get; init; }
 
-        public virtual bool Equals(JassIdentifierNameSyntax? other) => other is not null && string.Equals(Name, other.Name, StringComparison.Ordinal);
+        public virtual bool Equals(JassIdentifierNameSyntax? other)
+        {
+            return other is not null
+                && string.Equals(Name, other.Name, StringComparison.Ordinal);
+        }
 
         public override string ToString() => Name;
     }

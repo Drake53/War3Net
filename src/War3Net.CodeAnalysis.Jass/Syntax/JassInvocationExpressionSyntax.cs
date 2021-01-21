@@ -15,18 +15,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Arguments = arguments;
         }
 
-        public JassInvocationExpressionSyntax(string functionName, params IExpressionSyntax[] arguments)
-        {
-            IdentifierName = new JassIdentifierNameSyntax(functionName);
-            Arguments = new JassArgumentListSyntax(arguments);
-        }
-
         public JassIdentifierNameSyntax IdentifierName { get; init; }
 
         public JassArgumentListSyntax Arguments { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassInvocationExpressionSyntax e && IdentifierName.Equals(e.IdentifierName) && Arguments.Equals(e.Arguments);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassInvocationExpressionSyntax invocationExpression
+                && IdentifierName.Equals(invocationExpression.IdentifierName)
+                && Arguments.Equals(invocationExpression.Arguments);
+        }
 
-        public override string ToString() => $"{IdentifierName}({Arguments})";
+        public override string ToString() => $"{IdentifierName}{JassSymbol.LeftParenthesis}{Arguments}{JassSymbol.RightParenthesis}";
     }
 }

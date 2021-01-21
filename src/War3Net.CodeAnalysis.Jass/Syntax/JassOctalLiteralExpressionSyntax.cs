@@ -18,8 +18,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public int Value { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassOctalLiteralExpressionSyntax e && Value == e.Value;
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassOctalLiteralExpressionSyntax octalLiteralExpression
+                && Value == octalLiteralExpression.Value;
+        }
 
-        public override string ToString() => Convert.ToString(Value, 8);
+        public override string ToString() => Value == 0 ? "0" : $"0{Convert.ToString(Value, 8)}";
     }
 }

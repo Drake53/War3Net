@@ -15,18 +15,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Indexer = indexer;
         }
 
-        public JassArrayReferenceExpressionSyntax(string name, IExpressionSyntax indexer)
-        {
-            IdentifierName = new JassIdentifierNameSyntax(name);
-            Indexer = indexer;
-        }
-
         public JassIdentifierNameSyntax IdentifierName { get; init; }
 
         public IExpressionSyntax Indexer { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassArrayReferenceExpressionSyntax e && IdentifierName.Equals(e.IdentifierName) && Indexer.Equals(e.Indexer);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassArrayReferenceExpressionSyntax arrayReferenceExpression
+                && IdentifierName.Equals(arrayReferenceExpression.IdentifierName)
+                && Indexer.Equals(arrayReferenceExpression.Indexer);
+        }
 
-        public override string ToString() => $"{IdentifierName}[{Indexer}]";
+        public override string ToString() => $"{IdentifierName}{JassSymbol.LeftSquareBracket}{Indexer}{JassSymbol.RightSquareBracket}";
     }
 }

@@ -14,15 +14,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             IdentifierName = identifierName;
         }
 
-        public JassFunctionReferenceExpressionSyntax(string name)
-        {
-            IdentifierName = new JassIdentifierNameSyntax(name);
-        }
-
         public JassIdentifierNameSyntax IdentifierName { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassFunctionReferenceExpressionSyntax e && IdentifierName.Equals(e.IdentifierName);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassFunctionReferenceExpressionSyntax functionReferenceExpression
+                && IdentifierName.Equals(functionReferenceExpression.IdentifierName);
+        }
 
-        public override string ToString() => $"function {IdentifierName}";
+        public override string ToString() => $"{JassKeyword.Function} {IdentifierName}";
     }
 }

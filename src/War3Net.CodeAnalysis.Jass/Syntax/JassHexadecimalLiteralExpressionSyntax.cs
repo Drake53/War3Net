@@ -18,8 +18,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public int Value { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassHexadecimalLiteralExpressionSyntax e && Value == e.Value;
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression
+                && Value == hexadecimalLiteralExpression.Value;
+        }
 
-        public override string ToString() => Convert.ToString(Value, 16);
+        public override string ToString() => "0x" + Convert.ToString(Value, 16).ToUpperInvariant();
     }
 }

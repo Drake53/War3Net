@@ -24,7 +24,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IExpressionSyntax Right { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassBinaryExpressionSyntax e && Operator == e.Operator && Left.Equals(e.Left) && Right.Equals(e.Right);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassBinaryExpressionSyntax binaryExpression
+                && Operator == binaryExpression.Operator
+                && Left.Equals(binaryExpression.Left)
+                && Right.Equals(binaryExpression.Right);
+        }
 
         public override string ToString() => $"{Left} {Operator.GetString()} {Right}";
     }

@@ -16,7 +16,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public int Value { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassDecimalLiteralExpressionSyntax e && Value == e.Value;
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassDecimalLiteralExpressionSyntax decimalLiteralExpression
+                && Value == decimalLiteralExpression.Value;
+        }
 
         public override string ToString() => Value.ToString();
     }

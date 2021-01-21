@@ -21,8 +21,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IExpressionSyntax Expression { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassUnaryExpressionSyntax e && Operator == e.Operator && Expression.Equals(e.Expression);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassUnaryExpressionSyntax unaryExpression
+                && Operator == unaryExpression.Operator
+                && Expression.Equals(unaryExpression.Expression);
+        }
 
-        public override string ToString() => $"{Operator.GetString()} {Expression}";
+        public override string ToString()
+        {
+            return Operator == UnaryOperatorType.Not
+                ? $"{Operator.GetString()} {Expression}"
+                : $"{Operator.GetString()}{Expression}";
+        }
     }
 }

@@ -18,15 +18,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Arguments = arguments;
         }
 
-        public JassArgumentListSyntax(params IExpressionSyntax[] arguments)
-        {
-            Arguments = arguments.ToImmutableArray();
-        }
-
         public ImmutableArray<IExpressionSyntax> Arguments { get; init; }
 
-        public bool Equals(JassArgumentListSyntax? other) => other is not null && Arguments.SequenceEqual(other.Arguments);
+        public bool Equals(JassArgumentListSyntax? other)
+        {
+            return other is not null
+                && Arguments.SequenceEqual(other.Arguments);
+        }
 
-        public override string ToString() => string.Join(", ", Arguments);
+        public override string ToString() => string.Join($"{JassSymbol.Comma} ", Arguments);
     }
 }

@@ -17,6 +17,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public bool Equals(IExpressionSyntax? other) => other is JassNullLiteralExpressionSyntax;
 
-        public override string ToString() => "null";
+        public override string ToString() => JassKeyword.Null;
     }
 }

@@ -18,8 +18,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public int Value { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassFourCCLiteralExpressionSyntax e && Value == e.Value;
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassFourCCLiteralExpressionSyntax fourCCLiteralExpression
+                && Value == fourCCLiteralExpression.Value;
+        }
 
-        public override string ToString() => $"'{Value.ToRawcode()}'";
+        public override string ToString() => $"{JassSymbol.Apostrophe}{Value.ToRawcode()}{JassSymbol.Apostrophe}";
     }
 }

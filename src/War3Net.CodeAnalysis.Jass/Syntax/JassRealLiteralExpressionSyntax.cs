@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Globalization;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassRealLiteralExpressionSyntax : IExpressionSyntax
@@ -16,8 +18,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public float Value { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassRealLiteralExpressionSyntax e && Value == e.Value;
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassRealLiteralExpressionSyntax realLiteralExpression
+                && Value == realLiteralExpression.Value;
+        }
 
-        public override string ToString() => Value.ToString();
+        public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
     }
 }

@@ -16,8 +16,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IExpressionSyntax Expression { get; init; }
 
-        public bool Equals(IExpressionSyntax? other) => other is JassParenthesizedExpressionSyntax e && Expression.Equals(e.Expression);
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassParenthesizedExpressionSyntax parenthesizedExpression
+                && Expression.Equals(parenthesizedExpression.Expression);
+        }
 
-        public override string ToString() => $"({Expression})";
+        public override string ToString() => $"{JassSymbol.LeftParenthesis}{Expression}{JassSymbol.RightParenthesis}";
     }
 }
