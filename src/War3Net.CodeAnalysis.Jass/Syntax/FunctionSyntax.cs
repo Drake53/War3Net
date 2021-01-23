@@ -64,9 +64,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public LineDelimiterSyntax LastLineDelimiterNode => _eol2;
 
+        [Obsolete]
         public NativeFunctionDeclarationSyntax AsNativeFunction()
         {
-            return JassSyntaxFactory.NativeFunctionDeclaration(_declr, false);
+            throw new NotSupportedException();
         }
 
         internal sealed class Parser : SequenceParser
