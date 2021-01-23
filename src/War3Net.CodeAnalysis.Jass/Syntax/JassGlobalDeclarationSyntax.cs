@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationSyntax : IEquatable<JassGlobalDeclarationSyntax>
+    public class JassGlobalDeclarationSyntax : IDeclarationSyntax
     {
         public JassGlobalDeclarationSyntax(IVariableDeclarator declarator)
         {
@@ -18,10 +16,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IVariableDeclarator Declarator { get; init; }
 
-        public bool Equals(JassGlobalDeclarationSyntax? other)
+        public bool Equals(IDeclarationSyntax? other)
         {
-            return other is not null
-                && Declarator.Equals(other.Declarator);
+            return other is JassGlobalDeclarationSyntax globalDeclaration
+                && Declarator.Equals(globalDeclaration.Declarator);
         }
 
         public override string ToString() => Declarator.ToString();

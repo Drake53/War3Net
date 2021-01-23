@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
     {
         public static Parser<char, T> SkipWhitespaces<T>(this Parser<char, T> parser)
         {
-            return parser.Before(Token(@char => char.IsWhiteSpace(@char) && @char != '\n').Many());
+            return parser.Before(Token(@char => char.IsWhiteSpace(@char) && @char != JassSymbol.CarriageReturn && @char != JassSymbol.LineFeed).Many());
         }
 
         public static Parser<char, T> AssertNotFollowedByLetterOrUnderscore<T>(this Parser<char, T> parser)
