@@ -106,7 +106,7 @@ namespace War3Net.CodeAnalysis.Jass
                                     continue;
                                 }
 
-                                throw new Exception($"Invalid sequence of symbols: {peekChar}{(char)peek}");
+                                throw new InvalidDataException($"Invalid sequence of symbols: {peekChar}{(char)peek}");
                             }
                         }
                         else
@@ -129,9 +129,6 @@ namespace War3Net.CodeAnalysis.Jass
 
                     buffer.Append((char)reader.Read());
                 }
-
-                yield return new SyntaxToken(SyntaxTokenType.NewlineSymbol);
-                yield return new SyntaxToken(SyntaxTokenType.EndOfFile);
             }
         }
 

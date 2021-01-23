@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="JassParser.cs" company="Drake53">
+// <copyright file="LegacyJassParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,11 +12,11 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    public class JassParser //: IDisposable
+    public class LegacyJassParser //: IDisposable
     {
         private readonly JassTokenizer _tokenizer;
 
-        internal JassParser(JassTokenizer tokenizer/*, CancellationToken cancellationToken = default*/)
+        internal LegacyJassParser(JassTokenizer tokenizer/*, CancellationToken cancellationToken = default*/)
         {
             _tokenizer = tokenizer;
         }
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Jass
         public static FileSyntax ParseString(string text)
         {
             var tokenizer = new JassTokenizer(text);
-            var parser = new JassParser(tokenizer);
+            var parser = new LegacyJassParser(tokenizer);
             return parser.Parse();
         }
 
@@ -43,7 +43,10 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var ps = new ParseState();
             ps.Position = 0;
-            ps.Tokens = _tokenizer.Tokenize().ToList();
+            ps.Tokens = _tokenizer.Tokenize()
+                .Append(new SyntaxToken(SyntaxTokenType.NewlineSymbol))
+                .Append(new SyntaxToken(SyntaxTokenType.EndOfFile))
+                .ToList();
 
             return (FileSyntax.Parser.Get.Parse(ps).FirstOrDefault()?.Node as FileSyntax) ?? throw new InvalidDataException("Parsing failed. There may be syntax errors.");
 

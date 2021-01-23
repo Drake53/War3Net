@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static IEnumerable<string> GetIdentifiers(string filePath)
         {
-            var fileSyntax = JassParser.ParseFile( filePath );
+            var fileSyntax = LegacyJassParser.ParseFile( filePath );
 
             foreach (var declarationNode in fileSyntax.DeclarationList)
             {

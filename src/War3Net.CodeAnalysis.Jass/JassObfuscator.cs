@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static void Obfuscate(string inputFile, string outputFile, params string[] referenceFiles)
         {
-            var fileSyntax = JassParser.ParseFile(inputFile);
+            var fileSyntax = LegacyJassParser.ParseFile(inputFile);
 
             if (!Directory.Exists(new FileInfo(outputFile).DirectoryName))
             {
