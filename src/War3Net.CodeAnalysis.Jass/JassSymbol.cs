@@ -13,6 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public const char LineFeed = '\n';
         public const char CarriageReturn = '\r';
+        public const char ExclamationMark = '!';
         public const char QuotationMark = '"';
         public const char DollarSign = '$';
         public const char Apostrophe = '\'';
@@ -22,6 +23,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const char PlusSign = '+';
         public const char Comma = ',';
         public const char MinusSign = '-';
+        public const char FullStop = '.';
         public const char Slash = '/';
         public const char LessThanSign = '<';
         public const char EqualsSign = '=';

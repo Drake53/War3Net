@@ -15,9 +15,9 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
         {
             return unaryOperator switch
             {
-                UnaryOperatorType.Plus => "+",
-                UnaryOperatorType.Minus => "-",
-                UnaryOperatorType.Not => "not",
+                UnaryOperatorType.Plus => $"{JassSymbol.PlusSign}",
+                UnaryOperatorType.Minus => $"{JassSymbol.MinusSign}",
+                UnaryOperatorType.Not => JassKeyword.Not,
             };
         }
     }

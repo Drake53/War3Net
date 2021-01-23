@@ -15,18 +15,18 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
         {
             return binaryOperator switch
             {
-                BinaryOperatorType.Add => "+",
-                BinaryOperatorType.Subtract => "-",
-                BinaryOperatorType.Multiplication => "*",
-                BinaryOperatorType.Division => "/",
-                BinaryOperatorType.GreaterThan => ">",
-                BinaryOperatorType.LessThan => "<",
-                BinaryOperatorType.Equals => "==",
-                BinaryOperatorType.NotEquals => "!=",
-                BinaryOperatorType.GreaterOrEqual => ">=",
-                BinaryOperatorType.LessOrEqual => "<=",
-                BinaryOperatorType.And => "and",
-                BinaryOperatorType.Or => "or",
+                BinaryOperatorType.Add => $"{JassSymbol.PlusSign}",
+                BinaryOperatorType.Subtract => $"{JassSymbol.MinusSign}",
+                BinaryOperatorType.Multiplication => $"{JassSymbol.Asterisk}",
+                BinaryOperatorType.Division => $"{JassSymbol.Slash}",
+                BinaryOperatorType.GreaterThan => $"{JassSymbol.GreaterThanSign}",
+                BinaryOperatorType.LessThan => $"{JassSymbol.LessThanSign}",
+                BinaryOperatorType.Equals => $"{JassSymbol.EqualsSign}{JassSymbol.EqualsSign}",
+                BinaryOperatorType.NotEquals => $"{JassSymbol.ExclamationMark}{JassSymbol.EqualsSign}",
+                BinaryOperatorType.GreaterOrEqual => $"{JassSymbol.GreaterThanSign}{JassSymbol.EqualsSign}",
+                BinaryOperatorType.LessOrEqual => $"{JassSymbol.LessThanSign}{JassSymbol.EqualsSign}",
+                BinaryOperatorType.And => JassKeyword.And,
+                BinaryOperatorType.Or => JassKeyword.Or,
             };
         }
     }

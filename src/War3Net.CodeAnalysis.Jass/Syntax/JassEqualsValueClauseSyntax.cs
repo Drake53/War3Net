@@ -24,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Expression.Equals(other.Expression);
         }
 
-        public override string ToString() => $"{JassSymbol.Assignment} {Expression}";
+        public override string ToString() => $"{JassSymbol.EqualsSign} {Expression}";
     }
 }

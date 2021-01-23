@@ -12,6 +12,7 @@ namespace War3Net.CodeAnalysis.Jass
     public static class JassKeyword
     {
         public const string Alias = "alias";
+        public const string And = "and";
         public const string Array = "array";
         public const string Boolean = "boolean";
         public const string Call = "call";
@@ -35,8 +36,10 @@ namespace War3Net.CodeAnalysis.Jass
         public const string Local = "local";
         public const string Loop = "loop";
         public const string Native = "native";
+        public const string Not = "not";
         public const string Nothing = "nothing";
         public const string Null = "null";
+        public const string Or = "or";
         public const string Real = "real";
         public const string Return = "return";
         public const string Returns = "returns";
