@@ -24,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && string.Equals(Comment, commentDeclaration.Comment, StringComparison.Ordinal);
         }
 
-        public override string ToString() => $"//{Comment}";
+        public override string ToString() => $"{JassSymbol.Slash}{JassSymbol.Slash}{Comment}";
     }
 }

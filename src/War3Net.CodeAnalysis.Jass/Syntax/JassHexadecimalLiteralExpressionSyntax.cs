@@ -24,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == hexadecimalLiteralExpression.Value;
         }
 
-        public override string ToString() => "0x" + Convert.ToString(Value, 16).ToUpperInvariant();
+        public override string ToString() => $"{JassSymbol.Zero}{JassSymbol.X}" + Convert.ToString(Value, 16).ToUpperInvariant();
     }
 }

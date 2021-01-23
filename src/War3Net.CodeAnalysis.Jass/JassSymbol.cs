@@ -25,10 +25,12 @@ namespace War3Net.CodeAnalysis.Jass
         public const char MinusSign = '-';
         public const char FullStop = '.';
         public const char Slash = '/';
+        public const char Zero = '0';
         public const char LessThanSign = '<';
         public const char EqualsSign = '=';
         public const char GreaterThanSign = '>';
         public const char LeftSquareBracket = '[';
         public const char RightSquareBracket = ']';
+        public const char X = 'x';
     }
 }

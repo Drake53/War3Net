@@ -24,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == octalLiteralExpression.Value;
         }
 
-        public override string ToString() => Value == 0 ? "0" : $"0{Convert.ToString(Value, 8)}";
+        public override string ToString() => Value == 0 ? $"{JassSymbol.Zero}" : $"{JassSymbol.Zero}{Convert.ToString(Value, 8)}";
     }
 }

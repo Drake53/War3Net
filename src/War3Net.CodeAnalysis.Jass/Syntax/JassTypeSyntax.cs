@@ -11,27 +11,27 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassTypeSyntax : IEquatable<JassTypeSyntax>
     {
-        public static readonly JassTypeSyntax Boolean = new JassTypeSyntax(JassKeyword.Boolean);
-        public static readonly JassTypeSyntax Code = new JassTypeSyntax(JassKeyword.Code);
-        public static readonly JassTypeSyntax Handle = new JassTypeSyntax(JassKeyword.Handle);
-        public static readonly JassTypeSyntax Integer = new JassTypeSyntax(JassKeyword.Integer);
-        public static readonly JassTypeSyntax Nothing = new JassTypeSyntax(JassKeyword.Nothing);
-        public static readonly JassTypeSyntax Real = new JassTypeSyntax(JassKeyword.Real);
-        public static readonly JassTypeSyntax String = new JassTypeSyntax(JassKeyword.String);
+        public static readonly JassTypeSyntax Boolean = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Boolean));
+        public static readonly JassTypeSyntax Code = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Code));
+        public static readonly JassTypeSyntax Handle = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Handle));
+        public static readonly JassTypeSyntax Integer = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Integer));
+        public static readonly JassTypeSyntax Nothing = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Nothing));
+        public static readonly JassTypeSyntax Real = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Real));
+        public static readonly JassTypeSyntax String = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.String));
 
-        internal JassTypeSyntax(string type)
+        internal JassTypeSyntax(JassIdentifierNameSyntax typeName)
         {
-            Type = type;
+            TypeName = typeName;
         }
 
-        public string Type { get; init; }
+        public JassIdentifierNameSyntax TypeName { get; init; }
 
         public bool Equals(JassTypeSyntax? other)
         {
             return other is not null
-                && string.Equals(Type, other.Type, StringComparison.Ordinal);
+                && TypeName.Equals(other.TypeName);
         }
 
-        public override string ToString() => Type;
+        public override string ToString() => TypeName.ToString();
     }
 }

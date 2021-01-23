@@ -7,6 +7,9 @@
 
 #pragma warning disable CA1720, SA1600
 
+using System;
+using System.Collections.Generic;
+
 namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassKeyword
@@ -49,5 +52,49 @@ namespace War3Net.CodeAnalysis.Jass
         public const string Then = "then";
         public const string True = "true";
         public const string Type = "type";
+
+        private static readonly HashSet<string> _keywords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            Alias,
+            And,
+            Array,
+            Boolean,
+            Call,
+            Code,
+            Constant,
+            Debug,
+            Else,
+            ElseIf,
+            EndFunction,
+            EndGlobals,
+            EndIf,
+            EndLoop,
+            ExitWhen,
+            Extends,
+            False,
+            Function,
+            Globals,
+            Handle,
+            If,
+            Integer,
+            Local,
+            Loop,
+            Native,
+            Not,
+            Nothing,
+            Null,
+            Or,
+            Real,
+            Return,
+            Returns,
+            Set,
+            String,
+            Takes,
+            Then,
+            True,
+            Type,
+        };
+
+        public static bool IsKeyword(string value) => _keywords.Contains(value);
     }
 }

@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassCommentStatementSyntax : IStatementSyntax
+    public class JassCommentStatementSyntax : IStatementSyntax, ICustomScriptAction
     {
         public JassCommentStatementSyntax(string comment)
         {
@@ -24,6 +24,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && string.Equals(Comment, commentStatement.Comment, StringComparison.Ordinal);
         }
 
-        public override string ToString() => $"//{Comment}";
+        public bool Equals(ICustomScriptAction? other)
+        {
+            return other is JassCommentStatementSyntax commentStatement
+                && string.Equals(Comment, commentStatement.Comment, StringComparison.Ordinal);
+        }
+
+        public override string ToString() => $"{JassSymbol.Slash}{JassSymbol.Slash}{Comment}";
     }
 }
