@@ -15,19 +15,16 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaStatementSyntax Transpile(JassFunctionDeclarationSyntax functionDeclaration)
         {
-            var parameters = Transpile(functionDeclaration.FunctionDeclarator.ParameterList);
-            var functionIdentifier = Transpile(functionDeclaration.FunctionDeclarator.IdentifierName);
-
             RegisterFunctionReturnType(functionDeclaration.FunctionDeclarator);
 
             var functionExpression = new LuaFunctionExpressionSyntax();
-            functionExpression.AddParameters(parameters);
+            functionExpression.AddParameters(Transpile(functionDeclaration.FunctionDeclarator.ParameterList));
             functionExpression.Body.Statements.AddRange(Transpile(functionDeclaration.Body));
             functionExpression.RenderAsFunctionDefinition = true;
 
             _localTypes.Clear();
 
-            var luaFunctionDeclaration = new LuaVariableDeclaratorSyntax(functionIdentifier, functionExpression);
+            var luaFunctionDeclaration = new LuaVariableDeclaratorSyntax(Transpile(functionDeclaration.FunctionDeclarator.IdentifierName), functionExpression);
             luaFunctionDeclaration.IsLocalDeclaration = false;
 
             var declaration = new LuaVariableListDeclarationSyntax();

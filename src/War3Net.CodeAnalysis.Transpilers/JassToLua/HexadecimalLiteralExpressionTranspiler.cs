@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             type = JassTypeSyntax.Integer;
 
-            return hexadecimalLiteralExpression.Value;
+            return hexadecimalLiteralExpression.ToString();
         }
     }
 }

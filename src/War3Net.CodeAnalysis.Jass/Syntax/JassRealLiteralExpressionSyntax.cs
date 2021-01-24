@@ -11,6 +11,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassRealLiteralExpressionSyntax : IExpressionSyntax
     {
+#if true
+        public JassRealLiteralExpressionSyntax(string intPart, string fracPart)
+        {
+            IntPart = intPart;
+            FracPart = fracPart;
+        }
+
+        public string IntPart { get; init; }
+
+        public string FracPart { get; init; }
+
+        public bool Equals(IExpressionSyntax? other)
+        {
+            return other is JassRealLiteralExpressionSyntax realLiteralExpression
+                && float.Parse(ToString(), CultureInfo.InvariantCulture) == float.Parse(realLiteralExpression.ToString(), CultureInfo.InvariantCulture);
+        }
+
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(FracPart)
+                ? IntPart
+                : $"{IntPart}{JassSymbol.FullStop}{FracPart}";
+        }
+#else
         public JassRealLiteralExpressionSyntax(float value)
         {
             Value = value;
@@ -25,5 +49,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         }
 
         public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
+#endif
     }
 }

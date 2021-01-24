@@ -51,14 +51,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
         public static int FromJassRawcode(this string s)
         {
             var bytes = Encoding.UTF8.GetBytes(s);
-            if (bytes.Length == 4)
-            {
-                if (s.Length == 4)
-                {
-                    return BitConverter.ToInt32(bytes);
-                }
-            }
-            else
+            if (bytes.Length != 4)
             {
                 var p437 = CodePagesEncodingProvider.Instance.GetEncoding(437);
                 bytes = p437!.GetBytes(s);
