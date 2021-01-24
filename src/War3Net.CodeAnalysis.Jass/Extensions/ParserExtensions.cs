@@ -19,11 +19,6 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             return parser.Before(Token(@char => char.IsWhiteSpace(@char) && @char != JassSymbol.CarriageReturn && @char != JassSymbol.LineFeed).Many());
         }
 
-        public static Parser<char, T> AssertNotFollowedByLetterOrUnderscore<T>(this Parser<char, T> parser)
-        {
-            return parser.Before(Not(Token(@char => char.IsLetter(@char) || @char == '_')));
-        }
-
         public static Parser<char, T> AssertNotFollowedByLetterOrDigitOrUnderscore<T>(this Parser<char, T> parser)
         {
             return parser.Before(Not(Token(@char => char.IsLetterOrDigit(@char) || @char == '_')));

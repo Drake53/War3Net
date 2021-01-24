@@ -11,16 +11,16 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass
 {
+    [Obsolete]
     public struct SyntaxToken
     {
-        // TODO: add constants for all keywords
         public const string TypeKeyword = "type";
         public const string NewlineSymbol = "\n";
 
         public readonly SyntaxTokenType TokenType;
         public readonly string TokenValue;
 
-        private static readonly Lazy<Dictionary<SyntaxTokenType, string>> _defaultTokenValues = new Lazy<Dictionary<SyntaxTokenType, string>>(() => InitializeDefaultTokenValues());
+        private static readonly Lazy<Dictionary<SyntaxTokenType, string?>> _defaultTokenValues = new Lazy<Dictionary<SyntaxTokenType, string?>>(() => InitializeDefaultTokenValues());
         private static readonly Lazy<Dictionary<char, SyntaxTokenType>> _singleSymbolTokens = new Lazy<Dictionary<char, SyntaxTokenType>>(() => InitializeSingleSymbolTokens());
         private static readonly Lazy<Dictionary<string, SyntaxTokenType>> _keywordTokens = new Lazy<Dictionary<string, SyntaxTokenType>>(() => InitializeKeywordTokens());
 
@@ -78,7 +78,7 @@ namespace War3Net.CodeAnalysis.Jass
                     {
                         var firstChar = token[0];
 
-                        if (firstChar == '$') return SyntaxTokenType.HexadecimalNumber;
+                        if (firstChar == JassSymbol.DollarSign) return SyntaxTokenType.HexadecimalNumber;
                         if (token.Contains('.')) return SyntaxTokenType.RealNumber;
                         if (!char.IsDigit(firstChar)) return SyntaxTokenType.AlphanumericIdentifier;
 
@@ -93,9 +93,9 @@ namespace War3Net.CodeAnalysis.Jass
             }
         }
 
-        private static Dictionary<SyntaxTokenType, string> InitializeDefaultTokenValues()
+        private static Dictionary<SyntaxTokenType, string?> InitializeDefaultTokenValues()
         {
-            var result = new Dictionary<SyntaxTokenType, string>();
+            var result = new Dictionary<SyntaxTokenType, string?>();
 
             result.Add(SyntaxTokenType.Undefined, null);
             result.Add(SyntaxTokenType.EndOfFile, string.Empty);
@@ -135,6 +135,7 @@ namespace War3Net.CodeAnalysis.Jass
             result.Add(SyntaxTokenType.RealKeyword, "real");
             result.Add(SyntaxTokenType.BooleanKeyword, "boolean");
             result.Add(SyntaxTokenType.StringKeyword, "string");
+            result.Add(SyntaxTokenType.AliasKeyword, "alias");
 
             // Operators
             result.Add(SyntaxTokenType.PlusOperator, "+");

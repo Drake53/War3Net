@@ -12,6 +12,7 @@ using System.Text;
 
 namespace War3Net.CodeAnalysis.Jass
 {
+    [Obsolete]
     internal class JassTokenizer : IDisposable
     {
         private const int BufferCapacity = 120;

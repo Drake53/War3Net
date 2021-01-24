@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Linq;
 
@@ -12,6 +13,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
+    [Obsolete]
     public class LegacyJassParser //: IDisposable
     {
         private readonly JassTokenizer _tokenizer;

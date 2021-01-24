@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass
 {
+    [Obsolete]
     public enum SyntaxTokenType
     {
         Undefined,
