@@ -9,7 +9,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassNullLiteralExpressionSyntax : IExpressionSyntax
     {
-        public static readonly JassNullLiteralExpressionSyntax Null = new JassNullLiteralExpressionSyntax();
+        public static readonly JassNullLiteralExpressionSyntax Value = new JassNullLiteralExpressionSyntax();
 
         private JassNullLiteralExpressionSyntax()
         {

@@ -11,7 +11,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class BinaryOperatorTypeExtensions
     {
-        public static string GetString(this BinaryOperatorType binaryOperator)
+        public static string GetSymbol(this BinaryOperatorType binaryOperator)
         {
             return binaryOperator switch
             {

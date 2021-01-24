@@ -31,8 +31,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override string ToString()
         {
             return Operator == UnaryOperatorType.Not
-                ? $"{Operator.GetString()} {Expression}"
-                : $"{Operator.GetString()}{Expression}";
+                ? $"{Operator.GetSymbol()} {Expression}"
+                : $"{Operator.GetSymbol()}{Expression}";
         }
     }
 }

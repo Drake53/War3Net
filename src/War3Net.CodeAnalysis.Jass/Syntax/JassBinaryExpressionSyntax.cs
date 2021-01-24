@@ -32,6 +32,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Right.Equals(binaryExpression.Right);
         }
 
-        public override string ToString() => $"{Left} {Operator.GetString()} {Right}";
+        public override string ToString() => $"{Left} {Operator.GetSymbol()} {Right}";
     }
 }

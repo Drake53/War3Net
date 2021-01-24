@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, IExpressionSyntax> GetNullLiteralExpressionParser()
         {
-            return Keyword.Null.ThenReturn<IExpressionSyntax>(JassNullLiteralExpressionSyntax.Null)
+            return Keyword.Null.ThenReturn<IExpressionSyntax>(JassNullLiteralExpressionSyntax.Value)
                 .Labelled("null literal");
         }
     }

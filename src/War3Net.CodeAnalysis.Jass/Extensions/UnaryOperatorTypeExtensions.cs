@@ -11,7 +11,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class UnaryOperatorTypeExtensions
     {
-        public static string GetString(this UnaryOperatorType unaryOperator)
+        public static string GetSymbol(this UnaryOperatorType unaryOperator)
         {
             return unaryOperator switch
             {
