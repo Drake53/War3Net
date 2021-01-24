@@ -24,8 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, Unit> newlineParser)
         {
             return declarationParser.Before(commentParser.Optional().Then(newlineParser.Or(Lookahead(End)))).Many()
-                .Select(declarations => new JassCompilationUnitSyntax(declarations.ToImmutableArray()))
-                .Before(End);
+                .Select(declarations => new JassCompilationUnitSyntax(declarations.ToImmutableArray()));
         }
     }
 }

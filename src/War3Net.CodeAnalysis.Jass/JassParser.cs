@@ -8,13 +8,123 @@
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
+using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
+using static Pidgin.Parser<char>;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
+        private static readonly JassParser _parser = new JassParser();
+
+        private readonly Parser<char, JassArgumentListSyntax> _argumentListParser;
+        private readonly Parser<char, JassCompilationUnitSyntax> _compilationUnitParser;
+        private readonly Parser<char, ICustomScriptAction> _customScriptActionParser;
+        private readonly Parser<char, IDeclarationSyntax> _declarationParser;
+        private readonly Parser<char, IExpressionSyntax> _expressionParser;
+        private readonly Parser<char, JassIdentifierNameSyntax> _identifierNameParser;
+        private readonly Parser<char, JassParameterListSyntax> _parameterListParser;
+        private readonly Parser<char, IStatementSyntax> _statementParser;
+        private readonly Parser<char, JassTypeSyntax> _typeParser;
+
+        private JassParser()
+        {
+            var identifierNameParser = GetIdentifierNameParser();
+            var typeParser = GetTypeParser(identifierNameParser);
+            var expressionParser = GetExpressionParser(identifierNameParser);
+            var equalsValueClauseParser = GetEqualsValueClauseParser(expressionParser);
+
+            var argumentListParser = GetArgumentListParser(expressionParser);
+            var parameterListParser = GetParameterListParser(GetParameterParser(identifierNameParser, typeParser));
+            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser);
+            var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser);
+
+            var commentParser = GetCommentParser();
+            var newLineParser = GetNewLineParser();
+            var endOfLineParser = GetEndOfLineParser(commentParser, newLineParser);
+            var emptyDeclarationParser = GetEmptyDeclarationParser();
+            var commentDeclarationParser = GetCommentDeclarationParser(commentParser);
+
+            var setStatementParser = GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser).Cast<IStatementSyntax>();
+            var callStatementParser = GetCallStatementParser(argumentListParser, identifierNameParser).Cast<IStatementSyntax>();
+            var statementParser = GetStatementParser(
+                expressionParser,
+                setStatementParser,
+                callStatementParser,
+                variableDeclaratorParser,
+                commentParser,
+                endOfLineParser);
+
+            var customScriptActionParser = GetCustomScriptActionParser(
+                GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser).Cast<ICustomScriptAction>(),
+                GetCallStatementParser(argumentListParser, identifierNameParser).Cast<ICustomScriptAction>(),
+                GetIfCustomScriptActionParser(expressionParser),
+                GetLoopCustomScriptActionParser(),
+                expressionParser,
+                variableDeclaratorParser,
+                functionDeclaratorParser,
+                commentParser);
+
+            var globalDeclarationParser = GetGlobalDeclarationParser(
+                emptyDeclarationParser,
+                commentDeclarationParser,
+                equalsValueClauseParser,
+                identifierNameParser,
+                typeParser,
+                endOfLineParser);
+
+            var declarationParser = GetDeclarationParser(
+                emptyDeclarationParser,
+                commentDeclarationParser,
+                globalDeclarationParser,
+                functionDeclaratorParser,
+                identifierNameParser,
+                GetStatementListParser(statementParser, endOfLineParser),
+                typeParser,
+                endOfLineParser);
+
+            var compilationUnitParser = GetCompilationUnitParser(
+                declarationParser,
+                commentParser,
+                newLineParser);
+
+            var whitespaceParser = Return(Unit.Value).SkipWhitespaces();
+
+            Parser<char, T> Create<T>(Parser<char, T> parser) => whitespaceParser.Then(parser).Before(End);
+
+            _argumentListParser = Create(argumentListParser);
+            _compilationUnitParser = Create(compilationUnitParser);
+            _customScriptActionParser = Create(customScriptActionParser.Before(commentParser.Optional()));
+            _declarationParser = Create(declarationParser);
+            _expressionParser = Create(expressionParser);
+            _identifierNameParser = Create(identifierNameParser);
+            _parameterListParser = Create(parameterListParser);
+            _statementParser = Create(statementParser);
+            _typeParser = Create(typeParser);
+        }
+
+        internal static JassParser Instance => _parser;
+
+        internal Parser<char, JassArgumentListSyntax> ArgumentListParser => _argumentListParser;
+
+        internal Parser<char, JassCompilationUnitSyntax> CompilationUnitParser => _compilationUnitParser;
+
+        internal Parser<char, ICustomScriptAction> CustomScriptActionParser => _customScriptActionParser;
+
+        internal Parser<char, IDeclarationSyntax> DeclarationParser => _declarationParser;
+
+        internal Parser<char, IExpressionSyntax> ExpressionParser => _expressionParser;
+
+        internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;
+
+        internal Parser<char, JassParameterListSyntax> ParameterListParser => _parameterListParser;
+
+        internal Parser<char, IStatementSyntax> StatementParser => _statementParser;
+
+        internal Parser<char, JassTypeSyntax> TypeParser => _typeParser;
+
         private static class Keyword
         {
             internal static readonly Parser<char, string> Alias = GetKeywordParser(JassKeyword.Alias);
