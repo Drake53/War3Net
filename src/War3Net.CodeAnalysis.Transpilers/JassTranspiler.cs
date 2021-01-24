@@ -105,7 +105,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 TranspileToEnumHandler.Reset();
             }
 
-            var fileSyntax = JassParser.ParseFile(filePath);
+            var fileSyntax = LegacyJassParser.ParseFile(filePath);
 
             if (outputLuaTypes != null)
             {

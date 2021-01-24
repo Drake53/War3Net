@@ -17,51 +17,39 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        private readonly Dictionary<string, SyntaxTokenType> _functionReturnTypes;
-        private readonly Dictionary<string, SyntaxTokenType> _globalTypes;
-        private readonly Dictionary<string, SyntaxTokenType> _localTypes;
+        private readonly Dictionary<JassIdentifierNameSyntax, JassTypeSyntax> _functionReturnTypes;
+        private readonly Dictionary<JassIdentifierNameSyntax, JassTypeSyntax> _globalTypes;
+        private readonly Dictionary<JassIdentifierNameSyntax, JassTypeSyntax> _localTypes;
 
         public JassToLuaTranspiler()
         {
-            _functionReturnTypes = new(StringComparer.Ordinal);
-            _globalTypes = new(StringComparer.Ordinal);
-            _localTypes = new(StringComparer.Ordinal);
+            _functionReturnTypes = new();
+            _globalTypes = new();
+            _localTypes = new();
         }
 
-        public void RegisterJassFile(FileSyntax file)
+        public void RegisterJassFile(JassCompilationUnitSyntax compilationUnit)
         {
-            foreach (var declaration in file.DeclarationList)
+            foreach (var declaration in compilationUnit.Declarations)
             {
-                if (declaration.Declaration.GlobalsBlock is not null)
+                if (declaration is JassGlobalDeclarationListSyntax globalDeclarationList)
                 {
-                    foreach (var globalDeclaration in declaration.Declaration.GlobalsBlock.GlobalDeclarationListNode)
+                    foreach (var global in globalDeclarationList.Globals)
                     {
-                        if (globalDeclaration.ConstantDeclarationNode is not null)
+                        if (global is JassGlobalDeclarationSyntax globalDeclaration)
                         {
-                            RegisterGlobalVariableType(globalDeclaration.ConstantDeclarationNode);
-                        }
-                        else if (globalDeclaration.VariableDeclarationNode is not null)
-                        {
-                            if (globalDeclaration.VariableDeclarationNode.DeclarationNode.VariableDefinitionNode is not null)
-                            {
-                                RegisterVariableType(globalDeclaration.VariableDeclarationNode.DeclarationNode.VariableDefinitionNode, false);
-                            }
-                            else if (globalDeclaration.VariableDeclarationNode.DeclarationNode.ArrayDefinitionNode is not null)
-                            {
-                                RegisterVariableType(globalDeclaration.VariableDeclarationNode.DeclarationNode.ArrayDefinitionNode, false);
-                            }
+                            RegisterVariableType(globalDeclaration.Declarator, false);
                         }
                     }
                 }
-                else if (declaration.Declaration.NativeFunctionDeclaration is not null)
+                else if (declaration is JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration)
                 {
-                    RegisterFunctionReturnType(declaration.Declaration.NativeFunctionDeclaration.FunctionDeclarationNode);
+                    RegisterFunctionReturnType(nativeFunctionDeclaration.FunctionDeclarator);
                 }
-            }
-
-            foreach (var function in file.FunctionList)
-            {
-                RegisterFunctionReturnType(function.FunctionDeclarationNode);
+                else if (declaration is JassFunctionDeclarationSyntax functionDeclaration)
+                {
+                    RegisterFunctionReturnType(functionDeclaration.FunctionDeclarator);
+                }
             }
         }
 
@@ -72,7 +60,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 throw new ArgumentNullException(nameof(method));
             }
 
-            _functionReturnTypes.Add(method.Name, method.ReturnType.ToJassTypeKeyword());
+            _functionReturnTypes.Add(JassSyntaxFactory.ParseIdentifierName(method.Name), method.ReturnType.ToJassType());
         }
 
         public void RegisterGlobalVariableType(FieldInfo field)
@@ -82,51 +70,45 @@ namespace War3Net.CodeAnalysis.Transpilers
                 throw new ArgumentNullException(nameof(field));
             }
 
-            _globalTypes.Add(field.Name, field.FieldType.ToJassTypeKeyword());
+            _globalTypes.Add(JassSyntaxFactory.ParseIdentifierName(field.Name), field.FieldType.ToJassType());
         }
 
-        private void RegisterFunctionReturnType(FunctionDeclarationSyntax functionDeclaration)
+        private void RegisterFunctionReturnType(JassFunctionDeclaratorSyntax functionDeclarator)
         {
-            _functionReturnTypes.Add(functionDeclaration.IdentifierNode.ValueText, functionDeclaration.ReturnTypeNode.TypeNameNode?.TypeNameToken.TokenType ?? SyntaxTokenType.NothingKeyword);
+            _functionReturnTypes.Add(functionDeclarator.IdentifierName, functionDeclarator.ReturnType);
         }
 
-        private void RegisterGlobalVariableType(GlobalConstantDeclarationSyntax globalConstantDeclaration)
+        private void RegisterVariableType(IVariableDeclarator declarator, bool isLocalDeclaration)
         {
-            _globalTypes.Add(globalConstantDeclaration.IdentifierNameNode.ValueText, globalConstantDeclaration.TypeNameNode.TypeNameToken.TokenType);
+            switch (declarator)
+            {
+                case JassArrayDeclaratorSyntax arrayDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(arrayDeclarator.IdentifierName, arrayDeclarator.Type); break;
+                case JassVariableDeclaratorSyntax variableDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(variableDeclarator.IdentifierName, variableDeclarator.Type); break;
+            }
         }
 
-        private void RegisterLocalVariableType(TypeReferenceSyntax typeReference)
+        private void RegisterLocalVariableType(JassParameterSyntax parameter)
         {
-            _localTypes.Add(typeReference.TypeReferenceNameToken.ValueText, typeReference.TypeNameNode.TypeNameToken.TokenType);
+            _localTypes.Add(parameter.IdentifierName, parameter.Type);
         }
 
-        private void RegisterVariableType(ArrayDefinitionSyntax arrayDefinition, bool isLocalDeclaration)
-        {
-            (isLocalDeclaration ? _localTypes : _globalTypes).Add(arrayDefinition.IdentifierNameNode.ValueText, arrayDefinition.TypeNameNode.TypeNameToken.TokenType);
-        }
-
-        private void RegisterVariableType(VariableDefinitionSyntax variableDefinition, bool isLocalDeclaration)
-        {
-            (isLocalDeclaration ? _localTypes : _globalTypes).Add(variableDefinition.IdentifierNameNode.ValueText, variableDefinition.TypeNameNode.TypeNameToken.TokenType);
-        }
-
-        private SyntaxTokenType GetFunctionReturnType(string functionName)
+        private JassTypeSyntax GetFunctionReturnType(JassIdentifierNameSyntax functionName)
         {
             return _functionReturnTypes.TryGetValue(functionName, out var type)
                 ? type
 #if DEBUG
-                : SyntaxTokenType.NullKeyword;
+                : JassTypeSyntax.Nothing;
 #else
                 : throw new KeyNotFoundException($"Function '{functionName}' could not be found.");
 #endif
         }
 
-        private SyntaxTokenType GetVariableType(string variableName)
+        private JassTypeSyntax GetVariableType(JassIdentifierNameSyntax variableName)
         {
             return (_localTypes.TryGetValue(variableName, out var type) || _globalTypes.TryGetValue(variableName, out type))
                 ? type
 #if DEBUG
-                : SyntaxTokenType.NullKeyword;
+                : JassTypeSyntax.Nothing;
 #else
                 : throw new KeyNotFoundException($"Variable '{variableName}' could not be found.");
 #endif

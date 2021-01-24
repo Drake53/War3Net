@@ -8,31 +8,33 @@
 using System;
 using System.ComponentModel;
 
+using War3Net.CodeAnalysis.Jass.Syntax;
+
 namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class TypeExtensions
     {
-        public static SyntaxTokenType ToJassTypeKeyword(this Type type)
+        public static JassTypeSyntax ToJassType(this Type type)
         {
             var typeCode = Type.GetTypeCode(type);
             return typeCode switch
             {
-                TypeCode.Empty => SyntaxTokenType.NullKeyword,
-                TypeCode.Object => SyntaxTokenType.HandleKeyword,
-                TypeCode.Boolean => SyntaxTokenType.BooleanKeyword,
-                TypeCode.Char => SyntaxTokenType.IntegerKeyword,
-                TypeCode.SByte => SyntaxTokenType.IntegerKeyword,
-                TypeCode.Byte => SyntaxTokenType.IntegerKeyword,
-                TypeCode.Int16 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.UInt16 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.Int32 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.UInt32 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.Int64 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.UInt64 => SyntaxTokenType.IntegerKeyword,
-                TypeCode.Single => SyntaxTokenType.RealKeyword,
-                TypeCode.Double => SyntaxTokenType.RealKeyword,
-                TypeCode.Decimal => SyntaxTokenType.RealKeyword,
-                TypeCode.String => SyntaxTokenType.StringKeyword,
+                TypeCode.Empty => JassTypeSyntax.Nothing,
+                TypeCode.Object => JassTypeSyntax.Handle,
+                TypeCode.Boolean => JassTypeSyntax.Boolean,
+                TypeCode.Char => JassTypeSyntax.Integer,
+                TypeCode.SByte => JassTypeSyntax.Integer,
+                TypeCode.Byte => JassTypeSyntax.Integer,
+                TypeCode.Int16 => JassTypeSyntax.Integer,
+                TypeCode.UInt16 => JassTypeSyntax.Integer,
+                TypeCode.Int32 => JassTypeSyntax.Integer,
+                TypeCode.UInt32 => JassTypeSyntax.Integer,
+                TypeCode.Int64 => JassTypeSyntax.Integer,
+                TypeCode.UInt64 => JassTypeSyntax.Integer,
+                TypeCode.Single => JassTypeSyntax.Real,
+                TypeCode.Double => JassTypeSyntax.Real,
+                TypeCode.Decimal => JassTypeSyntax.Real,
+                TypeCode.String => JassTypeSyntax.String,
 
                 _ => throw new InvalidEnumArgumentException(nameof(typeCode), (int)typeCode, typeof(TypeCode)),
             };
