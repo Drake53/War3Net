@@ -19,5 +19,18 @@ namespace War3Net.CodeAnalysis.Jass
                 case JassVariableDeclaratorSyntax variableDeclarator: Render(variableDeclarator); break;
             }
         }
+
+        public void Render(JassVariableDeclaratorSyntax variableDeclarator)
+        {
+            Render(variableDeclarator.Type);
+            Write(' ');
+            Render(variableDeclarator.IdentifierName);
+
+            if (variableDeclarator.Value is not null)
+            {
+                Write(' ');
+                Render(variableDeclarator.Value);
+            }
+        }
     }
 }

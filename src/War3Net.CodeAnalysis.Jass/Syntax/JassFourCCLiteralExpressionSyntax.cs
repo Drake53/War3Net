@@ -5,7 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.Common.Extensions;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -24,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == fourCCLiteralExpression.Value;
         }
 
-        public override string ToString() => $"{JassSymbol.Apostrophe}{Value.ToRawcode()}{JassSymbol.Apostrophe}";
+        public override string ToString() => $"{JassSymbol.Apostrophe}{Value.ToJassRawcode()}{JassSymbol.Apostrophe}";
     }
 }

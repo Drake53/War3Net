@@ -14,6 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassGlobalDeclarationListSyntax globalDeclarationList)
         {
             WriteLine(JassKeyword.Globals);
+            Indent();
 
             foreach (var globalDeclaration in globalDeclarationList.Globals)
             {
@@ -21,6 +22,7 @@ namespace War3Net.CodeAnalysis.Jass
                 WriteLine();
             }
 
+            Outdent();
             Write(JassKeyword.EndGlobals);
         }
     }

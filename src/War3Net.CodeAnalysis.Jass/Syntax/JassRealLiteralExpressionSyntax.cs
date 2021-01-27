@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override string ToString()
         {
             return string.IsNullOrEmpty(FracPart)
-                ? IntPart
+                ? $"{IntPart}{JassSymbol.FullStop}"
                 : $"{IntPart}{JassSymbol.FullStop}{FracPart}";
         }
 #else
