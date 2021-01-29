@@ -39,9 +39,8 @@ namespace War3Net.CodeAnalysis.Jass
                     new[]
                     {
                         // https://www.hiveworkshop.com/threads/precedence-in-jass.43500/#post-378439
-                        Pidgin.Expression.Operator.Prefix(GetUnaryNotOperatorParser()),
-                        Pidgin.Expression.Operator.Prefix(GetUnaryPlusOperatorParser())
-                            .And(Pidgin.Expression.Operator.Prefix(GetUnaryMinusOperatorParser())),
+                        Pidgin.Expression.Operator.PrefixChainable(GetUnaryNotOperatorParser()),
+                        Pidgin.Expression.Operator.PrefixChainable(GetUnaryPlusOperatorParser(), GetUnaryMinusOperatorParser()),
                         Pidgin.Expression.Operator.InfixL(GetBinaryMultiplicationOperatorParser())
                             .And(Pidgin.Expression.Operator.InfixL(GetBinaryDivisionOperatorParser())),
                         Pidgin.Expression.Operator.InfixL(GetBinaryAddOperatorParser())
