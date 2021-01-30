@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -13,7 +14,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassCompilationUnitSyntax File(params IDeclarationSyntax[] declarations)
+        public static JassCompilationUnitSyntax CompilationUnit(IEnumerable<IDeclarationSyntax> declarations)
+        {
+            return new JassCompilationUnitSyntax(declarations.ToImmutableArray());
+        }
+
+        public static JassCompilationUnitSyntax CompilationUnit(params IDeclarationSyntax[] declarations)
         {
             return new JassCompilationUnitSyntax(declarations.ToImmutableArray());
         }

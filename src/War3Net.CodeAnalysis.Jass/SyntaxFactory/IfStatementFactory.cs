@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -31,6 +32,15 @@ namespace War3Net.CodeAnalysis.Jass
                 null);
         }
 
+        public static JassIfStatementSyntax IfStatement(IExpressionSyntax condition, JassStatementListSyntax body, JassElseClauseSyntax elseClause)
+        {
+            return new JassIfStatementSyntax(
+                condition,
+                body,
+                ImmutableArray.Create<JassElseIfClauseSyntax>(),
+                elseClause);
+        }
+
         public static JassIfStatementSyntax IfStatement(IExpressionSyntax condition, JassStatementListSyntax body, params JassElseIfClauseSyntax[] elseIfClauses)
         {
             return new JassIfStatementSyntax(
@@ -38,6 +48,15 @@ namespace War3Net.CodeAnalysis.Jass
                 body,
                 elseIfClauses.ToImmutableArray(),
                 null);
+        }
+
+        public static JassIfStatementSyntax IfStatement(IExpressionSyntax condition, JassStatementListSyntax body, IEnumerable<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax elseClause)
+        {
+            return new JassIfStatementSyntax(
+                condition,
+                body,
+                elseIfClauses.ToImmutableArray(),
+                elseClause);
         }
     }
 }
