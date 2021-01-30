@@ -5,13 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    public partial class JassRenderer : IDisposable
+    public partial class JassRenderer
     {
         private readonly TextWriter _writer;
         private readonly JassRendererOptions _options;
@@ -29,11 +28,6 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _writer = writer;
             _options = options;
-        }
-
-        public void Dispose()
-        {
-            _writer.Dispose();
         }
 
         private void Write(char c)

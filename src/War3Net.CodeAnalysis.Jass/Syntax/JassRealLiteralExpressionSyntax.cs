@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
@@ -24,8 +25,22 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public bool Equals(IExpressionSyntax? other)
         {
-            return other is JassRealLiteralExpressionSyntax realLiteralExpression
-                && float.Parse(ToString(), CultureInfo.InvariantCulture) == float.Parse(realLiteralExpression.ToString(), CultureInfo.InvariantCulture);
+            if (other is JassRealLiteralExpressionSyntax realLiteralExpression && FracPart.Length == realLiteralExpression.FracPart.Length)
+            {
+                var left = float.Parse(ToString(), CultureInfo.InvariantCulture);
+                var right = float.Parse(realLiteralExpression.ToString(), CultureInfo.InvariantCulture);
+
+                if (left == right)
+                {
+                    return true;
+                }
+
+                var difference = MathF.Abs(left - right);
+                var maxDifference = MathF.Pow(10, -FracPart.Length) * 1.01f;
+                return difference <= maxDifference;
+            }
+
+            return false;
         }
 
         public override string ToString()

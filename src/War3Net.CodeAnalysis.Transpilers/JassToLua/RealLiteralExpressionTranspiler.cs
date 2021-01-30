@@ -17,11 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             type = JassTypeSyntax.Real;
 
-#if true
             return realLiteralExpression.ToString();
-#else
-            return realLiteralExpression.Value;
-#endif
         }
     }
 }
