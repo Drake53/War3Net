@@ -29,28 +29,6 @@ namespace War3Net.IO.Mpq
             return File.Create(path);
         }
 
-        public static bool FileExists(string path)
-        {
-            return MpqFile.Exists(path);
-        }
-
-        public static bool FileExists(MpqArchive archive, string path)
-        {
-            return MpqFile.Exists(archive, path);
-        }
-
-        /// <exception cref="FileNotFoundException"></exception>
-        public static Stream GetFile(string path)
-        {
-            return MpqFile.OpenRead(path);
-        }
-
-        /// <exception cref="FileNotFoundException"></exception>
-        public static Stream GetFile(MpqArchive archive, string path)
-        {
-            return MpqFile.OpenRead(archive, path);
-        }
-
         public static IEnumerable<(string fileName, MpqLocale locale, Stream stream)> EnumerateFiles(string path)
         {
             if (File.Exists(path))

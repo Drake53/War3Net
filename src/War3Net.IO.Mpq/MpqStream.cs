@@ -320,7 +320,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 resultStream.Position = 0;
-                using (var writer = new BinaryWriter(resultStream, new System.Text.UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
                 {
                     for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
