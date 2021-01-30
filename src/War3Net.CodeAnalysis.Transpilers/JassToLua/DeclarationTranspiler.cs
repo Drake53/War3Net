@@ -25,11 +25,11 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             return declaration switch
             {
-                JassEmptyDeclarationSyntax emptyDeclaration => new[] { Transpile(emptyDeclaration) },
-                JassCommentDeclarationSyntax commentDeclaration => new[] { Transpile(commentDeclaration) },
+                JassEmptyDeclarationSyntax emptyDeclaration => IgnoreEmptyDeclarations ? Array.Empty<LuaStatementSyntax>() : new[] { Transpile(emptyDeclaration) },
+                JassCommentDeclarationSyntax commentDeclaration => IgnoreComments ? Array.Empty<LuaStatementSyntax>() : new[] { Transpile(commentDeclaration) },
                 JassGlobalDeclarationListSyntax globalDeclarationList => Transpile(globalDeclarationList),
                 JassGlobalDeclarationSyntax globalDeclaration => new[] { Transpile(globalDeclaration) },
-                JassFunctionDeclarationSyntax functionDeclaration => new[] { Transpile(functionDeclaration) },
+                JassFunctionDeclarationSyntax functionDeclaration => IgnoreEmptyDeclarations && KeepFunctionsSeparated ? new[] { Transpile(functionDeclaration), LuaBlankLinesStatement.One } : new[] { Transpile(functionDeclaration) },
                 _ => Array.Empty<LuaStatementSyntax>(),
             };
         }

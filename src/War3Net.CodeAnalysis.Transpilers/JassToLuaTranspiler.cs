@@ -27,6 +27,14 @@ namespace War3Net.CodeAnalysis.Transpilers
             _localTypes = new(StringComparer.Ordinal);
         }
 
+        public bool IgnoreComments { get; set; }
+
+        public bool IgnoreEmptyDeclarations { get; set; }
+
+        public bool IgnoreEmptyStatements { get; set; }
+
+        public bool KeepFunctionsSeparated { get; set; }
+
         public void RegisterJassFile(JassCompilationUnitSyntax compilationUnit)
         {
             foreach (var declaration in compilationUnit.Declarations)
@@ -77,7 +85,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             _functionReturnTypes.Add(functionDeclarator.IdentifierName.Name, functionDeclarator.ReturnType);
         }
 
-        private void RegisterVariableType(IVariableDeclarator declarator, bool isLocalDeclaration)
+        private void RegisterVariableType(IVariableDeclaratorSyntax declarator, bool isLocalDeclaration)
         {
             switch (declarator)
             {

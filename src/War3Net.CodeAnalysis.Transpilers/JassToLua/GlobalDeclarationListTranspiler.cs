@@ -18,7 +18,10 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public IEnumerable<LuaStatementSyntax> Transpile(JassGlobalDeclarationListSyntax globalDeclarationList)
         {
-            return globalDeclarationList.Globals.Select(declaration => declaration switch
+            return globalDeclarationList.Globals
+                .Where(declaration => !(declaration is JassCommentDeclarationSyntax && IgnoreComments))
+                .Where(declaration => !(declaration is JassEmptyDeclarationSyntax && IgnoreEmptyDeclarations))
+                .Select(declaration => declaration switch
             {
                 JassEmptyDeclarationSyntax emptyDeclaration => Transpile(emptyDeclaration),
                 JassCommentDeclarationSyntax commentDeclaration => Transpile(commentDeclaration),
