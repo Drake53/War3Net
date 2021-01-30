@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, IStatementSyntax> setStatementParser,
             Parser<char, IStatementSyntax> callStatementParser,
-            Parser<char, IVariableDeclarator> variableDeclaratorParser,
+            Parser<char, IVariableDeclaratorSyntax> variableDeclaratorParser,
             Parser<char, string> commentParser,
             Parser<char, Unit> endOfLineParser)
         {

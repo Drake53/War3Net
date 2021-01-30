@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArrayDeclaratorSyntax : IVariableDeclarator
+    public class JassArrayDeclaratorSyntax : IVariableDeclaratorSyntax
     {
         public JassArrayDeclaratorSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassIdentifierNameSyntax IdentifierName { get; init; }
 
-        public bool Equals(IVariableDeclarator? other)
+        public bool Equals(IVariableDeclaratorSyntax? other)
         {
             return other is JassArrayDeclaratorSyntax arrayDeclarator
                 && Type.Equals(arrayDeclarator.Type)

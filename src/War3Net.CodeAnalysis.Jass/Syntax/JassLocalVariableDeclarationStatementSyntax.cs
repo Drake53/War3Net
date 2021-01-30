@@ -9,12 +9,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, ICustomScriptAction
     {
-        public JassLocalVariableDeclarationStatementSyntax(IVariableDeclarator declarator)
+        public JassLocalVariableDeclarationStatementSyntax(IVariableDeclaratorSyntax declarator)
         {
             Declarator = declarator;
         }
 
-        public IVariableDeclarator Declarator { get; init; }
+        public IVariableDeclaratorSyntax Declarator { get; init; }
 
         public bool Equals(IStatementSyntax? other)
         {

@@ -15,12 +15,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IVariableDeclarator> GetArrayDeclaratorParser(
+        internal static Parser<char, IVariableDeclaratorSyntax> GetArrayDeclaratorParser(
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
             Parser<char, JassTypeSyntax> typeParser)
         {
             return Map(
-                (type, id) => (IVariableDeclarator)new JassArrayDeclaratorSyntax(type, id),
+                (type, id) => (IVariableDeclaratorSyntax)new JassArrayDeclaratorSyntax(type, id),
                 Try(typeParser.Before(Keyword.Array)),
                 identifierNameParser);
         }

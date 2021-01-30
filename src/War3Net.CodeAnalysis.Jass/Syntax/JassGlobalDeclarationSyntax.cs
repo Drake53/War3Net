@@ -9,12 +9,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassGlobalDeclarationSyntax : IDeclarationSyntax
     {
-        public JassGlobalDeclarationSyntax(IVariableDeclarator declarator)
+        public JassGlobalDeclarationSyntax(IVariableDeclaratorSyntax declarator)
         {
             Declarator = declarator;
         }
 
-        public IVariableDeclarator Declarator { get; init; }
+        public IVariableDeclaratorSyntax Declarator { get; init; }
 
         public bool Equals(IDeclarationSyntax? other)
         {

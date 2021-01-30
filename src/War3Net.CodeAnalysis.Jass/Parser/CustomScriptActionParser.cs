@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, ICustomScriptAction> ifCustomScriptActionParser,
             Parser<char, ICustomScriptAction> loopCustomScriptActionParser,
             Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, IVariableDeclarator> variableDeclaratorParser,
+            Parser<char, IVariableDeclaratorSyntax> variableDeclaratorParser,
             Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
             Parser<char, string> commentParser)
         {

@@ -11,7 +11,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(IVariableDeclarator declarator)
+        public void Render(IVariableDeclaratorSyntax declarator)
         {
             switch (declarator)
             {

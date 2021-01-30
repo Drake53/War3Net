@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassVariableDeclaratorSyntax : IVariableDeclarator
+    public class JassVariableDeclaratorSyntax : IVariableDeclaratorSyntax
     {
         public JassVariableDeclaratorSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax? value)
         {
@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassEqualsValueClauseSyntax? Value { get; init; }
 
-        public bool Equals(IVariableDeclarator? other)
+        public bool Equals(IVariableDeclaratorSyntax? other)
         {
             return other is JassVariableDeclaratorSyntax variableDeclarator
                 && Type.Equals(variableDeclarator.Type)

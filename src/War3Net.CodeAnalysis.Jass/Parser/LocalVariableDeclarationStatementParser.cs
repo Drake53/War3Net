@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassLocalVariableDeclarationStatementSyntax> GetLocalVariableDeclarationStatementParser(Parser<char, IVariableDeclarator> variableDeclaratorParser)
+        internal static Parser<char, JassLocalVariableDeclarationStatementSyntax> GetLocalVariableDeclarationStatementParser(Parser<char, IVariableDeclaratorSyntax> variableDeclaratorParser)
         {
             return Keyword.Local.Then(variableDeclaratorParser)
                 .Select(declarator => new JassLocalVariableDeclarationStatementSyntax(declarator));
