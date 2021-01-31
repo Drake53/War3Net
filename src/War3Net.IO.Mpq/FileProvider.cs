@@ -20,7 +20,7 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public static FileStream CreateFileAndFolder(string path)
         {
-            var directory = new FileInfo(path).Directory;
+            var directory = new FileInfo(path).Directory!;
             if (!directory.Exists)
             {
                 directory.Create();

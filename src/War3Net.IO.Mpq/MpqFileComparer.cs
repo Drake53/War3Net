@@ -85,9 +85,9 @@ namespace War3Net.IO.Mpq
             return obj.GetHashCode();
         }
 
-        public abstract int Compare(MpqFile x, MpqFile y);
+        public abstract int Compare(MpqFile? x, MpqFile? y);
 
-        public abstract bool Equals(MpqFile x, MpqFile y);
+        public abstract bool Equals(MpqFile? x, MpqFile? y);
 
         public abstract int GetHashCode(MpqFile mpqFile);
     }

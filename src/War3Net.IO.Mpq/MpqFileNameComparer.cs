@@ -18,7 +18,7 @@ namespace War3Net.IO.Mpq
             _ignoreLocale = ignoreLocale;
         }
 
-        public override int Compare(MpqFile x, MpqFile y)
+        public override int Compare(MpqFile? x, MpqFile? y)
         {
             if (ReferenceEquals(x, y))
             {
@@ -48,7 +48,7 @@ namespace War3Net.IO.Mpq
             return x.Name.CompareTo(y.Name);
         }
 
-        public override bool Equals(MpqFile x, MpqFile y)
+        public override bool Equals(MpqFile? x, MpqFile? y)
         {
             return Compare(x, y) == 0;
         }

@@ -166,7 +166,7 @@ namespace War3Net.IO.Mpq
             var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
             while (!archive.FileExists(subPath))
             {
-                var directoryName = new FileInfo(subPath).DirectoryName;
+                var directoryName = new FileInfo(subPath).DirectoryName ?? string.Empty;
                 if (directoryName.Length <= ignoreLength)
                 {
                     return false;
@@ -231,7 +231,7 @@ namespace War3Net.IO.Mpq
             var ignoreLength = new FileInfo(subPath).FullName.Length - path.Length;
             while (!archive.FileExists(subPath))
             {
-                var directoryName = new FileInfo(subPath).DirectoryName;
+                var directoryName = new FileInfo(subPath).DirectoryName ?? string.Empty;
                 if (directoryName.Length <= ignoreLength)
                 {
                     throw new FileNotFoundException($"File not found: {path}");

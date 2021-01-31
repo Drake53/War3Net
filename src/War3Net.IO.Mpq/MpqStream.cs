@@ -22,7 +22,7 @@ namespace War3Net.IO.Mpq
         private readonly Stream _stream;
         private readonly int _blockSize;
         private readonly MpqStreamMode _mode;
-        private readonly uint[] _blockPositions;
+        private readonly uint[] _blockPositions = Array.Empty<uint>();
         private readonly bool _isStreamOwner;
 
         // MpqEntry data
