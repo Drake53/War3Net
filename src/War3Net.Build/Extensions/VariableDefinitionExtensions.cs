@@ -5,7 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Extensions
 {
@@ -14,6 +17,11 @@ namespace War3Net.Build.Extensions
         public static string GetVariableName(this VariableDefinition variable)
         {
             return $"udg_{variable.Name}";
+        }
+
+        public static IExpressionSyntax GetInitialValueExpression(this VariableDefinition variable)
+        {
+            throw new NotImplementedException();
         }
     }
 }
