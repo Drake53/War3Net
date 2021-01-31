@@ -19,6 +19,62 @@ namespace War3Net.Build.Extensions
         private static readonly ulong CampaignInfoHashedFileName = MpqHash.GetHashedFileName(CampaignInfo.FileName);
         private static readonly ulong MapInfoHashedFileName = MpqHash.GetHashedFileName(MapInfo.FileName);
 
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName)
+        {
+            var mpqFiles = mpqArchiveBuilder.ToArray();
+            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            if (campaignInfoFile is not null)
+            {
+                using var reader = new BinaryReader(campaignInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                var campaignInfo = reader.ReadCampaignInfo();
+                campaignInfoFile.MpqStream.Position = 0;
+                mpqArchiveBuilder.SaveWithPreArchiveData(fileName, campaignInfo);
+            }
+            else
+            {
+                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                if (mapInfoFile is not null)
+                {
+                    using var reader = new BinaryReader(mapInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                    var mapInfo = reader.ReadMapInfo();
+                    mapInfoFile.MpqStream.Position = 0;
+                    mpqArchiveBuilder.SaveWithPreArchiveData(fileName, mapInfo);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Unable to find {CampaignInfo.FileName} or {MapInfo.FileName} file to use as source for pre-archive data.");
+                }
+            }
+        }
+
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions)
+        {
+            var mpqFiles = mpqArchiveBuilder.ToArray();
+            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            if (campaignInfoFile is not null)
+            {
+                using var reader = new BinaryReader(campaignInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                var campaignInfo = reader.ReadCampaignInfo();
+                campaignInfoFile.MpqStream.Position = 0;
+                mpqArchiveBuilder.SaveWithPreArchiveData(fileName, createOptions, campaignInfo);
+            }
+            else
+            {
+                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                if (mapInfoFile is not null)
+                {
+                    using var reader = new BinaryReader(mapInfoFile.MpqStream, new UTF8Encoding(false, true), true);
+                    var mapInfo = reader.ReadMapInfo();
+                    mapInfoFile.MpqStream.Position = 0;
+                    mpqArchiveBuilder.SaveWithPreArchiveData(fileName, createOptions, mapInfo);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Unable to find {CampaignInfo.FileName} or {MapInfo.FileName} file to use as source for pre-archive data.");
+                }
+            }
+        }
+
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, bool leaveOpen = false)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
@@ -75,6 +131,24 @@ namespace War3Net.Build.Extensions
             }
         }
 
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, CampaignInfo campaignInfo)
+        {
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
+            {
+                campaignInfo.WriteArchiveHeaderToStream(stream);
+                mpqArchiveBuilder.SaveTo(stream);
+            }
+        }
+
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo)
+        {
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
+            {
+                campaignInfo.WriteArchiveHeaderToStream(stream);
+                mpqArchiveBuilder.SaveTo(stream, createOptions);
+            }
+        }
+
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream);
@@ -85,6 +159,24 @@ namespace War3Net.Build.Extensions
         {
             campaignInfo.WriteArchiveHeaderToStream(stream);
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
+        }
+
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MapInfo mapInfo)
+        {
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
+            {
+                mapInfo.WriteArchiveHeaderToStream(stream);
+                mpqArchiveBuilder.SaveTo(stream);
+            }
+        }
+
+        public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, MapInfo mapInfo)
+        {
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
+            {
+                mapInfo.WriteArchiveHeaderToStream(stream);
+                mpqArchiveBuilder.SaveTo(stream, createOptions);
+            }
         }
 
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, bool leaveOpen = false)

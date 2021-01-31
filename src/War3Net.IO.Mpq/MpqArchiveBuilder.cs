@@ -99,7 +99,7 @@ namespace War3Net.IO.Mpq
 
         public void SaveTo(string fileName)
         {
-            using (var stream = File.Create(fileName))
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
                 SaveTo(stream);
             }
@@ -107,7 +107,7 @@ namespace War3Net.IO.Mpq
 
         public void SaveTo(string fileName, MpqArchiveCreateOptions createOptions)
         {
-            using (var stream = File.Create(fileName))
+            using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
                 SaveTo(stream, createOptions);
             }
