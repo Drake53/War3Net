@@ -58,7 +58,11 @@ namespace War3Net.Build.Script
                     while (true)
                     {
                         line = reader.ReadLine();
-                        if (string.Equals(line, "{", StringComparison.Ordinal))
+                        if (line is null)
+                        {
+                            throw new InvalidDataException("Expected opening brace or comment.");
+                        }
+                        else if (string.Equals(line, "{", StringComparison.Ordinal))
                         {
                             break;
                         }

@@ -305,7 +305,7 @@ namespace War3Net.Build.Info
                     nint randomUnitTableCount = reader.ReadInt32();
                     for (nint i = 0; i < randomUnitTableCount; i++)
                     {
-                        RandomUnitTables.Add(reader.ReadRandomUnitTable(FormatVersion));
+                        RandomUnitTables!.Add(reader.ReadRandomUnitTable(FormatVersion));
                     }
                 }
 
@@ -314,7 +314,7 @@ namespace War3Net.Build.Info
                     nint randomItemTableCount = reader.ReadInt32();
                     for (nint i = 0; i < randomItemTableCount; i++)
                     {
-                        RandomItemTables.Add(reader.ReadRandomItemTable(FormatVersion));
+                        RandomItemTables!.Add(reader.ReadRandomItemTable(FormatVersion));
                     }
                 }
 
@@ -330,19 +330,9 @@ namespace War3Net.Build.Info
 
         internal void WriteTo(BinaryWriter writer)
         {
-            if (FormatVersion >= MapInfoFormatVersion.v27 && GameVersion is null)
-            {
-                throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(GameVersion)} is null.");
-            }
-
             if (CameraBounds is null)
             {
                 throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBounds)} is null.");
-            }
-
-            if (FormatVersion >= MapInfoFormatVersion.v15 && CameraBoundsComplements is null)
-            {
-                throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBoundsComplements)} is null.");
             }
 
             writer.Write((int)FormatVersion);
@@ -354,6 +344,11 @@ namespace War3Net.Build.Info
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {
+                    if (GameVersion is null)
+                    {
+                        throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(GameVersion)} is null.");
+                    }
+
                     writer.Write(GameVersion.Major);
                     writer.Write(GameVersion.Minor);
                     writer.Write(GameVersion.Build);
@@ -379,6 +374,11 @@ namespace War3Net.Build.Info
             writer.Write(CameraBounds);
             if (FormatVersion >= MapInfoFormatVersion.v15)
             {
+                if (CameraBoundsComplements is null)
+                {
+                    throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(CameraBoundsComplements)} is null.");
+                }
+
                 writer.Write(CameraBoundsComplements);
             }
 
@@ -503,6 +503,11 @@ namespace War3Net.Build.Info
 
             if (FormatVersion >= MapInfoFormatVersion.v15)
             {
+                if (RandomUnitTables is null)
+                {
+                    throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(RandomUnitTables)} is null.");
+                }
+
                 writer.Write(RandomUnitTables.Count);
                 foreach (var unitTable in RandomUnitTables)
                 {
@@ -512,6 +517,11 @@ namespace War3Net.Build.Info
 
             if (FormatVersion >= MapInfoFormatVersion.v24)
             {
+                if (RandomItemTables is null)
+                {
+                    throw new InvalidOperationException($"Cannot serialize {nameof(MapInfo)}, because {nameof(RandomItemTables)} is null.");
+                }
+
                 writer.Write(RandomItemTables.Count);
                 foreach (var itemTable in RandomItemTables)
                 {
