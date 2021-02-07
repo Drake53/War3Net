@@ -54,13 +54,7 @@ namespace War3Net.Common.Extensions
 
         public static bool ReadBool(this BinaryReader reader)
         {
-            var value = reader.ReadInt32();
-            return value switch
-            {
-                0 => false,
-                1 => true,
-                _ => throw new InvalidDataException($"A 32-bit bool must be either 0 or 1, but got '{value}'."),
-            };
+            return reader.ReadInt32().ToBool();
         }
 
         public static Color ReadColorRgba(this BinaryReader reader)

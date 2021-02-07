@@ -12,15 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
     <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
     <PackageReference Include="War3Net.IO.Mpq" Version="$(War3NetIOMpqVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Script\DefaultTriggerData.Designer.cs">
+    <Compile Update="Resources\DefaultTriggerData.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>DefaultTriggerData.resx</DependentUpon>
@@ -28,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Script\DefaultTriggerData.resx">
+    <EmbeddedResource Update="Resources\DefaultTriggerData.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DefaultTriggerData.Designer.cs</LastGenOutput>
     </EmbeddedResource>

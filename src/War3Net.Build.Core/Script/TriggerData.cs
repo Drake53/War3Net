@@ -7,27 +7,36 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+
+using War3Net.Build.Resources;
 
 namespace War3Net.Build.Script
 {
-    public sealed class TriggerData
+    public sealed partial class TriggerData
     {
         private static readonly Lazy<TriggerData> _defaultTriggerData = new Lazy<TriggerData>(() => ParseText(DefaultTriggerData.TriggerData));
 
-        private readonly Dictionary<string, string[]> _triggerEvents;
-        private readonly Dictionary<string, string[]> _triggerConditions;
-        private readonly Dictionary<string, string[]> _triggerActions;
-        private readonly Dictionary<string, string[]> _triggerCalls;
+        private readonly Dictionary<string, TriggerType> _triggerTypes;
+        private readonly Dictionary<string, TriggerTypeDefault> _triggerTypeDefaults;
+        private readonly Dictionary<string, TriggerEvent> _triggerEvents;
+        private readonly Dictionary<string, TriggerCondition> _triggerConditions;
+        private readonly Dictionary<string, TriggerAction> _triggerActions;
+        private readonly Dictionary<string, TriggerCall> _triggerCalls;
 
         private TriggerData()
         {
-            _triggerEvents = new Dictionary<string, string[]>();
-            _triggerConditions = new Dictionary<string, string[]>();
-            _triggerActions = new Dictionary<string, string[]>();
-            _triggerCalls = new Dictionary<string, string[]>();
+            _triggerTypes = new();
+            _triggerTypeDefaults = new();
+            _triggerEvents = new();
+            _triggerConditions = new();
+            _triggerActions = new();
+            _triggerCalls = new();
         }
 
         public static TriggerData Default => _defaultTriggerData.Value;
@@ -52,8 +61,9 @@ namespace War3Net.Build.Script
 
             using var reader = new StreamReader(stream, leaveOpen: leaveOpen);
 
-            Dictionary<string, string[]>? target = null;
-            var argumentsOffset = -1;
+            object? target = null;
+            MethodInfo? addMethod = null;
+            ConstructorInfo? constructor = null;
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
@@ -64,17 +74,24 @@ namespace War3Net.Build.Script
 
                 if (line.StartsWith('[') && line.EndsWith(']'))
                 {
-                    target = line[1..^1] switch
+                    target = line switch
                     {
-                        "TriggerEvents" => result._triggerEvents,
-                        "TriggerConditions" => result._triggerConditions,
-                        "TriggerActions" => result._triggerActions,
-                        "TriggerCalls" => result._triggerCalls,
+                        "[TriggerTypes]" => result._triggerTypes,
+                        "[TriggerTypeDefaults]" => result._triggerTypeDefaults,
+                        "[TriggerEvents]" => result._triggerEvents,
+                        "[TriggerConditions]" => result._triggerConditions,
+                        "[TriggerActions]" => result._triggerActions,
+                        "[TriggerCalls]" => result._triggerCalls,
 
                         _ => null,
                     };
 
-                    argumentsOffset = result._triggerCalls == target ? 3 : 1;
+                    if (target is not null)
+                    {
+                        // Get Dictionary<string, T> add method and constructor.
+                        addMethod = target.GetType().GetMethod("Add");
+                        constructor = target.GetType().GetGenericArguments()[1].GetConstructors().Single();
+                    }
 
                     continue;
                 }
@@ -84,7 +101,7 @@ namespace War3Net.Build.Script
                     continue;
                 }
 
-                if (target != null)
+                if (target is not null)
                 {
                     var split = line.Split('=');
                     if (split.Length != 2)
@@ -96,27 +113,19 @@ namespace War3Net.Build.Script
                         }
                     }
 
+                    var key = split[0];
                     var values = split[1].Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    if (values.Length - argumentsOffset < 0)
-                    {
-                        throw new InvalidDataException(
-                            argumentsOffset > 1
-                            ? $"Expected at least {argumentsOffset} arguments, but only got {values.Length}."
-                            : "Expected at least one argument, but got none.");
-                    }
 
-                    var parameters = values.Skip(argumentsOffset).ToArray();
-                    if (parameters.Length == 1 && string.Equals(parameters[0], "nothing", StringComparison.Ordinal))
-                    {
-                        parameters = Array.Empty<string>();
-                    }
-
-                    target.Add(split[0], parameters);
+                    addMethod!.Invoke(target, new[] { key, constructor!.Invoke(new object[] { key, values }) });
                 }
             }
 
             return result;
         }
+
+        public bool TryGetTriggerType(string typeName, [NotNullWhen(true)] out TriggerType? triggerType) => _triggerTypes.TryGetValue(typeName, out triggerType);
+
+        public bool TryGetTriggerTypeDefault(string typeName, [NotNullWhen(true)] out TriggerTypeDefault? triggerTypeDefault) => _triggerTypeDefaults.TryGetValue(typeName, out triggerTypeDefault);
 
         public int GetParameterCount(TriggerFunctionType functionType, string functionName)
         {
@@ -128,26 +137,24 @@ namespace War3Net.Build.Script
             return GetParameters(functionType, functionName)[parameterIndex];
         }
 
-        public string[] GetParameters(TriggerFunctionType functionType, string functionName)
+        public ImmutableArray<string> GetParameters(TriggerFunctionType functionType, string functionName)
         {
-            var target = functionType switch
-            {
-                TriggerFunctionType.Event => _triggerEvents,
-                TriggerFunctionType.Condition => _triggerConditions,
-                TriggerFunctionType.Action => _triggerActions,
-                TriggerFunctionType.Call => _triggerCalls,
-
-                _ => throw new InvalidEnumArgumentException(nameof(functionType), (int)functionType, typeof(TriggerFunctionType)),
-            };
-
             if (string.IsNullOrWhiteSpace(functionName))
             {
                 throw new ArgumentNullException(nameof(functionName));
             }
 
-            return target.TryGetValue(functionName, out var parameters)
-                ? parameters
-                : throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
+            ImmutableArray<string>? parameters = functionType switch
+            {
+                TriggerFunctionType.Event => _triggerEvents.TryGetValue(functionName, out var @event) ? @event.ArgumentTypes : null,
+                TriggerFunctionType.Condition => _triggerConditions.TryGetValue(functionName, out var condition) ? condition.ArgumentTypes : null,
+                TriggerFunctionType.Action => _triggerActions.TryGetValue(functionName, out var action) ? action.ArgumentTypes : null,
+                TriggerFunctionType.Call => _triggerCalls.TryGetValue(functionName, out var call) ? call.ArgumentTypes : null,
+
+                _ => throw new InvalidEnumArgumentException(nameof(functionType), (int)functionType, typeof(TriggerFunctionType)),
+            };
+
+            return parameters ?? throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
         }
     }
 }
