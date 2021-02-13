@@ -63,9 +63,10 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(MapCustomTextTriggers.FileName);
             archive.AddFileName(MapTriggers.FileName);
             archive.AddFileName(MapTriggerStrings.FileName);
-            archive.AddFileName(@"scripts\war3map.j");
             archive.AddFileName(@"war3map.j");
             archive.AddFileName(@"war3map.lua");
+            archive.AddFileName(@"scripts\war3map.j");
+            archive.AddFileName(@"scripts\war3map.lua");
 
             archive.AddFileName(MapDoodads.FileName);
             archive.AddFileName(MapUnits.FileName);

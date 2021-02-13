@@ -15,7 +15,7 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerDefinition : TriggerItem
     {
-        internal TriggerDefinition(TriggerItemType triggerItemType = TriggerItemType.Gui)
+        public TriggerDefinition(TriggerItemType triggerItemType = TriggerItemType.Gui)
             : base(triggerItemType)
         {
         }

@@ -24,6 +24,8 @@ namespace War3Net.Build
 {
     public sealed class Map
     {
+        private static readonly Encoding _defaultEncoding = Encoding.UTF8;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Map"/> class.
         /// </summary>
@@ -33,6 +35,7 @@ namespace War3Net.Build
         {
             Info = mapInfo;
             Environment = mapEnvironment;
+            Script = string.Empty;
         }
 
         private Map(string mapFolder)
@@ -168,7 +171,7 @@ namespace War3Net.Build
             {
                 using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapCustomTextTriggers.FileName));
                 using var reader = new BinaryReader(fileStream);
-                CustomTextTriggers = reader.ReadMapCustomTextTriggers(Encoding.UTF8);
+                CustomTextTriggers = reader.ReadMapCustomTextTriggers(_defaultEncoding);
             }
 
             if (File.Exists(Path.Combine(mapFolder, MapTriggers.FileName)))
@@ -336,7 +339,7 @@ namespace War3Net.Build
             {
                 using var fileStream = MpqFile.OpenRead(mapArchive, MapCustomTextTriggers.FileName);
                 using var reader = new BinaryReader(fileStream);
-                CustomTextTriggers = reader.ReadMapCustomTextTriggers(Encoding.UTF8);
+                CustomTextTriggers = reader.ReadMapCustomTextTriggers(_defaultEncoding);
             }
 
             if (MpqFile.Exists(mapArchive, MapTriggers.FileName))
