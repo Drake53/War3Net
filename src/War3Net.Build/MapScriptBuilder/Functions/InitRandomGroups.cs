@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,15 +20,24 @@ using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
-    public static partial class MapScriptFactory
+    public partial class MapScriptBuilder
     {
-        public static JassFunctionDeclarationSyntax InitRandomGroups(IEnumerable<RandomUnitTable> randomUnitTables)
+        protected virtual JassFunctionDeclarationSyntax InitRandomGroups(Map map)
         {
-            const string LocalCurrentSetVariableName = "curset";
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var randomUnitTables = map.Info.RandomUnitTables;
+            if (randomUnitTables is null)
+            {
+                throw new ArgumentException($"Function '{nameof(InitRandomGroups)}' cannot be generated without {nameof(MapInfo.RandomUnitTables)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, LocalCurrentSetVariableName));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.CurrentSet));
             statements.Add(JassEmptyStatementSyntax.Value);
 
             foreach (var unitTable in randomUnitTables)
@@ -43,7 +53,7 @@ namespace War3Net.Build
                         SyntaxFactory.LiteralExpression(unitTable.UnitSets[i].Chance)));
                 }
 
-                statements.Add(SyntaxFactory.SetStatement(LocalCurrentSetVariableName, SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
+                statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
                 statements.Add(JassEmptyStatementSyntax.Value);
 
                 var groupVarName = unitTable.GetVariableName();
@@ -52,7 +62,7 @@ namespace War3Net.Build
                 {
                     var set = unitTable.UnitSets[setIndex];
 
-                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(LocalCurrentSetVariableName), SyntaxFactory.LiteralExpression(setIndex));
+                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(setIndex));
                     var bodyStatements = new List<IStatementSyntax>();
 
                     for (var position = 0; position < unitTable.Types.Count; position++)
@@ -90,6 +100,16 @@ namespace War3Net.Build
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitRandomGroups)), statements);
+        }
+
+        protected virtual bool InitRandomGroupsCondition(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Info.RandomUnitTables is not null && map.Info.RandomUnitTables.Any();
         }
     }
 }

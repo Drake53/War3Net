@@ -19,7 +19,9 @@ namespace War3Net.Build.Extensions
 
         public static string GetDropItemsFunctionName(this UnitData unitData, int id)
         {
-            return $"Unit{id:D6}_DropItems";
+            return unitData.MapItemTableId == -1
+                ? $"Unit{id:D6}_DropItems"
+                : $"ItemTable{unitData.MapItemTableId:D6}_DropItems";
         }
     }
 }

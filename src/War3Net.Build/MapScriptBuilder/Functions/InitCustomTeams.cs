@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,10 +18,17 @@ using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
-    public static partial class MapScriptFactory
+    public partial class MapScriptBuilder
     {
-        public static JassFunctionDeclarationSyntax InitCustomTeams(MapInfo mapInfo)
+        protected virtual JassFunctionDeclarationSyntax InitCustomTeams(Map map)
         {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var mapInfo = map.Info;
+
             var statements = new List<IStatementSyntax>();
 
             var forceDataCount = mapInfo.Forces.Count;
@@ -139,6 +147,16 @@ namespace War3Net.Build
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTeams)), statements);
+        }
+
+        protected virtual bool InitCustomTeamsCondition(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return true;
         }
     }
 }

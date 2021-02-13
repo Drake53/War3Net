@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Info;
@@ -16,10 +17,17 @@ using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
-    public static partial class MapScriptFactory
+    public partial class MapScriptBuilder
     {
-        public static JassFunctionDeclarationSyntax InitUpgrades(MapInfo mapInfo)
+        protected virtual JassFunctionDeclarationSyntax InitUpgrades(Map map)
         {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var mapInfo = map.Info;
+
             var statements = new List<IStatementSyntax>();
 
             foreach (var player in mapInfo.Players)
@@ -83,6 +91,16 @@ namespace War3Net.Build
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitUpgrades)), statements);
+        }
+
+        protected virtual bool InitUpgradesCondition(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return true;
         }
     }
 }

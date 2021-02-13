@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Info;
@@ -17,10 +18,17 @@ using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
-    public static partial class MapScriptFactory
+    public partial class MapScriptBuilder
     {
-        public static JassFunctionDeclarationSyntax InitCustomPlayerSlots(MapInfo mapInfo)
+        protected virtual JassFunctionDeclarationSyntax InitCustomPlayerSlots(Map map)
         {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var mapInfo = map.Info;
+
             var statements = new List<IStatementSyntax>();
 
             var playerDataCount = mapInfo.Players.Count;
@@ -86,6 +94,16 @@ namespace War3Net.Build
             statements.Add(JassEmptyStatementSyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomPlayerSlots)), statements);
+        }
+
+        protected virtual bool InitCustomPlayerSlotsCondition(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return true;
         }
     }
 }

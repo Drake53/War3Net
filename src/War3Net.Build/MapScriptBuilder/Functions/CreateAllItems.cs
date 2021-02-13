@@ -5,10 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -19,15 +21,24 @@ using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
-    public static partial class MapScriptFactory
+    public partial class MapScriptBuilder
     {
-        public static JassFunctionDeclarationSyntax CreateAllItems(MapUnits mapUnits)
+        protected virtual JassFunctionDeclarationSyntax CreateAllItems(Map map)
         {
-            const string LocalItemIdVariableName = "itemID";
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var mapUnits = map.Units;
+            if (mapUnits is null)
+            {
+                throw new ArgumentException($"Function '{nameof(CreateAllItems)}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, LocalItemIdVariableName));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId));
 
             foreach (var item in mapUnits.Units.Where(item => item.IsItem() && !item.IsPlayerStartLocation()))
             {
@@ -38,7 +49,7 @@ namespace War3Net.Build
                     {
                         case RandomUnitAny randomUnitAny:
                             statements.Add(SyntaxFactory.SetStatement(
-                                LocalItemIdVariableName,
+                                VariableName.ItemId,
                                 SyntaxFactory.InvocationExpression(
                                     nameof(ChooseRandomItemEx),
                                     SyntaxFactory.InvocationExpression(nameof(ConvertItemType), SyntaxFactory.LiteralExpression((int)randomUnitAny.Class)),
@@ -79,7 +90,7 @@ namespace War3Net.Build
                             }
 
                             statements.Add(SyntaxFactory.SetStatement(
-                                LocalItemIdVariableName,
+                                VariableName.ItemId,
                                 SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
 
                             break;
@@ -89,10 +100,10 @@ namespace War3Net.Build
                     }
 
                     statements.Add(SyntaxFactory.IfStatement(
-                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(LocalItemIdVariableName), SyntaxFactory.LiteralExpression(-1)),
+                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
                         SyntaxFactory.CallStatement(
                             nameof(CreateItem),
-                            SyntaxFactory.VariableReferenceExpression(LocalItemIdVariableName),
+                            SyntaxFactory.VariableReferenceExpression(VariableName.ItemId),
                             SyntaxFactory.LiteralExpression(item.Position.X),
                             SyntaxFactory.LiteralExpression(item.Position.Y))));
                 }
@@ -116,6 +127,16 @@ namespace War3Net.Build
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllItems)), statements);
+        }
+
+        protected virtual bool CreateAllItemsCondition(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Units is not null && (map.Info.FormatVersion == MapInfoFormatVersion.v8 || map.Units.Units.Any(item => item.IsItem() && !item.IsPlayerStartLocation()));
         }
     }
 }
