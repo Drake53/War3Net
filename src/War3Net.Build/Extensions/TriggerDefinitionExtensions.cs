@@ -33,7 +33,7 @@ namespace War3Net.Build.Extensions
 
         private static string GetEscapedTriggerName(this TriggerDefinition trigger)
         {
-            return trigger.Name.Replace(' ', '_');
+            return trigger.Name.TrimEnd().Replace(' ', '_');
         }
     }
 }
