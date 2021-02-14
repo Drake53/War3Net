@@ -117,7 +117,7 @@ namespace War3Net.Build
             var builder = new MapBuilder(map);
             foreach (var assetDirectory in assetsDirectories)
             {
-                builder.AddFiles(assetDirectory);
+                builder.AddFiles(assetDirectory, "*", SearchOption.AllDirectories);
             }
 
             if (map.Info.ScriptLanguage == ScriptLanguage.Lua)
