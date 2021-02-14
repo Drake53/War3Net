@@ -111,7 +111,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Regions is not null && (map.Info.FormatVersion == Info.MapInfoFormatVersion.v8 || map.Regions.Regions.Any());
+            return map.Regions is not null
+                && map.Regions.Regions.Any();
         }
     }
 }

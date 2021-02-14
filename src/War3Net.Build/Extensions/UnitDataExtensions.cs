@@ -23,5 +23,15 @@ namespace War3Net.Build.Extensions
                 ? $"Unit{id:D6}_DropItems"
                 : $"ItemTable{unitData.MapItemTableId:D6}_DropItems";
         }
+
+        public static bool IsBuilding(this UnitData unitData)
+        {
+            return false;
+        }
+
+        public static bool IsPassiveBuilding(this UnitData unitData)
+        {
+            return false;
+        }
     }
 }

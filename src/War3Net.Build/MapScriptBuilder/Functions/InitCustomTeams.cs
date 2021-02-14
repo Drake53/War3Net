@@ -156,7 +156,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info.MapFlags.HasFlag(MapFlags.UseCustomForces);
         }
     }
 }

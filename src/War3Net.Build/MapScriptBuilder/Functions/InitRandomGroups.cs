@@ -109,7 +109,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.RandomUnitTables is not null && map.Info.RandomUnitTables.Any();
+            return map.Info.RandomUnitTables is not null
+                && map.Info.RandomUnitTables.Any();
         }
     }
 }

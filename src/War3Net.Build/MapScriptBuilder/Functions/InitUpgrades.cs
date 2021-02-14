@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -100,7 +101,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info.UpgradeData.Any();
         }
     }
 }
