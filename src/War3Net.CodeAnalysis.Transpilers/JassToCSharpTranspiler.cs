@@ -12,5 +12,12 @@ namespace War3Net.CodeAnalysis.Transpilers
         public JassToCSharpTranspiler()
         {
         }
+
+        /// <summary>
+        /// Used when <see cref="ApplyCSharpLuaTemplateAttribute"/> is <see langword="true"/>.
+        /// </summary>
+        public JassToLuaTranspiler? JassToLuaTranspiler { get; set; }
+
+        public bool ApplyCSharpLuaTemplateAttribute { get; set; }
     }
 }
