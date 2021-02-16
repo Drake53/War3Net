@@ -7,9 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.Build.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Transpilers;
 
 using static War3Api.Common;
 
@@ -19,6 +23,16 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
+        public virtual IEnumerable<MemberDeclarationSyntax> CamerasApi(Map map, JassToCSharpTranspiler transpiler)
+        {
+            if (transpiler is null)
+            {
+                throw new ArgumentNullException(nameof(transpiler));
+            }
+
+            return Cameras(map).Select(camera => transpiler.Transpile(camera));
+        }
+
         protected virtual IEnumerable<JassGlobalDeclarationSyntax> Cameras(Map map)
         {
             if (map is null)

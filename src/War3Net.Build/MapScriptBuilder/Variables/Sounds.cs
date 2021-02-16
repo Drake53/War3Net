@@ -7,8 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Transpilers;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
@@ -16,6 +20,16 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
+        public virtual IEnumerable<MemberDeclarationSyntax> SoundsApi(Map map, JassToCSharpTranspiler transpiler)
+        {
+            if (transpiler is null)
+            {
+                throw new ArgumentNullException(nameof(transpiler));
+            }
+
+            return Sounds(map).Select(sound => transpiler.Transpile(sound));
+        }
+
         protected virtual IEnumerable<JassGlobalDeclarationSyntax> Sounds(Map map)
         {
             if (map is null)
