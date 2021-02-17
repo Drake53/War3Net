@@ -483,12 +483,12 @@ namespace War3Net.Build.Extensions
 #pragma warning disable IDE0011, SA1503
                 case MapSounds.FileName: if (map.Sounds is null || overwriteFile) map.SetSoundsFile(stream, encoding, leaveOpen); break;
                 case MapCameras.FileName: if (map.Cameras is null || overwriteFile) map.SetCamerasFile(stream, encoding, leaveOpen); break;
-                case MapEnvironment.FileName: if (overwriteFile) map.SetEnvironmentFile(stream, encoding, leaveOpen); break;
+                case MapEnvironment.FileName: if (map.Environment is null || overwriteFile) map.SetEnvironmentFile(stream, encoding, leaveOpen); break;
                 case MapPathingMap.FileName: if (map.PathingMap is null || overwriteFile) map.SetPathingMapFile(stream, encoding, leaveOpen); break;
                 case MapPreviewIcons.FileName: if (map.PreviewIcons is null || overwriteFile) map.SetPreviewIconsFile(stream, encoding, leaveOpen); break;
                 case MapRegions.FileName: if (map.Regions is null || overwriteFile) map.SetRegionsFile(stream, encoding, leaveOpen); break;
                 case MapShadowMap.FileName: if (map.ShadowMap is null || overwriteFile) map.SetShadowMapFile(stream, encoding, leaveOpen); break;
-                case MapInfo.FileName: if (overwriteFile) map.SetInfoFile(stream, encoding, leaveOpen); break;
+                case MapInfo.FileName: if (map.Info is null || overwriteFile) map.SetInfoFile(stream, encoding, leaveOpen); break;
                 case MapAbilityObjectData.FileName: if (map.AbilityObjectData is null || overwriteFile) map.SetAbilityObjectDataFile(stream, encoding, leaveOpen); break;
                 case MapBuffObjectData.FileName: if (map.BuffObjectData is null || overwriteFile) map.SetBuffObjectDataFile(stream, encoding, leaveOpen); break;
                 case MapDestructableObjectData.FileName: if (map.DestructableObjectData is null || overwriteFile) map.SetDestructableObjectDataFile(stream, encoding, leaveOpen); break;
