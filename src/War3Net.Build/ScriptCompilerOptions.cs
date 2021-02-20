@@ -59,8 +59,22 @@ namespace War3Net.Build
 
         /// <summary>
         /// If <see langword="true"/>, .dll files from package references are decompiled into .cs files, so that they can be transpiled to lua.
+        /// Exceptions are made for System.* packages, *.Sources packages, and the Microsoft.NETCore.Platforms and NETStandard.Library packages.
+        /// This setting is ignored if either <see cref="DecompilePackages"/> or <see cref="ExcludeDecompilePackages"/> is not <see langword="null"/>.
         /// </summary>
         public bool DecompilePackageLibs { get; set; }
+
+        /// <summary>
+        /// Case-insensitive list (separated by ;) of package names for which the .dll file(s) should be decompiled into .cs files, so that they can be transpiled to lua.
+        /// Supports ? and * as wildcard characters.
+        /// </summary>
+        public string? DecompilePackages { get; set; }
+
+        /// <summary>
+        /// Case-insensitive list (separated by ;) of package names for which the .dll file(s) should NOT be decompiled into .cs files.
+        /// Supports ? and * as wildcard characters.
+        /// </summary>
+        public string? ExcludeDecompilePackages { get; set; }
 
         public bool Debug { get; set; }
 
