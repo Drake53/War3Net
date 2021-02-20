@@ -5,10 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 
-using War3Net.Build.Providers;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Import

@@ -348,8 +348,11 @@ namespace War3Net.IO.Mpq
         public bool CanBeDecrypted => !_isEncrypted || _fileSize < 4 || _encryptionSeed != 0;
 
         public uint CompressedSize => _compressedSize;
+
         public uint FileSize => _fileSize;
+
         public uint FilePosition => _filePosition;
+
         public int BlockSize => _blockSize;
 
         /// <inheritdoc/>
