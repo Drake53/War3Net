@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-
 namespace War3Net.Build.Diagnostics
 {
     internal static class NamingDiagnostics

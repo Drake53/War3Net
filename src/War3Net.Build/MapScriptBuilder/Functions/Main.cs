@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Common;
-using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
