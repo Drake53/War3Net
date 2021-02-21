@@ -134,9 +134,13 @@ namespace War3Net.Build
                 compiler.IsPreventDebugObject = true;
                 compiler.IsCommentsDisabled = compilerOptions.Optimize;
 
+                var mapScriptBuilder = new MapScriptBuilder();
+                mapScriptBuilder.SetDefaultOptionsForCSharpLua();
+                mapScriptBuilder.LobbyMusic = compilerOptions.LobbyMusic;
+
                 var compileResult = string.IsNullOrEmpty(compilerOptions.CommonJPath) || string.IsNullOrEmpty(compilerOptions.BlizzardJPath)
-                    ? map.CompileScript(compiler, compilerOptions.Libraries)
-                    : map.CompileScript(compiler, compilerOptions.Libraries, compilerOptions.CommonJPath, compilerOptions.BlizzardJPath);
+                    ? map.CompileScript(compiler, mapScriptBuilder, compilerOptions.Libraries)
+                    : map.CompileScript(compiler, mapScriptBuilder, compilerOptions.Libraries, compilerOptions.CommonJPath, compilerOptions.BlizzardJPath);
 
                 if (!compileResult.Success)
                 {
@@ -145,6 +149,10 @@ namespace War3Net.Build
             }
             else
             {
+                var mapScriptBuilder = new MapScriptBuilder();
+                mapScriptBuilder.SetDefaultOptionsForMap(map);
+                mapScriptBuilder.LobbyMusic = compilerOptions.LobbyMusic;
+
                 map.CompileScript();
             }
 

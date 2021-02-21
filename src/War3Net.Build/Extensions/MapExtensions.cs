@@ -519,9 +519,22 @@ namespace War3Net.Build.Extensions
 
         public static void CompileScript(this Map map)
         {
+            var mapScriptBuilder = new MapScriptBuilder();
+            mapScriptBuilder.SetDefaultOptionsForMap(map);
+
+            map.CompileScript(mapScriptBuilder);
+        }
+
+        public static void CompileScript(this Map map, MapScriptBuilder mapScriptBuilder)
+        {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
+            }
+
+            if (mapScriptBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(mapScriptBuilder));
             }
 
             if (map.Info.ScriptLanguage != ScriptLanguage.Jass)
@@ -529,13 +542,9 @@ namespace War3Net.Build.Extensions
                 throw new InvalidOperationException($"The map's script language must be set to jass in order to use the jass compiler.");
             }
 
-            using var stream = new MemoryStream();
-
-            var mapScriptBuilder = new MapScriptBuilder();
-            mapScriptBuilder.SetDefaultOptionsForMap(map);
-
             var compilationUnit = mapScriptBuilder.Build(map);
 
+            using var stream = new MemoryStream();
             using (var writer = new StreamWriter(stream, _defaultEncoding, leaveOpen: true))
             {
                 var renderer = new JassRenderer(writer);
@@ -552,7 +561,21 @@ namespace War3Net.Build.Extensions
             return map.CompileScript(compiler, luaSystemLibs, Path.Combine(jassHelperFolder, "common.j"), Path.Combine(jassHelperFolder, "Blizzard.j"));
         }
 
+        public static CompileResult CompileScript(this Map map, Compiler compiler, MapScriptBuilder mapScriptBuilder, IEnumerable<string> luaSystemLibs)
+        {
+            var jassHelperFolder = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Warcraft III", "JassHelper");
+            return map.CompileScript(compiler, mapScriptBuilder, luaSystemLibs, Path.Combine(jassHelperFolder, "common.j"), Path.Combine(jassHelperFolder, "Blizzard.j"));
+        }
+
         public static CompileResult CompileScript(this Map map, Compiler compiler, IEnumerable<string> luaSystemLibs, string commonJPath, string blizzardJPath)
+        {
+            var mapScriptBuilder = new MapScriptBuilder();
+            mapScriptBuilder.SetDefaultOptionsForCSharpLua();
+
+            return map.CompileScript(compiler, mapScriptBuilder, luaSystemLibs, commonJPath, blizzardJPath);
+        }
+
+        public static CompileResult CompileScript(this Map map, Compiler compiler, MapScriptBuilder mapScriptBuilder, IEnumerable<string> luaSystemLibs, string commonJPath, string blizzardJPath)
         {
             if (map is null)
             {
@@ -562,6 +585,11 @@ namespace War3Net.Build.Extensions
             if (compiler is null)
             {
                 throw new ArgumentNullException(nameof(compiler));
+            }
+
+            if (mapScriptBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(mapScriptBuilder));
             }
 
             if (map.Info.ScriptLanguage != ScriptLanguage.Lua)
@@ -588,9 +616,6 @@ namespace War3Net.Build.Extensions
 
             transpiler.RegisterJassFile(JassSyntaxFactory.ParseCompilationUnit(File.ReadAllText(commonJPath)));
             transpiler.RegisterJassFile(JassSyntaxFactory.ParseCompilationUnit(File.ReadAllText(blizzardJPath)));
-
-            var mapScriptBuilder = new MapScriptBuilder();
-            mapScriptBuilder.SetDefaultOptionsForCSharpLua();
 
             var luaCompilationUnit = transpiler.Transpile(mapScriptBuilder.Build(map));
             using (var writer = new StreamWriter(stream, _defaultEncoding, leaveOpen: true))
