@@ -126,14 +126,13 @@ namespace War3Net.Build
                 var csproj = Directory.EnumerateFiles(compilerOptions.SourceDirectory, "*.csproj", SearchOption.TopDirectoryOnly).Single();
                 var compiler = compilerOptions.DecompilePackageLibs && compilerOptions.DecompilePackages is null && compilerOptions.ExcludeDecompilePackages is null
                     ? new Compiler(csproj, compilerOptions.OutputDirectory, string.Empty, null, csc, false, null, string.Empty)
-                    : new Compiler(csproj, compilerOptions.OutputDirectory, string.Empty, null, compilerOptions.DecompilePackages, compilerOptions.ExcludeDecompilePackages, csc, false, null, string.Empty)
-                {
-                    IsExportMetadata = false,
-                    IsModule = false,
-                    IsInlineSimpleProperty = false,
-                    IsPreventDebugObject = true,
-                    IsCommentsDisabled = compilerOptions.Optimize,
-                };
+                    : new Compiler(csproj, compilerOptions.OutputDirectory, string.Empty, null, compilerOptions.DecompilePackages, compilerOptions.ExcludeDecompilePackages, csc, false, null, string.Empty);
+
+                compiler.IsExportMetadata = false;
+                compiler.IsModule = false;
+                compiler.IsInlineSimpleProperty = false;
+                compiler.IsPreventDebugObject = true;
+                compiler.IsCommentsDisabled = compilerOptions.Optimize;
 
                 var compileResult = string.IsNullOrEmpty(compilerOptions.CommonJPath) || string.IsNullOrEmpty(compilerOptions.BlizzardJPath)
                     ? map.CompileScript(compiler, compilerOptions.Libraries)
