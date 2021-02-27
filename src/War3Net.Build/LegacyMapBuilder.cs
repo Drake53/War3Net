@@ -120,6 +120,16 @@ namespace War3Net.Build
                 builder.AddFiles(assetDirectory, "*", SearchOption.AllDirectories);
             }
 
+            if (map.Info is null)
+            {
+                throw new ArgumentException($"{nameof(Map)}.{nameof(Map.Info)} can not be null, it must be set either by {nameof(compilerOptions)}.{nameof(ScriptCompilerOptions.MapInfo)} or {nameof(assetsDirectories)}.");
+            }
+
+            if (map.Environment is null)
+            {
+                throw new ArgumentException($"{nameof(Map)}.{nameof(Map.Environment)} can not be null, it must be set either by {nameof(compilerOptions)}.{nameof(ScriptCompilerOptions.MapEnvironment)} or {nameof(assetsDirectories)}.");
+            }
+
             if (map.Info.ScriptLanguage == ScriptLanguage.Lua)
             {
                 var csc = compilerOptions.Debug ? "-define:DEBUG" : null;
