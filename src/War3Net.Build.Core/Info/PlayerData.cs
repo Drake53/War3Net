@@ -21,6 +21,8 @@ namespace War3Net.Build.Info
         /// </summary>
         public PlayerData()
         {
+            AllyLowPriorityFlags = new Bitmask32(0);
+            AllyHighPriorityFlags = new Bitmask32(0);
         }
 
         internal PlayerData(BinaryReader reader, MapInfoFormatVersion formatVersion)
