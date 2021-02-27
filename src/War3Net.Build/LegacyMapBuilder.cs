@@ -128,11 +128,11 @@ namespace War3Net.Build
                     ? new Compiler(csproj, compilerOptions.OutputDirectory, string.Empty, null, csc, false, null, string.Empty)
                     : new Compiler(csproj, compilerOptions.OutputDirectory, string.Empty, null, compilerOptions.DecompilePackages, compilerOptions.ExcludeDecompilePackages, csc, false, null, string.Empty);
 
-                compiler.IsExportMetadata = false;
-                compiler.IsModule = false;
-                compiler.IsInlineSimpleProperty = false;
-                compiler.IsPreventDebugObject = true;
                 compiler.IsCommentsDisabled = compilerOptions.Optimize;
+                compiler.IsExportMetadata = compilerOptions.ExportMetadata;
+                compiler.IsInlineSimpleProperty = false;
+                compiler.IsModule = false;
+                compiler.IsPreventDebugObject = true;
 
                 var mapScriptBuilder = new MapScriptBuilder();
                 mapScriptBuilder.SetDefaultOptionsForCSharpLua();

@@ -76,6 +76,11 @@ namespace War3Net.Build
         /// </summary>
         public string? ExcludeDecompilePackages { get; set; }
 
+        /// <summary>
+        /// <see cref="CSharpLua.Compiler.IsExportMetadata"/>.
+        /// </summary>
+        public bool ExportMetadata { get; set; }
+
         public bool Debug { get; set; }
 
         public bool Optimize { get; set; }
