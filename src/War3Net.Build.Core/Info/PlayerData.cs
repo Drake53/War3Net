@@ -25,6 +25,16 @@ namespace War3Net.Build.Info
             AllyHighPriorityFlags = new Bitmask32(0);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerData"/> class.
+        /// </summary>
+        public PlayerData(int id)
+            : this()
+        {
+            Id = id;
+            Name = $"Player {id + 1}";
+        }
+
         internal PlayerData(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             ReadFrom(reader, formatVersion);
