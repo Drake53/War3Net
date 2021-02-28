@@ -10,10 +10,6 @@
     <PackageTags>warcraft3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="War3Api.Blizzard" Version="1.32.3.1" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.Transpilers\War3Net.CodeAnalysis.Transpilers.csproj" />

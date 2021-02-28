@@ -9,8 +9,6 @@ using System.ComponentModel;
 
 using War3Net.Build.Widget;
 
-using static War3Api.Common;
-
 namespace War3Net.Build.Extensions
 {
     public static class ItemClassExtensions
@@ -19,17 +17,30 @@ namespace War3Net.Build.Extensions
         {
             return itemClass switch
             {
-                ItemClass.Permanent => nameof(ITEM_TYPE_PERMANENT),
-                ItemClass.Charged => nameof(ITEM_TYPE_CHARGED),
-                ItemClass.PowerUp => useLegacyTomeItemType ? nameof(ITEM_TYPE_TOME) : nameof(ITEM_TYPE_POWERUP),
-                ItemClass.Artifact => nameof(ITEM_TYPE_ARTIFACT),
-                ItemClass.Purchasable => nameof(ITEM_TYPE_PURCHASABLE),
-                ItemClass.Campaign => nameof(ITEM_TYPE_CAMPAIGN),
-                ItemClass.Miscellaneous => nameof(ITEM_TYPE_MISCELLANEOUS),
-                ItemClass.Any => nameof(ITEM_TYPE_ANY),
+                ItemClass.Permanent => ItemTypeName.Permanent,
+                ItemClass.Charged => ItemTypeName.Charged,
+                ItemClass.PowerUp => useLegacyTomeItemType ? ItemTypeName.Tome : ItemTypeName.Powerup,
+                ItemClass.Artifact => ItemTypeName.Artifact,
+                ItemClass.Purchasable => ItemTypeName.Purchasable,
+                ItemClass.Campaign => ItemTypeName.Campaign,
+                ItemClass.Miscellaneous => ItemTypeName.Miscellaneous,
+                ItemClass.Any => ItemTypeName.Any,
 
                 _ => throw new InvalidEnumArgumentException(nameof(itemClass), (int)itemClass, typeof(ItemClass)),
             };
+        }
+
+        private class ItemTypeName
+        {
+            internal const string Permanent = "ITEM_TYPE_PERMANENT";
+            internal const string Charged = "ITEM_TYPE_CHARGED";
+            internal const string Tome = "ITEM_TYPE_TOME";
+            internal const string Powerup = "ITEM_TYPE_POWERUP";
+            internal const string Artifact = "ITEM_TYPE_ARTIFACT";
+            internal const string Purchasable = "ITEM_TYPE_PURCHASABLE";
+            internal const string Campaign = "ITEM_TYPE_CAMPAIGN";
+            internal const string Miscellaneous = "ITEM_TYPE_MISCELLANEOUS";
+            internal const string Any = "ITEM_TYPE_ANY";
         }
     }
 }
