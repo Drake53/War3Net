@@ -14,8 +14,6 @@ using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -43,17 +41,17 @@ namespace War3Net.Build
             foreach (var unitTable in randomUnitTables)
             {
                 statements.Add(new JassCommentStatementSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
-                statements.Add(SyntaxFactory.CallStatement(nameof(War3Api.Blizzard.RandomDistReset)));
+                statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                 for (var i = 0; i < unitTable.UnitSets.Count; i++)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(War3Api.Blizzard.RandomDistAddItem),
+                        FunctionName.RandomDistAddItem,
                         SyntaxFactory.LiteralExpression(i),
                         SyntaxFactory.LiteralExpression(unitTable.UnitSets[i].Chance)));
                 }
 
-                statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
+                statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
                 statements.Add(JassEmptyStatementSyntax.Value);
 
                 var groupVarName = unitTable.GetVariableName();
@@ -69,7 +67,7 @@ namespace War3Net.Build
                     {
                         var id = set?.UnitIds[position] ?? 0;
                         var unitTypeExpression = RandomUnitProvider.IsRandomUnit(id, out var level)
-                            ? SyntaxFactory.InvocationExpression(nameof(ChooseRandomCreep), SyntaxFactory.LiteralExpression(level))
+                            ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(level))
                             : id == 0 ? SyntaxFactory.LiteralExpression(-1) : SyntaxFactory.FourCCLiteralExpression(id);
 
                         bodyStatements.Add(SyntaxFactory.SetStatement(

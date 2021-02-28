@@ -14,8 +14,6 @@ using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -36,17 +34,17 @@ namespace War3Net.Build
             var playerDataCount = mapInfo.Players.Count;
             var forceDataCount = mapInfo.Forces.Count;
 
-            statements.Add(SyntaxFactory.CallStatement(nameof(SetMapName), SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapName))));
-            statements.Add(SyntaxFactory.CallStatement(nameof(SetMapDescription), SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapDescription))));
-            statements.Add(SyntaxFactory.CallStatement(nameof(SetPlayers), SyntaxFactory.LiteralExpression(playerDataCount)));
-            statements.Add(SyntaxFactory.CallStatement(nameof(SetTeams), SyntaxFactory.LiteralExpression(playerDataCount)));
-            statements.Add(SyntaxFactory.CallStatement(nameof(SetGamePlacement), SyntaxFactory.VariableReferenceExpression(nameof(MAP_PLACEMENT_USE_MAP_SETTINGS))));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.SetMapName, SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapName))));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.SetMapDescription, SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapDescription))));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.SetPlayers, SyntaxFactory.LiteralExpression(playerDataCount)));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.SetTeams, SyntaxFactory.LiteralExpression(playerDataCount)));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
             statements.Add(JassEmptyStatementSyntax.Value);
 
             if (!string.IsNullOrEmpty(LobbyMusic))
             {
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(PlayMusic),
+                    NativeName.PlayMusic,
                     SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(LobbyMusic))));
             }
 
@@ -54,7 +52,7 @@ namespace War3Net.Build
             {
                 var location = mapInfo.Players[i].StartPosition;
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(DefineStartLocation),
+                    NativeName.DefineStartLocation,
                     SyntaxFactory.LiteralExpression(i),
                     SyntaxFactory.LiteralExpression(location.X, precision: 1),
                     SyntaxFactory.LiteralExpression(location.Y, precision: 1)));
@@ -74,12 +72,12 @@ namespace War3Net.Build
                 for (var i = 0; i < playerDataCount; i++)
                 {
                     elseStatements.Add(SyntaxFactory.CallStatement(
-                        nameof(War3Api.Blizzard.SetPlayerSlotAvailable),
-                        SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(mapInfo.Players[i].Id)),
-                        SyntaxFactory.VariableReferenceExpression(nameof(MAP_CONTROL_USER))));
+                        FunctionName.SetPlayerSlotAvailable,
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(mapInfo.Players[i].Id)),
+                        SyntaxFactory.VariableReferenceExpression(MapControlName.User)));
                 }
 
-                elseStatements.Add(SyntaxFactory.CallStatement(nameof(War3Api.Blizzard.InitGenericPlayerSlots)));
+                elseStatements.Add(SyntaxFactory.CallStatement(FunctionName.InitGenericPlayerSlots));
             }
 
             statements.AddRange(elseStatements);

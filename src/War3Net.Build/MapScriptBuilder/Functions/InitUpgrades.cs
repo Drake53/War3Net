@@ -12,8 +12,6 @@ using System.Linq;
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -75,8 +73,8 @@ namespace War3Net.Build
                 foreach (var tech in maxLevel)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SetPlayerTechMaxAllowed),
-                        SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerNumber)),
+                        NativeName.SetPlayerTechMaxAllowed,
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
                         SyntaxFactory.FourCCLiteralExpression(tech.Key),
                         SyntaxFactory.LiteralExpression(tech.Value)));
                 }
@@ -84,8 +82,8 @@ namespace War3Net.Build
                 foreach (var tech in researched)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SetPlayerTechResearched),
-                        SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerNumber)),
+                        NativeName.SetPlayerTechResearched,
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
                         SyntaxFactory.FourCCLiteralExpression(tech.Key),
                         SyntaxFactory.LiteralExpression(tech.Value + 1)));
                 }

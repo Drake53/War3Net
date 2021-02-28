@@ -15,8 +15,6 @@ using War3Net.Build.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.CodeAnalysis.Transpilers;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -49,7 +47,7 @@ namespace War3Net.Build
             foreach (var region in mapRegions.Regions)
             {
                 yield return SyntaxFactory.GlobalDeclaration(
-                    SyntaxFactory.ParseTypeName(nameof(rect)),
+                    SyntaxFactory.ParseTypeName(TypeName.Rect),
                     region.GetVariableName(),
                     JassNullLiteralExpressionSyntax.Value);
             }

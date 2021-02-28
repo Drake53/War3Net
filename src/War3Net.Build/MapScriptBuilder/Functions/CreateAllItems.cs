@@ -14,8 +14,6 @@ using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -49,8 +47,8 @@ namespace War3Net.Build
                             statements.Add(SyntaxFactory.SetStatement(
                                 VariableName.ItemId,
                                 SyntaxFactory.InvocationExpression(
-                                    nameof(ChooseRandomItemEx),
-                                    SyntaxFactory.InvocationExpression(nameof(ConvertItemType), SyntaxFactory.LiteralExpression((int)randomUnitAny.Class)),
+                                    NativeName.ChooseRandomItemEx,
+                                    SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)randomUnitAny.Class)),
                                     SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
 
                             break;
@@ -59,20 +57,20 @@ namespace War3Net.Build
                             break;
 
                         case RandomUnitCustomTable randomUnitCustomTable:
-                            statements.Add(SyntaxFactory.CallStatement(nameof(War3Api.Blizzard.RandomDistReset)));
+                            statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                             var summedChance = 0;
                             foreach (var randomItem in randomUnitCustomTable.RandomUnits)
                             {
                                 IExpressionSyntax id = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
                                     ? SyntaxFactory.InvocationExpression(
-                                        nameof(ChooseRandomItemEx),
-                                        SyntaxFactory.InvocationExpression(nameof(ConvertItemType), SyntaxFactory.LiteralExpression((int)itemClass)),
+                                        NativeName.ChooseRandomItemEx,
+                                        SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)itemClass)),
                                         SyntaxFactory.LiteralExpression(level))
                                     : SyntaxFactory.FourCCLiteralExpression(randomItem.UnitId);
 
                                 statements.Add(SyntaxFactory.CallStatement(
-                                    nameof(War3Api.Blizzard.RandomDistAddItem),
+                                    FunctionName.RandomDistAddItem,
                                     id,
                                     SyntaxFactory.LiteralExpression(randomItem.Chance)));
 
@@ -82,14 +80,14 @@ namespace War3Net.Build
                             if (summedChance < 100)
                             {
                                 statements.Add(SyntaxFactory.CallStatement(
-                                    nameof(War3Api.Blizzard.RandomDistAddItem),
+                                    FunctionName.RandomDistAddItem,
                                     SyntaxFactory.LiteralExpression(-1),
                                     SyntaxFactory.LiteralExpression(100 - summedChance)));
                             }
 
                             statements.Add(SyntaxFactory.SetStatement(
                                 VariableName.ItemId,
-                                SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
+                                SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
 
                             break;
 
@@ -100,7 +98,7 @@ namespace War3Net.Build
                     statements.Add(SyntaxFactory.IfStatement(
                         SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
                         SyntaxFactory.CallStatement(
-                            nameof(CreateItem),
+                            NativeName.CreateItem,
                             SyntaxFactory.VariableReferenceExpression(VariableName.ItemId),
                             SyntaxFactory.LiteralExpression(item.Position.X),
                             SyntaxFactory.LiteralExpression(item.Position.Y))));
@@ -120,7 +118,7 @@ namespace War3Net.Build
                         args.Add(SyntaxFactory.FourCCLiteralExpression(item.SkinId));
                     }
 
-                    statements.Add(SyntaxFactory.CallStatement(hasSkin ? nameof(BlzCreateItemWithSkin) : nameof(CreateItem), args.ToArray()));
+                    statements.Add(SyntaxFactory.CallStatement(hasSkin ? NativeName.BlzCreateItemWithSkin : NativeName.CreateItem, args.ToArray()));
                 }
             }
 

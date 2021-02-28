@@ -12,8 +12,6 @@ using System.Linq;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.Common.Extensions;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -41,16 +39,16 @@ namespace War3Net.Build
                         if (techData.Id.ToRawcode()[0] == 'A')
                         {
                             statements.Add(SyntaxFactory.CallStatement(
-                                nameof(SetPlayerAbilityAvailable),
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerNumber)),
+                                NativeName.SetPlayerAbilityAvailable,
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
                                 SyntaxFactory.FourCCLiteralExpression(techData.Id),
                                 SyntaxFactory.LiteralExpression(false)));
                         }
                         else
                         {
                             statements.Add(SyntaxFactory.CallStatement(
-                                nameof(SetPlayerTechMaxAllowed),
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerNumber)),
+                                NativeName.SetPlayerTechMaxAllowed,
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
                                 SyntaxFactory.FourCCLiteralExpression(techData.Id),
                                 SyntaxFactory.LiteralExpression(0)));
                         }

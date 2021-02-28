@@ -46,7 +46,7 @@ namespace War3Net.Build
             foreach (var sound in mapSounds.Sounds)
             {
                 yield return SyntaxFactory.GlobalDeclaration(
-                    SyntaxFactory.ParseTypeName(nameof(sound)),
+                    SyntaxFactory.ParseTypeName(TypeName.Sound),
                     sound.Name,
                     JassNullLiteralExpressionSyntax.Value);
             }

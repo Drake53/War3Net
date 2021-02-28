@@ -13,8 +13,6 @@ using War3Net.Build.Extensions;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -35,8 +33,8 @@ namespace War3Net.Build
             }
 
             var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(destructable)), VariableName.Destructable));
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(trigger)), VariableName.Trigger));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Destructable), VariableName.Destructable));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
 
             if (UseLifeVariable)
             {
@@ -45,14 +43,14 @@ namespace War3Net.Build
 
             var createFunctions = new[]
             {
-                nameof(CreateDestructable),
-                nameof(CreateDeadDestructable),
-                nameof(CreateDestructableZ),
-                nameof(CreateDeadDestructableZ),
-                nameof(BlzCreateDestructableWithSkin),
-                nameof(BlzCreateDeadDestructableWithSkin),
-                nameof(BlzCreateDestructableZWithSkin),
-                nameof(BlzCreateDeadDestructableZWithSkin),
+                NativeName.CreateDestructable,
+                NativeName.CreateDeadDestructable,
+                NativeName.CreateDestructableZ,
+                NativeName.CreateDeadDestructableZ,
+                NativeName.BlzCreateDestructableWithSkin,
+                NativeName.BlzCreateDeadDestructableWithSkin,
+                NativeName.BlzCreateDestructableZWithSkin,
+                NativeName.BlzCreateDeadDestructableZWithSkin,
             };
 
             foreach (var (destructable, id) in mapDoodads.Doodads.IncludeId().Where(pair => CreateAllDestructablesConditionSingleDoodad(map, pair.Obj)))
@@ -92,11 +90,11 @@ namespace War3Net.Build
                         statements.Add(SyntaxFactory.SetStatement(
                             VariableName.Life,
                             SyntaxFactory.InvocationExpression(
-                                nameof(GetDestructableLife),
+                                NativeName.GetDestructableLife,
                                 SyntaxFactory.VariableReferenceExpression(VariableName.Destructable))));
 
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetDestructableLife),
+                            NativeName.SetDestructableLife,
                             SyntaxFactory.VariableReferenceExpression(VariableName.Destructable),
                             SyntaxFactory.BinaryMultiplicationExpression(
                                 SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
@@ -105,30 +103,30 @@ namespace War3Net.Build
                     else
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetDestructableLife),
+                            NativeName.SetDestructableLife,
                             SyntaxFactory.VariableReferenceExpression(VariableName.Destructable),
                             SyntaxFactory.BinaryMultiplicationExpression(
                                 SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
-                                SyntaxFactory.InvocationExpression(nameof(GetDestructableLife), SyntaxFactory.VariableReferenceExpression(VariableName.Destructable)))));
+                                SyntaxFactory.InvocationExpression(NativeName.GetDestructableLife, SyntaxFactory.VariableReferenceExpression(VariableName.Destructable)))));
                     }
                 }
 
                 statements.Add(SyntaxFactory.SetStatement(
                     VariableName.Trigger,
-                    SyntaxFactory.InvocationExpression(nameof(CreateTrigger))));
+                    SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerRegisterDeathEvent),
+                    NativeName.TriggerRegisterDeathEvent,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
                     SyntaxFactory.VariableReferenceExpression(VariableName.Destructable)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerAddAction),
+                    NativeName.TriggerAddAction,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.FunctionReferenceExpression(nameof(War3Api.Blizzard.SaveDyingWidget))));
+                    SyntaxFactory.FunctionReferenceExpression(FunctionName.SaveDyingWidget)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerAddAction),
+                    NativeName.TriggerAddAction,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
                     SyntaxFactory.FunctionReferenceExpression(destructable.GetDropItemsFunctionName(id))));
             }

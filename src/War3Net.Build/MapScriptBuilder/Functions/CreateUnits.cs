@@ -14,8 +14,6 @@ using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -40,14 +38,14 @@ namespace War3Net.Build
             }
 
             var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(player)), VariableName.Player, SyntaxFactory.InvocationExpression(nameof(Player), playerNumber)));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Player), VariableName.Player, SyntaxFactory.InvocationExpression(NativeName.Player, playerNumber)));
             if (!ForceGenerateGlobalUnitVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(unit)), VariableName.Unit));
+                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Unit), VariableName.Unit));
             }
 
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.UnitId));
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(trigger)), VariableName.Trigger));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
             if (UseLifeVariable)
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
@@ -69,13 +67,13 @@ namespace War3Net.Build
                             {
                                 statements.Add(SyntaxFactory.SetStatement(
                                     VariableName.UnitId,
-                                    SyntaxFactory.InvocationExpression(nameof(ChooseRandomNPBuilding))));
+                                    SyntaxFactory.InvocationExpression(NativeName.ChooseRandomNPBuilding)));
                             }
                             else
                             {
                                 statements.Add(SyntaxFactory.SetStatement(
                                     VariableName.UnitId,
-                                    SyntaxFactory.InvocationExpression(nameof(ChooseRandomCreep), SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
+                                    SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
                             }
 
                             break;
@@ -88,15 +86,15 @@ namespace War3Net.Build
                             break;
 
                         case RandomUnitCustomTable randomUnitCustomTable:
-                            statements.Add(SyntaxFactory.CallStatement(nameof(War3Api.Blizzard.RandomDistReset)));
+                            statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                             var summedChance = 0;
                             foreach (var randomUnit in randomUnitCustomTable.RandomUnits)
                             {
                                 statements.Add(SyntaxFactory.CallStatement(
-                                    nameof(War3Api.Blizzard.RandomDistAddItem),
+                                    FunctionName.RandomDistAddItem,
                                     RandomUnitProvider.IsRandomUnit(randomUnit.UnitId, out var level)
-                                        ? SyntaxFactory.InvocationExpression(nameof(ChooseRandomCreep), SyntaxFactory.LiteralExpression(level))
+                                        ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(level))
                                         : SyntaxFactory.FourCCLiteralExpression(randomUnit.UnitId),
                                     SyntaxFactory.LiteralExpression(randomUnit.Chance)));
 
@@ -106,14 +104,14 @@ namespace War3Net.Build
                             if (summedChance < 100)
                             {
                                 statements.Add(SyntaxFactory.CallStatement(
-                                    nameof(War3Api.Blizzard.RandomDistAddItem),
+                                    FunctionName.RandomDistAddItem,
                                     SyntaxFactory.LiteralExpression(-1),
                                     SyntaxFactory.LiteralExpression(100 - summedChance)));
                             }
 
                             statements.Add(SyntaxFactory.SetStatement(
                                 VariableName.UnitId,
-                                SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
+                                SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
 
                             break;
                     }
@@ -122,7 +120,7 @@ namespace War3Net.Build
                     ifBodyStatements.Add(SyntaxFactory.SetStatement(
                         unitVariableName,
                         SyntaxFactory.InvocationExpression(
-                            nameof(CreateUnit),
+                            NativeName.CreateUnit,
                             SyntaxFactory.VariableReferenceExpression(VariableName.Player),
                             SyntaxFactory.VariableReferenceExpression(VariableName.UnitId),
                             SyntaxFactory.LiteralExpression(unit.Position.X, precision: 1),
@@ -154,12 +152,12 @@ namespace War3Net.Build
 
                     statements.Add(SyntaxFactory.SetStatement(
                         unitVariableName,
-                        SyntaxFactory.InvocationExpression(hasSkin ? nameof(BlzCreateUnitWithSkin) : nameof(CreateUnit), args.ToArray())));
+                        SyntaxFactory.InvocationExpression(hasSkin ? NativeName.BlzCreateUnitWithSkin : NativeName.CreateUnit, args.ToArray())));
 
                     if (unit.HeroLevel > 1)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetHeroLevel),
+                            NativeName.SetHeroLevel,
                             SyntaxFactory.VariableReferenceExpression(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroLevel),
                             SyntaxFactory.LiteralExpression(false)));
@@ -168,7 +166,7 @@ namespace War3Net.Build
                     if (unit.HeroStrength > 0)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetHeroStr),
+                            NativeName.SetHeroStr,
                             SyntaxFactory.VariableReferenceExpression(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroStrength),
                             SyntaxFactory.LiteralExpression(true)));
@@ -177,7 +175,7 @@ namespace War3Net.Build
                     if (unit.HeroAgility > 0)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetHeroAgi),
+                            NativeName.SetHeroAgi,
                             SyntaxFactory.VariableReferenceExpression(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroAgility),
                             SyntaxFactory.LiteralExpression(true)));
@@ -186,7 +184,7 @@ namespace War3Net.Build
                     if (unit.HeroIntelligence > 0)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetHeroInt),
+                            NativeName.SetHeroInt,
                             SyntaxFactory.VariableReferenceExpression(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroIntelligence),
                             SyntaxFactory.LiteralExpression(true)));
@@ -224,14 +222,14 @@ namespace War3Net.Build
                     statements.Add(SyntaxFactory.SetStatement(
                         VariableName.Life,
                         SyntaxFactory.InvocationExpression(
-                            nameof(GetUnitState),
+                            NativeName.GetUnitState,
                             SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.VariableReferenceExpression(nameof(UNIT_STATE_LIFE)))));
+                            SyntaxFactory.VariableReferenceExpression(UnitStateName.Life))));
 
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SetUnitState),
+                        NativeName.SetUnitState,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(nameof(UNIT_STATE_LIFE)),
+                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
                         SyntaxFactory.BinaryMultiplicationExpression(
                             SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
                             SyntaxFactory.VariableReferenceExpression(VariableName.Life))));
@@ -239,31 +237,31 @@ namespace War3Net.Build
                 else
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SetUnitState),
+                        NativeName.SetUnitState,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(nameof(UNIT_STATE_LIFE)),
+                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
                         SyntaxFactory.BinaryMultiplicationExpression(
                             SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
                             SyntaxFactory.InvocationExpression(
-                                nameof(GetUnitState),
+                                NativeName.GetUnitState,
                                 SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                                SyntaxFactory.VariableReferenceExpression(nameof(UNIT_STATE_LIFE))))));
+                                SyntaxFactory.VariableReferenceExpression(UnitStateName.Life)))));
                 }
             }
 
             if (unit.MP != -1)
             {
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(SetUnitState),
+                    NativeName.SetUnitState,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(nameof(UNIT_STATE_MANA)),
+                    SyntaxFactory.VariableReferenceExpression(UnitStateName.Mana),
                     SyntaxFactory.LiteralExpression(unit.MP)));
             }
 
             if (unit.IsGoldMine())
             {
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(SetResourceAmount),
+                    NativeName.SetResourceAmount,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
                     SyntaxFactory.LiteralExpression(unit.GoldAmount)));
             }
@@ -271,16 +269,16 @@ namespace War3Net.Build
             if (unit.CustomPlayerColorId != -1)
             {
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(SetUnitColor),
+                    NativeName.SetUnitColor,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.InvocationExpression(nameof(ConvertPlayerColor), SyntaxFactory.LiteralExpression(unit.CustomPlayerColorId))));
+                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(unit.CustomPlayerColorId))));
             }
 
             if (unit.TargetAcquisition != -1f)
             {
                 const float CampAcquisitionRange = 200f;
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(SetUnitAcquireRange),
+                    NativeName.SetUnitAcquireRange,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
                     SyntaxFactory.LiteralExpression(unit.TargetAcquisition == -2f ? CampAcquisitionRange : unit.TargetAcquisition, precision: 1)));
             }
@@ -291,13 +289,13 @@ namespace War3Net.Build
                 if (destinationRect is not null)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(WaygateSetDestination),
+                        NativeName.WaygateSetDestination,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
                         SyntaxFactory.LiteralExpression(destinationRect.CenterX),
                         SyntaxFactory.LiteralExpression(destinationRect.CenterY)));
 
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(WaygateActivate),
+                        NativeName.WaygateActivate,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
                         SyntaxFactory.LiteralExpression(true)));
                 }
@@ -308,7 +306,7 @@ namespace War3Net.Build
                 for (var i = 0; i < ability.HeroAbilityLevel; i++)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SelectHeroSkill),
+                        NativeName.SelectHeroSkill,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
                         SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
                 }
@@ -316,7 +314,7 @@ namespace War3Net.Build
                 if (ability.IsAutocastActive)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(IssueImmediateOrderById),
+                        NativeName.IssueImmediateOrderById,
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
                         SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
                 }
@@ -325,7 +323,7 @@ namespace War3Net.Build
             foreach (var item in unit.InventoryData)
             {
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(UnitAddItemToSlotById),
+                    NativeName.UnitAddItemToSlotById,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
                     SyntaxFactory.FourCCLiteralExpression(item.ItemId),
                     SyntaxFactory.LiteralExpression(item.Slot)));
@@ -333,22 +331,22 @@ namespace War3Net.Build
 
             if (unit.ItemTableSets.Any() || (unit.MapItemTableId != -1 && randomItemTables is not null))
             {
-                statements.Add(SyntaxFactory.SetStatement(VariableName.Trigger, SyntaxFactory.InvocationExpression(nameof(CreateTrigger))));
+                statements.Add(SyntaxFactory.SetStatement(VariableName.Trigger, SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerRegisterUnitEvent),
+                    NativeName.TriggerRegisterUnitEvent,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(nameof(EVENT_UNIT_DEATH))));
+                    SyntaxFactory.VariableReferenceExpression(UnitEventName.Death)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerRegisterUnitEvent),
+                    NativeName.TriggerRegisterUnitEvent,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(nameof(EVENT_UNIT_CHANGE_OWNER))));
+                    SyntaxFactory.VariableReferenceExpression(UnitEventName.ChangeOwner)));
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(TriggerAddAction),
+                    NativeName.TriggerAddAction,
                     SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
                     SyntaxFactory.FunctionReferenceExpression(unit.GetDropItemsFunctionName(id))));
             }

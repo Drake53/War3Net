@@ -12,8 +12,6 @@ using System.Linq;
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -54,16 +52,16 @@ namespace War3Net.Build
                 foreach (var playerSlot in playerSlots)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
-                        nameof(SetPlayerTeam),
-                        SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot)),
+                        NativeName.SetPlayerTeam,
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot)),
                         SyntaxFactory.LiteralExpression(i)));
 
                     if (alliedVictory)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetPlayerState),
-                            SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot)),
-                            SyntaxFactory.VariableReferenceExpression(nameof(PLAYER_STATE_ALLIED_VICTORY)),
+                            NativeName.SetPlayerState,
+                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot)),
+                            SyntaxFactory.VariableReferenceExpression(PlayerStateName.AlliedVictory),
                             SyntaxFactory.LiteralExpression(1)));
                     }
                 }
@@ -78,30 +76,30 @@ namespace War3Net.Build
                         {
                             statements.Add(SyntaxFactory.CallStatement(
                                 statementName,
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot1)),
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot2)),
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot1)),
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot2)),
                                 SyntaxFactory.LiteralExpression(true)));
                         }
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.Allied))
                     {
-                        AddSetAllianceStateStatement(nameof(War3Api.Blizzard.SetPlayerAllianceStateAllyBJ));
+                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareVision))
                     {
-                        AddSetAllianceStateStatement(nameof(War3Api.Blizzard.SetPlayerAllianceStateVisionBJ));
+                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateVisionBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareUnitControl))
                     {
-                        AddSetAllianceStateStatement(nameof(War3Api.Blizzard.SetPlayerAllianceStateControlBJ));
+                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateControlBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareAdvancedUnitControl))
                     {
-                        AddSetAllianceStateStatement(nameof(War3Api.Blizzard.SetPlayerAllianceStateFullControlBJ));
+                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateFullControlBJ);
                     }
                 }
                 else
@@ -114,9 +112,9 @@ namespace War3Net.Build
                         foreach (var (playerSlot1, playerSlot2) in playerSlotPairs)
                         {
                             statements.Add(SyntaxFactory.CallStatement(
-                                nameof(SetPlayerAlliance),
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot1)),
-                                SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.LiteralExpression(playerSlot2)),
+                                NativeName.SetPlayerAlliance,
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot1)),
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot2)),
                                 SyntaxFactory.VariableReferenceExpression(variableName),
                                 SyntaxFactory.LiteralExpression(true)));
                         }
@@ -124,22 +122,22 @@ namespace War3Net.Build
 
                     if (forceData.Flags.HasFlag(ForceFlags.Allied))
                     {
-                        AddSetAllianceStateStatement(nameof(ALLIANCE_PASSIVE), "   Allied");
+                        AddSetAllianceStateStatement(AllianceTypeName.Passive, "   Allied");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareVision))
                     {
-                        AddSetAllianceStateStatement(nameof(ALLIANCE_SHARED_VISION), "   Shared Vision");
+                        AddSetAllianceStateStatement(AllianceTypeName.SharedVision, "   Shared Vision");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareUnitControl))
                     {
-                        AddSetAllianceStateStatement(nameof(ALLIANCE_SHARED_CONTROL), "   Shared Control");
+                        AddSetAllianceStateStatement(AllianceTypeName.SharedControl, "   Shared Control");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareAdvancedUnitControl))
                     {
-                        AddSetAllianceStateStatement(nameof(ALLIANCE_SHARED_ADVANCED_CONTROL), "   Advanced Control");
+                        AddSetAllianceStateStatement(AllianceTypeName.SharedAdvancedControl, "   Advanced Control");
                     }
                 }
 

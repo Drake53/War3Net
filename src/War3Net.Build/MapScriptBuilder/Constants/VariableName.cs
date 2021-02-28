@@ -11,6 +11,7 @@ namespace War3Net.Build
     {
         private class VariableName
         {
+            internal const string BJLastDyingWidget = "bj_lastDyingWidget";
             internal const string CanDrop = "canDrop";
             internal const string CurrentSet = "curset";
             internal const string Destructable = "d";

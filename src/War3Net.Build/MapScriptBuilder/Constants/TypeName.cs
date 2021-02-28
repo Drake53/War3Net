@@ -15,6 +15,7 @@ namespace War3Net.Build
             internal const string Destructable = "destructable";
             internal const string Player = "player";
             internal const string Rect = "rect";
+            internal const string Sound = "sound";
             internal const string Trigger = "trigger";
             internal const string Unit = "unit";
             internal const string WeatherEffect = "weathereffect";

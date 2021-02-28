@@ -15,8 +15,6 @@ using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -72,23 +70,23 @@ namespace War3Net.Build
             }
 
             var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(widget)), VariableName.TrigWidget, JassNullLiteralExpressionSyntax.Value));
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(nameof(unit)), VariableName.TrigUnit, JassNullLiteralExpressionSyntax.Value));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Widget), VariableName.TrigWidget, JassNullLiteralExpressionSyntax.Value));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Unit), VariableName.TrigUnit, JassNullLiteralExpressionSyntax.Value));
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId, SyntaxFactory.LiteralExpression(0)));
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Boolean, VariableName.CanDrop, SyntaxFactory.LiteralExpression(true)));
             statements.Add(JassEmptyStatementSyntax.Value);
 
             statements.Add(SyntaxFactory.SetStatement(
                 VariableName.TrigWidget,
-                SyntaxFactory.VariableReferenceExpression(nameof(War3Api.Blizzard.bj_lastDyingWidget))));
+                SyntaxFactory.VariableReferenceExpression(VariableName.BJLastDyingWidget)));
 
             statements.Add(SyntaxFactory.IfStatement(
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.TrigWidget), JassNullLiteralExpressionSyntax.Value)),
-                SyntaxFactory.SetStatement(VariableName.TrigUnit, SyntaxFactory.InvocationExpression(nameof(GetTriggerUnit)))));
+                SyntaxFactory.SetStatement(VariableName.TrigUnit, SyntaxFactory.InvocationExpression(NativeName.GetTriggerUnit))));
 
             statements.Add(JassEmptyStatementSyntax.Value);
 
-            var canDropConditionExpression = SyntaxFactory.UnaryNotExpression(SyntaxFactory.InvocationExpression(nameof(IsUnitHidden), SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit)));
+            var canDropConditionExpression = SyntaxFactory.UnaryNotExpression(SyntaxFactory.InvocationExpression(NativeName.IsUnitHidden, SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit)));
 
             var ifBody = new List<IStatementSyntax>()
             {
@@ -98,12 +96,12 @@ namespace War3Net.Build
             ifBody.Add(SyntaxFactory.IfStatement(
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryAndExpression(
                     SyntaxFactory.VariableReferenceExpression(VariableName.CanDrop),
-                    SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.InvocationExpression(nameof(GetChangingUnit)), JassNullLiteralExpressionSyntax.Value))),
+                    SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.InvocationExpression(NativeName.GetChangingUnit), JassNullLiteralExpressionSyntax.Value))),
                 SyntaxFactory.SetStatement(
                     VariableName.CanDrop,
                     new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryEqualsExpression(
-                        SyntaxFactory.InvocationExpression(nameof(GetChangingUnitPrevOwner)),
-                        SyntaxFactory.InvocationExpression(nameof(Player), SyntaxFactory.VariableReferenceExpression(nameof(PLAYER_NEUTRAL_AGGRESSIVE))))))));
+                        SyntaxFactory.InvocationExpression(NativeName.GetChangingUnitPrevOwner),
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralHostile)))))));
 
             statements.Add(SyntaxFactory.IfStatement(
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit), JassNullLiteralExpressionSyntax.Value)),
@@ -115,7 +113,7 @@ namespace War3Net.Build
             foreach (var itemSet in itemSets)
             {
                 randomDistStatements.Add(new JassCommentStatementSyntax($" Item set {i}"));
-                randomDistStatements.Add(SyntaxFactory.CallStatement(nameof(War3Api.Blizzard.RandomDistReset)));
+                randomDistStatements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                 var summedChance = 0;
                 foreach (var item in itemSet.Items)
@@ -125,9 +123,9 @@ namespace War3Net.Build
                         if (chooseItemClass)
                         {
                             randomDistStatements.Add(SyntaxFactory.CallStatement(
-                                nameof(War3Api.Blizzard.RandomDistAddItem),
+                                FunctionName.RandomDistAddItem,
                                 SyntaxFactory.InvocationExpression(
-                                    nameof(ChooseRandomItemEx),
+                                    NativeName.ChooseRandomItemEx,
                                     SyntaxFactory.VariableReferenceExpression(itemClass.GetVariableName()),
                                     SyntaxFactory.LiteralExpression(level)),
                                 SyntaxFactory.LiteralExpression(item.Chance)));
@@ -135,15 +133,15 @@ namespace War3Net.Build
                         else
                         {
                             randomDistStatements.Add(SyntaxFactory.CallStatement(
-                                nameof(War3Api.Blizzard.RandomDistAddItem),
-                                SyntaxFactory.InvocationExpression(nameof(ChooseRandomItem), SyntaxFactory.LiteralExpression(level)),
+                                FunctionName.RandomDistAddItem,
+                                SyntaxFactory.InvocationExpression(NativeName.ChooseRandomItem, SyntaxFactory.LiteralExpression(level)),
                                 SyntaxFactory.LiteralExpression(item.Chance)));
                         }
                     }
                     else
                     {
                         randomDistStatements.Add(SyntaxFactory.CallStatement(
-                            nameof(War3Api.Blizzard.RandomDistAddItem),
+                            FunctionName.RandomDistAddItem,
                             SyntaxFactory.FourCCLiteralExpression(item.ItemId),
                             SyntaxFactory.LiteralExpression(item.Chance)));
                     }
@@ -154,23 +152,23 @@ namespace War3Net.Build
                 if (summedChance < 100)
                 {
                     randomDistStatements.Add(SyntaxFactory.CallStatement(
-                        nameof(War3Api.Blizzard.RandomDistAddItem),
+                        FunctionName.RandomDistAddItem,
                         SyntaxFactory.LiteralExpression(-1),
                         SyntaxFactory.LiteralExpression(100 - summedChance)));
                 }
 
                 var unitDropItemStatement = SyntaxFactory.CallStatement(
-                    nameof(War3Api.Blizzard.UnitDropItem),
+                    FunctionName.UnitDropItem,
                     SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit),
                     SyntaxFactory.VariableReferenceExpression(VariableName.ItemId));
 
-                randomDistStatements.Add(SyntaxFactory.SetStatement(VariableName.ItemId, SyntaxFactory.InvocationExpression(nameof(War3Api.Blizzard.RandomDistChoose))));
+                randomDistStatements.Add(SyntaxFactory.SetStatement(VariableName.ItemId, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
 
                 randomDistStatements.Add(SyntaxFactory.IfStatement(
                     new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit), JassNullLiteralExpressionSyntax.Value)),
                     SyntaxFactory.StatementList(unitDropItemStatement),
                     new JassElseClauseSyntax(SyntaxFactory.StatementList(SyntaxFactory.CallStatement(
-                        nameof(War3Api.Blizzard.WidgetDropItem),
+                        FunctionName.WidgetDropItem,
                         SyntaxFactory.VariableReferenceExpression(VariableName.TrigWidget),
                         SyntaxFactory.VariableReferenceExpression(VariableName.ItemId))))));
 
@@ -184,8 +182,8 @@ namespace War3Net.Build
                 randomDistStatements.ToArray()));
             statements.Add(JassEmptyStatementSyntax.Value);
 
-            statements.Add(SyntaxFactory.SetStatement(nameof(War3Api.Blizzard.bj_lastDyingWidget), JassNullLiteralExpressionSyntax.Value));
-            statements.Add(SyntaxFactory.CallStatement(nameof(DestroyTrigger), SyntaxFactory.InvocationExpression(nameof(GetTriggeringTrigger))));
+            statements.Add(SyntaxFactory.SetStatement(VariableName.BJLastDyingWidget, JassNullLiteralExpressionSyntax.Value));
+            statements.Add(SyntaxFactory.CallStatement(NativeName.DestroyTrigger, SyntaxFactory.InvocationExpression(NativeName.GetTriggeringTrigger)));
 
             return statements;
         }

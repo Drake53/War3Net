@@ -15,8 +15,6 @@ using War3Net.Build.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.CodeAnalysis.Transpilers;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -49,7 +47,7 @@ namespace War3Net.Build
             foreach (var camera in mapCameras.Cameras)
             {
                 yield return SyntaxFactory.GlobalDeclaration(
-                    SyntaxFactory.ParseTypeName(nameof(camerasetup)),
+                    SyntaxFactory.ParseTypeName(TypeName.CameraSetup),
                     camera.GetVariableName(),
                     JassNullLiteralExpressionSyntax.Value);
             }

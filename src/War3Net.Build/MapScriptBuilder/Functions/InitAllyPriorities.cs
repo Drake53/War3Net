@@ -11,8 +11,6 @@ using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -47,16 +45,16 @@ namespace War3Net.Build
                     if (hasLowFlag || hasHighFlag)
                     {
                         startLocPrioStatements.Add(SyntaxFactory.CallStatement(
-                            nameof(SetStartLocPrio),
+                            NativeName.SetStartLocPrio,
                             SyntaxFactory.LiteralExpression(i),
                             SyntaxFactory.LiteralExpression(slotIndex++),
                             SyntaxFactory.LiteralExpression(j),
-                            SyntaxFactory.VariableReferenceExpression(hasHighFlag ? nameof(MAP_LOC_PRIO_HIGH) : nameof(MAP_LOC_PRIO_LOW))));
+                            SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                     }
                 }
 
                 statements.Add(SyntaxFactory.CallStatement(
-                    nameof(SetStartLocPrioCount),
+                    NativeName.SetStartLocPrioCount,
                     SyntaxFactory.LiteralExpression(i),
                     SyntaxFactory.LiteralExpression(slotIndex)));
 

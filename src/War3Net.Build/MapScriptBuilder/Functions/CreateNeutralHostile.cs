@@ -12,8 +12,6 @@ using War3Net.Build.Extensions;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static War3Api.Common;
-
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
@@ -38,7 +36,7 @@ namespace War3Net.Build
                 CreateUnits(
                     map,
                     mapUnits.Units.IncludeId().Where(pair => CreateNeutralHostileConditionSingleUnit(map, pair.Obj)),
-                    SyntaxFactory.VariableReferenceExpression(nameof(PLAYER_NEUTRAL_AGGRESSIVE))));
+                    SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralHostile)));
         }
 
         protected virtual bool CreateNeutralHostileCondition(Map map)
