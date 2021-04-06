@@ -18,22 +18,22 @@ namespace War3Net.Build.Extensions
     {
         private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream)
         {
-            mapInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding, signData);
+            mapInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings)
         {
-            mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, _defaultEncoding, signData);
+            mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, Encoding encoding, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, Encoding encoding)
         {
-            mapInfo.WriteArchiveHeaderToStream(stream, null, encoding, signData);
+            mapInfo.WriteArchiveHeaderToStream(stream, null, encoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings, Encoding encoding, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings, Encoding encoding)
         {
             using (var writer = new BinaryWriter(stream, encoding, true))
             {
@@ -42,12 +42,6 @@ namespace War3Net.Build.Extensions
                 writer.WriteString(mapInfo.MapName.Localize(mapTriggerStrings));
                 writer.Write((int)mapInfo.MapFlags);
                 writer.Write(mapInfo.Players.Count);
-
-                if (signData != null && signData.Length == 256)
-                {
-                    writer.Write("NGIS".FromRawcode());
-                    writer.Write(signData);
-                }
             }
         }
     }

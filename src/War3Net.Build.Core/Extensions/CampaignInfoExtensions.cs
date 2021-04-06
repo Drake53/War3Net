@@ -18,22 +18,22 @@ namespace War3Net.Build.Extensions
     {
         private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream)
         {
-            campaignInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding, signData);
+            campaignInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings)
         {
-            campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings, _defaultEncoding, signData);
+            campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, Encoding encoding, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, Encoding encoding)
         {
-            campaignInfo.WriteArchiveHeaderToStream(stream, null, encoding, signData);
+            campaignInfo.WriteArchiveHeaderToStream(stream, null, encoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding, byte[]? signData = null)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding)
         {
             using (var writer = new BinaryWriter(stream, encoding, true))
             {
@@ -42,12 +42,6 @@ namespace War3Net.Build.Extensions
                 writer.WriteString(campaignInfo.CampaignName.Localize(campaignTriggerStrings));
                 writer.Write((int)campaignInfo.CampaignFlags);
                 writer.Write(1);
-
-                if (signData != null && signData.Length == 256)
-                {
-                    writer.Write("NGIS".FromRawcode());
-                    writer.Write(signData);
-                }
             }
         }
     }
