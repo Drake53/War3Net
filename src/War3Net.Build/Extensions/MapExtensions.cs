@@ -500,7 +500,7 @@ namespace War3Net.Build.Extensions
                 case MapTriggers.FileName: if (map.Triggers is null || overwriteFile) map.SetTriggersFile(stream, encoding, leaveOpen); break;
                 case MapTriggerStrings.FileName: if (map.TriggerStrings is null || overwriteFile) map.SetTriggerStringsFile(stream, encoding, leaveOpen); break;
                 case MapDoodads.FileName: if (map.Doodads is null || overwriteFile) map.SetDoodadsFile(stream, encoding, leaveOpen); break;
-                case MapUnits.FileName: if (map.Units is null || overwriteFile) map.SetUnitsFile(stream, encoding, leaveOpen); break;
+                case /*MapUnits.FileName*/ "war3mapunits.doo": if (map.Units is null || overwriteFile) map.SetUnitsFile(stream, encoding, leaveOpen); break;
 
                 case @"war3map.j":
                 case @"scripts\war3map.j":
