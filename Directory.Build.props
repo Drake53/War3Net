@@ -34,10 +34,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <War3NetBuildVersion>5.0.2</War3NetBuildVersion>
+    <War3NetBuildVersion>5.0.3</War3NetBuildVersion>
     <War3NetBuildCoreVersion>5.2.2</War3NetBuildCoreVersion>
     <War3NetCodeAnalysisJassVersion>5.2.2</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.2.7</War3NetCodeAnalysisTranspilersVersion>
+    <War3NetCodeAnalysisTranspilersVersion>5.2.8</War3NetCodeAnalysisTranspilersVersion>
     <War3NetCommonVersion>5.0.2</War3NetCommonVersion>
     <War3NetDrawingBlpVersion>5.0.0</War3NetDrawingBlpVersion>
     <War3NetDrawingTgaVersion>1.0.0</War3NetDrawingTgaVersion>
@@ -53,7 +53,7 @@
     <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
     <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
     -->
-    <War3NetCSharpLuaVersion>1.7.12</War3NetCSharpLuaVersion>
+    <War3NetCSharpLuaVersion>1.7.13</War3NetCSharpLuaVersion>
     <War3NetCSharpLuaCoreSystemVersion>1.7.11</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>
