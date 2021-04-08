@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable CS8604
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +27,8 @@ namespace NuGetPackageUploader
     {
         private const string LocalNuGetFeedDirectory = null;
         private const string ApiKey = null;
+        private const bool AskUploadLatestVersionOnly = true;
+        private const bool IgnoreVersionIncrementRequirement = true;
 
         [STAThread]
         private static async Task Main(string[] args)
@@ -34,6 +38,84 @@ namespace NuGetPackageUploader
                 return;
             }
 
+            var repositoryRoot = GetRepositoryRoot();
+            var war3netProjectFolders = Directory.EnumerateDirectories(Path.Combine(repositoryRoot, "src"), "War3Net.*", SearchOption.TopDirectoryOnly);
+
+            var updateableProjects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var handledProjects = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var projectsToUpdate = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "War3Net.Build",
+                // "War3Net.Build.Core",
+                // "War3Net.CodeAnalysis.Jass",
+                "War3Net.CodeAnalysis.Transpilers",
+                // "War3Net.Common",
+                // "War3Net.Drawing.Blp",
+                // "War3Net.IO.Compression",
+                // "War3Net.IO.Mpq",
+                // "War3Net.IO.Slk",
+                // "War3Net.Runtime.Api",
+            };
+
+            var projectFolders = new List<string>();
+            foreach (var projectFolder in war3netProjectFolders)
+            {
+                var projectName = new DirectoryInfo(projectFolder).Name;
+                if (projectsToUpdate.Contains(projectName))
+                {
+                    projectFolders.Add(projectFolder);
+                }
+                else
+                {
+                    handledProjects.Add(projectName);
+                }
+            }
+
+            war3netProjectFolders = projectFolders.ToArray();
+
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = "git";
+                process.StartInfo.Arguments = "status --porcelain";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.Start();
+
+                var output = process.StandardOutput.ReadToEnd().TrimEnd('\n');
+                process.WaitForExit();
+
+                var anyUncommittedChangesFound = false;
+                var paths = output.Split("\n").Select(line => line[3..]).ToHashSet();
+                if (paths.Contains("Directory.Build.props") || paths.Contains("src/Directory.Build.props"))
+                {
+                    anyUncommittedChangesFound = true;
+                    Console.WriteLine("Uncommitted changes detected in 'Directory.Build.props'.");
+                }
+
+                foreach (var projectFolder in war3netProjectFolders)
+                {
+                    var projectName = new DirectoryInfo(projectFolder).Name;
+                    var expectedPrefix = $"src/{projectName}/";
+                    var uncommittedFilePaths = paths.Where(path => path.StartsWith(expectedPrefix));
+                    if (uncommittedFilePaths.Any())
+                    {
+                        anyUncommittedChangesFound = true;
+                        Console.WriteLine($"Uncommitted changes detected in project '{projectName}'.");
+                        foreach (var uncommittedFilePath in uncommittedFilePaths)
+                        {
+                            Console.WriteLine($"  {uncommittedFilePath[expectedPrefix.Length..]}");
+                        }
+                    }
+                }
+
+                if (anyUncommittedChangesFound)
+                {
+                    return;
+                }
+            }
+
+            Environment.SetEnvironmentVariable(@"DOTNET_CLI_TELEMETRY_OPTOUT", "1");
+
             // https://github.com/NuGet/Samples/blob/master/PackageDownloadsExample/Program.cs
             const string sourceString = "https://api.nuget.org/v3/index.json";
             var source = new PackageSource(sourceString);
@@ -42,10 +124,6 @@ namespace NuGetPackageUploader
 
             var search = await repository.GetResourceAsync<RawSearchResourceV3>();
             var filter = new SearchFilter(includePrerelease: true);
-
-            var war3netProjectFolders = Directory.EnumerateDirectories(@"..\..\..\..\", "War3Net.*", SearchOption.TopDirectoryOnly);
-            var updateableProjects = new HashSet<string>();
-            var handledProjects = new HashSet<string>();
 
             var knownLatestVersions = new Dictionary<string, NuGetVersion>();
             var uploadablePackageFilePaths = new Dictionary<string, HashSet<string>>(); // from local feed to online feed
@@ -276,59 +354,40 @@ namespace NuGetPackageUploader
                 // Overview of projects for which the version should be incremented.
                 if (updateableProjects.Any())
                 {
-                    Console.WriteLine("Projects that require version increment:");
-                    foreach (var updateableProject in updateableProjects)
-                    {
-                        Console.WriteLine(updateableProject);
-                    }
-
-                    Console.WriteLine();
-
-                    // 'dotnet pack' not deterministic, so byte-by-byte comparison can incorrectly detect if changes were made to a project.
-                    Console.WriteLine("Ignore version increment requirement? (Y/N)");
-
-                    var key = Console.ReadKey().Key;
-                    if (key == ConsoleKey.Y)
+                    if (IgnoreVersionIncrementRequirement)
                     {
                         handledProjects.UnionWith(updateableProjects);
                         updateableProjects.Clear();
                     }
+                    else
+                    {
+                        Console.WriteLine("Projects that require version increment:");
+                        foreach (var updateableProject in updateableProjects)
+                        {
+                            Console.WriteLine(updateableProject);
+                        }
 
-                    Console.WriteLine();
-                    Console.WriteLine();
+                        Console.WriteLine();
+
+                        // 'dotnet pack' not deterministic, so byte-by-byte comparison can incorrectly detect if changes were made to a project.
+                        Console.WriteLine("Ignore version increment requirement? (Y/N)");
+
+                        var key = Console.ReadKey().Key;
+                        if (key == ConsoleKey.Y)
+                        {
+                            handledProjects.UnionWith(updateableProjects);
+                            updateableProjects.Clear();
+                        }
+
+                        Console.WriteLine();
+                        Console.WriteLine();
+                    }
                 }
 
                 // Overview of projects that reference an old version of a War3Net package.
                 var allProjectFiles = Directory.EnumerateFiles(@"..\..\..\..\..\", "*.csproj", SearchOption.AllDirectories);
                 var anyProject = false;
                 var anyPackage = false;
-                foreach (var projectFile in allProjectFiles)
-                {
-                    var project = CSharpLua.ProjectHelper.ParseProject(projectFile, "Release");
-                    foreach (var packageReference in project.PackageReferences)
-                    {
-                        if (knownLatestFeedVersions.TryGetValue(packageReference.Name, out var knownLatestFeedVersion))
-                        {
-                            if (knownLatestFeedVersion > NuGetVersion.Parse(packageReference.Version))
-                            {
-                                if (!anyProject)
-                                {
-                                    anyProject = true;
-                                    Console.WriteLine("Projects that require package update:");
-                                }
-
-                                if (!anyPackage)
-                                {
-                                    Console.WriteLine(new FileInfo(projectFile).Name);
-                                }
-
-                                Console.WriteLine($"  {packageReference.Name}: {packageReference.Version} -> {knownLatestFeedVersion}");
-                            }
-                        }
-                    }
-
-                    anyPackage = false;
-                }
 
                 if (anyProject)
                 {
@@ -400,11 +459,17 @@ namespace NuGetPackageUploader
                     foreach (var moveablePackageFilePath in pair.Value)
                     {
                         var v = moveablePackageFilePath.GetNuGetVersion(projectName);
+                        var isLatest = knownLatestVersions[projectName] == v;
+                        if (!isLatest && AskUploadLatestVersionOnly)
+                        {
+                            continue;
+                        }
+
                         var fileInfo = new FileInfo(moveablePackageFilePath);
                         var fileName = fileInfo.Name;
                         Console.WriteLine($"Move {fileName} to local feed? (Y/N)");
 
-                        if (knownLatestVersions[projectName] > v)
+                        if (!isLatest)
                         {
                             Console.WriteLine($"  Note: latest is v{knownLatestVersions[projectName]}");
                         }
@@ -483,11 +548,17 @@ namespace NuGetPackageUploader
                     foreach (var uploadablePackageFilePath in pair.Value)
                     {
                         var v = uploadablePackageFilePath.GetNuGetVersion(projectName);
+                        var isLatest = knownLatestVersions[projectName] == v;
+                        if (!isLatest && AskUploadLatestVersionOnly)
+                        {
+                            continue;
+                        }
+
                         var fileInfo = new FileInfo(uploadablePackageFilePath);
                         var fileName = fileInfo.Name;
                         Console.WriteLine($"Upload {fileName} to NuGet? (Y/N)");
 
-                        if (knownLatestVersions[projectName] > v)
+                        if (!isLatest)
                         {
                             Console.WriteLine($"  Note: latest is v{knownLatestVersions[projectName]}");
                         }
@@ -510,6 +581,23 @@ namespace NuGetPackageUploader
                 }
 
                 break;
+            }
+        }
+
+        private static string GetRepositoryRoot()
+        {
+            using (var process = new Process())
+            {
+                process.StartInfo.FileName = "git";
+                process.StartInfo.Arguments = "rev-parse --show-toplevel";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.Start();
+
+                var output = process.StandardOutput.ReadToEnd().TrimEnd('\n');
+                process.WaitForExit();
+
+                return output;
             }
         }
 
