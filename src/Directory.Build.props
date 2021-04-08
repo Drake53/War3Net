@@ -11,7 +11,14 @@
   <PropertyGroup Condition="'$(PACK)'=='true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Deterministic>true</Deterministic>
+    
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 
   <PropertyGroup>
     <Owners>Drake53</Owners>
@@ -26,7 +33,6 @@
     
     <PackageReleaseNotes>https://github.com/Drake53/War3Net/tree/master/docs/changelogs</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Drake53/War3Net</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
