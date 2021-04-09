@@ -173,25 +173,70 @@ namespace War3Net.Build
                 AppendFunction(CreatePlayerBuildings, CreatePlayerBuildingsCondition);
                 AppendFunction(CreatePlayerUnits, CreatePlayerUnitsCondition);
                 AppendFunction(CreateNeutralUnits, CreateNeutralUnitsCondition);
-                AppendFunction(CreateAllUnits, CreateAllUnitsCondition);
+                AppendFunction(CreateAllUnits, (map) => true);
             }
 
             AppendBannerAndFunction("Regions", CreateRegions, CreateRegionsCondition);
             AppendBannerAndFunction("Cameras", CreateCameras, CreateCamerasCondition);
 
+            // TODO: triggers
+
+            if (InitUpgradesCondition(map))
+            {
+                AppendBanner("Upgrades");
+
+                foreach (var i in Enumerable.Range(0, MaxPlayerSlots))
+                {
+                    if (InitUpgrades_PlayerCondition(map, i))
+                    {
+                        declarations.Add(InitUpgrades_Player(map, i));
+                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    }
+                }
+
+                declarations.Add(InitUpgrades(map));
+                declarations.Add(JassEmptyDeclarationSyntax.Value);
+            }
+
+            if (InitTechTreeCondition(map))
+            {
+                AppendBanner("TechTree");
+
+                foreach (var i in Enumerable.Range(0, MaxPlayerSlots))
+                {
+                    if (InitTechTree_PlayerCondition(map, i))
+                    {
+                        declarations.Add(InitTechTree_Player(map, i));
+                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    }
+                }
+
+                declarations.Add(InitTechTree(map));
+                declarations.Add(JassEmptyDeclarationSyntax.Value);
+            }
+
             AppendBanner("Players");
 
-            declarations.Add(InitCustomPlayerSlots(map));
-            declarations.Add(JassEmptyDeclarationSyntax.Value);
-
-            declarations.Add(InitCustomTeams(map));
-            declarations.Add(JassEmptyDeclarationSyntax.Value);
-
-            var ids = Enumerable.Range(0, MaxPlayerSlots).ToArray();
-            if (map.Info.Players.Any(p => ids.Any(id => p.AllyLowPriorityFlags[id] || p.AllyHighPriorityFlags[id])))
+            if (InitCustomPlayerSlotsCondition(map))
             {
-                declarations.Add(InitAllyPriorities(map));
+                declarations.Add(InitCustomPlayerSlots(map));
                 declarations.Add(JassEmptyDeclarationSyntax.Value);
+            }
+
+            if (InitCustomTeamsCondition(map))
+            {
+                declarations.Add(InitCustomTeams(map));
+                declarations.Add(JassEmptyDeclarationSyntax.Value);
+            }
+
+            if (InitAllyPrioritiesCondition(map))
+            {
+                var ids = Enumerable.Range(0, MaxPlayerSlots).ToArray();
+                if (map.Info.Players.Any(p => ids.Any(id => p.AllyLowPriorityFlags[id] || p.AllyHighPriorityFlags[id])))
+                {
+                    declarations.Add(InitAllyPriorities(map));
+                    declarations.Add(JassEmptyDeclarationSyntax.Value);
+                }
             }
 
             AppendBannerAndFunction("Main Initialization", main, mainCondition);

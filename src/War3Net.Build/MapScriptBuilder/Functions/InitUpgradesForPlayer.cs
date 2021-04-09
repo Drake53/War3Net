@@ -1,0 +1,101 @@
+﻿// ------------------------------------------------------------------------------
+// <copyright file="InitUpgradesForPlayer.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using War3Net.Build.Info;
+using War3Net.CodeAnalysis.Jass.Syntax;
+
+using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+
+namespace War3Net.Build
+{
+    public partial class MapScriptBuilder
+    {
+        protected virtual JassFunctionDeclarationSyntax InitUpgrades_Player(Map map, int playerId)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            var mapInfo = map.Info;
+
+            var statements = new List<IStatementSyntax>();
+
+            var maxLevel = new Dictionary<int, int>();
+            var researched = new Dictionary<int, int>();
+            for (var i = 0; i < mapInfo.UpgradeData.Count; i++)
+            {
+                var upgradeData = mapInfo.UpgradeData[i];
+                if (upgradeData.Availability != UpgradeAvailability.Available && upgradeData.Players[playerId])
+                {
+                    if (upgradeData.Availability == UpgradeAvailability.Unavailable)
+                    {
+                        if (maxLevel.TryGetValue(upgradeData.Id, out var level))
+                        {
+                            if (upgradeData.Level < level)
+                            {
+                                maxLevel[upgradeData.Id] = upgradeData.Level;
+                            }
+                        }
+                        else
+                        {
+                            maxLevel.Add(upgradeData.Id, upgradeData.Level);
+                        }
+                    }
+                    else if (upgradeData.Availability == UpgradeAvailability.Researched)
+                    {
+                        if (researched.TryGetValue(upgradeData.Id, out var level))
+                        {
+                            if (upgradeData.Level > level)
+                            {
+                                researched[upgradeData.Id] = upgradeData.Level;
+                            }
+                        }
+                        else
+                        {
+                            researched.Add(upgradeData.Id, upgradeData.Level);
+                        }
+                    }
+                }
+            }
+
+            foreach (var tech in maxLevel)
+            {
+                statements.Add(SyntaxFactory.CallStatement(
+                    NativeName.SetPlayerTechMaxAllowed,
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
+                    SyntaxFactory.FourCCLiteralExpression(tech.Key),
+                    SyntaxFactory.LiteralExpression(tech.Value)));
+            }
+
+            foreach (var tech in researched)
+            {
+                statements.Add(SyntaxFactory.CallStatement(
+                    NativeName.SetPlayerTechResearched,
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
+                    SyntaxFactory.FourCCLiteralExpression(tech.Key),
+                    SyntaxFactory.LiteralExpression(tech.Value + 1)));
+            }
+
+            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitUpgrades_Player) + playerId), statements);
+        }
+
+        protected virtual bool InitUpgrades_PlayerCondition(Map map, int playerId)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Info.UpgradeData.Any(upgradeData => upgradeData.Availability != UpgradeAvailability.Available && upgradeData.Players[playerId]);
+        }
+    }
+}

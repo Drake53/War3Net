@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.Common.Extensions;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
@@ -25,34 +24,13 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var mapInfo = map.Info;
-
             var statements = new List<IStatementSyntax>();
 
-            foreach (var player in mapInfo.Players)
+            for (var i = 0; i < MaxPlayerSlots; i++)
             {
-                var playerNumber = player.Id;
-                foreach (var techData in mapInfo.TechData)
+                if (InitTechTree_PlayerCondition(map, i))
                 {
-                    if (techData.Players[playerNumber])
-                    {
-                        if (techData.Id.ToRawcode()[0] == 'A')
-                        {
-                            statements.Add(SyntaxFactory.CallStatement(
-                                NativeName.SetPlayerAbilityAvailable,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
-                                SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                                SyntaxFactory.LiteralExpression(false)));
-                        }
-                        else
-                        {
-                            statements.Add(SyntaxFactory.CallStatement(
-                                NativeName.SetPlayerTechMaxAllowed,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerNumber)),
-                                SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                                SyntaxFactory.LiteralExpression(0)));
-                        }
-                    }
+                    statements.Add(SyntaxFactory.CallStatement(nameof(InitTechTree_Player) + i));
                 }
             }
 
