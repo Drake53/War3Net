@@ -17,7 +17,7 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// The maximum capacity of an <see cref="MpqTable"/>.
         /// </summary>
-        public const int MaxSize = 0x1 << 15;
+        public const int MaxSize = 0x1 << 16;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqTable"/> class.
