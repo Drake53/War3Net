@@ -12,5 +12,7 @@ namespace War3Net.IO.Mpq.Extensions
     internal static class BinaryReaderExtensions
     {
         internal static Attributes ReadAttributes(this BinaryReader reader) => new Attributes(reader);
+
+        internal static Signature ReadSignature(this BinaryReader reader) => new Signature(reader);
     }
 }

@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace War3Net.IO.Mpq.Extensions
 {
@@ -45,6 +46,32 @@ namespace War3Net.IO.Mpq.Extensions
 
             return (!hasCrc32 || attributes.Crc32s.Count == count)
                 && (!hasDateTime || attributes.DateTimes.Count == count);
+        }
+
+        public static bool VerifySignature(this MpqArchive archive, ReadOnlySpan<char> publicKey)
+        {
+            throw new NotImplementedException();
+
+            using var signatureStream = archive.OpenFile(Signature.FileName);
+            using var reader = new BinaryReader(signatureStream);
+
+            var signature = reader.ReadSignature();
+
+            using var memoryStream = new MemoryStream();
+            archive.BaseStream.Position = 0;
+            archive.BaseStream.CopyTo(memoryStream);
+
+            var streamBytes = memoryStream.ToArray();
+            var archiveBytes = new byte[archive.Header.ArchiveSize];
+            var overwrite = new byte[signatureStream.Length];
+
+            Array.Copy(overwrite, 0, streamBytes, signatureStream.FilePosition, overwrite.Length);
+            Array.Copy(streamBytes, archive.Header.DataPosition, archiveBytes, 0, archiveBytes.Length);
+
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(publicKey);
+
+            return rsa.VerifyData(archiveBytes, signature.SignatureBytes, HashAlgorithmName.MD5, RSASignaturePadding.Pkcs1);
         }
     }
 }

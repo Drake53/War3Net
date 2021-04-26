@@ -12,5 +12,7 @@ namespace War3Net.IO.Mpq.Extensions
     internal static class BinaryWriterExtensions
     {
         internal static void Write(this BinaryWriter writer, Attributes attributes) => attributes.WriteTo(writer);
+
+        internal static void Write(this BinaryWriter writer, Signature signature) => signature.WriteTo(writer);
     }
 }
