@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 using War3Net.IO.Mpq.Extensions;
@@ -302,6 +303,7 @@ namespace War3Net.IO.Mpq
                     InsertMpqFile(mpqFile, !selectedGap);
                 }
 
+                var signaturePosition = endOfStream + 8;
                 if (signature is not null)
                 {
                     _baseStream.Position = endOfStream;
@@ -359,12 +361,6 @@ namespace War3Net.IO.Mpq
                     InsertMpqFile(attributesMpqFile, true, false);
                 }
 
-                if (signature is not null)
-                {
-                    // TODO: sign the archive
-                    throw new NotImplementedException();
-                }
-
                 _baseStream.Position = endOfStream;
                 _hashTable.WriteTo(writer);
                 _blockTable.WriteTo(writer);
@@ -381,6 +377,21 @@ namespace War3Net.IO.Mpq
 
                 _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, createOptions.BlockSize, _archiveFollowsHeader);
                 _mpqHeader.WriteTo(writer);
+
+                if (wantGenerateSignature)
+                {
+                    var archiveBytes = new byte[_mpqHeader.ArchiveSize];
+                    _baseStream.Position = _headerOffset;
+                    _baseStream.Read(archiveBytes);
+
+                    using var rsa = RSA.Create();
+
+                    rsa.ImportFromPem(createOptions.SignaturePrivateKey);
+                    var signatureBytes = rsa.SignData(archiveBytes, HashAlgorithmName.MD5, RSASignaturePadding.Pkcs1);
+
+                    _baseStream.Position = signaturePosition;
+                    _baseStream.Write(signatureBytes.Reverse().ToArray());
+                }
             }
         }
 

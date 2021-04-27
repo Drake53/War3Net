@@ -20,6 +20,7 @@ namespace War3Net.IO.Mpq
             HashTableSize = null;
             WriteArchiveFirst = true;
             SignatureCreateMode = null;
+            SignaturePrivateKey = null;
             ListFileCreateMode = null;
             AttributesCreateMode = null;
             AttributesFlags = AttributesFlags.Crc32 | AttributesFlags.DateTime;
@@ -41,6 +42,8 @@ namespace War3Net.IO.Mpq
         public bool WriteArchiveFirst { get; set; }
 
         public MpqFileCreateMode? SignatureCreateMode { get; set; }
+
+        public string? SignaturePrivateKey { get; set; }
 
         public MpqFileCreateMode? ListFileCreateMode { get; set; }
 
