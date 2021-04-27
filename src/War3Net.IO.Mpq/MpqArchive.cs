@@ -69,6 +69,10 @@ namespace War3Net.IO.Mpq
                 _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
             }
 
+            AddFileName(Signature.FileName);
+            AddFileName(ListFile.FileName);
+            AddFileName(Attributes.FileName);
+
             if (loadListFile)
             {
                 if (TryOpenFile(ListFile.FileName, out var listFileStream))
@@ -106,11 +110,14 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << createOptions.BlockSize;
             _archiveFollowsHeader = createOptions.WriteArchiveFirst;
 
+            var signatureName = Signature.FileName.GetStringHash();
             var listFileName = ListFile.FileName.GetStringHash();
             var attributesName = Attributes.FileName.GetStringHash();
 
+            var signatureCreateMode = createOptions.SignatureCreateMode.GetValueOrDefault(MpqFileCreateMode.Prune);
             var listFileCreateMode = createOptions.ListFileCreateMode.GetValueOrDefault(MpqFileCreateMode.Overwrite);
             var attributesCreateMode = createOptions.AttributesCreateMode.GetValueOrDefault(MpqFileCreateMode.Overwrite);
+            var haveSignature = false;
             var haveListFile = false;
             var haveAttributes = false;
             var mpqFiles = new HashSet<MpqFile>(MpqFileComparer.Default);
@@ -119,6 +126,18 @@ namespace War3Net.IO.Mpq
                 if (mpqFile is MpqOrphanedFile)
                 {
                     continue;
+                }
+
+                if (mpqFile.Name == signatureName)
+                {
+                    if (signatureCreateMode.HasFlag(MpqFileCreateMode.RemoveFlag))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        haveSignature = true;
+                    }
                 }
 
                 if (mpqFile.Name == listFileName)
@@ -152,6 +171,13 @@ namespace War3Net.IO.Mpq
             }
 
             var fileCount = (uint)mpqFiles.Count;
+
+            var wantGenerateSignature = !haveSignature && signatureCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
+            var signature = wantGenerateSignature ? new Signature() : null;
+            if (wantGenerateSignature)
+            {
+                fileCount++;
+            }
 
             var wantGenerateListFile = !haveListFile && listFileCreateMode.HasFlag(MpqFileCreateMode.AddFlag);
             var listFile = wantGenerateListFile ? new ListFile() : null;
@@ -276,6 +302,20 @@ namespace War3Net.IO.Mpq
                     InsertMpqFile(mpqFile, !selectedGap);
                 }
 
+                if (signature is not null)
+                {
+                    _baseStream.Position = endOfStream;
+
+                    using var signatureStream = new MemoryStream();
+                    using var signatureWriter = new BinaryWriter(signatureStream);
+                    signatureWriter.Write(signature);
+                    signatureWriter.Flush();
+
+                    using var signatureMpqFile = MpqFile.New(signatureStream, Signature.FileName);
+                    signatureMpqFile.TargetFlags = MpqFileFlags.Exists;
+                    InsertMpqFile(signatureMpqFile, true);
+                }
+
                 if (listFile is not null)
                 {
                     _baseStream.Position = endOfStream;
@@ -317,6 +357,12 @@ namespace War3Net.IO.Mpq
                     using var attributesMpqFile = MpqFile.New(attributesStream, Attributes.FileName);
                     attributesMpqFile.TargetFlags = MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey;
                     InsertMpqFile(attributesMpqFile, true, false);
+                }
+
+                if (signature is not null)
+                {
+                    // TODO: sign the archive
+                    throw new NotImplementedException();
                 }
 
                 _baseStream.Position = endOfStream;

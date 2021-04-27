@@ -19,9 +19,10 @@ namespace War3Net.IO.Mpq
             BlockSize = DefaultBlockSize;
             HashTableSize = null;
             WriteArchiveFirst = true;
-            AttributesFlags = AttributesFlags.Crc32 | AttributesFlags.DateTime;
-            AttributesCreateMode = null;
+            SignatureCreateMode = null;
             ListFileCreateMode = null;
+            AttributesCreateMode = null;
+            AttributesFlags = AttributesFlags.Crc32 | AttributesFlags.DateTime;
         }
 
         /// <summary>
@@ -39,10 +40,12 @@ namespace War3Net.IO.Mpq
         /// </summary>
         public bool WriteArchiveFirst { get; set; }
 
-        public AttributesFlags AttributesFlags { get; set; }
+        public MpqFileCreateMode? SignatureCreateMode { get; set; }
+
+        public MpqFileCreateMode? ListFileCreateMode { get; set; }
 
         public MpqFileCreateMode? AttributesCreateMode { get; set; }
 
-        public MpqFileCreateMode? ListFileCreateMode { get; set; }
+        public AttributesFlags AttributesFlags { get; set; }
     }
 }

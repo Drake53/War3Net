@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 
 namespace War3Net.IO.Mpq
@@ -14,9 +13,11 @@ namespace War3Net.IO.Mpq
     {
         public const string FileName = "(signature)";
 
-        internal Signature(MpqArchiveCreateOptions mpqArchiveCreateOptions)
+        internal Signature()
         {
-            throw new NotImplementedException();
+            Unk1 = 0;
+            Unk2 = 0;
+            SignatureBytes = new byte[64];
         }
 
         internal Signature(BinaryReader reader)
