@@ -36,6 +36,8 @@ namespace War3Net.IO.Mpq
 
         public List<DateTime> DateTimes { get; init; } = new();
 
+        public List<byte[]> Unk0x04s { get; init; } = new();
+
         internal void ReadFrom(BinaryReader reader)
         {
             Unk = reader.ReadInt32();
@@ -58,6 +60,12 @@ namespace War3Net.IO.Mpq
             if (hasDateTime)
             {
                 bytesPerMpqFile += 8;
+            }
+
+            var hasUnk0x04 = Flags.HasFlag(AttributesFlags.Unk0x04);
+            if (hasUnk0x04)
+            {
+                bytesPerMpqFile += 16;
             }
 
             var remainingBytes = reader.BaseStream.Length - reader.BaseStream.Position;
@@ -85,6 +93,14 @@ namespace War3Net.IO.Mpq
                         DateTimes.Add(new DateTime(reader.ReadInt64(), DateTimeKind.Unspecified));
                     }
                 }
+
+                if (hasUnk0x04)
+                {
+                    for (nint i = 0; i < fileCount; i++)
+                    {
+                        Unk0x04s.Add(reader.ReadBytes(16));
+                    }
+                }
             }
             else if (remainingBytes > 0)
             {
@@ -110,6 +126,14 @@ namespace War3Net.IO.Mpq
                 foreach (var dateTime in DateTimes)
                 {
                     writer.Write(dateTime.Ticks);
+                }
+            }
+
+            if (Flags.HasFlag(AttributesFlags.Unk0x04))
+            {
+                foreach (var unk0x04 in Unk0x04s)
+                {
+                    writer.Write(unk0x04);
                 }
             }
         }

@@ -217,6 +217,11 @@ namespace War3Net.IO.Mpq
                             {
                                 attributes.DateTimes.Add(DateTime.Now);
                             }
+
+                            if (attributes.Flags.HasFlag(AttributesFlags.Unk0x04))
+                            {
+                                attributes.Unk0x04s.Add(new byte[16]);
+                            }
                         }
                     }
 
@@ -297,6 +302,11 @@ namespace War3Net.IO.Mpq
                     if (attributes.Flags.HasFlag(AttributesFlags.DateTime))
                     {
                         attributes.DateTimes.Add(DateTime.Now);
+                    }
+
+                    if (attributes.Flags.HasFlag(AttributesFlags.Unk0x04))
+                    {
+                        attributes.Unk0x04s.Add(new byte[16]);
                     }
 
                     using var attributesStream = new MemoryStream();

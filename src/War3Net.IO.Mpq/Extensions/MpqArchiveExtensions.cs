@@ -9,10 +9,14 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 
+using Ionic.Crc;
+
 namespace War3Net.IO.Mpq.Extensions
 {
     public static class MpqArchiveExtensions
     {
+        private static readonly int _signatureCrc32 = new CRC32().GetCrc32(new MemoryStream(new byte[64 + (2 * sizeof(int))]));
+
         /// <exception cref="ArgumentException">Thrown when the <see cref="MpqArchive"/> does not contain an <see cref="Attributes"/> file.</exception>
         public static bool VerifyAttributes(this MpqArchive archive)
         {
@@ -21,23 +25,58 @@ namespace War3Net.IO.Mpq.Extensions
                 throw new ArgumentException($"The archive must contain an {Attributes.FileName} file.", nameof(archive));
             }
 
+            archive.AddFileName(Signature.FileName);
+
             using var reader = new BinaryReader(attributesStream);
 
             var attributes = reader.ReadAttributes();
             var hasCrc32 = attributes.Flags.HasFlag(AttributesFlags.Crc32);
             var hasDateTime = attributes.Flags.HasFlag(AttributesFlags.DateTime);
+            var hasUnk0x04 = attributes.Flags.HasFlag(AttributesFlags.Unk0x04);
 
             var count = 0;
             foreach (var mpqEntry in archive)
             {
                 if (hasCrc32)
                 {
-                    using var mpqEntryStream = archive.OpenFile(mpqEntry);
+                    var actualCrc32 = attributes.Crc32s[count];
+                    if (string.Equals(mpqEntry.FileName, Attributes.FileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (actualCrc32 != 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(mpqEntry.FileName, Signature.FileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (actualCrc32 != _signatureCrc32)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        using var mpqEntryStream = archive.OpenFile(mpqEntry);
+                        if (actualCrc32 != new CRC32().GetCrc32(mpqEntryStream))
+                        {
+                            return false;
+                        }
+                    }
+                }
 
-                    var crc32 = mpqEntry.FileName == Attributes.FileName ? 0 : new Ionic.Crc.CRC32().GetCrc32(mpqEntryStream);
-                    if (crc32 != attributes.Crc32s[count])
+                if (hasUnk0x04)
+                {
+                    if (attributes.Unk0x04s[count].Length != 16)
                     {
                         return false;
+                    }
+
+                    for (var i = 0; i < 16; i++)
+                    {
+                        if (attributes.Unk0x04s[count][i] != 0)
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -45,7 +84,8 @@ namespace War3Net.IO.Mpq.Extensions
             }
 
             return (!hasCrc32 || attributes.Crc32s.Count == count)
-                && (!hasDateTime || attributes.DateTimes.Count == count);
+                && (!hasDateTime || attributes.DateTimes.Count == count)
+                && (!hasUnk0x04 || attributes.Unk0x04s.Count == count);
         }
 
         public static bool VerifySignature(this MpqArchive archive, ReadOnlySpan<char> publicKey)
