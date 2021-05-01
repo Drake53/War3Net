@@ -38,9 +38,29 @@ namespace War3Net.Common.Tests.Extensions
             Assert.AreEqual(expectedString, binaryReader.ReadChars());
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestReadInt24s), DynamicDataSourceType.Method)]
+        public void TestReadInt24(byte[] bytes, int expected)
+        {
+            using var memoryStream = new MemoryStream();
+            using var binaryWriter = new BinaryWriter(memoryStream);
+
+            binaryWriter.Write(bytes);
+
+            memoryStream.Position = 0;
+            using var binaryReader = new BinaryReader(memoryStream);
+            Assert.AreEqual(expected, binaryReader.ReadInt24());
+        }
+
         private static IEnumerable<object?[]> GetTestReadStrings()
         {
             return TestData.GetTestStrings().Where(objects => objects.Length == 1);
+        }
+
+        private static IEnumerable<object[]> GetTestReadInt24s()
+        {
+            yield return new object[] { new byte[] { 0, 0, 0 }, 0 };
+            yield return new object[] { new byte[] { 1, 0, 0 }, 1 };
         }
     }
 }
