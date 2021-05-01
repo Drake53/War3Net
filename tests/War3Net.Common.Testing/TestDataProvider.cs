@@ -32,7 +32,10 @@ namespace War3Net.Common.Testing
             return _archiveFileExtensions.Contains(extension);
         }
 
-        public static string GetFile(string path)
+        /// <summary>
+        /// Prepends <see cref="TestDataFolder"/> to the given path.
+        /// </summary>
+        public static string GetPath(string path)
         {
             return Path.Combine(TestDataFolder, path);
         }
@@ -82,18 +85,28 @@ namespace War3Net.Common.Testing
 
         private static IEnumerable<string> GetTestDataDirectories(params string[] directories)
         {
+            var dirs = directories.ToHashSet();
+
             foreach (var directory in directories)
             {
-                DownloadTestData(directory);
+                if (Path.IsPathFullyQualified(directory))
+                {
+                    dirs.Remove(directory);
+                    yield return directory;
+                }
+                else
+                {
+                    DownloadTestData(directory);
+                }
             }
 
-            foreach (var directory in directories.SelectMany(directory => new[]
+            foreach (var directory in dirs.SelectMany(directory => new[]
             {
                 Path.Combine(TestDataFolder, directory),
 #if DEBUG
                 Path.Combine(TestDataFolder, LocalDataFolder, directory),
-                Path.Combine(TestDataFolder, WebCacheDataFolder, directory),
 #endif
+                Path.Combine(TestDataFolder, WebCacheDataFolder, directory),
             }))
             {
                 yield return directory;
@@ -124,6 +137,13 @@ namespace War3Net.Common.Testing
                 306784, // LegendaryResistanceV2.14.w3x
                 306890, // OrangeMushroomStory_4.9_english.w3x
                 306913, // platform_escape_bw_2.9e.w3x
+
+                // Some random melee maps
+                310279,
+                310280,
+                310421,
+                310519,
+                310540,
             });
 
             var directoryInfo = new DirectoryInfo(Path.Combine(TestDataFolder, WebCacheDataFolder, directoryName));
