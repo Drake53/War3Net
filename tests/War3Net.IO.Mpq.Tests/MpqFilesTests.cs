@@ -27,7 +27,7 @@ namespace War3Net.IO.Mpq.Tests
             using var archive = MpqArchive.Open(mpqFilePath, true);
             var mpqFiles = archive.GetMpqFiles();
 
-            Assert.AreEqual(archive.Count, mpqFiles.Count());
+            Assert.AreEqual((int)archive.BlockTable.Size, mpqFiles.Count());
             foreach (var mpqFile in mpqFiles)
             {
                 Assert.IsNotNull(mpqFile);

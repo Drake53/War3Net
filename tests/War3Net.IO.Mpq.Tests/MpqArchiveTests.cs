@@ -66,31 +66,16 @@ namespace War3Net.IO.Mpq.Tests
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetTestFiles), DynamicDataSourceType.Method)]
-        [Obsolete("does same as test below, except it doesn't skip noise.png")]
-        public void TestStoreThenRetrieveFile(string filename)
-        {
-            var fileStream = File.OpenRead(filename);
-            var mpqFile = MpqFile.New(fileStream, filename, true);
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions());
-
-            var openedArchive = MpqArchive.Open(archive.BaseStream);
-            var openedStream = openedArchive.OpenFile(filename);
-
-            StreamAssert.AreEqual(fileStream, openedStream, true);
-        }
-
-        [DataTestMethod]
         [DynamicData(nameof(GetTestFilesAndFlags), DynamicDataSourceType.Method)]
-        public void TestStoreThenRetrieveFileWithFlags(string filename, MpqFileFlags flags)
+        public void TestStoreThenRetrieveFileWithFlags(string fileName, MpqFileFlags flags)
         {
-            var fileStream = File.OpenRead(filename);
-            var mpqFile = MpqFile.New(fileStream, filename, true);
+            using var fileStream = File.OpenRead(fileName);
+            var mpqFile = MpqFile.New(fileStream, fileName, true);
             mpqFile.TargetFlags = flags;
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
+            using var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
 
-            var openedArchive = MpqArchive.Open(archive.BaseStream);
-            var openedStream = openedArchive.OpenFile(filename);
+            using var openedArchive = MpqArchive.Open(archive.BaseStream);
+            var openedStream = openedArchive.OpenFile(fileName);
 
             StreamAssert.AreEqual(fileStream, openedStream, true);
         }
@@ -101,11 +86,11 @@ namespace War3Net.IO.Mpq.Tests
         {
             const string FileName = "someRandomFile.empty";
 
-            var mpqFile = MpqFile.New(null, FileName);
+            using var mpqFile = MpqFile.New(null, FileName);
             mpqFile.TargetFlags = flags;
-            var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
+            using var archive = MpqArchive.Create(new MemoryStream(), new List<MpqFile>() { mpqFile }, new MpqArchiveCreateOptions { BlockSize = BlockSize });
 
-            var openedArchive = MpqArchive.Open(archive.BaseStream);
+            using var openedArchive = MpqArchive.Open(archive.BaseStream);
             var openedStream = openedArchive.OpenFile(FileName);
 
             Assert.IsTrue(openedStream.Length == 0);
@@ -126,23 +111,21 @@ namespace War3Net.IO.Mpq.Tests
 
             // TODO: fix assumption that recreated archive's hashtable cannot be smaller than original
             // TODO: fix assumption of how recreated blocktable's entries are laid out relative to input mpqFiles array? (aka: replace the 'offset' variable)
-            var offsetPerUnknownFile = (recreatedArchive.HashTableSize / inputArchive.HashTableSize) - 1;
+            var offsetPerUnknownFile = (recreatedArchive.HashTable.Size / inputArchive.HashTable.Size) - 1;
             var mpqEncryptedFileCount = mpqFiles.Where(mpqFile => mpqFile.IsFilePositionFixed).Count();
             var offset = mpqEncryptedFileCount * (offsetPerUnknownFile + 1);
             mpqEncryptedFileCount = 0;
             for (var index = 0; index < mpqFiles.Length; index++)
             {
                 var mpqFile = mpqFiles[index];
-                bool exists;
                 MpqEntry? inputEntry;
                 if (mpqFile is MpqKnownFile knownFile)
                 {
-                    exists = inputArchive.FileExists(knownFile.FileName, out var entryIndex);
-                    inputEntry = exists ? inputArchive[entryIndex] : null;
+                    inputEntry = inputArchive.GetMpqEntries(knownFile.FileName).FirstOrDefault();
                 }
                 else if (mpqFile is MpqUnknownFile unknownFile)
                 {
-                    exists = inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex & inputArchive.HashTableMask, out inputEntry);
+                    inputArchive.TryGetEntryFromHashTable(mpqFile.HashIndex & inputArchive.HashTable.Mask, out inputEntry);
                 }
                 else if (mpqFile is MpqOrphanedFile orphanedFile)
                 {
@@ -163,7 +146,7 @@ namespace War3Net.IO.Mpq.Tests
 
                 var recreatedEntry = recreatedArchive[blockIndex];
 
-                if (exists)
+                if (inputEntry is not null)
                 {
                     if (!mpqFile.MpqStream.CanBeDecrypted)
                     {
@@ -200,7 +183,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestDeleteFile()
         {
-            var inputArchivePath = TestDataProvider.GetFile(@"Maps\NewLuaMap.w3m");
+            var inputArchivePath = TestDataProvider.GetPath(@"Maps\NewLuaMap.w3m");
             const string fileName = "war3map.lua";
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
@@ -212,14 +195,15 @@ namespace War3Net.IO.Mpq.Tests
 
             using var outputArchive = MpqArchive.Create((Stream?)null, newFiles, new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, AttributesFlags = AttributesFlags.DateTime | AttributesFlags.Crc32 });
 
-            Assert.IsTrue(outputArchive.FileExists(fileName, out var entryIndex));
-            Assert.AreEqual(0U, outputArchive[entryIndex].FileSize);
+            var entries = outputArchive.GetMpqEntries(fileName);
+            Assert.IsTrue(entries.Any());
+            Assert.AreEqual(0U, entries.Single().FileSize);
         }
 
         [TestMethod]
         public void TestRecreatePKCompressed()
         {
-            var inputArchivePath = TestDataProvider.GetFile(@"Maps\PKCompressed.w3x");
+            var inputArchivePath = TestDataProvider.GetPath(@"Maps\PKCompressed.w3x");
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
             using var recreatedArchive = MpqArchive.Create((Stream?)null, inputArchive.GetMpqFiles().ToArray(), new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
@@ -248,18 +232,36 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(archive.VerifyAttributes());
         }
 
-        private static IEnumerable<object[]> GetTestArchives()
+        private static IEnumerable<object[]> GetTestMaps()
         {
             return TestDataProvider.GetDynamicData("*", SearchOption.TopDirectoryOnly, "Maps");
         }
 
+        private static IEnumerable<object[]> GetTestArchives()
+        {
+            return TestDataProvider.GetDynamicData("*", SearchOption.TopDirectoryOnly, "Mpq");
+        }
+
         private static IEnumerable<object[]> GetTestArchivesAttributes()
         {
+            foreach (var archive in GetTestMaps())
+            {
+                using (var mpqArchive = MpqArchive.Open((string)archive[0]))
+                {
+                    if (!mpqArchive.FileExists(Attributes.FileName))
+                    {
+                        continue;
+                    }
+                }
+
+                yield return new object[] { archive[0] };
+            }
+
             foreach (var archive in GetTestArchives())
             {
                 using (var mpqArchive = MpqArchive.Open((string)archive[0]))
                 {
-                    if (!mpqArchive.TryAddFilename(Attributes.FileName))
+                    if (!mpqArchive.FileExists(Attributes.FileName))
                     {
                         continue;
                     }
@@ -271,33 +273,20 @@ namespace War3Net.IO.Mpq.Tests
 
         private static IEnumerable<object[]> GetTestArchivesAndSettings()
         {
-            foreach (var archive in GetTestArchives())
+            foreach (var archive in GetTestMaps())
             {
                 yield return new object[] { archive[0], true };
                 yield return new object[] { archive[0], false };
             }
         }
 
-        private static IEnumerable<object[]> GetTestFiles()
-        {
-            foreach (var file in Directory.EnumerateFiles(@"..\..\..\TestData", "*", SearchOption.TopDirectoryOnly))
-            {
-                yield return new object[] { file };
-            }
-        }
-
         private static IEnumerable<object[]> GetTestFilesAndFlags()
         {
-            foreach (var file in Directory.EnumerateFiles(@"..\..\..\TestData", "*", SearchOption.TopDirectoryOnly))
+            foreach (var file in TestDataProvider.GetDynamicData("*", SearchOption.TopDirectoryOnly, "Text"))
             {
-                if (new FileInfo(file).Name == "noise.png")
-                {
-                    continue;
-                }
-
                 foreach (var flags in GetFlagCombinations())
                 {
-                    yield return new object[] { file, flags };
+                    yield return new object[] { file[0], flags };
                 }
             }
         }
