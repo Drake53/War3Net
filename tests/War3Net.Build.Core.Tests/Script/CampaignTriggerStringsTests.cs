@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapTriggerStringsTests.cs" company="Drake53">
+// <copyright file="CampaignTriggerStringsTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,29 +18,29 @@ using War3Net.Common.Testing;
 namespace War3Net.Build.Core.Tests.Script
 {
     [TestClass]
-    public class MapTriggerStringsTests
+    public class CampaignTriggerStringsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapTriggerStringsData), DynamicDataSourceType.Method)]
-        public void TestParseMapTriggerStrings(string mapTriggerStringsFilePath)
+        [DynamicData(nameof(GetCampaignTriggerStringsData), DynamicDataSourceType.Method)]
+        public void TestParseCampaignTriggerStrings(string campaignTriggerStringsFilePath)
         {
             ParseTestHelper.RunStreamRWTest(
-                mapTriggerStringsFilePath,
-                typeof(MapTriggerStrings),
+                campaignTriggerStringsFilePath,
+                typeof(CampaignTriggerStrings),
                 nameof(StreamWriterExtensions.WriteTriggerStrings));
         }
 
-        private static IEnumerable<object[]> GetMapTriggerStringsData()
+        private static IEnumerable<object[]> GetCampaignTriggerStringsData()
         {
             return TestDataProvider.GetDynamicData(
-                MapTriggerStrings.FileName.GetSearchPattern(),
+                CampaignTriggerStrings.FileName.GetSearchPattern(),
                 SearchOption.AllDirectories,
                 Path.Combine("Triggers"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapTriggerStrings.FileName,
+                CampaignTriggerStrings.FileName,
                 SearchOption.AllDirectories,
-                "Maps"));
+                "Campaigns"));
         }
     }
 }

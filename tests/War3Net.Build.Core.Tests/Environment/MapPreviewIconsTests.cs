@@ -26,6 +26,7 @@ namespace War3Net.Build.Core.Tests.Environment
             ParseTestHelper.RunBinaryRWTest(iconsFilePath, typeof(MapPreviewIcons));
         }
 
+#if false
         [DataTestMethod]
         [DynamicData(nameof(GetMapPreviewIconsMapFolders), DynamicDataSourceType.Method)]
         public void TestGenerateMapPreviewIcons(string mapFolder)
@@ -49,6 +50,7 @@ namespace War3Net.Build.Core.Tests.Environment
                 Assert.AreEqual(expectedIcon.Color.ToArgb(), actualIcon.Color.ToArgb());
             }
         }
+#endif
 
         private static IEnumerable<object[]> GetMapPreviewIconsFiles()
         {
@@ -65,8 +67,8 @@ namespace War3Net.Build.Core.Tests.Environment
 
         private static IEnumerable<object[]> GetMapPreviewIconsMapFolders()
         {
-            yield return new[] { TestDataProvider.GetFile(@"MapFiles\TestIcons1") };
-            yield return new[] { TestDataProvider.GetFile(@"MapFiles\TestIcons2") };
+            yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons1") };
+            yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons2") };
         }
     }
 }

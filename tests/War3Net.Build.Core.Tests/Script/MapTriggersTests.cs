@@ -57,7 +57,7 @@ namespace War3Net.Build.Core.Tests.Script
         {
             foreach (var testData in GetMapTriggersData())
             {
-                using var original = FileProvider.GetFile((string)testData[0]);
+                using var original = MpqFile.OpenRead((string)testData[0]);
                 using var reader = new BinaryReader(original);
 
                 if (original.Length >= 8)

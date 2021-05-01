@@ -12,27 +12,29 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
+using War3Net.Build.Extensions;
 using War3Net.Common.Testing;
-using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
     [TestClass]
     public class MapEnvironmentTests
     {
+#if false
         [TestMethod]
         public void TestDefaultMapEnvironment()
         {
             // Get World Editor default environment file.
-            using var defaultEnvironmentStream = File.OpenRead(TestDataProvider.GetFile(@"MapFiles\DefaultMapFiles\war3map.w3e"));
-            var defaultMapEnvironment = MapEnvironment.Parse(defaultEnvironmentStream, true);
+            using var defaultEnvironmentStream = File.OpenRead(TestDataProvider.GetPath(@"MapFiles\DefaultMapFiles\war3map.w3e"));
+            using var defaultEnvironmentReader = new BinaryReader(defaultEnvironmentStream);
+            var defaultMapEnvironment = defaultEnvironmentReader.ReadMapEnvironment();
             defaultEnvironmentStream.Position = 0;
 
             // Get War3Net default environment file.
             var mapEnvironment = MapEnvironment.Default;
 
             // Update defaults that are different.
-            var tileEnumerator = defaultMapEnvironment.GetEnumerator();
+            var tileEnumerator = defaultMapEnvironment.TerrainTiles.GetEnumerator();
             foreach (var tile in mapEnvironment)
             {
                 tileEnumerator.MoveNext();
@@ -47,16 +49,13 @@ namespace War3Net.Build.Core.Tests.Environment
 
             StreamAssert.AreEqual(defaultEnvironmentStream, mapEnvironmentStream);
         }
+#endif
 
         [DataTestMethod]
         [DynamicData(nameof(GetEnvironmentFiles), DynamicDataSourceType.Method)]
         public void TestParseMapEnvironment(string environmentFilePath)
         {
-            using var original = FileProvider.GetFile(environmentFilePath);
-            using var recreated = new MemoryStream();
-
-            MapEnvironment.Parse(original, true).SerializeTo(recreated, true);
-            StreamAssert.AreEqual(original, recreated, true);
+            ParseTestHelper.RunBinaryRWTest(environmentFilePath, typeof(MapEnvironment));
         }
 
         [DataTestMethod]
@@ -64,7 +63,8 @@ namespace War3Net.Build.Core.Tests.Environment
         public void TestDefaultTileset(string environmentFilePath)
         {
             using var fileStream = File.OpenRead(environmentFilePath);
-            var environment = MapEnvironment.Parse(fileStream);
+            using var reader = new BinaryReader(fileStream);
+            var environment = reader.ReadMapEnvironment();
             Assert.IsTrue(environment.IsDefaultTileset());
         }
 
@@ -77,7 +77,7 @@ namespace War3Net.Build.Core.Tests.Environment
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapEnvironment.FileName,
-                SearchOption.TopDirectoryOnly,
+                SearchOption.AllDirectories,
                 "Maps"));
         }
 

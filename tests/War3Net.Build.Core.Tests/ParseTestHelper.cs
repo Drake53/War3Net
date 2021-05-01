@@ -24,7 +24,7 @@ namespace War3Net.Build.Core.Tests
             string filePath,
             Type type,
             string? readMethodName = null,
-            params object?[]? additionalReadParameters)
+            params object[]? additionalReadParameters)
         {
             RunBinaryRWTest(filePath, type, readMethodName, additionalReadParameters, null);
         }
@@ -33,8 +33,8 @@ namespace War3Net.Build.Core.Tests
             string filePath,
             Type type,
             string? readMethodName = null,
-            object?[]? additionalReadParameters = null,
-            object?[]? additionalWriteParameters = null)
+            object[]? additionalReadParameters = null,
+            object[]? additionalWriteParameters = null)
         {
             var expectedReadTypes = new[] { typeof(BinaryReader) };
             if (additionalReadParameters is not null)
@@ -54,10 +54,10 @@ namespace War3Net.Build.Core.Tests
             var writeMethod = typeof(BinaryWriterExtensions).GetMethod(nameof(BinaryWriter.Write), expectedWriteTypes);
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
-            using var expectedStream = FileProvider.GetFile(filePath);
+            using var expectedStream = MpqFile.OpenRead(filePath);
             using var reader = new BinaryReader(expectedStream);
             var parsedFile = readMethod!.Invoke(null, new object?[] { reader }.Concat(additionalReadParameters ?? Array.Empty<object?[]>()).ToArray());
-            Assert.AreEqual(type, parsedFile.GetType());
+            Assert.AreEqual(type, parsedFile!.GetType());
 
             using var actualStream = new MemoryStream();
             using var writer = new BinaryWriter(actualStream);
@@ -70,21 +70,18 @@ namespace War3Net.Build.Core.Tests
         internal static void RunStreamRWTest(
             string filePath,
             Type type,
-            Encoding? encoding = null,
-            string? readMethodName = null,
-            string writeMethodName = nameof(StreamWriter.Write),
-            params object[] additionalReadParameters)
+            string writeMethodName)
         {
-            var readMethod = typeof(StreamReaderExtensions).GetMethod(readMethodName ?? $"Read{type.Name}");
+            var readMethod = typeof(StreamReaderExtensions).GetMethod($"Read{type.Name}");
             Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
 
             var writeMethod = typeof(StreamWriterExtensions).GetMethod(writeMethodName, new[] { typeof(StreamWriter), type });
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
-            using var expectedStream = FileProvider.GetFile(filePath);
-            using var reader = new StreamReader(expectedStream, encoding ?? new UTF8Encoding(false, true));
-            var parsedFile = readMethod!.Invoke(null, new[] { reader }.Concat(additionalReadParameters).ToArray());
-            Assert.AreEqual(type, parsedFile.GetType());
+            using var expectedStream = MpqFile.OpenRead(filePath);
+            using var reader = new StreamReader(expectedStream, new UTF8Encoding(false, true));
+            var parsedFile = readMethod!.Invoke(null, new[] { reader });
+            Assert.AreEqual(type, parsedFile!.GetType());
 
             using var actualStream = new MemoryStream();
             using var writer = new StreamWriter(actualStream, reader.CurrentEncoding);

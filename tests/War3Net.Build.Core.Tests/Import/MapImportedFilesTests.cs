@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapTriggerStringsTests.cs" company="Drake53">
+// <copyright file="MapImportedFilesTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,33 +12,34 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
-using War3Net.Build.Script;
+using War3Net.Build.Import;
 using War3Net.Common.Testing;
 
-namespace War3Net.Build.Core.Tests.Script
+namespace War3Net.Build.Core.Tests.Import
 {
     [TestClass]
-    public class MapTriggerStringsTests
+    public class MapImportedFilesTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapTriggerStringsData), DynamicDataSourceType.Method)]
-        public void TestParseMapTriggerStrings(string mapTriggerStringsFilePath)
+        [DynamicData(nameof(GetMapImportedFilesData), DynamicDataSourceType.Method)]
+        public void TestParseMapImportedFiles(string mapImportedFilesFilePath)
         {
-            ParseTestHelper.RunStreamRWTest(
-                mapTriggerStringsFilePath,
-                typeof(MapTriggerStrings),
-                nameof(StreamWriterExtensions.WriteTriggerStrings));
+            ParseTestHelper.RunBinaryRWTest(
+                mapImportedFilesFilePath,
+                typeof(MapImportedFiles),
+                nameof(BinaryReaderExtensions.ReadImportedFiles),
+                false);
         }
 
-        private static IEnumerable<object[]> GetMapTriggerStringsData()
+        private static IEnumerable<object[]> GetMapImportedFilesData()
         {
             return TestDataProvider.GetDynamicData(
-                MapTriggerStrings.FileName.GetSearchPattern(),
+                MapImportedFiles.FileName.GetSearchPattern(),
                 SearchOption.AllDirectories,
-                Path.Combine("Triggers"))
+                Path.Combine("Import"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapTriggerStrings.FileName,
+                MapImportedFiles.FileName,
                 SearchOption.AllDirectories,
                 "Maps"));
         }
