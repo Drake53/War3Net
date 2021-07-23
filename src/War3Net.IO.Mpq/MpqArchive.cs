@@ -194,7 +194,7 @@ namespace War3Net.IO.Mpq
                 fileCount++;
             }
 
-            _hashTable = new HashTable(Math.Max(createOptions.HashTableSize ?? fileCount * 8, fileCount));
+            _hashTable = new HashTable(Math.Max(fileCount, createOptions.HashTableSize ?? Math.Min(fileCount * 8, MpqTable.MaxSize)));
             _blockTable = new BlockTable();
 
             using (var writer = new BinaryWriter(_baseStream, new UTF8Encoding(false, true), true))
