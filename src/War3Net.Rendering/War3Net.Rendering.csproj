@@ -15,15 +15,15 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
-    <ProjectReference Include="..\War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj" />
     <ProjectReference Include="..\War3Net.Modeling\War3Net.Modeling.csproj" />
+    <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="War3Net.Drawing.Blp" Version="2.0.1" />
     <!-- todo: packagereferences -->
-    <ProjectReference Include="..\War3Net.Drawing.Tga\War3Net.Drawing.Tga.csproj" />
     <ProjectReference Include="..\War3Net.Modeling\War3Net.Modeling.csproj" />
+    <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />
   </ItemGroup>
 
 </Project>
