@@ -49,10 +49,14 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.Roll), SyntaxFactory.LiteralExpression(camera.Roll), zero));
                 statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.FieldOfView), SyntaxFactory.LiteralExpression(camera.FieldOfView), zero));
                 statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.FarZ), SyntaxFactory.LiteralExpression(camera.FarClippingPlane), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.NearZ), SyntaxFactory.LiteralExpression(camera.NearClippingPlane), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalPitch), SyntaxFactory.LiteralExpression(camera.LocalPitch), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalYaw), SyntaxFactory.LiteralExpression(camera.LocalYaw), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalRoll), SyntaxFactory.LiteralExpression(camera.LocalRoll), zero));
+                if (mapCameras.UseNewFormat)
+                {
+                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.NearZ), SyntaxFactory.LiteralExpression(camera.NearClippingPlane), zero));
+                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalPitch), SyntaxFactory.LiteralExpression(camera.LocalPitch), zero));
+                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalYaw), SyntaxFactory.LiteralExpression(camera.LocalYaw), zero));
+                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalRoll), SyntaxFactory.LiteralExpression(camera.LocalRoll), zero));
+                }
+
                 statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetDestPosition, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.LiteralExpression(camera.TargetPosition.X), SyntaxFactory.LiteralExpression(camera.TargetPosition.Y), zero));
                 statements.Add(JassEmptyStatementSyntax.Value);
             }
