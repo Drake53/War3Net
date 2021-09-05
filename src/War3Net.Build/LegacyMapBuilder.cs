@@ -92,8 +92,10 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(compilerOptions));
             }
 
-            var map = new Map(compilerOptions.MapInfo!, compilerOptions.MapEnvironment!)
+            var map = new Map
             {
+                Info = compilerOptions.MapInfo,
+                Environment = compilerOptions.MapEnvironment,
                 Sounds = compilerOptions.MapSounds,
                 PreviewIcons = compilerOptions.MapIcons,
                 Regions = compilerOptions.MapRegions,
