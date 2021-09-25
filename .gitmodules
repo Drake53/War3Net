@@ -3,4 +3,7 @@
 	url = https://github.com/Drake53/CSharp.lua
 [submodule "submodules/FastMDX"]
 	path = submodules/FastMDX
-	url = https://github.com/HanabishiRecca/FastMDX
+	url = https://github.com/Drake53/FastMDX
+[submodule "submodules/JpegLibrary"]
+	path = submodules/JpegLibrary
+	url = https://github.com/Drake53/JpegLibrary
