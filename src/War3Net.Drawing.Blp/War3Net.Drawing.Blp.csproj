@@ -1,15 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
     <Version>$(War3NetDrawingBlpVersion)</Version>
-    <UseWPF>true</UseWPF>
+    <UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup>
     <Description>War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.</Description>
     <PackageTags>blp;warcraft3</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JpegLibrary" Version="0.3.30" Condition="'$(TargetFramework)' != 'net5.0-windows'" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />

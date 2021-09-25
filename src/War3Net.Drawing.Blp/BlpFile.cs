@@ -6,15 +6,17 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using War3Net.Common.Extensions;
+
+#if WINDOWS
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+#else
+using JpegLibrary;
+#endif
 
 namespace War3Net.Drawing.Blp
 {
@@ -166,6 +168,7 @@ namespace War3Net.Drawing.Blp
         /// </summary>
         public int MipMapCount => _mipMapCount;
 
+#if WINDOWS
         /// <summary>
         /// Converts the BLP to a <see cref="BitmapSource"/>.
         /// </summary>
@@ -206,6 +209,7 @@ namespace War3Net.Drawing.Blp
                     throw new IndexOutOfRangeException();
             }
         }
+#endif
 
         /// <summary>
         /// Returns array of pixels in BGRA or RGBA order.
@@ -229,6 +233,7 @@ namespace War3Net.Drawing.Blp
 
         private byte[] GetPixelsJPG(int mipMapLevel, out int w, out int h)
         {
+#if WINDOWS
             var bitmapSource = GetBitmapSource(mipMapLevel);
             w = bitmapSource.PixelWidth;
             h = bitmapSource.PixelHeight;
@@ -236,6 +241,26 @@ namespace War3Net.Drawing.Blp
             var pixels = new byte[4 * w * h];
             bitmapSource.CopyPixels(pixels, 4 * w, 0);
             return pixels;
+#else
+            var decoder = new JpegDecoder();
+
+            var jpegFileBytes = GetJpegFileBytes(mipMapLevel);
+            decoder.SetInput(jpegFileBytes);
+            decoder.Identify();
+
+            if (decoder.Precision != 8)
+            {
+                throw new InvalidDataException($"JPEG precision must be 8, but was {decoder.Precision}.");
+            }
+
+            w = decoder.Width;
+            h = decoder.Height;
+
+            decoder.SetOutputWriter(JpegBlockOutputWriter8Bit.Create(decoder, out var dest));
+            decoder.Decode();
+
+            return dest.ToArray();
+#endif
         }
 
         private byte[] GetPixelsDirect(int mipMapLevel, out int w, out int h, bool bgra = true)
