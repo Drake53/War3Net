@@ -100,8 +100,8 @@ namespace War3Net.IO.Slk
                 return this;
             }
 
-            var newTable = new SylkTable(_columns, _rows);
-            for (var row = 0; row < _rows; row++)
+            var newTable = new SylkTable(_columns, _rows+1);
+            for (var row = 0; row <= _rows; row++)
             {
                 for (var column = 0; column < _columns; column++)
                 {
@@ -128,14 +128,14 @@ namespace War3Net.IO.Slk
             var otherColumnInt = other[otherColumn].Single();
 
             var thisRowMap = new Dictionary<object, int>();
-            for (var row = 1; row < _rows; row++)
+            for (var row = 1; row <= _rows; row++)
             {
                 thisRowMap.Add(_values[thisColumnInt, row], row);
             }
 
             var otherRow = _rows;
             var otherRowMap = new Dictionary<object, int>();
-            for (var row = 1; row < other._rows; row++)
+            for (var row = 1; row <= other._rows; row++)
             {
                 var key = other._values[otherColumnInt, row];
                 otherRowMap.Add(key, thisRowMap.TryGetValue(key, out var thisRow) ? thisRow : otherRow++);
@@ -144,7 +144,7 @@ namespace War3Net.IO.Slk
             newTable._rows = otherRow;
             newTable._columns = newTable._width;
 
-            for (var row = 0; row < _rows; row++)
+            for (var row = 0; row <= _rows; row++)
             {
                 var key = _values[thisColumnInt, row];
                 for (var column = 0; column < _columns; column++)
@@ -160,7 +160,7 @@ namespace War3Net.IO.Slk
                 }
             }
 
-            for (var row = 0; row < other._rows; row++)
+            for (var row = 0; row <= other._rows; row++)
             {
                 var key = other._values[otherColumnInt, row];
                 var seenOtherColumn = false;
