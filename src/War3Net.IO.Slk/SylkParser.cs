@@ -95,39 +95,41 @@ namespace War3Net.IO.Slk
             }
         }
 
-        private void SetCellContent(string x, string y, string value)
+        /// <param name="x">The cell's 1-indexed X position.</param>
+        /// <param name="y">The cell's 1-indexed Y position.</param>
+        private void SetCellContent(string x, string? y, string value)
         {
             if (y == null && _lastY == null)
             {
                 throw new InvalidDataException("Row for cell is not defined.");
             }
 
-            var xi = int.Parse(x);
-            var yi = y == null ? _lastY.Value : int.Parse(y);
+            var xi = int.Parse(x) - 1;
+            var yi = y == null ? _lastY.Value : (int.Parse(y) - 1);
 
             if (value.StartsWith('"') && value.EndsWith('"'))
             {
-                _table[xi - 1, yi - 1] = value[1..^1];
+                _table[xi, yi] = value[1..^1];
             }
             else if (int.TryParse(value, out var @int))
             {
-                _table[xi - 1, yi - 1] = @int;
+                _table[xi, yi] = @int;
             }
             else if (float.TryParse(value, out var @float))
             {
-                _table[xi - 1, yi - 1] = @float;
+                _table[xi, yi] = @float;
             }
-            else if (string.Equals(value, "true", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase))
             {
-                _table[xi - 1, yi - 1] = true;
+                _table[xi, yi] = true;
             }
-            else if (string.Equals(value, "false", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(value, bool.FalseString, StringComparison.OrdinalIgnoreCase))
             {
-                _table[xi - 1, yi - 1] = false;
+                _table[xi, yi] = false;
             }
             else if (string.Equals(value, "#VALUE!", StringComparison.Ordinal))
             {
-                _table[xi - 1, yi - 1] = 0;
+                _table[xi, yi] = 0;
             }
             else
             {
