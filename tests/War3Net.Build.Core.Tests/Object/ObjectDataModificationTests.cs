@@ -38,5 +38,28 @@ namespace War3Net.Build.Core.Tests.Object
             mod.Value = value;
             _ = mod.ValueAsBool;
         }
+
+        [DataTestMethod]
+        [DataRow('c', 'c')]
+        [DataRow('c', "c")]
+        [DataRow('C', "C")]
+        public void ObjectDataModification_ValueAsChar_Correct(char expected, object value)
+        {
+            var mod = new ObjectDataModificationMock();
+            mod.Value = value;
+            Assert.AreEqual(expected, mod.ValueAsChar);
+        }
+
+        [DataTestMethod]
+        [DataRow("test")]
+        [DataRow(2)]
+        [DataRow(2.0)]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ObjectDataModification_ValueAsChar_InvalidOperation(object value)
+        {
+            var mod = new ObjectDataModificationMock();
+            mod.Value = value;
+            _ = mod.ValueAsChar;
+        }
     }
 }

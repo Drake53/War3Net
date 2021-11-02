@@ -47,7 +47,7 @@ namespace War3Net.Build.Object
             }
         }
 
-        public char ValueAsChar => Value is char c ? c : throw new InvalidOperationException();
+        public char ValueAsChar => Value is char c ? c : Value is string str && str.Length == 1 ? char.Parse(str) : throw new InvalidOperationException();
 
         protected object ReadValue(BinaryReader reader, ObjectDataFormatVersion formatVersion)
         {
