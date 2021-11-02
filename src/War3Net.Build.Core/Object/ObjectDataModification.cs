@@ -37,6 +37,11 @@ namespace War3Net.Build.Object
         {
             get
             {
+                if (Value is bool b)
+                {
+                    return b;
+                }
+
                 if (Value is int i)
                 {
                     switch (i)
