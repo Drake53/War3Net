@@ -39,8 +39,13 @@ namespace War3Net.Build.Object
             {
                 if (Value is int i)
                 {
-                    if (i == 1) return true;
-                    else if (i == 0) return false;
+                    switch (i)
+                    {
+                        case 1:
+                            return true;
+                        case 0:
+                            return false;
+                    }
                 }
 
                 throw new InvalidOperationException();
