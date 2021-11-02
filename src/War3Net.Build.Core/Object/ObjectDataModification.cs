@@ -33,19 +33,7 @@ namespace War3Net.Build.Object
 
         public string ValueAsString => Value is string s ? s : throw new InvalidOperationException();
 
-        public bool ValueAsBool
-        {
-            get
-            {
-                if (Value is int i)
-                {
-                    if (i == 1) return true;
-                    else if (i == 0) return false;
-                }
-
-                throw new InvalidOperationException();
-            }
-        }
+        public bool ValueAsBool => Value is bool b ? b : throw new InvalidOperationException();
 
         public char ValueAsChar => Value is char c ? c : throw new InvalidOperationException();
 
