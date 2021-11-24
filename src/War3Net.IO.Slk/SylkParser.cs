@@ -127,13 +127,13 @@ namespace War3Net.IO.Slk
             {
                 _table[xi, yi] = false;
             }
-            else if (string.Equals(value, "#VALUE!", StringComparison.Ordinal))
+            else if (string.Equals(value, "#VALUE!", StringComparison.Ordinal) || string.Equals(value, "#REF!", StringComparison.Ordinal))
             {
                 _table[xi, yi] = 0;
             }
             else
             {
-                throw new NotSupportedException("Can only parse strings, integers, floats, and booleans.");
+                throw new NotSupportedException($"Unable to parse value '{value}'. Can only parse strings, integers, floats, and booleans.");
             }
 
             _lastY = yi;
