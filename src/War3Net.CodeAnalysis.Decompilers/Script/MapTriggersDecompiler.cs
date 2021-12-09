@@ -1,0 +1,359 @@
+﻿using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+
+using War3Net.Build.Common;
+using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Syntax;
+
+namespace War3Net.CodeAnalysis.Decompilers
+{
+    public partial class JassScriptDecompiler
+    {
+        public bool TryDecompileMapTriggers([NotNullWhen(true)] out MapTriggers? mapTriggers)
+        {
+            var initGlobals = GetFunction("InitGlobals");
+            var initCustomTriggers = GetFunction("InitCustomTriggers");
+            var runInitializationTriggers = GetFunction("RunInitializationTriggers");
+
+            if (TryDecompileMapTriggers(initGlobals.FunctionDeclaration, initCustomTriggers.FunctionDeclaration, runInitializationTriggers?.FunctionDeclaration, out mapTriggers))
+            {
+                initGlobals.Handled = true;
+                initCustomTriggers.Handled = true;
+
+                if (runInitializationTriggers is not null)
+                {
+                    runInitializationTriggers.Handled = true;
+                }
+
+                return true;
+            }
+
+            mapTriggers = null;
+            return false;
+        }
+
+        public bool TryDecompileMapTriggers(
+            JassFunctionDeclarationSyntax initGlobalsFunction,
+            JassFunctionDeclarationSyntax initCustomTriggersFunction,
+            JassFunctionDeclarationSyntax? runInitializationTriggersFunction,
+            [NotNullWhen(true)] out MapTriggers? mapTriggers)
+        {
+            if (initGlobalsFunction is null)
+            {
+                throw new ArgumentNullException(nameof(initGlobalsFunction));
+            }
+
+            if (initCustomTriggersFunction is null)
+            {
+                throw new ArgumentNullException(nameof(initCustomTriggersFunction));
+            }
+
+            mapTriggers = new MapTriggers(MapTriggersFormatVersion.Tft, MapTriggersSubVersion.New)
+            {
+                GameVersion = 2,
+                TriggerItems = new()
+                {
+                    new TriggerCategoryDefinition(TriggerItemType.RootCategory)
+                    {
+                        Name = "Untitled",
+                        Id = 0,
+                        ParentId = -1,
+                    },
+                },
+            };
+
+            mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
+            {
+                Name = "Variables",
+                Id = 2 << 24,
+                ParentId = 0,
+            });
+
+            foreach (var declaration in Context.CompilationUnit.Declarations
+                .SelectMany(declaration => declaration is JassGlobalDeclarationListSyntax globalDeclarationList ? globalDeclarationList.Globals : ImmutableArray<IDeclarationSyntax>.Empty))
+            {
+                if (declaration is JassGlobalDeclarationSyntax globalDeclaration)
+                {
+                    if (globalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal))
+                    {
+                        var variableDefinition = new VariableDefinition
+                        {
+                            Name = globalDeclaration.Declarator.IdentifierName.Name["udg_".Length..],
+                            Type = globalDeclaration.Declarator.Type.TypeName.Name,
+                            Unk = 1,
+                            IsArray = false,
+                            ArraySize = 1,
+                            IsInitialized = false,
+                            InitialValue = string.Empty,
+                            Id = (6 << 24) + mapTriggers.Variables.Count,
+                            ParentId = 2 << 24,
+                        };
+
+                        if (globalDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
+                        {
+                            variableDefinition.IsArray = false;
+
+                            if (variableDeclarator.Value is not null &&
+                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
+                            {
+                                variableDefinition.IsInitialized = true;
+                                variableDefinition.InitialValue = initialValue;
+                            }
+                        }
+                        else if (globalDeclaration.Declarator is JassArrayDeclaratorSyntax arrayDeclarator)
+                        {
+                            variableDefinition.IsArray = true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                        mapTriggers.Variables.Add(variableDefinition);
+
+                        var triggerVariableDefinition = new TriggerVariableDefinition();
+                        triggerVariableDefinition.Name = variableDefinition.Name;
+                        triggerVariableDefinition.Id = variableDefinition.Id;
+                        triggerVariableDefinition.ParentId = variableDefinition.ParentId;
+                        mapTriggers.TriggerItems.Add(triggerVariableDefinition);
+                    }
+                }
+            }
+
+            foreach (var statement in initGlobalsFunction.Body.Statements)
+            {
+                if (statement is JassLoopStatementSyntax loopStatement)
+                {
+                    if (loopStatement.Body.Statements.Length == 3 &&
+                        loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
+                        loopStatement.Body.Statements[1] is JassSetStatementSyntax setVariableStatement &&
+                        loopStatement.Body.Statements[2] is JassSetStatementSyntax &&
+                        setVariableStatement.Indexer is JassVariableReferenceExpressionSyntax i &&
+                        string.Equals(i.IdentifierName.Name, "i", StringComparison.Ordinal))
+                    {
+                        var variableName = setVariableStatement.IdentifierName.Name["udg_".Length..];
+                        var arraySize = ((JassDecimalLiteralExpressionSyntax)((JassBinaryExpressionSyntax)DeparenthesizeExpression(exitStatement.Condition)).Right).Value;
+
+                        var variableDefinition = mapTriggers.Variables.Single(v => string.Equals(v.Name, variableName, StringComparison.Ordinal));
+
+                        variableDefinition.ArraySize = arraySize;
+
+                        if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.Value.Expression, variableDefinition.Type, out var initialValue))
+                        {
+                            variableDefinition.IsInitialized = true;
+                            variableDefinition.InitialValue = initialValue;
+                        }
+                    }
+                }
+            }
+
+            mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
+            {
+                Name = "Untitled Category",
+                Id = (2 << 24) + 1,
+                ParentId = 0,
+            });
+
+            foreach (var statement in initCustomTriggersFunction.Body.Statements)
+            {
+                if (statement is JassCallStatementSyntax callStatement &&
+                    callStatement.Arguments.Arguments.IsEmpty &&
+                    Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var initTrigFunction) &&
+                    TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
+                {
+                    trigger.Id = (3 << 24) + mapTriggers.TriggerItems.Where(triggerItem => triggerItem is TriggerDefinition).Count();
+                    trigger.ParentId = (2 << 24) + 1;
+
+                    mapTriggers.TriggerItems.Add(trigger);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool TryDecompileTriggerDefinition(FunctionDeclarationContext initTrigFunction, [NotNullWhen(true)] out TriggerDefinition? trigger)
+        {
+            if (initTrigFunction is null)
+            {
+                throw new ArgumentNullException(nameof(initTrigFunction));
+            }
+
+            trigger = null;
+
+            string? triggerVariableName = null;
+
+            var triggerFunctionName = initTrigFunction.FunctionDeclaration.FunctionDeclarator.IdentifierName.Name["InitTrig_".Length..];
+
+            foreach (var statement in initTrigFunction.FunctionDeclaration.Body.Statements)
+            {
+                if (statement is JassSetStatementSyntax setStatement)
+                {
+                    if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        invocationExpression.Arguments.Arguments.IsEmpty &&
+                        setStatement.Indexer is null &&
+                        string.Equals(setStatement.IdentifierName.Name, $"gg_trg_{triggerFunctionName}", StringComparison.Ordinal) &&
+                        string.Equals(invocationExpression.IdentifierName.Name, "CreateTrigger", StringComparison.Ordinal))
+                    {
+                        triggerVariableName = setStatement.IdentifierName.Name;
+
+                        trigger = new TriggerDefinition();
+                        trigger.IsEnabled = true;
+                        trigger.IsInitiallyOn = true;
+                        trigger.Name = triggerFunctionName.Replace('_', ' ');
+
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (statement is JassCallStatementSyntax callStatement)
+                {
+                    if (string.Equals(callStatement.IdentifierName.Name, "TriggerAddAction", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                        {
+                            var actionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
+                                declaration is JassFunctionDeclarationSyntax functionDeclaration &&
+                                string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, functionReferenceExpression.IdentifierName.Name, StringComparison.Ordinal));
+
+                            if (TryDecompileTriggerActionFunctions(actionsFunction.Body, out var actionFunctions))
+                            {
+                                trigger.Functions.AddRange(actionFunctions);
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "TriggerAddCondition", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassInvocationExpressionSyntax conditionInvocationExpression &&
+                            string.Equals(conditionInvocationExpression.IdentifierName.Name, "Condition", StringComparison.Ordinal) &&
+                            conditionInvocationExpression.Arguments.Arguments.Length == 1 &&
+                            conditionInvocationExpression.Arguments.Arguments[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                        {
+                            var conditionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
+                                declaration is JassFunctionDeclarationSyntax functionDeclaration &&
+                                string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, functionReferenceExpression.IdentifierName.Name, StringComparison.Ordinal));
+
+                            foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
+                            {
+                                if (TryDecompileTriggerConditionFunction(conditionStatement, true, out var conditionFunction))
+                                {
+                                    trigger.Functions.Add(conditionFunction);
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+
+                            // Last statement must be "return true"
+                            if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
+                                finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
+                                !returnBooleanLiteralExpression.Value)
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "DisableTrigger", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 1 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                        {
+                            trigger.IsInitiallyOn = false;
+
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        var eventParameters = Context.TriggerData.GetParameters(TriggerFunctionType.Event, callStatement.IdentifierName.Name);
+
+                        if (callStatement.Arguments.Arguments.Length == eventParameters.Length + 1 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                        {
+                            var function = new TriggerFunction
+                            {
+                                Type = TriggerFunctionType.Event,
+                                IsEnabled = true,
+                                Name = callStatement.IdentifierName.Name,
+                            };
+
+                            for (var i = 1; i < callStatement.Arguments.Arguments.Length; i++)
+                            {
+                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], eventParameters[i - 1], out var functionParameter))
+                                {
+                                    function.Parameters.Add(functionParameter);
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+
+                            trigger.Functions.Add(function);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return trigger is not null;
+        }
+
+        private bool TryDecompileVariableDefinitionInitialValue(IExpressionSyntax expression, string type, [NotNullWhen(true)] out string? initialValue)
+        {
+            if (expression is not JassNullLiteralExpressionSyntax &&
+                (!Context.TriggerData.TryGetTriggerTypeDefault(type, out var typeDefault) ||
+                 !string.Equals(typeDefault.ExpressionString, expression.ToString(), StringComparison.Ordinal)) &&
+                TryDecompileTriggerFunctionParameter(expression, type, out var functionParameter))
+            {
+                initialValue = functionParameter.Value;
+                return true;
+            }
+
+            initialValue = null;
+            return false;
+        }
+    }
+}
