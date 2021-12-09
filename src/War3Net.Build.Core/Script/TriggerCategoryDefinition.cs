@@ -13,7 +13,7 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerCategoryDefinition : TriggerItem
     {
-        internal TriggerCategoryDefinition(TriggerItemType triggerItemType = TriggerItemType.Category)
+        public TriggerCategoryDefinition(TriggerItemType triggerItemType = TriggerItemType.Category)
             : base(triggerItemType)
         {
         }

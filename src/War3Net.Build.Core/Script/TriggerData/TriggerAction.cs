@@ -35,6 +35,16 @@ namespace War3Net.Build.Script
             public int GameVersion { get; }
 
             public ImmutableArray<string> ArgumentTypes { get; }
+
+            public string? ScriptName { get; private set; }
+
+            public void SetAdditionalProperty(string propertyName, string value)
+            {
+                if (string.Equals(propertyName, "ScriptName", StringComparison.Ordinal))
+                {
+                    ScriptName = value;
+                }
+            }
         }
     }
 }

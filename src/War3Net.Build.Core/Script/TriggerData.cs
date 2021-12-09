@@ -28,6 +28,12 @@ namespace War3Net.Build.Script
         private readonly Dictionary<string, TriggerCondition> _triggerConditions;
         private readonly Dictionary<string, TriggerAction> _triggerActions;
         private readonly Dictionary<string, TriggerCall> _triggerCalls;
+        private readonly Dictionary<string, TriggerParam> _triggerParams;
+
+        private Dictionary<string, TriggerCondition> _triggerConditionsLookup;
+        private Dictionary<string, Dictionary<int, TriggerAction>> _triggerActionsLookup;
+        private Dictionary<string, TriggerParam> _variableTypePresets;
+        private Dictionary<string, Dictionary<string, TriggerParam>> _triggerParamsLookup;
 
         private TriggerData()
         {
@@ -35,8 +41,9 @@ namespace War3Net.Build.Script
             _triggerTypeDefaults = new();
             _triggerEvents = new();
             _triggerConditions = new();
-            _triggerActions = new();
+            _triggerActions = new(StringComparer.Ordinal);
             _triggerCalls = new();
+            _triggerParams = new();
         }
 
         public static TriggerData Default => _defaultTriggerData.Value;
@@ -63,7 +70,9 @@ namespace War3Net.Build.Script
 
             object? target = null;
             MethodInfo? addMethod = null;
+            PropertyInfo? getProperty = null;
             ConstructorInfo? constructor = null;
+            MethodInfo? additionalPropertySetter = null;
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
@@ -82,15 +91,18 @@ namespace War3Net.Build.Script
                         "[TriggerConditions]" => result._triggerConditions,
                         "[TriggerActions]" => result._triggerActions,
                         "[TriggerCalls]" => result._triggerCalls,
+                        "[TriggerParams]" => result._triggerParams,
 
                         _ => null,
                     };
 
                     if (target is not null)
                     {
-                        // Get Dictionary<string, T> add method and constructor.
+                        // Get Dictionary<string, T> add method, this[string], and T constructor, propertySetter.
                         addMethod = target.GetType().GetMethod("Add");
+                        getProperty = target.GetType().GetProperty("Item");
                         constructor = target.GetType().GetGenericArguments()[1].GetConstructors().Single();
+                        additionalPropertySetter = target.GetType().GetGenericArguments()[1].GetMethod("SetAdditionalProperty");
                     }
 
                     continue;
@@ -98,12 +110,37 @@ namespace War3Net.Build.Script
 
                 if (line.StartsWith('_'))
                 {
+                    if (additionalPropertySetter is null)
+                    {
+                        continue;
+                    }
+
+                    var split = line.Split('_', 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length != 2)
+                    {
+                        continue;
+                    }
+
+                    var key = split[0];
+                    object? obj;
+                    try
+                    {
+                        obj = getProperty!.GetValue(target, new object[] { key });
+                    }
+                    catch (TargetInvocationException e) when (e.InnerException is KeyNotFoundException)
+                    {
+                        continue;
+                    }
+
+                    var parameters = split[1].Split('=', 2);
+                    additionalPropertySetter.Invoke(obj, new object[] { parameters[0], parameters[1] });
+
                     continue;
                 }
 
                 if (target is not null)
                 {
-                    var split = line.Split('=');
+                    var split = line.Split('=', 2);
                     if (split.Length != 2)
                     {
                         split = line.Split('-');
@@ -119,6 +156,8 @@ namespace War3Net.Build.Script
                     addMethod!.Invoke(target, new[] { key, constructor!.Invoke(new object[] { key, values }) });
                 }
             }
+
+            result.PrepareLookups();
 
             return result;
         }
@@ -155,6 +194,119 @@ namespace War3Net.Build.Script
             };
 
             return parameters ?? throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
+        }
+
+        public bool TryGetParametersByScriptName(
+            string scriptName,
+            int expectedParameterCount,
+            [NotNullWhen(true)] out ImmutableArray<string>? parameters,
+            [NotNullWhen(true)] out string? functionName)
+        {
+            if (string.IsNullOrWhiteSpace(scriptName))
+            {
+                throw new ArgumentNullException(nameof(scriptName));
+            }
+
+            if (_triggerActionsLookup.TryGetValue(scriptName, out var triggerActions) && triggerActions.TryGetValue(expectedParameterCount, out var action))
+            {
+                parameters = action.ArgumentTypes;
+                functionName = action.ActionFunctionName;
+                return true;
+            }
+
+            parameters = null;
+            functionName = null;
+            return false;
+        }
+
+        public bool TryGetReturnType(string functionName, [NotNullWhen(true)] out string? returnType)
+        {
+            if (_triggerCalls.TryGetValue(functionName, out var call))
+            {
+                returnType = call.ReturnType;
+                return true;
+            }
+
+            returnType = null;
+            return false;
+        }
+
+        public bool TryGetOperatorCompareType(string variableType, [NotNullWhen(true)] out string? operatorCompareType, [NotNullWhen(true)] out string? operatorType)
+        {
+            if (_triggerConditionsLookup.TryGetValue(variableType, out var triggerCondition))
+            {
+                operatorCompareType = triggerCondition.ConditionFunctionName;
+                operatorType = triggerCondition.ArgumentTypes[1];
+                return true;
+            }
+
+            operatorCompareType = null;
+            operatorType = null;
+            return false;
+        }
+
+        public bool TryGetTriggerParamPreset(string codeText, [NotNullWhen(true)] out string? presetName, [NotNullWhen(true)] out string? type)
+        {
+            if (_variableTypePresets.TryGetValue(codeText, out var triggerParam))
+            {
+                presetName = triggerParam.ParameterName;
+                type = triggerParam.VariableType;
+                return true;
+            }
+
+            presetName = null;
+            type = null;
+            return false;
+        }
+
+        public bool TryGetTriggerParamPreset(string variableType, string codeText, [NotNullWhen(true)] out string? presetName)
+        {
+            if (_triggerParamsLookup.TryGetValue(variableType, out var variableTypePresets) && variableTypePresets.TryGetValue(codeText, out var triggerParam))
+            {
+                presetName = triggerParam.ParameterName;
+                return true;
+            }
+
+            presetName = null;
+            return false;
+        }
+
+        private void PrepareLookups()
+        {
+            _triggerConditionsLookup = _triggerConditions
+                .Where(triggerCondition => triggerCondition.Value.ArgumentTypes.Length == 3 && string.Equals(triggerCondition.Value.ArgumentTypes[0], triggerCondition.Value.ArgumentTypes[2], StringComparison.Ordinal))
+                .ToDictionary(triggerCondition => triggerCondition.Value.ArgumentTypes[0], triggerCondition => triggerCondition.Value);
+
+            _triggerActionsLookup = _triggerActions
+                .GroupBy(triggerAction => string.IsNullOrEmpty(triggerAction.Value.ScriptName) ? triggerAction.Key : triggerAction.Value.ScriptName)
+                .ToDictionary(grouping => grouping.Key, grouping => grouping.GroupBy(triggerAction => triggerAction.Value.ArgumentTypes.Length).ToDictionary(grouping => grouping.Key, grouping => grouping.First().Value));
+
+            _variableTypePresets = GetTriggerParamDictionary(_triggerParams, GetAllowedOperatorCompareVariableTypes());
+
+            _triggerParamsLookup = _triggerParams
+                .GroupBy(triggerParam => triggerParam.Value.VariableType, StringComparer.Ordinal)
+                .ToDictionary(grouping => grouping.Key, grouping => GetTriggerParamDictionary(grouping));
+        }
+
+        private HashSet<string> GetAllowedOperatorCompareVariableTypes()
+        {
+            return _triggerConditionsLookup.Keys.ToHashSet(StringComparer.Ordinal);
+        }
+
+        private Dictionary<string, TriggerParam> GetTriggerParamDictionary(IEnumerable<KeyValuePair<string, TriggerParam>> items, HashSet<string>? allowedVariableTypes = null)
+        {
+            var result = new Dictionary<string, TriggerParam>();
+            foreach (var item in items)
+            {
+                if (allowedVariableTypes is not null && (string.Equals(item.Value.CodeText, "null", StringComparison.Ordinal) || !allowedVariableTypes.Contains(item.Value.VariableType)))
+                {
+                    continue;
+                }
+
+                result.TryAdd(item.Value.CodeText, item.Value);
+            }
+
+            return result;
         }
     }
 }

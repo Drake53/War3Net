@@ -13,6 +13,10 @@ namespace War3Net.Build.Script
 {
     public sealed class VariableDefinition
     {
+        public VariableDefinition()
+        {
+        }
+
         internal VariableDefinition(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             ReadFrom(reader, triggerData, formatVersion, subVersion);

@@ -13,7 +13,7 @@ namespace War3Net.Build.Script
 {
     public sealed class TriggerVariableDefinition : TriggerItem
     {
-        internal TriggerVariableDefinition(TriggerItemType triggerItemType = TriggerItemType.Variable)
+        public TriggerVariableDefinition(TriggerItemType triggerItemType = TriggerItemType.Variable)
             : base(triggerItemType)
         {
         }
