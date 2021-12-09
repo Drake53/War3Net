@@ -38,6 +38,11 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.ExpressionParser.ParseOrThrow(expression);
         }
 
+        public static JassFunctionDeclarationSyntax ParseFunctionDeclaration(string functionDeclaration)
+        {
+            return JassParser.Instance.FunctionDeclarationParser.ParseOrThrow(functionDeclaration);
+        }
+
         public static JassIdentifierNameSyntax ParseIdentifierName(string identifierName)
         {
             return JassParser.Instance.IdentifierNameParser.ParseOrThrow(identifierName);

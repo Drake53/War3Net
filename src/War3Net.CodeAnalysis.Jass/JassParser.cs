@@ -24,6 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
         private readonly Parser<char, ICustomScriptAction> _customScriptActionParser;
         private readonly Parser<char, IDeclarationSyntax> _declarationParser;
         private readonly Parser<char, IExpressionSyntax> _expressionParser;
+        private readonly Parser<char, JassFunctionDeclarationSyntax> _functionDeclarationParser;
         private readonly Parser<char, JassIdentifierNameSyntax> _identifierNameParser;
         private readonly Parser<char, JassParameterListSyntax> _parameterListParser;
         private readonly Parser<char, IStatementSyntax> _statementParser;
@@ -75,6 +76,11 @@ namespace War3Net.CodeAnalysis.Jass
                 typeParser,
                 endOfLineParser);
 
+            var functionDeclarationParser = GetStandaloneFunctionDeclarationParser(
+                functionDeclaratorParser,
+                GetStatementListParser(statementParser, endOfLineParser),
+                endOfLineParser);
+
             var declarationParser = GetDeclarationParser(
                 emptyDeclarationParser,
                 commentDeclarationParser,
@@ -99,6 +105,7 @@ namespace War3Net.CodeAnalysis.Jass
             _customScriptActionParser = Create(customScriptActionParser.Before(commentParser.Optional()));
             _declarationParser = Create(declarationParser);
             _expressionParser = Create(expressionParser);
+            _functionDeclarationParser = Create(functionDeclarationParser);
             _identifierNameParser = Create(identifierNameParser);
             _parameterListParser = Create(parameterListParser);
             _statementParser = Create(statementParser);
@@ -116,6 +123,8 @@ namespace War3Net.CodeAnalysis.Jass
         internal Parser<char, IDeclarationSyntax> DeclarationParser => _declarationParser;
 
         internal Parser<char, IExpressionSyntax> ExpressionParser => _expressionParser;
+
+        internal Parser<char, JassFunctionDeclarationSyntax> FunctionDeclarationParser => _functionDeclarationParser;
 
         internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;
 
