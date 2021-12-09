@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Version>$(War3NetCodeAnalysisDecompilersVersion)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Regenerate war3map files from a Warcraft III map script.</Description>
+    <PackageTags>jass;warcraft3</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
+    <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.Build.Core" Version="$(War3NetBuildCoreVersion)" />
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
+  </ItemGroup>
+
+</Project>
