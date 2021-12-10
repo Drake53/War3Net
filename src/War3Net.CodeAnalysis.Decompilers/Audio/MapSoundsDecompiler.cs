@@ -87,6 +87,20 @@ namespace War3Net.CodeAnalysis.Decompilers
                             return false;
                         }
                     }
+                    else if (setStatement.Indexer is null &&
+                             setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal) &&
+                             setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
+                    {
+                        sounds.Add(setStatement.IdentifierName.Name, new Sound
+                        {
+                            Name = setStatement.IdentifierName.Name,
+                            FilePath = Regex.Unescape(stringLiteralExpression.Value),
+                            EaxSetting = string.Empty,
+                            Flags = SoundFlags.Music,
+                            FadeInRate = 10,
+                            FadeOutRate = 10,
+                        });
+                    }
                     else
                     {
                         continue;
