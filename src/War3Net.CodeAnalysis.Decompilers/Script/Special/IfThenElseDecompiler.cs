@@ -17,7 +17,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Name = "IfThenElseMultiple",
             };
 
-            if (DeparenthesizeExpression(ifStatement.Condition) is JassInvocationExpressionSyntax conditionInvocationExpression &&
+            var conditionExpression = DeparenthesizeExpression(ifStatement.Condition);
+
+            if (conditionExpression is JassInvocationExpressionSyntax conditionInvocationExpression &&
                 Context.FunctionDeclarations.TryGetValue(conditionInvocationExpression.IdentifierName.Name, out var conditionsFunctionDeclaration) &&
                 conditionsFunctionDeclaration.IsConditionsFunction)
             {
@@ -45,6 +47,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     actionFunction = null;
                     return false;
                 }
+            }
+            else if (TryDecompileConditionExpression(conditionExpression, out var conditionFunction))
+            {
+                conditionFunction.Branch = 0;
+                function.ChildFunctions.Add(conditionFunction);
             }
             else
             {

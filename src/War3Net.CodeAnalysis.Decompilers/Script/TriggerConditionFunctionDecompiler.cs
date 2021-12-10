@@ -38,143 +38,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         }
                     }
 
-                    if (conditionExpression is JassInvocationExpressionSyntax invocationExpression)
-                    {
-                        if (string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanAnd", StringComparison.Ordinal) ||
-                            string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanOr", StringComparison.Ordinal))
-                        {
-                            if (invocationExpression.Arguments.Arguments.Length == 2)
-                            {
-                                var function = new TriggerFunction
-                                {
-                                    Type = TriggerFunctionType.Condition,
-                                    IsEnabled = true,
-                                    Name = invocationExpression.IdentifierName.Name,
-                                };
-
-                                foreach (var argument in invocationExpression.Arguments.Arguments)
-                                {
-                                    var conditionInvocationExpression = (JassInvocationExpressionSyntax)argument;
-                                    var conditionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
-                                        declaration is JassFunctionDeclarationSyntax functionDeclaration &&
-                                        string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, conditionInvocationExpression.IdentifierName.Name, StringComparison.Ordinal));
-
-                                    if (conditionsFunction.Body.Statements.Length == 1)
-                                    {
-                                        if (conditionsFunction.Body.Statements[0] is JassReturnStatementSyntax singleReturnStatement)
-                                        {
-                                            if (TryDecompileTriggerConditionFunction(singleReturnStatement, true, out var conditionSubFunction))
-                                            {
-                                                function.Parameters.Add(new TriggerFunctionParameter
-                                                {
-                                                    Type = TriggerFunctionParameterType.Function,
-                                                    Value = string.Empty,
-                                                    Function = conditionSubFunction,
-                                                });
-                                            }
-                                            else
-                                            {
-                                                conditionFunction = null;
-                                                return false;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            conditionFunction = null;
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
-                                        {
-                                            if (TryDecompileTriggerConditionFunction(conditionStatement, true, out var conditionSubFunction))
-                                            {
-                                                function.Parameters.Add(new TriggerFunctionParameter
-                                                {
-                                                    Type = TriggerFunctionParameterType.Function,
-                                                    Value = string.Empty,
-                                                    Function = conditionSubFunction,
-                                                });
-                                            }
-                                            else
-                                            {
-                                                conditionFunction = null;
-                                                return false;
-                                            }
-                                        }
-
-                                        // Last statement must be "return true"
-                                        if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
-                                            finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
-                                            !returnBooleanLiteralExpression.Value)
-                                        {
-                                            conditionFunction = null;
-                                            return false;
-                                        }
-                                    }
-                                }
-
-                                conditionFunction = function;
-                                return true;
-                            }
-                            else
-                            {
-                                conditionFunction = null;
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            if (invocationExpression.Arguments.Arguments.IsEmpty)
-                            {
-                                var conditionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
-                                    declaration is JassFunctionDeclarationSyntax functionDeclaration &&
-                                    string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, invocationExpression.IdentifierName.Name, StringComparison.Ordinal));
-
-                                // Last statement must be "return true" or "return false"
-                                if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
-                                    finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression)
-                                {
-                                    conditionFunction = null;
-                                    return false;
-                                }
-
-                                var function = new TriggerFunction
-                                {
-                                    Type = TriggerFunctionType.Condition,
-                                    IsEnabled = true,
-                                    Name = returnBooleanLiteralExpression.Value ? "AndMultiple" : "OrMultiple",
-                                };
-
-                                foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
-                                {
-                                    if (TryDecompileTriggerConditionFunction(conditionStatement, returnBooleanLiteralExpression.Value, out var conditionSubFunction))
-                                    {
-                                        conditionSubFunction.Branch = 0;
-                                        function.ChildFunctions.Add(conditionSubFunction);
-                                    }
-                                    else
-                                    {
-                                        conditionFunction = null;
-                                        return false;
-                                    }
-                                }
-
-                                conditionFunction = function;
-                                return true;
-                            }
-                            else
-                            {
-                                conditionFunction = null;
-                                return false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return TryDecompileTriggerConditionFunction(conditionExpression, out conditionFunction);
-                    }
+                    return TryDecompileConditionExpression(conditionExpression, out conditionFunction);
                 }
                 else
                 {
@@ -191,6 +55,104 @@ namespace War3Net.CodeAnalysis.Decompilers
             else
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private bool TryDecompileConditionExpression(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunction? conditionFunction)
+        {
+            expression = DeparenthesizeExpression(expression);
+
+            if (expression is JassInvocationExpressionSyntax invocationExpression)
+            {
+                if (string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanAnd", StringComparison.Ordinal) ||
+                    string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanOr", StringComparison.Ordinal))
+                {
+                    if (invocationExpression.Arguments.Arguments.Length == 2)
+                    {
+                        var function = new TriggerFunction
+                        {
+                            Type = TriggerFunctionType.Condition,
+                            IsEnabled = true,
+                            Name = invocationExpression.IdentifierName.Name,
+                        };
+
+                        foreach (var argument in invocationExpression.Arguments.Arguments)
+                        {
+                            if (TryDecompileConditionExpression(argument, out var conditionSubFunction))
+                            {
+                                function.Parameters.Add(new TriggerFunctionParameter
+                                {
+                                    Type = TriggerFunctionParameterType.Function,
+                                    Value = string.Empty,
+                                    Function = conditionSubFunction,
+                                });
+                            }
+                            else
+                            {
+                                conditionFunction = null;
+                                return false;
+                            }
+                        }
+
+                        conditionFunction = function;
+                        return true;
+                    }
+                    else
+                    {
+                        conditionFunction = null;
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (invocationExpression.Arguments.Arguments.IsEmpty &&
+                        Context.FunctionDeclarations.TryGetValue(invocationExpression.IdentifierName.Name, out var conditionsFunctionDeclaration) &&
+                        conditionsFunctionDeclaration.IsConditionsFunction)
+                    {
+                        var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
+
+                        // Last statement must be "return true" or "return false"
+                        if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
+                            finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression)
+                        {
+                            conditionFunction = null;
+                            return false;
+                        }
+
+                        var function = new TriggerFunction
+                        {
+                            Type = TriggerFunctionType.Condition,
+                            IsEnabled = true,
+                            Name = returnBooleanLiteralExpression.Value ? "AndMultiple" : "OrMultiple",
+                        };
+
+                        foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
+                        {
+                            if (TryDecompileTriggerConditionFunction(conditionStatement, returnBooleanLiteralExpression.Value, out var conditionSubFunction))
+                            {
+                                conditionSubFunction.Branch = 0;
+                                function.ChildFunctions.Add(conditionSubFunction);
+                            }
+                            else
+                            {
+                                conditionFunction = null;
+                                return false;
+                            }
+                        }
+
+                        conditionFunction = function;
+                        return true;
+                    }
+                    else
+                    {
+                        conditionFunction = null;
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return TryDecompileTriggerConditionFunction(expression, out conditionFunction);
             }
         }
 

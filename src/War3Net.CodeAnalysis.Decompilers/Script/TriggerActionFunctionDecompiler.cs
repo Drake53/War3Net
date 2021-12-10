@@ -20,27 +20,34 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (Context.TriggerData.TryGetParametersByScriptName(callStatement.IdentifierName.Name, callStatement.Arguments.Arguments.Length, out var parameters, out var functionName))
                     {
-                        var function = new TriggerFunction
+                        if (TryDecompileForEachLoopActionFunction(callStatement, parameters.Value, out var loopActionFunction))
                         {
-                            Type = TriggerFunctionType.Action,
-                            IsEnabled = true,
-                            Name = functionName,
-                        };
-
-                        for (var j = 0; j < callStatement.Arguments.Arguments.Length; j++)
-                        {
-                            if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[j], parameters.Value[j], out var functionParameter))
-                            {
-                                function.Parameters.Add(functionParameter);
-                            }
-                            else
-                            {
-                                actionFunctions = null;
-                                return false;
-                            }
+                            result.Add(loopActionFunction);
                         }
+                        else
+                        {
+                            var function = new TriggerFunction
+                            {
+                                Type = TriggerFunctionType.Action,
+                                IsEnabled = true,
+                                Name = functionName,
+                            };
 
-                        result.Add(function);
+                            for (var j = 0; j < callStatement.Arguments.Arguments.Length; j++)
+                            {
+                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[j], parameters.Value[j], out var functionParameter))
+                                {
+                                    function.Parameters.Add(functionParameter);
+                                }
+                                else
+                                {
+                                    actionFunctions = null;
+                                    return false;
+                                }
+                            }
+
+                            result.Add(function);
+                        }
                     }
                     else
                     {

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -50,6 +51,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 case "damagetype":
                     return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
 
+                case "destructable":
+                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
+
                 case "effect":
                     return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
@@ -78,6 +82,9 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                 case "imagefile":
                     return TryDecompileTriggerFunctionImageFileParameter(expression, out functionParameter);
+
+                case "includeoption":
+                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
 
                 case "integer":
                     return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
@@ -118,6 +125,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 case "onoffoption":
                     return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
 
+                case "pauseunpauseoption":
+                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
+
                 case "player":
                     return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
                         || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
@@ -153,10 +163,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter);
 
                 case "string":
-                    return TryDecompileTriggerFunctionStringParameter(expression, out functionParameter);
-
                 case "StringExt":
-                    return TryDecompileTriggerFunctionStringExtParameter(expression, out functionParameter);
+                    return TryDecompileTriggerFunctionStringParameter(expression, out functionParameter);
 
                 case "stringnoformat":
                     return TryDecompileTriggerFunctionStringNoFormatParameter(expression, out functionParameter);
@@ -207,6 +215,23 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
         }
 
+        private bool TryDecompileTriggerFunctionParameter(BinaryOperatorType binaryOperatorType, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+        {
+            if (Context.TriggerData.TryGetTriggerParamPreset(type, binaryOperatorType.GetSymbol(), out var value))
+            {
+                functionParameter = new TriggerFunctionParameter
+                {
+                    Type = TriggerFunctionParameterType.Preset,
+                    Value = value,
+                };
+
+                return true;
+            }
+
+            functionParameter = null;
+            return false;
+        }
+
         private bool TryDecompileTriggerFunctionParameterPreset(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TryGetTriggerParamPreset(type, expression.ToString(), out var value))
@@ -238,7 +263,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
             {
-                if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, "integer", out var arrayIndexer))
+                if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
                     functionParameter = new TriggerFunctionParameter
                     {
@@ -252,6 +277,35 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             functionParameter = null;
+            return false;
+        }
+
+        private bool TryDecompileTriggerFunctionParameterVariable(JassSetStatementSyntax setStatement, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter, [NotNullWhen(true)] out string? type)
+        {
+            if (setStatement.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal) &&
+                Context.VariableDeclarations.TryGetValue(setStatement.IdentifierName.Name, out var variableDeclaration))
+            {
+                type = variableDeclaration.Type;
+                functionParameter = new TriggerFunctionParameter
+                {
+                    Type = TriggerFunctionParameterType.Variable,
+                    Value = setStatement.IdentifierName.Name["udg_".Length..],
+                };
+
+                if (setStatement.Indexer is null)
+                {
+                    return true;
+                }
+                else if (TryDecompileTriggerFunctionParameter(setStatement.Indexer, JassKeyword.Integer, out var arrayIndexer))
+                {
+                    functionParameter.ArrayIndexer = arrayIndexer;
+
+                    return true;
+                }
+            }
+
+            functionParameter = null;
+            type = null;
             return false;
         }
 
@@ -363,7 +417,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
             {
-                if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, "integer", out var arrayIndexer))
+                if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
                     functionParameter = new TriggerFunctionParameter
                     {
@@ -411,17 +465,6 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileTriggerFunctionCodeParameter(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (expression is JassFunctionReferenceExpressionSyntax functionReferenceExpression)
-            {
-                functionParameter = new TriggerFunctionParameter
-                {
-                    Type = TriggerFunctionParameterType.String,
-                    Value = functionReferenceExpression.IdentifierName.Name,
-                };
-
-                return true;
-            }
-
             functionParameter = null;
             return false;
         }
@@ -470,9 +513,33 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                 return true;
             }
+            else if (expression is JassUnaryExpressionSyntax unaryExpression)
+            {
+                if (unaryExpression.Operator == UnaryOperatorType.Plus ||
+                    unaryExpression.Operator == UnaryOperatorType.Minus)
+                {
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.String,
+                        Value = unaryExpression.ToString(),
+                    };
+
+                    return true;
+                }
+            }
             else if (expression is JassBinaryExpressionSyntax binaryExpression)
             {
-                throw new NotImplementedException();
+                if (TryDecompileTriggerCallFunction(binaryExpression, JassKeyword.Integer, out var callFunction))
+                {
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Function,
+                        Value = callFunction.Name,
+                        Function = callFunction,
+                    };
+
+                    return true;
+                }
             }
 
             functionParameter = null;
@@ -533,7 +600,17 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else if (expression is JassBinaryExpressionSyntax binaryExpression)
             {
-                throw new NotImplementedException();
+                if (TryDecompileTriggerCallFunction(binaryExpression, JassKeyword.Real, out var callFunction))
+                {
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Function,
+                        Value = callFunction.Name,
+                        Function = callFunction,
+                    };
+
+                    return true;
+                }
             }
 
             functionParameter = null;
@@ -583,40 +660,19 @@ namespace War3Net.CodeAnalysis.Decompilers
                     return true;
                 }
             }
-
-            functionParameter = null;
-            return false;
-        }
-
-        private bool TryDecompileTriggerFunctionStringExtParameter(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
-        {
-            if (expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
+            else if (expression is JassBinaryExpressionSyntax binaryExpression)
             {
-                functionParameter = new TriggerFunctionParameter
-                {
-                    Type = TriggerFunctionParameterType.String,
-                    Value = stringLiteralExpression.Value,
-                };
-
-                return true;
-            }
-            else if (expression is JassInvocationExpressionSyntax invocationExpression)
-            {
-                if (TryDecompileTriggerCallFunction(invocationExpression, out var callFunction))
+                if (TryDecompileTriggerCallFunction(binaryExpression, JassKeyword.String, out var callFunction))
                 {
                     functionParameter = new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.Function,
-                        Value = invocationExpression.IdentifierName.Name,
+                        Value = callFunction.Name,
                         Function = callFunction,
                     };
 
                     return true;
                 }
-            }
-            else if (expression is JassBinaryExpressionSyntax binaryExpression)
-            {
-                throw new NotImplementedException();
             }
 
             functionParameter = null;
