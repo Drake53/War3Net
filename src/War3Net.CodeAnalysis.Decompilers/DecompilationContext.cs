@@ -36,11 +36,14 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             ObjectData = new ObjectDataContext(map, campaign);
             TriggerData = triggerData ?? TriggerData.Default;
-            CompilationUnit = JassSyntaxFactory.ParseCompilationUnit(map.Script);
+
+            var compilationUnit = JassSyntaxFactory.ParseCompilationUnit(map.Script);
 
             var comments = new List<JassCommentDeclarationSyntax>();
             var functionDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, FunctionDeclarationContext>(StringComparer.Ordinal);
-            foreach (var declaration in CompilationUnit.Declarations)
+            var variableDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, VariableDeclarationContext>(StringComparer.Ordinal);
+
+            foreach (var declaration in compilationUnit.Declarations)
             {
                 if (declaration is JassCommentDeclarationSyntax commentDeclaration)
                 {
@@ -52,20 +55,31 @@ namespace War3Net.CodeAnalysis.Decompilers
                     {
                         functionDeclarationsBuilder.Add(functionDeclaration.FunctionDeclarator.IdentifierName.Name, new FunctionDeclarationContext(functionDeclaration, comments));
                     }
+                    else if (declaration is JassGlobalDeclarationListSyntax globalDeclarationList)
+                    {
+                        foreach (var declaration2 in globalDeclarationList.Globals)
+                        {
+                            if (declaration2 is JassGlobalDeclarationSyntax globalDeclaration)
+                            {
+                                variableDeclarationsBuilder.Add(globalDeclaration.Declarator.IdentifierName.Name, new VariableDeclarationContext(globalDeclaration));
+                            }
+                        }
+                    }
 
                     comments.Clear();
                 }
             }
 
             FunctionDeclarations = functionDeclarationsBuilder.ToImmutable();
+            VariableDeclarations = variableDeclarationsBuilder.ToImmutable();
         }
 
         public ObjectDataContext ObjectData { get; }
 
         public TriggerData TriggerData { get; }
 
-        public JassCompilationUnitSyntax CompilationUnit { get; }
-
         public ImmutableDictionary<string, FunctionDeclarationContext> FunctionDeclarations { get; }
+
+        public ImmutableDictionary<string, VariableDeclarationContext> VariableDeclarations { get; }
     }
 }

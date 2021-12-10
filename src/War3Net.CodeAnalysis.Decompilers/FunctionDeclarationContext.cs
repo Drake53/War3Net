@@ -11,12 +11,23 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             FunctionDeclaration = functionDeclaration;
             Comments = comments.ToImmutableList();
+
+            if (functionDeclaration.FunctionDeclarator.ParameterList.Parameters.IsEmpty)
+            {
+                IsActionsFunction = functionDeclaration.FunctionDeclarator.ReturnType == JassTypeSyntax.Nothing;
+                IsConditionsFunction = functionDeclaration.FunctionDeclarator.ReturnType == JassTypeSyntax.Boolean;
+            }
+
             Handled = false;
         }
 
         public JassFunctionDeclarationSyntax FunctionDeclaration { get; }
 
         public ImmutableList<JassCommentDeclarationSyntax> Comments { get; }
+
+        public bool IsActionsFunction { get; }
+
+        public bool IsConditionsFunction { get; }
 
         public bool Handled { get; set; }
     }
