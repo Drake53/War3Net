@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -13,11 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassFourCCLiteralExpressionSyntax FourCCLiteralExpression(int value)
         {
-            return new JassFourCCLiteralExpressionSyntax(
-                (value & unchecked((int)0xFF000000)) >> 24 |
-                (value & 0x00FF0000) >> 8 |
-                (value & 0x0000FF00) << 8 |
-                (value & 0x000000FF) << 24);
+            return new JassFourCCLiteralExpressionSyntax(value.InvertEndianness());
         }
     }
 }
