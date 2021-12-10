@@ -32,9 +32,15 @@ namespace War3Net.CodeAnalysis.Decompilers.Extensions
                 return true;
             }
 
-            if (expression is JassRealLiteralExpressionSyntax realLiteralExpression)
+            if (expression is JassRealLiteralExpressionSyntax realLiteralExpression &&
+                float.TryParse(realLiteralExpression.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
             {
-                value = float.Parse(realLiteralExpression.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+                return true;
+            }
+
+            if (expression is JassUnaryExpressionSyntax unaryExpression &&
+                float.TryParse(unaryExpression.ToString(), NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
+            {
                 return true;
             }
 
