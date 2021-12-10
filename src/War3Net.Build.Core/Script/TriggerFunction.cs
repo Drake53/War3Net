@@ -29,7 +29,7 @@ namespace War3Net.Build.Script
 
         public TriggerFunctionType Type { get; set; }
 
-        public int Branch { get; set; } = -1;
+        public int? Branch { get; set; }
 
         public string Name { get; set; }
 
@@ -77,9 +77,9 @@ namespace War3Net.Build.Script
         internal void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.Write((int)Type);
-            if (Branch != -1)
+            if (Branch.HasValue)
             {
-                writer.Write(Branch);
+                writer.Write(Branch.Value);
             }
 
             writer.WriteString(Name);
