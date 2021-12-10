@@ -26,7 +26,10 @@ namespace War3Net.Build.Script
 
         public bool IsComment { get; set; }
 
-        public int Unk { get; set; }
+        /// <summary>
+        /// If <see langword="false"/>, the category is collapsed, hiding its children in the trigger editor.
+        /// </summary>
+        public bool IsExpanded { get; set; }
 
         internal void ReadFrom(BinaryReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
@@ -39,7 +42,7 @@ namespace War3Net.Build.Script
 
             if (subVersion is not null)
             {
-                Unk = reader.ReadInt32();
+                IsExpanded = reader.ReadBool();
                 ParentId = reader.ReadInt32();
             }
         }
@@ -55,7 +58,7 @@ namespace War3Net.Build.Script
 
             if (subVersion is not null)
             {
-                writer.Write(Unk);
+                writer.WriteBool(IsExpanded);
                 writer.Write(ParentId);
             }
         }
