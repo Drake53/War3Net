@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -42,180 +41,74 @@ namespace War3Net.CodeAnalysis.Decompilers
                         }
 
                         result.Add(function);
-                        continue;
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        result.Add(DecompileCustomScriptAction(callStatement));
                     }
                 }
                 else if (statement is JassSetStatementSyntax setStatement)
                 {
                     if (i + 2 < statementList.Statements.Length &&
-                        statementList.Statements[i + 1] is JassSetStatementSyntax setIndexEndStatement &&
-                        statementList.Statements[i + 2] is JassLoopStatementSyntax loopStatement &&
-                        loopStatement.Body.Statements.Length >= 2 &&
-                        loopStatement.Body.Statements.First() is JassExitStatementSyntax exitStatement &&
-                        DeparenthesizeExpression(exitStatement.Condition) is JassBinaryExpressionSyntax exitExpression &&
-                        exitExpression.Operator == BinaryOperatorType.GreaterThan &&
-                        exitExpression.Left is JassVariableReferenceExpressionSyntax exitLeftVariableReferenceExpression &&
-                        exitExpression.Right is JassVariableReferenceExpressionSyntax exitRightVariableReferenceExpression &&
-                        loopStatement.Body.Statements.Last() is JassSetStatementSyntax incrementStatement &&
-                        incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&
-                        incrementExpression.Operator == BinaryOperatorType.Add &&
-                        incrementExpression.Left is JassVariableReferenceExpressionSyntax incrementVariableReferenceExpression &&
-                        incrementExpression.Right is JassDecimalLiteralExpressionSyntax incrementLiteralExpression &&
-                        incrementLiteralExpression.Value == 1 &&
-                        string.Equals(setStatement.IdentifierName.Name, exitLeftVariableReferenceExpression.IdentifierName.Name, StringComparison.Ordinal) &&
-                        string.Equals(setIndexEndStatement.IdentifierName.Name, exitRightVariableReferenceExpression.IdentifierName.Name, StringComparison.Ordinal) &&
-                        string.Equals(setStatement.IdentifierName.Name, incrementStatement.IdentifierName.Name, StringComparison.Ordinal) &&
-                        string.Equals(setStatement.IdentifierName.Name, incrementVariableReferenceExpression.IdentifierName.Name, StringComparison.Ordinal))
+                        TryDecompileForLoopActionFunction(setStatement, statementList.Statements[i + 1], statementList.Statements[i + 2], out var loopFunction))
                     {
-                        var loopFunction = new TriggerFunction
-                        {
-                            Type = TriggerFunctionType.Action,
-                            IsEnabled = true,
-                        };
-
-                        if (TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, "integer", out var indexFunctionParameter) &&
-                            TryDecompileTriggerFunctionParameter(setIndexEndStatement.Value.Expression, "integer", out var indexEndFunctionParameter) &&
-                            TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActionFunctions))
-                        {
-                            loopFunction.Parameters.Add(indexFunctionParameter);
-                            loopFunction.Parameters.Add(indexEndFunctionParameter);
-
-                            foreach (var loopActionFunction in loopActionFunctions.Skip(1).SkipLast(1))
-                            {
-                                loopActionFunction.Branch = 0;
-                                loopFunction.ChildFunctions.Add(loopActionFunction);
-                            }
-                        }
-                        else
-                        {
-                            actionFunctions = null;
-                            return false;
-                        }
-
-                        if (string.Equals(setStatement.IdentifierName.Name, "bj_forLoopAIndex", StringComparison.Ordinal) &&
-                            string.Equals(setIndexEndStatement.IdentifierName.Name, "bj_forLoopAIndexEnd", StringComparison.Ordinal))
-                        {
-                            loopFunction.Name = "ForLoopAMultiple";
-                        }
-                        else if (string.Equals(setStatement.IdentifierName.Name, "bj_forLoopBIndex", StringComparison.Ordinal) &&
-                                 string.Equals(setIndexEndStatement.IdentifierName.Name, "bj_forLoopBIndexEnd", StringComparison.Ordinal))
-                        {
-                            loopFunction.Name = "ForLoopBMultiple";
-                        }
-                        else
-                        {
-                            actionFunctions = null;
-                            return false;
-                        }
-
                         result.Add(loopFunction);
 
                         i += 2;
-                        continue;
                     }
-
-                    var function = new TriggerFunction
+                    else if (i + 1 < statementList.Statements.Length &&
+                             TryDecompileForLoopVarActionFunction(setStatement, statementList.Statements[i + 1], out var loopVarFunction))
                     {
-                        Type = TriggerFunctionType.Action,
-                        IsEnabled = true,
-                        Name = "CustomScriptCode",
-                        Parameters = new()
-                        {
-                            new TriggerFunctionParameter
-                            {
-                                Type = TriggerFunctionParameterType.String,
-                                Value = setStatement.ToString(),
-                            },
-                        },
-                    };
+                        result.Add(loopVarFunction);
 
-                    result.Add(function);
-                    continue;
-                }
-                else if (statement is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement)
-                {
-                    var function = new TriggerFunction
-                    {
-                        Type = TriggerFunctionType.Action,
-                        IsEnabled = true,
-                        Name = "CustomScriptCode",
-                        Parameters = new()
-                        {
-                            new TriggerFunctionParameter
-                            {
-                                Type = TriggerFunctionParameterType.String,
-                                Value = localVariableDeclarationStatement.ToString(),
-                            },
-                        },
-                    };
-
-                    result.Add(function);
-                    continue;
-                }
-                else if (statement is JassIfStatementSyntax ifStatement)
-                {
-                    if (ifStatement.ElseIfClauses.IsEmpty)
+                        i += 1;
+                    }
+                    else if (TryDecompileTriggerFunctionParameterVariable(setStatement, out var variableFunctionParameter, out var variableType) &&
+                             TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, variableType, out var valueFunctionParameter))
                     {
                         var function = new TriggerFunction
                         {
                             Type = TriggerFunctionType.Action,
                             IsEnabled = true,
-                            Name = "IfThenElseMultiple",
+                            Name = "SetVariable",
                         };
 
-                        if (DeparenthesizeExpression(ifStatement.Condition) is JassInvocationExpressionSyntax conditionInvocationExpression)
+                        function.Parameters.Add(variableFunctionParameter);
+                        function.Parameters.Add(valueFunctionParameter);
+
+                        result.Add(function);
+                    }
+                    else
+                    {
+                        result.Add(DecompileCustomScriptAction(setStatement));
+                    }
+                }
+                else if (statement is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement)
+                {
+                    result.Add(DecompileCustomScriptAction(localVariableDeclarationStatement));
+                }
+                else if (statement is JassIfStatementSyntax ifStatement)
+                {
+                    if (ifStatement.ElseIfClauses.IsEmpty &&
+                        ifStatement.ElseClause is not null)
+                    {
+                        if (TryDecompileIfThenElseActionFunction(ifStatement, out var ifThenElseFunction))
                         {
-                            var conditionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
-                                declaration is JassFunctionDeclarationSyntax functionDeclaration &&
-                                string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, conditionInvocationExpression.IdentifierName.Name, StringComparison.Ordinal));
-
-                            foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
-                            {
-                                if (TryDecompileTriggerConditionFunction(conditionStatement, true, out var conditionFunction))
-                                {
-                                    conditionFunction.Branch = 0;
-                                    function.ChildFunctions.Add(conditionFunction);
-                                }
-                                else
-                                {
-                                    actionFunctions = null;
-                                    return false;
-                                }
-                            }
-
-                            // Last statement must be "return true"
-                            if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
-                                finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
-                                !returnBooleanLiteralExpression.Value)
-                            {
-                                actionFunctions = null;
-                                return false;
-                            }
+                            result.Add(ifThenElseFunction);
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            actionFunctions = null;
+                            return false;
                         }
+                    }
+                    else
+                    {
+                        result.Add(DecompileCustomScriptAction(new JassIfCustomScriptAction(ifStatement.Condition)));
 
-                        if (TryDecompileTriggerActionFunctions(ifStatement.Body, out var thenActions) &&
-                            TryDecompileTriggerActionFunctions(ifStatement.ElseClause.Body, out var elseActions))
+                        if (TryDecompileTriggerActionFunctions(ifStatement.Body, out var thenActions))
                         {
-                            foreach (var action in thenActions)
-                            {
-                                action.Branch = 1;
-                            }
-
-                            foreach (var action in elseActions)
-                            {
-                                action.Branch = 2;
-                            }
-
-                            function.ChildFunctions.AddRange(thenActions);
-                            function.ChildFunctions.AddRange(elseActions);
+                            result.AddRange(thenActions);
                         }
                         else
                         {
@@ -223,31 +116,42 @@ namespace War3Net.CodeAnalysis.Decompilers
                             return false;
                         }
 
-                        result.Add(function);
-                        continue;
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
+                        foreach (var elseIfClause in ifStatement.ElseIfClauses)
+                        {
+                            result.Add(DecompileCustomScriptAction(new JassElseIfCustomScriptAction(elseIfClause.Condition)));
+
+                            if (TryDecompileTriggerActionFunctions(elseIfClause.Body, out var elseIfActions))
+                            {
+                                result.AddRange(elseIfActions);
+                            }
+                            else
+                            {
+                                actionFunctions = null;
+                                return false;
+                            }
+                        }
+
+                        if (ifStatement.ElseClause is not null)
+                        {
+                            result.Add(DecompileCustomScriptAction(JassElseCustomScriptAction.Value));
+
+                            if (TryDecompileTriggerActionFunctions(ifStatement.ElseClause.Body, out var elseActions))
+                            {
+                                result.AddRange(elseActions);
+                            }
+                            else
+                            {
+                                actionFunctions = null;
+                                return false;
+                            }
+                        }
+
+                        result.Add(DecompileCustomScriptAction(JassEndIfCustomScriptAction.Value));
                     }
                 }
                 else if (statement is JassLoopStatementSyntax loopStatement)
                 {
-                    var function = new TriggerFunction
-                    {
-                        Type = TriggerFunctionType.Action,
-                        IsEnabled = true,
-                        Name = "CustomScriptCode",
-                        Parameters = new()
-                        {
-                            new TriggerFunctionParameter
-                            {
-                                Type = TriggerFunctionParameterType.String,
-                                Value = "loop",
-                            },
-                        },
-                    };
-                    result.Add(function);
+                    result.Add(DecompileCustomScriptAction(JassLoopCustomScriptAction.Value));
 
                     if (TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActions))
                     {
@@ -259,47 +163,36 @@ namespace War3Net.CodeAnalysis.Decompilers
                         return false;
                     }
 
-                    function = new TriggerFunction
-                    {
-                        Type = TriggerFunctionType.Action,
-                        IsEnabled = true,
-                        Name = "CustomScriptCode",
-                        Parameters = new()
-                        {
-                            new TriggerFunctionParameter
-                            {
-                                Type = TriggerFunctionParameterType.String,
-                                Value = "endloop",
-                            },
-                        },
-                    };
-                    result.Add(function);
-
-                    continue;
+                    result.Add(DecompileCustomScriptAction(JassEndLoopCustomScriptAction.Value));
                 }
                 else if (statement is JassExitStatementSyntax exitStatement)
                 {
-                    var function = new TriggerFunction
+                    result.Add(DecompileCustomScriptAction(exitStatement));
+                }
+                else if (statement is JassCommentStatementSyntax commentStatement)
+                {
+                    result.Add(new TriggerFunction
                     {
                         Type = TriggerFunctionType.Action,
                         IsEnabled = true,
-                        Name = "CustomScriptCode",
+                        Name = "CommentString",
                         Parameters = new()
                         {
                             new TriggerFunctionParameter
                             {
                                 Type = TriggerFunctionParameterType.String,
-                                Value = exitStatement.ToString(),
+                                Value = commentStatement.Comment,
                             },
                         },
-                    };
-
-                    result.Add(function);
-                    continue;
+                    });
+                }
+                else if (statement is JassReturnStatementSyntax returnStatement)
+                {
+                    result.Add(DecompileCustomScriptAction(returnStatement));
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
 
