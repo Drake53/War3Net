@@ -37,72 +37,81 @@ namespace War3Net.Build
 
             foreach (var sound in mapSounds.Sounds)
             {
-                var is3DSound = sound.Flags.HasFlag(SoundFlags.Is3DSound)
-                    && sound.Channel != SoundChannel.Error
-                    && sound.Channel != SoundChannel.Music
-                    && sound.Channel != SoundChannel.UserInterface;
-
-                statements.Add(SyntaxFactory.SetStatement(
-                    sound.Name,
-                    SyntaxFactory.InvocationExpression(
-                        NativeName.CreateSound,
-                        SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.FilePath)),
-                        SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.Looping)),
-                        SyntaxFactory.LiteralExpression(is3DSound),
-                        SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.StopWhenOutOfRange)),
-                        SyntaxFactory.LiteralExpression(sound.FadeInRate),
-                        SyntaxFactory.LiteralExpression(sound.FadeOutRate),
-                        SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.EaxSetting)))));
-
-                if (sound.DistanceCutoff != 3000f)
+                if (sound.Flags.HasFlag(SoundFlags.Music))
                 {
-                    var distanceCutoff = sound.DistanceCutoff == uint.MaxValue ? 3000f : sound.DistanceCutoff;
-                    statements.Add(SyntaxFactory.CallStatement(
-                        NativeName.SetSoundDistanceCutoff,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(distanceCutoff, precision: 1)));
+                    statements.Add(SyntaxFactory.SetStatement(
+                        sound.Name,
+                        SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.FilePath))));
                 }
-
-                if ((int)sound.Channel != -1)
+                else
                 {
-                    var channel = sound.Channel == SoundChannel.Undefined ? SoundChannel.General : sound.Channel;
+                    var is3DSound = sound.Flags.HasFlag(SoundFlags.Is3DSound)
+                        && sound.Channel != SoundChannel.Error
+                        && sound.Channel != SoundChannel.Music
+                        && sound.Channel != SoundChannel.UserInterface;
+
+                    statements.Add(SyntaxFactory.SetStatement(
+                        sound.Name,
+                        SyntaxFactory.InvocationExpression(
+                            NativeName.CreateSound,
+                            SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.FilePath)),
+                            SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.Looping)),
+                            SyntaxFactory.LiteralExpression(is3DSound),
+                            SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.StopWhenOutOfRange)),
+                            SyntaxFactory.LiteralExpression(sound.FadeInRate),
+                            SyntaxFactory.LiteralExpression(sound.FadeOutRate),
+                            SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.EaxSetting)))));
+
+                    if (sound.DistanceCutoff != 3000f)
+                    {
+                        var distanceCutoff = sound.DistanceCutoff == uint.MaxValue ? 3000f : sound.DistanceCutoff;
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundDistanceCutoff,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(distanceCutoff, precision: 1)));
+                    }
+
+                    if ((int)sound.Channel != -1)
+                    {
+                        var channel = sound.Channel == SoundChannel.Undefined ? SoundChannel.General : sound.Channel;
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundChannel,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression((int)channel)));
+                    }
+
                     statements.Add(SyntaxFactory.CallStatement(
-                        NativeName.SetSoundChannel,
+                        NativeName.SetSoundVolume,
                         SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression((int)channel)));
-                }
-
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.SetSoundVolume,
-                    SyntaxFactory.VariableReferenceExpression(sound.Name),
-                    SyntaxFactory.LiteralExpression(sound.Volume == -1 ? 127 : sound.Volume)));
-
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.SetSoundPitch,
-                    SyntaxFactory.VariableReferenceExpression(sound.Name),
-                    SyntaxFactory.LiteralExpression(sound.Pitch == uint.MaxValue ? 1f : sound.Pitch, precision: 1)));
-
-                if (is3DSound)
-                {
-                    statements.Add(SyntaxFactory.CallStatement(
-                        NativeName.SetSoundDistances,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(sound.MinDistance == uint.MaxValue ? 0f : sound.MinDistance, precision: 1),
-                        SyntaxFactory.LiteralExpression(sound.MaxDistance == uint.MaxValue ? 10000f : sound.MaxDistance, precision: 1)));
+                        SyntaxFactory.LiteralExpression(sound.Volume == -1 ? 127 : sound.Volume)));
 
                     statements.Add(SyntaxFactory.CallStatement(
-                        NativeName.SetSoundConeAngles,
+                        NativeName.SetSoundPitch,
                         SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(sound.ConeAngleInside == uint.MaxValue ? 0f : sound.ConeAngleInside, precision: 1),
-                        SyntaxFactory.LiteralExpression(sound.ConeAngleOutside == uint.MaxValue ? 0f : sound.ConeAngleOutside, precision: 1),
-                        SyntaxFactory.LiteralExpression(sound.ConeOutsideVolume == -1 ? 127 : sound.ConeOutsideVolume)));
+                        SyntaxFactory.LiteralExpression(sound.Pitch == uint.MaxValue ? 1f : sound.Pitch, precision: 1)));
 
-                    statements.Add(SyntaxFactory.CallStatement(
-                        NativeName.SetSoundConeOrientation,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(sound.ConeOrientation.X == uint.MaxValue ? 0f : sound.ConeOrientation.X, precision: 1),
-                        SyntaxFactory.LiteralExpression(sound.ConeOrientation.Y == uint.MaxValue ? 0f : sound.ConeOrientation.Y, precision: 1),
-                        SyntaxFactory.LiteralExpression(sound.ConeOrientation.Z == uint.MaxValue ? 0f : sound.ConeOrientation.Z, precision: 1)));
+                    if (is3DSound)
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundDistances,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.MinDistance == uint.MaxValue ? 0f : sound.MinDistance, precision: 1),
+                            SyntaxFactory.LiteralExpression(sound.MaxDistance == uint.MaxValue ? 10000f : sound.MaxDistance, precision: 1)));
+
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundConeAngles,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.ConeAngleInside == uint.MaxValue ? 0f : sound.ConeAngleInside, precision: 1),
+                            SyntaxFactory.LiteralExpression(sound.ConeAngleOutside == uint.MaxValue ? 0f : sound.ConeAngleOutside, precision: 1),
+                            SyntaxFactory.LiteralExpression(sound.ConeOutsideVolume == -1 ? 127 : sound.ConeOutsideVolume)));
+
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundConeOrientation,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.X == uint.MaxValue ? 0f : sound.ConeOrientation.X, precision: 1),
+                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.Y == uint.MaxValue ? 0f : sound.ConeOrientation.Y, precision: 1),
+                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.Z == uint.MaxValue ? 0f : sound.ConeOrientation.Z, precision: 1)));
+                    }
                 }
             }
 

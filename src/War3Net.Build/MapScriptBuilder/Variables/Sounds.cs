@@ -11,6 +11,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.Build.Audio;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.CodeAnalysis.Transpilers;
 
@@ -45,10 +46,19 @@ namespace War3Net.Build
 
             foreach (var sound in mapSounds.Sounds)
             {
-                yield return SyntaxFactory.GlobalDeclaration(
-                    SyntaxFactory.ParseTypeName(TypeName.Sound),
-                    sound.Name,
-                    JassNullLiteralExpressionSyntax.Value);
+                if (sound.Flags.HasFlag(SoundFlags.Music))
+                {
+                    yield return SyntaxFactory.GlobalDeclaration(
+                        JassTypeSyntax.String,
+                        sound.Name);
+                }
+                else
+                {
+                    yield return SyntaxFactory.GlobalDeclaration(
+                        SyntaxFactory.ParseTypeName(TypeName.Sound),
+                        sound.Name,
+                        JassNullLiteralExpressionSyntax.Value);
+                }
             }
         }
     }
