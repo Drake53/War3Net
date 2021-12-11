@@ -111,27 +111,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     {
                         var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
 
-                        // Last statement must be "return true" or "return false"
-                        if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
-                            finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression)
+                        if (conditionsFunction.Body.Statements.Length == 1)
                         {
-                            conditionFunction = null;
-                            return false;
-                        }
-
-                        var function = new TriggerFunction
-                        {
-                            Type = TriggerFunctionType.Condition,
-                            IsEnabled = true,
-                            Name = returnBooleanLiteralExpression.Value ? "AndMultiple" : "OrMultiple",
-                        };
-
-                        foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
-                        {
-                            if (TryDecompileTriggerConditionFunction(conditionStatement, returnBooleanLiteralExpression.Value, out var conditionSubFunction))
+                            if (conditionsFunction.Body.Statements[0] is JassReturnStatementSyntax singleReturnStatement)
                             {
-                                conditionSubFunction.Branch = 0;
-                                function.ChildFunctions.Add(conditionSubFunction);
+                                return TryDecompileTriggerConditionFunction(singleReturnStatement, true, out conditionFunction);
                             }
                             else
                             {
@@ -139,9 +123,40 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
+                        else
+                        {
+                            // Last statement must be "return true" or "return false"
+                            if (conditionsFunction.Body.Statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
+                                finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression)
+                            {
+                                conditionFunction = null;
+                                return false;
+                            }
 
-                        conditionFunction = function;
-                        return true;
+                            var function = new TriggerFunction
+                            {
+                                Type = TriggerFunctionType.Condition,
+                                IsEnabled = true,
+                                Name = returnBooleanLiteralExpression.Value ? "AndMultiple" : "OrMultiple",
+                            };
+
+                            foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
+                            {
+                                if (TryDecompileTriggerConditionFunction(conditionStatement, returnBooleanLiteralExpression.Value, out var conditionSubFunction))
+                                {
+                                    conditionSubFunction.Branch = 0;
+                                    function.ChildFunctions.Add(conditionSubFunction);
+                                }
+                                else
+                                {
+                                    conditionFunction = null;
+                                    return false;
+                                }
+                            }
+
+                            conditionFunction = function;
+                            return true;
+                        }
                     }
                     else
                     {

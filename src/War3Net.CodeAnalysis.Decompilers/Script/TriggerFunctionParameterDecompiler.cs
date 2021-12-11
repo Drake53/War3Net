@@ -120,7 +120,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                         || TryDecompileTriggerFunctionMusicFileParameter(expression, out functionParameter);
 
                 case "multiboard":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter);
+                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
+                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
                 case "onoffoption":
                     return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
@@ -180,7 +181,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                         || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
                 case "unit":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
+                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
+                        || TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
                         || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
                 case "unitcode":
@@ -253,25 +255,14 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
             {
-                functionParameter = new TriggerFunctionParameter
-                {
-                    Type = TriggerFunctionParameterType.Variable,
-                    Value = variableReferenceExpression.IdentifierName.Name,
-                };
-
+                functionParameter = DecompileVariableTriggerFunctionParameter(variableReferenceExpression.IdentifierName.Name);
                 return true;
             }
             else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
             {
                 if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
-                    functionParameter = new TriggerFunctionParameter
-                    {
-                        Type = TriggerFunctionParameterType.Variable,
-                        Value = arrayReferenceExpression.IdentifierName.Name,
-                        ArrayIndexer = arrayIndexer,
-                    };
-
+                    functionParameter = DecompileVariableTriggerFunctionParameter(arrayReferenceExpression.IdentifierName.Name, arrayIndexer);
                     return true;
                 }
             }
@@ -285,12 +276,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (setStatement.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal) &&
                 Context.VariableDeclarations.TryGetValue(setStatement.IdentifierName.Name, out var variableDeclaration))
             {
+                functionParameter = DecompileVariableTriggerFunctionParameter(setStatement.IdentifierName.Name);
                 type = variableDeclaration.Type;
-                functionParameter = new TriggerFunctionParameter
-                {
-                    Type = TriggerFunctionParameterType.Variable,
-                    Value = setStatement.IdentifierName.Name["udg_".Length..],
-                };
 
                 if (setStatement.Indexer is null)
                 {
@@ -406,12 +393,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
             {
-                functionParameter = new TriggerFunctionParameter
-                {
-                    Type = TriggerFunctionParameterType.Variable,
-                    Value = variableReferenceExpression.IdentifierName.Name,
-                };
-
+                functionParameter = DecompileVariableTriggerFunctionParameter(variableReferenceExpression.IdentifierName.Name);
                 type = string.Empty;
                 return true;
             }
@@ -419,13 +401,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
-                    functionParameter = new TriggerFunctionParameter
-                    {
-                        Type = TriggerFunctionParameterType.Variable,
-                        Value = arrayReferenceExpression.IdentifierName.Name,
-                        ArrayIndexer = arrayIndexer,
-                    };
-
+                    functionParameter = DecompileVariableTriggerFunctionParameter(arrayReferenceExpression.IdentifierName.Name, arrayIndexer);
                     type = string.Empty;
                     return true;
                 }
@@ -434,6 +410,16 @@ namespace War3Net.CodeAnalysis.Decompilers
             functionParameter = null;
             type = null;
             return false;
+        }
+
+        private TriggerFunctionParameter DecompileVariableTriggerFunctionParameter(string variableName, TriggerFunctionParameter? arrayIndexer = null)
+        {
+            return new TriggerFunctionParameter
+            {
+                Type = TriggerFunctionParameterType.Variable,
+                Value = variableName.StartsWith("udg_", StringComparison.Ordinal) ? variableName["udg_".Length..] : variableName,
+                ArrayIndexer = arrayIndexer,
+            };
         }
 
         private bool TryDecompileTriggerFunctionAbilCodeParameter(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)

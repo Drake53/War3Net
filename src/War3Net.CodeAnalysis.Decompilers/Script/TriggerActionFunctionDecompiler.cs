@@ -178,20 +178,28 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassCommentStatementSyntax commentStatement)
                 {
-                    result.Add(new TriggerFunction
+                    if (commentStatement.Comment.Length > 1 &&
+                        commentStatement.Comment.StartsWith(' '))
                     {
-                        Type = TriggerFunctionType.Action,
-                        IsEnabled = true,
-                        Name = "CommentString",
-                        Parameters = new()
+                        result.Add(new TriggerFunction
                         {
-                            new TriggerFunctionParameter
+                            Type = TriggerFunctionType.Action,
+                            IsEnabled = true,
+                            Name = "CommentString",
+                            Parameters = new()
                             {
-                                Type = TriggerFunctionParameterType.String,
-                                Value = commentStatement.Comment,
+                                new TriggerFunctionParameter
+                                {
+                                    Type = TriggerFunctionParameterType.String,
+                                    Value = commentStatement.Comment[1..],
+                                },
                             },
-                        },
-                    });
+                        });
+                    }
+                    else
+                    {
+                        result.Add(DecompileCustomScriptAction(commentStatement));
+                    }
                 }
                 else if (statement is JassReturnStatementSyntax returnStatement)
                 {
