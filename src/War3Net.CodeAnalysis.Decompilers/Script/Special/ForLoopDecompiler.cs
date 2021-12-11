@@ -10,6 +10,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Decompilers.Extensions;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -23,7 +24,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 statement3 is JassLoopStatementSyntax loopStatement &&
                 loopStatement.Body.Statements.Length >= 2 &&
                 loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
-                DeparenthesizeExpression(exitStatement.Condition) is JassBinaryExpressionSyntax exitExpression &&
+                exitStatement.Condition.Deparenthesize() is JassBinaryExpressionSyntax exitExpression &&
                 exitExpression.Operator == BinaryOperatorType.GreaterThan &&
                 exitExpression.Left is JassVariableReferenceExpressionSyntax exitLeftVariableReferenceExpression &&
                 exitExpression.Right is JassVariableReferenceExpressionSyntax exitRightVariableReferenceExpression &&
@@ -95,7 +96,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (statement2 is JassLoopStatementSyntax loopStatement &&
                 loopStatement.Body.Statements.Length >= 2 &&
                 loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
-                DeparenthesizeExpression(exitStatement.Condition) is JassBinaryExpressionSyntax exitExpression &&
+                exitStatement.Condition.Deparenthesize() is JassBinaryExpressionSyntax exitExpression &&
                 exitExpression.Operator == BinaryOperatorType.GreaterThan &&
                 loopStatement.Body.Statements[^1] is JassSetStatementSyntax incrementStatement &&
                 incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&

@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Decompilers.Extensions;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -29,14 +30,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                     returnStatement.Value is JassBooleanLiteralExpressionSyntax booleanLiteralExpression &&
                     booleanLiteralExpression.Value != returnValue)
                 {
-                    var conditionExpression = DeparenthesizeExpression(ifStatement.Condition);
+                    var conditionExpression = ifStatement.Condition.Deparenthesize();
 
                     if (returnValue)
                     {
                         if (conditionExpression is JassUnaryExpressionSyntax unaryExpression &&
                             unaryExpression.Operator == UnaryOperatorType.Not)
                         {
-                            conditionExpression = DeparenthesizeExpression(unaryExpression.Expression);
+                            conditionExpression = unaryExpression.Expression.Deparenthesize();
                         }
                         else
                         {
@@ -55,7 +56,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else if (statement is JassReturnStatementSyntax returnStatement)
             {
-                var returnExpression = DeparenthesizeExpression(returnStatement.Value);
+                var returnExpression = returnStatement.Value.Deparenthesize();
 
                 return TryDecompileTriggerConditionFunction(returnExpression, out conditionFunction);
             }
@@ -67,7 +68,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileConditionExpression(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunction? conditionFunction)
         {
-            expression = DeparenthesizeExpression(expression);
+            expression = expression.Deparenthesize();
 
             if (expression is JassInvocationExpressionSyntax invocationExpression)
             {

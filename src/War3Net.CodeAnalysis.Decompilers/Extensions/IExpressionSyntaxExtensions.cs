@@ -13,6 +13,16 @@ namespace War3Net.CodeAnalysis.Decompilers.Extensions
 {
     public static class IExpressionSyntaxExtensions
     {
+        public static IExpressionSyntax Deparenthesize(this IExpressionSyntax expression)
+        {
+            while (expression is JassParenthesizedExpressionSyntax parenthesizedExpression)
+            {
+                expression = parenthesizedExpression.Expression;
+            }
+
+            return expression;
+        }
+
         public static bool TryGetIntegerExpressionValue(this IExpressionSyntax expression, out int value)
         {
             switch (expression)

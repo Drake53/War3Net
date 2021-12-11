@@ -103,18 +103,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassIfStatementSyntax ifStatement)
                 {
-                    if (ifStatement.ElseIfClauses.IsEmpty &&
-                        ifStatement.ElseClause is not null)
+                    if (TryDecompileIfThenElseActionFunction(ifStatement, out var ifThenElseFunction))
                     {
-                        if (TryDecompileIfThenElseActionFunction(ifStatement, out var ifThenElseFunction))
-                        {
-                            result.Add(ifThenElseFunction);
-                        }
-                        else
-                        {
-                            actionFunctions = null;
-                            return false;
-                        }
+                        result.Add(ifThenElseFunction);
                     }
                     else
                     {
