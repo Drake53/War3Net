@@ -1,4 +1,11 @@
-﻿using System.Globalization;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="IExpressionSyntaxExtensions.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 

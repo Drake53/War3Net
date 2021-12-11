@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="JassScriptDecompiler.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 
 using War3Net.Build;
@@ -69,7 +76,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                             continue;
                         }
 
-                        if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var candidateFunction) && !candidateFunction.Handled)
+                        if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var candidateFunction) &&
+                            candidateFunction.IsActionsFunction &&
+                            !candidateFunction.Handled)
                         {
                             yield return candidateFunction;
                         }

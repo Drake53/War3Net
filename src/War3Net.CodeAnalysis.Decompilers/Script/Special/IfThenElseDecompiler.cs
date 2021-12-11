@@ -1,4 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="IfThenElseDecompiler.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using War3Net.Build.Script;
@@ -40,7 +47,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
 
                 // Last statement must be "return true"
-                if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
+                if (conditionsFunction.Body.Statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
                     finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
                     !returnBooleanLiteralExpression.Value)
                 {
