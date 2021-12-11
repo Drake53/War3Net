@@ -42,69 +42,74 @@ namespace War3Net.CodeAnalysis.Decompilers
                 if (statement is JassSetStatementSyntax setStatement)
                 {
                     if (setStatement.Indexer is null &&
-                        setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal) &&
-                        setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
-                        string.Equals(invocationExpression.IdentifierName.Name, "CreateSound", StringComparison.Ordinal))
+                        setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal))
                     {
-                        if (invocationExpression.Arguments.Arguments.Length == 7 &&
-                            invocationExpression.Arguments.Arguments[0] is JassStringLiteralExpressionSyntax fileNameLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[1] is JassBooleanLiteralExpressionSyntax loopingLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax is3DLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[3] is JassBooleanLiteralExpressionSyntax stopWhenOutOfRangeLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[4] is JassDecimalLiteralExpressionSyntax fadeInRateLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[5] is JassDecimalLiteralExpressionSyntax fadeOutRateLiteralExpression &&
-                            invocationExpression.Arguments.Arguments[6] is JassStringLiteralExpressionSyntax eaxSettingLiteralExpression)
+                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                            string.Equals(invocationExpression.IdentifierName.Name, "CreateSound", StringComparison.Ordinal))
                         {
-                            var flags = (SoundFlags)0;
-                            if (loopingLiteralExpression.Value)
+                            if (invocationExpression.Arguments.Arguments.Length == 7 &&
+                                invocationExpression.Arguments.Arguments[0] is JassStringLiteralExpressionSyntax fileNameLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[1] is JassBooleanLiteralExpressionSyntax loopingLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax is3DLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[3] is JassBooleanLiteralExpressionSyntax stopWhenOutOfRangeLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[4] is JassDecimalLiteralExpressionSyntax fadeInRateLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[5] is JassDecimalLiteralExpressionSyntax fadeOutRateLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[6] is JassStringLiteralExpressionSyntax eaxSettingLiteralExpression)
                             {
-                                flags |= SoundFlags.Looping;
-                            }
+                                var flags = (SoundFlags)0;
+                                if (loopingLiteralExpression.Value)
+                                {
+                                    flags |= SoundFlags.Looping;
+                                }
 
-                            if (is3DLiteralExpression.Value)
+                                if (is3DLiteralExpression.Value)
+                                {
+                                    flags |= SoundFlags.Is3DSound;
+                                }
+
+                                if (stopWhenOutOfRangeLiteralExpression.Value)
+                                {
+                                    flags |= SoundFlags.StopWhenOutOfRange;
+                                }
+
+                                sounds.Add(setStatement.IdentifierName.Name, new Sound
+                                {
+                                    Name = setStatement.IdentifierName.Name,
+                                    FilePath = Regex.Unescape(fileNameLiteralExpression.Value),
+                                    EaxSetting = eaxSettingLiteralExpression.Value,
+                                    Flags = flags,
+                                    FadeInRate = fadeInRateLiteralExpression.Value,
+                                    FadeOutRate = fadeOutRateLiteralExpression.Value,
+                                });
+                            }
+                            else
                             {
-                                flags |= SoundFlags.Is3DSound;
+                                mapSounds = null;
+                                return false;
                             }
-
-                            if (stopWhenOutOfRangeLiteralExpression.Value)
-                            {
-                                flags |= SoundFlags.StopWhenOutOfRange;
-                            }
-
+                        }
+                        else if (setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
+                        {
                             sounds.Add(setStatement.IdentifierName.Name, new Sound
                             {
                                 Name = setStatement.IdentifierName.Name,
-                                FilePath = Regex.Unescape(fileNameLiteralExpression.Value),
-                                EaxSetting = eaxSettingLiteralExpression.Value,
-                                Flags = flags,
-                                FadeInRate = fadeInRateLiteralExpression.Value,
-                                FadeOutRate = fadeOutRateLiteralExpression.Value,
+                                FilePath = Regex.Unescape(stringLiteralExpression.Value),
+                                EaxSetting = string.Empty,
+                                Flags = SoundFlags.Music,
+                                FadeInRate = 10,
+                                FadeOutRate = 10,
                             });
                         }
                         else
                         {
-                            mapSounds = null;
-                            return false;
+                            continue;
                         }
-                    }
-                    else if (setStatement.Indexer is null &&
-                             setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal) &&
-                             setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
-                    {
-                        sounds.Add(setStatement.IdentifierName.Name, new Sound
-                        {
-                            Name = setStatement.IdentifierName.Name,
-                            FilePath = Regex.Unescape(stringLiteralExpression.Value),
-                            EaxSetting = string.Empty,
-                            Flags = SoundFlags.Music,
-                            FadeInRate = 10,
-                            FadeOutRate = 10,
-                        });
                     }
                     else
                     {
                         continue;
                     }
+
                 }
                 else if (statement is JassCallStatementSyntax callStatement)
                 {
