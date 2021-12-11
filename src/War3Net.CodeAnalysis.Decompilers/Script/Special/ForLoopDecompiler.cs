@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
@@ -15,12 +15,12 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (statement2 is JassSetStatementSyntax setIndexEndStatement &&
                 statement3 is JassLoopStatementSyntax loopStatement &&
                 loopStatement.Body.Statements.Length >= 2 &&
-                loopStatement.Body.Statements.First() is JassExitStatementSyntax exitStatement &&
+                loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
                 DeparenthesizeExpression(exitStatement.Condition) is JassBinaryExpressionSyntax exitExpression &&
                 exitExpression.Operator == BinaryOperatorType.GreaterThan &&
                 exitExpression.Left is JassVariableReferenceExpressionSyntax exitLeftVariableReferenceExpression &&
                 exitExpression.Right is JassVariableReferenceExpressionSyntax exitRightVariableReferenceExpression &&
-                loopStatement.Body.Statements.Last() is JassSetStatementSyntax incrementStatement &&
+                loopStatement.Body.Statements[^1] is JassSetStatementSyntax incrementStatement &&
                 incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&
                 incrementExpression.Operator == BinaryOperatorType.Add &&
                 incrementExpression.Left is JassVariableReferenceExpressionSyntax incrementVariableReferenceExpression &&
@@ -37,14 +37,15 @@ namespace War3Net.CodeAnalysis.Decompilers
                     IsEnabled = true,
                 };
 
+                var loopBody = new JassStatementListSyntax(ImmutableArray.CreateRange(loopStatement.Body.Statements, 1, loopStatement.Body.Statements.Length - 2, statement => statement));
                 if (TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
                     TryDecompileTriggerFunctionParameter(setIndexEndStatement.Value.Expression, JassKeyword.Integer, out var indexEndFunctionParameter) &&
-                    TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActionFunctions))
+                    TryDecompileTriggerActionFunctions(loopBody, out var loopActionFunctions))
                 {
                     loopFunction.Parameters.Add(indexFunctionParameter);
                     loopFunction.Parameters.Add(indexEndFunctionParameter);
 
-                    foreach (var loopActionFunction in loopActionFunctions.Skip(1).SkipLast(1))
+                    foreach (var loopActionFunction in loopActionFunctions)
                     {
                         loopActionFunction.Branch = 0;
                         loopFunction.ChildFunctions.Add(loopActionFunction);
@@ -86,10 +87,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (statement2 is JassLoopStatementSyntax loopStatement &&
                 loopStatement.Body.Statements.Length >= 2 &&
-                loopStatement.Body.Statements.First() is JassExitStatementSyntax exitStatement &&
+                loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
                 DeparenthesizeExpression(exitStatement.Condition) is JassBinaryExpressionSyntax exitExpression &&
                 exitExpression.Operator == BinaryOperatorType.GreaterThan &&
-                loopStatement.Body.Statements.Last() is JassSetStatementSyntax incrementStatement &&
+                loopStatement.Body.Statements[^1] is JassSetStatementSyntax incrementStatement &&
                 incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&
                 incrementExpression.Operator == BinaryOperatorType.Add &&
                 incrementExpression.Right is JassDecimalLiteralExpressionSyntax incrementLiteralExpression &&
@@ -147,9 +148,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 loopFunction.Parameters.Add(indexFunctionParameter);
                 loopFunction.Parameters.Add(indexEndFunctionParameter);
 
-                if (TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActionFunctions))
+                var loopBody = new JassStatementListSyntax(ImmutableArray.CreateRange(loopStatement.Body.Statements, 1, loopStatement.Body.Statements.Length - 2, statement => statement));
+                if (TryDecompileTriggerActionFunctions(loopBody, out var loopActionFunctions))
                 {
-                    foreach (var loopActionFunction in loopActionFunctions.Skip(1).SkipLast(1))
+                    foreach (var loopActionFunction in loopActionFunctions)
                     {
                         loopActionFunction.Branch = 0;
                         loopFunction.ChildFunctions.Add(loopActionFunction);
