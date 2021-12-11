@@ -79,6 +79,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             FunctionDeclarations = functionDeclarationsBuilder.ToImmutable();
             VariableDeclarations = variableDeclarationsBuilder.ToImmutable();
+
+            ImportedFileNames = new(StringComparer.OrdinalIgnoreCase);
         }
 
         public ObjectDataContext ObjectData { get; }
@@ -88,5 +90,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         public ImmutableDictionary<string, FunctionDeclarationContext> FunctionDeclarations { get; }
 
         public ImmutableDictionary<string, VariableDeclarationContext> VariableDeclarations { get; }
+
+        public HashSet<string> ImportedFileNames { get; }
     }
 }

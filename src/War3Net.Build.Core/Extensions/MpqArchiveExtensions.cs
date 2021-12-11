@@ -10,6 +10,7 @@ using System.IO;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -24,7 +25,7 @@ namespace War3Net.Build.Extensions
         {
             archive.AddFileName(Attributes.FileName);
             archive.AddFileName(ListFile.FileName);
-            archive.AddFileName(@"(signature)");
+            archive.AddFileName(Signature.FileName);
             archive.AddFileName(@"(user data)");
 
             archive.AddFileName(MapSounds.FileName);
@@ -75,7 +76,7 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(@"war3mapExtra.txt");
             archive.AddFileName(@"war3mapMisc.txt");
             archive.AddFileName(@"war3mapSkin.txt");
-            archive.AddFileName(@"war3map.imp");
+            archive.AddFileName(MapImportedFiles.FileName);
 
             if (archive.IsCampaignArchive(out var campaignInfo))
             {

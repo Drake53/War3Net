@@ -79,10 +79,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                                     flags |= SoundFlags.StopWhenOutOfRange;
                                 }
 
+                                var filePath = Regex.Unescape(fileNameLiteralExpression.Value);
+                                Context.ImportedFileNames.Add(filePath);
+
                                 sounds.Add(setStatement.IdentifierName.Name, new Sound
                                 {
                                     Name = setStatement.IdentifierName.Name,
-                                    FilePath = Regex.Unescape(fileNameLiteralExpression.Value),
+                                    FilePath = filePath,
                                     EaxSetting = eaxSettingLiteralExpression.Value,
                                     Flags = flags,
                                     FadeInRate = fadeInRateLiteralExpression.Value,
@@ -97,10 +100,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                         }
                         else if (setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
                         {
+                            var filePath = Regex.Unescape(stringLiteralExpression.Value);
+                            Context.ImportedFileNames.Add(filePath);
+
                             sounds.Add(setStatement.IdentifierName.Name, new Sound
                             {
                                 Name = setStatement.IdentifierName.Name,
-                                FilePath = Regex.Unescape(stringLiteralExpression.Value),
+                                FilePath = filePath,
                                 EaxSetting = string.Empty,
                                 Flags = SoundFlags.Music,
                                 FadeInRate = 10,

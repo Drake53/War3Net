@@ -14,6 +14,7 @@ using CSharpLua;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -133,6 +134,22 @@ namespace War3Net.Build.Extensions
             writer.Flush();
 
             return MpqFile.New(memoryStream, MapShadowMap.FileName);
+        }
+
+        public static MpqFile? GetImportedFilesFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.ImportedFiles is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.ImportedFiles);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, MapImportedFiles.FileName);
         }
 
         public static MpqFile GetInfoFile(this Map map, Encoding? encoding = null)
@@ -391,6 +408,12 @@ namespace War3Net.Build.Extensions
             map.ShadowMap = reader.ReadMapShadowMap();
         }
 
+        public static void SetImportedFilesFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.ImportedFiles = reader.ReadMapImportedFiles();
+        }
+
         public static void SetInfoFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
@@ -488,6 +511,7 @@ namespace War3Net.Build.Extensions
                 case MapPreviewIcons.FileName: if (map.PreviewIcons is null || overwriteFile) map.SetPreviewIconsFile(stream, encoding, leaveOpen); break;
                 case MapRegions.FileName: if (map.Regions is null || overwriteFile) map.SetRegionsFile(stream, encoding, leaveOpen); break;
                 case MapShadowMap.FileName: if (map.ShadowMap is null || overwriteFile) map.SetShadowMapFile(stream, encoding, leaveOpen); break;
+                case MapImportedFiles.FileName: if (map.ImportedFiles is null || overwriteFile) map.SetImportedFilesFile(stream, encoding, leaveOpen); break;
                 case MapInfo.FileName: if (map.Info is null || overwriteFile) map.SetInfoFile(stream, encoding, leaveOpen); break;
                 case MapAbilityObjectData.FileName: if (map.AbilityObjectData is null || overwriteFile) map.SetAbilityObjectDataFile(stream, encoding, leaveOpen); break;
                 case MapBuffObjectData.FileName: if (map.BuffObjectData is null || overwriteFile) map.SetBuffObjectDataFile(stream, encoding, leaveOpen); break;

@@ -131,7 +131,8 @@ namespace War3Net.Build
                 _map.GetPathingMapFile(_encoding),
                 _map.GetTriggersFile(_encoding),
                 _map.GetTriggerStringsFile(_encoding),
-                _map.GetUnitsFile(_encoding));
+                _map.GetUnitsFile(_encoding),
+                _map.GetImportedFilesFile(_encoding));
 
             AddFilesToArchiveBuilder(_files.ToArray());
 
