@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -14,15 +15,18 @@ namespace War3Net.CodeAnalysis.Decompilers
         public VariableDeclarationContext(JassGlobalDeclarationSyntax globalDeclaration)
         {
             GlobalDeclaration = globalDeclaration;
-            Type = globalDeclaration.Declarator.Type.TypeName.Name;
             IsArray = globalDeclaration.Declarator is JassArrayDeclaratorSyntax;
+
+            Type = globalDeclaration.Declarator.Type.TypeName.Name;
         }
 
         public JassGlobalDeclarationSyntax GlobalDeclaration { get; }
 
-        public string Type { get; }
-
         public bool IsArray { get; }
+
+        public VariableDefinition? VariableDefinition { get; set; }
+
+        public string Type { get; set; }
 
         public bool Handled { get; set; }
     }

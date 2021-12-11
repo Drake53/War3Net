@@ -1,9 +1,17 @@
-﻿using System;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="TriggerFunctionParameterDecompiler.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Decompilers.Extensions;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -14,7 +22,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private bool TryDecompileTriggerFunctionParameter(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            expression = DeparenthesizeExpression(expression);
+            expression = expression.Deparenthesize();
 
             switch (type)
             {
@@ -255,15 +263,13 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
             {
-                functionParameter = DecompileVariableTriggerFunctionParameter(variableReferenceExpression.IdentifierName.Name);
-                return true;
+                return TryDecompileVariableTriggerFunctionParameter(type, variableReferenceExpression.IdentifierName.Name, null, out functionParameter);
             }
             else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
             {
                 if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
-                    functionParameter = DecompileVariableTriggerFunctionParameter(arrayReferenceExpression.IdentifierName.Name, arrayIndexer);
-                    return true;
+                    return TryDecompileVariableTriggerFunctionParameter(type, arrayReferenceExpression.IdentifierName.Name, arrayIndexer, out functionParameter);
                 }
             }
 
@@ -394,7 +400,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             else if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
             {
                 functionParameter = DecompileVariableTriggerFunctionParameter(variableReferenceExpression.IdentifierName.Name);
-                type = string.Empty;
+                type = Context.VariableDeclarations.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var variableDeclaration) ? variableDeclaration.Type : string.Empty;
                 return true;
             }
             else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
@@ -402,7 +408,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
                 {
                     functionParameter = DecompileVariableTriggerFunctionParameter(arrayReferenceExpression.IdentifierName.Name, arrayIndexer);
-                    type = string.Empty;
+                    type = Context.VariableDeclarations.TryGetValue(arrayReferenceExpression.IdentifierName.Name, out var variableDeclaration) ? variableDeclaration.Type : string.Empty;
                     return true;
                 }
             }
@@ -420,6 +426,44 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Value = variableName.StartsWith("udg_", StringComparison.Ordinal) ? variableName["udg_".Length..] : variableName,
                 ArrayIndexer = arrayIndexer,
             };
+        }
+
+        private bool TryDecompileVariableTriggerFunctionParameter(string expectedType, string variableName, TriggerFunctionParameter? arrayIndexer, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+        {
+            if (Context.VariableDeclarations.TryGetValue(variableName, out var variableDeclaration))
+            {
+                if (string.Equals(variableDeclaration.Type, expectedType, StringComparison.Ordinal))
+                {
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Variable,
+                        Value = variableName.StartsWith("udg_", StringComparison.Ordinal) ? variableName["udg_".Length..] : variableName,
+                        ArrayIndexer = arrayIndexer,
+                    };
+
+                    return true;
+                }
+                else if (Context.TriggerData.TryGetCustomTypes(variableDeclaration.Type, out var customTypes) && customTypes.Contains(expectedType))
+                {
+                    variableDeclaration.Type = expectedType;
+                    if (variableDeclaration.VariableDefinition is not null)
+                    {
+                        variableDeclaration.VariableDefinition.Type = expectedType;
+                    }
+
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Variable,
+                        Value = variableName.StartsWith("udg_", StringComparison.Ordinal) ? variableName["udg_".Length..] : variableName,
+                        ArrayIndexer = arrayIndexer,
+                    };
+
+                    return true;
+                }
+            }
+
+            functionParameter = null;
+            return false;
         }
 
         private bool TryDecompileTriggerFunctionAbilCodeParameter(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
@@ -526,6 +570,16 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                     return true;
                 }
+            }
+            else if (expression is JassFourCCLiteralExpressionSyntax fourCCLiteralExpression)
+            {
+                functionParameter = new TriggerFunctionParameter
+                {
+                    Type = TriggerFunctionParameterType.String,
+                    Value = fourCCLiteralExpression.Value.ToString(),
+                };
+
+                return true;
             }
 
             functionParameter = null;

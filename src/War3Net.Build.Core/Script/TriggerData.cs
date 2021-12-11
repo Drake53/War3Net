@@ -30,6 +30,7 @@ namespace War3Net.Build.Script
         private readonly Dictionary<string, TriggerCall> _triggerCalls;
         private readonly Dictionary<string, TriggerParam> _triggerParams;
 
+        private Dictionary<string, HashSet<string>> _triggerTypesLookup;
         private Dictionary<string, TriggerCondition> _triggerConditionsLookup;
         private Dictionary<string, Dictionary<int, TriggerAction>> _triggerActionsLookup;
         private Dictionary<string, TriggerParam> _variableTypePresets;
@@ -271,8 +272,18 @@ namespace War3Net.Build.Script
             return false;
         }
 
+        public bool TryGetCustomTypes(string baseType, [NotNullWhen(true)] out HashSet<string>? customTypes)
+        {
+            return _triggerTypesLookup.TryGetValue(baseType, out customTypes);
+        }
+
         private void PrepareLookups()
         {
+            _triggerTypesLookup = _triggerTypes
+                .Where(triggerType => !string.IsNullOrEmpty(triggerType.Value.BaseType))
+                .GroupBy(triggerType => triggerType.Value.BaseType!)
+                .ToDictionary(grouping => grouping.Key, grouping => grouping.Select(triggerType => triggerType.Key).ToHashSet(StringComparer.Ordinal), StringComparer.Ordinal);
+
             _triggerConditionsLookup = _triggerConditions
                 .Where(triggerCondition => triggerCondition.Value.ArgumentTypes.Length == 3 && string.Equals(triggerCondition.Value.ArgumentTypes[0], triggerCondition.Value.ArgumentTypes[2], StringComparison.Ordinal))
                 .ToDictionary(triggerCondition => triggerCondition.Value.ArgumentTypes[0], triggerCondition => triggerCondition.Value);

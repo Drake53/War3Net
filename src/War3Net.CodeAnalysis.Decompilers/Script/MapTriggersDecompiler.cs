@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿// ------------------------------------------------------------------------------
+// <copyright file="MapTriggersDecompiler.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-using War3Net.Build.Common;
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Decompilers.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -50,6 +57,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                 throw new ArgumentNullException(nameof(initCustomTriggersFunction));
             }
 
+            const int RootCategoryId = (int)TriggerItemTypeId.RootCategory << 24;
+            const int VariablesCategoryId = (int)TriggerItemTypeId.Category << 24;
+            const int TriggersCategoryId = ((int)TriggerItemTypeId.Category << 24) + 1;
+
+            var variableId = (int)TriggerItemTypeId.Variable << 24;
+            var triggerId = (int)TriggerItemTypeId.Gui << 24;
+
             mapTriggers = new MapTriggers(MapTriggersFormatVersion.Tft, MapTriggersSubVersion.New)
             {
                 GameVersion = 2,
@@ -58,7 +72,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     new TriggerCategoryDefinition(TriggerItemType.RootCategory)
                     {
                         Name = "Untitled",
-                        Id = 0,
+                        Id = RootCategoryId,
                         ParentId = -1,
                     },
                 },
@@ -67,58 +81,47 @@ namespace War3Net.CodeAnalysis.Decompilers
             mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
             {
                 Name = "Variables",
-                Id = 2 << 24,
-                ParentId = 0,
+                Id = VariablesCategoryId,
+                ParentId = RootCategoryId,
             });
 
-            foreach (var declaration in Context.CompilationUnit.Declarations
-                .SelectMany(declaration => declaration is JassGlobalDeclarationListSyntax globalDeclarationList ? globalDeclarationList.Globals : ImmutableArray<IDeclarationSyntax>.Empty))
+            foreach (var declaration in Context.VariableDeclarations)
             {
-                if (declaration is JassGlobalDeclarationSyntax globalDeclaration)
+                var globalDeclaration = declaration.Value.GlobalDeclaration;
+                if (globalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal))
                 {
-                    if (globalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal))
+                    var variableDefinition = new VariableDefinition
                     {
-                        var variableDefinition = new VariableDefinition
-                        {
-                            Name = globalDeclaration.Declarator.IdentifierName.Name["udg_".Length..],
-                            Type = globalDeclaration.Declarator.Type.TypeName.Name,
-                            Unk = 1,
-                            IsArray = false,
-                            ArraySize = 1,
-                            IsInitialized = false,
-                            InitialValue = string.Empty,
-                            Id = (6 << 24) + mapTriggers.Variables.Count,
-                            ParentId = 2 << 24,
-                        };
+                        Name = globalDeclaration.Declarator.IdentifierName.Name["udg_".Length..],
+                        Type = globalDeclaration.Declarator.Type.TypeName.Name,
+                        Unk = 1,
+                        IsArray = declaration.Value.IsArray,
+                        ArraySize = 1,
+                        IsInitialized = false,
+                        InitialValue = string.Empty,
+                        Id = variableId++,
+                        ParentId = VariablesCategoryId,
+                    };
 
-                        if (globalDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
-                        {
-                            variableDefinition.IsArray = false;
+                    declaration.Value.VariableDefinition = variableDefinition;
 
-                            if (variableDeclarator.Value is not null &&
-                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
-                            {
-                                variableDefinition.IsInitialized = true;
-                                variableDefinition.InitialValue = initialValue;
-                            }
+                    if (globalDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
+                    {
+                        if (variableDeclarator.Value is not null &&
+                            TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
+                        {
+                            variableDefinition.IsInitialized = true;
+                            variableDefinition.InitialValue = initialValue;
                         }
-                        else if (globalDeclaration.Declarator is JassArrayDeclaratorSyntax arrayDeclarator)
-                        {
-                            variableDefinition.IsArray = true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-
-                        mapTriggers.Variables.Add(variableDefinition);
-
-                        var triggerVariableDefinition = new TriggerVariableDefinition();
-                        triggerVariableDefinition.Name = variableDefinition.Name;
-                        triggerVariableDefinition.Id = variableDefinition.Id;
-                        triggerVariableDefinition.ParentId = variableDefinition.ParentId;
-                        mapTriggers.TriggerItems.Add(triggerVariableDefinition);
                     }
+
+                    mapTriggers.Variables.Add(variableDefinition);
+
+                    var triggerVariableDefinition = new TriggerVariableDefinition();
+                    triggerVariableDefinition.Name = variableDefinition.Name;
+                    triggerVariableDefinition.Id = variableDefinition.Id;
+                    triggerVariableDefinition.ParentId = variableDefinition.ParentId;
+                    mapTriggers.TriggerItems.Add(triggerVariableDefinition);
                 }
             }
 
@@ -134,7 +137,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         string.Equals(i.IdentifierName.Name, "i", StringComparison.Ordinal))
                     {
                         var variableName = setVariableStatement.IdentifierName.Name["udg_".Length..];
-                        var arraySize = ((JassDecimalLiteralExpressionSyntax)((JassBinaryExpressionSyntax)DeparenthesizeExpression(exitStatement.Condition)).Right).Value;
+                        var arraySize = ((JassDecimalLiteralExpressionSyntax)((JassBinaryExpressionSyntax)exitStatement.Condition.Deparenthesize()).Right).Value;
 
                         var variableDefinition = mapTriggers.Variables.Single(v => string.Equals(v.Name, variableName, StringComparison.Ordinal));
 
@@ -152,10 +155,11 @@ namespace War3Net.CodeAnalysis.Decompilers
             mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
             {
                 Name = "Untitled Category",
-                Id = (2 << 24) + 1,
-                ParentId = 0,
+                Id = TriggersCategoryId,
+                ParentId = RootCategoryId,
             });
 
+            var triggers = new Dictionary<string, TriggerDefinition>(StringComparer.Ordinal);
             foreach (var statement in initCustomTriggersFunction.Body.Statements)
             {
                 if (statement is JassCallStatementSyntax callStatement &&
@@ -163,14 +167,36 @@ namespace War3Net.CodeAnalysis.Decompilers
                     Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var initTrigFunction) &&
                     TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
                 {
-                    trigger.Id = (3 << 24) + mapTriggers.TriggerItems.Where(triggerItem => triggerItem is TriggerDefinition).Count();
-                    trigger.ParentId = (2 << 24) + 1;
+                    trigger.Id = triggerId++;
+                    trigger.ParentId = TriggersCategoryId;
 
+                    triggers.Add(trigger.Name, trigger);
                     mapTriggers.TriggerItems.Add(trigger);
                 }
                 else
                 {
                     return false;
+                }
+            }
+
+            if (runInitializationTriggersFunction is not null)
+            {
+                foreach (var statement in runInitializationTriggersFunction.Body.Statements)
+                {
+                    if (statement is JassCallStatementSyntax callStatement &&
+                        callStatement.Arguments.Arguments.Length == 1 &&
+                        string.Equals(callStatement.IdentifierName.Name, "ConditionalTriggerExecute", StringComparison.Ordinal) &&
+                        callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax triggerVariableReferenceExpression &&
+                        triggerVariableReferenceExpression.IdentifierName.Name.StartsWith("gg_trg_", StringComparison.Ordinal) &&
+                        triggers.TryGetValue(triggerVariableReferenceExpression.IdentifierName.Name["gg_trg_".Length..].Replace('_', ' '), out var triggerDefinition))
+                    {
+                        triggerDefinition.Functions.Add(new TriggerFunction
+                        {
+                            Type = TriggerFunctionType.Event,
+                            IsEnabled = true,
+                            Name = "MapInitializationEvent",
+                        });
+                    }
                 }
             }
 
@@ -221,11 +247,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                         if (callStatement.Arguments.Arguments.Length == 2 &&
                             callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
                             callStatement.Arguments.Arguments[1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
-                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal) &&
+                            Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var actionsFunctionDeclaration) &&
+                            actionsFunctionDeclaration.IsActionsFunction)
                         {
-                            var actionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
-                                declaration is JassFunctionDeclarationSyntax functionDeclaration &&
-                                string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, functionReferenceExpression.IdentifierName.Name, StringComparison.Ordinal));
+                            var actionsFunction = actionsFunctionDeclaration.FunctionDeclaration;
 
                             if (TryDecompileTriggerActionFunctions(actionsFunction.Body, out var actionFunctions))
                             {
@@ -251,11 +277,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                             string.Equals(conditionInvocationExpression.IdentifierName.Name, "Condition", StringComparison.Ordinal) &&
                             conditionInvocationExpression.Arguments.Arguments.Length == 1 &&
                             conditionInvocationExpression.Arguments.Arguments[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
-                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
+                            string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal) &&
+                            Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var conditionsFunctionDeclaration) &&
+                            conditionsFunctionDeclaration.IsConditionsFunction)
                         {
-                            var conditionsFunction = (JassFunctionDeclarationSyntax)Context.CompilationUnit.Declarations.Single(declaration =>
-                                declaration is JassFunctionDeclarationSyntax functionDeclaration &&
-                                string.Equals(functionDeclaration.FunctionDeclarator.IdentifierName.Name, functionReferenceExpression.IdentifierName.Name, StringComparison.Ordinal));
+                            var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
 
                             foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
                             {
@@ -270,7 +296,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                             }
 
                             // Last statement must be "return true"
-                            if (conditionsFunction.Body.Statements.Last() is not JassReturnStatementSyntax finalReturnStatement ||
+                            if (conditionsFunction.Body.Statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
                                 finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
                                 !returnBooleanLiteralExpression.Value)
                             {

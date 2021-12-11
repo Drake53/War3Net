@@ -129,8 +129,8 @@ namespace War3Net.Build.Script
                             TriggerItems.Add(reader.ReadTriggerVariableDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
                             break;
 
-                        case TriggerItemType.UNK2:
-                        case TriggerItemType.UNK128:
+                        case TriggerItemType.UNK1:
+                        case TriggerItemType.UNK7:
                             throw new NotSupportedException();
 
                         default:
