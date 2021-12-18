@@ -31,7 +31,7 @@ namespace War3Net.Build
             return RandomUnitTables(map).Select(randomUnitTable => transpiler.Transpile(randomUnitTable));
         }
 
-        protected virtual IEnumerable<JassGlobalDeclarationSyntax> RandomUnitTables(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> RandomUnitTables(Map map)
         {
             if (map is null)
             {

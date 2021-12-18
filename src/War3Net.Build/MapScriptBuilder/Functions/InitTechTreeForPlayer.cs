@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax InitTechTree_Player(Map map, int playerId)
+        protected internal virtual JassFunctionDeclarationSyntax InitTechTree_Player(Map map, int playerId)
         {
             if (map is null)
             {
@@ -55,7 +55,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitTechTree_Player) + playerId), statements);
         }
 
-        protected virtual bool InitTechTree_PlayerCondition(Map map, int playerId)
+        protected internal virtual bool InitTechTree_PlayerCondition(Map map, int playerId)
         {
             if (map is null)
             {

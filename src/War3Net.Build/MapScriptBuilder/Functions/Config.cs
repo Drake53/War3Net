@@ -20,7 +20,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax config(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax config(Map map)
         {
             if (map is null)
             {
@@ -95,7 +95,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(config)), statements);
         }
 
-        protected virtual bool configCondition(Map map)
+        protected internal virtual bool configCondition(Map map)
         {
             if (map is null)
             {

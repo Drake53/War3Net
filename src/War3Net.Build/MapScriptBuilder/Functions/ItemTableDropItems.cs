@@ -21,7 +21,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax ItemTableDropItems(Map map, RandomItemTable table)
+        protected internal virtual JassFunctionDeclarationSyntax ItemTableDropItems(Map map, RandomItemTable table)
         {
             if (map is null)
             {
@@ -36,7 +36,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(table.GetDropItemsFunctionName()), GetItemTableDropItemsStatements(map, table.ItemSets, false));
         }
 
-        protected virtual JassFunctionDeclarationSyntax ItemTableDropItems(Map map, WidgetData widgetData, int id)
+        protected internal virtual JassFunctionDeclarationSyntax ItemTableDropItems(Map map, WidgetData widgetData, int id)
         {
             if (map is null)
             {
@@ -57,7 +57,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(funcName), GetItemTableDropItemsStatements(map, widgetData.ItemTableSets, true));
         }
 
-        protected virtual IEnumerable<IStatementSyntax> GetItemTableDropItemsStatements(Map map, IEnumerable<RandomItemSet> itemSets, bool chooseItemClass)
+        protected internal virtual IEnumerable<IStatementSyntax> GetItemTableDropItemsStatements(Map map, IEnumerable<RandomItemSet> itemSets, bool chooseItemClass)
         {
             if (map is null)
             {

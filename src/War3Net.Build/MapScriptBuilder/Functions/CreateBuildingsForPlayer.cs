@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateBuildingsForPlayer(Map map, int playerId)
+        protected internal virtual JassFunctionDeclarationSyntax CreateBuildingsForPlayer(Map map, int playerId)
         {
             var functionName = nameof(CreateBuildingsForPlayer) + playerId;
 
@@ -41,7 +41,7 @@ namespace War3Net.Build
                     SyntaxFactory.LiteralExpression(playerId)));
         }
 
-        protected virtual bool CreateBuildingsForPlayerCondition(Map map, int playerId)
+        protected internal virtual bool CreateBuildingsForPlayerCondition(Map map, int playerId)
         {
             if (map is null)
             {
@@ -52,7 +52,7 @@ namespace War3Net.Build
                 && map.Units.Units.Any(unit => CreateBuildingsForPlayerConditionSingleUnit(map, playerId, unit));
         }
 
-        protected virtual bool CreateBuildingsForPlayerConditionSingleUnit(Map map, int playerId, UnitData unitData)
+        protected internal virtual bool CreateBuildingsForPlayerConditionSingleUnit(Map map, int playerId, UnitData unitData)
         {
             if (map is null)
             {

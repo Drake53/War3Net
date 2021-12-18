@@ -19,7 +19,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateRegions(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreateRegions(Map map)
         {
             if (map is null)
             {
@@ -102,7 +102,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateRegions)), statements);
         }
 
-        protected virtual bool CreateRegionsCondition(Map map)
+        protected internal virtual bool CreateRegionsCondition(Map map)
         {
             if (map is null)
             {

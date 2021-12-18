@@ -17,7 +17,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax InitAllyPriorities(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax InitAllyPriorities(Map map)
         {
             if (map is null)
             {
@@ -64,7 +64,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitAllyPriorities)), statements);
         }
 
-        protected virtual bool InitAllyPrioritiesCondition(Map map)
+        protected internal virtual bool InitAllyPrioritiesCondition(Map map)
         {
             if (map is null)
             {

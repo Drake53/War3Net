@@ -31,7 +31,7 @@ namespace War3Net.Build
             return Sounds(map).Select(sound => transpiler.Transpile(sound));
         }
 
-        protected virtual IEnumerable<JassGlobalDeclarationSyntax> Sounds(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Sounds(Map map)
         {
             if (map is null)
             {

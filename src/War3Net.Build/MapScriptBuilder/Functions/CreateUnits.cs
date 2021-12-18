@@ -20,7 +20,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual IEnumerable<IStatementSyntax> CreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, IExpressionSyntax playerNumber)
+        protected internal virtual IEnumerable<IStatementSyntax> CreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, IExpressionSyntax playerNumber)
         {
             if (map is null)
             {
@@ -197,7 +197,7 @@ namespace War3Net.Build
             return statements;
         }
 
-        protected virtual IEnumerable<IStatementSyntax> GetCreateUnitStatements(Map map, UnitData unit, int id)
+        protected internal virtual IEnumerable<IStatementSyntax> GetCreateUnitStatements(Map map, UnitData unit, int id)
         {
             if (map is null)
             {

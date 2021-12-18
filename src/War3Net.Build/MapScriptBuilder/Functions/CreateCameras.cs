@@ -19,7 +19,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateCameras(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreateCameras(Map map)
         {
             if (map is null)
             {
@@ -64,7 +64,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateCameras)), statements);
         }
 
-        protected virtual bool CreateCamerasCondition(Map map)
+        protected internal virtual bool CreateCamerasCondition(Map map)
         {
             if (map is null)
             {

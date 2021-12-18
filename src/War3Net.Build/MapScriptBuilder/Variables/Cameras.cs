@@ -31,7 +31,7 @@ namespace War3Net.Build
             return Cameras(map).Select(camera => transpiler.Transpile(camera));
         }
 
-        protected virtual IEnumerable<JassGlobalDeclarationSyntax> Cameras(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Cameras(Map map)
         {
             if (map is null)
             {

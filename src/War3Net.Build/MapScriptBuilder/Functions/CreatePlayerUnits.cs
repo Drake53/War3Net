@@ -16,7 +16,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreatePlayerUnits(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreatePlayerUnits(Map map)
         {
             if (map is null)
             {
@@ -36,7 +36,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreatePlayerUnits)), statements);
         }
 
-        protected virtual bool CreatePlayerUnitsCondition(Map map)
+        protected internal virtual bool CreatePlayerUnitsCondition(Map map)
         {
             if (map is null)
             {

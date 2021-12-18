@@ -13,7 +13,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual bool SetDayNightModelsCondition(Map map)
+        protected internal virtual bool SetDayNightModelsCondition(Map map)
         {
             if (map is null)
             {
@@ -23,7 +23,7 @@ namespace War3Net.Build
             return true;
         }
 
-        protected virtual bool SetTerrainFogExCondition(Map map)
+        protected internal virtual bool SetTerrainFogExCondition(Map map)
         {
             if (map is null)
             {
@@ -33,7 +33,7 @@ namespace War3Net.Build
             return map.Info.MapFlags.HasFlag(MapFlags.HasTerrainFog);
         }
 
-        protected virtual bool SetWaterBaseColorCondition(Map map)
+        protected internal virtual bool SetWaterBaseColorCondition(Map map)
         {
             if (map is null)
             {
@@ -43,7 +43,7 @@ namespace War3Net.Build
             return map.Info.MapFlags.HasFlag(MapFlags.HasWaterTintingColor);
         }
 
-        protected virtual bool EnableGlobalWeatherEffectCondition(Map map)
+        protected internal virtual bool EnableGlobalWeatherEffectCondition(Map map)
         {
             if (map is null)
             {
@@ -53,7 +53,7 @@ namespace War3Net.Build
             return map.Info.GlobalWeather != WeatherType.None;
         }
 
-        protected virtual bool NewSoundEnvironmentCondition(Map map)
+        protected internal virtual bool NewSoundEnvironmentCondition(Map map)
         {
             if (map is null)
             {
@@ -63,7 +63,7 @@ namespace War3Net.Build
             return map.Info.FormatVersion > MapInfoFormatVersion.v15;
         }
 
-        protected virtual bool SetAmbientSoundCondition(Map map)
+        protected internal virtual bool SetAmbientSoundCondition(Map map)
         {
             if (map is null)
             {
@@ -73,7 +73,7 @@ namespace War3Net.Build
             return true;
         }
 
-        protected virtual bool SetMapMusicCondition(Map map)
+        protected internal virtual bool SetMapMusicCondition(Map map)
         {
             if (map is null)
             {
@@ -83,7 +83,7 @@ namespace War3Net.Build
             return true;
         }
 
-        protected virtual bool InitBlizzardCondition(Map map)
+        protected internal virtual bool InitBlizzardCondition(Map map)
         {
             if (map is null)
             {

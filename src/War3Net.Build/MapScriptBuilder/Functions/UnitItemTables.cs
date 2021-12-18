@@ -17,7 +17,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual IEnumerable<JassFunctionDeclarationSyntax> UnitItemTables(Map map)
+        protected internal virtual IEnumerable<JassFunctionDeclarationSyntax> UnitItemTables(Map map)
         {
             if (map is null)
             {
@@ -40,7 +40,7 @@ namespace War3Net.Build
             }
         }
 
-        protected virtual bool UnitItemTablesCondition(Map map)
+        protected internal virtual bool UnitItemTablesCondition(Map map)
         {
             if (map is null)
             {
@@ -51,7 +51,7 @@ namespace War3Net.Build
                 && map.Units.Units.Any(unit => UnitItemTablesConditionSingleUnit(map, unit));
         }
 
-        protected virtual bool UnitItemTablesConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool UnitItemTablesConditionSingleUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

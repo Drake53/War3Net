@@ -31,7 +31,7 @@ namespace War3Net.Build
             return Regions(map).Select(region => transpiler.Transpile(region));
         }
 
-        protected virtual IEnumerable<JassGlobalDeclarationSyntax> Regions(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Regions(Map map)
         {
             if (map is null)
             {

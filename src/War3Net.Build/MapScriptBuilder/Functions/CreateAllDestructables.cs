@@ -19,7 +19,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateAllDestructables(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreateAllDestructables(Map map)
         {
             if (map is null)
             {
@@ -134,7 +134,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllDestructables)), statements);
         }
 
-        protected virtual bool CreateAllDestructablesCondition(Map map)
+        protected internal virtual bool CreateAllDestructablesCondition(Map map)
         {
             if (map is null)
             {
@@ -145,7 +145,7 @@ namespace War3Net.Build
                 && map.Doodads.Doodads.Any(doodad => CreateAllDestructablesConditionSingleDoodad(map, doodad));
         }
 
-        protected virtual bool CreateAllDestructablesConditionSingleDoodad(Map map, DoodadData doodadData)
+        protected internal virtual bool CreateAllDestructablesConditionSingleDoodad(Map map, DoodadData doodadData)
         {
             if (map is null)
             {

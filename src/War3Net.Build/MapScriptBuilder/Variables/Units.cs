@@ -31,7 +31,7 @@ namespace War3Net.Build
             return Units(map).Select(unit => transpiler.Transpile(unit));
         }
 
-        protected virtual IEnumerable<JassGlobalDeclarationSyntax> Units(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Units(Map map)
         {
             if (map is null)
             {

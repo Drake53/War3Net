@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax InitSounds(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax InitSounds(Map map)
         {
             if (map is null)
             {
@@ -118,7 +118,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitSounds)), statements);
         }
 
-        protected virtual bool InitSoundsCondition(Map map)
+        protected internal virtual bool InitSoundsCondition(Map map)
         {
             if (map is null)
             {

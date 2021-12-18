@@ -16,7 +16,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual IEnumerable<JassFunctionDeclarationSyntax> MapItemTables(Map map)
+        protected internal virtual IEnumerable<JassFunctionDeclarationSyntax> MapItemTables(Map map)
         {
             if (map is null)
             {
@@ -32,7 +32,7 @@ namespace War3Net.Build
             return randomItemTables.Select(table => ItemTableDropItems(map, table));
         }
 
-        protected virtual bool MapItemTablesCondition(Map map)
+        protected internal virtual bool MapItemTablesCondition(Map map)
         {
             if (map is null)
             {

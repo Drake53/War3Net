@@ -19,7 +19,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateAllUnits(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreateAllUnits(Map map)
         {
             if (map is null)
             {
@@ -56,7 +56,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllUnits)), statements);
         }
 
-        protected virtual bool CreateAllUnitsCondition(Map map)
+        protected internal virtual bool CreateAllUnitsCondition(Map map)
         {
             if (map is null)
             {
@@ -67,7 +67,7 @@ namespace War3Net.Build
                 && map.Units.Units.Any(unit => CreateAllUnitsConditionSingleUnit(map, unit));
         }
 
-        protected virtual bool CreateAllUnitsConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool CreateAllUnitsConditionSingleUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax InitCustomTeams(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax InitCustomTeams(Map map)
         {
             if (map is null)
             {
@@ -147,7 +147,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTeams)), statements);
         }
 
-        protected virtual bool InitCustomTeamsCondition(Map map)
+        protected internal virtual bool InitCustomTeamsCondition(Map map)
         {
             if (map is null)
             {

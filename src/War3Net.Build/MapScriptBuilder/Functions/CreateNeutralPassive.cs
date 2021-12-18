@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax CreateNeutralPassive(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax CreateNeutralPassive(Map map)
         {
             if (map is null)
             {
@@ -39,7 +39,7 @@ namespace War3Net.Build
                     SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralPassive)));
         }
 
-        protected virtual bool CreateNeutralPassiveCondition(Map map)
+        protected internal virtual bool CreateNeutralPassiveCondition(Map map)
         {
             if (map is null)
             {
@@ -50,7 +50,7 @@ namespace War3Net.Build
                 && map.Units.Units.Any(unit => CreateNeutralPassiveConditionSingleUnit(map, unit));
         }
 
-        protected virtual bool CreateNeutralPassiveConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool CreateNeutralPassiveConditionSingleUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

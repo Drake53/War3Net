@@ -16,7 +16,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual IEnumerable<JassFunctionDeclarationSyntax> DestructableItemTables(Map map)
+        protected internal virtual IEnumerable<JassFunctionDeclarationSyntax> DestructableItemTables(Map map)
         {
             if (map is null)
             {
@@ -39,7 +39,7 @@ namespace War3Net.Build
             }
         }
 
-        protected virtual bool DestructableItemTablesCondition(Map map)
+        protected internal virtual bool DestructableItemTablesCondition(Map map)
         {
             if (map is null)
             {
@@ -50,7 +50,7 @@ namespace War3Net.Build
                 && map.Doodads.Doodads.Any(doodad => DestructableItemTablesConditionSingleDoodad(map, doodad));
         }
 
-        protected virtual bool DestructableItemTablesConditionSingleDoodad(Map map, DoodadData doodadData)
+        protected internal virtual bool DestructableItemTablesConditionSingleDoodad(Map map, DoodadData doodadData)
         {
             if (map is null)
             {

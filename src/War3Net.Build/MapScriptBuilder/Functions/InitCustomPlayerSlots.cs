@@ -18,7 +18,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected virtual JassFunctionDeclarationSyntax InitCustomPlayerSlots(Map map)
+        protected internal virtual JassFunctionDeclarationSyntax InitCustomPlayerSlots(Map map)
         {
             if (map is null)
             {
@@ -94,7 +94,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomPlayerSlots)), statements);
         }
 
-        protected virtual bool InitCustomPlayerSlotsCondition(Map map)
+        protected internal virtual bool InitCustomPlayerSlotsCondition(Map map)
         {
             if (map is null)
             {
