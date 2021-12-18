@@ -24,6 +24,8 @@ namespace War3Net.Build
             internal const string ChooseRandomItem = "ChooseRandomItem";
             internal const string ChooseRandomItemEx = "ChooseRandomItemEx";
             internal const string ChooseRandomNPBuilding = "ChooseRandomNPBuilding";
+            internal const string Condition = "Condition";
+            internal const string ConditionalTriggerExecute = "ConditionalTriggerExecute";
             internal const string ConvertItemType = "ConvertItemType";
             internal const string ConvertPlayerColor = "ConvertPlayerColor";
             internal const string CreateCameraSetup = "CreateCameraSetup";
@@ -37,6 +39,7 @@ namespace War3Net.Build
             internal const string CreateUnit = "CreateUnit";
             internal const string DefineStartLocation = "DefineStartLocation";
             internal const string DestroyTrigger = "DestroyTrigger";
+            internal const string DisableTrigger = "DisableTrigger";
             internal const string EnableWeatherEffect = "EnableWeatherEffect";
             internal const string ForcePlayerStartLocation = "ForcePlayerStartLocation";
             internal const string GetCameraMargin = "GetCameraMargin";
@@ -95,6 +98,7 @@ namespace War3Net.Build
             internal const string SetUnitState = "SetUnitState";
             internal const string SetWaterBaseColor = "SetWaterBaseColor";
             internal const string TriggerAddAction = "TriggerAddAction";
+            internal const string TriggerAddCondition = "TriggerAddCondition";
             internal const string TriggerRegisterDeathEvent = "TriggerRegisterDeathEvent";
             internal const string TriggerRegisterUnitEvent = "TriggerRegisterUnitEvent";
             internal const string UnitAddItemToSlotById = "UnitAddItemToSlotById";

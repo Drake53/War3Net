@@ -223,6 +223,21 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(FunctionName.InitBlizzard));
             }
 
+            if (InitGlobalsCondition(map))
+            {
+                statements.Add(SyntaxFactory.CallStatement(nameof(InitGlobals)));
+            }
+
+            if (InitCustomTriggersCondition(map))
+            {
+                statements.Add(SyntaxFactory.CallStatement(nameof(InitCustomTriggers)));
+            }
+
+            if (RunInitializationTriggersCondition(map))
+            {
+                statements.Add(SyntaxFactory.CallStatement(nameof(RunInitializationTriggers)));
+            }
+
             if (UseCSharpLua)
             {
                 statements.Add(SyntaxFactory.CallStatement(CSharpLua.LuaSyntaxGenerator.kManifestFuncName));

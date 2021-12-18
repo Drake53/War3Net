@@ -8,11 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
+using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
@@ -54,7 +56,7 @@ namespace War3Net.Build
         public virtual void SetDefaultOptionsForMap(Map? map)
         {
             LobbyMusic = null;
-            MaxPlayerSlots = map is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua ? 24 : 12;
+            MaxPlayerSlots = map is null || map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
             UseCSharpLua = false;
             UseLifeVariable = true;
@@ -86,11 +88,16 @@ namespace War3Net.Build
                 declarations.Add(JassEmptyDeclarationSyntax.Value);
             }
 
-            void AppendBannerAndFunction(string bannerText, Func<Map, JassFunctionDeclarationSyntax> function, Func<Map, bool> condition)
+            void AppendBannerAndFunction(string bannerText, Func<Map, JassFunctionDeclarationSyntax> function, Func<Map, bool> condition, bool includeCommentLine = false)
             {
                 if (condition(map))
                 {
                     AppendBanner(bannerText);
+                    if (includeCommentLine)
+                    {
+                        declarations.Add(commentLine1);
+                    }
+
                     declarations.Add(function(map));
                     declarations.Add(JassEmptyDeclarationSyntax.Value);
                 }
@@ -136,6 +143,7 @@ namespace War3Net.Build
             generatedGlobals.AddRange(Regions(map));
             generatedGlobals.AddRange(Cameras(map));
             generatedGlobals.AddRange(Sounds(map));
+            generatedGlobals.AddRange(Triggers(map));
             generatedGlobals.AddRange(Units(map));
             generatedGlobals.AddRange(RandomUnitTables(map));
 
@@ -147,6 +155,12 @@ namespace War3Net.Build
 
             declarations.Add(new JassGlobalDeclarationListSyntax(globalDeclarationList.ToImmutableArray()));
             declarations.Add(JassEmptyDeclarationSyntax.Value);
+
+            if (InitGlobalsCondition(map))
+            {
+                declarations.Add(InitGlobals(map));
+                declarations.Add(JassEmptyDeclarationSyntax.Value);
+            }
 
             AppendBanner("Custom Script Code");
             AppendBannerAndFunction("Random Groups", InitRandomGroups, InitRandomGroupsCondition);
@@ -179,7 +193,23 @@ namespace War3Net.Build
             AppendBannerAndFunction("Regions", CreateRegions, CreateRegionsCondition);
             AppendBannerAndFunction("Cameras", CreateCameras, CreateCamerasCondition);
 
-            // TODO: triggers
+            AppendBanner("Triggers");
+            if (map.Triggers is not null)
+            {
+                foreach (var trigger in map.Triggers.TriggerItems)
+                {
+                    if (trigger is TriggerDefinition triggerDefinition &&
+                        InitTrigCondition(map, triggerDefinition))
+                    {
+                        declarations.Add(commentLine1);
+                        declarations.Add(InitTrig(map, triggerDefinition));
+                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    }
+                }
+
+                AppendFunction(InitCustomTriggers, InitCustomTriggersCondition);
+                AppendFunction(RunInitializationTriggers, RunInitializationTriggersCondition);
+            }
 
             if (InitUpgradesCondition(map))
             {
@@ -239,13 +269,13 @@ namespace War3Net.Build
                 }
             }
 
-            AppendBannerAndFunction("Main Initialization", main, mainCondition);
+            AppendBannerAndFunction("Main Initialization", main, mainCondition, true);
             AppendBannerAndFunction("Map Configuration", config, configCondition);
 
             return SyntaxFactory.CompilationUnit(declarations);
         }
 
-        protected virtual IEnumerable<JassCommentDeclarationSyntax> GetMapScriptHeader(Map map)
+        protected internal virtual IEnumerable<JassCommentDeclarationSyntax> GetMapScriptHeader(Map map)
         {
             if (map is null)
             {
