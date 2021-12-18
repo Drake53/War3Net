@@ -76,5 +76,22 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 
             return result;
         }
+
+        internal static bool IsJassRawcode(this string s)
+        {
+            var bytes = Encoding.UTF8.GetBytes(s);
+            if (bytes.Length != 4)
+            {
+                var p437 = CodePagesEncodingProvider.Instance.GetEncoding(437);
+                bytes = p437!.GetBytes(s);
+
+                if (bytes.Length != 4)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

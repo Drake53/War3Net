@@ -19,6 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, IExpressionSyntax> GetFourCCLiteralExpressionParser()
         {
             return Symbol.Apostrophe.Then(AnyCharExcept(JassSymbol.Apostrophe).ManyString()).Before(Symbol.Apostrophe)
+                .Assert(value => value.IsJassRawcode())
                 .Select<IExpressionSyntax>(value => new JassFourCCLiteralExpressionSyntax(value.FromJassRawcode()))
                 .Labelled("fourCC literal");
         }
