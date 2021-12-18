@@ -27,9 +27,22 @@ namespace War3Net.Build
         /// Initializes a new instance of the <see cref="MapScriptBuilder"/> class.
         /// </summary>
         public MapScriptBuilder()
+            : this(TriggerData.Default)
         {
-            SetDefaultOptionsForMap(null);
         }
+
+        public MapScriptBuilder(TriggerData triggerData)
+        {
+            TriggerData = triggerData;
+            LobbyMusic = null;
+            MaxPlayerSlots = 24;
+            ForceGenerateGlobalUnitVariable = false;
+            UseCSharpLua = false;
+            UseLifeVariable = true;
+            UseWeatherEffectVariable = true;
+        }
+
+        public TriggerData TriggerData { get; set; }
 
         public string? LobbyMusic { get; set; }
 
@@ -53,8 +66,13 @@ namespace War3Net.Build
             UseWeatherEffectVariable = false;
         }
 
-        public virtual void SetDefaultOptionsForMap(Map? map)
+        public virtual void SetDefaultOptionsForMap(Map map)
         {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
             LobbyMusic = null;
             MaxPlayerSlots = map is null || map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
