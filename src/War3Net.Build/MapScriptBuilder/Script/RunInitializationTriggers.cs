@@ -37,12 +37,7 @@ namespace War3Net.Build
             foreach (var trigger in mapTriggers.TriggerItems)
             {
                 if (trigger is TriggerDefinition triggerDefinition &&
-                    triggerDefinition.IsEnabled &&
-                    triggerDefinition.IsInitiallyOn &&
-                    triggerDefinition.Functions.Any(function =>
-                        function.Type == TriggerFunctionType.Event &&
-                        function.IsEnabled &&
-                        string.Equals(function.Name, TriggerFunctionName.MapInitializationEvent, StringComparison.Ordinal)))
+                    RunInitializationTriggersConditionSingleTrigger(map, triggerDefinition))
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.ConditionalTriggerExecute,
@@ -60,7 +55,30 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Triggers is not null;
+            return map.Triggers is not null
+                && map.Triggers.TriggerItems.Any(trigger =>
+                       trigger is TriggerDefinition triggerDefinition &&
+                       RunInitializationTriggersConditionSingleTrigger(map, triggerDefinition));
+        }
+
+        protected internal virtual bool RunInitializationTriggersConditionSingleTrigger(Map map, TriggerDefinition triggerDefinition)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            if (triggerDefinition is null)
+            {
+                throw new ArgumentNullException(nameof(triggerDefinition));
+            }
+
+            return triggerDefinition.IsEnabled
+                && triggerDefinition.IsInitiallyOn
+                && triggerDefinition.Functions.Any(function =>
+                       function.Type == TriggerFunctionType.Event &&
+                       function.IsEnabled &&
+                       string.Equals(function.Name, TriggerFunctionName.MapInitializationEvent, StringComparison.Ordinal));
         }
     }
 }
