@@ -26,6 +26,8 @@ namespace War3Net.Build
     {
         private static readonly Encoding _defaultEncoding = Encoding.UTF8;
 
+        private readonly string? _mapName;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Map"/> class.
         /// </summary>
@@ -43,11 +45,12 @@ namespace War3Net.Build
         {
             Info = mapInfo;
             Environment = mapEnvironment;
-            Script = string.Empty;
         }
 
-        private Map(string mapFolder, MapFiles mapFiles)
+        private Map(string? mapName, string mapFolder, MapFiles mapFiles)
         {
+            _mapName = mapName;
+
             if (mapFiles.HasFlag(MapFiles.Info) && File.Exists(Path.Combine(mapFolder, MapInfo.FileName)))
             {
                 using var infoStream = File.OpenRead(Path.Combine(mapFolder, MapInfo.FileName));
@@ -216,8 +219,10 @@ namespace War3Net.Build
             }
         }
 
-        private Map(MpqArchive mapArchive, MapFiles mapFiles)
+        private Map(string? mapName, MpqArchive mapArchive, MapFiles mapFiles)
         {
+            _mapName = mapName;
+
             if (mapFiles.HasFlag(MapFiles.Info) && MpqFile.Exists(mapArchive, MapInfo.FileName))
             {
                 using var infoStream = MpqFile.OpenRead(mapArchive, MapInfo.FileName);
@@ -438,30 +443,40 @@ namespace War3Net.Build
         /// </summary>
         public static Map Open(string path, MapFiles mapFiles = MapFiles.All)
         {
-            if (File.Exists(path))
+            var fileInfo = new FileInfo(path);
+            if (fileInfo.Exists)
             {
                 using var mapArchive = MpqArchive.Open(path);
-                return new Map(mapArchive, mapFiles);
-            }
-            else if (Directory.Exists(path))
-            {
-                return new Map(path, mapFiles);
+                return new Map(fileInfo.Name, mapArchive, mapFiles);
             }
             else
             {
-                throw new ArgumentException("Could not find a file or folder at the specified path.");
+                var directoryInfo = new DirectoryInfo(path);
+                if (directoryInfo.Exists)
+                {
+                    return new Map(directoryInfo.Name, path, mapFiles);
+                }
+                else
+                {
+                    throw new ArgumentException("Could not find a file or folder at the specified path.", nameof(path));
+                }
             }
         }
 
         public static Map Open(Stream stream, MapFiles mapFiles = MapFiles.All)
         {
             using var mapArchive = MpqArchive.Open(stream);
-            return new Map(mapArchive, mapFiles);
+            return new Map(null, mapArchive, mapFiles);
         }
 
         public static Map Open(MpqArchive archive, MapFiles mapFiles = MapFiles.All)
         {
-            return new Map(archive, mapFiles);
+            return new Map(null, archive, mapFiles);
+        }
+
+        public override string? ToString()
+        {
+            return string.IsNullOrEmpty(_mapName) ? base.ToString() : _mapName;
         }
     }
 }
