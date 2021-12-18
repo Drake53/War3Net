@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
@@ -25,6 +26,10 @@ namespace War3Net.Build
             }
 
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(InitAllyPriorities)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -69,6 +74,11 @@ namespace War3Net.Build
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
+            }
+
+            if (map.Info is null)
+            {
+                return false;
             }
 
             var ids = Enumerable.Range(0, MaxPlayerSlots).ToArray();

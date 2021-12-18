@@ -30,7 +30,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.MapFlags.HasFlag(MapFlags.HasTerrainFog);
+            return map.Info is not null
+                && map.Info.MapFlags.HasFlag(MapFlags.HasTerrainFog);
         }
 
         protected internal virtual bool SetWaterBaseColorCondition(Map map)
@@ -40,7 +41,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.MapFlags.HasFlag(MapFlags.HasWaterTintingColor);
+            return map.Info is not null
+                && map.Info.MapFlags.HasFlag(MapFlags.HasWaterTintingColor);
         }
 
         protected internal virtual bool EnableGlobalWeatherEffectCondition(Map map)
@@ -50,7 +52,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.GlobalWeather != WeatherType.None;
+            return map.Info is not null
+                && map.Info.GlobalWeather != WeatherType.None;
         }
 
         protected internal virtual bool NewSoundEnvironmentCondition(Map map)
@@ -60,7 +63,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.FormatVersion > MapInfoFormatVersion.v15;
+            return map.Info is not null
+                && map.Info.FormatVersion > MapInfoFormatVersion.v15;
         }
 
         protected internal virtual bool SetAmbientSoundCondition(Map map)

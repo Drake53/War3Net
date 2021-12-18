@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.Common.Extensions;
 
@@ -26,6 +27,10 @@ namespace War3Net.Build
             }
 
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(InitTechTree_Player) + playerId}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -62,7 +67,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.TechData.Any(techData => techData.Players[playerId]);
+            return map.Info is not null
+                && map.Info.TechData.Any(techData => techData.Players[playerId]);
         }
     }
 }

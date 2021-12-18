@@ -26,6 +26,10 @@ namespace War3Net.Build
             }
 
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(InitUpgrades_Player) + playerId}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -95,7 +99,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.UpgradeData.Any(upgradeData => upgradeData.Availability != UpgradeAvailability.Available && upgradeData.Players[playerId]);
+            return map.Info is not null
+                && map.Info.UpgradeData.Any(upgradeData => upgradeData.Availability != UpgradeAvailability.Available && upgradeData.Players[playerId]);
         }
     }
 }

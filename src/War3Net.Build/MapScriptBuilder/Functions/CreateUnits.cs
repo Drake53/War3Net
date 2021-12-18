@@ -209,7 +209,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(unit));
             }
 
-            var randomItemTables = map.Info.RandomItemTables;
+            var randomItemTables = map.Info?.RandomItemTables;
 
             var statements = new List<IStatementSyntax>();
 

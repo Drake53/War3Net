@@ -31,8 +31,6 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitSounds)}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
             }
 
-            var mapInfo = map.Info;
-
             var statements = new List<IStatementSyntax>();
 
             foreach (var sound in mapSounds.Sounds)

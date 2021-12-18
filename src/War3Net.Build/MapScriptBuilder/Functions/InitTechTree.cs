@@ -44,7 +44,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.TechData.Any();
+            return map.Info is not null
+                && map.Info.TechData.Any();
         }
     }
 }

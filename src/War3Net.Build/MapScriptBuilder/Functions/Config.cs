@@ -28,6 +28,10 @@ namespace War3Net.Build
             }
 
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(config)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -102,7 +106,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info is not null;
         }
     }
 }

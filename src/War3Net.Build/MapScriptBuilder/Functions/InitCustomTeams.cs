@@ -26,6 +26,10 @@ namespace War3Net.Build
             }
 
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(InitCustomTeams)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -152,6 +156,11 @@ namespace War3Net.Build
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
+            }
+
+            if (map.Info is null)
+            {
+                return false;
             }
 
             return map.Info.MapFlags.HasFlag(MapFlags.UseCustomForces);

@@ -27,7 +27,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var randomUnitTables = map.Info.RandomUnitTables;
+            var randomUnitTables = map.Info?.RandomUnitTables;
             if (randomUnitTables is null)
             {
                 throw new ArgumentException($"Function '{nameof(InitRandomGroups)}' cannot be generated without {nameof(MapInfo.RandomUnitTables)}.", nameof(map));
@@ -107,7 +107,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.RandomUnitTables is not null
+            return map.Info?.RandomUnitTables is not null
                 && map.Info.RandomUnitTables.Any();
         }
     }

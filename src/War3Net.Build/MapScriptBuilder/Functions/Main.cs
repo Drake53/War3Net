@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Common;
+using War3Net.Build.Environment;
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -28,7 +30,16 @@ namespace War3Net.Build
             }
 
             var mapEnvironment = map.Environment;
+            if (mapEnvironment is null)
+            {
+                throw new ArgumentException($"Function '{nameof(main)}' cannot be generated without {nameof(MapEnvironment)}.", nameof(map));
+            }
+
             var mapInfo = map.Info;
+            if (mapInfo is null)
+            {
+                throw new ArgumentException($"Function '{nameof(main)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+            }
 
             var statements = new List<IStatementSyntax>();
 
@@ -229,7 +240,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info is not null
+                && map.Environment is not null;
         }
     }
 }

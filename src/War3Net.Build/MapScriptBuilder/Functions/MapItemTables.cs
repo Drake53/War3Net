@@ -23,7 +23,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var randomItemTables = map.Info.RandomItemTables;
+            var randomItemTables = map.Info?.RandomItemTables;
             if (randomItemTables is null)
             {
                 throw new ArgumentException($"'ItemTable_DropItems' functions cannot be generated without {nameof(MapInfo.RandomItemTables)}.");
@@ -39,7 +39,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.RandomItemTables is not null && map.Info.RandomItemTables.Any();
+            return map.Info?.RandomItemTables is not null
+                && map.Info.RandomItemTables.Any();
         }
     }
 }
