@@ -61,8 +61,13 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, MapCameras.FileName);
         }
 
-        public static MpqFile GetEnvironmentFile(this Map map, Encoding? encoding = null)
+        public static MpqFile? GetEnvironmentFile(this Map map, Encoding? encoding = null)
         {
+            if (map.Environment is null)
+            {
+                return null;
+            }
+
             using var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
@@ -152,8 +157,13 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, MapImportedFiles.FileName);
         }
 
-        public static MpqFile GetInfoFile(this Map map, Encoding? encoding = null)
+        public static MpqFile? GetInfoFile(this Map map, Encoding? encoding = null)
         {
+            if (map.Info is null)
+            {
+                return null;
+            }
+
             using var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
@@ -291,8 +301,13 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, MapCustomTextTriggers.FileName);
         }
 
-        public static MpqFile GetScriptFile(this Map map, Encoding? encoding = null)
+        public static MpqFile? GetScriptFile(this Map map, Encoding? encoding = null)
         {
+            if (map.Info is null || string.IsNullOrEmpty(map.Script))
+            {
+                return null;
+            }
+
             using var memoryStream = new MemoryStream();
             using var writer = new StreamWriter(memoryStream, encoding ?? _defaultEncoding, leaveOpen: true);
 
@@ -528,11 +543,11 @@ namespace War3Net.Build.Extensions
 
                 case @"war3map.j":
                 case @"scripts\war3map.j":
-                    if (map.Info.ScriptLanguage == ScriptLanguage.Jass && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
+                    if ((map.Info is null || map.Info.ScriptLanguage == ScriptLanguage.Jass) && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 
                 case @"war3map.lua":
                 case @"scripts\war3map.lua":
-                    if (map.Info.ScriptLanguage == ScriptLanguage.Lua && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
+                    if ((map.Info is null || map.Info.ScriptLanguage == ScriptLanguage.Lua) && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 #pragma warning restore IDE0011, SA1503
 
                 default: return false;
@@ -561,9 +576,14 @@ namespace War3Net.Build.Extensions
                 throw new ArgumentNullException(nameof(mapScriptBuilder));
             }
 
+            if (map.Info is null)
+            {
+                throw new ArgumentException($"The map must contain the '{MapInfo.FileName}' file in order to use the jass compiler.", nameof(map));
+            }
+
             if (map.Info.ScriptLanguage != ScriptLanguage.Jass)
             {
-                throw new InvalidOperationException($"The map's script language must be set to jass in order to use the jass compiler.");
+                throw new ArgumentException($"The map's script language must be set to jass in order to use the jass compiler.", nameof(map));
             }
 
             var compilationUnit = mapScriptBuilder.Build(map);
@@ -616,9 +636,14 @@ namespace War3Net.Build.Extensions
                 throw new ArgumentNullException(nameof(mapScriptBuilder));
             }
 
+            if (map.Info is null)
+            {
+                throw new ArgumentException($"The map must contain the '{MapInfo.FileName}' file in order to use the C# compiler.", nameof(map));
+            }
+
             if (map.Info.ScriptLanguage != ScriptLanguage.Lua)
             {
-                throw new InvalidOperationException($"The map's script language must be set to lua in order to use the C# compiler.");
+                throw new ArgumentException($"The map's script language must be set to lua in order to use the C# compiler.", nameof(map));
             }
 
             using var stream = new MemoryStream();

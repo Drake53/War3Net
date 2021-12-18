@@ -38,7 +38,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var randomUnitTables = map.Info.RandomUnitTables;
+            var randomUnitTables = map.Info?.RandomUnitTables;
             if (randomUnitTables is null)
             {
                 yield break;
