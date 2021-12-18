@@ -11,6 +11,7 @@ using System.Linq;
 
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
@@ -107,6 +108,11 @@ namespace War3Net.Build
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
+            }
+
+            if (map.Info is not null && map.Info.FormatVersion == MapInfoFormatVersion.v8)
+            {
+                return true;
             }
 
             return map.Regions is not null

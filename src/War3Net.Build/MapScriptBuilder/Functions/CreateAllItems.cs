@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -130,6 +131,11 @@ namespace War3Net.Build
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
+            }
+
+            if (map.Info is not null && map.Info.FormatVersion == MapInfoFormatVersion.v8)
+            {
+                return true;
             }
 
             return map.Units is not null
