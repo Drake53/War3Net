@@ -158,12 +158,18 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            if (map.Info is null)
+            return map.Info is not null;
+        }
+
+        protected internal virtual bool InitCustomTeamsInvokeCondition(Map map)
+        {
+            if (map is null)
             {
-                return false;
+                throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Info.MapFlags.HasFlag(MapFlags.UseCustomForces);
+            return map.Info is not null
+                && map.Info.MapFlags.HasFlag(MapFlags.UseCustomForces);
         }
     }
 }

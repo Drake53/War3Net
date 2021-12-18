@@ -86,7 +86,7 @@ namespace War3Net.Build
 
             statements.AddRange(elseStatements);
 
-            if (InitCustomTeamsCondition(map))
+            if (InitCustomTeamsCondition(map) && InitCustomTeamsInvokeCondition(map))
             {
                 statements.Add(SyntaxFactory.CallStatement(nameof(InitCustomTeams)));
             }
