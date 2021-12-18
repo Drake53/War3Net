@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Extensions;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -46,6 +47,39 @@ namespace War3Net.Build
                 if (!variable.IsInitialized)
                 {
                     continue;
+                }
+
+                var initialValue = TriggerData.TryGetTriggerParamPresetValue(variable.Type, variable.InitialValue, out var codeText)
+                    ? codeText
+                    : variable.InitialValue;
+
+                if (variable.IsArray)
+                {
+                    statements.Add(SyntaxFactory.SetStatement(
+                        "i",
+                        SyntaxFactory.LiteralExpression(0)));
+
+                    statements.Add(SyntaxFactory.LoopStatement(
+                        SyntaxFactory.ExitStatement(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryGreaterThanExpression(
+                            SyntaxFactory.VariableReferenceExpression("i"),
+                            SyntaxFactory.LiteralExpression(variable.ArraySize)))),
+                        SyntaxFactory.SetStatement(
+                            variable.GetVariableName(),
+                            SyntaxFactory.VariableReferenceExpression("i"),
+                            SyntaxFactory.ParseExpression(initialValue)),
+                        SyntaxFactory.SetStatement(
+                            "i",
+                            SyntaxFactory.BinaryAdditionExpression(
+                                SyntaxFactory.VariableReferenceExpression("i"),
+                                SyntaxFactory.LiteralExpression(1)))));
+
+                    statements.Add(JassEmptyStatementSyntax.Value);
+                }
+                else
+                {
+                    statements.Add(SyntaxFactory.SetStatement(
+                        variable.GetVariableName(),
+                        SyntaxFactory.ParseExpression(initialValue)));
                 }
             }
 

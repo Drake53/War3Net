@@ -197,6 +197,19 @@ namespace War3Net.Build.Script
             return parameters ?? throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
         }
 
+        public string GetScriptName(TriggerFunctionType functionType, string functionName)
+        {
+            if (functionType == TriggerFunctionType.Action)
+            {
+                var triggerAction = _triggerActions[functionName];
+                return string.IsNullOrEmpty(triggerAction.ScriptName) ? triggerAction.ActionFunctionName : triggerAction.ScriptName;
+            }
+            else
+            {
+                return functionName;
+            }
+        }
+
         public bool TryGetParametersByScriptName(
             string scriptName,
             int expectedParameterCount,
@@ -244,6 +257,25 @@ namespace War3Net.Build.Script
             operatorCompareType = null;
             operatorType = null;
             return false;
+        }
+
+        public TriggerParam GetTriggerParamPresetValue(string presetName)
+        {
+            return _triggerParams.TryGetValue(presetName, out var triggerParam) ? triggerParam : throw null;
+        }
+
+        public bool TryGetTriggerParamPresetValue(string variableType, string presetName, [NotNullWhen(true)] out string? codeText)
+        {
+            if (_triggerParams.TryGetValue(presetName, out var triggerParam) && string.Equals(triggerParam.VariableType, variableType, StringComparison.Ordinal))
+            {
+                codeText = triggerParam.CodeText;
+                return true;
+            }
+            else
+            {
+                codeText = null;
+                return false;
+            }
         }
 
         public bool TryGetTriggerParamPreset(string codeText, [NotNullWhen(true)] out string? presetName, [NotNullWhen(true)] out string? type)
