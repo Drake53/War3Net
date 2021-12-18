@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -472,6 +473,48 @@ namespace War3Net.Build
         public static Map Open(MpqArchive archive, MapFiles mapFiles = MapFiles.All)
         {
             return new Map(null, archive, mapFiles);
+        }
+
+        public static bool TryOpen(string path, [NotNullWhen(true)] out Map? map, MapFiles mapFiles = MapFiles.All)
+        {
+            try
+            {
+                map = Open(path, mapFiles);
+                return true;
+            }
+            catch
+            {
+                map = null;
+                return false;
+            }
+        }
+
+        public static bool TryOpen(Stream stream, [NotNullWhen(true)] out Map? map, MapFiles mapFiles = MapFiles.All)
+        {
+            try
+            {
+                map = Open(stream, mapFiles);
+                return true;
+            }
+            catch
+            {
+                map = null;
+                return false;
+            }
+        }
+
+        public static bool TryOpen(MpqArchive archive, [NotNullWhen(true)] out Map? map, MapFiles mapFiles = MapFiles.All)
+        {
+            try
+            {
+                map = Open(archive, mapFiles);
+                return true;
+            }
+            catch
+            {
+                map = null;
+                return false;
+            }
         }
 
         public override string? ToString()
