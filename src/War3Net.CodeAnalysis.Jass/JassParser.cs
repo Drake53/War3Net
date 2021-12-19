@@ -20,6 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
         private static readonly JassParser _parser = new JassParser();
 
         private readonly Parser<char, JassArgumentListSyntax> _argumentListParser;
+        private readonly Parser<char, BinaryOperatorType> _binaryOperatorParser;
         private readonly Parser<char, JassCompilationUnitSyntax> _compilationUnitParser;
         private readonly Parser<char, ICustomScriptAction> _customScriptActionParser;
         private readonly Parser<char, IDeclarationSyntax> _declarationParser;
@@ -29,6 +30,7 @@ namespace War3Net.CodeAnalysis.Jass
         private readonly Parser<char, JassParameterListSyntax> _parameterListParser;
         private readonly Parser<char, IStatementSyntax> _statementParser;
         private readonly Parser<char, JassTypeSyntax> _typeParser;
+        private readonly Parser<char, UnaryOperatorType> _unaryOperatorParser;
 
         private JassParser()
         {
@@ -101,6 +103,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, T> Create<T>(Parser<char, T> parser) => whitespaceParser.Then(parser).Before(End);
 
             _argumentListParser = Create(argumentListParser);
+            _binaryOperatorParser = Create(GetBinaryOperatorParser());
             _compilationUnitParser = Create(compilationUnitParser);
             _customScriptActionParser = Create(customScriptActionParser.Before(commentParser.Optional()));
             _declarationParser = Create(declarationParser);
@@ -110,11 +113,14 @@ namespace War3Net.CodeAnalysis.Jass
             _parameterListParser = Create(parameterListParser);
             _statementParser = Create(statementParser);
             _typeParser = Create(typeParser);
+            _unaryOperatorParser = Create(GetUnaryOperatorParser());
         }
 
         internal static JassParser Instance => _parser;
 
         internal Parser<char, JassArgumentListSyntax> ArgumentListParser => _argumentListParser;
+
+        internal Parser<char, BinaryOperatorType> BinaryOperatorParser => _binaryOperatorParser;
 
         internal Parser<char, JassCompilationUnitSyntax> CompilationUnitParser => _compilationUnitParser;
 
@@ -133,6 +139,8 @@ namespace War3Net.CodeAnalysis.Jass
         internal Parser<char, IStatementSyntax> StatementParser => _statementParser;
 
         internal Parser<char, JassTypeSyntax> TypeParser => _typeParser;
+
+        internal Parser<char, UnaryOperatorType> UnaryOperatorParser => _unaryOperatorParser;
 
         private static class Keyword
         {

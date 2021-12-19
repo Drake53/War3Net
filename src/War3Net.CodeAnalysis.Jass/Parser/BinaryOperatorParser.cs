@@ -5,79 +5,91 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
+
+using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryOperatorParser(Parser<char, BinaryOperatorType> operatorTypeParser)
+        internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser()
         {
-            return operatorTypeParser.Select<Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>>(@operator => (left, right) => new JassBinaryExpressionSyntax(@operator, left, right));
+            return OneOf(
+                GetBinaryAddOperatorParser(),
+                GetBinarySubtractOperatorParser(),
+                GetBinaryMultiplicationOperatorParser(),
+                GetBinaryDivisionOperatorParser(),
+                GetBinaryGreaterOrEqualOperatorParser(),
+                GetBinaryLessOrEqualOperatorParser(),
+                GetBinaryEqualsOperatorParser(),
+                GetBinaryNotEqualsOperatorParser(),
+                GetBinaryGreaterThanOperatorParser(),
+                GetBinaryLessThanOperatorParser(),
+                GetBinaryAndOperatorParser(),
+                GetBinaryOrOperatorParser());
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryAddOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryAddOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.PlusSign.ThenReturn(BinaryOperatorType.Add));
+            return Symbol.PlusSign.ThenReturn(BinaryOperatorType.Add);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinarySubtractOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinarySubtractOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.MinusSign.ThenReturn(BinaryOperatorType.Subtract));
+            return Symbol.MinusSign.ThenReturn(BinaryOperatorType.Subtract);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryMultiplicationOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryMultiplicationOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.Asterisk.ThenReturn(BinaryOperatorType.Multiplication));
+            return Symbol.Asterisk.ThenReturn(BinaryOperatorType.Multiplication);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryDivisionOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryDivisionOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.Slash.ThenReturn(BinaryOperatorType.Division));
+            return Symbol.Slash.ThenReturn(BinaryOperatorType.Division);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryGreaterOrEqualOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterOrEqualOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.GreaterOrEquals.ThenReturn(BinaryOperatorType.GreaterOrEqual));
+            return Symbol.GreaterOrEquals.ThenReturn(BinaryOperatorType.GreaterOrEqual);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryLessOrEqualOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryLessOrEqualOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.LessOrEquals.ThenReturn(BinaryOperatorType.LessOrEqual));
+            return Symbol.LessOrEquals.ThenReturn(BinaryOperatorType.LessOrEqual);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryEqualsOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryEqualsOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.EqualsEquals.ThenReturn(BinaryOperatorType.Equals));
+            return Symbol.EqualsEquals.ThenReturn(BinaryOperatorType.Equals);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryNotEqualsOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryNotEqualsOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.NotEquals.ThenReturn(BinaryOperatorType.NotEquals));
+            return Symbol.NotEquals.ThenReturn(BinaryOperatorType.NotEquals);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryGreaterThanOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterThanOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.GreaterThanSign.ThenReturn(BinaryOperatorType.GreaterThan));
+            return Symbol.GreaterThanSign.ThenReturn(BinaryOperatorType.GreaterThan);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryLessThanOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryLessThanOperatorParser()
         {
-            return GetBinaryOperatorParser(Symbol.LessThanSign.ThenReturn(BinaryOperatorType.LessThan));
+            return Symbol.LessThanSign.ThenReturn(BinaryOperatorType.LessThan);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryAndOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryAndOperatorParser()
         {
-            return GetBinaryOperatorParser(Keyword.And.ThenReturn(BinaryOperatorType.And));
+            return Keyword.And.ThenReturn(BinaryOperatorType.And);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> GetBinaryOrOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryOrOperatorParser()
         {
-            return GetBinaryOperatorParser(Keyword.Or.ThenReturn(BinaryOperatorType.Or));
+            return Keyword.Or.ThenReturn(BinaryOperatorType.Or);
         }
     }
 }

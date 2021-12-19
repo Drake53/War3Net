@@ -5,34 +5,37 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
+
+using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> GetUnaryOperatorParser(Parser<char, UnaryOperatorType> operatorTypeParser)
+        internal static Parser<char, UnaryOperatorType> GetUnaryOperatorParser()
         {
-            return operatorTypeParser.Select<Func<IExpressionSyntax, IExpressionSyntax>>(@operator => expression => new JassUnaryExpressionSyntax(@operator, expression));
+            return OneOf(
+                GetUnaryPlusOperatorParser(),
+                GetUnaryMinusOperatorParser(),
+                GetUnaryNotOperatorParser());
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> GetUnaryPlusOperatorParser()
+        internal static Parser<char, UnaryOperatorType> GetUnaryPlusOperatorParser()
         {
-            return GetUnaryOperatorParser(Symbol.PlusSign.ThenReturn(UnaryOperatorType.Plus));
+            return Symbol.PlusSign.ThenReturn(UnaryOperatorType.Plus);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> GetUnaryMinusOperatorParser()
+        internal static Parser<char, UnaryOperatorType> GetUnaryMinusOperatorParser()
         {
-            return GetUnaryOperatorParser(Symbol.MinusSign.ThenReturn(UnaryOperatorType.Minus));
+            return Symbol.MinusSign.ThenReturn(UnaryOperatorType.Minus);
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> GetUnaryNotOperatorParser()
+        internal static Parser<char, UnaryOperatorType> GetUnaryNotOperatorParser()
         {
-            return GetUnaryOperatorParser(Keyword.Not.ThenReturn(UnaryOperatorType.Not));
+            return Keyword.Not.ThenReturn(UnaryOperatorType.Not);
         }
     }
 }

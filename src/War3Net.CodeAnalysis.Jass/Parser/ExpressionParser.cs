@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using Pidgin;
+using Pidgin.Expression;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -39,20 +40,20 @@ namespace War3Net.CodeAnalysis.Jass
                     new[]
                     {
                         // https://www.hiveworkshop.com/threads/precedence-in-jass.43500/#post-378439
-                        Pidgin.Expression.Operator.PrefixChainable(GetUnaryNotOperatorParser()),
-                        Pidgin.Expression.Operator.PrefixChainable(GetUnaryPlusOperatorParser(), GetUnaryMinusOperatorParser()),
-                        Pidgin.Expression.Operator.InfixL(GetBinaryMultiplicationOperatorParser())
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryDivisionOperatorParser())),
-                        Pidgin.Expression.Operator.InfixL(GetBinaryAddOperatorParser())
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinarySubtractOperatorParser())),
-                        Pidgin.Expression.Operator.InfixL(GetBinaryGreaterOrEqualOperatorParser())
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryLessOrEqualOperatorParser()))
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryEqualsOperatorParser()))
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryNotEqualsOperatorParser()))
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryGreaterThanOperatorParser()))
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryLessThanOperatorParser())),
-                        Pidgin.Expression.Operator.InfixL(GetBinaryAndOperatorParser())
-                            .And(Pidgin.Expression.Operator.InfixL(GetBinaryOrOperatorParser())),
+                        Operator.PrefixChainable(GetUnaryNotOperatorParser().Prefix()),
+                        Operator.PrefixChainable(GetUnaryPlusOperatorParser().Prefix(), GetUnaryMinusOperatorParser().Prefix()),
+                        Operator.InfixL(GetBinaryMultiplicationOperatorParser().Infix())
+                            .And(Operator.InfixL(GetBinaryDivisionOperatorParser().Infix())),
+                        Operator.InfixL(GetBinaryAddOperatorParser().Infix())
+                            .And(Operator.InfixL(GetBinarySubtractOperatorParser().Infix())),
+                        Operator.InfixL(GetBinaryGreaterOrEqualOperatorParser().Infix())
+                            .And(Operator.InfixL(GetBinaryLessOrEqualOperatorParser().Infix()))
+                            .And(Operator.InfixL(GetBinaryEqualsOperatorParser().Infix()))
+                            .And(Operator.InfixL(GetBinaryNotEqualsOperatorParser().Infix()))
+                            .And(Operator.InfixL(GetBinaryGreaterThanOperatorParser().Infix()))
+                            .And(Operator.InfixL(GetBinaryLessThanOperatorParser().Infix())),
+                        Operator.InfixL(GetBinaryAndOperatorParser().Infix())
+                            .And(Operator.InfixL(GetBinaryOrOperatorParser().Infix())),
                     }));
         }
     }
