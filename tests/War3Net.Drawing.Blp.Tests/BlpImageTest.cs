@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -14,95 +13,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace War3Net.Drawing.Blp.Tests
 {
-    public static class SKColorFormatter
-    {
-        /// <summary>
-        /// Displays the <see cref="SkiaSharp.SKColor"/> in the style of <see cref="Color.ToString()"/>.
-        /// </summary>
-        public static string ToColorString(this SkiaSharp.SKColor color)
-        {
-            return $"Color [A={color.Alpha}, R={color.Red}, G={color.Green}, B={color.Blue}]";
-        }
-    }
-
     [TestClass]
     public class BlpImageTest
     {
-        [DataTestMethod]
-        [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
-        public void TestGetBlpSKBitmap(string inputImagePath, string expectedImagePath, int mipMapLevel)
-        {
-            using (var fileStream = File.OpenRead(inputImagePath))
-            {
-                var expectedImage = new Bitmap(expectedImagePath);
-                var blpFile = new BlpFile(fileStream);
-                var actualImage = blpFile.GetSKBitmap(mipMapLevel);
-
-                Assert.AreEqual(expectedImage.Width, actualImage.Width);
-                Assert.AreEqual(expectedImage.Height, actualImage.Height);
-
-                for (var y = 0; y < expectedImage.Height; y++)
-                {
-                    for (var x = 0; x < expectedImage.Width; x++)
-                    {
-                        // Allow pixel values to be slightly different, since some testcases were decoded with WPF (BitmapSource), not SkiaSharp.
-                        const int delta = 1;
-
-                        var expectedPixel = expectedImage.GetPixel(x, y);
-                        var actualPixel = actualImage.GetPixel(x, y);
-
-                        var message = $"Expected:<{expectedPixel}>. Actual:<{actualPixel.ToColorString()}>";
-
-                        Assert.IsTrue(Math.Abs(expectedPixel.A - actualPixel.Alpha) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.R - actualPixel.Red) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.G - actualPixel.Green) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.B - actualPixel.Blue) <= delta, message);
-                    }
-                }
-
-                expectedImage.Dispose();
-                blpFile.Dispose();
-            }
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
-        public void TestGetBlpBitmap(string inputImagePath, string expectedImagePath, int mipMapLevel)
-        {
-            using (var fileStream = File.OpenRead(inputImagePath))
-            {
-                var expectedImage = new Bitmap(expectedImagePath);
-                var blpFile = new BlpFile(fileStream);
-                var actualImage = blpFile.GetBitmap(mipMapLevel);
-
-                Assert.AreEqual(expectedImage.Width, actualImage.Width);
-                Assert.AreEqual(expectedImage.Height, actualImage.Height);
-
-                for (var y = 0; y < expectedImage.Height; y++)
-                {
-                    for (var x = 0; x < expectedImage.Width; x++)
-                    {
-                        // Allow pixel values to be slightly different, since some testcases were decoded with WPF (BitmapSource), not SkiaSharp.
-                        const int delta = 1;
-
-                        var expectedPixel = expectedImage.GetPixel(x, y);
-                        var actualPixel = actualImage.GetPixel(x, y);
-
-                        var message = $"Expected:<{expectedPixel}>. Actual:<{actualPixel}>";
-
-                        Assert.IsTrue(Math.Abs(expectedPixel.A - actualPixel.A) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.R - actualPixel.R) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.G - actualPixel.G) <= delta, message);
-                        Assert.IsTrue(Math.Abs(expectedPixel.B - actualPixel.B) <= delta, message);
-                    }
-                }
-
-                expectedImage.Dispose();
-                blpFile.Dispose();
-            }
-        }
-
-#if NETFRAMEWORK || NETCOREAPP3_0
+#if WINDOWS
         [DataTestMethod]
         [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
         public void TestGetBlpBitmapSource(string inputImagePath, string expectedImagePath, int mipMapLevel)
