@@ -5,14 +5,16 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics;
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.Build.Common;
 using War3Net.Build.Environment;
+using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.Build.Script;
 using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
@@ -33,7 +35,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.SourceDirectory = null;
             scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
 
-            var mapBuilder = new MapBuilder(OutputMapName);
+            var mapBuilder = new LegacyMapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions, InputPath))
             {
             }
@@ -49,7 +51,9 @@ namespace War3Net.Build.Tests
             const string OutputMapName = "TestOutput.w3x";
             const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
 
-            var mapInfo = MapInfo.Parse(File.OpenRead(Path.Combine(InputPath, MapInfo.FileName)));
+            using var mapInfoStream = File.OpenRead(Path.Combine(InputPath, MapInfo.FileName));
+            using var mapInfoReader = new BinaryReader(mapInfoStream);
+            var mapInfo = mapInfoReader.ReadMapInfo();
             mapInfo.ScriptLanguage = ScriptLanguage.Lua;
 
             var scriptCompilerOptions = new ScriptCompilerOptions();
@@ -58,7 +62,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.SourceDirectory = null;
             scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
 
-            var mapBuilder = new MapBuilder(OutputMapName);
+            var mapBuilder = new LegacyMapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions, InputPath))
             {
                 var mapPath = Path.Combine(scriptCompilerOptions.OutputDirectory, OutputMapName);
@@ -80,8 +84,10 @@ namespace War3Net.Build.Tests
 
             var scriptCompilerOptions = new ScriptCompilerOptions(CSharpLua.CoreSystem.CoreSystemProvider.GetCoreSystemFiles());
 
-            scriptCompilerOptions.MapInfo = MapInfo.Default;
-            scriptCompilerOptions.MapEnvironment = MapEnvironment.Default;
+            // scriptCompilerOptions.MapInfo = MapInfo.Default;
+            // scriptCompilerOptions.MapEnvironment = MapEnvironment.Default;
+            throw new NotImplementedException();
+
             scriptCompilerOptions.SourceDirectory = @".\TestData\Script\Template";
             scriptCompilerOptions.OutputDirectory = @".\TestOutput\Template";
 
@@ -90,7 +96,7 @@ namespace War3Net.Build.Tests
 #endif
 
             // Build and launch
-            var mapBuilder = new MapBuilder(OutputMapName);
+            var mapBuilder = new LegacyMapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions))
             {
                 var mapPath = Path.Combine(scriptCompilerOptions.OutputDirectory, OutputMapName);
@@ -110,32 +116,36 @@ namespace War3Net.Build.Tests
         {
             // Get World Editor default info file.
             using var defaultInfoStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3i");
-            var defaultMapInfo = MapInfo.Parse(defaultInfoStream, true);
+            using var defaultInfoReader = new BinaryReader(defaultInfoStream);
+            var defaultMapInfo = defaultInfoReader.ReadMapInfo();
             defaultInfoStream.Position = 0;
 
             // Get War3Net default info file.
-            var mapInfo = MapInfo.Default;
+            MapInfo mapInfo; // = MapInfo.Default;
+            throw new NotImplementedException();
 
             // Update defaults that are different.
             mapInfo.EditorVersion = 6072;
             mapInfo.ScriptLanguage = ScriptLanguage.Jass;
 
-            var player0 = mapInfo.GetPlayerData(0);
-            player0.PlayerName = "TRIGSTR_001";
-            player0.StartPosition = defaultMapInfo.GetPlayerData(0).StartPosition;
-            mapInfo.SetPlayerData(player0);
+            var player0 = mapInfo.Players[0];
+            player0.Name = "TRIGSTR_001";
+            player0.StartPosition = defaultMapInfo.Players[0].StartPosition;
+            mapInfo.Players.Clear();
+            mapInfo.Players.Add(player0);
 
-            var team0 = mapInfo.GetForceData(0);
-            team0.ForceName = "TRIGSTR_002";
-            team0.IncludeAllPlayers();
-            mapInfo.SetForceData(team0);
+            var team0 = mapInfo.Forces[0];
+            team0.Name = "TRIGSTR_002";
+            team0.Players = new Bitmask32();
+            mapInfo.Forces.Clear();
+            mapInfo.Forces.Add(team0);
 
             // Compare files.
             using var mapInfoStream = new MemoryStream();
-            mapInfo.SerializeTo(mapInfoStream, true);
-            mapInfoStream.Position = 0;
+            using var mapInfoWriter = new BinaryWriter(mapInfoStream);
+            mapInfoWriter.Write(mapInfo);
 
-            StreamAssert.AreEqual(defaultInfoStream, mapInfoStream);
+            StreamAssert.AreEqual(defaultInfoStream, mapInfoStream, true);
         }
 
         [TestMethod]
@@ -143,15 +153,17 @@ namespace War3Net.Build.Tests
         {
             // Get World Editor default environment file.
             using var defaultEnvironmentStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3e");
-            var defaultMapEnvironment = MapEnvironment.Parse(defaultEnvironmentStream, true);
+            using var defaultEnvironmentReader = new BinaryReader(defaultEnvironmentStream);
+            var defaultMapEnvironment = defaultEnvironmentReader.ReadMapEnvironment();
             defaultEnvironmentStream.Position = 0;
 
             // Get War3Net default environment file.
-            var mapEnvironment = MapEnvironment.Default;
+            MapEnvironment mapEnvironment; // = MapEnvironment.Default;
+            throw new NotImplementedException();
 
             // Update defaults that are different.
-            var tileEnumerator = defaultMapEnvironment.GetEnumerator();
-            foreach (var tile in mapEnvironment)
+            var tileEnumerator = defaultMapEnvironment.TerrainTiles.GetEnumerator();
+            foreach (var tile in mapEnvironment.TerrainTiles)
             {
                 tileEnumerator.MoveNext();
                 tile.Variation = tileEnumerator.Current.Variation;
@@ -160,10 +172,10 @@ namespace War3Net.Build.Tests
 
             // Compare files.
             using var mapEnvironmentStream = new MemoryStream();
-            mapEnvironment.SerializeTo(mapEnvironmentStream, true);
-            mapEnvironmentStream.Position = 0;
+            using var mapEnvironmentWriter = new BinaryWriter(mapEnvironmentStream);
+            mapEnvironmentWriter.Write(mapEnvironment);
 
-            StreamAssert.AreEqual(defaultEnvironmentStream, mapEnvironmentStream);
+            StreamAssert.AreEqual(defaultEnvironmentStream, mapEnvironmentStream, true);
         }
     }
 }
