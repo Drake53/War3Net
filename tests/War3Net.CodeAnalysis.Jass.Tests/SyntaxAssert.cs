@@ -37,7 +37,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests
         public static void ExpressionThrowsException(string expression)
         {
             var message = new BoxedString();
-            Assert.ThrowsException<ParseException>(() => message.String = GetExpressionDisplayString(JassPidginParser.ParseExpression(expression)), "\r\n{0}", message);
+            Assert.ThrowsException<ParseException>(() => message.String = GetExpressionDisplayString(JassSyntaxFactory.ParseExpression(expression)), "\r\n{0}", message);
         }
 
         private static string GetExpressionDisplayString(IExpressionSyntax? expression)
