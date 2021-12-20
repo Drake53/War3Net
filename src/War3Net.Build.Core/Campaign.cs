@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 using War3Net.Build.Extensions;
@@ -19,6 +20,8 @@ namespace War3Net.Build
 {
     public sealed class Campaign
     {
+        private readonly string? _campaignName;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Campaign"/> class.
         /// </summary>
@@ -36,8 +39,10 @@ namespace War3Net.Build
             Info = campaignInfo;
         }
 
-        private Campaign(string campaignFolder, CampaignFiles campaignFiles)
+        private Campaign(string? campaignName, string campaignFolder, CampaignFiles campaignFiles)
         {
+            _campaignName = campaignName;
+
             if (campaignFiles.HasFlag(CampaignFiles.ImportedFiles) && File.Exists(Path.Combine(campaignFolder, CampaignImportedFiles.FileName)))
             {
                 using var fileStream = File.OpenRead(Path.Combine(campaignFolder, CampaignImportedFiles.FileName));
@@ -109,8 +114,10 @@ namespace War3Net.Build
             }
         }
 
-        private Campaign(MpqArchive campaignArchive, CampaignFiles campaignFiles)
+        private Campaign(string? campaignName, MpqArchive campaignArchive, CampaignFiles campaignFiles)
         {
+            _campaignName = campaignName;
+
             if (campaignFiles.HasFlag(CampaignFiles.ImportedFiles) && MpqFile.Exists(campaignArchive, CampaignImportedFiles.FileName))
             {
                 using var fileStream = MpqFile.OpenRead(campaignArchive, CampaignImportedFiles.FileName);
@@ -207,30 +214,82 @@ namespace War3Net.Build
         /// </summary>
         public static Campaign Open(string path, CampaignFiles campaignFiles = CampaignFiles.All)
         {
-            if (File.Exists(path))
+            var fileInfo = new FileInfo(path);
+            if (fileInfo.Exists)
             {
                 using var campaignArchive = MpqArchive.Open(path);
-                return new Campaign(campaignArchive, campaignFiles);
-            }
-            else if (Directory.Exists(path))
-            {
-                return new Campaign(path, campaignFiles);
+                return new Campaign(fileInfo.Name, campaignArchive, campaignFiles);
             }
             else
             {
-                throw new ArgumentException("Could not find a file or folder at the specified path.");
+                var directoryInfo = new DirectoryInfo(path);
+                if (directoryInfo.Exists)
+                {
+                    return new Campaign(directoryInfo.Name, path, campaignFiles);
+                }
+                else
+                {
+                    throw new ArgumentException("Could not find a file or folder at the specified path.");
+                }
             }
         }
 
         public static Campaign Open(Stream stream, CampaignFiles campaignFiles = CampaignFiles.All)
         {
             using var campaignArchive = MpqArchive.Open(stream);
-            return new Campaign(campaignArchive, campaignFiles);
+            return new Campaign(null, campaignArchive, campaignFiles);
         }
 
         public static Campaign Open(MpqArchive archive, CampaignFiles campaignFiles = CampaignFiles.All)
         {
-            return new Campaign(archive, campaignFiles);
+            return new Campaign(null, archive, campaignFiles);
+        }
+
+        public static bool TryOpen(string path, [NotNullWhen(true)] out Campaign? campaign, CampaignFiles campaignFiles = CampaignFiles.All)
+        {
+            try
+            {
+                campaign = Open(path, campaignFiles);
+                return true;
+            }
+            catch
+            {
+                campaign = null;
+                return false;
+            }
+        }
+
+        public static bool TryOpen(Stream stream, [NotNullWhen(true)] out Campaign? campaign, CampaignFiles campaignFiles = CampaignFiles.All)
+        {
+            try
+            {
+                campaign = Open(stream, campaignFiles);
+                return true;
+            }
+            catch
+            {
+                campaign = null;
+                return false;
+            }
+        }
+
+        public static bool TryOpen(MpqArchive archive, [NotNullWhen(true)] out Campaign? campaign, CampaignFiles campaignFiles = CampaignFiles.All)
+        {
+            try
+            {
+                campaign = Open(archive, campaignFiles);
+                return true;
+            }
+            catch
+            {
+                campaign = null;
+                return false;
+            }
+        }
+
+        public override string? ToString()
+        {
+            return string.IsNullOrEmpty(_campaignName) ? base.ToString() : _campaignName;
         }
     }
 }
