@@ -289,7 +289,18 @@ namespace War3Net.Build
 
         public override string? ToString()
         {
-            return string.IsNullOrEmpty(_campaignName) ? base.ToString() : _campaignName;
+            if (!string.IsNullOrEmpty(_campaignName))
+            {
+                return _campaignName;
+            }
+
+            var campaignName = Info?.CampaignName.Localize(TriggerStrings);
+            if (!string.IsNullOrEmpty(campaignName))
+            {
+                return campaignName;
+            }
+
+            return base.ToString();
         }
     }
 }

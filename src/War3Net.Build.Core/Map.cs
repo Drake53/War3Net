@@ -519,7 +519,18 @@ namespace War3Net.Build
 
         public override string? ToString()
         {
-            return string.IsNullOrEmpty(_mapName) ? base.ToString() : _mapName;
+            if (!string.IsNullOrEmpty(_mapName))
+            {
+                return _mapName;
+            }
+
+            var mapName = Info?.MapName.Localize(TriggerStrings);
+            if (!string.IsNullOrEmpty(mapName))
+            {
+                return mapName;
+            }
+
+            return base.ToString();
         }
     }
 }
