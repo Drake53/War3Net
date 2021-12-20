@@ -26,5 +26,7 @@ namespace War3Net.Build.Import
             : base(reader)
         {
         }
+
+        public override string ToString() => FileName;
     }
 }

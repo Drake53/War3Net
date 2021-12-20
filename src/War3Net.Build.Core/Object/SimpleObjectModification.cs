@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
@@ -31,6 +32,8 @@ namespace War3Net.Build.Object
         public int NewId { get; set; }
 
         public List<SimpleObjectDataModification> Modifications { get; init; } = new();
+
+        public override string ToString() => NewId == 0 ? OldId.ToRawcode() : $"{NewId.ToRawcode()}:{OldId.ToRawcode()}";
 
         internal void ReadFrom(BinaryReader reader, ObjectDataFormatVersion formatVersion)
         {

@@ -9,6 +9,7 @@ using System.IO;
 
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Common
 {
@@ -34,6 +35,8 @@ namespace War3Net.Build.Common
         public int Chance { get; set; }
 
         public int ItemId { get; set; }
+
+        public override string ToString() => $"{ItemId.ToRawcode()} ({Chance}%)";
 
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {

@@ -35,6 +35,8 @@ namespace War3Net.Build.Info
 
         public List<RandomUnitSet> UnitSets { get; init; } = new();
 
+        public override string ToString() => Name;
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Index = reader.ReadInt32();

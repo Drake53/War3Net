@@ -36,6 +36,8 @@ namespace War3Net.Build.Info
 
         public UpgradeAvailability Availability { get; set; }
 
+        public override string ToString() => Id.ToRawcode();
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Players = reader.ReadBitmask32();

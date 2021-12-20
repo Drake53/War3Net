@@ -39,6 +39,8 @@ namespace War3Net.Build.Environment
 
         public List<Region> Regions { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             FormatVersion = reader.ReadInt32<MapRegionsFormatVersion>();

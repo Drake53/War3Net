@@ -45,6 +45,8 @@ namespace War3Net.Build.Script
 
         public List<CustomTextTrigger> CustomTextTriggers { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader, Encoding encoding)
         {
             var version = reader.ReadInt32();

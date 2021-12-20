@@ -29,6 +29,8 @@ namespace War3Net.Build.Import
 
         public string FullPath { get; set; }
 
+        public override string ToString() => FullPath;
+
         internal void ReadFrom(BinaryReader reader, ImportedFilesFormatVersion formatVersion)
         {
             Flags = reader.ReadByte<ImportedFileFlags>();

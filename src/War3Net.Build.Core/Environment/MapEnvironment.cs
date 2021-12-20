@@ -77,6 +77,8 @@ namespace War3Net.Build.Environment
                 && AreListsEqual(CliffTypes, TerrainTypeProvider.GetCliffTypes(Tileset).ToArray());
         }
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             if (reader.ReadInt32() != FileFormatSignature)

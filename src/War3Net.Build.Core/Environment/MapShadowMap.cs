@@ -29,6 +29,8 @@ namespace War3Net.Build.Environment
         // True = 0xff, false = 0x00
         public List<byte> Cells { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             Cells.AddRange(reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position)));

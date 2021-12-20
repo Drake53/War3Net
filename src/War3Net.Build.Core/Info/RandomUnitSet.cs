@@ -6,6 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
+using System.Linq;
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
@@ -27,6 +30,8 @@ namespace War3Net.Build.Info
         public int Chance { get; set; }
 
         public int[] UnitIds { get; set; }
+
+        public override string ToString() => $"{string.Join(", ", UnitIds.Select(id => id.ToRawcode()))} ({Chance}%)";
 
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {

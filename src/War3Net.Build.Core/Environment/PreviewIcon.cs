@@ -34,6 +34,8 @@ namespace War3Net.Build.Environment
 
         public Color Color { get; set; }
 
+        public override string ToString() => IconType.ToString();
+
         internal void ReadFrom(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
         {
             IconType = reader.ReadInt32<PreviewIconType>();

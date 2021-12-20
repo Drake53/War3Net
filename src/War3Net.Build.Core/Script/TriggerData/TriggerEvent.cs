@@ -35,6 +35,8 @@ namespace War3Net.Build.Script
             public int GameVersion { get; }
 
             public ImmutableArray<string> ArgumentTypes { get; }
+
+            public override string ToString() => EventFunctionName;
         }
     }
 }

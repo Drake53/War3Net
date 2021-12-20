@@ -45,6 +45,8 @@ namespace War3Net.Build.Script
                     ScriptName = value;
                 }
             }
+
+            public override string ToString() => ActionFunctionName;
         }
     }
 }

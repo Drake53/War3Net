@@ -34,6 +34,8 @@ namespace War3Net.Build.Script
             public string ReturnType { get; }
 
             public ImmutableArray<string> ArgumentTypes { get; }
+
+            public override string ToString() => FunctionName;
         }
     }
 }

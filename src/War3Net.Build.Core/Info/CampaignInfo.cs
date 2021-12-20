@@ -74,6 +74,8 @@ namespace War3Net.Build.Info
 
         public List<CampaignMap> Maps { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             FormatVersion = reader.ReadInt32<CampaignInfoFormatVersion>();

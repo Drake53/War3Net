@@ -50,6 +50,8 @@ namespace War3Net.Build.Script
 
         public List<TriggerItem> TriggerItems { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader, TriggerData triggerData)
         {
             var header = reader.ReadInt32();

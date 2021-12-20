@@ -33,6 +33,8 @@ namespace War3Net.Build.Info
 
         public string Name { get; set; }
 
+        public override string ToString() => Name;
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Flags = reader.ReadInt32<ForceFlags>();

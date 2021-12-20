@@ -7,6 +7,8 @@
 
 using System.IO;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Widget
 {
     public sealed class RandomUnitTableUnit
@@ -26,6 +28,8 @@ namespace War3Net.Build.Widget
         public int UnitId { get; set; }
 
         public int Chance { get; set; }
+
+        public override string ToString() => $"{UnitId.ToRawcode()} ({Chance}%)";
 
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {

@@ -33,6 +33,8 @@ namespace War3Net.Build.Info
 
         public string MapFilePath { get; set; }
 
+        public override string ToString() => Title;
+
         internal void ReadFrom(BinaryReader reader, CampaignInfoFormatVersion formatVersion)
         {
             IsVisibleInitially = reader.ReadBool();

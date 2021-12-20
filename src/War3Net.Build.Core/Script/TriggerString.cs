@@ -36,6 +36,8 @@ namespace War3Net.Build.Script
 
         public string? Value { get; set; }
 
+        public override string? ToString() => Value;
+
         internal void ReadFrom(StreamReader reader)
         {
             while (true)

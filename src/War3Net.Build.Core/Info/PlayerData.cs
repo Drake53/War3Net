@@ -60,6 +60,8 @@ namespace War3Net.Build.Info
 
         public int Unk2 { get; set; }
 
+        public override string ToString() => Name;
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Id = reader.ReadInt32();

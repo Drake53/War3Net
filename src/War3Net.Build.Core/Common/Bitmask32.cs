@@ -67,6 +67,8 @@ namespace War3Net.Build.Common
 
         public void Clear() => _mask = 0;
 
+        public override string ToString() => Convert.ToString(_mask, 2).PadLeft(32, '0');
+
         internal void ReadFrom(BinaryReader reader)
         {
             _mask = reader.ReadInt32();

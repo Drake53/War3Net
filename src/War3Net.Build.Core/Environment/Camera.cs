@@ -52,6 +52,8 @@ namespace War3Net.Build.Environment
 
         public string Name { get; set; }
 
+        public override string ToString() => Name;
+
         internal void ReadFrom(BinaryReader reader, MapCamerasFormatVersion formatVersion, bool useNewFormat)
         {
             TargetPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());

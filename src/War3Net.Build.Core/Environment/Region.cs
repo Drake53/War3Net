@@ -52,6 +52,8 @@ namespace War3Net.Build.Environment
 
         public float CenterY => 0.5f * (Top + Bottom);
 
+        public override string ToString() => Name;
+
         internal void ReadFrom(BinaryReader reader, MapRegionsFormatVersion formatVersion)
         {
             Left = reader.ReadSingle();

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Numerics;
 
 using War3Net.Build.Common;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
@@ -38,5 +39,7 @@ namespace War3Net.Build.Widget
         public List<RandomItemSet> ItemTableSets { get; init; } = new();
 
         public int CreationNumber { get; set; }
+
+        public override string ToString() => TypeId.ToRawcode();
     }
 }

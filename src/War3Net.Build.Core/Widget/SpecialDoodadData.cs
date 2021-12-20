@@ -8,6 +8,8 @@
 using System.Drawing;
 using System.IO;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Widget
 {
     public sealed class SpecialDoodadData
@@ -29,6 +31,8 @@ namespace War3Net.Build.Widget
         public int Variation { get; set; }
 
         public Point Position { get; set; }
+
+        public override string ToString() => TypeId.ToRawcode();
 
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, SpecialDoodadVersion specialDoodadVersion)
         {

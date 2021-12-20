@@ -23,6 +23,8 @@ namespace War3Net.Build.Script
             public string ExpressionString { get; }
 
             public string? DisplayString { get; }
+
+            public override string ToString() => TypeName;
         }
     }
 }

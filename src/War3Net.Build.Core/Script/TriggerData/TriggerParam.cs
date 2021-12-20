@@ -31,6 +31,8 @@ namespace War3Net.Build.Script
             public string CodeText { get; }
 
             public string DisplayText { get; }
+
+            public override string ToString() => ParameterName;
         }
     }
 }

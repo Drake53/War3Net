@@ -32,6 +32,8 @@ namespace War3Net.Build.Widget
 
         public ItemClass Class { get; set; }
 
+        public override string ToString() => $"Level {Level} ({Class})";
+
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             Level = reader.ReadInt24();

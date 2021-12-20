@@ -31,6 +31,8 @@ namespace War3Net.Build.Widget
 
         public int HeroAbilityLevel { get; set; }
 
+        public override string ToString() => AbilityId.ToRawcode();
+
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             AbilityId = reader.ReadInt32();

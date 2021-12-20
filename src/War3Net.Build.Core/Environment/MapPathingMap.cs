@@ -41,6 +41,8 @@ namespace War3Net.Build.Environment
 
         public List<PathingType> Cells { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             if (reader.ReadInt32() != FileFormatSignature)

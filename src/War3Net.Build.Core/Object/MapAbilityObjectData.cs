@@ -26,5 +26,7 @@ namespace War3Net.Build.Object
             : base(reader)
         {
         }
+
+        public override string ToString() => FileName;
     }
 }

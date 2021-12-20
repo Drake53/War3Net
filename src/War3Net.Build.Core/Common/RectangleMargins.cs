@@ -32,6 +32,8 @@ namespace War3Net.Build.Common
 
         public int Top { get; set; }
 
+        public override string ToString() => $"{nameof(Left)} = {Left} {nameof(Right)} = {Right} {nameof(Bottom)} = {Bottom} {nameof(Top)} = {Top}";
+
         internal void ReadFrom(BinaryReader reader)
         {
             Left = reader.ReadInt32();

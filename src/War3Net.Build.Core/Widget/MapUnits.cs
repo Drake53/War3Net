@@ -45,6 +45,8 @@ namespace War3Net.Build.Widget
 
         public List<UnitData> Units { get; init; } = new();
 
+        public override string ToString() => FileName;
+
         internal void ReadFrom(BinaryReader reader)
         {
             if (reader.ReadInt32() != FileFormatSignature)

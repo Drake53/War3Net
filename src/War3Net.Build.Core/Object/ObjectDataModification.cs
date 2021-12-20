@@ -37,6 +37,8 @@ namespace War3Net.Build.Object
 
         public char ValueAsChar => Value is char c ? c : throw new InvalidOperationException();
 
+        public override string ToString() => Id.ToRawcode();
+
         protected object ReadValue(BinaryReader reader, ObjectDataFormatVersion formatVersion)
         {
             return Type switch

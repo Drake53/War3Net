@@ -7,6 +7,8 @@
 
 using System.IO;
 
+using War3Net.Common.Extensions;
+
 namespace War3Net.Build.Widget
 {
     public sealed class InventoryItemData
@@ -28,6 +30,8 @@ namespace War3Net.Build.Widget
 
         // 0x00000000 == none
         public int ItemId { get; set; }
+
+        public override string ToString() => ItemId.ToRawcode();
 
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {

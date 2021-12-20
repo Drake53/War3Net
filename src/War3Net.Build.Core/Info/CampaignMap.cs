@@ -29,6 +29,8 @@ namespace War3Net.Build.Info
 
         public string MapFilePath { get; set; }
 
+        public override string ToString() => MapFilePath;
+
         internal void ReadFrom(BinaryReader reader, CampaignInfoFormatVersion formatVersion)
         {
             Unk = reader.ReadChars();

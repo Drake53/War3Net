@@ -69,6 +69,8 @@ namespace War3Net.Build.Audio
         // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
         public string SoundName { get; set; }
 
+        public override string ToString() => FilePath;
+
         internal void ReadFrom(BinaryReader reader, MapSoundsFormatVersion formatVersion)
         {
             Name = reader.ReadChars();

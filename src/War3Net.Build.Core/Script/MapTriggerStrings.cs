@@ -24,5 +24,7 @@ namespace War3Net.Build.Script
             : base(reader)
         {
         }
+
+        public override string ToString() => FileName;
     }
 }

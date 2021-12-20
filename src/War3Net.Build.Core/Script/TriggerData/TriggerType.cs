@@ -42,6 +42,8 @@ namespace War3Net.Build.Script
             public string? ImportType { get; }
 
             public bool? TreatAsBaseType { get; }
+
+            public override string ToString() => TypeName;
         }
     }
 }
