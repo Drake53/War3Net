@@ -59,8 +59,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 invocationExpression.Arguments.Arguments[1] is JassBooleanLiteralExpressionSyntax loopingLiteralExpression &&
                                 invocationExpression.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax is3DLiteralExpression &&
                                 invocationExpression.Arguments.Arguments[3] is JassBooleanLiteralExpressionSyntax stopWhenOutOfRangeLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[4] is JassDecimalLiteralExpressionSyntax fadeInRateLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[5] is JassDecimalLiteralExpressionSyntax fadeOutRateLiteralExpression &&
+                                invocationExpression.Arguments.Arguments[4].TryGetIntegerExpressionValue(out var fadeInRate) &&
+                                invocationExpression.Arguments.Arguments[5].TryGetIntegerExpressionValue(out var fadeOutRate) &&
                                 invocationExpression.Arguments.Arguments[6] is JassStringLiteralExpressionSyntax eaxSettingLiteralExpression)
                             {
                                 var flags = (SoundFlags)0;
@@ -88,8 +88,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                                     FilePath = filePath,
                                     EaxSetting = eaxSettingLiteralExpression.Value,
                                     Flags = flags,
-                                    FadeInRate = fadeInRateLiteralExpression.Value,
-                                    FadeOutRate = fadeOutRateLiteralExpression.Value,
+                                    FadeInRate = fadeInRate,
+                                    FadeOutRate = fadeOutRate,
                                 });
                             }
                             else
