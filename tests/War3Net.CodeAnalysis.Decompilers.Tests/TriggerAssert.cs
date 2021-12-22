@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests
 {
@@ -67,7 +68,26 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests
             Assert.AreEqual(expectedFunction.Name, actualFunction.Name, ignoreCase: false, CultureInfo.InvariantCulture);
             Assert.AreEqual(expectedFunction.IsEnabled, actualFunction.IsEnabled);
 
-            AreEqual(expectedFunction.Parameters, actualFunction.Parameters);
+            if (string.Equals(expectedFunction.Name, "CustomScriptCode", StringComparison.Ordinal))
+            {
+                var expectedFunctionParameter = expectedFunction.Parameters.Single();
+                var actualFunctionParameter = actualFunction.Parameters.Single();
+
+                var expectedCustomScriptAction = JassSyntaxFactory.ParseCustomScriptAction(expectedFunctionParameter.Value);
+                var actualCustomScriptAction = JassSyntaxFactory.ParseCustomScriptAction(actualFunctionParameter.Value);
+
+                Assert.AreEqual(expectedFunctionParameter.Type, actualFunctionParameter.Type);
+                Assert.IsTrue(expectedCustomScriptAction.Equals(actualCustomScriptAction));
+                Assert.IsNull(expectedFunctionParameter.Function);
+                Assert.IsNull(actualFunctionParameter.Function);
+                Assert.IsNull(expectedFunctionParameter.ArrayIndexer);
+                Assert.IsNull(actualFunctionParameter.ArrayIndexer);
+            }
+            else
+            {
+                AreEqual(expectedFunction.Parameters, actualFunction.Parameters);
+            }
+
             AreEqual(expectedFunction.ChildFunctions, actualFunction.ChildFunctions);
         }
 
