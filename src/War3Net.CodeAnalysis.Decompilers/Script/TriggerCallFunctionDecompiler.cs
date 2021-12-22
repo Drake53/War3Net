@@ -18,8 +18,8 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private bool TryDecompileTriggerCallFunction(JassInvocationExpressionSyntax invocationExpression, [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
-            var parameters = Context.TriggerData.GetParameters(TriggerFunctionType.Call, invocationExpression.IdentifierName.Name);
-            if (parameters.Length == invocationExpression.Arguments.Arguments.Length)
+            var argumentTypes = Context.TriggerData.TriggerData.TriggerCalls[invocationExpression.IdentifierName.Name].ArgumentTypes;
+            if (argumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
             {
                 var function = new TriggerFunction
                 {
@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                 for (var i = 0; i < invocationExpression.Arguments.Arguments.Length; i++)
                 {
-                    if (TryDecompileTriggerFunctionParameter(invocationExpression.Arguments.Arguments[i], parameters[i], out var functionParameter))
+                    if (TryDecompileTriggerFunctionParameter(invocationExpression.Arguments.Arguments[i], argumentTypes[i], out var functionParameter))
                     {
                         function.Parameters.Add(functionParameter);
                     }
@@ -60,13 +60,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                 _ => throw new NotSupportedException(),
             };
 
-            var parameters = Context.TriggerData.GetParameters(TriggerFunctionType.Call, functionName);
-            if (parameters.Length == 2)
+            var argumentTypes = Context.TriggerData.TriggerData.TriggerCalls[functionName].ArgumentTypes;
+            if (argumentTypes.Length == 2)
             {
                 if (string.Equals(type, JassKeyword.String, StringComparison.Ordinal) &&
                     binaryExpression.Operator == BinaryOperatorType.Add &&
-                    TryDecompileTriggerFunctionParameter(binaryExpression.Left, parameters[0], out var leftFunctionParameter) &&
-                    TryDecompileTriggerFunctionParameter(binaryExpression.Right, parameters[1], out var rightFunctionParameter))
+                    TryDecompileTriggerFunctionParameter(binaryExpression.Left, argumentTypes[0], out var leftFunctionParameter) &&
+                    TryDecompileTriggerFunctionParameter(binaryExpression.Right, argumentTypes[1], out var rightFunctionParameter))
                 {
                     var function = new TriggerFunction
                     {
@@ -82,11 +82,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     return true;
                 }
             }
-            else if (parameters.Length == 3)
+            else if (argumentTypes.Length == 3)
             {
-                if (TryDecompileTriggerFunctionParameter(binaryExpression.Left, parameters[0], out var leftFunctionParameter) &&
-                    TryDecompileTriggerFunctionParameter(binaryExpression.Operator, parameters[1], out var operatorFunctionParameter) &&
-                    TryDecompileTriggerFunctionParameter(binaryExpression.Right, parameters[2], out var rightFunctionParameter))
+                if (TryDecompileTriggerFunctionParameter(binaryExpression.Left, argumentTypes[0], out var leftFunctionParameter) &&
+                    TryDecompileTriggerFunctionParameter(binaryExpression.Operator, argumentTypes[1], out var operatorFunctionParameter) &&
+                    TryDecompileTriggerFunctionParameter(binaryExpression.Right, argumentTypes[2], out var rightFunctionParameter))
                 {
                     var function = new TriggerFunction
                     {

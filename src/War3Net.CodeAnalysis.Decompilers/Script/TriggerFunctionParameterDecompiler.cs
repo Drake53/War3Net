@@ -9,6 +9,7 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Decompilers.Extensions;
@@ -227,12 +228,13 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileTriggerFunctionParameter(BinaryOperatorType binaryOperatorType, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (Context.TriggerData.TryGetTriggerParamPreset(type, binaryOperatorType.GetSymbol(), out var value))
+            if (Context.TriggerData.TriggerParams.TryGetValue(type, out var triggerParamsForType) &&
+                triggerParamsForType.TryGetValue(binaryOperatorType.GetSymbol(), out var triggerParams))
             {
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.Preset,
-                    Value = value,
+                    Value = triggerParams.Single().ParameterName,
                 };
 
                 return true;
@@ -244,12 +246,13 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileTriggerFunctionParameterPreset(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (Context.TriggerData.TryGetTriggerParamPreset(type, expression.ToString(), out var value))
+            if (Context.TriggerData.TriggerParams.TryGetValue(type, out var triggerParamsForType) &&
+                triggerParamsForType.TryGetValue(expression.ToString(), out var triggerParams))
             {
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.Preset,
-                    Value = value,
+                    Value = triggerParams.Single().ParameterName,
                 };
 
                 return true;
@@ -443,7 +446,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                     return true;
                 }
-                else if (Context.TriggerData.TryGetCustomTypes(variableDeclaration.Type, out var customTypes) && customTypes.Contains(expectedType))
+                else if (Context.TriggerData.TriggerTypes.TryGetValue(variableDeclaration.Type, out var customTypes) && customTypes.ContainsKey(expectedType))
                 {
                     variableDeclaration.Type = expectedType;
                     if (variableDeclaration.VariableDefinition is not null)

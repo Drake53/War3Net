@@ -42,7 +42,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             ObjectData = new ObjectDataContext(map, campaign);
-            TriggerData = triggerData ?? TriggerData.Default;
+            TriggerData = new TriggerDataContext(triggerData);
 
             var compilationUnit = JassSyntaxFactory.ParseCompilationUnit(map.Script);
 
@@ -85,7 +85,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         public ObjectDataContext ObjectData { get; }
 
-        public TriggerData TriggerData { get; }
+        public TriggerDataContext TriggerData { get; }
 
         public ImmutableDictionary<string, FunctionDeclarationContext> FunctionDeclarations { get; }
 

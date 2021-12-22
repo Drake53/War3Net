@@ -325,9 +325,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        var eventParameters = Context.TriggerData.GetParameters(TriggerFunctionType.Event, callStatement.IdentifierName.Name);
+                        var argumentTypes = Context.TriggerData.TriggerData.TriggerEvents[callStatement.IdentifierName.Name].ArgumentTypes;
 
-                        if (callStatement.Arguments.Arguments.Length == eventParameters.Length + 1 &&
+                        if (callStatement.Arguments.Arguments.Length == argumentTypes.Length + 1 &&
                             callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
                             string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
                         {
@@ -340,7 +340,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             for (var i = 1; i < callStatement.Arguments.Arguments.Length; i++)
                             {
-                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], eventParameters[i - 1], out var functionParameter))
+                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], argumentTypes[i - 1], out var functionParameter))
                                 {
                                     function.Parameters.Add(functionParameter);
                                 }
@@ -370,8 +370,8 @@ namespace War3Net.CodeAnalysis.Decompilers
         private bool TryDecompileVariableDefinitionInitialValue(IExpressionSyntax expression, string type, [NotNullWhen(true)] out string? initialValue)
         {
             if (expression is not JassNullLiteralExpressionSyntax &&
-                (!Context.TriggerData.TryGetTriggerTypeDefault(type, out var typeDefault) ||
-                 !string.Equals(typeDefault.ExpressionString, expression.ToString(), StringComparison.Ordinal)) &&
+                (!Context.TriggerData.TriggerData.TriggerTypeDefaults.TryGetValue(type, out var typeDefault) ||
+                 !string.Equals(typeDefault.ScriptText, expression.ToString(), StringComparison.Ordinal)) &&
                 TryDecompileTriggerFunctionParameter(expression, type, out var functionParameter))
             {
                 initialValue = functionParameter.Value;

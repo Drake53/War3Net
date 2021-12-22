@@ -220,7 +220,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                         return false;
                     }
 
-                    if (!Context.TriggerData.TryGetTriggerParamPreset(operatorTypeLeft, binaryExpression.Operator.GetSymbol(), out var value))
+                    if (!Context.TriggerData.TriggerParams.TryGetValue(operatorTypeLeft, out var triggerParamsForType) ||
+                        !triggerParamsForType.TryGetValue(binaryExpression.Operator.GetSymbol(), out var triggerParams))
                     {
                         return false;
                     }
@@ -228,7 +229,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     var operatorFunctionParameter = new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.Preset,
-                        Value = value,
+                        Value = triggerParams.Single().ParameterName,
                     };
 
                     function.Name = operatorCompareTypeLeft;
@@ -258,20 +259,22 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             var expressionString = expression.ToString();
             if (!string.Equals(expressionString, "0", StringComparison.Ordinal) &&
-                Context.TriggerData.TryGetTriggerParamPreset(expressionString, out var presetValue, out var presetType) &&
-                Context.TriggerData.TryGetOperatorCompareType(presetType, out operatorCompareType, out operatorType))
+                Context.TriggerData.TryGetTriggerConditionForUnknownType(expressionString, out var triggerCondition, out var triggerParam))
             {
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.Preset,
-                    Value = presetValue,
+                    Value = triggerParam.ParameterName,
                 };
+
+                operatorCompareType = triggerCondition.FunctionName;
+                operatorType = triggerCondition.ArgumentTypes[1];
 
                 return true;
             }
             else if (expression is JassInvocationExpressionSyntax invocationExpression &&
-                     Context.TriggerData.TryGetReturnType(invocationExpression.IdentifierName.Name, out var returnType) &&
-                     Context.TriggerData.TryGetOperatorCompareType(returnType, out operatorCompareType, out operatorType))
+                     Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
+                     Context.TriggerData.TriggerConditions.TryGetValue(triggerCall.ReturnType, out triggerCondition))
             {
                 if (TryDecompileTriggerCallFunction(invocationExpression, out var callFunction))
                 {
@@ -281,6 +284,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                         Value = invocationExpression.IdentifierName.Name,
                         Function = callFunction,
                     };
+
+                    operatorCompareType = triggerCondition.FunctionName;
+                    operatorType = triggerCondition.ArgumentTypes[1];
 
                     return true;
                 }
@@ -296,8 +302,11 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (!string.IsNullOrEmpty(literalType))
                 {
-                    if (Context.TriggerData.TryGetOperatorCompareType(literalType, out operatorCompareType, out operatorType))
+                    if (Context.TriggerData.TriggerConditions.TryGetValue(literalType, out triggerCondition))
                     {
+                        operatorCompareType = triggerCondition.FunctionName;
+                        operatorType = triggerCondition.ArgumentTypes[1];
+
                         return true;
                     }
                     else

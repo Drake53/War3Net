@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
@@ -21,41 +22,45 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (parameters.Length > 0 &&
                 string.Equals(parameters[^1], JassKeyword.Code, StringComparison.Ordinal) &&
-                Context.TriggerData.TryGetParametersByScriptName(callStatement.IdentifierName.Name, callStatement.Arguments.Arguments.Length - 1, out var parametersMultiple, out var functionName) &&
-                callStatement.Arguments.Arguments[^1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
-                Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var actionsFunctionDeclaration) &&
-                actionsFunctionDeclaration.IsActionsFunction &&
-                TryDecompileTriggerActionFunctions(actionsFunctionDeclaration.FunctionDeclaration.Body, out var loopActionFunctions))
+                Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Name, out var actions))
             {
-                var function = new TriggerFunction
-                {
-                    Type = TriggerFunctionType.Action,
-                    IsEnabled = true,
-                    Name = functionName,
-                };
+                var action = actions.First(action => action.ArgumentTypes.Length == callStatement.Arguments.Arguments.Length - 1);
 
-                for (var i = 0; i < callStatement.Arguments.Arguments.Length - 1; i++)
+                if (callStatement.Arguments.Arguments[^1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                    Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var actionsFunctionDeclaration) &&
+                    actionsFunctionDeclaration.IsActionsFunction &&
+                    TryDecompileTriggerActionFunctions(actionsFunctionDeclaration.FunctionDeclaration.Body, out var loopActionFunctions))
                 {
-                    if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], parametersMultiple.Value[i], out var functionParameter))
+                    var function = new TriggerFunction
                     {
-                        function.Parameters.Add(functionParameter);
-                    }
-                    else
+                        Type = TriggerFunctionType.Action,
+                        IsEnabled = true,
+                        Name = action.FunctionName,
+                    };
+
+                    for (var i = 0; i < callStatement.Arguments.Arguments.Length - 1; i++)
                     {
-                        actionFunction = null;
-                        return false;
+                        if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], action.ArgumentTypes[i], out var functionParameter))
+                        {
+                            function.Parameters.Add(functionParameter);
+                        }
+                        else
+                        {
+                            actionFunction = null;
+                            return false;
+                        }
                     }
+
+                    foreach (var loopActionFunction in loopActionFunctions)
+                    {
+                        loopActionFunction.Branch = 0;
+                    }
+
+                    function.ChildFunctions.AddRange(loopActionFunctions);
+
+                    actionFunction = function;
+                    return true;
                 }
-
-                foreach (var loopActionFunction in loopActionFunctions)
-                {
-                    loopActionFunction.Branch = 0;
-                }
-
-                function.ChildFunctions.AddRange(loopActionFunctions);
-
-                actionFunction = function;
-                return true;
             }
 
             actionFunction = null;

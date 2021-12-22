@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -25,9 +26,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                 var statement = statementList.Statements[i];
                 if (statement is JassCallStatementSyntax callStatement)
                 {
-                    if (Context.TriggerData.TryGetParametersByScriptName(callStatement.IdentifierName.Name, callStatement.Arguments.Arguments.Length, out var parameters, out var functionName))
+                    if (Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Name, out var actions))
                     {
-                        if (TryDecompileForEachLoopActionFunction(callStatement, parameters.Value, out var loopActionFunction))
+                        var action = actions.First(action => action.ArgumentTypes.Length == callStatement.Arguments.Arguments.Length);
+
+                        if (TryDecompileForEachLoopActionFunction(callStatement, action.ArgumentTypes, out var loopActionFunction))
                         {
                             result.Add(loopActionFunction);
                         }
@@ -37,12 +40,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                             {
                                 Type = TriggerFunctionType.Action,
                                 IsEnabled = true,
-                                Name = functionName,
+                                Name = action.FunctionName,
                             };
 
                             for (var j = 0; j < callStatement.Arguments.Arguments.Length; j++)
                             {
-                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[j], parameters.Value[j], out var functionParameter))
+                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[j], action.ArgumentTypes[j], out var functionParameter))
                                 {
                                     function.Parameters.Add(functionParameter);
                                 }
