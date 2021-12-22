@@ -66,9 +66,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             const int RootCategoryId = (int)TriggerItemTypeId.RootCategory << 24;
-            const int VariablesCategoryId = (int)TriggerItemTypeId.Category << 24;
-            const int TriggersCategoryId = ((int)TriggerItemTypeId.Category << 24) + 1;
 
+            var categoryId = (int)TriggerItemTypeId.Category << 24;
             var variableId = (int)TriggerItemTypeId.Variable << 24;
             var triggerId = (int)TriggerItemTypeId.Gui << 24;
 
@@ -88,51 +87,53 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (Context.VariableDeclarations.Any(declaration => declaration.Value.GlobalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal)))
             {
+                var variablesCategoryId = categoryId++;
+
                 mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
                 {
                     Name = "Variables",
-                    Id = VariablesCategoryId,
+                    Id = variablesCategoryId,
                     ParentId = RootCategoryId,
                 });
-            }
 
-            foreach (var declaration in Context.VariableDeclarations)
-            {
-                var globalDeclaration = declaration.Value.GlobalDeclaration;
-                if (globalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal))
+                foreach (var declaration in Context.VariableDeclarations)
                 {
-                    var variableDefinition = new VariableDefinition
+                    var globalDeclaration = declaration.Value.GlobalDeclaration;
+                    if (globalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal))
                     {
-                        Name = globalDeclaration.Declarator.IdentifierName.Name["udg_".Length..],
-                        Type = globalDeclaration.Declarator.Type.TypeName.Name,
-                        Unk = 1,
-                        IsArray = declaration.Value.IsArray,
-                        ArraySize = 1,
-                        IsInitialized = false,
-                        InitialValue = string.Empty,
-                        Id = variableId++,
-                        ParentId = VariablesCategoryId,
-                    };
-
-                    declaration.Value.VariableDefinition = variableDefinition;
-
-                    if (globalDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
-                    {
-                        if (variableDeclarator.Value is not null &&
-                            TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
+                        var variableDefinition = new VariableDefinition
                         {
-                            variableDefinition.IsInitialized = true;
-                            variableDefinition.InitialValue = initialValue;
+                            Name = globalDeclaration.Declarator.IdentifierName.Name["udg_".Length..],
+                            Type = globalDeclaration.Declarator.Type.TypeName.Name,
+                            Unk = 1,
+                            IsArray = declaration.Value.IsArray,
+                            ArraySize = 1,
+                            IsInitialized = false,
+                            InitialValue = string.Empty,
+                            Id = variableId++,
+                            ParentId = variablesCategoryId,
+                        };
+
+                        declaration.Value.VariableDefinition = variableDefinition;
+
+                        if (globalDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
+                        {
+                            if (variableDeclarator.Value is not null &&
+                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
+                            {
+                                variableDefinition.IsInitialized = true;
+                                variableDefinition.InitialValue = initialValue;
+                            }
                         }
+
+                        mapTriggers.Variables.Add(variableDefinition);
+
+                        var triggerVariableDefinition = new TriggerVariableDefinition();
+                        triggerVariableDefinition.Name = variableDefinition.Name;
+                        triggerVariableDefinition.Id = variableDefinition.Id;
+                        triggerVariableDefinition.ParentId = variableDefinition.ParentId;
+                        mapTriggers.TriggerItems.Add(triggerVariableDefinition);
                     }
-
-                    mapTriggers.Variables.Add(variableDefinition);
-
-                    var triggerVariableDefinition = new TriggerVariableDefinition();
-                    triggerVariableDefinition.Name = variableDefinition.Name;
-                    triggerVariableDefinition.Id = variableDefinition.Id;
-                    triggerVariableDefinition.ParentId = variableDefinition.ParentId;
-                    mapTriggers.TriggerItems.Add(triggerVariableDefinition);
                 }
             }
 
@@ -163,10 +164,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
+            var triggersCategoryId = categoryId++;
+
             mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
             {
                 Name = "Untitled Category",
-                Id = TriggersCategoryId,
+                Id = triggersCategoryId,
                 ParentId = RootCategoryId,
             });
 
@@ -179,7 +182,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
                 {
                     trigger.Id = triggerId++;
-                    trigger.ParentId = TriggersCategoryId;
+                    trigger.ParentId = triggersCategoryId;
 
                     triggers.Add(trigger.Name, trigger);
                     mapTriggers.TriggerItems.Add(trigger);
