@@ -86,12 +86,15 @@ namespace War3Net.CodeAnalysis.Decompilers
                 },
             };
 
-            mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
+            if (Context.VariableDeclarations.Any(declaration => declaration.Value.GlobalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal)))
             {
-                Name = "Variables",
-                Id = VariablesCategoryId,
-                ParentId = RootCategoryId,
-            });
+                mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
+                {
+                    Name = "Variables",
+                    Id = VariablesCategoryId,
+                    ParentId = RootCategoryId,
+                });
+            }
 
             foreach (var declaration in Context.VariableDeclarations)
             {
@@ -333,9 +336,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        var argumentTypes = Context.TriggerData.TriggerData.TriggerEvents[callStatement.IdentifierName.Name].ArgumentTypes;
-
-                        if (callStatement.Arguments.Arguments.Length == argumentTypes.Length + 1 &&
+                        if (Context.TriggerData.TriggerData.TriggerEvents.TryGetValue(callStatement.IdentifierName.Name, out var triggerEvent) &&
+                            callStatement.Arguments.Arguments.Length == triggerEvent.ArgumentTypes.Length + 1 &&
                             callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
                             string.Equals(variableReferenceExpression.IdentifierName.Name, triggerVariableName, StringComparison.Ordinal))
                         {
@@ -348,7 +350,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             for (var i = 1; i < callStatement.Arguments.Arguments.Length; i++)
                             {
-                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], argumentTypes[i - 1], out var functionParameter))
+                                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], triggerEvent.ArgumentTypes[i - 1], out var functionParameter))
                                 {
                                     function.Parameters.Add(functionParameter);
                                 }

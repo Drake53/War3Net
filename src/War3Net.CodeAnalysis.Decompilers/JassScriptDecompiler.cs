@@ -86,15 +86,5 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
         }
-
-        private static IExpressionSyntax DeparenthesizeExpression(IExpressionSyntax expression)
-        {
-            while (expression is JassParenthesizedExpressionSyntax parenthesizedExpression)
-            {
-                expression = parenthesizedExpression.Expression;
-            }
-
-            return expression;
-        }
     }
 }

@@ -82,6 +82,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 var filePath = Regex.Unescape(fileNameLiteralExpression.Value);
                                 Context.ImportedFileNames.Add(filePath);
 
+                                if (!is3DLiteralExpression.Value && !IsInternalSound(filePath))
+                                {
+                                    flags |= SoundFlags.UNK16;
+                                }
+
                                 sounds.Add(setStatement.IdentifierName.Name, new Sound
                                 {
                                     Name = setStatement.IdentifierName.Name,
@@ -100,15 +105,22 @@ namespace War3Net.CodeAnalysis.Decompilers
                         }
                         else if (setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
                         {
+                            var flags = SoundFlags.Music;
+
                             var filePath = Regex.Unescape(stringLiteralExpression.Value);
                             Context.ImportedFileNames.Add(filePath);
+
+                            if (!IsInternalSound(filePath))
+                            {
+                                flags |= SoundFlags.UNK16;
+                            }
 
                             sounds.Add(setStatement.IdentifierName.Name, new Sound
                             {
                                 Name = setStatement.IdentifierName.Name,
                                 FilePath = filePath,
                                 EaxSetting = string.Empty,
-                                Flags = SoundFlags.Music,
+                                Flags = flags,
                                 FadeInRate = 10,
                                 FadeOutRate = 10,
                             });
@@ -269,6 +281,17 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             mapSounds = null;
             return false;
+        }
+
+        [Obsolete]
+        private static bool IsInternalSound(string filePath)
+        {
+            return filePath.StartsWith(@"Sound\", StringComparison.OrdinalIgnoreCase)
+                || filePath.StartsWith(@"Sound/", StringComparison.OrdinalIgnoreCase)
+                || filePath.StartsWith(@"UI\", StringComparison.OrdinalIgnoreCase)
+                || filePath.StartsWith(@"UI/", StringComparison.OrdinalIgnoreCase)
+                || filePath.StartsWith(@"Units\", StringComparison.OrdinalIgnoreCase)
+                || filePath.StartsWith(@"Units/", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
