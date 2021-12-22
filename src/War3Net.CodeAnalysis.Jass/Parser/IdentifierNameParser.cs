@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassIdentifierNameSyntax> GetIdentifierNameParser()
         {
             return Try(Token(c => char.IsLetterOrDigit(c) || c == '_').AtLeastOnceString().Assert(value => !char.IsDigit(value[0])))
-                .Then(value => value[0] != '_' && value[^1] != '_' && !JassKeyword.IsKeyword(value)
+                .Then(value => JassSyntaxFacts.IsValidIdentifier(value) && !JassKeyword.IsKeyword(value)
                     ? Return(new JassIdentifierNameSyntax(value))
                     : Fail<JassIdentifierNameSyntax>($"'{value}' is not a valid identifier name"))
                 .SkipWhitespaces()

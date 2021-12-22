@@ -28,6 +28,8 @@ namespace War3Net.Build.Script
 
         public string? Code { get; set; }
 
+        public override string? ToString() => Code;
+
         internal void ReadFrom(BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion)
         {
             var length = reader.ReadInt32();

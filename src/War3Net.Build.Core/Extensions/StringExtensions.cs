@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using War3Net.Build.Script;
@@ -14,6 +15,7 @@ namespace War3Net.Build.Extensions
 {
     public static class StringExtensions
     {
+        [return: NotNullIfNotNull("s")]
         public static string? Localize(this string? s, TriggerStrings? triggerStrings)
         {
             if (s is null || triggerStrings is null)
