@@ -25,14 +25,17 @@ namespace War3Net.CodeAnalysis.Decompilers
             var runInitializationTriggers = GetFunction("RunInitializationTriggers");
 
             if (TryDecompileMapTriggers(
-                initGlobals.FunctionDeclaration,
+                initGlobals?.FunctionDeclaration,
                 initCustomTriggers?.FunctionDeclaration,
                 runInitializationTriggers?.FunctionDeclaration,
                 formatVersion,
                 subVersion,
                 out mapTriggers))
             {
-                initGlobals.Handled = true;
+                if (initGlobals is not null)
+                {
+                    initGlobals.Handled = true;
+                }
 
                 if (initCustomTriggers is not null)
                 {
@@ -52,37 +55,33 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         public bool TryDecompileMapTriggers(
-            JassFunctionDeclarationSyntax initGlobalsFunction,
+            JassFunctionDeclarationSyntax? initGlobalsFunction,
             JassFunctionDeclarationSyntax? initCustomTriggersFunction,
             JassFunctionDeclarationSyntax? runInitializationTriggersFunction,
             MapTriggersFormatVersion formatVersion,
             MapTriggersSubVersion? subVersion,
             [NotNullWhen(true)] out MapTriggers? mapTriggers)
         {
-            if (initGlobalsFunction is null)
-            {
-                throw new ArgumentNullException(nameof(initGlobalsFunction));
-            }
-
             const int RootCategoryId = (int)TriggerItemTypeId.RootCategory << 24;
 
-            var categoryId = (int)TriggerItemTypeId.Category << 24;
+            var categoryId = subVersion.HasValue ? (int)TriggerItemTypeId.Category << 24 : 0;
             var variableId = (int)TriggerItemTypeId.Variable << 24;
             var triggerId = (int)TriggerItemTypeId.Gui << 24;
 
             mapTriggers = new MapTriggers(formatVersion, subVersion)
             {
                 GameVersion = 2,
-                TriggerItems = new()
-                {
-                    new TriggerCategoryDefinition(TriggerItemType.RootCategory)
-                    {
-                        Name = "Untitled",
-                        Id = RootCategoryId,
-                        ParentId = -1,
-                    },
-                },
             };
+
+            if (subVersion.HasValue)
+            {
+                mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.RootCategory)
+                {
+                    Name = "Untitled",
+                    Id = RootCategoryId,
+                    ParentId = -1,
+                });
+            }
 
             if (Context.VariableDeclarations.Any(declaration => declaration.Value.GlobalDeclaration.Declarator.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal)))
             {
@@ -136,28 +135,31 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            foreach (var statement in initGlobalsFunction.Body.Statements)
+            if (initGlobalsFunction is not null)
             {
-                if (statement is JassLoopStatementSyntax loopStatement)
+                foreach (var statement in initGlobalsFunction.Body.Statements)
                 {
-                    if (loopStatement.Body.Statements.Length == 3 &&
-                        loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
-                        loopStatement.Body.Statements[1] is JassSetStatementSyntax setVariableStatement &&
-                        loopStatement.Body.Statements[2] is JassSetStatementSyntax &&
-                        setVariableStatement.Indexer is JassVariableReferenceExpressionSyntax i &&
-                        string.Equals(i.IdentifierName.Name, "i", StringComparison.Ordinal))
+                    if (statement is JassLoopStatementSyntax loopStatement)
                     {
-                        var variableName = setVariableStatement.IdentifierName.Name["udg_".Length..];
-                        var arraySize = ((JassDecimalLiteralExpressionSyntax)((JassBinaryExpressionSyntax)exitStatement.Condition.Deparenthesize()).Right).Value;
-
-                        var variableDefinition = mapTriggers.Variables.Single(v => string.Equals(v.Name, variableName, StringComparison.Ordinal));
-
-                        variableDefinition.ArraySize = arraySize;
-
-                        if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.Value.Expression, variableDefinition.Type, out var initialValue))
+                        if (loopStatement.Body.Statements.Length == 3 &&
+                            loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
+                            loopStatement.Body.Statements[1] is JassSetStatementSyntax setVariableStatement &&
+                            loopStatement.Body.Statements[2] is JassSetStatementSyntax &&
+                            setVariableStatement.Indexer is JassVariableReferenceExpressionSyntax i &&
+                            string.Equals(i.IdentifierName.Name, "i", StringComparison.Ordinal))
                         {
-                            variableDefinition.IsInitialized = true;
-                            variableDefinition.InitialValue = initialValue;
+                            var variableName = setVariableStatement.IdentifierName.Name["udg_".Length..];
+                            var arraySize = ((JassDecimalLiteralExpressionSyntax)((JassBinaryExpressionSyntax)exitStatement.Condition.Deparenthesize()).Right).Value;
+
+                            var variableDefinition = mapTriggers.Variables.Single(v => string.Equals(v.Name, variableName, StringComparison.Ordinal));
+
+                            variableDefinition.ArraySize = arraySize;
+
+                            if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.Value.Expression, variableDefinition.Type, out var initialValue))
+                            {
+                                variableDefinition.IsInitialized = true;
+                                variableDefinition.InitialValue = initialValue;
+                            }
                         }
                     }
                 }
