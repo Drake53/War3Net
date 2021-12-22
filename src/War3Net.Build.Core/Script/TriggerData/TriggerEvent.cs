@@ -64,7 +64,7 @@ namespace War3Net.Build.Script
                     FunctionName = functionName;
                     GameVersion = gameVersion;
 
-                    if (argumentTypes.Length == 1 && string.Equals(ArgumentTypes[0], JassKeyword.Nothing, StringComparison.Ordinal))
+                    if (argumentTypes.Length == 1 && string.Equals(argumentTypes[0], JassKeyword.Nothing, StringComparison.Ordinal))
                     {
                         ArgumentTypes = ImmutableArray<string>.Empty;
                     }
