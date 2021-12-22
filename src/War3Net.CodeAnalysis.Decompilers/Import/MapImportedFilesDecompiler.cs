@@ -23,14 +23,14 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapImportedFiles(MpqArchive mpqArchive, [NotNullWhen(true)] out MapImportedFiles? mapImportedFiles)
+        public bool TryDecompileMapImportedFiles(MpqArchive mpqArchive, ImportedFilesFormatVersion formatVersion, [NotNullWhen(true)] out MapImportedFiles? mapImportedFiles)
         {
             if (mpqArchive is null)
             {
                 throw new ArgumentNullException(nameof(mpqArchive));
             }
 
-            mapImportedFiles = new MapImportedFiles(ImportedFilesFormatVersion.Normal);
+            mapImportedFiles = new MapImportedFiles(formatVersion);
 
             var ignoreList = GetIgnoreList();
 

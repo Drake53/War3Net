@@ -20,11 +20,11 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapRegions([NotNullWhen(true)] out MapRegions? mapRegions)
+        public bool TryDecompileMapRegions(MapRegionsFormatVersion formatVersion, [NotNullWhen(true)] out MapRegions? mapRegions)
         {
             foreach (var candidateFunction in GetCandidateFunctions("CreateRegions"))
             {
-                if (TryDecompileMapRegions(candidateFunction.FunctionDeclaration, out mapRegions))
+                if (TryDecompileMapRegions(candidateFunction.FunctionDeclaration, formatVersion, out mapRegions))
                 {
                     candidateFunction.Handled = true;
 
@@ -36,7 +36,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             return false;
         }
 
-        public bool TryDecompileMapRegions(JassFunctionDeclarationSyntax functionDeclaration, [NotNullWhen(true)] out MapRegions? mapRegions)
+        public bool TryDecompileMapRegions(JassFunctionDeclarationSyntax functionDeclaration, MapRegionsFormatVersion formatVersion, [NotNullWhen(true)] out MapRegions? mapRegions)
         {
             if (functionDeclaration is null)
             {
@@ -180,7 +180,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (regions.Any())
             {
-                mapRegions = new MapRegions(MapRegionsFormatVersion.Normal);
+                mapRegions = new MapRegions(formatVersion);
                 mapRegions.Regions.AddRange(createdRegions);
                 return true;
             }

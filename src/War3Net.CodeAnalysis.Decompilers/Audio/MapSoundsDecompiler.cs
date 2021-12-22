@@ -19,11 +19,11 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapSounds([NotNullWhen(true)] out MapSounds? mapSounds)
+        public bool TryDecompileMapSounds(MapSoundsFormatVersion formatVersion, [NotNullWhen(true)] out MapSounds? mapSounds)
         {
             foreach (var candidateFunction in GetCandidateFunctions("InitSounds"))
             {
-                if (TryDecompileMapSounds(candidateFunction.FunctionDeclaration, out mapSounds))
+                if (TryDecompileMapSounds(candidateFunction.FunctionDeclaration, formatVersion, out mapSounds))
                 {
                     candidateFunction.Handled = true;
 
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             return false;
         }
 
-        public bool TryDecompileMapSounds(JassFunctionDeclarationSyntax functionDeclaration, [NotNullWhen(true)] out MapSounds? mapSounds)
+        public bool TryDecompileMapSounds(JassFunctionDeclarationSyntax functionDeclaration, MapSoundsFormatVersion formatVersion, [NotNullWhen(true)] out MapSounds? mapSounds)
         {
             if (functionDeclaration is null)
             {
@@ -262,7 +262,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (sounds.Any())
             {
-                mapSounds = new MapSounds(MapSoundsFormatVersion.Normal);
+                mapSounds = new MapSounds(formatVersion);
                 mapSounds.Sounds.AddRange(sounds.Values);
                 return true;
             }

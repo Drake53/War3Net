@@ -18,13 +18,19 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapTriggers([NotNullWhen(true)] out MapTriggers? mapTriggers)
+        public bool TryDecompileMapTriggers(MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, [NotNullWhen(true)] out MapTriggers? mapTriggers)
         {
             var initGlobals = GetFunction("InitGlobals");
             var initCustomTriggers = GetFunction("InitCustomTriggers");
             var runInitializationTriggers = GetFunction("RunInitializationTriggers");
 
-            if (TryDecompileMapTriggers(initGlobals.FunctionDeclaration, initCustomTriggers.FunctionDeclaration, runInitializationTriggers?.FunctionDeclaration, out mapTriggers))
+            if (TryDecompileMapTriggers(
+                initGlobals.FunctionDeclaration,
+                initCustomTriggers.FunctionDeclaration,
+                runInitializationTriggers?.FunctionDeclaration,
+                formatVersion,
+                subVersion,
+                out mapTriggers))
             {
                 initGlobals.Handled = true;
                 initCustomTriggers.Handled = true;
@@ -45,6 +51,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassFunctionDeclarationSyntax initGlobalsFunction,
             JassFunctionDeclarationSyntax initCustomTriggersFunction,
             JassFunctionDeclarationSyntax? runInitializationTriggersFunction,
+            MapTriggersFormatVersion formatVersion,
+            MapTriggersSubVersion? subVersion,
             [NotNullWhen(true)] out MapTriggers? mapTriggers)
         {
             if (initGlobalsFunction is null)
@@ -64,7 +72,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             var variableId = (int)TriggerItemTypeId.Variable << 24;
             var triggerId = (int)TriggerItemTypeId.Gui << 24;
 
-            mapTriggers = new MapTriggers(MapTriggersFormatVersion.Tft, MapTriggersSubVersion.New)
+            mapTriggers = new MapTriggers(formatVersion, subVersion)
             {
                 GameVersion = 2,
                 TriggerItems = new()

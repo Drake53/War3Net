@@ -18,11 +18,11 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapCameras(bool useNewFormat, [NotNullWhen(true)] out MapCameras? mapCameras)
+        public bool TryDecompileMapCameras(MapCamerasFormatVersion formatVersion, bool useNewFormat, [NotNullWhen(true)] out MapCameras? mapCameras)
         {
             foreach (var candidateFunction in GetCandidateFunctions("CreateCameras"))
             {
-                if (TryDecompileMapCameras(candidateFunction.FunctionDeclaration, useNewFormat, out mapCameras))
+                if (TryDecompileMapCameras(candidateFunction.FunctionDeclaration, formatVersion, useNewFormat, out mapCameras))
                 {
                     candidateFunction.Handled = true;
 
@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             return false;
         }
 
-        public bool TryDecompileMapCameras(JassFunctionDeclarationSyntax functionDeclaration, bool useNewFormat, [NotNullWhen(true)] out MapCameras? mapCameras)
+        public bool TryDecompileMapCameras(JassFunctionDeclarationSyntax functionDeclaration, MapCamerasFormatVersion formatVersion, bool useNewFormat, [NotNullWhen(true)] out MapCameras? mapCameras)
         {
             if (functionDeclaration is null)
             {
@@ -159,7 +159,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (cameras.Any())
             {
-                mapCameras = new MapCameras(MapCamerasFormatVersion.Normal, useNewFormat);
+                mapCameras = new MapCameras(formatVersion, useNewFormat);
                 mapCameras.Cameras.AddRange(cameras.Values);
                 return true;
             }
