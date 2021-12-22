@@ -5,26 +5,30 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Globalization;
-
-using War3Net.Common.Extensions;
-
 namespace War3Net.Build.Script
 {
     public sealed partial class TriggerData
     {
         public sealed class TriggerType
         {
-            public TriggerType(string key, params string[] values)
+            internal TriggerType(
+                string typeName,
+                int gameVersion,
+                bool usableAsGlobalVariable,
+                bool usableWithComparisonOperators,
+                string displayText,
+                string? baseType,
+                string? importType,
+                bool treatAsBaseType)
             {
-                TypeName = key;
-                GameVersion = int.Parse(values[0], CultureInfo.InvariantCulture);
-                UsableAsGlobalVariable = int.Parse(values[1], CultureInfo.InvariantCulture).ToBool();
-                UsableWithComparisonOperators = int.Parse(values[2], CultureInfo.InvariantCulture).ToBool();
-                DisplayString = values[3];
-                BaseType = values.Length > 4 ? values[4] : null;
-                ImportType = values.Length > 5 ? values[5] : null;
-                TreatAsBaseType = values.Length > 6 ? int.Parse(values[6], CultureInfo.InvariantCulture).ToBool() : null;
+                TypeName = typeName;
+                GameVersion = gameVersion;
+                UsableAsGlobalVariable = usableAsGlobalVariable;
+                UsableWithComparisonOperators = usableWithComparisonOperators;
+                DisplayText = displayText;
+                BaseType = baseType;
+                ImportType = importType;
+                TreatAsBaseType = treatAsBaseType;
             }
 
             public string TypeName { get; }
@@ -35,13 +39,13 @@ namespace War3Net.Build.Script
 
             public bool UsableWithComparisonOperators { get; }
 
-            public string DisplayString { get; }
+            public string DisplayText { get; }
 
             public string? BaseType { get; }
 
             public string? ImportType { get; }
 
-            public bool? TreatAsBaseType { get; }
+            public bool TreatAsBaseType { get; }
 
             public override string ToString() => TypeName;
         }

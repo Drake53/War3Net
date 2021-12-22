@@ -6,350 +6,671 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Text.RegularExpressions;
 
 using War3Net.Build.Resources;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
 {
     public sealed partial class TriggerData
     {
-        private static readonly Lazy<TriggerData> _defaultTriggerData = new Lazy<TriggerData>(() => ParseText(DefaultTriggerData.TriggerData));
+        private static readonly Lazy<TriggerData> _defaultTriggerData = new(GetDefaultTriggerData);
 
-        private readonly Dictionary<string, TriggerType> _triggerTypes;
-        private readonly Dictionary<string, TriggerTypeDefault> _triggerTypeDefaults;
-        private readonly Dictionary<string, TriggerEvent> _triggerEvents;
-        private readonly Dictionary<string, TriggerCondition> _triggerConditions;
-        private readonly Dictionary<string, TriggerAction> _triggerActions;
-        private readonly Dictionary<string, TriggerCall> _triggerCalls;
-        private readonly Dictionary<string, TriggerParam> _triggerParams;
-
-        private Dictionary<string, HashSet<string>> _triggerTypesLookup;
-        private Dictionary<string, TriggerCondition> _triggerConditionsLookup;
-        private Dictionary<string, Dictionary<int, TriggerAction>> _triggerActionsLookup;
-        private Dictionary<string, TriggerParam> _variableTypePresets;
-        private Dictionary<string, Dictionary<string, TriggerParam>> _triggerParamsLookup;
-
-        private TriggerData()
+        internal TriggerData(StringReader reader)
         {
-            _triggerTypes = new();
-            _triggerTypeDefaults = new();
-            _triggerEvents = new();
-            _triggerConditions = new();
-            _triggerActions = new(StringComparer.Ordinal);
-            _triggerCalls = new();
-            _triggerParams = new();
+            ReadFrom(reader);
+
+            TriggerCategories ??= ImmutableDictionary<string, TriggerCategory>.Empty;
+            TriggerTypes ??= ImmutableDictionary<string, TriggerType>.Empty;
+            TriggerTypeDefaults ??= ImmutableDictionary<string, TriggerTypeDefault>.Empty;
+            TriggerParams ??= ImmutableDictionary<string, TriggerParam>.Empty;
+            TriggerEvents ??= ImmutableDictionary<string, TriggerEvent>.Empty;
+            TriggerConditions ??= ImmutableDictionary<string, TriggerCondition>.Empty;
+            TriggerActions ??= ImmutableDictionary<string, TriggerAction>.Empty;
+            TriggerCalls ??= ImmutableDictionary<string, TriggerCall>.Empty;
+            DefaultTriggerCategories ??= ImmutableDictionary<int, DefaultTriggerCategory>.Empty;
+            DefaultTriggers ??= ImmutableDictionary<int, DefaultTrigger>.Empty;
         }
 
         public static TriggerData Default => _defaultTriggerData.Value;
 
-        public static TriggerData ParseFile(string filePath) => ParseStream(File.OpenRead(filePath));
+        public ImmutableDictionary<string, TriggerCategory> TriggerCategories { get; private set; }
 
-        public static TriggerData ParseText(string text)
+        public ImmutableDictionary<string, TriggerType> TriggerTypes { get; private set; }
+
+        public ImmutableDictionary<string, TriggerTypeDefault> TriggerTypeDefaults { get; private set; }
+
+        public ImmutableDictionary<string, TriggerParam> TriggerParams { get; private set; }
+
+        public ImmutableDictionary<string, TriggerEvent> TriggerEvents { get; private set; }
+
+        public ImmutableDictionary<string, TriggerCondition> TriggerConditions { get; private set; }
+
+        public ImmutableDictionary<string, TriggerAction> TriggerActions { get; private set; }
+
+        public ImmutableDictionary<string, TriggerCall> TriggerCalls { get; private set; }
+
+        public ImmutableDictionary<int, DefaultTriggerCategory> DefaultTriggerCategories { get; private set; }
+
+        public ImmutableDictionary<int, DefaultTrigger> DefaultTriggers { get; private set; }
+
+        internal void ReadFrom(StringReader reader)
         {
-            var stream = new MemoryStream();
-            using (var writer = new StreamWriter(stream, leaveOpen: true))
+            while (true)
             {
-                writer.Write(text);
-            }
+                if (TryGetNextSection(reader, out var sectionName))
+                {
+                    while (!string.IsNullOrEmpty(sectionName))
+                    {
+                        sectionName = ReadNextSection(reader, sectionName);
+                    }
 
-            stream.Position = 0;
-            return ParseStream(stream);
+                    return;
+                }
+            }
         }
 
-        public static TriggerData ParseStream(Stream stream, bool leaveOpen = false)
+        internal bool TryGetNextSection(StringReader reader, out string? result)
         {
-            var result = new TriggerData();
+            result = reader.ReadLine();
 
-            using var reader = new StreamReader(stream, leaveOpen: leaveOpen);
-
-            object? target = null;
-            MethodInfo? addMethod = null;
-            PropertyInfo? getProperty = null;
-            ConstructorInfo? constructor = null;
-            MethodInfo? additionalPropertySetter = null;
-            while (!reader.EndOfStream)
+            if (result is null)
             {
-                var line = reader.ReadLine();
+                return true;
+            }
+
+            if (result.StartsWith('[') && result.EndsWith(']'))
+            {
+                result = result[1..^1];
+                return true;
+            }
+
+            return false;
+        }
+
+        internal string? ReadNextSection(StringReader reader, string sectionName)
+        {
+            return sectionName switch
+            {
+                nameof(TriggerCategories) => ReadTriggerCategories(reader),
+                nameof(TriggerTypes) => ReadTriggerType(reader),
+                nameof(TriggerTypeDefaults) => ReadTriggerTypeDefaults(reader),
+                nameof(TriggerParams) => ReadTriggerParams(reader),
+                nameof(TriggerEvents) => ReadTriggerEvents(reader),
+                nameof(TriggerConditions) => ReadTriggerConditions(reader),
+                nameof(TriggerActions) => ReadTriggerActions(reader),
+                nameof(TriggerCalls) => ReadTriggerCalls(reader),
+                nameof(DefaultTriggerCategories) => ReadDefaultTriggerCategories(reader),
+                nameof(DefaultTriggers) => ReadDefaultTriggers(reader),
+
+                _ => throw new InvalidDataException($"Unknown {nameof(TriggerData)} section: '{sectionName}'"),
+            };
+        }
+
+        internal string? ReadTriggerCategories(StringReader reader)
+        {
+            if (TriggerCategories is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerCategory>(StringComparer.Ordinal);
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    TriggerCategories = builder.ToImmutable();
+                    return line;
+                }
+
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
                 {
                     continue;
                 }
 
-                if (line.StartsWith('[') && line.EndsWith(']'))
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var values = split[1].Split(',', 3);
+
+                var triggerCategory = new TriggerCategory(
+                    key,
+                    values[0],
+                    values[1],
+                    values.Length > 2 ? int.Parse(values[2], CultureInfo.InvariantCulture).ToBool() : false);
+
+                builder.Add(key, triggerCategory);
+            }
+        }
+
+        internal string? ReadTriggerType(StringReader reader)
+        {
+            if (TriggerTypes is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerType>(StringComparer.Ordinal);
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
                 {
-                    target = line switch
-                    {
-                        "[TriggerTypes]" => result._triggerTypes,
-                        "[TriggerTypeDefaults]" => result._triggerTypeDefaults,
-                        "[TriggerEvents]" => result._triggerEvents,
-                        "[TriggerConditions]" => result._triggerConditions,
-                        "[TriggerActions]" => result._triggerActions,
-                        "[TriggerCalls]" => result._triggerCalls,
-                        "[TriggerParams]" => result._triggerParams,
+                    TriggerTypes = builder.ToImmutable();
+                    return line;
+                }
 
-                        _ => null,
-                    };
-
-                    if (target is not null)
-                    {
-                        // Get Dictionary<string, T> add method, this[string], and T constructor, propertySetter.
-                        addMethod = target.GetType().GetMethod("Add");
-                        getProperty = target.GetType().GetProperty("Item");
-                        constructor = target.GetType().GetGenericArguments()[1].GetConstructors().Single();
-                        additionalPropertySetter = target.GetType().GetGenericArguments()[1].GetMethod("SetAdditionalProperty");
-                    }
-
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
                     continue;
                 }
 
-                if (line.StartsWith('_'))
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var values = split[1].Split(',', 7);
+
+                var triggerType = new TriggerType(
+                    key,
+                    int.Parse(values[0], CultureInfo.InvariantCulture),
+                    int.Parse(values[1], CultureInfo.InvariantCulture).ToBool(),
+                    int.Parse(values[2], CultureInfo.InvariantCulture).ToBool(),
+                    values[3],
+                    values.Length > 4 ? values[4] : null,
+                    values.Length > 5 ? values[5] : null,
+                    values.Length > 6 ? int.Parse(values[6], CultureInfo.InvariantCulture).ToBool() : true);
+
+                builder.Add(key, triggerType);
+            }
+        }
+
+        internal string? ReadTriggerTypeDefaults(StringReader reader)
+        {
+            if (TriggerTypeDefaults is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerTypeDefault>(StringComparer.Ordinal);
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
                 {
-                    if (additionalPropertySetter is null)
-                    {
-                        continue;
-                    }
+                    TriggerTypeDefaults = builder.ToImmutable();
+                    return line;
+                }
 
-                    var split = line.Split('_', 2, StringSplitOptions.RemoveEmptyEntries);
-                    if (split.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    var key = split[0];
-                    object? obj;
-                    try
-                    {
-                        obj = getProperty!.GetValue(target, new object[] { key });
-                    }
-                    catch (TargetInvocationException e) when (e.InnerException is KeyNotFoundException)
-                    {
-                        continue;
-                    }
-
-                    var parameters = split[1].Split('=', 2);
-                    additionalPropertySetter.Invoke(obj, new object[] { parameters[0], parameters[1] });
-
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
                     continue;
                 }
 
-                if (target is not null)
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var values = split[1].Split(',', 2);
+
+                var triggerTypeDefault = new TriggerTypeDefault(
+                    key,
+                    values[0],
+                    values.Length > 1 ? values[1] : null);
+
+                builder.Add(key, triggerTypeDefault);
+            }
+        }
+
+        internal string? ReadTriggerParams(StringReader reader)
+        {
+            if (TriggerParams is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerParam>(StringComparer.Ordinal);
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
                 {
-                    var split = line.Split('=', 2);
-                    if (split.Length != 2)
+                    TriggerParams = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var values = split[1].Split(',', 4);
+
+                var triggerParam = new TriggerParam(
+                    key,
+                    int.Parse(values[0], CultureInfo.InvariantCulture),
+                    values[1],
+                    values[2],
+                    values[3]);
+
+                builder.Add(key, triggerParam);
+            }
+        }
+
+        internal string? ReadTriggerEvents(StringReader reader)
+        {
+            if (TriggerEvents is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerEvent>(StringComparer.Ordinal);
+
+            TriggerEvent.Builder? triggerEventBuilder = null;
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    if (triggerEventBuilder is not null)
                     {
-                        split = line.Split('-');
-                        if (split.Length != 2)
+                        builder.Add(triggerEventBuilder.FunctionName, triggerEventBuilder.ToImmutable());
+                    }
+
+                    TriggerEvents = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+                var key = split[0];
+
+                if (key.StartsWith('_'))
+                {
+                    if (triggerEventBuilder is null || !key.StartsWith($"_{triggerEventBuilder.FunctionName}_", StringComparison.Ordinal))
+                    {
+                        throw new InvalidDataException(line);
+                    }
+
+                    switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
+                    {
+                        case nameof(TriggerEvent.DisplayName): triggerEventBuilder.DisplayName = split[1]; break;
+                        case nameof(TriggerEvent.Parameters): triggerEventBuilder.Parameters = split[1]; break;
+                        case nameof(TriggerEvent.Defaults): triggerEventBuilder.Defaults = split[1].Split(',').ToImmutableArray(); break;
+                        case nameof(TriggerEvent.Limits): triggerEventBuilder.Limits = split[1].Split(',').Select(value => int.TryParse(value, out var result) ? (int?)result : null).ToImmutableArray(); break;
+                        case nameof(TriggerEvent.Category): triggerEventBuilder.Category = split[1]; break;
+
+                        default: throw new InvalidDataException(key);
+                    }
+                }
+                else
+                {
+                    if (triggerEventBuilder is not null)
+                    {
+                        builder.Add(triggerEventBuilder.FunctionName, triggerEventBuilder.ToImmutable());
+                    }
+
+                    var values = split[1].Split(',');
+
+                    triggerEventBuilder = new TriggerEvent.Builder(
+                        key,
+                        int.Parse(values[0], CultureInfo.InvariantCulture),
+                        values[1..].ToImmutableArray());
+                }
+            }
+        }
+
+        internal string? ReadTriggerConditions(StringReader reader)
+        {
+            if (TriggerConditions is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerCondition>(StringComparer.Ordinal);
+
+            TriggerCondition.Builder? triggerConditionBuilder = null;
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    if (triggerConditionBuilder is not null)
+                    {
+                        builder.Add(triggerConditionBuilder.FunctionName, triggerConditionBuilder.ToImmutable());
+                    }
+
+                    TriggerConditions = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+                var key = split[0];
+
+                if (key.StartsWith('_'))
+                {
+                    if (triggerConditionBuilder is null || !key.StartsWith($"_{triggerConditionBuilder.FunctionName}_", StringComparison.Ordinal))
+                    {
+                        throw new InvalidDataException(line);
+                    }
+
+                    switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
+                    {
+                        case nameof(TriggerCondition.DisplayName): triggerConditionBuilder.DisplayName = split[1]; break;
+                        case nameof(TriggerCondition.Parameters): triggerConditionBuilder.Parameters = split[1]; break;
+                        case nameof(TriggerCondition.Defaults): triggerConditionBuilder.Defaults = split[1].Split(',').ToImmutableArray(); break;
+                        case nameof(TriggerCondition.Category): triggerConditionBuilder.Category = split[1]; break;
+                        case nameof(TriggerCondition.UseWithAI): triggerConditionBuilder.UseWithAI = int.Parse(split[1], CultureInfo.InvariantCulture).ToBool(); break;
+                        case nameof(TriggerCondition.AIDefaults): triggerConditionBuilder.AIDefaults = split[1].Split(',').ToImmutableArray(); break;
+
+                        default: throw new InvalidDataException(key);
+                    }
+                }
+                else
+                {
+                    if (triggerConditionBuilder is not null)
+                    {
+                        builder.Add(triggerConditionBuilder.FunctionName, triggerConditionBuilder.ToImmutable());
+                    }
+
+                    var values = split[1].Split(',');
+
+                    triggerConditionBuilder = new TriggerCondition.Builder(
+                        key,
+                        int.Parse(values[0], CultureInfo.InvariantCulture),
+                        values[1..].ToImmutableArray());
+                }
+            }
+        }
+
+        internal string? ReadTriggerActions(StringReader reader)
+        {
+            if (TriggerActions is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerAction>(StringComparer.Ordinal);
+
+            TriggerAction.Builder? triggerActionBuilder = null;
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    if (triggerActionBuilder is not null)
+                    {
+                        builder.Add(triggerActionBuilder.FunctionName, triggerActionBuilder.ToImmutable());
+                    }
+
+                    TriggerActions = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+                var key = split[0];
+
+                if (key.StartsWith('_'))
+                {
+                    if (triggerActionBuilder is null || !key.StartsWith($"_{triggerActionBuilder.FunctionName}_", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new InvalidDataException(line);
+                    }
+
+                    switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
+                    {
+                        case nameof(TriggerAction.DisplayName): triggerActionBuilder.DisplayName = split[1]; break;
+                        case nameof(TriggerAction.Parameters): triggerActionBuilder.Parameters = split[1]; break;
+                        case nameof(TriggerAction.Defaults): triggerActionBuilder.Defaults = split[1].Split(',').ToImmutableArray(); break;
+                        case nameof(TriggerAction.Limits): triggerActionBuilder.Limits = split[1].Split(',').Select(value => int.TryParse(value, out var result) ? (int?)result : null).ToImmutableArray(); break;
+                        case nameof(TriggerAction.Category): triggerActionBuilder.Category = split[1]; break;
+                        case nameof(TriggerAction.ScriptName): triggerActionBuilder.ScriptName = split[1]; break;
+
+                        default: throw new InvalidDataException(key);
+                    }
+                }
+                else
+                {
+                    if (triggerActionBuilder is not null)
+                    {
+                        builder.Add(triggerActionBuilder.FunctionName, triggerActionBuilder.ToImmutable());
+                    }
+
+                    var values = split[1].Split(',');
+
+                    triggerActionBuilder = new TriggerAction.Builder(
+                        key,
+                        int.Parse(values[0], CultureInfo.InvariantCulture),
+                        values[1..].ToImmutableArray());
+                }
+            }
+        }
+
+        internal string? ReadTriggerCalls(StringReader reader)
+        {
+            if (TriggerCalls is not null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var builder = ImmutableDictionary.CreateBuilder<string, TriggerCall>(StringComparer.Ordinal);
+
+            TriggerCall.Builder? triggerCallBuilder = null;
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    if (triggerCallBuilder is not null)
+                    {
+                        builder.Add(triggerCallBuilder.FunctionName, triggerCallBuilder.ToImmutable());
+                    }
+
+                    TriggerCalls = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+                var key = split[0];
+
+                if (key.StartsWith('_'))
+                {
+                    if (triggerCallBuilder is null || !key.StartsWith($"_{triggerCallBuilder.FunctionName}", StringComparison.Ordinal))
+                    {
+                        throw new InvalidDataException(line);
+                    }
+
+                    var keys = key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (keys.Length == 1)
+                    {
+                        triggerCallBuilder.Category = split[1];
+                    }
+                    else
+                    {
+                        switch (keys[1])
                         {
-                            throw new InvalidDataException(line);
+                            case nameof(TriggerCall.DisplayName): triggerCallBuilder.DisplayName = split[1]; break;
+                            case nameof(TriggerCall.Parameters): triggerCallBuilder.Parameters = split[1]; break;
+                            case nameof(TriggerCall.Defaults): triggerCallBuilder.Defaults = split[1].Split(',').ToImmutableArray(); break;
+                            case nameof(TriggerCall.Limits):
+                            case "Limites": triggerCallBuilder.Limits = split[1].Split(',').Select(value => int.TryParse(value, out var result) ? (int?)result : null).ToImmutableArray(); break;
+                            case nameof(TriggerCall.Category):
+                            case "CATEGORY": triggerCallBuilder.Category = split[1]; break;
+                            case nameof(TriggerCall.UseWithAI): triggerCallBuilder.UseWithAI = int.Parse(split[1], CultureInfo.InvariantCulture).ToBool(); break;
+
+                            default: throw new InvalidDataException(key);
                         }
                     }
+                }
+                else
+                {
+                    if (triggerCallBuilder is not null)
+                    {
+                        builder.Add(triggerCallBuilder.FunctionName, triggerCallBuilder.ToImmutable());
+                    }
 
-                    var key = split[0];
-                    var values = split[1].Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var values = split[1].Split(',');
 
-                    addMethod!.Invoke(target, new[] { key, constructor!.Invoke(new object[] { key, values }) });
+                    triggerCallBuilder = new TriggerCall.Builder(
+                        key,
+                        int.Parse(values[0], CultureInfo.InvariantCulture),
+                        int.Parse(values[1], CultureInfo.InvariantCulture).ToBool(),
+                        values[2],
+                        values[3..].ToImmutableArray());
                 }
             }
-
-            result.PrepareLookups();
-
-            return result;
         }
 
-        public bool TryGetTriggerType(string typeName, [NotNullWhen(true)] out TriggerType? triggerType) => _triggerTypes.TryGetValue(typeName, out triggerType);
-
-        public bool TryGetTriggerTypeDefault(string typeName, [NotNullWhen(true)] out TriggerTypeDefault? triggerTypeDefault) => _triggerTypeDefaults.TryGetValue(typeName, out triggerTypeDefault);
-
-        public int GetParameterCount(TriggerFunctionType functionType, string functionName)
+        internal string? ReadDefaultTriggerCategories(StringReader reader)
         {
-            return GetParameters(functionType, functionName).Length;
-        }
-
-        public string GetParameterType(TriggerFunctionType functionType, string functionName, int parameterIndex)
-        {
-            return GetParameters(functionType, functionName)[parameterIndex];
-        }
-
-        public ImmutableArray<string> GetParameters(TriggerFunctionType functionType, string functionName)
-        {
-            if (string.IsNullOrWhiteSpace(functionName))
+            if (DefaultTriggerCategories is not null)
             {
-                throw new ArgumentNullException(nameof(functionName));
+                throw new InvalidOperationException();
             }
 
-            ImmutableArray<string>? parameters = functionType switch
+            var builder = ImmutableDictionary.CreateBuilder<int, DefaultTriggerCategory>();
+
+            while (true)
             {
-                TriggerFunctionType.Event => _triggerEvents.TryGetValue(functionName, out var @event) ? @event.ArgumentTypes : null,
-                TriggerFunctionType.Condition => _triggerConditions.TryGetValue(functionName, out var condition) ? condition.ArgumentTypes : null,
-                TriggerFunctionType.Action => _triggerActions.TryGetValue(functionName, out var action) ? action.ArgumentTypes : null,
-                TriggerFunctionType.Call => _triggerCalls.TryGetValue(functionName, out var call) ? call.ArgumentTypes : null,
+                if (TryGetNextSection(reader, out var line))
+                {
+                    DefaultTriggerCategories = builder.ToImmutable();
+                    return line;
+                }
 
-                _ => throw new InvalidEnumArgumentException(nameof(functionType), (int)functionType, typeof(TriggerFunctionType)),
-            };
-
-            return parameters ?? throw new KeyNotFoundException($"The {functionType} '{functionName}' was not found.");
-        }
-
-        public string GetScriptName(TriggerFunctionType functionType, string functionName)
-        {
-            if (functionType == TriggerFunctionType.Action)
-            {
-                var triggerAction = _triggerActions[functionName];
-                return string.IsNullOrEmpty(triggerAction.ScriptName) ? triggerAction.ActionFunctionName : triggerAction.ScriptName;
-            }
-            else
-            {
-                return functionName;
-            }
-        }
-
-        public bool TryGetParametersByScriptName(
-            string scriptName,
-            int expectedParameterCount,
-            [NotNullWhen(true)] out ImmutableArray<string>? parameters,
-            [NotNullWhen(true)] out string? functionName)
-        {
-            if (string.IsNullOrWhiteSpace(scriptName))
-            {
-                throw new ArgumentNullException(nameof(scriptName));
-            }
-
-            if (_triggerActionsLookup.TryGetValue(scriptName, out var triggerActions) && triggerActions.TryGetValue(expectedParameterCount, out var action))
-            {
-                parameters = action.ArgumentTypes;
-                functionName = action.ActionFunctionName;
-                return true;
-            }
-
-            parameters = null;
-            functionName = null;
-            return false;
-        }
-
-        public bool TryGetReturnType(string functionName, [NotNullWhen(true)] out string? returnType)
-        {
-            if (_triggerCalls.TryGetValue(functionName, out var call))
-            {
-                returnType = call.ReturnType;
-                return true;
-            }
-
-            returnType = null;
-            return false;
-        }
-
-        public bool TryGetOperatorCompareType(string variableType, [NotNullWhen(true)] out string? operatorCompareType, [NotNullWhen(true)] out string? operatorType)
-        {
-            if (_triggerConditionsLookup.TryGetValue(variableType, out var triggerCondition))
-            {
-                operatorCompareType = triggerCondition.ConditionFunctionName;
-                operatorType = triggerCondition.ArgumentTypes[1];
-                return true;
-            }
-
-            operatorCompareType = null;
-            operatorType = null;
-            return false;
-        }
-
-        public TriggerParam GetTriggerParamPresetValue(string presetName)
-        {
-            return _triggerParams.TryGetValue(presetName, out var triggerParam) ? triggerParam : throw null;
-        }
-
-        public bool TryGetTriggerParamPresetValue(string variableType, string presetName, [NotNullWhen(true)] out string? codeText)
-        {
-            if (_triggerParams.TryGetValue(presetName, out var triggerParam) && string.Equals(triggerParam.VariableType, variableType, StringComparison.Ordinal))
-            {
-                codeText = triggerParam.CodeText;
-                return true;
-            }
-            else
-            {
-                codeText = null;
-                return false;
-            }
-        }
-
-        public bool TryGetTriggerParamPreset(string codeText, [NotNullWhen(true)] out string? presetName, [NotNullWhen(true)] out string? type)
-        {
-            if (_variableTypePresets.TryGetValue(codeText, out var triggerParam))
-            {
-                presetName = triggerParam.ParameterName;
-                type = triggerParam.VariableType;
-                return true;
-            }
-
-            presetName = null;
-            type = null;
-            return false;
-        }
-
-        public bool TryGetTriggerParamPreset(string variableType, string codeText, [NotNullWhen(true)] out string? presetName)
-        {
-            if (_triggerParamsLookup.TryGetValue(variableType, out var variableTypePresets) && variableTypePresets.TryGetValue(codeText, out var triggerParam))
-            {
-                presetName = triggerParam.ParameterName;
-                return true;
-            }
-
-            presetName = null;
-            return false;
-        }
-
-        public bool TryGetCustomTypes(string baseType, [NotNullWhen(true)] out HashSet<string>? customTypes)
-        {
-            return _triggerTypesLookup.TryGetValue(baseType, out customTypes);
-        }
-
-        private void PrepareLookups()
-        {
-            _triggerTypesLookup = _triggerTypes
-                .Where(triggerType => !string.IsNullOrEmpty(triggerType.Value.BaseType))
-                .GroupBy(triggerType => triggerType.Value.BaseType!)
-                .ToDictionary(grouping => grouping.Key, grouping => grouping.Select(triggerType => triggerType.Key).ToHashSet(StringComparer.Ordinal), StringComparer.Ordinal);
-
-            _triggerConditionsLookup = _triggerConditions
-                .Where(triggerCondition => triggerCondition.Value.ArgumentTypes.Length == 3 && string.Equals(triggerCondition.Value.ArgumentTypes[0], triggerCondition.Value.ArgumentTypes[2], StringComparison.Ordinal))
-                .ToDictionary(triggerCondition => triggerCondition.Value.ArgumentTypes[0], triggerCondition => triggerCondition.Value);
-
-            _triggerActionsLookup = _triggerActions
-                .GroupBy(triggerAction => string.IsNullOrEmpty(triggerAction.Value.ScriptName) ? triggerAction.Key : triggerAction.Value.ScriptName)
-                .ToDictionary(grouping => grouping.Key, grouping => grouping.GroupBy(triggerAction => triggerAction.Value.ArgumentTypes.Length).ToDictionary(grouping => grouping.Key, grouping => grouping.First().Value));
-
-            _variableTypePresets = GetTriggerParamDictionary(_triggerParams, GetAllowedOperatorCompareVariableTypes());
-
-            _triggerParamsLookup = _triggerParams
-                .GroupBy(triggerParam => triggerParam.Value.VariableType, StringComparer.Ordinal)
-                .ToDictionary(grouping => grouping.Key, grouping => GetTriggerParamDictionary(grouping));
-        }
-
-        private HashSet<string> GetAllowedOperatorCompareVariableTypes()
-        {
-            return _triggerConditionsLookup.Keys.ToHashSet(StringComparer.Ordinal);
-        }
-
-        private Dictionary<string, TriggerParam> GetTriggerParamDictionary(IEnumerable<KeyValuePair<string, TriggerParam>> items, HashSet<string>? allowedVariableTypes = null)
-        {
-            var result = new Dictionary<string, TriggerParam>();
-            foreach (var item in items)
-            {
-                if (allowedVariableTypes is not null && (string.Equals(item.Value.CodeText, "null", StringComparison.Ordinal) || !allowedVariableTypes.Contains(item.Value.VariableType)))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
                 {
                     continue;
                 }
 
-                result.TryAdd(item.Value.CodeText, item.Value);
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var value = split[1];
+
+                if (string.Equals(key, "NumCategories", StringComparison.Ordinal))
+                {
+                }
+                else
+                {
+                    var defaultTriggerCategory = new DefaultTriggerCategory(value);
+
+                    builder.Add(builder.Count + 1, defaultTriggerCategory);
+                }
+            }
+        }
+
+        internal string? ReadDefaultTriggers(StringReader reader)
+        {
+            if (DefaultTriggers is not null)
+            {
+                throw new InvalidOperationException();
             }
 
-            return result;
+            var builder = ImmutableDictionary.CreateBuilder<int, DefaultTrigger>();
+
+            DefaultTrigger.Builder? defaultTriggerBuilder = null;
+
+            while (true)
+            {
+                if (TryGetNextSection(reader, out var line))
+                {
+                    if (defaultTriggerBuilder is not null)
+                    {
+                        builder.Add(defaultTriggerBuilder.TriggerNumber, defaultTriggerBuilder.ToImmutable());
+                    }
+
+                    DefaultTriggers = builder.ToImmutable();
+                    return line;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("//", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var split = line.Split('=', 2);
+
+                var key = split[0];
+                var value = split[1];
+
+                if (string.Equals(key, "NumTriggers", StringComparison.Ordinal))
+                {
+                }
+                else
+                {
+                    if (defaultTriggerBuilder is null || !key.StartsWith($"Trigger{defaultTriggerBuilder.TriggerNumber:D2}", StringComparison.Ordinal))
+                    {
+                        if (defaultTriggerBuilder is not null)
+                        {
+                            builder.Add(defaultTriggerBuilder.TriggerNumber, defaultTriggerBuilder.ToImmutable());
+                        }
+
+                        var triggerNumber = int.Parse(new string(key["Trigger".Length..].TakeWhile(c => char.IsDigit(c)).ToArray()), CultureInfo.InvariantCulture);
+                        defaultTriggerBuilder = new DefaultTrigger.Builder(triggerNumber);
+                    }
+
+                    var triggerKey = $"Trigger{defaultTriggerBuilder.TriggerNumber:D2}";
+
+                    if (string.Equals(key, $"{triggerKey}Name", StringComparison.Ordinal))
+                    {
+                        defaultTriggerBuilder.TriggerName = value;
+                    }
+                    else if (string.Equals(key, $"{triggerKey}Comment", StringComparison.Ordinal))
+                    {
+                        defaultTriggerBuilder.Comment = value;
+                    }
+                    else if (string.Equals(key, $"{triggerKey}Category", StringComparison.Ordinal))
+                    {
+                        defaultTriggerBuilder.Category = int.Parse(value, CultureInfo.InvariantCulture);
+                    }
+                    else if (Regex.IsMatch(key, $"{triggerKey}Event[0-9]{{2,}}", RegexOptions.None))
+                    {
+                        defaultTriggerBuilder.Events.Add(value);
+                    }
+                    else if (Regex.IsMatch(key, $"{triggerKey}Condition[0-9]{{2,}}", RegexOptions.None))
+                    {
+                        defaultTriggerBuilder.Conditions.Add(value);
+                    }
+                    else if (Regex.IsMatch(key, $"{triggerKey}Action[0-9]{{2,}}", RegexOptions.None))
+                    {
+                        defaultTriggerBuilder.Actions.Add(value);
+                    }
+                }
+            }
+        }
+
+        private static TriggerData GetDefaultTriggerData()
+        {
+            using var reader = new StringReader(DefaultTriggerData.TriggerData);
+
+            return new TriggerData(reader);
         }
     }
 }

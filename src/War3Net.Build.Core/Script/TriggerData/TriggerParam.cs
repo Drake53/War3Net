@@ -5,21 +5,24 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Globalization;
-
 namespace War3Net.Build.Script
 {
     public sealed partial class TriggerData
     {
         public sealed class TriggerParam
         {
-            public TriggerParam(string key, params string[] values)
+            internal TriggerParam(
+                string parameterName,
+                int gameVersion,
+                string variableType,
+                string scriptText,
+                string displayText)
             {
-                ParameterName = key;
-                GameVersion = int.Parse(values[0], CultureInfo.InvariantCulture);
-                VariableType = values[1];
-                CodeText = values[2].StartsWith('`') && values[2].EndsWith('`') ? $"\"{values[2].Trim('`')}\"" : values[2].Trim('"');
-                DisplayText = values[3];
+                ParameterName = parameterName;
+                GameVersion = gameVersion;
+                VariableType = variableType;
+                ScriptText = scriptText;
+                DisplayText = displayText;
             }
 
             public string ParameterName { get; }
@@ -28,7 +31,7 @@ namespace War3Net.Build.Script
 
             public string VariableType { get; }
 
-            public string CodeText { get; }
+            public string ScriptText { get; }
 
             public string DisplayText { get; }
 

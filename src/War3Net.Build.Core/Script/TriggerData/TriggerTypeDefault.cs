@@ -11,20 +11,23 @@ namespace War3Net.Build.Script
     {
         public sealed class TriggerTypeDefault
         {
-            public TriggerTypeDefault(string key, params string[] values)
+            internal TriggerTypeDefault(
+                string variableType,
+                string scriptText,
+                string? displayText)
             {
-                TypeName = key;
-                ExpressionString = values[0];
-                DisplayString = values.Length > 1 ? values[1] : null;
+                VariableType = variableType;
+                ScriptText = scriptText;
+                DisplayText = displayText;
             }
 
-            public string TypeName { get; }
+            public string VariableType { get; }
 
-            public string ExpressionString { get; }
+            public string ScriptText { get; }
 
-            public string? DisplayString { get; }
+            public string? DisplayText { get; }
 
-            public override string ToString() => TypeName;
+            public override string ToString() => VariableType;
         }
     }
 }

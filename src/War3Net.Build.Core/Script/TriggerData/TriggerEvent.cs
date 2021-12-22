@@ -7,8 +7,6 @@
 
 using System;
 using System.Collections.Immutable;
-using System.Globalization;
-using System.Linq;
 
 using War3Net.CodeAnalysis.Jass;
 
@@ -18,25 +16,95 @@ namespace War3Net.Build.Script
     {
         public sealed class TriggerEvent
         {
-            public TriggerEvent(string key, params string[] values)
+            internal TriggerEvent(
+                string functionName,
+                int gameVersion,
+                ImmutableArray<string> argumentTypes,
+                string? displayName,
+                string? parameters,
+                ImmutableArray<string> defaults,
+                ImmutableArray<int?>? limits,
+                string category)
             {
-                EventFunctionName = key;
-                GameVersion = int.Parse(values[0], CultureInfo.InvariantCulture);
-                ArgumentTypes = values[1..].ToImmutableArray();
-
-                if (ArgumentTypes.Length == 1 && string.Equals(ArgumentTypes.Single(), JassKeyword.Nothing, StringComparison.Ordinal))
-                {
-                    ArgumentTypes = ImmutableArray<string>.Empty;
-                }
+                FunctionName = functionName;
+                GameVersion = gameVersion;
+                ArgumentTypes = argumentTypes;
+                DisplayName = displayName;
+                Parameters = parameters;
+                Defaults = defaults;
+                Limits = limits;
+                Category = category;
             }
 
-            public string EventFunctionName { get; }
+            public string FunctionName { get; }
 
             public int GameVersion { get; }
 
             public ImmutableArray<string> ArgumentTypes { get; }
 
-            public override string ToString() => EventFunctionName;
+            public string? DisplayName { get; }
+
+            public string? Parameters { get; }
+
+            public ImmutableArray<string> Defaults { get; }
+
+            public ImmutableArray<int?>? Limits { get; }
+
+            public string Category { get; }
+
+            public override string ToString() => FunctionName;
+
+            internal class Builder
+            {
+                public Builder(
+                    string functionName,
+                    int gameVersion,
+                    ImmutableArray<string> argumentTypes)
+                {
+                    FunctionName = functionName;
+                    GameVersion = gameVersion;
+
+                    if (argumentTypes.Length == 1 && string.Equals(ArgumentTypes[0], JassKeyword.Nothing, StringComparison.Ordinal))
+                    {
+                        ArgumentTypes = ImmutableArray<string>.Empty;
+                    }
+                    else
+                    {
+                        ArgumentTypes = argumentTypes;
+                    }
+                }
+
+                public string FunctionName { get; }
+
+                public int GameVersion { get; }
+
+                public ImmutableArray<string> ArgumentTypes { get; }
+
+                public string? DisplayName { get; set; }
+
+                public string? Parameters { get; set; }
+
+                public ImmutableArray<string>? Defaults { get; set; }
+
+                public ImmutableArray<int?>? Limits { get; set; }
+
+                public string? Category { get; set; }
+
+                public TriggerEvent ToImmutable()
+                {
+                    return new TriggerEvent(
+                        FunctionName,
+                        GameVersion,
+                        ArgumentTypes,
+                        DisplayName,
+                        Parameters,
+                        Defaults.Value,
+                        Limits,
+                        Category);
+                }
+
+                public override string ToString() => FunctionName;
+            }
         }
     }
 }

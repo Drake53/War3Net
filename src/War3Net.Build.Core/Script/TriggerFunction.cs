@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 using War3Net.Build.Extensions;
@@ -55,7 +56,16 @@ namespace War3Net.Build.Script
             Name = reader.ReadChars();
             IsEnabled = reader.ReadBool();
 
-            var parameterCount = triggerData.GetParameterCount(Type, Name);
+            nint parameterCount = Type switch
+            {
+                TriggerFunctionType.Event => triggerData.TriggerEvents[Name].ArgumentTypes.Length,
+                TriggerFunctionType.Condition => triggerData.TriggerConditions[Name].ArgumentTypes.Length,
+                TriggerFunctionType.Action => triggerData.TriggerActions[Name].ArgumentTypes.Length,
+                TriggerFunctionType.Call => triggerData.TriggerCalls[Name].ArgumentTypes.Length,
+
+                _ => throw new InvalidEnumArgumentException(nameof(Type), (int)Type, typeof(TriggerFunctionType)),
+            };
+
             for (nint i = 0; i < parameterCount; i++)
             {
                 Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, subVersion));

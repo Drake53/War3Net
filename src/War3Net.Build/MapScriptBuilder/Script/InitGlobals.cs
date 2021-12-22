@@ -37,7 +37,7 @@ namespace War3Net.Build
 
             if (mapTriggers.Variables.Any(variable => variable.IsArray && (
                 variable.IsInitialized ||
-                TriggerData.TryGetTriggerTypeDefault(variable.Type, out _) ||
+                TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out _) ||
                 string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(
@@ -50,17 +50,17 @@ namespace War3Net.Build
             {
                 if (variable.IsInitialized)
                 {
-                    var initialValue = TriggerData.TryGetTriggerParamPresetValue(variable.Type, variable.InitialValue, out var codeText)
-                        ? codeText
+                    var initialValue = TriggerData.TriggerParams.TryGetValue(variable.InitialValue, out var triggerParam) && string.Equals(triggerParam.VariableType, variable.Type, StringComparison.Ordinal)
+                        ? triggerParam.ScriptText
                         : variable.InitialValue;
 
                     statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(initialValue)));
                 }
                 else if (variable.IsArray)
                 {
-                    if (TriggerData.TryGetTriggerTypeDefault(variable.Type, out var triggerTypeDefault))
+                    if (TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out var triggerTypeDefault))
                     {
-                        statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(triggerTypeDefault.ExpressionString)));
+                        statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(triggerTypeDefault.ScriptText)));
                     }
                     else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                     {
