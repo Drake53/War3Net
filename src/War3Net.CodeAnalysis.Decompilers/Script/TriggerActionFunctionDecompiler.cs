@@ -51,8 +51,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 }
                                 else
                                 {
-                                    actionFunctions = null;
-                                    return false;
+                                    function = DecompileCustomScriptAction(callStatement);
+                                    break;
                                 }
                             }
 

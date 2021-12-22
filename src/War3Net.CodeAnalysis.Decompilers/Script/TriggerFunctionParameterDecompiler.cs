@@ -22,6 +22,18 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileTriggerFunctionParameter(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+#if DEBUG
+        {
+            if (TryDecompileTriggerFunctionParameterInternal(expression, type, out functionParameter))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryDecompileTriggerFunctionParameterInternal(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+#endif
         {
             expression = expression.Deparenthesize();
 
@@ -81,6 +93,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                         || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
                 case "group":
+                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
+
+                case "hashtable":
                     return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
 
                 case "heroskillcode":

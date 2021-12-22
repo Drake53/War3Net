@@ -126,11 +126,14 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                         mapTriggers.Variables.Add(variableDefinition);
 
-                        var triggerVariableDefinition = new TriggerVariableDefinition();
-                        triggerVariableDefinition.Name = variableDefinition.Name;
-                        triggerVariableDefinition.Id = variableDefinition.Id;
-                        triggerVariableDefinition.ParentId = variableDefinition.ParentId;
-                        mapTriggers.TriggerItems.Add(triggerVariableDefinition);
+                        if (subVersion.HasValue)
+                        {
+                            var triggerVariableDefinition = new TriggerVariableDefinition();
+                            triggerVariableDefinition.Name = variableDefinition.Name;
+                            triggerVariableDefinition.Id = variableDefinition.Id;
+                            triggerVariableDefinition.ParentId = variableDefinition.ParentId;
+                            mapTriggers.TriggerItems.Add(triggerVariableDefinition);
+                        }
                     }
                 }
             }

@@ -191,54 +191,46 @@ namespace War3Net.CodeAnalysis.Decompilers
                     IsEnabled = true,
                 };
 
-                if (TryDecompileOperatorCompareOperand(binaryExpression.Left, out var leftFunctionParameter, out var operatorCompareTypeLeft, out var operatorTypeLeft) &&
-                    TryDecompileOperatorCompareOperand(binaryExpression.Right, out var rightFunctionParameter, out var operatorCompareTypeRight, out var operatorTypeRight))
+                if (TryDecompileOperatorCompareOperand(binaryExpression.Left, out var leftFunctionParameter, out var leftTriggerCondition) &&
+                    TryDecompileOperatorCompareOperand(binaryExpression.Right, out var rightFunctionParameter, out var rightTriggerCondition))
                 {
-                    if (string.IsNullOrEmpty(operatorCompareTypeLeft) && string.IsNullOrEmpty(operatorCompareTypeRight))
+                    if (leftTriggerCondition is null)
                     {
-                        return false;
+                        if (rightTriggerCondition is null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            leftTriggerCondition = rightTriggerCondition;
+                        }
                     }
-                    else if (string.IsNullOrEmpty(operatorCompareTypeLeft))
-                    {
-                        operatorCompareTypeLeft = operatorCompareTypeRight;
-                    }
-                    else if (!string.IsNullOrEmpty(operatorCompareTypeRight) && !string.Equals(operatorCompareTypeLeft, operatorCompareTypeRight, StringComparison.Ordinal))
-                    {
-                        return false;
-                    }
-
-                    if (string.IsNullOrEmpty(operatorTypeLeft) && string.IsNullOrEmpty(operatorTypeRight))
-                    {
-                        return false;
-                    }
-                    else if (string.IsNullOrEmpty(operatorTypeLeft))
-                    {
-                        operatorTypeLeft = operatorTypeRight;
-                    }
-                    else if (!string.IsNullOrEmpty(operatorTypeRight) && !string.Equals(operatorTypeLeft, operatorTypeRight, StringComparison.Ordinal))
+                    else if (rightTriggerCondition is not null && !ReferenceEquals(leftTriggerCondition, rightTriggerCondition))
                     {
                         return false;
                     }
 
-                    if (!Context.TriggerData.TriggerParams.TryGetValue(operatorTypeLeft, out var triggerParamsForType) ||
-                        !triggerParamsForType.TryGetValue(binaryExpression.Operator.GetSymbol(), out var triggerParams))
+                    if (Context.TriggerData.TriggerParams.TryGetValue(leftTriggerCondition.ArgumentTypes[1], out var triggerParamsForType) &&
+                        triggerParamsForType.TryGetValue($"\"{binaryExpression.Operator.GetSymbol()}\"", out var triggerParams))
+                    {
+                        var operatorFunctionParameter = new TriggerFunctionParameter
+                        {
+                            Type = TriggerFunctionParameterType.Preset,
+                            Value = triggerParams.Single().ParameterName,
+                        };
+
+                        function.Name = leftTriggerCondition.FunctionName;
+                        function.Parameters.Add(leftFunctionParameter);
+                        function.Parameters.Add(operatorFunctionParameter);
+                        function.Parameters.Add(rightFunctionParameter);
+
+                        conditionFunction = function;
+                        return true;
+                    }
+                    else
                     {
                         return false;
                     }
-
-                    var operatorFunctionParameter = new TriggerFunctionParameter
-                    {
-                        Type = TriggerFunctionParameterType.Preset,
-                        Value = triggerParams.Single().ParameterName,
-                    };
-
-                    function.Name = operatorCompareTypeLeft;
-                    function.Parameters.Add(leftFunctionParameter);
-                    function.Parameters.Add(operatorFunctionParameter);
-                    function.Parameters.Add(rightFunctionParameter);
-
-                    conditionFunction = function;
-                    return true;
                 }
                 else
                 {
@@ -254,21 +246,17 @@ namespace War3Net.CodeAnalysis.Decompilers
         private bool TryDecompileOperatorCompareOperand(
             IExpressionSyntax expression,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter,
-            [NotNullWhen(true)] out string? operatorCompareType,
-            [NotNullWhen(true)] out string? operatorType)
+            out TriggerData.TriggerCondition? triggerCondition)
         {
             var expressionString = expression.ToString();
             if (!string.Equals(expressionString, "0", StringComparison.Ordinal) &&
-                Context.TriggerData.TryGetTriggerConditionForUnknownType(expressionString, out var triggerCondition, out var triggerParam))
+                Context.TriggerData.TryGetTriggerConditionForUnknownType(expressionString, out triggerCondition, out var triggerParam))
             {
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.Preset,
                     Value = triggerParam.ParameterName,
                 };
-
-                operatorCompareType = triggerCondition.FunctionName;
-                operatorType = triggerCondition.ArgumentTypes[1];
 
                 return true;
             }
@@ -285,16 +273,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                         Function = callFunction,
                     };
 
-                    operatorCompareType = triggerCondition.FunctionName;
-                    operatorType = triggerCondition.ArgumentTypes[1];
-
                     return true;
                 }
                 else
                 {
                     functionParameter = null;
-                    operatorCompareType = null;
-                    operatorType = null;
+                    triggerCondition = null;
                     return false;
                 }
             }
@@ -304,23 +288,18 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (Context.TriggerData.TriggerConditions.TryGetValue(literalType, out triggerCondition))
                     {
-                        operatorCompareType = triggerCondition.FunctionName;
-                        operatorType = triggerCondition.ArgumentTypes[1];
-
                         return true;
                     }
                     else
                     {
                         functionParameter = null;
-                        operatorCompareType = null;
-                        operatorType = null;
+                        triggerCondition = null;
                         return false;
                     }
                 }
                 else
                 {
-                    operatorCompareType = string.Empty;
-                    operatorType = string.Empty;
+                    triggerCondition = null;
                     return true;
                 }
             }
