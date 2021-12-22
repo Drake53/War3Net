@@ -26,14 +26,18 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (TryDecompileMapTriggers(
                 initGlobals.FunctionDeclaration,
-                initCustomTriggers.FunctionDeclaration,
+                initCustomTriggers?.FunctionDeclaration,
                 runInitializationTriggers?.FunctionDeclaration,
                 formatVersion,
                 subVersion,
                 out mapTriggers))
             {
                 initGlobals.Handled = true;
-                initCustomTriggers.Handled = true;
+
+                if (initCustomTriggers is not null)
+                {
+                    initCustomTriggers.Handled = true;
+                }
 
                 if (runInitializationTriggers is not null)
                 {
@@ -49,7 +53,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         public bool TryDecompileMapTriggers(
             JassFunctionDeclarationSyntax initGlobalsFunction,
-            JassFunctionDeclarationSyntax initCustomTriggersFunction,
+            JassFunctionDeclarationSyntax? initCustomTriggersFunction,
             JassFunctionDeclarationSyntax? runInitializationTriggersFunction,
             MapTriggersFormatVersion formatVersion,
             MapTriggersSubVersion? subVersion,
@@ -58,11 +62,6 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (initGlobalsFunction is null)
             {
                 throw new ArgumentNullException(nameof(initGlobalsFunction));
-            }
-
-            if (initCustomTriggersFunction is null)
-            {
-                throw new ArgumentNullException(nameof(initCustomTriggersFunction));
             }
 
             const int RootCategoryId = (int)TriggerItemTypeId.RootCategory << 24;
@@ -164,52 +163,55 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            var triggersCategoryId = categoryId++;
-
-            mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
+            if (initCustomTriggersFunction is not null)
             {
-                Name = "Untitled Category",
-                Id = triggersCategoryId,
-                ParentId = RootCategoryId,
-            });
+                var triggersCategoryId = categoryId++;
 
-            var triggers = new Dictionary<string, TriggerDefinition>(StringComparer.Ordinal);
-            foreach (var statement in initCustomTriggersFunction.Body.Statements)
-            {
-                if (statement is JassCallStatementSyntax callStatement &&
-                    callStatement.Arguments.Arguments.IsEmpty &&
-                    Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var initTrigFunction) &&
-                    TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
+                mapTriggers.TriggerItems.Add(new TriggerCategoryDefinition(TriggerItemType.Category)
                 {
-                    trigger.Id = triggerId++;
-                    trigger.ParentId = triggersCategoryId;
+                    Name = "Untitled Category",
+                    Id = triggersCategoryId,
+                    ParentId = RootCategoryId,
+                });
 
-                    triggers.Add(trigger.Name, trigger);
-                    mapTriggers.TriggerItems.Add(trigger);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            if (runInitializationTriggersFunction is not null)
-            {
-                foreach (var statement in runInitializationTriggersFunction.Body.Statements)
+                var triggers = new Dictionary<string, TriggerDefinition>(StringComparer.Ordinal);
+                foreach (var statement in initCustomTriggersFunction.Body.Statements)
                 {
                     if (statement is JassCallStatementSyntax callStatement &&
-                        callStatement.Arguments.Arguments.Length == 1 &&
-                        string.Equals(callStatement.IdentifierName.Name, "ConditionalTriggerExecute", StringComparison.Ordinal) &&
-                        callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax triggerVariableReferenceExpression &&
-                        triggerVariableReferenceExpression.IdentifierName.Name.StartsWith("gg_trg_", StringComparison.Ordinal) &&
-                        triggers.TryGetValue(triggerVariableReferenceExpression.IdentifierName.Name["gg_trg_".Length..].Replace('_', ' '), out var triggerDefinition))
+                        callStatement.Arguments.Arguments.IsEmpty &&
+                        Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var initTrigFunction) &&
+                        TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
                     {
-                        triggerDefinition.Functions.Add(new TriggerFunction
+                        trigger.Id = triggerId++;
+                        trigger.ParentId = triggersCategoryId;
+
+                        triggers.Add(trigger.Name, trigger);
+                        mapTriggers.TriggerItems.Add(trigger);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                if (runInitializationTriggersFunction is not null)
+                {
+                    foreach (var statement in runInitializationTriggersFunction.Body.Statements)
+                    {
+                        if (statement is JassCallStatementSyntax callStatement &&
+                            callStatement.Arguments.Arguments.Length == 1 &&
+                            string.Equals(callStatement.IdentifierName.Name, "ConditionalTriggerExecute", StringComparison.Ordinal) &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax triggerVariableReferenceExpression &&
+                            triggerVariableReferenceExpression.IdentifierName.Name.StartsWith("gg_trg_", StringComparison.Ordinal) &&
+                            triggers.TryGetValue(triggerVariableReferenceExpression.IdentifierName.Name["gg_trg_".Length..].Replace('_', ' '), out var triggerDefinition))
                         {
-                            Type = TriggerFunctionType.Event,
-                            IsEnabled = true,
-                            Name = "MapInitializationEvent",
-                        });
+                            triggerDefinition.Functions.Add(new TriggerFunction
+                            {
+                                Type = TriggerFunctionType.Event,
+                                IsEnabled = true,
+                                Name = "MapInitializationEvent",
+                            });
+                        }
                     }
                 }
             }

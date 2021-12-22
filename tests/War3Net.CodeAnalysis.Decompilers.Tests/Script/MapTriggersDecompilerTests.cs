@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -35,10 +36,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                 // TODO
             }
 
-            Assert.AreEqual(map.Triggers.TriggerItems.Count, decompiledMapTriggers.TriggerItems.Count);
+            var expectedTriggerItems = map.Triggers.TriggerItems
+                .Where(triggerItem => triggerItem is not DeletedTriggerItem)
+                .ToList();
+
+            Assert.AreEqual(expectedTriggerItems.Count, decompiledMapTriggers.TriggerItems.Count);
             for (var i = 0; i < decompiledMapTriggers.TriggerItems.Count; i++)
             {
-                var expectedTrigger = map.Triggers.TriggerItems[i];
+                var expectedTrigger = expectedTriggerItems[i];
                 var actualTrigger = decompiledMapTriggers.TriggerItems[i];
 
                 Assert.AreEqual(expectedTrigger.Type, actualTrigger.Type);
@@ -64,7 +69,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                 if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Triggers) &&
                     map.Info is not null &&
                     map.Triggers is not null &&
-                    (map.Triggers.Variables.Count > 0 || map.Triggers.TriggerItems.Count > 0) &&
+                    (map.Triggers.Variables.Count > 0 || map.Triggers.TriggerItems.Any(triggerItem => triggerItem is not DeletedTriggerItem)) &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
