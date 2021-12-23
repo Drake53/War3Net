@@ -513,7 +513,13 @@ namespace War3Net.Build.Extensions
             map.Units = reader.ReadMapUnits();
         }
 
-        /// <returns><see langword="true"/> if the file was recognized as a war3map file.</returns>
+        /// <returns>
+        /// <see langword="true"/> if the file was recognized as a war3map file.
+        /// Note that if the file already exists and <paramref name="overwriteFile"/> is <see langword="false"/>,
+        /// this method will still return <see langword="true"/> even though nothing changed.
+        /// If the file is a script file (war3map.j or war3map.lua), returns <see langword="false"/> if <see cref="Map.Info"/> is null,
+        /// or if <see cref="MapInfo.ScriptLanguage"/> does not match the script file's language.
+        /// </returns>
         public static bool SetFile(this Map map, string fileName, bool overwriteFile, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             switch (fileName.ToLowerInvariant())
@@ -543,11 +549,13 @@ namespace War3Net.Build.Extensions
 
                 case @"war3map.j":
                 case @"scripts\war3map.j":
-                    if ((map.Info is null || map.Info.ScriptLanguage == ScriptLanguage.Jass) && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
+                    if (map.Info is null || map.Info.ScriptLanguage != ScriptLanguage.Jass) return false;
+                    if (map.Script is null || overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 
                 case @"war3map.lua":
                 case @"scripts\war3map.lua":
-                    if ((map.Info is null || map.Info.ScriptLanguage == ScriptLanguage.Lua) && overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
+                    if (map.Info is null || map.Info.ScriptLanguage != ScriptLanguage.Lua) return false;
+                    if (map.Script is null || overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 #pragma warning restore IDE0011, SA1503
 
                 default: return false;
