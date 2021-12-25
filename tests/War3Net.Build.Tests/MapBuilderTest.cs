@@ -84,9 +84,8 @@ namespace War3Net.Build.Tests
 
             var scriptCompilerOptions = new ScriptCompilerOptions(CSharpLua.CoreSystem.CoreSystemProvider.GetCoreSystemFiles());
 
-            // scriptCompilerOptions.MapInfo = MapInfo.Default;
-            // scriptCompilerOptions.MapEnvironment = MapEnvironment.Default;
-            throw new NotImplementedException();
+            scriptCompilerOptions.MapInfo = MapFactory.Info();
+            scriptCompilerOptions.MapEnvironment = MapFactory.Environment(scriptCompilerOptions.MapInfo);
 
             scriptCompilerOptions.SourceDirectory = @".\TestData\Script\Template";
             scriptCompilerOptions.OutputDirectory = @".\TestOutput\Template";
@@ -109,73 +108,6 @@ namespace War3Net.Build.Tests
             {
                 Assert.Fail();
             }
-        }
-
-        [TestMethod]
-        public void TestDefaultMapInfo()
-        {
-            // Get World Editor default info file.
-            using var defaultInfoStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3i");
-            using var defaultInfoReader = new BinaryReader(defaultInfoStream);
-            var defaultMapInfo = defaultInfoReader.ReadMapInfo();
-            defaultInfoStream.Position = 0;
-
-            // Get War3Net default info file.
-            MapInfo mapInfo; // = MapInfo.Default;
-            throw new NotImplementedException();
-
-            // Update defaults that are different.
-            mapInfo.EditorVersion = 6072;
-            mapInfo.ScriptLanguage = ScriptLanguage.Jass;
-
-            var player0 = mapInfo.Players[0];
-            player0.Name = "TRIGSTR_001";
-            player0.StartPosition = defaultMapInfo.Players[0].StartPosition;
-            mapInfo.Players.Clear();
-            mapInfo.Players.Add(player0);
-
-            var team0 = mapInfo.Forces[0];
-            team0.Name = "TRIGSTR_002";
-            team0.Players = new Bitmask32();
-            mapInfo.Forces.Clear();
-            mapInfo.Forces.Add(team0);
-
-            // Compare files.
-            using var mapInfoStream = new MemoryStream();
-            using var mapInfoWriter = new BinaryWriter(mapInfoStream);
-            mapInfoWriter.Write(mapInfo);
-
-            StreamAssert.AreEqual(defaultInfoStream, mapInfoStream, true);
-        }
-
-        [TestMethod]
-        public void TestDefaultMapEnvironment()
-        {
-            // Get World Editor default environment file.
-            using var defaultEnvironmentStream = File.OpenRead(@".\TestData\MapFiles\DefaultMapFiles\war3map.w3e");
-            using var defaultEnvironmentReader = new BinaryReader(defaultEnvironmentStream);
-            var defaultMapEnvironment = defaultEnvironmentReader.ReadMapEnvironment();
-            defaultEnvironmentStream.Position = 0;
-
-            // Get War3Net default environment file.
-            MapEnvironment mapEnvironment; // = MapEnvironment.Default;
-            throw new NotImplementedException();
-
-            // Update defaults that are different.
-            var tileEnumerator = defaultMapEnvironment.TerrainTiles.GetEnumerator();
-            foreach (var tile in mapEnvironment.TerrainTiles)
-            {
-                tileEnumerator.MoveNext();
-                tile.Variation = tileEnumerator.Current.Variation;
-                tile.CliffVariation = tileEnumerator.Current.CliffVariation;
-            }
-
-            // Compare files.
-            using var mapEnvironmentStream = new MemoryStream();
-            using var mapEnvironmentWriter = new BinaryWriter(mapEnvironmentStream);
-            mapEnvironmentWriter.Write(mapEnvironment);
-
-            StreamAssert.AreEqual(defaultEnvironmentStream, mapEnvironmentStream, true);
         }
     }
 }
