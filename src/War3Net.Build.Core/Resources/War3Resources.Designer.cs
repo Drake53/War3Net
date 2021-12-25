@@ -78,5 +78,15 @@ namespace War3Net.Build.Resources {
                 return ResourceManager.GetString("TriggerData", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] UnitUI {
+            get {
+                object obj = ResourceManager.GetObject("UnitUI", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
