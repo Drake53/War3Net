@@ -56,7 +56,7 @@ namespace War3Net.Build.Providers
                 { "nmrc".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Sunken Ruins)
                 { "nmrd".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Icecrown Glacier)
                 { "nmre".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Outland)
-                { "nmrg".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Black Citadel)
+                { "nmrf".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Black Citadel)
                 { "nmr2".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Lordaeron Fall)
                 { "nmr3".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Lordaeron Winter)
                 { "nmr4".FromRawcode(), PreviewIconType.NeutralBuilding }, // Mercenary Camp (Barrens)
