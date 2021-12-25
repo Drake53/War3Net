@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Drawing;
 
 using War3Net.Build.Common;
@@ -28,13 +29,22 @@ namespace War3Net.Build.Extensions
             }
         }
 
+        /// <exception cref="ArgumentException">Thrown if <paramref name="color"/> is not a player color.</exception>
+        public static KnownPlayerColor ToKnownPlayerColor(this Color color)
+        {
+            return color.TryGetKnownPlayerColor(out var playerColor)
+                ? playerColor
+                : throw new ArgumentException($"{color} is not recognized as a player color.", nameof(color));
+        }
+
+#if false
         internal static KnownPlayerColor ToKnownPlayerColorInternal(this Color color)
         {
             return color.G switch
             {
                 0x03 => KnownPlayerColor.Red, // FF 03 03
                 0x42 => KnownPlayerColor.Blue, // 00 42 FF
-                0xE6 => KnownPlayerColor.Teal, // 1c E6 B9
+                0xE6 => KnownPlayerColor.Teal, // 1C E6 B9
                 0xFC => KnownPlayerColor.Yellow, // FF FC 00 or FF FC 01
                 0x8A => KnownPlayerColor.Orange, // FE 8A 0E
                 0xC0 => KnownPlayerColor.Green, // 20 C0 00
@@ -65,5 +75,52 @@ namespace War3Net.Build.Extensions
                 },
             };
         }
+#else
+        internal static KnownPlayerColor ToKnownPlayerColorInternal(this Color color)
+        {
+            return color.B switch
+            {
+                0x03 => KnownPlayerColor.Red, // FF 03 03
+                0xB9 => KnownPlayerColor.Teal, // 1C E6 B9
+                0x81 => KnownPlayerColor.Purple, // 54 00 81
+                0x01 => KnownPlayerColor.Yellow, // FF FC 01
+                0x0E => KnownPlayerColor.Orange, // FE 8A 0E
+                0xB0 => KnownPlayerColor.Pink, // E5 5B B0
+                0x97 => KnownPlayerColor.Gray, // 95 96 97
+                0xF1 => KnownPlayerColor.LightBlue, // 7E BF F1
+                0x46 => KnownPlayerColor.DarkGreen, // 10 62 46
+                0x04 => KnownPlayerColor.Brown, // 4E 2A 04
+                0xC3 => KnownPlayerColor.Navy, // 00 00 C3
+                0xFE => KnownPlayerColor.Violet, // BE 00 FE
+                0x87 => KnownPlayerColor.Wheat, // EB CD 87
+                0x8B => KnownPlayerColor.Peach, // F8 A4 8B
+                0x80 => KnownPlayerColor.Mint, // BF FF 80
+                0xEB => KnownPlayerColor.Lavender, // DC B9 EB
+                0x28 => KnownPlayerColor.Coal, // 28 28 28
+                0x1E => KnownPlayerColor.Emerald, // 00 78 1E
+                0x33 => KnownPlayerColor.Peanut, // A4 6F 33
+
+                0x00 => color.R switch
+                {
+                    0xFF => KnownPlayerColor.Yellow, // FF FC 00
+                    0x20 => KnownPlayerColor.Green, // 20 C0 00
+                    0x9B => KnownPlayerColor.Maroon, // 9B 00 00
+
+                    _ => KnownPlayerColor.Black, // 00 00 00
+                },
+
+                0xFF => color.G switch
+                {
+                    0x42 => KnownPlayerColor.Blue, // 00 42 FF
+                    0xEA => KnownPlayerColor.Turquoise, // 00 EA FF
+                    0xF0 => KnownPlayerColor.Snow, // EB F0 FF
+
+                    _ => KnownPlayerColor.Black, // 00 00 00
+                },
+
+                _ => KnownPlayerColor.Black, // 00 00 00
+            };
+        }
+#endif
     }
 }
