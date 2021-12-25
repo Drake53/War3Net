@@ -668,7 +668,7 @@ namespace War3Net.Build.Script
 
         private static TriggerData GetDefaultTriggerData()
         {
-            using var reader = new StringReader(DefaultTriggerData.TriggerData);
+            using var reader = new StringReader(War3Resources.TriggerData);
 
             return new TriggerData(reader);
         }

@@ -22,17 +22,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\DefaultTriggerData.Designer.cs">
+    <Compile Update="Resources\War3Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DefaultTriggerData.resx</DependentUpon>
+      <DependentUpon>War3Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources\DefaultTriggerData.resx">
+    <EmbeddedResource Update="Resources\War3Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DefaultTriggerData.Designer.cs</LastGenOutput>
+      <LastGenOutput>War3Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
