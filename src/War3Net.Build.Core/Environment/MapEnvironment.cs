@@ -41,6 +41,8 @@ namespace War3Net.Build.Environment
 
         public Tileset Tileset { get; set; }
 
+        public bool IsCustomTileset { get; set; }
+
         public List<TerrainType> TerrainTypes { get; init; } = new();
 
         public List<CliffType> CliffTypes { get; init; } = new();
@@ -88,7 +90,7 @@ namespace War3Net.Build.Environment
 
             FormatVersion = reader.ReadInt32<MapEnvironmentFormatVersion>();
             Tileset = (Tileset)reader.ReadChar();
-            var isCustomTileset = reader.ReadBool();
+            IsCustomTileset = reader.ReadBool();
 
             nint terrainTypeCount = reader.ReadInt32();
             for (nint i = 0; i < terrainTypeCount; i++)
@@ -121,7 +123,7 @@ namespace War3Net.Build.Environment
             writer.Write(FileFormatSignature);
             writer.Write((int)FormatVersion);
             writer.Write((char)Tileset);
-            writer.WriteBool(!IsDefaultTileset());
+            writer.WriteBool(IsCustomTileset);
 
             writer.Write(TerrainTypes.Count);
             foreach (var terrainType in TerrainTypes)

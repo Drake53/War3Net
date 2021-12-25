@@ -296,6 +296,11 @@ namespace War3Net.Build.Info
                     UpgradeData.Add(reader.ReadUpgradeData(FormatVersion));
                 }
 
+                if (reader.BaseStream.Position == reader.BaseStream.Length)
+                {
+                    return;
+                }
+
                 nint techDataCount = reader.ReadInt32();
                 for (nint i = 0; i < techDataCount; i++)
                 {
