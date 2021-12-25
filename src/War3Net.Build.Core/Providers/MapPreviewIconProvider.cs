@@ -17,7 +17,6 @@ namespace War3Net.Build.Providers
     public static class MapPreviewIconProvider
     {
         private static readonly Dictionary<int, PreviewIconType> _iconTypes = GetIconTypesDictionary();
-        private static readonly List<Color> _playerColors = GetPlayerColorsList();
 
         public static bool TryGetIcon(int unitTypeId, int ownerId, out PreviewIconType iconType, out Color color)
         {
@@ -26,7 +25,7 @@ namespace War3Net.Build.Providers
             {
                 if (iconType == PreviewIconType.PlayerStartLocation)
                 {
-                    color = _playerColors[ownerId];
+                    color = PlayerColor.FromKnownColor((KnownPlayerColor)ownerId);
                 }
 
                 return true;
@@ -53,42 +52,6 @@ namespace War3Net.Build.Providers
                 { "nmrk".FromRawcode(), PreviewIconType.NeutralBuilding },
                 { "nshp".FromRawcode(), PreviewIconType.NeutralBuilding },
                 { "sloc".FromRawcode(), PreviewIconType.PlayerStartLocation },
-            };
-        }
-
-        private static List<Color> GetPlayerColorsList()
-        {
-            return new List<Color>
-            {
-                PlayerColor.Red,
-                PlayerColor.Blue,
-                PlayerColor.Teal,
-                PlayerColor.Purple,
-                PlayerColor.Yellow,
-                PlayerColor.Orange,
-                PlayerColor.Green,
-                PlayerColor.Pink,
-                PlayerColor.Gray,
-                PlayerColor.LightBlue,
-                PlayerColor.DarkGreen,
-                PlayerColor.Brown,
-                PlayerColor.Maroon,
-                PlayerColor.Navy,
-                PlayerColor.Turquoise,
-                PlayerColor.Violet,
-                PlayerColor.Wheat,
-                PlayerColor.Peach,
-                PlayerColor.Mint,
-                PlayerColor.Lavender,
-                PlayerColor.Coal,
-                PlayerColor.Snow,
-                PlayerColor.Emerald,
-                PlayerColor.Peanut,
-
-                PlayerColor.Black,
-                PlayerColor.Black,
-                PlayerColor.Black,
-                PlayerColor.Black,
             };
         }
     }

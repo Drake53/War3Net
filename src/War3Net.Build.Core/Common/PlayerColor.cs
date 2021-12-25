@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.ComponentModel;
 using System.Drawing;
 
 namespace War3Net.Build.Common
@@ -20,6 +21,9 @@ namespace War3Net.Build.Common
         public static Color Purple => Color.FromArgb(unchecked((int)0xFF540081));
 
         public static Color Yellow => Color.FromArgb(unchecked((int)0xFFFFFC00));
+
+        // The value of yellow's blue channel can be either 0 or 1.
+        public static Color YellowAlt => Color.FromArgb(unchecked((int)0xFFFFFC01));
 
         public static Color Orange => Color.FromArgb(unchecked((int)0xFFFE8A0E));
 
@@ -60,5 +64,39 @@ namespace War3Net.Build.Common
         public static Color Peanut => Color.FromArgb(unchecked((int)0xFFA46F33));
 
         public static Color Black => Color.FromArgb(unchecked((int)0xFF000000));
+
+        public static Color FromKnownColor(KnownPlayerColor playerColor)
+        {
+            return playerColor switch
+            {
+                KnownPlayerColor.Red => Red,
+                KnownPlayerColor.Blue => Blue,
+                KnownPlayerColor.Teal => Teal,
+                KnownPlayerColor.Purple => Purple,
+                KnownPlayerColor.Yellow => Yellow,
+                KnownPlayerColor.Orange => Orange,
+                KnownPlayerColor.Green => Green,
+                KnownPlayerColor.Pink => Pink,
+                KnownPlayerColor.Gray => Gray,
+                KnownPlayerColor.LightBlue => LightBlue,
+                KnownPlayerColor.DarkGreen => DarkGreen,
+                KnownPlayerColor.Brown => Brown,
+                KnownPlayerColor.Maroon => Maroon,
+                KnownPlayerColor.Navy => Navy,
+                KnownPlayerColor.Turquoise => Turquoise,
+                KnownPlayerColor.Violet => Violet,
+                KnownPlayerColor.Wheat => Wheat,
+                KnownPlayerColor.Peach => Peach,
+                KnownPlayerColor.Mint => Mint,
+                KnownPlayerColor.Lavender => Lavender,
+                KnownPlayerColor.Coal => Coal,
+                KnownPlayerColor.Snow => Snow,
+                KnownPlayerColor.Emerald => Emerald,
+                KnownPlayerColor.Peanut => Peanut,
+                KnownPlayerColor.Black => Black,
+
+                _ => throw new InvalidEnumArgumentException(nameof(playerColor), (int)playerColor, typeof(KnownPlayerColor)),
+            };
+        }
     }
 }
