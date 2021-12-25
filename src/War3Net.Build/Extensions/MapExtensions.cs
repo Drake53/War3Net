@@ -314,7 +314,7 @@ namespace War3Net.Build.Extensions
             writer.Write(map.Script);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, map.Info.ScriptLanguage == ScriptLanguage.Lua ? "war3map.lua" : "war3map.j");
+            return MpqFile.New(memoryStream, map.Info.ScriptLanguage == ScriptLanguage.Lua ? LuaMapScript.FileName : JassMapScript.FileName);
         }
 
         public static MpqFile? GetTriggersFile(this Map map, Encoding? encoding = null)
@@ -547,13 +547,13 @@ namespace War3Net.Build.Extensions
                 case MapDoodads.FileName: if (map.Doodads is null || overwriteFile) map.SetDoodadsFile(stream, encoding, leaveOpen); break;
                 case /*MapUnits.FileName*/ "war3mapunits.doo": if (map.Units is null || overwriteFile) map.SetUnitsFile(stream, encoding, leaveOpen); break;
 
-                case @"war3map.j":
-                case @"scripts\war3map.j":
+                case JassMapScript.FileName:
+                case JassMapScript.FullName:
                     if (map.Info is null || map.Info.ScriptLanguage != ScriptLanguage.Jass) return false;
                     if (map.Script is null || overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 
-                case @"war3map.lua":
-                case @"scripts\war3map.lua":
+                case LuaMapScript.FileName:
+                case LuaMapScript.FullName:
                     if (map.Info is null || map.Info.ScriptLanguage != ScriptLanguage.Lua) return false;
                     if (map.Script is null || overwriteFile) map.SetScriptFile(stream, encoding, leaveOpen); break;
 #pragma warning restore IDE0011, SA1503

@@ -80,10 +80,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 MapTriggerStrings.FileName,
                 MapDoodads.FileName,
                 MapUnits.FileName,
-                "war3map.j",
-                "war3map.lua",
-                @"scripts\war3map.j",
-                @"scripts\war3map.lua",
+                JassMapScript.FileName,
+                JassMapScript.FullName,
+                LuaMapScript.FileName,
+                LuaMapScript.FullName,
             }
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }

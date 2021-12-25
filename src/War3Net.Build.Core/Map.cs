@@ -60,14 +60,14 @@ namespace War3Net.Build
 
                 if (mapFiles.HasFlag(MapFiles.Script))
                 {
-                    var extension = Info.ScriptLanguage switch
+                    var scriptFileName = Info.ScriptLanguage switch
                     {
-                        ScriptLanguage.Jass => ".j",
-                        ScriptLanguage.Lua => ".lua",
+                        ScriptLanguage.Jass => JassMapScript.FileName,
+                        ScriptLanguage.Lua => LuaMapScript.FileName,
+
                         _ => throw new InvalidEnumArgumentException(nameof(Info.ScriptLanguage), (int)Info.ScriptLanguage, typeof(ScriptLanguage)),
                     };
 
-                    var scriptFileName = $"war3map{extension}";
                     if (File.Exists(Path.Combine(mapFolder, scriptFileName)))
                     {
                         Script = File.ReadAllText(Path.Combine(mapFolder, scriptFileName));
@@ -232,22 +232,31 @@ namespace War3Net.Build
 
                 if (mapFiles.HasFlag(MapFiles.Script))
                 {
-                    var extension = Info.ScriptLanguage switch
+                    string scriptFileName, scriptFullName;
+                    switch (Info.ScriptLanguage)
                     {
-                        ScriptLanguage.Jass => ".j",
-                        ScriptLanguage.Lua => ".lua",
-                        _ => throw new InvalidEnumArgumentException(nameof(Info.ScriptLanguage), (int)Info.ScriptLanguage, typeof(ScriptLanguage)),
-                    };
+                        case ScriptLanguage.Jass:
+                            scriptFileName = JassMapScript.FileName;
+                            scriptFullName = JassMapScript.FullName;
+                            break;
 
-                    if (MpqFile.Exists(mapArchive, $"war3map{extension}"))
+                        case ScriptLanguage.Lua:
+                            scriptFileName = LuaMapScript.FileName;
+                            scriptFullName = LuaMapScript.FullName;
+                            break;
+
+                        default: throw new InvalidEnumArgumentException(nameof(Info.ScriptLanguage), (int)Info.ScriptLanguage, typeof(ScriptLanguage));
+                    }
+
+                    if (MpqFile.Exists(mapArchive, scriptFileName))
                     {
-                        using var fileStream = MpqFile.OpenRead(mapArchive, $"war3map{extension}");
+                        using var fileStream = MpqFile.OpenRead(mapArchive, scriptFileName);
                         using var reader = new StreamReader(fileStream);
                         Script = reader.ReadToEnd();
                     }
-                    else if (MpqFile.Exists(mapArchive, $@"scripts\war3map{extension}"))
+                    else if (MpqFile.Exists(mapArchive, scriptFullName))
                     {
-                        using var fileStream = MpqFile.OpenRead(mapArchive, $@"scripts\war3map{extension}");
+                        using var fileStream = MpqFile.OpenRead(mapArchive, scriptFullName);
                         using var reader = new StreamReader(fileStream);
                         Script = reader.ReadToEnd();
                     }
