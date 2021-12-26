@@ -5,13 +5,22 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using War3Net.Build.Resources;
 using War3Net.Build.Widget;
 using War3Net.Common.Extensions;
+using War3Net.IO.Slk;
 
 namespace War3Net.Build.Extensions
 {
     public static class UnitDataExtensions
     {
+        private static Lazy<HashSet<int>> _buildingTypeIds = new(GetBuildingTypeIds);
+
         public static string GetVariableName(this UnitData unitData)
         {
             return $"gg_unit_{unitData.TypeId.ToRawcode()}_{unitData.CreationNumber:D4}";
@@ -26,12 +35,35 @@ namespace War3Net.Build.Extensions
 
         public static bool IsBuilding(this UnitData unitData)
         {
-            return false;
+            return _buildingTypeIds.Value.Contains(unitData.TypeId);
         }
 
         public static bool IsPassiveBuilding(this UnitData unitData)
         {
-            return false;
+            return unitData.IsBuilding();
+        }
+
+        private static HashSet<int> GetBuildingTypeIds()
+        {
+            var unitUI = new SylkParser().Parse(new MemoryStream(War3Resources.UnitUI));
+
+            var typeIdColumn = unitUI["unitUIID"].Single();
+            var buildingShadowColumn = unitUI["buildingShadow"].Single();
+
+            var typeIds = new HashSet<int>();
+
+            // Zone indicator does not have a building shadow.
+            typeIds.Add("nzin".FromRawcode());
+
+            foreach (var row in unitUI.Skip(1))
+            {
+                if (row[buildingShadowColumn] is string s && !string.IsNullOrEmpty(s) && s != "_")
+                {
+                    typeIds.Add(((string)row[typeIdColumn]).FromRawcode());
+                }
+            }
+
+            return typeIds;
         }
     }
 }

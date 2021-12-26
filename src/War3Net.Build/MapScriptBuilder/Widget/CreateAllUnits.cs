@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -63,8 +64,13 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return map.Units is not null
-                && map.Units.Units.Any(unit => CreateAllUnitsConditionSingleUnit(map, unit));
+            if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua)
+            {
+                return map.Units is not null
+                    && map.Units.Units.Any(unit => CreateAllUnitsConditionSingleUnit(map, unit));
+            }
+
+            return map.Info.FormatVersion >= MapInfoFormatVersion.v15;
         }
 
         protected internal virtual bool CreateAllUnitsConditionSingleUnit(Map map, UnitData unitData)

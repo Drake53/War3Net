@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 
+using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
@@ -45,7 +46,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return false;
+            return map.Info is not null
+                && map.Info.FormatVersion < MapInfoFormatVersion.v15;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(unitData));
             }
 
-            return unitData.OwnerId == playerId && unitData.IsUnit() && unitData.IsBuilding() && !unitData.IsPlayerStartLocation();
+            return unitData.OwnerId == playerId && unitData.IsUnit() && unitData.IsBuilding();
         }
     }
 }
