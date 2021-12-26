@@ -30,6 +30,8 @@ namespace War3Net.CodeAnalysis.Jass
             _options = options;
         }
 
+        public void RenderNewLine() => WriteLine();
+
         private void Write(char c)
         {
             if (!_currentLineIndented)

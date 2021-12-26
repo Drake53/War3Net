@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -31,6 +33,8 @@ namespace War3Net.CodeAnalysis.Jass
                 case JassParenthesizedExpressionSyntax parenthesizedExpression: Render(parenthesizedExpression); break;
                 case JassUnaryExpressionSyntax unaryExpression: Render(unaryExpression); break;
                 case JassBinaryExpressionSyntax binaryExpression: Render(binaryExpression); break;
+
+                default: throw new NotSupportedException();
             }
         }
     }
