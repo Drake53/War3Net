@@ -22,7 +22,7 @@ namespace War3Net.Build.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class War3Resources {
+    public class War3Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace War3Net.Build.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("War3Net.Build.Resources.War3Resources", typeof(War3Resources).Assembly);
@@ -51,7 +51,7 @@ namespace War3Net.Build.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -73,7 +73,7 @@ namespace War3Net.Build.Resources {
         ///TC_ARITHMETIC=WESTRING_TRIGCAT_ARITHMETIC,ReplaceableTextures\WorldEditUI\Actions-AI,1
         ///TC_NOTHING=WESTRING_TRIGCAT_NOTHING,ReplaceableTextures\WorldEditUI\Actions-No [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string TriggerData {
+        public static string TriggerData {
             get {
                 return ResourceManager.GetString("TriggerData", resourceCulture);
             }
@@ -82,7 +82,7 @@ namespace War3Net.Build.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] UnitUI {
+        public static byte[] UnitUI {
             get {
                 object obj = ResourceManager.GetObject("UnitUI", resourceCulture);
                 return ((byte[])(obj));
