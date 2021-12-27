@@ -65,7 +65,11 @@ namespace War3Net.Build.Common
             set => _mask = index >= 0 && index < 32 ? value ? _mask | 1 << index : _mask & ~(1 << index) : throw new ArgumentOutOfRangeException(nameof(index));
         }
 
+        public static implicit operator int(Bitmask32 bitmask) => bitmask.ToInt32();
+
         public void Clear() => _mask = 0;
+
+        public int ToInt32() => _mask;
 
         public override string ToString() => Convert.ToString(_mask, 2).PadLeft(32, '0');
 

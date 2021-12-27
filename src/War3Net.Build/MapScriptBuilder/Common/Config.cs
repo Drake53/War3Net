@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
@@ -42,7 +43,16 @@ namespace War3Net.Build
             statements.Add(SyntaxFactory.CallStatement(NativeName.SetMapDescription, SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapDescription))));
             statements.Add(SyntaxFactory.CallStatement(NativeName.SetPlayers, SyntaxFactory.LiteralExpression(playerDataCount)));
             statements.Add(SyntaxFactory.CallStatement(NativeName.SetTeams, SyntaxFactory.LiteralExpression(playerDataCount)));
-            statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
+
+            if (mapInfo.Players.Any(player => player.AllyHighPriorityFlags != 0 || player.AllyLowPriorityFlags != 0))
+            {
+                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.TeamsTogether)));
+            }
+            else
+            {
+                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
+            }
+
             statements.Add(JassEmptyStatementSyntax.Value);
 
             if (!string.IsNullOrEmpty(LobbyMusic))
