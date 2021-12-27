@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.Common.Extensions;
-using War3Net.Common.Testing;
+using War3Net.TestTools.UnitTesting;
 
 using static War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 

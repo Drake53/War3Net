@@ -10,7 +10,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
-using War3Net.Common.Testing;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.MapFactory
 {

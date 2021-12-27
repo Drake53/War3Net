@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 using War3Net.IO.Mpq;
 
-namespace War3Net.Common.Testing
+namespace War3Net.TestTools.UnitTesting
 {
     public static class TestDataProvider
     {
-        internal const string TestDataFolder = @"..\..\..\..\War3Net.Common.Testing\TestData";
+        internal const string TestDataFolder = @"..\..\..\..\War3Net.TestTools.UnitTesting\TestData";
         internal const string LocalDataFolder = "Local";
         internal const string WebCacheDataFolder = "WebCache";
 

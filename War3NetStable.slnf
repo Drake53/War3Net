@@ -18,12 +18,12 @@
       "tests\\War3Net.Build.Tests\\War3Net.Build.Tests.csproj",
       "tests\\War3Net.CodeAnalysis.Jass.Tests\\War3Net.CodeAnalysis.Jass.Tests.csproj",
       "tests\\War3Net.CodeAnalysis.Transpilers.Tests\\War3Net.CodeAnalysis.Transpilers.Tests.csproj",
-      "tests\\War3Net.Common.Testing\\War3Net.Common.Testing.csproj",
       "tests\\War3Net.Common.Tests\\War3Net.Common.Tests.csproj",
       "tests\\War3Net.Drawing.Blp.Tests\\War3Net.Drawing.Blp.Tests.csproj",
       "tests\\War3Net.IO.Compression.Tests\\War3Net.IO.Compression.Tests.csproj",
       "tests\\War3Net.IO.Mpq.Tests\\War3Net.IO.Mpq.Tests.csproj",
-      "tests\\War3Net.IO.Slk.Tests\\War3Net.IO.Slk.Tests.csproj"
+      "tests\\War3Net.IO.Slk.Tests\\War3Net.IO.Slk.Tests.csproj",
+      "tests\\War3Net.TestTools.UnitTesting\\War3Net.TestTools.UnitTesting.csproj"
     ]
   }
 }

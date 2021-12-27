@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 #endif
 
-namespace War3Net.Common.Testing
+namespace War3Net.TestTools.UnitTesting
 {
     public static class StreamAssert
     {

@@ -4,10 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\War3Net.Common.Testing\War3Net.Common.Testing.csproj" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.Transpilers\War3Net.CodeAnalysis.Transpilers.csproj" />
   </ItemGroup>

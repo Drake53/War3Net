@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.Common.Testing;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {

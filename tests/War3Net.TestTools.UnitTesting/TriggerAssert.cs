@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
 
-namespace War3Net.Common.Testing
+namespace War3Net.TestTools.UnitTesting
 {
     public static class TriggerAssert
     {

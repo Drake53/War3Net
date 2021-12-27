@@ -5,17 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Diagnostics;
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Build.Common;
-using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.Common.Testing;
 
 namespace War3Net.Build.Tests
 {

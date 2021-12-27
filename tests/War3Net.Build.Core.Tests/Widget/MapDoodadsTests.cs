@@ -12,7 +12,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Widget;
-using War3Net.Common.Testing;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Widget
 {
