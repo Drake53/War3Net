@@ -20,12 +20,22 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static IExpressionSyntax LiteralExpression(int value)
         {
+            if (value == 0)
+            {
+                return new JassOctalLiteralExpressionSyntax(0);
+            }
+
             return new JassDecimalLiteralExpressionSyntax(value);
         }
 
         public static IExpressionSyntax LiteralExpression(float value, int precision = 1)
         {
-            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture).Split('.');
+            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture).Split('.', 2);
+            if (valueAsString[0].StartsWith('-'))
+            {
+                return UnaryMinusExpression(new JassRealLiteralExpressionSyntax(valueAsString[0].TrimStart('-'), valueAsString[1]));
+            }
+
             return new JassRealLiteralExpressionSyntax(valueAsString[0], valueAsString[1]);
         }
 
