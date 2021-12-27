@@ -165,6 +165,19 @@ namespace War3Net.Build
             generatedGlobals.AddRange(Units(map));
             generatedGlobals.AddRange(RandomUnitTables(map));
 
+            var userDefinedGlobals = new List<JassGlobalDeclarationSyntax>(Variables(map));
+
+            if (userDefinedGlobals.Any())
+            {
+                globalDeclarationList.Add(new JassCommentDeclarationSyntax(" User-defined"));
+                globalDeclarationList.AddRange(userDefinedGlobals);
+
+                if (generatedGlobals.Any())
+                {
+                    globalDeclarationList.Add(JassEmptyDeclarationSyntax.Value);
+                }
+            }
+
             if (generatedGlobals.Any())
             {
                 globalDeclarationList.Add(new JassCommentDeclarationSyntax(" Generated"));
