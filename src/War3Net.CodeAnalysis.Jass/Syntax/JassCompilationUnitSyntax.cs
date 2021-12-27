@@ -25,5 +25,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is not null
                 && Declarations.SequenceEqual(other.Declarations);
         }
+
+        public override string ToString() => $"<{base.ToString()}> [{Declarations.Length}]";
     }
 }

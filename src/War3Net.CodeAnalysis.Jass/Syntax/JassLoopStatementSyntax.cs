@@ -21,5 +21,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassLoopStatementSyntax loopStatement
                 && Body.Equals(loopStatement.Body);
         }
+
+        public override string ToString() => $"{JassKeyword.Loop} [{Body.Statements.Length}]";
     }
 }

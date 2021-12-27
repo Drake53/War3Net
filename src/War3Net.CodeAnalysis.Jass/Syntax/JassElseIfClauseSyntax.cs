@@ -27,5 +27,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Condition.Equals(other.Condition)
                 && Body.Equals(other.Body);
         }
+
+        public override string ToString() => $"{JassKeyword.ElseIf} {Condition} {JassKeyword.Then} [{Body.Statements.Length}]";
     }
 }

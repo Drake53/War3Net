@@ -21,5 +21,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassDebugStatementSyntax debugStatement
                 && Statement.Equals(debugStatement.Statement);
         }
+
+        public override string ToString() => $"{JassKeyword.Debug} {Statement}";
     }
 }

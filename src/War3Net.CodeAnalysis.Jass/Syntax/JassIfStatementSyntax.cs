@@ -39,5 +39,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && ElseIfClauses.SequenceEqual(ifStatement.ElseIfClauses)
                 && ElseClause.NullableEquals(ifStatement.ElseClause);
         }
+
+        public override string ToString() => $"{JassKeyword.If} {Condition} {JassKeyword.Then} [{Body.Statements.Length}]";
     }
 }

@@ -24,5 +24,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassGlobalDeclarationListSyntax globalDeclarationList
                 && Globals.SequenceEqual(globalDeclarationList.Globals);
         }
+
+        public override string ToString() => $"{JassKeyword.Globals} [{Globals.Length}]";
     }
 }

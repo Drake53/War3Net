@@ -25,5 +25,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && FunctionDeclarator.Equals(functionDeclaration.FunctionDeclarator)
                 && Body.Equals(functionDeclaration.Body);
         }
+
+        public override string ToString() => $"{FunctionDeclarator} [{Body.Statements.Length}]";
     }
 }

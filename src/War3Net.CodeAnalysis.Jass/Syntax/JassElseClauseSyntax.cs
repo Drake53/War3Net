@@ -23,5 +23,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is not null
                 && Body.Equals(other.Body);
         }
+
+        public override string ToString() => $"{JassKeyword.Else} [{Body.Statements.Length}]";
     }
 }
