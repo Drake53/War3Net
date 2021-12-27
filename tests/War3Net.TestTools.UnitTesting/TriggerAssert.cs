@@ -77,7 +77,7 @@ namespace War3Net.TestTools.UnitTesting
                 var actualCustomScriptAction = JassSyntaxFactory.ParseCustomScriptAction(actualFunctionParameter.Value);
 
                 Assert.AreEqual(expectedFunctionParameter.Type, actualFunctionParameter.Type);
-                Assert.IsTrue(expectedCustomScriptAction.Equals(actualCustomScriptAction));
+                SyntaxAssert.AreEqual(expectedCustomScriptAction, actualCustomScriptAction);
                 Assert.IsNull(expectedFunctionParameter.Function);
                 Assert.IsNull(actualFunctionParameter.Function);
                 Assert.IsNull(expectedFunctionParameter.ArrayIndexer);
