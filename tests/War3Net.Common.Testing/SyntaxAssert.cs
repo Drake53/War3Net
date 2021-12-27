@@ -11,9 +11,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-namespace War3Net.CodeAnalysis.Jass.Tests
+namespace War3Net.Common.Testing
 {
     public static class SyntaxAssert
     {
