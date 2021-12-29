@@ -46,6 +46,7 @@ namespace War3Net.Build
             internal const string GetChangingUnit = "GetChangingUnit";
             internal const string GetChangingUnitPrevOwner = "GetChangingUnitPrevOwner";
             internal const string GetDestructableLife = "GetDestructableLife";
+            internal const string GetGameTypeSelected = "GetGameTypeSelected";
             internal const string GetTriggeringTrigger = "GetTriggeringTrigger";
             internal const string GetTriggerUnit = "GetTriggerUnit";
             internal const string GetUnitState = "GetUnitState";

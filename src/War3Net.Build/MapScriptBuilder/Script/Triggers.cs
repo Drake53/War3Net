@@ -34,7 +34,7 @@ namespace War3Net.Build
             foreach (var trigger in mapTriggers.TriggerItems)
             {
                 if (trigger is TriggerDefinition triggerDefinition &&
-                    triggerDefinition.IsEnabled)
+                    !triggerDefinition.IsComment)
                 {
                     yield return SyntaxFactory.GlobalDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Trigger),

@@ -20,7 +20,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info is not null
+                && map.Info.FormatVersion >= MapInfoFormatVersion.v15;
         }
 
         protected internal virtual bool SetTerrainFogExCondition(Map map)
@@ -74,7 +75,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info is not null
+                && map.Info.FormatVersion >= MapInfoFormatVersion.v15;
         }
 
         protected internal virtual bool SetMapMusicCondition(Map map)
@@ -84,7 +86,8 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            return true;
+            return map.Info is not null
+                && map.Info.FormatVersion >= MapInfoFormatVersion.v15;
         }
 
         protected internal virtual bool InitBlizzardCondition(Map map)

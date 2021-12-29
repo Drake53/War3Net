@@ -94,7 +94,19 @@ namespace War3Net.Build
                 elseStatements.Add(SyntaxFactory.CallStatement(FunctionName.InitGenericPlayerSlots));
             }
 
-            statements.AddRange(elseStatements);
+            if (mapInfo.FormatVersion < MapInfoFormatVersion.v15)
+            {
+                statements.Add(SyntaxFactory.IfStatement(
+                    SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryEqualsExpression(
+                        SyntaxFactory.InvocationExpression(NativeName.GetGameTypeSelected),
+                        SyntaxFactory.VariableReferenceExpression(GameType.UseMapSettings))),
+                    SyntaxFactory.StatementList(SyntaxFactory.CallStatement(nameof(InitCustomTeams))),
+                    new JassElseClauseSyntax(SyntaxFactory.StatementList(elseStatements))));
+            }
+            else
+            {
+                statements.AddRange(elseStatements);
+            }
 
             if (InitCustomTeamsCondition(map) && InitCustomTeamsInvokeCondition(map))
             {

@@ -123,6 +123,8 @@ namespace War3Net.Build
                 }
             }
 
+            statements.Add(JassEmptyStatementSyntax.Value);
+
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllItems)), statements);
         }
 
