@@ -35,7 +35,7 @@ namespace War3Net.Build.Extensions
 
         public static bool IsBuilding(this UnitData unitData)
         {
-            return _buildingTypeIds.Value.Contains(unitData.TypeId);
+            return unitData.IsRandomBuilding() || _buildingTypeIds.Value.Contains(unitData.TypeId);
         }
 
         public static bool IsPassiveBuilding(this UnitData unitData)

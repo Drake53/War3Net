@@ -217,6 +217,18 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(nameof(CreateAllUnits)));
             }
+            else
+            {
+                if (CreateNeutralUnitsCondition(map))
+                {
+                    statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralUnits)));
+                }
+
+                if (CreatePlayerUnitsCondition(map))
+                {
+                    statements.Add(SyntaxFactory.CallStatement(nameof(CreatePlayerUnits)));
+                }
+            }
 
             if (InitBlizzardCondition(map))
             {
