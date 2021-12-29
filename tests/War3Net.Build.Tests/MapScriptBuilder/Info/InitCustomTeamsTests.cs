@@ -6,17 +6,29 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestDataInitCustomTeams), DynamicDataSourceType.Method)]
+        public void TestBodyInitCustomTeams(MapScriptBuilderTestData testData)
+        {
+            var expected = testData.DeclaredFunctions["InitCustomTeams"];
+            var actual = testData.MapScriptBuilder.InitCustomTeams(testData.Map);
+
+            SyntaxAssert.AreEqual(expected, actual);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomTeams(MapScriptBuilderTestData testData)
@@ -39,6 +51,17 @@ namespace War3Net.Build.Tests
             var actual = testData.MapScriptBuilder.InitCustomTeamsInvokeCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        private static IEnumerable<object?[]> GetTestDataInitCustomTeams()
+        {
+            foreach (var testData in GetUnobfuscatedTestData())
+            {
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("InitCustomTeams"))
+                {
+                    yield return testData;
+                }
+            }
         }
     }
 }

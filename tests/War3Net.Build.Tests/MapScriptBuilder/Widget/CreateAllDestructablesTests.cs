@@ -5,12 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestDataCreateAllDestructables), DynamicDataSourceType.Method)]
+        public void TestBodyCreateAllDestructables(MapScriptBuilderTestData testData)
+        {
+            var expected = testData.DeclaredFunctions["CreateAllDestructables"];
+            var actual = testData.MapScriptBuilder.CreateAllDestructables(testData.Map);
+
+            SyntaxAssert.AreEqual(expected, actual);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateAllDestructables(MapScriptBuilderTestData testData)
@@ -19,6 +33,17 @@ namespace War3Net.Build.Tests
             var actual = testData.MapScriptBuilder.CreateAllDestructablesCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        private static IEnumerable<object?[]> GetTestDataCreateAllDestructables()
+        {
+            foreach (var testData in GetUnobfuscatedTestData())
+            {
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("CreateAllDestructables"))
+                {
+                    yield return testData;
+                }
+            }
         }
     }
 }

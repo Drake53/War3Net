@@ -5,12 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestDataCreateCameras), DynamicDataSourceType.Method)]
+        public void TestBodyCreateCameras(MapScriptBuilderTestData testData)
+        {
+            var expected = testData.DeclaredFunctions["CreateCameras"];
+            var actual = testData.MapScriptBuilder.CreateCameras(testData.Map);
+
+            SyntaxAssert.AreEqual(expected, actual);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateCameras(MapScriptBuilderTestData testData)
@@ -19,6 +33,17 @@ namespace War3Net.Build.Tests
             var actual = testData.MapScriptBuilder.CreateCamerasCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        private static IEnumerable<object?[]> GetTestDataCreateCameras()
+        {
+            foreach (var testData in GetUnobfuscatedTestData())
+            {
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("CreateCameras"))
+                {
+                    yield return testData;
+                }
+            }
         }
     }
 }

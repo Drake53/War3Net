@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="InitCustomTriggersTests.cs" company="Drake53">
+// <copyright file="MainTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,30 +16,30 @@ namespace War3Net.Build.Tests
     public partial class MapScriptBuilderTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetTestDataInitCustomTriggers), DynamicDataSourceType.Method)]
-        public void TestBodyInitCustomTriggers(MapScriptBuilderTestData testData)
+        [DynamicData(nameof(GetTestDataMain), DynamicDataSourceType.Method)]
+        public void TestBodyMain(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitCustomTriggers"];
-            var actual = testData.MapScriptBuilder.InitCustomTriggers(testData.Map);
+            var expected = testData.DeclaredFunctions["main"];
+            var actual = testData.MapScriptBuilder.main(testData.Map);
 
             SyntaxAssert.AreEqual(expected, actual);
         }
 
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
-        public void TestConditionInitCustomTriggers(MapScriptBuilderTestData testData)
+        public void TestConditionMain(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitCustomTriggers");
-            var actual = testData.MapScriptBuilder.InitCustomTriggersCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey("main");
+            var actual = testData.MapScriptBuilder.mainCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
 
-        private static IEnumerable<object?[]> GetTestDataInitCustomTriggers()
+        private static IEnumerable<object?[]> GetTestDataMain()
         {
             foreach (var testData in GetUnobfuscatedTestData())
             {
-                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("InitCustomTriggers"))
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("main"))
                 {
                     yield return testData;
                 }

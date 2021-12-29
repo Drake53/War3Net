@@ -5,12 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestDataInitSounds), DynamicDataSourceType.Method)]
+        public void TestBodyInitSounds(MapScriptBuilderTestData testData)
+        {
+            var expected = testData.DeclaredFunctions["InitSounds"];
+            var actual = testData.MapScriptBuilder.InitSounds(testData.Map);
+
+            SyntaxAssert.AreEqual(expected, actual);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitSounds(MapScriptBuilderTestData testData)
@@ -19,6 +33,17 @@ namespace War3Net.Build.Tests
             var actual = testData.MapScriptBuilder.InitSoundsCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        private static IEnumerable<object?[]> GetTestDataInitSounds()
+        {
+            foreach (var testData in GetUnobfuscatedTestData())
+            {
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("InitSounds"))
+                {
+                    yield return testData;
+                }
+            }
         }
     }
 }

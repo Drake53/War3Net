@@ -5,12 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestDataInitCustomPlayerSlots), DynamicDataSourceType.Method)]
+        public void TestBodyInitCustomPlayerSlots(MapScriptBuilderTestData testData)
+        {
+            var expected = testData.DeclaredFunctions["InitCustomPlayerSlots"];
+            var actual = testData.MapScriptBuilder.InitCustomPlayerSlots(testData.Map);
+
+            SyntaxAssert.AreEqual(expected, actual);
+        }
+
         [DataTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomPlayerSlots(MapScriptBuilderTestData testData)
@@ -19,6 +33,17 @@ namespace War3Net.Build.Tests
             var actual = testData.MapScriptBuilder.InitCustomPlayerSlotsCondition(testData.Map);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        private static IEnumerable<object?[]> GetTestDataInitCustomPlayerSlots()
+        {
+            foreach (var testData in GetUnobfuscatedTestData())
+            {
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("InitCustomPlayerSlots"))
+                {
+                    yield return testData;
+                }
+            }
         }
     }
 }
