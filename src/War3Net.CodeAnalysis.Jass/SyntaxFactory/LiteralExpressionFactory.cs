@@ -25,6 +25,11 @@ namespace War3Net.CodeAnalysis.Jass
                 return new JassOctalLiteralExpressionSyntax(0);
             }
 
+            if (value < 0)
+            {
+                return UnaryMinusExpression(new JassDecimalLiteralExpressionSyntax(-value));
+            }
+
             return new JassDecimalLiteralExpressionSyntax(value);
         }
 
