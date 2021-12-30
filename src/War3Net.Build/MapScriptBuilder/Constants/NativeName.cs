@@ -50,6 +50,7 @@ namespace War3Net.Build
             internal const string GetTriggeringTrigger = "GetTriggeringTrigger";
             internal const string GetTriggerUnit = "GetTriggerUnit";
             internal const string GetUnitState = "GetUnitState";
+            internal const string IssueImmediateOrder = "IssueImmediateOrder";
             internal const string IssueImmediateOrderById = "IssueImmediateOrderById";
             internal const string IsUnitHidden = "IsUnitHidden";
             internal const string NewSoundEnvironment = "NewSoundEnvironment";

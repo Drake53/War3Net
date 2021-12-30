@@ -37,6 +37,7 @@ namespace War3Net.Build
             LobbyMusic = null;
             MaxPlayerSlots = 24;
             ForceGenerateGlobalUnitVariable = false;
+            ForceGenerateUnitWithSkin = false;
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;
@@ -50,6 +51,8 @@ namespace War3Net.Build
 
         public bool ForceGenerateGlobalUnitVariable { get; set; }
 
+        public bool ForceGenerateUnitWithSkin { get; set; }
+
         public bool UseCSharpLua { get; set; }
 
         public bool UseLifeVariable { get; set; }
@@ -61,6 +64,7 @@ namespace War3Net.Build
             LobbyMusic = lobbyMusic;
             MaxPlayerSlots = 24;
             ForceGenerateGlobalUnitVariable = true;
+            ForceGenerateUnitWithSkin = false;
             UseCSharpLua = true;
             UseLifeVariable = false;
             UseWeatherEffectVariable = false;
@@ -74,8 +78,9 @@ namespace War3Net.Build
             }
 
             LobbyMusic = null;
-            MaxPlayerSlots = map is null || map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua ? 24 : 12;
+            MaxPlayerSlots = map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v26 ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
+            ForceGenerateUnitWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.Reforged;
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;

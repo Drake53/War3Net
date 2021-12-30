@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -144,7 +145,7 @@ namespace War3Net.Build
                         SyntaxFactory.LiteralExpression(unit.Rotation * (180f / MathF.PI), precision: 3),
                     };
 
-                    var hasSkin = unit.SkinId != 0 && unit.SkinId != unit.TypeId;
+                    var hasSkin = ForceGenerateUnitWithSkin || (unit.SkinId != 0 && unit.SkinId != unit.TypeId);
                     if (hasSkin)
                     {
                         args.Add(SyntaxFactory.FourCCLiteralExpression(unit.SkinId));
@@ -266,12 +267,18 @@ namespace War3Net.Build
                     SyntaxFactory.LiteralExpression(unit.GoldAmount)));
             }
 
-            if (unit.CustomPlayerColorId != -1)
+            var playerColorId = unit.CustomPlayerColorId;
+            if (playerColorId == -1 && unit.TryGetDefaultPlayerColorId(out var defaultPlayerColorId))
+            {
+                playerColorId = defaultPlayerColorId;
+            }
+
+            if (playerColorId != -1)
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetUnitColor,
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(unit.CustomPlayerColorId))));
+                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(playerColorId))));
             }
 
             if (unit.TargetAcquisition != -1f)
@@ -318,6 +325,14 @@ namespace War3Net.Build
                         SyntaxFactory.VariableReferenceExpression(unitVariableName),
                         SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
                 }
+
+                if (ability.TryGetOrderOffString(out var orderOffString))
+                {
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.IssueImmediateOrder,
+                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.LiteralExpression(orderOffString)));
+                }
             }
 
             foreach (var item in unit.InventoryData)
@@ -339,11 +354,14 @@ namespace War3Net.Build
                     SyntaxFactory.VariableReferenceExpression(unitVariableName),
                     SyntaxFactory.VariableReferenceExpression(UnitEventName.Death)));
 
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.TriggerRegisterUnitEvent,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(UnitEventName.ChangeOwner)));
+                if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v24)
+                {
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.TriggerRegisterUnitEvent,
+                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
+                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.VariableReferenceExpression(UnitEventName.ChangeOwner)));
+                }
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.TriggerAddAction,

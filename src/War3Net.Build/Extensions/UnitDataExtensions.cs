@@ -20,6 +20,7 @@ namespace War3Net.Build.Extensions
     public static class UnitDataExtensions
     {
         private static Lazy<HashSet<int>> _buildingTypeIds = new(GetBuildingTypeIds);
+        private static Lazy<Dictionary<int, int>> _defaultPlayerColorIds = new(GetDefaultPlayerColorIds);
 
         public static string GetVariableName(this UnitData unitData)
         {
@@ -43,6 +44,17 @@ namespace War3Net.Build.Extensions
             return unitData.IsBuilding();
         }
 
+        public static bool TryGetDefaultPlayerColorId(this UnitData unitData, out int playerColorId)
+        {
+            if (unitData.IsRandomBuilding())
+            {
+                playerColorId = 0;
+                return true;
+            }
+
+            return _defaultPlayerColorIds.Value.TryGetValue(unitData.TypeId, out playerColorId);
+        }
+
         private static HashSet<int> GetBuildingTypeIds()
         {
             var unitUI = new SylkParser().Parse(new MemoryStream(War3Resources.UnitUI));
@@ -64,6 +76,26 @@ namespace War3Net.Build.Extensions
             }
 
             return typeIds;
+        }
+
+        private static Dictionary<int, int> GetDefaultPlayerColorIds()
+        {
+            var unitUI = new SylkParser().Parse(new MemoryStream(War3Resources.UnitUI));
+
+            var typeIdColumn = unitUI["unitUIID"].Single();
+            var playerColorIdColumn = unitUI["teamColor"].Single();
+
+            var playerColorIds = new Dictionary<int, int>();
+
+            foreach (var row in unitUI.Skip(1))
+            {
+                if (row[playerColorIdColumn] is int playerColorId)
+                {
+                    playerColorIds.Add(((string)row[typeIdColumn]).FromRawcode(), playerColorId);
+                }
+            }
+
+            return playerColorIds;
         }
     }
 }
