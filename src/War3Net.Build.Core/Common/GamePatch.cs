@@ -89,5 +89,6 @@ namespace War3Net.Build.Common
         v1_32_7,
         v1_32_8,
         v1_32_9,
+        v1_32_10,
     }
 }
