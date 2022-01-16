@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Compile Remove="TestData\Script\**" />
+    <Content Remove="TestData\Script\**" />
   </ItemGroup>
 
 </Project>
