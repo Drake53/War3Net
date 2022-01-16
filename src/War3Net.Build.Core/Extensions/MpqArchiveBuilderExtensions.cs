@@ -27,14 +27,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, _defaultEncoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -50,14 +50,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, _defaultEncoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -81,14 +81,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, _defaultEncoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -104,14 +104,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, _defaultEncoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -135,14 +135,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, Encoding encoding)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, encoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -158,14 +158,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, encoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -189,14 +189,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, Encoding encoding)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, encoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -212,14 +212,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, encoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -243,14 +243,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, bool leaveOpen = false)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, _defaultEncoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -266,14 +266,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, _defaultEncoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -297,14 +297,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, bool leaveOpen = false)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, _defaultEncoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -320,14 +320,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, _defaultEncoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
@@ -351,14 +351,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, Encoding encoding, bool leaveOpen = false)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, encoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -374,14 +374,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, encoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -405,14 +405,14 @@ namespace War3Net.Build.Extensions
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, Encoding encoding, bool leaveOpen = false)
         {
             var mpqFiles = mpqArchiveBuilder.ToArray();
-            var campaignInfoFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignInfoHashedFileName);
+            var campaignInfoFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignInfoHashedFileName);
             if (campaignInfoFile is not null)
             {
                 using var reader = new BinaryReader(campaignInfoFile.MpqStream, encoding, true);
                 var campaignInfo = reader.ReadCampaignInfo();
                 campaignInfoFile.MpqStream.Position = 0;
 
-                var campaignTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
+                var campaignTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == CampaignTriggerStringsHashedFileName);
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
@@ -428,14 +428,14 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                var mapInfoFile = mpqFiles.SingleOrDefault(file => file.Name == MapInfoHashedFileName);
+                var mapInfoFile = mpqFiles.FirstOrDefault(file => file.Name == MapInfoHashedFileName);
                 if (mapInfoFile is not null)
                 {
                     using var reader = new BinaryReader(mapInfoFile.MpqStream, encoding, true);
                     var mapInfo = reader.ReadMapInfo();
                     mapInfoFile.MpqStream.Position = 0;
 
-                    var mapTriggerStringsFile = mpqFiles.SingleOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
+                    var mapTriggerStringsFile = mpqFiles.FirstOrDefault(file => file.Name == MapTriggerStringsHashedFileName);
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
