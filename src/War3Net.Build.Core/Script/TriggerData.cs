@@ -497,6 +497,11 @@ namespace War3Net.Build.Script
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    split = line.Split('-', 2);
+                }
+
                 var key = split[0];
 
                 if (key.StartsWith('_'))
