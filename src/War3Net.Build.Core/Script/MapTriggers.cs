@@ -50,6 +50,8 @@ namespace War3Net.Build.Script
 
         public List<TriggerItem> TriggerItems { get; init; } = new();
 
+        public Dictionary<TriggerItemType, int> TriggerItemCounts { get; init; } = new();
+
         public override string ToString() => FileName;
 
         internal void ReadFrom(BinaryReader reader, TriggerData triggerData)
@@ -91,10 +93,9 @@ namespace War3Net.Build.Script
                 FormatVersion = reader.ReadInt32<MapTriggersFormatVersion>();
                 SubVersion = (MapTriggersSubVersion)version;
 
-                var triggerItemCounts = new Dictionary<TriggerItemType, int>();
                 foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
                 {
-                    triggerItemCounts[triggerItemType] = reader.ReadInt32();
+                    TriggerItemCounts[triggerItemType] = reader.ReadInt32();
                     nint deletedTriggerItemCount = reader.ReadInt32();
                     for (nint i = 0; i < deletedTriggerItemCount; i++)
                     {
@@ -143,12 +144,7 @@ namespace War3Net.Build.Script
                 foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
                 {
                     var count = TriggerItems.Count(item => item.Type == triggerItemType);
-                    if (count > triggerItemCounts[triggerItemType])
-                    {
-                        throw new InvalidDataException($"Expected {triggerItemCounts[triggerItemType]} trigger items of type {triggerItemType}, but got {count}.");
-                    }
-
-                    while (count < triggerItemCounts[triggerItemType])
+                    while (count < TriggerItemCounts[triggerItemType])
                     {
                         TriggerItems.Add(new DeletedTriggerItem(triggerItemType));
                         count++;
@@ -198,7 +194,7 @@ namespace War3Net.Build.Script
 
                 foreach (TriggerItemType triggerItemType in Enum.GetValues(typeof(TriggerItemType)))
                 {
-                    writer.Write(TriggerItems.Count(item => item.Type == triggerItemType));
+                    writer.Write(TriggerItemCounts.TryGetValue(triggerItemType, out var count) ? count : TriggerItems.Count(item => item.Type == triggerItemType));
 
                     var deletedItems = TriggerItems.Where(item => item is DeletedTriggerItem && item.Type == triggerItemType && item.Id != -1).ToList();
                     writer.Write(deletedItems.Count);
