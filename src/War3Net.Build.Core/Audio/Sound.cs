@@ -64,10 +64,30 @@ namespace War3Net.Build.Audio
 
         public Vector3 ConeOrientation { get; set; }
 
-        // TODO: reforged properties
-
         // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
         public string SoundName { get; set; }
+
+        public int Unk1 { get; set; }
+
+        public string Unk2 { get; set; }
+
+        public int Unk3 { get; set; }
+
+        public int Unk4 { get; set; }
+
+        public string Unk5 { get; set; }
+
+        public string Unk6 { get; set; }
+
+        public string Unk7 { get; set; }
+
+        public string Unk8 { get; set; }
+
+        public string Unk9 { get; set; }
+
+        public string Unk10 { get; set; }
+
+        public int Unk11 { get; set; }
 
         public override string ToString() => FilePath;
 
@@ -103,16 +123,25 @@ namespace War3Net.Build.Audio
                     throw new InvalidDataException($"Expected sound's {nameof(Name)} and {nameof(FilePath)} to be repeated.");
                 }
 
-                var unk2 = reader.ReadInt32();
-                var unk3 = reader.ReadByte();
-                var unk4 = reader.ReadInt32();
-                var unk5 = reader.ReadByte();
-                var unk6 = reader.ReadInt32();
-                var unk7 = reader.ReadInt32();
+                Unk1 = reader.ReadInt32();
+                Unk2 = reader.ReadChars();
+                Unk3 = reader.ReadInt32();
+
+                Unk4 = reader.ReadInt32();
+                if (Unk4 != 0)
+                {
+                    Unk5 = reader.ReadChars();
+                }
+
+                Unk6 = reader.ReadChars();
+                Unk7 = reader.ReadChars();
+                Unk8 = reader.ReadChars();
+                Unk9 = reader.ReadChars();
+                Unk10 = reader.ReadChars();
 
                 if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
                 {
-                    var unk8 = reader.ReadInt32();
+                    Unk11 = reader.ReadInt32();
                 }
             }
         }
@@ -146,16 +175,25 @@ namespace War3Net.Build.Audio
                 writer.WriteString(SoundName);
                 writer.WriteString(FilePath);
 
-                writer.Write(-1);
-                writer.Write((byte)0);
-                writer.Write(-1);
-                writer.Write((byte)0);
-                writer.Write(0);
-                writer.Write(0);
+                writer.Write(Unk1);
+                writer.WriteString(Unk2);
+                writer.Write(Unk3);
+
+                writer.Write(Unk4);
+                if (Unk4 != 0)
+                {
+                    writer.WriteString(Unk5);
+                }
+
+                writer.WriteString(Unk6);
+                writer.WriteString(Unk7);
+                writer.WriteString(Unk8);
+                writer.WriteString(Unk9);
+                writer.WriteString(Unk10);
 
                 if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
                 {
-                    writer.Write(1);
+                    writer.Write(Unk11);
                 }
             }
         }
