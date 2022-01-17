@@ -67,11 +67,11 @@ namespace War3Net.Build.Audio
         // 'SoundName' in .slk files? (reforged only, can be different from name in filepath, eg DeathHumanLargeBuilding = BuildingDeathLargeHuman.wav).
         public string SoundName { get; set; }
 
-        public int Unk1 { get; set; }
+        public int DialogueTextKey { get; set; }
 
         public string Unk2 { get; set; }
 
-        public int Unk3 { get; set; }
+        public int DialogueSpeakerNameKey { get; set; }
 
         public int Unk4 { get; set; }
 
@@ -81,11 +81,11 @@ namespace War3Net.Build.Audio
 
         public string Unk7 { get; set; }
 
-        public string Unk8 { get; set; }
+        public string FacialAnimationLabel { get; set; }
 
-        public string Unk9 { get; set; }
+        public string FacialAnimationGroupLabel { get; set; }
 
-        public string Unk10 { get; set; }
+        public string FacialAnimationSetFilepath { get; set; }
 
         public int Unk11 { get; set; }
 
@@ -123,9 +123,9 @@ namespace War3Net.Build.Audio
                     throw new InvalidDataException($"Expected sound's {nameof(Name)} and {nameof(FilePath)} to be repeated.");
                 }
 
-                Unk1 = reader.ReadInt32();
+                DialogueTextKey = reader.ReadInt32();
                 Unk2 = reader.ReadChars();
-                Unk3 = reader.ReadInt32();
+                DialogueSpeakerNameKey = reader.ReadInt32();
 
                 Unk4 = reader.ReadInt32();
                 if (Unk4 != 0)
@@ -135,9 +135,9 @@ namespace War3Net.Build.Audio
 
                 Unk6 = reader.ReadChars();
                 Unk7 = reader.ReadChars();
-                Unk8 = reader.ReadChars();
-                Unk9 = reader.ReadChars();
-                Unk10 = reader.ReadChars();
+                FacialAnimationLabel = reader.ReadChars();
+                FacialAnimationGroupLabel = reader.ReadChars();
+                FacialAnimationSetFilepath = reader.ReadChars();
 
                 if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
                 {
@@ -175,9 +175,9 @@ namespace War3Net.Build.Audio
                 writer.WriteString(SoundName);
                 writer.WriteString(FilePath);
 
-                writer.Write(Unk1);
+                writer.Write(DialogueTextKey);
                 writer.WriteString(Unk2);
-                writer.Write(Unk3);
+                writer.Write(DialogueSpeakerNameKey);
 
                 writer.Write(Unk4);
                 if (Unk4 != 0)
@@ -187,9 +187,9 @@ namespace War3Net.Build.Audio
 
                 writer.WriteString(Unk6);
                 writer.WriteString(Unk7);
-                writer.WriteString(Unk8);
-                writer.WriteString(Unk9);
-                writer.WriteString(Unk10);
+                writer.WriteString(FacialAnimationLabel);
+                writer.WriteString(FacialAnimationGroupLabel);
+                writer.WriteString(FacialAnimationSetFilepath);
 
                 if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
                 {

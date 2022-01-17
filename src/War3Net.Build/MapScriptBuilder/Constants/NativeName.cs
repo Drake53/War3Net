@@ -62,6 +62,8 @@ namespace War3Net.Build
             internal const string SetCameraBounds = "SetCameraBounds";
             internal const string SetDayNightModels = "SetDayNightModels";
             internal const string SetDestructableLife = "SetDestructableLife";
+            internal const string SetDialogueSpeakerNameKey = "SetDialogueSpeakerNameKey";
+            internal const string SetDialogueTextKey = "SetDialogueTextKey";
             internal const string SetGamePlacement = "SetGamePlacement";
             internal const string SetHeroAgi = "SetHeroAgi";
             internal const string SetHeroInt = "SetHeroInt";
@@ -88,6 +90,9 @@ namespace War3Net.Build
             internal const string SetSoundConeOrientation = "SetSoundConeOrientation";
             internal const string SetSoundDistanceCutoff = "SetSoundDistanceCutoff";
             internal const string SetSoundDistances = "SetSoundDistances";
+            internal const string SetSoundFacialAnimationGroupLabel = "SetSoundFacialAnimationGroupLabel";
+            internal const string SetSoundFacialAnimationLabel = "SetSoundFacialAnimationLabel";
+            internal const string SetSoundFacialAnimationSetFilepath = "SetSoundFacialAnimationSetFilepath";
             internal const string SetSoundPitch = "SetSoundPitch";
             internal const string SetSoundPosition = "SetSoundPosition";
             internal const string SetSoundVolume = "SetSoundVolume";

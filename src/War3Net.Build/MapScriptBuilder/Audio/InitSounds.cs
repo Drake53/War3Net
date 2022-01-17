@@ -60,6 +60,46 @@ namespace War3Net.Build
                             SyntaxFactory.LiteralExpression(sound.FadeOutRate),
                             SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.EaxSetting)))));
 
+                    if (!string.IsNullOrEmpty(sound.FacialAnimationLabel))
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundFacialAnimationLabel,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.FacialAnimationLabel)));
+                    }
+
+                    if (!string.IsNullOrEmpty(sound.FacialAnimationGroupLabel))
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundFacialAnimationGroupLabel,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.FacialAnimationGroupLabel)));
+                    }
+
+                    if (!string.IsNullOrEmpty(sound.FacialAnimationSetFilepath))
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetSoundFacialAnimationSetFilepath,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression(sound.FacialAnimationSetFilepath)));
+                    }
+
+                    if (sound.DialogueSpeakerNameKey > 0)
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetDialogueSpeakerNameKey,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueSpeakerNameKey}")));
+                    }
+
+                    if (sound.DialogueTextKey > 0)
+                    {
+                        statements.Add(SyntaxFactory.CallStatement(
+                            NativeName.SetDialogueTextKey,
+                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueTextKey}")));
+                    }
+
                     if (sound.DistanceCutoff != 3000f)
                     {
                         var distanceCutoff = sound.DistanceCutoff == uint.MaxValue ? 3000f : sound.DistanceCutoff;
