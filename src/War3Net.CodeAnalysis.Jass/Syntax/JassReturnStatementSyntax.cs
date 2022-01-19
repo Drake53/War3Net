@@ -11,6 +11,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassReturnStatementSyntax : IStatementSyntax, ICustomScriptAction
     {
+        public static readonly JassReturnStatementSyntax Empty = new JassReturnStatementSyntax(null);
+
         public JassReturnStatementSyntax(IExpressionSyntax? value)
         {
             Value = value;

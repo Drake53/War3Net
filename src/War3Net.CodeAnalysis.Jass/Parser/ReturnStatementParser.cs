@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassReturnStatementSyntax> GetReturnStatementParser(Parser<char, IExpressionSyntax> expressionParser)
         {
             return Keyword.Return.Then(expressionParser.Optional())
-                .Select(expression => new JassReturnStatementSyntax(expression.GetValueOrDefault()));
+                .Select(expression => expression.HasValue ? new JassReturnStatementSyntax(expression.Value) : JassReturnStatementSyntax.Empty);
         }
     }
 }
