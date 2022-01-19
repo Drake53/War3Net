@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassCommentDeclarationSyntax : IDeclarationSyntax
@@ -18,7 +20,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public bool Equals(IDeclarationSyntax? other)
         {
-            return other is JassCommentDeclarationSyntax;
+            return other is JassCommentDeclarationSyntax comment
+                && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
         }
 
         public override string ToString() => $"{JassSymbol.Slash}{JassSymbol.Slash}{Comment}";
