@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -95,6 +96,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                                     Flags = flags,
                                     FadeInRate = fadeInRate,
                                     FadeOutRate = fadeOutRate,
+
+                                    DialogueTextKey = -1,
+                                    DialogueSpeakerNameKey = -1,
+                                    FacialAnimationLabel = string.Empty,
+                                    FacialAnimationGroupLabel = string.Empty,
+                                    FacialAnimationSetFilepath = string.Empty,
                                 });
                             }
                             else
@@ -137,8 +144,90 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassCallStatementSyntax callStatement)
                 {
-                    if (string.Equals(callStatement.IdentifierName.Name, "SetSoundParamsFromLabel", StringComparison.Ordinal) ||
-                        string.Equals(callStatement.IdentifierName.Name, "SetSoundDuration", StringComparison.Ordinal))
+                    if (string.Equals(callStatement.IdentifierName.Name, "SetSoundParamsFromLabel", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationLabel", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
+                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
+                        {
+                            sound.FacialAnimationLabel = stringLiteralExpression.Value;
+                        }
+                        else
+                        {
+                            mapSounds = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationGroupLabel", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
+                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
+                        {
+                            sound.FacialAnimationGroupLabel = stringLiteralExpression.Value;
+                        }
+                        else
+                        {
+                            mapSounds = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationSetFilepath", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
+                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
+                        {
+                            sound.FacialAnimationSetFilepath = stringLiteralExpression.Value;
+                        }
+                        else
+                        {
+                            mapSounds = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetDialogueSpeakerNameKey", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
+                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
+                            stringLiteralExpression.Value.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
+                            int.TryParse(stringLiteralExpression.Value["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueSpeakerNameKey))
+                        {
+                            sound.DialogueSpeakerNameKey = dialogueSpeakerNameKey;
+                        }
+                        else
+                        {
+                            mapSounds = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetDialogueTextKey", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 2 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
+                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
+                            stringLiteralExpression.Value.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
+                            int.TryParse(stringLiteralExpression.Value["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueTextKey))
+                        {
+                            sound.DialogueTextKey = dialogueTextKey;
+                        }
+                        else
+                        {
+                            mapSounds = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundDuration", StringComparison.Ordinal))
                     {
                         continue;
                     }

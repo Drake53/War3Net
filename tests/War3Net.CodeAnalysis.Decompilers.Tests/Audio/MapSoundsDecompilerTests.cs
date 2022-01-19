@@ -12,6 +12,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
+using War3Net.Build.Audio;
 using War3Net.Build.Info;
 using War3Net.TestTools.UnitTesting;
 
@@ -38,6 +39,15 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
                 Assert.AreEqual(expectedSound.Flags, actualSound.Flags);
                 Assert.AreEqual(expectedSound.FadeInRate, actualSound.FadeInRate);
                 Assert.AreEqual(expectedSound.FadeOutRate, actualSound.FadeOutRate);
+
+                if (map.Sounds.FormatVersion >= MapSoundsFormatVersion.Reforged)
+                {
+                    Assert.AreEqual(expectedSound.DialogueTextKey, actualSound.DialogueTextKey);
+                    Assert.AreEqual(expectedSound.DialogueSpeakerNameKey, actualSound.DialogueSpeakerNameKey);
+                    Assert.AreEqual(expectedSound.FacialAnimationLabel, actualSound.FacialAnimationLabel, ignoreCase: false, CultureInfo.InvariantCulture);
+                    Assert.AreEqual(expectedSound.FacialAnimationGroupLabel, actualSound.FacialAnimationGroupLabel, ignoreCase: false, CultureInfo.InvariantCulture);
+                    Assert.AreEqual(expectedSound.FacialAnimationSetFilepath, actualSound.FacialAnimationSetFilepath, ignoreCase: false, CultureInfo.InvariantCulture);
+                }
             }
         }
 
