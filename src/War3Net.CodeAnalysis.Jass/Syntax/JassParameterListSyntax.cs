@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static readonly JassParameterListSyntax Empty = new JassParameterListSyntax(ImmutableArray<JassParameterSyntax>.Empty);
 
-        internal JassParameterListSyntax(ImmutableArray<JassParameterSyntax> parameters)
+        public JassParameterListSyntax(ImmutableArray<JassParameterSyntax> parameters)
         {
             Parameters = parameters;
         }

@@ -11,7 +11,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         public static readonly JassDebugCustomScriptAction DebugLoop = new JassDebugCustomScriptAction(JassLoopCustomScriptAction.Value);
 
-        internal JassDebugCustomScriptAction(ICustomScriptAction action)
+        public JassDebugCustomScriptAction(ICustomScriptAction action)
         {
             Action = action;
         }
