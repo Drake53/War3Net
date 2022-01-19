@@ -9,7 +9,7 @@ using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-namespace War3Net.CodeAnalysis.Decompilers.Extensions
+namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class IExpressionSyntaxExtensions
     {
@@ -34,6 +34,13 @@ namespace War3Net.CodeAnalysis.Decompilers.Extensions
                 case JassOctalLiteralExpressionSyntax octalLiteralExpression:
                     value = octalLiteralExpression.Value;
                     return true;
+
+                case JassFourCCLiteralExpressionSyntax fourCCLiteralExpression:
+                    value = fourCCLiteralExpression.Value;
+                    return true;
+
+                case JassUnaryExpressionSyntax unaryExpression:
+                    return int.TryParse(unaryExpression.ToString(), out value);
 
                 default:
                     value = default;

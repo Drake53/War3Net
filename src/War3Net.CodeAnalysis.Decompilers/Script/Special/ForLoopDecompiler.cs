@@ -10,8 +10,8 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Decompilers.Extensions;
 using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
