@@ -65,6 +65,15 @@ namespace War3Net.Common.Extensions
             return Color.FromArgb(alpha, red, green, blue);
         }
 
+        public static Color ReadColorBgra(this BinaryReader reader)
+        {
+            var blue = reader.ReadByte();
+            var green = reader.ReadByte();
+            var red = reader.ReadByte();
+            var alpha = reader.ReadByte();
+            return Color.FromArgb(alpha, red, green, blue);
+        }
+
         public static int ReadInt24(this BinaryReader reader)
         {
             var bytes = reader.ReadBytes(3);

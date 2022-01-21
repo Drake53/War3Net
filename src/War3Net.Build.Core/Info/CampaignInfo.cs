@@ -95,7 +95,7 @@ namespace War3Net.Build.Info
             FogStartZ = reader.ReadSingle();
             FogEndZ = reader.ReadSingle();
             FogDensity = reader.ReadSingle();
-            FogColor = reader.ReadColorRgba();
+            FogColor = reader.ReadColorBgra();
             Race = reader.ReadInt32<CampaignRace>();
 
             nint mapCount = reader.ReadInt32();
@@ -130,7 +130,7 @@ namespace War3Net.Build.Info
             writer.Write(FogStartZ);
             writer.Write(FogEndZ);
             writer.Write(FogDensity);
-            writer.Write(FogColor.ToArgb());
+            writer.Write(FogColor.ToBgra());
             writer.Write((int)Race);
 
             writer.Write(MapButtons.Count);

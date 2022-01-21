@@ -64,7 +64,7 @@ namespace War3Net.Build.Environment
             CreationNumber = reader.ReadInt32();
             WeatherType = reader.ReadInt32<WeatherType>();
             AmbientSound = reader.ReadChars();
-            Color = Color.FromArgb(reader.ReadInt32());
+            Color = reader.ReadColorBgra();
         }
 
         internal void WriteTo(BinaryWriter writer, MapRegionsFormatVersion formatVersion)
@@ -77,7 +77,7 @@ namespace War3Net.Build.Environment
             writer.Write(CreationNumber);
             writer.Write((int)WeatherType);
             writer.WriteString(AmbientSound);
-            writer.Write(Color.ToArgb());
+            writer.Write(Color.ToBgra());
         }
     }
 }

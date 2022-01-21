@@ -41,7 +41,7 @@ namespace War3Net.Build.Environment
             IconType = reader.ReadInt32<PreviewIconType>();
             X = reader.ReadInt32();
             Y = reader.ReadInt32();
-            Color = Color.FromArgb(reader.ReadInt32());
+            Color = reader.ReadColorBgra();
         }
 
         internal void WriteTo(BinaryWriter writer, MapPreviewIconsFormatVersion formatVersion)
@@ -49,7 +49,7 @@ namespace War3Net.Build.Environment
             writer.Write((int)IconType);
             writer.Write(X);
             writer.Write(Y);
-            writer.Write(Color.ToArgb());
+            writer.Write(Color.ToBgra());
         }
     }
 }

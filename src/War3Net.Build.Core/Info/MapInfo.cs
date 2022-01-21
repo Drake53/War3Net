@@ -246,7 +246,7 @@ namespace War3Net.Build.Info
                     FogStartZ = reader.ReadSingle();
                     FogEndZ = reader.ReadSingle();
                     FogDensity = reader.ReadSingle();
-                    FogColor = reader.ReadColorRgba();
+                    FogColor = reader.ReadColorBgra();
 
                     if (FormatVersion >= MapInfoFormatVersion.Tft)
                     {
@@ -255,7 +255,7 @@ namespace War3Net.Build.Info
 
                     SoundEnvironment = reader.ReadChars();
                     LightEnvironment = reader.ReadChar<Tileset>();
-                    WaterTintingColor = reader.ReadColorRgba();
+                    WaterTintingColor = reader.ReadColorBgra();
                 }
 
                 if (FormatVersion >= MapInfoFormatVersion.Lua)
@@ -453,7 +453,7 @@ namespace War3Net.Build.Info
                     writer.Write(FogStartZ);
                     writer.Write(FogEndZ);
                     writer.Write(FogDensity);
-                    writer.Write(FogColor.ToRgba());
+                    writer.Write(FogColor.ToBgra());
 
                     if (FormatVersion >= MapInfoFormatVersion.Tft)
                     {
@@ -463,7 +463,7 @@ namespace War3Net.Build.Info
                     writer.WriteString(SoundEnvironment);
                     writer.Write((char)LightEnvironment);
 
-                    writer.Write(WaterTintingColor.ToRgba());
+                    writer.Write(WaterTintingColor.ToBgra());
                 }
 
                 if (FormatVersion >= MapInfoFormatVersion.Lua)
