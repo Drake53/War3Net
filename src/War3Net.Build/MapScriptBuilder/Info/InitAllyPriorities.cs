@@ -36,34 +36,63 @@ namespace War3Net.Build
             var playerDataCount = mapInfo.Players.Count;
             for (var i = 0; i < playerDataCount; i++)
             {
-                statements.Add(JassEmptyStatementSyntax.Value);
-
                 var playerData = mapInfo.Players[i];
 
-                var startLocPrioStatements = new List<IStatementSyntax>();
+                var allyStartLocPrioStatements = new List<IStatementSyntax>();
+                var enemyStartLocPrioStatements = new List<IStatementSyntax>();
 
-                var slotIndex = 0;
+                var allySlotIndex = 0;
+                var enemySlotIndex = 0;
                 for (var j = 0; j < MaxPlayerSlots; j++)
                 {
                     var hasLowFlag = playerData.AllyLowPriorityFlags[j];
                     var hasHighFlag = playerData.AllyHighPriorityFlags[j];
                     if (hasLowFlag || hasHighFlag)
                     {
-                        startLocPrioStatements.Add(SyntaxFactory.CallStatement(
+                        allyStartLocPrioStatements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetStartLocPrio,
                             SyntaxFactory.LiteralExpression(i),
-                            SyntaxFactory.LiteralExpression(slotIndex++),
+                            SyntaxFactory.LiteralExpression(allySlotIndex++),
                             SyntaxFactory.LiteralExpression(j),
                             SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                     }
+
+                    if (mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged)
+                    {
+                        hasLowFlag = playerData.EnemyLowPriorityFlags[j];
+                        hasHighFlag = playerData.EnemyHighPriorityFlags[j];
+                        if (hasLowFlag || hasHighFlag)
+                        {
+                            enemyStartLocPrioStatements.Add(SyntaxFactory.CallStatement(
+                                NativeName.SetEnemyStartLocPrio,
+                                SyntaxFactory.LiteralExpression(i),
+                                SyntaxFactory.LiteralExpression(enemySlotIndex++),
+                                SyntaxFactory.LiteralExpression(j),
+                                SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
+                        }
+                    }
                 }
+
+                statements.Add(JassEmptyStatementSyntax.Value);
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetStartLocPrioCount,
                     SyntaxFactory.LiteralExpression(i),
-                    SyntaxFactory.LiteralExpression(slotIndex)));
+                    SyntaxFactory.LiteralExpression(allySlotIndex)));
 
-                statements.AddRange(startLocPrioStatements);
+                statements.AddRange(allyStartLocPrioStatements);
+
+                if (enemyStartLocPrioStatements.Count > 0)
+                {
+                    statements.Add(JassEmptyStatementSyntax.Value);
+
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.SetEnemyStartLocPrioCount,
+                        SyntaxFactory.LiteralExpression(i),
+                        SyntaxFactory.LiteralExpression(enemySlotIndex)));
+
+                    statements.AddRange(enemyStartLocPrioStatements);
+                }
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitAllyPriorities)), statements);

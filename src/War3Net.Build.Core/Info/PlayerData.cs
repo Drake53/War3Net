@@ -56,9 +56,9 @@ namespace War3Net.Build.Info
 
         public Bitmask32 AllyHighPriorityFlags { get; set; }
 
-        public int Unk1 { get; set; }
+        public Bitmask32 EnemyLowPriorityFlags { get; set; }
 
-        public int Unk2 { get; set; }
+        public Bitmask32 EnemyHighPriorityFlags { get; set; }
 
         public override string ToString() => Name;
 
@@ -75,8 +75,13 @@ namespace War3Net.Build.Info
 
             if (formatVersion >= MapInfoFormatVersion.Reforged)
             {
-                Unk1 = reader.ReadInt32();
-                Unk2 = reader.ReadInt32();
+                EnemyLowPriorityFlags = reader.ReadBitmask32();
+                EnemyHighPriorityFlags = reader.ReadBitmask32();
+            }
+            else
+            {
+                EnemyLowPriorityFlags = new Bitmask32(0);
+                EnemyHighPriorityFlags = new Bitmask32(0);
             }
         }
 
@@ -94,8 +99,8 @@ namespace War3Net.Build.Info
 
             if (formatVersion >= MapInfoFormatVersion.Reforged)
             {
-                writer.Write(Unk1);
-                writer.Write(Unk2);
+                writer.Write(EnemyLowPriorityFlags);
+                writer.Write(EnemyHighPriorityFlags);
             }
         }
     }
