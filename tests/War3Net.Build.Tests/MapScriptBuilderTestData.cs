@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Immutable;
 
+using War3Net.Build.Info;
+using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build.Tests
@@ -34,6 +36,24 @@ namespace War3Net.Build.Tests
             DeclaredFunctions = builder.ToImmutable();
 
             IsObfuscated = !Map.Script!.StartsWith("//===========================================================================", StringComparison.Ordinal);
+
+            if (Map.Info is not null && Map.Info.MapFlags.HasFlag(MapFlags.MeleeMap))
+            {
+                IsMeleeWithoutTrigger = true;
+                if (Map.Triggers is not null)
+                {
+                    foreach (var triggerItem in Map.Triggers.TriggerItems)
+                    {
+                        if (triggerItem is TriggerDefinition triggerDefinition)
+                        {
+                            if (triggerDefinition.Functions.Count > 0)
+                            {
+                                IsMeleeWithoutTrigger = false;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public Map Map { get; }
@@ -45,6 +65,8 @@ namespace War3Net.Build.Tests
         public ImmutableDictionary<string, JassFunctionDeclarationSyntax> DeclaredFunctions { get; }
 
         public bool IsObfuscated { get; }
+
+        public bool IsMeleeWithoutTrigger { get; }
 
         public override string? ToString() => Map.ToString();
     }

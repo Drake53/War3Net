@@ -37,11 +37,11 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object?[]> GetTestDataCreatePlayerUnits()
         {
-            foreach (var testData in GetUnobfuscatedTestData())
+            foreach (var testData in _testData)
             {
-                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("CreatePlayerUnits"))
+                if (testData.DeclaredFunctions.ContainsKey("CreatePlayerUnits"))
                 {
-                    yield return testData;
+                    yield return new object[] { testData };
                 }
             }
         }

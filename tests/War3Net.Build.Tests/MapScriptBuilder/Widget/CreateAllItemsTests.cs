@@ -37,11 +37,11 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object?[]> GetTestDataCreateAllItems()
         {
-            foreach (var testData in GetUnobfuscatedTestData())
+            foreach (var testData in _testData)
             {
-                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("CreateAllItems"))
+                if (testData.DeclaredFunctions.ContainsKey("CreateAllItems"))
                 {
-                    yield return testData;
+                    yield return new object[] { testData };
                 }
             }
         }
