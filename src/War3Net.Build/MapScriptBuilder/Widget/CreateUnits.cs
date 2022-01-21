@@ -56,7 +56,11 @@ namespace War3Net.Build
 
             foreach (var (unit, id) in units.OrderBy(pair => pair.Unit.CreationNumber))
             {
-                var unitVariableName = ForceGenerateGlobalUnitVariable ? unit.GetVariableName() : VariableName.Unit;
+                var unitVariableName = unit.GetVariableName();
+                if (!ForceGenerateGlobalUnitVariable && !UnitTriggerReferences.Contains(unitVariableName))
+                {
+                    unitVariableName = VariableName.Unit;
+                }
 
                 if (unit.IsRandomUnit() || unit.IsRandomBuilding())
                 {

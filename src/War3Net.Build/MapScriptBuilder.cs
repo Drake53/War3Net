@@ -41,6 +41,7 @@ namespace War3Net.Build
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;
+            UnitTriggerReferences = new(StringComparer.Ordinal);
         }
 
         public TriggerData TriggerData { get; set; }
@@ -58,6 +59,8 @@ namespace War3Net.Build
         public bool UseLifeVariable { get; set; }
 
         public bool UseWeatherEffectVariable { get; set; }
+
+        public HashSet<string> UnitTriggerReferences { get; set; }
 
         public virtual void SetDefaultOptionsForCSharpLua(string? lobbyMusic = null)
         {
@@ -84,6 +87,24 @@ namespace War3Net.Build
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;
+        }
+
+        public virtual void FindTriggerUnitVariableReferencesForMap(Map map)
+        {
+            var mapTriggers = map.Triggers;
+            if (mapTriggers is not null)
+            {
+                foreach (var trigger in mapTriggers.TriggerItems)
+                {
+                    if (trigger is TriggerDefinition triggerDefinition)
+                    {
+                        foreach (var function in triggerDefinition.Functions)
+                        {
+                            FindUnitVariableReferences(function);
+                        }
+                    }
+                }
+            }
         }
 
         public virtual JassCompilationUnitSyntax Build(Map map)
@@ -331,6 +352,32 @@ namespace War3Net.Build
             yield return new JassCommentDeclarationSyntax($"   Map Author: {mapInfo.MapAuthor.Localize(mapTriggerStrings)}");
             yield return new JassCommentDeclarationSyntax($" ");
             yield return new JassCommentDeclarationSyntax($"===========================================================================");
+        }
+
+        protected internal virtual void FindUnitVariableReferences(TriggerFunction function)
+        {
+            foreach (var parameter in function.Parameters)
+            {
+                FindUnitVariableReferences(parameter);
+            }
+
+            foreach (var childFunction in function.ChildFunctions)
+            {
+                FindUnitVariableReferences(childFunction);
+            }
+        }
+
+        protected internal virtual void FindUnitVariableReferences(TriggerFunctionParameter parameter)
+        {
+            if (parameter.Type == TriggerFunctionParameterType.Variable &&
+                parameter.Value.StartsWith("gg_unit_", StringComparison.Ordinal))
+            {
+                UnitTriggerReferences.Add(parameter.Value);
+            }
+            else if (parameter.Function is not null)
+            {
+                FindUnitVariableReferences(parameter.Function);
+            }
         }
     }
 }
