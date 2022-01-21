@@ -88,6 +88,12 @@ namespace War3Net.Build
 
                     if (forceData.Flags.HasFlag(ForceFlags.Allied))
                     {
+                        if (mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged)
+                        {
+                            statements.Add(JassEmptyStatementSyntax.Value);
+                            statements.Add(new JassCommentStatementSyntax("  Allied"));
+                        }
+
                         AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
                     }
 

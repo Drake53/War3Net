@@ -102,15 +102,17 @@ namespace War3Net.Build
 
             if (SetTerrainFogExCondition(map))
             {
+                var precision = mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged ? 3 : 1;
+
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetTerrainFogEx,
                     SyntaxFactory.LiteralExpression((int)mapInfo.FogStyle),
                     SyntaxFactory.LiteralExpression(mapInfo.FogStartZ),
                     SyntaxFactory.LiteralExpression(mapInfo.FogEndZ),
-                    SyntaxFactory.LiteralExpression(mapInfo.FogDensity),
-                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.R / 255f),
-                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.G / 255f),
-                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.B / 255f)));
+                    SyntaxFactory.LiteralExpression(mapInfo.FogDensity, precision),
+                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.R / 255f, precision),
+                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.G / 255f, precision),
+                    SyntaxFactory.LiteralExpression(mapInfo.FogColor.B / 255f, precision)));
             }
 
             if (SetWaterBaseColorCondition(map))

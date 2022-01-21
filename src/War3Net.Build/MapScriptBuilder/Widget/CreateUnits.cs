@@ -145,10 +145,12 @@ namespace War3Net.Build
                         SyntaxFactory.LiteralExpression(unit.Rotation * (180f / MathF.PI), precision: 3),
                     };
 
-                    var hasSkin = ForceGenerateUnitWithSkin || (unit.SkinId != 0 && unit.SkinId != unit.TypeId);
+                    var skinId = unit.SkinId == 0 ? unit.TypeId : unit.SkinId;
+
+                    var hasSkin = ForceGenerateUnitWithSkin || skinId != unit.TypeId;
                     if (hasSkin)
                     {
-                        args.Add(SyntaxFactory.FourCCLiteralExpression(unit.SkinId));
+                        args.Add(SyntaxFactory.FourCCLiteralExpression(skinId));
                     }
 
                     statements.Add(SyntaxFactory.SetStatement(

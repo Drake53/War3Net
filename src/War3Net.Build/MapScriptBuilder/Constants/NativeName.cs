@@ -64,6 +64,8 @@ namespace War3Net.Build
             internal const string SetDestructableLife = "SetDestructableLife";
             internal const string SetDialogueSpeakerNameKey = "SetDialogueSpeakerNameKey";
             internal const string SetDialogueTextKey = "SetDialogueTextKey";
+            internal const string SetEnemyStartLocPrio = "SetEnemyStartLocPrio";
+            internal const string SetEnemyStartLocPrioCount = "SetEnemyStartLocPrioCount";
             internal const string SetGamePlacement = "SetGamePlacement";
             internal const string SetHeroAgi = "SetHeroAgi";
             internal const string SetHeroInt = "SetHeroInt";
