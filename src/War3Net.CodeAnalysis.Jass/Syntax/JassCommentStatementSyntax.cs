@@ -20,7 +20,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public bool Equals(IStatementSyntax? other)
         {
-            return other is JassCommentStatementSyntax;
+            return other is JassCommentStatementSyntax comment
+                && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
         }
 
         public bool Equals(ICustomScriptAction? other)
