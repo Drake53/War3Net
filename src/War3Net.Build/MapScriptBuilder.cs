@@ -7,8 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -37,11 +35,14 @@ namespace War3Net.Build
             LobbyMusic = null;
             MaxPlayerSlots = 24;
             ForceGenerateGlobalUnitVariable = false;
+            ForceGenerateGlobalDestructableVariable = false;
             ForceGenerateUnitWithSkin = false;
+            ForceGenerateDestructableWithSkin = false;
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;
             UnitTriggerReferences = new(StringComparer.Ordinal);
+            DestructableTriggerReferences = new(StringComparer.Ordinal);
         }
 
         public TriggerData TriggerData { get; set; }
@@ -52,7 +53,11 @@ namespace War3Net.Build
 
         public bool ForceGenerateGlobalUnitVariable { get; set; }
 
+        public bool ForceGenerateGlobalDestructableVariable { get; set; }
+
         public bool ForceGenerateUnitWithSkin { get; set; }
+
+        public bool ForceGenerateDestructableWithSkin { get; set; }
 
         public bool UseCSharpLua { get; set; }
 
@@ -62,12 +67,16 @@ namespace War3Net.Build
 
         public HashSet<string> UnitTriggerReferences { get; set; }
 
+        public HashSet<string> DestructableTriggerReferences { get; set; }
+
         public virtual void SetDefaultOptionsForCSharpLua(string? lobbyMusic = null)
         {
             LobbyMusic = lobbyMusic;
             MaxPlayerSlots = 24;
             ForceGenerateGlobalUnitVariable = true;
+            ForceGenerateGlobalDestructableVariable = true;
             ForceGenerateUnitWithSkin = false;
+            ForceGenerateDestructableWithSkin = false;
             UseCSharpLua = true;
             UseLifeVariable = false;
             UseWeatherEffectVariable = false;
@@ -83,7 +92,9 @@ namespace War3Net.Build
             LobbyMusic = null;
             MaxPlayerSlots = map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v26 ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
+            ForceGenerateGlobalDestructableVariable = false;
             ForceGenerateUnitWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.Reforged;
+            ForceGenerateDestructableWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.Reforged;
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;
@@ -119,8 +130,6 @@ namespace War3Net.Build
             JassCommentDeclarationSyntax commentLine3 = new("*");
 
             List<IDeclarationSyntax> declarations = new();
-            var globalDeclarationList = new List<IDeclarationSyntax>();
-            var generatedGlobals = new List<JassGlobalDeclarationSyntax>();
 
             void AppendBanner(string bannerText)
             {
@@ -184,33 +193,8 @@ namespace War3Net.Build
             declarations.Add(JassEmptyDeclarationSyntax.Value);
 
             AppendBanner("Global Variables");
-            generatedGlobals.AddRange(Regions(map));
-            generatedGlobals.AddRange(Cameras(map));
-            generatedGlobals.AddRange(Sounds(map));
-            generatedGlobals.AddRange(Triggers(map));
-            generatedGlobals.AddRange(Units(map));
-            generatedGlobals.AddRange(RandomUnitTables(map));
 
-            var userDefinedGlobals = new List<JassGlobalDeclarationSyntax>(Variables(map));
-
-            if (userDefinedGlobals.Any())
-            {
-                globalDeclarationList.Add(new JassCommentDeclarationSyntax(" User-defined"));
-                globalDeclarationList.AddRange(userDefinedGlobals);
-
-                if (generatedGlobals.Any())
-                {
-                    globalDeclarationList.Add(JassEmptyDeclarationSyntax.Value);
-                }
-            }
-
-            if (generatedGlobals.Any())
-            {
-                globalDeclarationList.Add(new JassCommentDeclarationSyntax(" Generated"));
-                globalDeclarationList.AddRange(generatedGlobals);
-            }
-
-            declarations.Add(new JassGlobalDeclarationListSyntax(globalDeclarationList.ToImmutableArray()));
+            declarations.Add(Globals(map));
             declarations.Add(JassEmptyDeclarationSyntax.Value);
 
             if (InitGlobalsCondition(map))

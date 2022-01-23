@@ -6,11 +6,17 @@
 // ------------------------------------------------------------------------------
 
 using War3Net.Build.Widget;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Extensions
 {
     public static class DoodadDataExtensions
     {
+        public static string GetVariableName(this DoodadData doodadData)
+        {
+            return $"gg_dest_{doodadData.TypeId.ToRawcode()}_{doodadData.CreationNumber:D4}";
+        }
+
         public static string GetDropItemsFunctionName(this DoodadData doodadData, int id)
         {
             return doodadData.MapItemTableId == -1

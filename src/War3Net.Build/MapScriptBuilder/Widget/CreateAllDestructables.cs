@@ -34,7 +34,11 @@ namespace War3Net.Build
             }
 
             var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Destructable), VariableName.Destructable));
+            if (!ForceGenerateGlobalDestructableVariable)
+            {
+                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Destructable), VariableName.Destructable));
+            }
+
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
 
             if (UseLifeVariable)
@@ -56,9 +60,16 @@ namespace War3Net.Build
 
             foreach (var (destructable, id) in mapDoodads.Doodads.IncludeId().Where(pair => CreateAllDestructablesConditionSingleDoodad(map, pair.Obj)))
             {
+                var destructableVariableName = destructable.GetVariableName();
+                if (!ForceGenerateGlobalDestructableVariable && !DestructableTriggerReferences.Contains(destructableVariableName))
+                {
+                    destructableVariableName = VariableName.Destructable;
+                }
+
                 var isDead = destructable.Life == 0;
                 var hasZ = destructable.State.HasFlag(DoodadState.WithZ);
-                var hasSkin = destructable.SkinId != 0 && destructable.SkinId != destructable.TypeId;
+                var skinId = destructable.SkinId == 0 ? destructable.TypeId : destructable.SkinId;
+                var hasSkin = ForceGenerateUnitWithSkin || skinId != destructable.TypeId;
                 var createFunctionIndex = isDead ? 1 : 0;
 
                 var arguments = new List<IExpressionSyntax>();
@@ -81,7 +92,7 @@ namespace War3Net.Build
                 }
 
                 statements.Add(SyntaxFactory.SetStatement(
-                    VariableName.Destructable,
+                    destructableVariableName,
                     SyntaxFactory.InvocationExpression(createFunctions[createFunctionIndex], arguments.ToArray())));
 
                 if (!isDead && destructable.Life != 100)
@@ -92,11 +103,11 @@ namespace War3Net.Build
                             VariableName.Life,
                             SyntaxFactory.InvocationExpression(
                                 NativeName.GetDestructableLife,
-                                SyntaxFactory.VariableReferenceExpression(VariableName.Destructable))));
+                                SyntaxFactory.VariableReferenceExpression(destructableVariableName))));
 
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetDestructableLife,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Destructable),
+                            SyntaxFactory.VariableReferenceExpression(destructableVariableName),
                             SyntaxFactory.BinaryMultiplicationExpression(
                                 SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
                                 SyntaxFactory.VariableReferenceExpression(VariableName.Life))));
@@ -105,31 +116,34 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetDestructableLife,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Destructable),
+                            SyntaxFactory.VariableReferenceExpression(destructableVariableName),
                             SyntaxFactory.BinaryMultiplicationExpression(
                                 SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
-                                SyntaxFactory.InvocationExpression(NativeName.GetDestructableLife, SyntaxFactory.VariableReferenceExpression(VariableName.Destructable)))));
+                                SyntaxFactory.InvocationExpression(NativeName.GetDestructableLife, SyntaxFactory.VariableReferenceExpression(destructableVariableName)))));
                     }
                 }
 
-                statements.Add(SyntaxFactory.SetStatement(
-                    VariableName.Trigger,
-                    SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
+                if (destructable.HasItemTable())
+                {
+                    statements.Add(SyntaxFactory.SetStatement(
+                        VariableName.Trigger,
+                        SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
 
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.TriggerRegisterDeathEvent,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Destructable)));
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.TriggerRegisterDeathEvent,
+                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
+                        SyntaxFactory.VariableReferenceExpression(destructableVariableName)));
 
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.TriggerAddAction,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.FunctionReferenceExpression(FunctionName.SaveDyingWidget)));
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.TriggerAddAction,
+                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
+                        SyntaxFactory.FunctionReferenceExpression(FunctionName.SaveDyingWidget)));
 
-                statements.Add(SyntaxFactory.CallStatement(
-                    NativeName.TriggerAddAction,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.FunctionReferenceExpression(destructable.GetDropItemsFunctionName(id))));
+                    statements.Add(SyntaxFactory.CallStatement(
+                        NativeName.TriggerAddAction,
+                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
+                        SyntaxFactory.FunctionReferenceExpression(destructable.GetDropItemsFunctionName(id))));
+                }
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllDestructables)), statements);
@@ -163,7 +177,9 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(doodadData));
             }
 
-            return doodadData.ItemTableSets.Any() || doodadData.MapItemTableId != -1;
+            return ForceGenerateGlobalDestructableVariable
+                || DestructableTriggerReferences.Contains(doodadData.GetVariableName())
+                || doodadData.HasItemTable();
         }
     }
 }

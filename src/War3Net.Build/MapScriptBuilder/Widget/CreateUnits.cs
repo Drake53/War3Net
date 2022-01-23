@@ -220,7 +220,11 @@ namespace War3Net.Build
 
             var statements = new List<IStatementSyntax>();
 
-            var unitVariableName = ForceGenerateGlobalUnitVariable ? unit.GetVariableName() : VariableName.Unit;
+            var unitVariableName = unit.GetVariableName();
+            if (!ForceGenerateGlobalUnitVariable && !UnitTriggerReferences.Contains(unitVariableName))
+            {
+                unitVariableName = VariableName.Unit;
+            }
 
             if (unit.HP != -1)
             {
@@ -350,7 +354,7 @@ namespace War3Net.Build
                     SyntaxFactory.LiteralExpression(item.Slot)));
             }
 
-            if (unit.ItemTableSets.Any() || (unit.MapItemTableId != -1 && randomItemTables is not null))
+            if (unit.HasItemTable())
             {
                 statements.Add(SyntaxFactory.SetStatement(VariableName.Trigger, SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
 

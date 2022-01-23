@@ -63,7 +63,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(unitData));
             }
 
-            return unitData.IsUnit() && unitData.ItemTableSets.Any(itemTableSet => itemTableSet.Items.Any());
+            return unitData.IsUnit() && unitData.HasItemTableSets();
         }
     }
 }

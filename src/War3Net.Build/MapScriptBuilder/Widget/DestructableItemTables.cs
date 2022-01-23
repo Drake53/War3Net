@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Extensions;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -62,7 +63,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(doodadData));
             }
 
-            return doodadData.ItemTableSets.Any();
+            return doodadData.HasItemTableSets();
         }
     }
 }

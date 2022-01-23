@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="Units.cs" company="Drake53">
+// <copyright file="Destructables.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -21,37 +21,37 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        public virtual IEnumerable<MemberDeclarationSyntax> UnitsApi(Map map, JassToCSharpTranspiler transpiler)
+        public virtual IEnumerable<MemberDeclarationSyntax> DestructablesApi(Map map, JassToCSharpTranspiler transpiler)
         {
             if (transpiler is null)
             {
                 throw new ArgumentNullException(nameof(transpiler));
             }
 
-            return Units(map).Select(unit => transpiler.Transpile(unit));
+            return Destructables(map).Select(destructable => transpiler.Transpile(destructable));
         }
 
-        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Units(Map map)
+        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Destructables(Map map)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var mapUnits = map.Units;
-            if (mapUnits is null)
+            var mapDoodads = map.Doodads;
+            if (mapDoodads is null)
             {
                 yield break;
             }
 
-            foreach (var unit in mapUnits.Units.Where(unit => CreateAllUnitsConditionSingleUnit(map, unit)))
+            foreach (var destructable in mapDoodads.Doodads.Where(destructable => CreateAllDestructablesConditionSingleDoodad(map, destructable)))
             {
-                var unitVariableName = unit.GetVariableName();
-                if (ForceGenerateGlobalUnitVariable || UnitTriggerReferences.Contains(unitVariableName))
+                var destructableVariableName = destructable.GetVariableName();
+                if (ForceGenerateGlobalDestructableVariable || DestructableTriggerReferences.Contains(destructableVariableName))
                 {
                     yield return SyntaxFactory.GlobalDeclaration(
-                        SyntaxFactory.ParseTypeName(TypeName.Unit),
-                        unitVariableName,
+                        SyntaxFactory.ParseTypeName(TypeName.Destructable),
+                        destructableVariableName,
                         JassNullLiteralExpressionSyntax.Value);
                 }
             }
