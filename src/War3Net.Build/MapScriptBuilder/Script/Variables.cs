@@ -43,13 +43,19 @@ namespace War3Net.Build
                         SyntaxFactory.ParseTypeName(type),
                         variable.GetVariableName());
                 }
+                else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
+                {
+                    yield return SyntaxFactory.GlobalDeclaration(
+                        JassTypeSyntax.String,
+                        variable.GetVariableName());
+                }
                 else
                 {
                     var value = variable.Type switch
                     {
                         JassKeyword.Integer => SyntaxFactory.LiteralExpression(0),
                         JassKeyword.Real => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.String => SyntaxFactory.LiteralExpression(string.Empty),
+                        JassKeyword.Boolean => JassBooleanLiteralExpressionSyntax.False,
 
                         _ => JassNullLiteralExpressionSyntax.Value,
                     };

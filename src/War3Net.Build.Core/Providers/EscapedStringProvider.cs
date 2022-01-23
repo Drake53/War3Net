@@ -14,7 +14,7 @@ namespace War3Net.Build.Providers
     public static class EscapedStringProvider
     {
         /// <summary>
-        /// Modified <see cref="System.Text.RegularExpressions.Regex.Escape(string)"/> to only escape \\, \n, \r, \t, and \f.
+        /// Modified <see cref="System.Text.RegularExpressions.Regex.Escape(string)"/> to only escape \\, \n, \r, \t, \f, and ".
         /// </summary>
         [return: NotNullIfNotNull("input")]
         public static string? GetEscapedString(string? input)
@@ -52,6 +52,9 @@ namespace War3Net.Build.Providers
                             case '\f':
                                 sb.Append(@"\f");
                                 break;
+                            case '"':
+                                sb.Append(@"\""");
+                                break;
                         }
 
                         i++;
@@ -85,7 +88,8 @@ namespace War3Net.Build.Providers
                 || ch == '\n'
                 || ch == '\r'
                 || ch == '\t'
-                || ch == '\f';
+                || ch == '\f'
+                || ch == '"';
         }
     }
 }

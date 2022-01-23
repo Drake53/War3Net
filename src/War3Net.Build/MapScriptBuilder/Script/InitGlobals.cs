@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Info;
+using War3Net.Build.Providers;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -35,10 +37,12 @@ namespace War3Net.Build
 
             var statements = new List<IStatementSyntax>();
 
-            if (mapTriggers.Variables.Any(variable => variable.IsArray && (
-                variable.IsInitialized ||
-                TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out _) ||
-                string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))
+            if (mapTriggers.Variables.Any(variable =>
+                (variable.IsArray ||
+                 map.Info.FormatVersion >= MapInfoFormatVersion.Reforged) &&
+                (variable.IsInitialized ||
+                 TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out _) ||
+                 string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(
                     JassTypeSyntax.Integer,
@@ -52,20 +56,19 @@ namespace War3Net.Build
                 {
                     var initialValue = TriggerData.TriggerParams.TryGetValue(variable.InitialValue, out var triggerParam) && string.Equals(triggerParam.VariableType, variable.Type, StringComparison.Ordinal)
                         ? triggerParam.ScriptText
-                        : variable.InitialValue;
+                        : string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal)
+                            ? $"\"{EscapedStringProvider.GetEscapedString(variable.InitialValue)}\""
+                            : variable.InitialValue;
 
                     statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(initialValue)));
                 }
-                else if (variable.IsArray)
+                else if (TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out var triggerTypeDefault))
                 {
-                    if (TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out var triggerTypeDefault))
-                    {
-                        statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(triggerTypeDefault.ScriptText)));
-                    }
-                    else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
-                    {
-                        statements.AddRange(InitGlobal(variable, SyntaxFactory.LiteralExpression(string.Empty)));
-                    }
+                    statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(triggerTypeDefault.ScriptText)));
+                }
+                else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
+                {
+                    statements.AddRange(InitGlobal(variable, SyntaxFactory.LiteralExpression(string.Empty)));
                 }
             }
 
