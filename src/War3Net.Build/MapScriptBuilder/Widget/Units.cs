@@ -47,7 +47,7 @@ namespace War3Net.Build
             foreach (var unit in mapUnits.Units.Where(unit => CreateAllUnitsConditionSingleUnit(map, unit)))
             {
                 var unitVariableName = unit.GetVariableName();
-                if (ForceGenerateGlobalUnitVariable || UnitTriggerReferences.Contains(unitVariableName))
+                if (ForceGenerateGlobalUnitVariable || TriggerVariableReferences.ContainsKey(unitVariableName))
                 {
                     yield return SyntaxFactory.GlobalDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Unit),

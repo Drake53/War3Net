@@ -57,7 +57,7 @@ namespace War3Net.Build
             foreach (var (unit, id) in units.OrderBy(pair => pair.Unit.CreationNumber))
             {
                 var unitVariableName = unit.GetVariableName();
-                if (!ForceGenerateGlobalUnitVariable && !UnitTriggerReferences.Contains(unitVariableName))
+                if (!ForceGenerateGlobalUnitVariable && (!TriggerVariableReferences.TryGetValue(unitVariableName, out var value) || !value))
                 {
                     unitVariableName = VariableName.Unit;
                 }
@@ -221,7 +221,7 @@ namespace War3Net.Build
             var statements = new List<IStatementSyntax>();
 
             var unitVariableName = unit.GetVariableName();
-            if (!ForceGenerateGlobalUnitVariable && !UnitTriggerReferences.Contains(unitVariableName))
+            if (!ForceGenerateGlobalUnitVariable && (!TriggerVariableReferences.TryGetValue(unitVariableName, out var value) || !value))
             {
                 unitVariableName = VariableName.Unit;
             }

@@ -47,7 +47,7 @@ namespace War3Net.Build
             foreach (var destructable in mapDoodads.Doodads.Where(destructable => CreateAllDestructablesConditionSingleDoodad(map, destructable)))
             {
                 var destructableVariableName = destructable.GetVariableName();
-                if (ForceGenerateGlobalDestructableVariable || DestructableTriggerReferences.Contains(destructableVariableName))
+                if (ForceGenerateGlobalDestructableVariable || TriggerVariableReferences.ContainsKey(destructableVariableName))
                 {
                     yield return SyntaxFactory.GlobalDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Destructable),

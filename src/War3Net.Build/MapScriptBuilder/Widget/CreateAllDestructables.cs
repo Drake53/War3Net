@@ -61,7 +61,7 @@ namespace War3Net.Build
             foreach (var (destructable, id) in mapDoodads.Doodads.IncludeId().Where(pair => CreateAllDestructablesConditionSingleDoodad(map, pair.Obj)))
             {
                 var destructableVariableName = destructable.GetVariableName();
-                if (!ForceGenerateGlobalDestructableVariable && !DestructableTriggerReferences.Contains(destructableVariableName))
+                if (!ForceGenerateGlobalDestructableVariable && (!TriggerVariableReferences.TryGetValue(destructableVariableName, out var value) || !value))
                 {
                     destructableVariableName = VariableName.Destructable;
                 }
@@ -178,7 +178,7 @@ namespace War3Net.Build
             }
 
             return ForceGenerateGlobalDestructableVariable
-                || DestructableTriggerReferences.Contains(doodadData.GetVariableName())
+                || (TriggerVariableReferences.TryGetValue(doodadData.GetVariableName(), out var value) && value)
                 || doodadData.HasItemTable();
         }
     }
