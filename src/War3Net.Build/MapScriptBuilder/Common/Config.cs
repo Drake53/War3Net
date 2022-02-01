@@ -53,7 +53,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
             }
 
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             if (!string.IsNullOrEmpty(LobbyMusic))
             {
@@ -72,8 +72,8 @@ namespace War3Net.Build
                     SyntaxFactory.LiteralExpression(location.Y, precision: 1)));
             }
 
-            statements.Add(JassEmptyStatementSyntax.Value);
-            statements.Add(new JassCommentStatementSyntax(" Player setup"));
+            statements.Add(JassEmptySyntax.Value);
+            statements.Add(new JassCommentSyntax(" Player setup"));
 
             if (InitCustomPlayerSlotsCondition(map))
             {

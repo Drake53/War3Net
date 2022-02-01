@@ -73,7 +73,7 @@ namespace War3Net.Build
                     }
                 }
 
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetStartLocPrioCount,
@@ -84,7 +84,7 @@ namespace War3Net.Build
 
                 if (enemyStartLocPrioStatements.Count > 0)
                 {
-                    statements.Add(JassEmptyStatementSyntax.Value);
+                    statements.Add(JassEmptySyntax.Value);
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetEnemyStartLocPrioCount,

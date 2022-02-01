@@ -52,7 +52,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
             }
 
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             foreach (var (unit, id) in units.OrderBy(pair => pair.Unit.CreationNumber))
             {

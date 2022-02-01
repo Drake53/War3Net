@@ -43,14 +43,14 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(triggerDefinition));
             }
 
-            var commentLine = new JassCommentDeclarationSyntax("===========================================================================").ToString();
+            var commentLine = new JassCommentSyntax("===========================================================================").ToString();
 
             _writer.WriteLine(commentLine);
-            _writer.WriteLine(new JassCommentDeclarationSyntax($" Trigger: {triggerDefinition.Name}").ToString());
+            _writer.WriteLine(new JassCommentSyntax($" Trigger: {triggerDefinition.Name}").ToString());
 
             if (!string.IsNullOrEmpty(triggerDefinition.Description))
             {
-                _writer.WriteLine(new JassCommentDeclarationSyntax(string.Empty));
+                _writer.WriteLine(new JassCommentSyntax(string.Empty));
 
                 using var stringReader = new StringReader(triggerDefinition.Description);
                 while (true)
@@ -61,7 +61,7 @@ namespace War3Net.Build
                         break;
                     }
 
-                    _writer.WriteLine(new JassCommentDeclarationSyntax($" {line}").ToString());
+                    _writer.WriteLine(new JassCommentSyntax($" {line}").ToString());
                 }
             }
 

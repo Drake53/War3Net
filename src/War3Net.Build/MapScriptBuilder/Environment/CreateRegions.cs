@@ -38,7 +38,7 @@ namespace War3Net.Build
             if (UseWeatherEffectVariable)
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.WeatherEffect), VariableName.WeatherEffect));
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
             }
 
             foreach (var region in mapRegions.Regions)

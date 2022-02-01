@@ -257,7 +257,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(CSharpLua.LuaSyntaxGenerator.kManifestFuncName));
             }
 
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(main)), statements);
         }

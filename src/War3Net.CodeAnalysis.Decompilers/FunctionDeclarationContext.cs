@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     internal class FunctionDeclarationContext
     {
-        public FunctionDeclarationContext(JassFunctionDeclarationSyntax functionDeclaration, IEnumerable<JassCommentDeclarationSyntax> comments)
+        public FunctionDeclarationContext(JassFunctionDeclarationSyntax functionDeclaration, IEnumerable<JassCommentSyntax> comments)
         {
             FunctionDeclaration = functionDeclaration;
             Comments = comments.ToImmutableList();
@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         public JassFunctionDeclarationSyntax FunctionDeclaration { get; }
 
-        public ImmutableList<JassCommentDeclarationSyntax> Comments { get; }
+        public ImmutableList<JassCommentSyntax> Comments { get; }
 
         public bool IsActionsFunction { get; }
 

@@ -46,15 +46,15 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             var compilationUnit = JassSyntaxFactory.ParseCompilationUnit(map.Script);
 
-            var comments = new List<JassCommentDeclarationSyntax>();
+            var comments = new List<JassCommentSyntax>();
             var functionDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, FunctionDeclarationContext>(StringComparer.Ordinal);
             var variableDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, VariableDeclarationContext>(StringComparer.Ordinal);
 
             foreach (var declaration in compilationUnit.Declarations)
             {
-                if (declaration is JassCommentDeclarationSyntax commentDeclaration)
+                if (declaration is JassCommentSyntax comment)
                 {
-                    comments.Add(commentDeclaration);
+                    comments.Add(comment);
                 }
                 else
                 {

@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return statement switch
             {
-                JassEmptyStatementSyntax emptyStatement => Transpile(emptyStatement),
-                JassCommentStatementSyntax commentStatement => Transpile(commentStatement),
+                JassEmptySyntax empty => Transpile(empty),
+                JassCommentSyntax comment => Transpile(comment),
                 JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement => Transpile(localVariableDeclarationStatement),
                 JassSetStatementSyntax setStatement => Transpile(setStatement),
                 JassCallStatementSyntax callStatement => Transpile(callStatement),

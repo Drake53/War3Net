@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,12 +20,12 @@ namespace War3Net.CodeAnalysis.Transpilers
         public IEnumerable<LuaStatementSyntax> Transpile(JassGlobalDeclarationListSyntax globalDeclarationList)
         {
             return globalDeclarationList.Globals
-                .Where(declaration => !(declaration is JassCommentDeclarationSyntax && IgnoreComments))
-                .Where(declaration => !(declaration is JassEmptyDeclarationSyntax && IgnoreEmptyDeclarations))
+                .Where(declaration => !(declaration is JassCommentSyntax && IgnoreComments))
+                .Where(declaration => !(declaration is JassEmptySyntax && IgnoreEmptyDeclarations))
                 .Select(declaration => declaration switch
             {
-                JassEmptyDeclarationSyntax emptyDeclaration => Transpile(emptyDeclaration),
-                JassCommentDeclarationSyntax commentDeclaration => Transpile(commentDeclaration),
+                JassEmptySyntax empty => Transpile(empty),
+                JassCommentSyntax comment => Transpile(comment),
                 JassGlobalDeclarationSyntax globalDeclaration => Transpile(globalDeclaration),
             });
         }

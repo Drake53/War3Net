@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Jass
         {
             switch (declaration)
             {
-                case JassEmptyDeclarationSyntax emptyDeclaration: Render(emptyDeclaration); break;
-                case JassCommentDeclarationSyntax commentDeclaration: Render(commentDeclaration); break;
+                case JassEmptySyntax empty: Render(empty); break;
+                case JassCommentSyntax comment: Render(comment); break;
                 case JassTypeDeclarationSyntax typeDeclaration: Render(typeDeclaration); break;
                 case JassGlobalDeclarationListSyntax globalDeclarationList: Render(globalDeclarationList); break;
                 case JassGlobalDeclarationSyntax globalDeclaration: Render(globalDeclaration); break;

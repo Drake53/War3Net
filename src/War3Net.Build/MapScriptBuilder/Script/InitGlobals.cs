@@ -102,7 +102,7 @@ namespace War3Net.Build
                             SyntaxFactory.VariableReferenceExpression("i"),
                             SyntaxFactory.LiteralExpression(1))));
 
-                yield return JassEmptyStatementSyntax.Value;
+                yield return JassEmptySyntax.Value;
             }
             else
             {

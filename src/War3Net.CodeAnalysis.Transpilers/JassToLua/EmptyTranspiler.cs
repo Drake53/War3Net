@@ -1,19 +1,21 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CommentStatementRenderer.cs" company="Drake53">
+// <copyright file="EmptyTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-namespace War3Net.CodeAnalysis.Jass
+namespace War3Net.CodeAnalysis.Transpilers
 {
-    public partial class JassRenderer
+    public partial class JassToLuaTranspiler
     {
-        public void Render(JassCommentStatementSyntax commentStatement)
+        public LuaStatementSyntax Transpile(JassEmptySyntax empty)
         {
-            Write(commentStatement.ToString());
+            return LuaBlankLinesStatement.One;
         }
     }
 }

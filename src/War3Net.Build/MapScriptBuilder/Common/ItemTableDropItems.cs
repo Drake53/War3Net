@@ -74,7 +74,7 @@ namespace War3Net.Build
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Unit), VariableName.TrigUnit, JassNullLiteralExpressionSyntax.Value));
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId, SyntaxFactory.LiteralExpression(0)));
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Boolean, VariableName.CanDrop, SyntaxFactory.LiteralExpression(true)));
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             statements.Add(SyntaxFactory.SetStatement(
                 VariableName.TrigWidget,
@@ -84,7 +84,7 @@ namespace War3Net.Build
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.TrigWidget), JassNullLiteralExpressionSyntax.Value)),
                 SyntaxFactory.SetStatement(VariableName.TrigUnit, SyntaxFactory.InvocationExpression(NativeName.GetTriggerUnit))));
 
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             var canDropConditionExpression = SyntaxFactory.UnaryNotExpression(SyntaxFactory.InvocationExpression(NativeName.IsUnitHidden, SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit)));
 
@@ -105,14 +105,14 @@ namespace War3Net.Build
 
             statements.Add(SyntaxFactory.IfStatement(
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.TrigUnit), JassNullLiteralExpressionSyntax.Value)),
-                ifBody.ToArray()));
-            statements.Add(JassEmptyStatementSyntax.Value);
+                SyntaxFactory.StatementList(ifBody)));
+            statements.Add(JassEmptySyntax.Value);
 
             var i = 0;
             var randomDistStatements = new List<IStatementSyntax>();
             foreach (var itemSet in itemSets)
             {
-                randomDistStatements.Add(new JassCommentStatementSyntax($" Item set {i}"));
+                randomDistStatements.Add(new JassCommentSyntax($" Item set {i}"));
                 randomDistStatements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                 var summedChance = 0;
@@ -172,7 +172,7 @@ namespace War3Net.Build
                         SyntaxFactory.VariableReferenceExpression(VariableName.TrigWidget),
                         SyntaxFactory.VariableReferenceExpression(VariableName.ItemId))))));
 
-                randomDistStatements.Add(JassEmptyStatementSyntax.Value);
+                randomDistStatements.Add(JassEmptySyntax.Value);
 
                 i++;
             }
@@ -180,7 +180,7 @@ namespace War3Net.Build
             statements.Add(SyntaxFactory.IfStatement(
                 new JassParenthesizedExpressionSyntax(SyntaxFactory.VariableReferenceExpression(VariableName.CanDrop)),
                 randomDistStatements.ToArray()));
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             statements.Add(SyntaxFactory.SetStatement(VariableName.BJLastDyingWidget, JassNullLiteralExpressionSyntax.Value));
             statements.Add(SyntaxFactory.CallStatement(NativeName.DestroyTrigger, SyntaxFactory.InvocationExpression(NativeName.GetTriggeringTrigger)));

@@ -19,8 +19,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         public IEnumerable<LuaStatementSyntax> Transpile(JassStatementListSyntax statementList)
         {
             return statementList.Statements
-                .Where(statement => !(statement is JassCommentStatementSyntax && IgnoreComments))
-                .Where(statement => !(statement is JassEmptyStatementSyntax && IgnoreEmptyStatements))
+                .Where(statement => !(statement is JassCommentSyntax && IgnoreComments))
+                .Where(statement => !(statement is JassEmptySyntax && IgnoreEmptyStatements))
                 .Select(Transpile);
         }
     }

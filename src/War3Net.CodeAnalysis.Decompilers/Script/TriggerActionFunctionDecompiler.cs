@@ -177,10 +177,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     result.Add(DecompileCustomScriptAction(exitStatement));
                 }
-                else if (statement is JassCommentStatementSyntax commentStatement)
+                else if (statement is JassCommentSyntax comment)
                 {
-                    if (commentStatement.Comment.Length > 1 &&
-                        commentStatement.Comment.StartsWith(' '))
+                    if (comment.Comment.Length > 1 &&
+                        comment.Comment.StartsWith(' '))
                     {
                         result.Add(new TriggerFunction
                         {
@@ -192,14 +192,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 new TriggerFunctionParameter
                                 {
                                     Type = TriggerFunctionParameterType.String,
-                                    Value = commentStatement.Comment[1..],
+                                    Value = comment.Comment[1..],
                                 },
                             },
                         });
                     }
                     else
                     {
-                        result.Add(DecompileCustomScriptAction(commentStatement));
+                        result.Add(DecompileCustomScriptAction(comment));
                     }
                 }
                 else if (statement is JassReturnStatementSyntax returnStatement)

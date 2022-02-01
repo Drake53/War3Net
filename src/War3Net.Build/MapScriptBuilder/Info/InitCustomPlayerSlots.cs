@@ -39,8 +39,8 @@ namespace War3Net.Build
             {
                 var playerData = mapInfo.Players[i];
 
-                statements.Add(JassEmptyStatementSyntax.Value);
-                statements.Add(new JassCommentStatementSyntax($" Player {playerData.Id}"));
+                statements.Add(JassEmptySyntax.Value);
+                statements.Add(new JassCommentSyntax($" Player {playerData.Id}"));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerStartLocation,
@@ -93,7 +93,7 @@ namespace War3Net.Build
                 }
             }
 
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomPlayerSlots)), statements);
         }

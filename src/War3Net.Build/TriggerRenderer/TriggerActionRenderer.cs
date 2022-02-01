@@ -119,7 +119,7 @@ namespace War3Net.Build
                     break;
 
                 case "CommentString":
-                    context.Renderer.Render(new JassCommentStatementSyntax(" " + function.Parameters[0].Value));
+                    context.Renderer.Render(new JassCommentSyntax(" " + function.Parameters[0].Value));
                     context.Renderer.RenderNewLine();
                     break;
 

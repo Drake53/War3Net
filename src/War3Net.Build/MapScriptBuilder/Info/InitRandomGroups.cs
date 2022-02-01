@@ -36,11 +36,11 @@ namespace War3Net.Build
             var statements = new List<IStatementSyntax>();
 
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.CurrentSet));
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             foreach (var unitTable in randomUnitTables)
             {
-                statements.Add(new JassCommentStatementSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
+                statements.Add(new JassCommentSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
                 statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                 for (var i = 0; i < unitTable.UnitSets.Count; i++)
@@ -52,7 +52,7 @@ namespace War3Net.Build
                 }
 
                 statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
 
                 var groupVarName = unitTable.GetVariableName();
                 var ifElseifBlocks = new List<(IExpressionSyntax Condition, IStatementSyntax[] Body)>();
@@ -94,7 +94,7 @@ namespace War3Net.Build
                     ifElseifBlocks.Skip(1).Select(elseIf => new JassElseIfClauseSyntax(elseIf.Condition, SyntaxFactory.StatementList(elseIf.Body))),
                     new JassElseClauseSyntax(SyntaxFactory.StatementList(elseClauseStatements))));
 
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitRandomGroups)), statements);

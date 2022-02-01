@@ -32,18 +32,18 @@ namespace War3Net.Build
 
             if (userDefinedGlobals.Any())
             {
-                globalDeclarationList.Add(new JassCommentDeclarationSyntax(" User-defined"));
+                globalDeclarationList.Add(new JassCommentSyntax(" User-defined"));
                 globalDeclarationList.AddRange(userDefinedGlobals);
 
                 if (generatedGlobals.Any())
                 {
-                    globalDeclarationList.Add(JassEmptyDeclarationSyntax.Value);
+                    globalDeclarationList.Add(JassEmptySyntax.Value);
                 }
             }
 
             if (generatedGlobals.Any())
             {
-                globalDeclarationList.Add(new JassCommentDeclarationSyntax(" Generated"));
+                globalDeclarationList.Add(new JassCommentSyntax(" Generated"));
                 globalDeclarationList.AddRange(generatedGlobals);
             }
 

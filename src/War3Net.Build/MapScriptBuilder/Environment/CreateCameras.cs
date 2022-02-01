@@ -34,7 +34,7 @@ namespace War3Net.Build
             }
 
             var statements = new List<IStatementSyntax>();
-            statements.Add(JassEmptyStatementSyntax.Value);
+            statements.Add(JassEmptySyntax.Value);
 
             var zero = SyntaxFactory.LiteralExpression(0f);
 
@@ -59,7 +59,7 @@ namespace War3Net.Build
                 }
 
                 statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetDestPosition, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.LiteralExpression(camera.TargetPosition.X), SyntaxFactory.LiteralExpression(camera.TargetPosition.Y), zero));
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateCameras)), statements);

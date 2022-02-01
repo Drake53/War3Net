@@ -7,6 +7,8 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Syntax;
+
 using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -16,6 +18,16 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, string> GetCommentParser()
         {
             return Try(String($"{JassSymbol.Slash}{JassSymbol.Slash}")).Then(AnyCharExcept(JassSymbol.CarriageReturn, JassSymbol.LineFeed).ManyString());
+        }
+
+        internal static Parser<char, IDeclarationSyntax> GetCommentDeclarationParser(Parser<char, string> commentParser)
+        {
+            return commentParser.Select<IDeclarationSyntax>(comment => new JassCommentSyntax(comment));
+        }
+
+        internal static Parser<char, JassCommentSyntax> GetCommentStatementParser(Parser<char, string> commentParser)
+        {
+            return commentParser.Select(comment => new JassCommentSyntax(comment));
         }
     }
 }

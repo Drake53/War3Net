@@ -104,9 +104,9 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            JassCommentDeclarationSyntax commentLine1 = new("===========================================================================");
-            JassCommentDeclarationSyntax commentLine2 = new("***************************************************************************");
-            JassCommentDeclarationSyntax commentLine3 = new("*");
+            JassCommentSyntax commentLine1 = new("===========================================================================");
+            JassCommentSyntax commentLine2 = new("***************************************************************************");
+            JassCommentSyntax commentLine3 = new("*");
 
             List<IDeclarationSyntax> declarations = new();
 
@@ -114,10 +114,10 @@ namespace War3Net.Build
             {
                 declarations.Add(commentLine2);
                 declarations.Add(commentLine3);
-                declarations.Add(new JassCommentDeclarationSyntax($"*  {bannerText}"));
+                declarations.Add(new JassCommentSyntax($"*  {bannerText}"));
                 declarations.Add(commentLine3);
                 declarations.Add(commentLine2);
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             void AppendBannerAndFunction(string bannerText, Func<Map, JassFunctionDeclarationSyntax> function, Func<Map, bool> condition, bool includeCommentLine = false)
@@ -131,7 +131,7 @@ namespace War3Net.Build
                     }
 
                     declarations.Add(function(map));
-                    declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    declarations.Add(JassEmptySyntax.Value);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace War3Net.Build
                     foreach (var function in functions(map))
                     {
                         declarations.Add(function);
-                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                        declarations.Add(JassEmptySyntax.Value);
                     }
                 }
             }
@@ -154,7 +154,7 @@ namespace War3Net.Build
                 {
                     declarations.Add(commentLine1);
                     declarations.Add(function(map));
-                    declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    declarations.Add(JassEmptySyntax.Value);
                 }
             }
 
@@ -164,22 +164,22 @@ namespace War3Net.Build
                 {
                     declarations.Add(commentLine1);
                     declarations.Add(function(map, index));
-                    declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    declarations.Add(JassEmptySyntax.Value);
                 }
             }
 
             declarations.AddRange(GetMapScriptHeader(map));
-            declarations.Add(JassEmptyDeclarationSyntax.Value);
+            declarations.Add(JassEmptySyntax.Value);
 
             AppendBanner("Global Variables");
 
             declarations.Add(Globals(map));
-            declarations.Add(JassEmptyDeclarationSyntax.Value);
+            declarations.Add(JassEmptySyntax.Value);
 
             if (InitGlobalsCondition(map))
             {
                 declarations.Add(InitGlobals(map));
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             AppendBanner("Custom Script Code");
@@ -223,7 +223,7 @@ namespace War3Net.Build
                     {
                         declarations.Add(commentLine1);
                         declarations.Add(InitTrig(map, triggerDefinition));
-                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                        declarations.Add(JassEmptySyntax.Value);
                     }
                 }
 
@@ -240,12 +240,12 @@ namespace War3Net.Build
                     if (InitUpgrades_PlayerCondition(map, i))
                     {
                         declarations.Add(InitUpgrades_Player(map, i));
-                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                        declarations.Add(JassEmptySyntax.Value);
                     }
                 }
 
                 declarations.Add(InitUpgrades(map));
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             if (InitTechTreeCondition(map))
@@ -257,12 +257,12 @@ namespace War3Net.Build
                     if (InitTechTree_PlayerCondition(map, i))
                     {
                         declarations.Add(InitTechTree_Player(map, i));
-                        declarations.Add(JassEmptyDeclarationSyntax.Value);
+                        declarations.Add(JassEmptySyntax.Value);
                     }
                 }
 
                 declarations.Add(InitTechTree(map));
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             AppendBanner("Players");
@@ -270,13 +270,13 @@ namespace War3Net.Build
             if (InitCustomPlayerSlotsCondition(map))
             {
                 declarations.Add(InitCustomPlayerSlots(map));
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             if (InitCustomTeamsCondition(map))
             {
                 declarations.Add(InitCustomTeams(map));
-                declarations.Add(JassEmptyDeclarationSyntax.Value);
+                declarations.Add(JassEmptySyntax.Value);
             }
 
             if (InitAllyPrioritiesCondition(map))
@@ -285,7 +285,7 @@ namespace War3Net.Build
                 if (map.Info.Players.Any(p => ids.Any(id => p.AllyLowPriorityFlags[id] || p.AllyHighPriorityFlags[id])))
                 {
                     declarations.Add(InitAllyPriorities(map));
-                    declarations.Add(JassEmptyDeclarationSyntax.Value);
+                    declarations.Add(JassEmptySyntax.Value);
                 }
             }
 
@@ -295,7 +295,7 @@ namespace War3Net.Build
             return SyntaxFactory.CompilationUnit(declarations);
         }
 
-        protected internal virtual IEnumerable<JassCommentDeclarationSyntax> GetMapScriptHeader(Map map)
+        protected internal virtual IEnumerable<JassCommentSyntax> GetMapScriptHeader(Map map)
         {
             if (map is null)
             {
@@ -305,16 +305,16 @@ namespace War3Net.Build
             var mapInfo = map.Info;
             var mapTriggerStrings = map.TriggerStrings;
 
-            yield return new JassCommentDeclarationSyntax($"===========================================================================");
-            yield return new JassCommentDeclarationSyntax($" ");
-            yield return new JassCommentDeclarationSyntax($" {mapInfo.MapName.Localize(mapTriggerStrings)}");
-            yield return new JassCommentDeclarationSyntax($" ");
-            yield return new JassCommentDeclarationSyntax($"   Warcraft III map script");
-            yield return new JassCommentDeclarationSyntax($"   Generated by {Assembly.GetExecutingAssembly().GetName().Name}");
-            yield return new JassCommentDeclarationSyntax($"   Date: {DateTime.Now:ddd MMM dd HH:mm:ss yyyy}");
-            yield return new JassCommentDeclarationSyntax($"   Map Author: {mapInfo.MapAuthor.Localize(mapTriggerStrings)}");
-            yield return new JassCommentDeclarationSyntax($" ");
-            yield return new JassCommentDeclarationSyntax($"===========================================================================");
+            yield return new JassCommentSyntax($"===========================================================================");
+            yield return new JassCommentSyntax($" ");
+            yield return new JassCommentSyntax($" {mapInfo.MapName.Localize(mapTriggerStrings)}");
+            yield return new JassCommentSyntax($" ");
+            yield return new JassCommentSyntax($"   Warcraft III map script");
+            yield return new JassCommentSyntax($"   Generated by {Assembly.GetExecutingAssembly().GetName().Name}");
+            yield return new JassCommentSyntax($"   Date: {DateTime.Now:ddd MMM dd HH:mm:ss yyyy}");
+            yield return new JassCommentSyntax($"   Map Author: {mapInfo.MapAuthor.Localize(mapTriggerStrings)}");
+            yield return new JassCommentSyntax($" ");
+            yield return new JassCommentSyntax($"===========================================================================");
         }
     }
 }

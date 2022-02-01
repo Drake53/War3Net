@@ -50,7 +50,7 @@ namespace War3Net.Build
                     continue;
                 }
 
-                statements.Add(new JassCommentStatementSyntax($" Force: {forceData.Name}"));
+                statements.Add(new JassCommentSyntax($" Force: {forceData.Name}"));
 
                 var alliedVictory = forceData.Flags.HasFlag(ForceFlags.AlliedVictory);
                 foreach (var playerSlot in playerSlots)
@@ -90,8 +90,8 @@ namespace War3Net.Build
                     {
                         if (mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged)
                         {
-                            statements.Add(JassEmptyStatementSyntax.Value);
-                            statements.Add(new JassCommentStatementSyntax("  Allied"));
+                            statements.Add(JassEmptySyntax.Value);
+                            statements.Add(new JassCommentSyntax("   Allied"));
                         }
 
                         AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
@@ -116,8 +116,8 @@ namespace War3Net.Build
                 {
                     void AddSetAllianceStateStatement(string variableName, string comment)
                     {
-                        statements.Add(JassEmptyStatementSyntax.Value);
-                        statements.Add(new JassCommentStatementSyntax(comment));
+                        statements.Add(JassEmptySyntax.Value);
+                        statements.Add(new JassCommentSyntax(comment));
 
                         foreach (var (playerSlot1, playerSlot2) in playerSlotPairs)
                         {
@@ -151,7 +151,7 @@ namespace War3Net.Build
                     }
                 }
 
-                statements.Add(JassEmptyStatementSyntax.Value);
+                statements.Add(JassEmptySyntax.Value);
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTeams)), statements);

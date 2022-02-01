@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CommentStatementTranspiler.cs" company="Drake53">
+// <copyright file="CommentTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,9 +14,9 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public StatementSyntax Transpile(JassCommentStatementSyntax commentStatement)
+        public StatementSyntax Transpile(JassCommentSyntax comment)
         {
-            return SyntaxFactory.ParseStatement(commentStatement.ToString());
+            return SyntaxFactory.ParseStatement(comment.ToString());
         }
     }
 }
