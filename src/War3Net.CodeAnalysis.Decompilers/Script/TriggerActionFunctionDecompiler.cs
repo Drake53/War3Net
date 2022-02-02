@@ -199,7 +199,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        result.Add(DecompileCustomScriptAction(comment));
+                        result.Add(DecompileCustomScriptAction((IStatementLineSyntax)comment));
                     }
                 }
                 else if (statement is JassReturnStatementSyntax returnStatement)

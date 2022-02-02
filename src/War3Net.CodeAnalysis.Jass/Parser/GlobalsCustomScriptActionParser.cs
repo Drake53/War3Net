@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="EndIfCustomScriptActionParser.cs" company="Drake53">
+// <copyright file="GlobalsCustomScriptActionParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,9 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IStatementLineSyntax> GetEndIfCustomScriptActionParser()
+        internal static Parser<char, IDeclarationLineSyntax> GetGlobalsCustomScriptActionParser()
         {
-            return Keyword.EndIf.ThenReturn<IStatementLineSyntax>(JassEndIfCustomScriptAction.Value);
+            return Keyword.Globals.ThenReturn<IDeclarationLineSyntax>(JassGlobalsCustomScriptAction.Value);
         }
     }
 }

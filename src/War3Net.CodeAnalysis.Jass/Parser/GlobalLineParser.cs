@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="GlobalDeclarationParser.cs" company="Drake53">
+// <copyright file="GlobalLineParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -15,17 +15,18 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IGlobalDeclarationSyntax> GetGlobalDeclarationParser(
-            Parser<char, JassEmptySyntax> emptyParser,
+        internal static Parser<char, IGlobalLineSyntax> GetGlobalLineParser(
+            Parser<char, JassEmptySyntax> emptyLineParser,
             Parser<char, JassCommentSyntax> commentParser,
             Parser<char, JassGlobalDeclarationSyntax> constantDeclarationParser,
             Parser<char, JassGlobalDeclarationSyntax> variableDeclarationParser)
         {
             return OneOf(
-                emptyParser.Cast<IGlobalDeclarationSyntax>(),
-                commentParser.Cast<IGlobalDeclarationSyntax>(),
-                constantDeclarationParser.Cast<IGlobalDeclarationSyntax>(),
-                variableDeclarationParser.Cast<IGlobalDeclarationSyntax>());
+                emptyLineParser.Cast<IGlobalLineSyntax>(),
+                commentParser.Cast<IGlobalLineSyntax>(),
+                constantDeclarationParser.Cast<IGlobalLineSyntax>(),
+                variableDeclarationParser.Cast<IGlobalLineSyntax>(),
+                GetEndGlobalsCustomScriptActionParser());
         }
     }
 }

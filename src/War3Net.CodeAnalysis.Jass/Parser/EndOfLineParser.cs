@@ -12,10 +12,10 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, Unit> GetEndOfLineParser(
-            Parser<char, string> commentParser,
+            Parser<char, string> commentStringParser,
             Parser<char, Unit> newLineParser)
         {
-            return commentParser.Optional().Then(newLineParser);
+            return commentStringParser.Optional().Then(newLineParser);
         }
     }
 }

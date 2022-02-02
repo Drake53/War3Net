@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationSyntax : IDeclarationSyntax
+    public class JassGlobalDeclarationSyntax : IGlobalDeclarationSyntax, IGlobalLineSyntax
     {
         public JassGlobalDeclarationSyntax(IVariableDeclaratorSyntax declarator)
         {
@@ -16,7 +16,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IVariableDeclaratorSyntax Declarator { get; init; }
 
-        public bool Equals(IDeclarationSyntax? other)
+        public bool Equals(IGlobalDeclarationSyntax? other)
+        {
+            return other is JassGlobalDeclarationSyntax globalDeclaration
+                && Declarator.Equals(globalDeclaration.Declarator);
+        }
+
+        public bool Equals(IGlobalLineSyntax? other)
         {
             return other is JassGlobalDeclarationSyntax globalDeclaration
                 && Declarator.Equals(globalDeclaration.Declarator);

@@ -20,10 +20,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, JassCompilationUnitSyntax> GetCompilationUnitParser(
             Parser<char, IDeclarationSyntax> declarationParser,
-            Parser<char, string> commentParser,
+            Parser<char, string> commentStringParser,
             Parser<char, Unit> newlineParser)
         {
-            return declarationParser.Before(commentParser.Optional().Then(newlineParser.Or(Lookahead(End)))).Many()
+            return declarationParser.Before(commentStringParser.Optional().Then(newlineParser.Or(Lookahead(End)))).Many()
                 .Select(declarations => new JassCompilationUnitSyntax(declarations.ToImmutableArray()));
         }
     }

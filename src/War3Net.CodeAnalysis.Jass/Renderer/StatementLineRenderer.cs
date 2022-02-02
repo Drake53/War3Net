@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CustomScriptActionRenderer.cs" company="Drake53">
+// <copyright file="StatementLineRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,9 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(ICustomScriptAction customScriptAction)
+        public void Render(IStatementLineSyntax statementLine)
         {
-            switch (customScriptAction)
+            switch (statementLine)
             {
                 case JassEmptySyntax empty: Render(empty); break;
                 case JassCommentSyntax comment: Render(comment); break;
@@ -30,7 +30,6 @@ namespace War3Net.CodeAnalysis.Jass
                 case JassEndLoopCustomScriptAction endLoopCustomScriptAction: Render(endLoopCustomScriptAction); break;
                 case JassExitStatementSyntax exitStatement: Render(exitStatement); break;
                 case JassReturnStatementSyntax returnStatement: Render(returnStatement); break;
-                case JassFunctionCustomScriptAction functionCustomScriptAction: Render(functionCustomScriptAction); break;
                 case JassEndFunctionCustomScriptAction functionCustomScriptAction: Render(functionCustomScriptAction); break;
                 case JassDebugCustomScriptAction debugCustomScriptAction: Render(debugCustomScriptAction); break;
 

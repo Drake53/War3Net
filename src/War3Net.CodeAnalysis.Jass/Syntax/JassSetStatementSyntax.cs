@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassSetStatementSyntax : IStatementSyntax, ICustomScriptAction
+    public class JassSetStatementSyntax : IStatementSyntax, IStatementLineSyntax
     {
         public JassSetStatementSyntax(JassIdentifierNameSyntax identifierName, IExpressionSyntax? indexer, JassEqualsValueClauseSyntax value)
         {
@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value.Equals(setStatement.Value);
         }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassSetStatementSyntax setStatement
                 && IdentifierName.Equals(setStatement.IdentifierName)

@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, ICustomScriptAction
+    public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, IStatementLineSyntax
     {
         public JassLocalVariableDeclarationStatementSyntax(IVariableDeclaratorSyntax declarator)
         {
@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Declarator.Equals(localVariableDeclarationStatement.Declarator);
         }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement
                 && Declarator.Equals(localVariableDeclarationStatement.Declarator);

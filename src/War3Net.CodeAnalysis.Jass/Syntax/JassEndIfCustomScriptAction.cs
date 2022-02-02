@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEndIfCustomScriptAction : ICustomScriptAction
+    public class JassEndIfCustomScriptAction : IStatementLineSyntax
     {
         public static readonly JassEndIfCustomScriptAction Value = new JassEndIfCustomScriptAction();
 
@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
         }
 
-        public bool Equals(ICustomScriptAction? other) => other is JassEndIfCustomScriptAction;
+        public bool Equals(IStatementLineSyntax? other) => other is JassEndIfCustomScriptAction;
 
         public override string ToString() => JassKeyword.EndIf;
     }

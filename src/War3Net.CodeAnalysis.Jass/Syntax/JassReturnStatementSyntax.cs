@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassReturnStatementSyntax : IStatementSyntax, ICustomScriptAction
+    public class JassReturnStatementSyntax : IStatementSyntax, IStatementLineSyntax
     {
         public static readonly JassReturnStatementSyntax Empty = new JassReturnStatementSyntax(null);
 
@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value.NullableEquals(returnStatement.Value);
         }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassReturnStatementSyntax returnStatement
                 && Value.NullableEquals(returnStatement.Value);

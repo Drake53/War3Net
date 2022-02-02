@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassElseIfCustomScriptAction : ICustomScriptAction
+    public class JassElseIfCustomScriptAction : IStatementLineSyntax
     {
         public JassElseIfCustomScriptAction(IExpressionSyntax condition)
         {
@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public IExpressionSyntax Condition { get; init; }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassElseIfCustomScriptAction elseIf
                 && Condition.Equals(elseIf.Condition);

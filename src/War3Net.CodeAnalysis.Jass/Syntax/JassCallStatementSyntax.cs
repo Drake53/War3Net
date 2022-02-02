@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassCallStatementSyntax : IStatementSyntax, ICustomScriptAction, IInvocationSyntax
+    public class JassCallStatementSyntax : IStatementSyntax, IStatementLineSyntax, IInvocationSyntax
     {
         public JassCallStatementSyntax(JassIdentifierNameSyntax identifierName, JassArgumentListSyntax arguments)
         {
@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Arguments.Equals(callStatement.Arguments);
         }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassCallStatementSyntax callStatement
                 && IdentifierName.Equals(callStatement.IdentifierName)

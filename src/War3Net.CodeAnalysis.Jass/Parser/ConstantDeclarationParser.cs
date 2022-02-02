@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="ArrayDeclaratorParser.cs" company="Drake53">
+// <copyright file="ConstantDeclarationParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -15,14 +15,16 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IVariableDeclaratorSyntax> GetArrayDeclaratorParser(
+        internal static Parser<char, JassGlobalDeclarationSyntax> GetConstantDeclarationParser(
+            Parser<char, JassEqualsValueClauseSyntax> equalsValueClauseParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
             Parser<char, JassTypeSyntax> typeParser)
         {
-            return Map(
-                (type, id) => (IVariableDeclaratorSyntax)new JassArrayDeclaratorSyntax(type, id),
-                Try(typeParser.Before(Keyword.Array)),
-                identifierNameParser);
+            return Keyword.Constant.Then(Map(
+                (type, id, value) => new JassGlobalDeclarationSyntax(new JassVariableDeclaratorSyntax(type, id, value)),
+                typeParser,
+                identifierNameParser,
+                equalsValueClauseParser));
         }
     }
 }

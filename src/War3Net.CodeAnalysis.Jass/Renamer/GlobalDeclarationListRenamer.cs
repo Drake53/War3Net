@@ -18,10 +18,10 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var isRenamed = false;
 
-            var declarationsBuilder = ImmutableArray.CreateBuilder<IDeclarationSyntax>();
+            var declarationsBuilder = ImmutableArray.CreateBuilder<IGlobalDeclarationSyntax>();
             foreach (var declaration in globalDeclarationList.Globals)
             {
-                if (TryRenameDeclaration(declaration, out var renamedDeclaration))
+                if (TryRenameGlobalDeclaration(declaration, out var renamedDeclaration))
                 {
                     declarationsBuilder.Add(renamedDeclaration);
                     isRenamed = true;

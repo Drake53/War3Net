@@ -19,28 +19,39 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, IStatementSyntax> GetStatementParser(
+            Parser<char, JassEmptySyntax> emptyParser,
+            Parser<char, JassCommentSyntax> commentParser,
+            Parser<char, JassLocalVariableDeclarationStatementSyntax> localVariableDeclarationStatementParser,
+            Parser<char, JassExitStatementSyntax> exitStatementParser,
+            Parser<char, JassReturnStatementSyntax> returnStatementParser,
+            Parser<char, JassSetStatementSyntax> setStatementParser,
+            Parser<char, JassCallStatementSyntax> callStatementParser,
             Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, IStatementSyntax> setStatementParser,
-            Parser<char, IStatementSyntax> callStatementParser,
-            Parser<char, IVariableDeclaratorSyntax> variableDeclaratorParser,
-            Parser<char, string> commentParser,
             Parser<char, Unit> endOfLineParser)
         {
+            var setParser = setStatementParser.Cast<IStatementSyntax>();
+            var callParser = callStatementParser.Cast<IStatementSyntax>();
+
             return Pidgin.Expression.ExpressionParser.Build<char, IStatementSyntax>(
                 statementParser =>
-                (
-                    OneOf(
-                        GetEmptyStatementParser().Cast<IStatementSyntax>(),
-                        GetCommentStatementParser(commentParser).Cast<IStatementSyntax>(),
-                        GetLocalVariableDeclarationStatementParser(variableDeclaratorParser).Cast<IStatementSyntax>(),
-                        setStatementParser,
-                        callStatementParser,
-                        GetIfStatementParser(expressionParser, statementParser, endOfLineParser),
-                        GetLoopStatementParser(statementParser, endOfLineParser),
-                        GetExitStatementParser(expressionParser).Cast<IStatementSyntax>(),
-                        GetReturnStatementParser(expressionParser).Cast<IStatementSyntax>(),
-                        GetDebugStatementParser(expressionParser, statementParser, setStatementParser, callStatementParser, endOfLineParser)),
-                    Array.Empty<OperatorTableRow<char, IStatementSyntax>>()));
+                {
+                    var statementListParser = GetStatementListParser(
+                        statementParser,
+                        endOfLineParser);
+
+                    return (OneOf(
+                        emptyParser.Cast<IStatementSyntax>(),
+                        commentParser.Cast<IStatementSyntax>(),
+                        localVariableDeclarationStatementParser.Cast<IStatementSyntax>(),
+                        setParser,
+                        callParser,
+                        GetIfStatementParser(expressionParser, statementListParser, endOfLineParser),
+                        GetLoopStatementParser(statementListParser, endOfLineParser),
+                        exitStatementParser.Cast<IStatementSyntax>(),
+                        returnStatementParser.Cast<IStatementSyntax>(),
+                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, endOfLineParser)),
+                    Array.Empty<OperatorTableRow<char, IStatementSyntax>>());
+                });
         }
     }
 }

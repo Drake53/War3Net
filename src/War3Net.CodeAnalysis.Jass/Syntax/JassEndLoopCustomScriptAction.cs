@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEndLoopCustomScriptAction : ICustomScriptAction
+    public class JassEndLoopCustomScriptAction : IStatementLineSyntax
     {
         public static readonly JassEndLoopCustomScriptAction Value = new JassEndLoopCustomScriptAction();
 
@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
         }
 
-        public bool Equals(ICustomScriptAction? other) => other is JassEndLoopCustomScriptAction;
+        public bool Equals(IStatementLineSyntax? other) => other is JassEndLoopCustomScriptAction;
 
         public override string ToString() => JassKeyword.EndLoop;
     }

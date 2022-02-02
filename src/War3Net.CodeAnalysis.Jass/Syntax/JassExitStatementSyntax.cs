@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassExitStatementSyntax : IStatementSyntax, ICustomScriptAction
+    public class JassExitStatementSyntax : IStatementSyntax, IStatementLineSyntax
     {
         public JassExitStatementSyntax(IExpressionSyntax condition)
         {
@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Condition.Equals(exitStatement.Condition);
         }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassExitStatementSyntax exitStatement
                 && Condition.Equals(exitStatement.Condition);

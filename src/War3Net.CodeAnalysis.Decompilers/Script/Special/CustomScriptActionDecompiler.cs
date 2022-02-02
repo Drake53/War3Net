@@ -12,7 +12,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private TriggerFunction DecompileCustomScriptAction(ICustomScriptAction customScriptAction)
+        private TriggerFunction DecompileCustomScriptAction(IDeclarationLineSyntax declarationLine)
         {
             return new TriggerFunction
             {
@@ -24,7 +24,43 @@ namespace War3Net.CodeAnalysis.Decompilers
                     new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.String,
-                        Value = customScriptAction.ToString(),
+                        Value = declarationLine.ToString(),
+                    },
+                },
+            };
+        }
+
+        private TriggerFunction DecompileCustomScriptAction(IGlobalLineSyntax globalLine)
+        {
+            return new TriggerFunction
+            {
+                Type = TriggerFunctionType.Action,
+                IsEnabled = true,
+                Name = "CustomScriptCode",
+                Parameters = new()
+                {
+                    new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.String,
+                        Value = globalLine.ToString(),
+                    },
+                },
+            };
+        }
+
+        private TriggerFunction DecompileCustomScriptAction(IStatementLineSyntax statementLine)
+        {
+            return new TriggerFunction
+            {
+                Type = TriggerFunctionType.Action,
+                IsEnabled = true,
+                Name = "CustomScriptCode",
+                Parameters = new()
+                {
+                    new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.String,
+                        Value = statementLine.ToString(),
                     },
                 },
             };

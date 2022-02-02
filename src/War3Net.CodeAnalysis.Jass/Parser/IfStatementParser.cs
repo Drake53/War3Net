@@ -19,15 +19,15 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, IStatementSyntax> GetIfStatementParser(
             Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, IStatementSyntax> statementParser,
+            Parser<char, JassStatementListSyntax> statementListParser,
             Parser<char, Unit> endOfLineParser)
         {
             return Map(
                 (condition, statementList, elseIfClauses, elseClause, _) => (IStatementSyntax)new JassIfStatementSyntax(condition, statementList, elseIfClauses.ToImmutableArray(), elseClause.GetValueOrDefault()),
                 Keyword.If.Then(expressionParser).Before(Keyword.Then).Before(endOfLineParser),
-                GetStatementListParser(statementParser, endOfLineParser),
-                GetElseIfClauseParser(expressionParser, statementParser, endOfLineParser).Many(),
-                GetElseClauseParser(statementParser, endOfLineParser).Optional(),
+                statementListParser,
+                GetElseIfClauseParser(expressionParser, statementListParser, endOfLineParser).Many(),
+                GetElseClauseParser(statementListParser, endOfLineParser).Optional(),
                 Keyword.EndIf);
         }
     }

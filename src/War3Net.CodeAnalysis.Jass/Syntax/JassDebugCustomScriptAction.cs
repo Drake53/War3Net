@@ -7,18 +7,18 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassDebugCustomScriptAction : ICustomScriptAction
+    public class JassDebugCustomScriptAction : IStatementLineSyntax
     {
         public static readonly JassDebugCustomScriptAction DebugLoop = new JassDebugCustomScriptAction(JassLoopCustomScriptAction.Value);
 
-        public JassDebugCustomScriptAction(ICustomScriptAction action)
+        public JassDebugCustomScriptAction(IStatementLineSyntax action)
         {
             Action = action;
         }
 
-        public ICustomScriptAction Action { get; init; }
+        public IStatementLineSyntax Action { get; init; }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IStatementLineSyntax? other)
         {
             return other is JassDebugCustomScriptAction debug
                 && Action.Equals(debug.Action);

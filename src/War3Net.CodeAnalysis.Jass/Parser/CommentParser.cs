@@ -15,19 +15,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, string> GetCommentParser()
+        internal static Parser<char, string> GetCommentStringParser()
         {
             return Try(String($"{JassSymbol.Slash}{JassSymbol.Slash}")).Then(AnyCharExcept(JassSymbol.CarriageReturn, JassSymbol.LineFeed).ManyString());
         }
 
-        internal static Parser<char, IDeclarationSyntax> GetCommentDeclarationParser(Parser<char, string> commentParser)
+        internal static Parser<char, JassCommentSyntax> GetCommentParser(Parser<char, string> commentStringParser)
         {
-            return commentParser.Select<IDeclarationSyntax>(comment => new JassCommentSyntax(comment));
-        }
-
-        internal static Parser<char, JassCommentSyntax> GetCommentStatementParser(Parser<char, string> commentParser)
-        {
-            return commentParser.Select(comment => new JassCommentSyntax(comment));
+            return commentStringParser.Select(comment => new JassCommentSyntax(comment));
         }
     }
 }

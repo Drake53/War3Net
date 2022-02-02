@@ -12,12 +12,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassGlobalDeclarationListSyntax : IDeclarationSyntax
     {
-        public JassGlobalDeclarationListSyntax(ImmutableArray<IDeclarationSyntax> globals)
+        public JassGlobalDeclarationListSyntax(ImmutableArray<IGlobalDeclarationSyntax> globals)
         {
             Globals = globals;
         }
 
-        public ImmutableArray<IDeclarationSyntax> Globals { get; init; }
+        public ImmutableArray<IGlobalDeclarationSyntax> Globals { get; init; }
 
         public bool Equals(IDeclarationSyntax? other)
         {

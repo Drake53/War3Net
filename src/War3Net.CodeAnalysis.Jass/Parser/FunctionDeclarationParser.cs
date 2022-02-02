@@ -15,24 +15,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassFunctionDeclarationSyntax> GetStandaloneFunctionDeclarationParser(
+        internal static Parser<char, JassFunctionDeclarationSyntax> GetFunctionDeclarationParser(
             Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
             Parser<char, JassStatementListSyntax> statementListParser,
             Parser<char, Unit> endOfLineParser)
         {
             return Map(
                 (declaration, body) => new JassFunctionDeclarationSyntax(declaration, body),
-                Keyword.Constant.Optional().Then(Keyword.Function).Then(functionDeclaratorParser).Before(endOfLineParser),
-                statementListParser.Before(Keyword.EndFunction));
-        }
-
-        internal static Parser<char, IDeclarationSyntax> GetFunctionDeclarationParser(
-            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
-            Parser<char, JassStatementListSyntax> statementListParser,
-            Parser<char, Unit> endOfLineParser)
-        {
-            return Map(
-                (declaration, body) => (IDeclarationSyntax)new JassFunctionDeclarationSyntax(declaration, body),
                 Keyword.Constant.Optional().Then(Keyword.Function).Then(functionDeclaratorParser).Before(endOfLineParser),
                 statementListParser.Before(Keyword.EndFunction));
         }

@@ -15,10 +15,10 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IDeclarationSyntax> GetNativeFunctionDeclarationParser(Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser)
+        internal static Parser<char, JassNativeFunctionDeclarationSyntax> GetNativeFunctionDeclarationParser(Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser)
         {
             return Try(Keyword.Constant.Optional().Then(Keyword.Native)).Then(functionDeclaratorParser)
-                .Select<IDeclarationSyntax>(functionDeclaration => new JassNativeFunctionDeclarationSyntax(functionDeclaration));
+                .Select(functionDeclaration => new JassNativeFunctionDeclarationSyntax(functionDeclaration));
         }
     }
 }

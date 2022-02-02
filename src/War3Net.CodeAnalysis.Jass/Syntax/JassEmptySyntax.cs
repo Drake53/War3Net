@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEmptySyntax : IDeclarationSyntax, IStatementSyntax, ICustomScriptAction
+    public class JassEmptySyntax : IDeclarationSyntax, IGlobalDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
     {
         public static readonly JassEmptySyntax Value = new JassEmptySyntax();
 
@@ -17,9 +17,15 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public bool Equals(IDeclarationSyntax? other) => other is JassEmptySyntax;
 
+        public bool Equals(IGlobalDeclarationSyntax? other) => other is JassEmptySyntax;
+
         public bool Equals(IStatementSyntax? other) => other is JassEmptySyntax;
 
-        public bool Equals(ICustomScriptAction? other) => other is JassEmptySyntax;
+        public bool Equals(IDeclarationLineSyntax? other) => other is JassEmptySyntax;
+
+        public bool Equals(IGlobalLineSyntax? other) => other is JassEmptySyntax;
+
+        public bool Equals(IStatementLineSyntax? other) => other is JassEmptySyntax;
 
         public override string ToString() => string.Empty;
     }

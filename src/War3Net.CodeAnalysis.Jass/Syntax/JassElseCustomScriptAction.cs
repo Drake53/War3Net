@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassElseCustomScriptAction : ICustomScriptAction
+    public class JassElseCustomScriptAction : IStatementLineSyntax
     {
         public static readonly JassElseCustomScriptAction Value = new JassElseCustomScriptAction();
 
@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
         }
 
-        public bool Equals(ICustomScriptAction? other) => other is JassElseCustomScriptAction;
+        public bool Equals(IStatementLineSyntax? other) => other is JassElseCustomScriptAction;
 
         public override string ToString() => JassKeyword.Else;
     }

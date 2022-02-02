@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, IDeclarationSyntax> GetGlobalDeclarationListParser(
-            Parser<char, IDeclarationSyntax> globalDeclarationParser,
+            Parser<char, IGlobalDeclarationSyntax> globalDeclarationParser,
             Parser<char, Unit> endOfLineParser)
         {
             return Keyword.Globals.Then(endOfLineParser).Then(globalDeclarationParser.Many()).Before(Keyword.EndGlobals)

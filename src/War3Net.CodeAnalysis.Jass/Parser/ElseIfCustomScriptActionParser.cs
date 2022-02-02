@@ -13,10 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, ICustomScriptAction> GetElseIfCustomScriptActionParser(Parser<char, IExpressionSyntax> expressionParser)
+        internal static Parser<char, IStatementLineSyntax> GetElseIfCustomScriptActionParser(Parser<char, IExpressionSyntax> expressionParser)
         {
             return Keyword.ElseIf.Then(expressionParser).Before(Keyword.Then)
-                .Select<ICustomScriptAction>(expression => new JassElseIfCustomScriptAction(expression));
+                .Select<IStatementLineSyntax>(expression => new JassElseIfCustomScriptAction(expression));
         }
     }
 }

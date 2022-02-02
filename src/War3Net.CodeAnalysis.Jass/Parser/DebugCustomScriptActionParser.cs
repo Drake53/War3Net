@@ -15,19 +15,19 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, ICustomScriptAction> GetDebugCustomScriptActionParser(
-            Parser<char, ICustomScriptAction> setCustomScriptActionParser,
-            Parser<char, ICustomScriptAction> callCustomScriptActionParser,
-            Parser<char, ICustomScriptAction> ifCustomScriptActionParser,
-            Parser<char, ICustomScriptAction> loopCustomScriptActionParser)
+        internal static Parser<char, IStatementLineSyntax> GetDebugCustomScriptActionParser(
+            Parser<char, IStatementLineSyntax> setCustomScriptActionParser,
+            Parser<char, IStatementLineSyntax> callCustomScriptActionParser,
+            Parser<char, IStatementLineSyntax> ifCustomScriptActionParser,
+            Parser<char, IStatementLineSyntax> loopCustomScriptActionParser)
         {
             return Keyword.Debug.Then(
                 OneOf(
                     setCustomScriptActionParser,
                     callCustomScriptActionParser,
                     ifCustomScriptActionParser)
-                .Select<ICustomScriptAction>(action => new JassDebugCustomScriptAction(action))
-                .Or(loopCustomScriptActionParser.ThenReturn<ICustomScriptAction>(JassDebugCustomScriptAction.DebugLoop)));
+                .Select<IStatementLineSyntax>(action => new JassDebugCustomScriptAction(action))
+                .Or(loopCustomScriptActionParser.ThenReturn<IStatementLineSyntax>(JassDebugCustomScriptAction.DebugLoop)));
         }
     }
 }

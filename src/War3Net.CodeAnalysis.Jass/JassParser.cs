@@ -21,14 +21,18 @@ namespace War3Net.CodeAnalysis.Jass
 
         private readonly Parser<char, JassArgumentListSyntax> _argumentListParser;
         private readonly Parser<char, BinaryOperatorType> _binaryOperatorParser;
+        private readonly Parser<char, JassCommentSyntax> _commentParser;
         private readonly Parser<char, JassCompilationUnitSyntax> _compilationUnitParser;
-        private readonly Parser<char, ICustomScriptAction> _customScriptActionParser;
         private readonly Parser<char, IDeclarationSyntax> _declarationParser;
+        private readonly Parser<char, IDeclarationLineSyntax> _declarationLineParser;
         private readonly Parser<char, IExpressionSyntax> _expressionParser;
         private readonly Parser<char, JassFunctionDeclarationSyntax> _functionDeclarationParser;
+        private readonly Parser<char, IGlobalDeclarationSyntax> _globalDeclarationParser;
+        private readonly Parser<char, IGlobalLineSyntax> _globalLineParser;
         private readonly Parser<char, JassIdentifierNameSyntax> _identifierNameParser;
         private readonly Parser<char, JassParameterListSyntax> _parameterListParser;
         private readonly Parser<char, IStatementSyntax> _statementParser;
+        private readonly Parser<char, IStatementLineSyntax> _statementLineParser;
         private readonly Parser<char, JassTypeSyntax> _typeParser;
         private readonly Parser<char, UnaryOperatorType> _unaryOperatorParser;
 
@@ -44,58 +48,96 @@ namespace War3Net.CodeAnalysis.Jass
             var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser);
             var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser);
 
-            var commentParser = GetCommentParser();
+            var commentStringParser = GetCommentStringParser();
             var newLineParser = GetNewLineParser();
-            var endOfLineParser = GetEndOfLineParser(commentParser, newLineParser);
-            var emptyDeclarationParser = GetEmptyDeclarationParser();
-            var commentDeclarationParser = GetCommentDeclarationParser(commentParser);
+            var endOfLineParser = GetEndOfLineParser(commentStringParser, newLineParser);
+            var emptyParser = GetEmptyParser();
+            var emptyLineParser = GetEmptyLineParser();
+            var commentParser = GetCommentParser(commentStringParser);
 
-            var setStatementParser = GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser).Cast<IStatementSyntax>();
-            var callStatementParser = GetCallStatementParser(argumentListParser, identifierNameParser).Cast<IStatementSyntax>();
+            var setStatementParser = GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser);
+            var callStatementParser = GetCallStatementParser(argumentListParser, identifierNameParser);
+            var exitStatementParser = GetExitStatementParser(expressionParser);
+            var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableDeclaratorParser);
+            var returnStatementParser = GetReturnStatementParser(expressionParser);
+
             var statementParser = GetStatementParser(
-                expressionParser,
+                emptyParser,
+                commentParser,
+                localVariableDeclarationStatementParser,
+                exitStatementParser,
+                returnStatementParser,
                 setStatementParser,
                 callStatementParser,
-                variableDeclaratorParser,
-                commentParser,
+                expressionParser,
                 endOfLineParser);
 
-            var customScriptActionParser = GetCustomScriptActionParser(
-                GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser).Cast<ICustomScriptAction>(),
-                GetCallStatementParser(argumentListParser, identifierNameParser).Cast<ICustomScriptAction>(),
-                GetIfCustomScriptActionParser(expressionParser),
-                GetLoopCustomScriptActionParser(),
-                expressionParser,
-                variableDeclaratorParser,
-                functionDeclaratorParser,
-                commentParser);
+            var statementLineParser = GetStatementLineParser(
+                emptyLineParser,
+                commentParser,
+                localVariableDeclarationStatementParser,
+                setStatementParser,
+                callStatementParser,
+                exitStatementParser,
+                returnStatementParser,
+                expressionParser);
 
-            var globalDeclarationParser = GetGlobalDeclarationParser(
-                emptyDeclarationParser,
-                commentDeclarationParser,
+            var constantDeclarationParser = GetConstantDeclarationParser(
                 equalsValueClauseParser,
                 identifierNameParser,
-                typeParser,
+                typeParser);
+
+            var variableDeclarationParser = GetVariableDeclarationParser(
+                equalsValueClauseParser,
+                identifierNameParser,
+                typeParser);
+
+            var globalDeclarationParser = GetGlobalDeclarationParser(
+                emptyParser,
+                commentParser,
+                constantDeclarationParser,
+                variableDeclarationParser);
+
+            var globalLineParser = GetGlobalLineParser(
+                emptyLineParser,
+                commentParser,
+                constantDeclarationParser,
+                variableDeclarationParser);
+
+            var statementListParser = GetStatementListParser(
+                statementParser,
                 endOfLineParser);
 
-            var functionDeclarationParser = GetStandaloneFunctionDeclarationParser(
+            var functionDeclarationParser = GetFunctionDeclarationParser(
                 functionDeclaratorParser,
-                GetStatementListParser(statementParser, endOfLineParser),
+                statementListParser,
                 endOfLineParser);
+
+            var typeDeclarationParser = GetTypeDeclarationParser(
+                identifierNameParser,
+                typeParser);
+
+            var nativeFunctionDeclarationParser = GetNativeFunctionDeclarationParser(functionDeclaratorParser);
 
             var declarationParser = GetDeclarationParser(
-                emptyDeclarationParser,
-                commentDeclarationParser,
-                globalDeclarationParser,
-                functionDeclaratorParser,
-                identifierNameParser,
-                GetStatementListParser(statementParser, endOfLineParser),
-                typeParser,
+                emptyParser,
+                commentParser,
+                typeDeclarationParser,
+                nativeFunctionDeclarationParser,
+                functionDeclarationParser,
+                globalDeclarationParser.Before(endOfLineParser),
                 endOfLineParser);
+
+            var declarationLineParser = GetDeclarationLineParser(
+                emptyLineParser,
+                commentParser,
+                typeDeclarationParser,
+                nativeFunctionDeclarationParser,
+                functionDeclaratorParser);
 
             var compilationUnitParser = GetCompilationUnitParser(
                 declarationParser,
-                commentParser,
+                commentStringParser,
                 newLineParser);
 
             var whitespaceParser = Return(Unit.Value).SkipWhitespaces();
@@ -104,14 +146,18 @@ namespace War3Net.CodeAnalysis.Jass
 
             _argumentListParser = Create(argumentListParser);
             _binaryOperatorParser = Create(GetBinaryOperatorParser());
+            _commentParser = Create(commentParser);
             _compilationUnitParser = Create(compilationUnitParser);
-            _customScriptActionParser = Create(customScriptActionParser.Before(commentParser.Optional()));
             _declarationParser = Create(declarationParser);
+            _declarationLineParser = Create(declarationLineParser);
             _expressionParser = Create(expressionParser);
             _functionDeclarationParser = Create(functionDeclarationParser);
+            _globalDeclarationParser = Create(globalDeclarationParser);
+            _globalLineParser = Create(globalLineParser);
             _identifierNameParser = Create(identifierNameParser);
             _parameterListParser = Create(parameterListParser);
             _statementParser = Create(statementParser);
+            _statementLineParser = Create(statementLineParser.Before(commentStringParser.Optional()));
             _typeParser = Create(typeParser);
             _unaryOperatorParser = Create(GetUnaryOperatorParser());
         }
@@ -122,21 +168,29 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal Parser<char, BinaryOperatorType> BinaryOperatorParser => _binaryOperatorParser;
 
+        internal Parser<char, JassCommentSyntax> CommentParser => _commentParser;
+
         internal Parser<char, JassCompilationUnitSyntax> CompilationUnitParser => _compilationUnitParser;
 
-        internal Parser<char, ICustomScriptAction> CustomScriptActionParser => _customScriptActionParser;
-
         internal Parser<char, IDeclarationSyntax> DeclarationParser => _declarationParser;
+
+        internal Parser<char, IDeclarationLineSyntax> DeclarationLineParser => _declarationLineParser;
 
         internal Parser<char, IExpressionSyntax> ExpressionParser => _expressionParser;
 
         internal Parser<char, JassFunctionDeclarationSyntax> FunctionDeclarationParser => _functionDeclarationParser;
+
+        internal Parser<char, IGlobalDeclarationSyntax> GlobalDeclarationParser => _globalDeclarationParser;
+
+        internal Parser<char, IGlobalLineSyntax> GlobalLineParser => _globalLineParser;
 
         internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;
 
         internal Parser<char, JassParameterListSyntax> ParameterListParser => _parameterListParser;
 
         internal Parser<char, IStatementSyntax> StatementParser => _statementParser;
+
+        internal Parser<char, IStatementLineSyntax> StatementLineParser => _statementLineParser;
 
         internal Parser<char, JassTypeSyntax> TypeParser => _typeParser;
 

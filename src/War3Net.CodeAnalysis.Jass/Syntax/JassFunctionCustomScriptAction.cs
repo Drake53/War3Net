@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassFunctionCustomScriptAction : ICustomScriptAction
+    public class JassFunctionCustomScriptAction : IDeclarationLineSyntax
     {
         public JassFunctionCustomScriptAction(JassFunctionDeclaratorSyntax functionDeclarator)
         {
@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassFunctionDeclaratorSyntax FunctionDeclarator { get; init; }
 
-        public bool Equals(ICustomScriptAction? other)
+        public bool Equals(IDeclarationLineSyntax? other)
         {
             return other is JassFunctionCustomScriptAction function
                 && FunctionDeclarator.Equals(function.FunctionDeclarator);

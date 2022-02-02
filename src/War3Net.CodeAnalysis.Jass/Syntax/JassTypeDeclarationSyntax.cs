@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassTypeDeclarationSyntax : IDeclarationSyntax
+    public class JassTypeDeclarationSyntax : IDeclarationSyntax, IDeclarationLineSyntax
     {
         public JassTypeDeclarationSyntax(JassIdentifierNameSyntax identifierName, JassTypeSyntax baseType)
         {
@@ -20,6 +20,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public JassTypeSyntax BaseType { get; init; }
 
         public bool Equals(IDeclarationSyntax? other)
+        {
+            return other is JassTypeDeclarationSyntax typeDeclaration
+                && IdentifierName.Equals(typeDeclaration.IdentifierName)
+                && BaseType.Equals(typeDeclaration.BaseType);
+        }
+
+        public bool Equals(IDeclarationLineSyntax? other)
         {
             return other is JassTypeDeclarationSyntax typeDeclaration
                 && IdentifierName.Equals(typeDeclaration.IdentifierName)

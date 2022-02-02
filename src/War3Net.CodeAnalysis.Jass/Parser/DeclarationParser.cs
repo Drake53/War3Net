@@ -16,22 +16,21 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, IDeclarationSyntax> GetDeclarationParser(
-            Parser<char, IDeclarationSyntax> emptyDeclarationParser,
-            Parser<char, IDeclarationSyntax> commentDeclarationParser,
-            Parser<char, IDeclarationSyntax> globalDeclarationParser,
-            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassStatementListSyntax> statementListParser,
-            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, JassEmptySyntax> emptyParser,
+            Parser<char, JassCommentSyntax> commentParser,
+            Parser<char, JassTypeDeclarationSyntax> typeDeclarationParser,
+            Parser<char, JassNativeFunctionDeclarationSyntax> nativeFunctionDeclarationParser,
+            Parser<char, JassFunctionDeclarationSyntax> functionDeclarationParser,
+            Parser<char, IGlobalDeclarationSyntax> globalDeclarationParser,
             Parser<char, Unit> endOfLineParser)
         {
             return OneOf(
-                emptyDeclarationParser,
-                commentDeclarationParser,
-                GetTypeDeclarationParser(identifierNameParser, typeParser),
+                emptyParser.Cast<IDeclarationSyntax>(),
+                commentParser.Cast<IDeclarationSyntax>(),
+                typeDeclarationParser.Cast<IDeclarationSyntax>(),
                 GetGlobalDeclarationListParser(globalDeclarationParser, endOfLineParser),
-                GetNativeFunctionDeclarationParser(functionDeclaratorParser),
-                GetFunctionDeclarationParser(functionDeclaratorParser, statementListParser, endOfLineParser));
+                nativeFunctionDeclarationParser.Cast<IDeclarationSyntax>(),
+                functionDeclarationParser.Cast<IDeclarationSyntax>());
         }
     }
 }

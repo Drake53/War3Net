@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, IStatementSyntax> GetDebugStatementParser(
             Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, IStatementSyntax> statementParser,
+            Parser<char, JassStatementListSyntax> statementListParser,
             Parser<char, IStatementSyntax> setStatementParser,
             Parser<char, IStatementSyntax> callStatementParser,
             Parser<char, Unit> endOfLineParser)
@@ -26,8 +26,8 @@ namespace War3Net.CodeAnalysis.Jass
                 OneOf(
                     setStatementParser,
                     callStatementParser,
-                    GetIfStatementParser(expressionParser, statementParser, endOfLineParser),
-                    GetLoopStatementParser(statementParser, endOfLineParser))
+                    GetIfStatementParser(expressionParser, statementListParser, endOfLineParser),
+                    GetLoopStatementParser(statementListParser, endOfLineParser))
                 .Select<IStatementSyntax>(statement => new JassDebugStatementSyntax(statement)));
         }
     }

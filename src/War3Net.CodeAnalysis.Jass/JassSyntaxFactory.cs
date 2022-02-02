@@ -25,19 +25,24 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.BinaryOperatorParser.ParseOrThrow(binaryOperator);
         }
 
+        public static JassCommentSyntax ParseComment(string comment)
+        {
+            return JassParser.Instance.CommentParser.ParseOrThrow(comment);
+        }
+
         public static JassCompilationUnitSyntax ParseCompilationUnit(string compilationUnit)
         {
             return JassParser.Instance.CompilationUnitParser.ParseOrThrow(compilationUnit);
         }
 
-        public static ICustomScriptAction ParseCustomScriptAction(string customScriptAction)
-        {
-            return JassParser.Instance.CustomScriptActionParser.ParseOrThrow(customScriptAction);
-        }
-
         public static IDeclarationSyntax ParseDeclaration(string declaration)
         {
             return JassParser.Instance.DeclarationParser.ParseOrThrow(declaration);
+        }
+
+        public static IDeclarationLineSyntax ParseDeclarationLine(string declarationLine)
+        {
+            return JassParser.Instance.DeclarationLineParser.ParseOrThrow(declarationLine);
         }
 
         public static IExpressionSyntax ParseExpression(string expression)
@@ -48,6 +53,16 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassFunctionDeclarationSyntax ParseFunctionDeclaration(string functionDeclaration)
         {
             return JassParser.Instance.FunctionDeclarationParser.ParseOrThrow(functionDeclaration);
+        }
+
+        public static IGlobalDeclarationSyntax ParseGlobalDeclaration(string globalDeclaration)
+        {
+            return JassParser.Instance.GlobalDeclarationParser.ParseOrThrow(globalDeclaration);
+        }
+
+        public static IGlobalLineSyntax ParseGlobalLine(string globalLine)
+        {
+            return JassParser.Instance.GlobalLineParser.ParseOrThrow(globalLine);
         }
 
         public static JassIdentifierNameSyntax ParseIdentifierName(string identifierName)
@@ -63,6 +78,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static IStatementSyntax ParseStatement(string statement)
         {
             return JassParser.Instance.StatementParser.ParseOrThrow(statement);
+        }
+
+        public static IStatementLineSyntax ParseStatementLine(string statementLine)
+        {
+            return JassParser.Instance.StatementLineParser.ParseOrThrow(statementLine);
         }
 
         public static JassTypeSyntax ParseTypeName(string typeName)
@@ -85,19 +105,24 @@ namespace War3Net.CodeAnalysis.Jass
             return TryParse(binaryOperator, JassParser.Instance.BinaryOperatorParser, out result);
         }
 
+        public static bool TryParseComment(string comment, [NotNullWhen(true)] out JassCommentSyntax? result)
+        {
+            return TryParse(comment, JassParser.Instance.CommentParser, out result);
+        }
+
         public static bool TryParseCompilationUnit(string compilationUnit, [NotNullWhen(true)] out JassCompilationUnitSyntax? result)
         {
             return TryParse(compilationUnit, JassParser.Instance.CompilationUnitParser, out result);
         }
 
-        public static bool TryParseCustomScriptAction(string customScriptAction, [NotNullWhen(true)] out ICustomScriptAction? result)
-        {
-            return TryParse(customScriptAction, JassParser.Instance.CustomScriptActionParser, out result);
-        }
-
         public static bool TryParseDeclaration(string declaration, [NotNullWhen(true)] out IDeclarationSyntax? result)
         {
             return TryParse(declaration, JassParser.Instance.DeclarationParser, out result);
+        }
+
+        public static bool TryParseDeclarationLine(string declarationLine, [NotNullWhen(true)] out IDeclarationLineSyntax? result)
+        {
+            return TryParse(declarationLine, JassParser.Instance.DeclarationLineParser, out result);
         }
 
         public static bool TryParseExpression(string expression, [NotNullWhen(true)] out IExpressionSyntax? result)
@@ -108,6 +133,16 @@ namespace War3Net.CodeAnalysis.Jass
         public static bool TryParseFunctionDeclaration(string functionDeclaration, [NotNullWhen(true)] out JassFunctionDeclarationSyntax? result)
         {
             return TryParse(functionDeclaration, JassParser.Instance.FunctionDeclarationParser, out result);
+        }
+
+        public static bool TryParseGlobalDeclaration(string globalDeclaration, [NotNullWhen(true)] out IGlobalDeclarationSyntax? result)
+        {
+            return TryParse(globalDeclaration, JassParser.Instance.GlobalDeclarationParser, out result);
+        }
+
+        public static bool TryParseGlobalLine(string globalLine, [NotNullWhen(true)] out IGlobalLineSyntax? result)
+        {
+            return TryParse(globalLine, JassParser.Instance.GlobalLineParser, out result);
         }
 
         public static bool TryParseIdentifierName(string identifierName, [NotNullWhen(true)] out JassIdentifierNameSyntax? result)
@@ -123,6 +158,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static bool TryParseStatement(string statement, [NotNullWhen(true)] out IStatementSyntax? result)
         {
             return TryParse(statement, JassParser.Instance.StatementParser, out result);
+        }
+
+        public static bool TryParseStatementLine(string statementLine, [NotNullWhen(true)] out IStatementLineSyntax? result)
+        {
+            return TryParse(statementLine, JassParser.Instance.StatementLineParser, out result);
         }
 
         public static bool TryParseTypeName(string typeName, [NotNullWhen(true)] out JassTypeSyntax? result)
