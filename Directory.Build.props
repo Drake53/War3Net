@@ -34,16 +34,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <War3NetBuildVersion>5.3.0</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.3.2</War3NetBuildCoreVersion>
-    <War3NetCodeAnalysisDecompilersVersion>0.1.0</War3NetCodeAnalysisDecompilersVersion>
-    <War3NetCodeAnalysisJassVersion>5.3.1</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.2.8</War3NetCodeAnalysisTranspilersVersion>
-    <War3NetCommonVersion>5.0.2</War3NetCommonVersion>
-    <War3NetDrawingBlpVersion>5.0.0</War3NetDrawingBlpVersion>
-    <War3NetIOCompressionVersion>5.1.0</War3NetIOCompressionVersion>
-    <War3NetIOMpqVersion>5.3.0</War3NetIOMpqVersion>
-    <War3NetIOSlkVersion>0.1.3</War3NetIOSlkVersion>
+    <War3NetBuildVersion>5.4.0</War3NetBuildVersion>
+    <War3NetBuildCoreVersion>5.4.0</War3NetBuildCoreVersion>
+    <War3NetCodeAnalysisDecompilersVersion>5.4.0</War3NetCodeAnalysisDecompilersVersion>
+    <War3NetCodeAnalysisJassVersion>5.4.0</War3NetCodeAnalysisJassVersion>
+    <War3NetCodeAnalysisTranspilersVersion>5.4.0</War3NetCodeAnalysisTranspilersVersion>
+    <War3NetCommonVersion>5.4.0</War3NetCommonVersion>
+    <War3NetDrawingBlpVersion>5.4.0</War3NetDrawingBlpVersion>
+    <War3NetIOCompressionVersion>5.4.0</War3NetIOCompressionVersion>
+    <War3NetIOMpqVersion>5.4.0</War3NetIOMpqVersion>
+    <War3NetIOSlkVersion>5.4.0</War3NetIOSlkVersion>
     <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
     <!--
     <War3NetRenderingVersion></War3NetRenderingVersion>
@@ -53,7 +53,7 @@
     <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
     <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
     -->
-    <War3NetCSharpLuaVersion>1.7.14</War3NetCSharpLuaVersion>
-    <War3NetCSharpLuaCoreSystemVersion>1.7.14</War3NetCSharpLuaCoreSystemVersion>
+    <War3NetCSharpLuaVersion>1.7.15</War3NetCSharpLuaVersion>
+    <War3NetCSharpLuaCoreSystemVersion>1.7.15</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>
