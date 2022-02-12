@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CustomScriptActionDecompiler.cs" company="Drake53">
+// <copyright file="CustomScriptCodeDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,41 +14,20 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private TriggerFunction DecompileCustomScriptAction(IDeclarationLineSyntax declarationLine)
         {
-            return new TriggerFunction
-            {
-                Type = TriggerFunctionType.Action,
-                IsEnabled = true,
-                Name = "CustomScriptCode",
-                Parameters = new()
-                {
-                    new TriggerFunctionParameter
-                    {
-                        Type = TriggerFunctionParameterType.String,
-                        Value = declarationLine.ToString(),
-                    },
-                },
-            };
+            return DecompileCustomScriptAction(declarationLine.ToString());
         }
 
         private TriggerFunction DecompileCustomScriptAction(IGlobalLineSyntax globalLine)
         {
-            return new TriggerFunction
-            {
-                Type = TriggerFunctionType.Action,
-                IsEnabled = true,
-                Name = "CustomScriptCode",
-                Parameters = new()
-                {
-                    new TriggerFunctionParameter
-                    {
-                        Type = TriggerFunctionParameterType.String,
-                        Value = globalLine.ToString(),
-                    },
-                },
-            };
+            return DecompileCustomScriptAction(globalLine.ToString());
         }
 
         private TriggerFunction DecompileCustomScriptAction(IStatementLineSyntax statementLine)
+        {
+            return DecompileCustomScriptAction(statementLine.ToString());
+        }
+
+        private TriggerFunction DecompileCustomScriptAction(string customScriptCode)
         {
             return new TriggerFunction
             {
@@ -60,7 +39,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.String,
-                        Value = statementLine.ToString(),
+                        Value = customScriptCode,
                     },
                 },
             };
