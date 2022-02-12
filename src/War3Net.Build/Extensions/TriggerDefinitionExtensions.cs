@@ -24,14 +24,19 @@ namespace War3Net.Build.Extensions
             return $"InitTrig_{trigger.GetTriggerIdentifierName()}";
         }
 
-        public static string GetTriggerConditionsFunctionName(this TriggerDefinition trigger)
+        public static string GetTrigConditionsFunctionName(this TriggerDefinition trigger)
         {
             return $"Trig_{trigger.GetTriggerIdentifierName()}_Conditions";
         }
 
-        public static string GetTriggerActionsFunctionName(this TriggerDefinition trigger)
+        public static string GetTrigActionsFunctionName(this TriggerDefinition trigger)
         {
             return $"Trig_{trigger.GetTriggerIdentifierName()}_Actions";
+        }
+
+        public static string GetTrigIdentifierBaseName(this TriggerDefinition trigger)
+        {
+            return $"Trig_{trigger.GetTriggerIdentifierName()}_";
         }
 
         public static string GetTriggerIdentifierName(this TriggerDefinition trigger)

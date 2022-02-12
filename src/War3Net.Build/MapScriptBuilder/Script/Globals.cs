@@ -17,7 +17,7 @@ namespace War3Net.Build
     {
         protected internal virtual JassGlobalDeclarationListSyntax Globals(Map map)
         {
-            var globalDeclarationList = new List<IDeclarationSyntax>();
+            var globalDeclarationList = new List<IGlobalDeclarationSyntax>();
             var generatedGlobals = new List<JassGlobalDeclarationSyntax>();
 
             generatedGlobals.AddRange(Regions(map));
