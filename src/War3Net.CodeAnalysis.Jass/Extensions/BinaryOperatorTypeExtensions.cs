@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.ComponentModel;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
@@ -27,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 BinaryOperatorType.LessOrEqual => $"{JassSymbol.LessThanSign}{JassSymbol.EqualsSign}",
                 BinaryOperatorType.And => JassKeyword.And,
                 BinaryOperatorType.Or => JassKeyword.Or,
+
+                _ => throw new InvalidEnumArgumentException(nameof(binaryOperator), (int)binaryOperator, typeof(BinaryOperatorType)),
             };
         }
     }

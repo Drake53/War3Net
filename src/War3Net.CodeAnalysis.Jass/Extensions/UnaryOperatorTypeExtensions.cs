@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.ComponentModel;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
@@ -18,6 +20,8 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 UnaryOperatorType.Plus => $"{JassSymbol.PlusSign}",
                 UnaryOperatorType.Minus => $"{JassSymbol.MinusSign}",
                 UnaryOperatorType.Not => JassKeyword.Not,
+
+                _ => throw new InvalidEnumArgumentException(nameof(unaryOperator), (int)unaryOperator, typeof(UnaryOperatorType)),
             };
         }
     }
