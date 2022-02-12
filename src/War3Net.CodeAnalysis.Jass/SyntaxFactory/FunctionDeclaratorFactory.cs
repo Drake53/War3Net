@@ -18,5 +18,13 @@ namespace War3Net.CodeAnalysis.Jass
                 JassParameterListSyntax.Empty,
                 JassTypeSyntax.Nothing);
         }
+
+        public static JassFunctionDeclaratorSyntax ConditionFunctionDeclarator(string name)
+        {
+            return new JassFunctionDeclaratorSyntax(
+                ParseIdentifierName(name),
+                JassParameterListSyntax.Empty,
+                JassTypeSyntax.Boolean);
+        }
     }
 }
