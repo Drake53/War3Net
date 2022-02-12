@@ -18,7 +18,7 @@ namespace War3Net.Build
         {
             context.TrigFunctionIdentifierBuilder.Append(1);
             var conditionFunctionName = context.TrigFunctionIdentifierBuilder.ToString();
-            RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Parameters[0].Function);
+            RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Parameters[0]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
             context.Renderer.Render(new JassIfCustomScriptAction(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.InvocationExpression(conditionFunctionName))));

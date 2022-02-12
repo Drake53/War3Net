@@ -20,11 +20,17 @@ namespace War3Net.Build
 {
     public partial class TriggerRenderer
     {
-        private void RenderConditionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, TriggerFunction function)
+        private void RenderConditionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, TriggerFunctionParameter parameter)
         {
+            if (parameter.Type != TriggerFunctionParameterType.Function || parameter.Function is null)
+            {
+                throw new ArgumentException("Parameter must have a function and be of type 'Function'.", nameof(parameter));
+            }
+
+            var function = parameter.Function;
             if (function.Type != TriggerFunctionType.Condition || !function.IsEnabled)
             {
-                throw new ArgumentException("Function must be enabled and of type 'Condition'.", nameof(function));
+                throw new ArgumentException("Parameter function must be enabled and of type 'Condition'.", nameof(parameter));
             }
 
             var stringBuilder = new StringBuilder();
@@ -117,12 +123,12 @@ namespace War3Net.Build
             {
                 context.TrigFunctionIdentifierBuilder.Append(1);
                 var conditionFunctionName1 = context.TrigFunctionIdentifierBuilder.ToString();
-                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName1, function.Parameters[0].Function);
+                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName1, function.Parameters[0]);
                 context.TrigFunctionIdentifierBuilder.Remove();
 
                 context.TrigFunctionIdentifierBuilder.Append(2);
                 var conditionFunctionName2 = context.TrigFunctionIdentifierBuilder.ToString();
-                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName2, function.Parameters[1].Function);
+                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName2, function.Parameters[1]);
                 context.TrigFunctionIdentifierBuilder.Remove();
 
                 return SyntaxFactory.InvocationExpression(

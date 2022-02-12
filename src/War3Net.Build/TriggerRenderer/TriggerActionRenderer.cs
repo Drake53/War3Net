@@ -20,11 +20,17 @@ namespace War3Net.Build
 {
     public partial class TriggerRenderer
     {
-        private void RenderActionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, TriggerFunction function)
+        private void RenderActionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, TriggerFunctionParameter parameter)
         {
+            if (parameter.Type != TriggerFunctionParameterType.Function || parameter.Function is null)
+            {
+                throw new ArgumentException("Parameter must have a function and be of type 'Function'.", nameof(parameter));
+            }
+
+            var function = parameter.Function;
             if (function.Type != TriggerFunctionType.Action || !function.IsEnabled)
             {
-                throw new ArgumentException("Function must be enabled and of type 'Action'.", nameof(function));
+                throw new ArgumentException("Parameter function must be enabled and of type 'Action'.", nameof(parameter));
             }
 
             var stringBuilder = new StringBuilder();
@@ -124,7 +130,7 @@ namespace War3Net.Build
                     break;
 
                 case "CustomScriptCode":
-                    context.Renderer.Render(SyntaxFactory.ParseCustomScriptAction(function.Parameters[0].Value));
+                    context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
                     context.Renderer.RenderNewLine();
                     break;
 

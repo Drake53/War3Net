@@ -29,7 +29,10 @@ namespace War3Net.Build
         private readonly TriggerData _triggerData;
         private readonly ImmutableDictionary<string, string> _variableTypes;
 
-        public TriggerRenderer(TextWriter writer, TriggerData triggerData, IEnumerable<VariableDefinition> variables)
+        public TriggerRenderer(
+            TextWriter writer,
+            TriggerData triggerData,
+            IEnumerable<VariableDefinition> variables)
         {
             _writer = writer;
             _triggerData = triggerData;
@@ -233,7 +236,7 @@ namespace War3Net.Build
                         if (type == "boolexpr")
                         {
                             var conditionFunctionName = context.TrigFunctionIdentifierBuilder.ToString();
-                            RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, parameter.Function);
+                            RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, parameter);
 
                             return SyntaxFactory.InvocationExpression(WellKnownNatives.Condition, SyntaxFactory.FunctionReferenceExpression(conditionFunctionName));
                         }

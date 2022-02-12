@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Immutable;
-using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -21,7 +20,7 @@ namespace War3Net.Build
         {
             context.TrigFunctionIdentifierBuilder.Append(function.Parameters.Count);
             var actionFunctionName = context.TrigFunctionIdentifierBuilder.ToString();
-            RenderActionFunction(context.TrigFunctionIdentifierBuilder, actionFunctionName, function.Parameters.Last().Function);
+            RenderActionFunction(context.TrigFunctionIdentifierBuilder, actionFunctionName, function.Parameters[^1]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
             var argumentListBuilder = ImmutableArray.CreateBuilder<IExpressionSyntax>();
