@@ -71,7 +71,7 @@ namespace War3Net.Build
             var allowBuildings = map.Info is not null && map.Info.FormatVersion < MapInfoFormatVersion.v15;
 
             var neutralPassiveId = MaxPlayerSlots + 3;
-            return unitData.OwnerId == neutralPassiveId && unitData.IsUnit() && (allowBuildings || !unitData.IsPassiveBuilding());
+            return unitData.OwnerId == neutralPassiveId && unitData.IsUnit() && (allowBuildings || !unitData.IsPassiveBuilding(map.UnitObjectData));
         }
     }
 }

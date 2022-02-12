@@ -69,7 +69,7 @@ namespace War3Net.Build
             }
 
             var neutralPassiveId = MaxPlayerSlots + 3;
-            return unitData.OwnerId == neutralPassiveId && unitData.IsUnit() && unitData.IsPassiveBuilding();
+            return unitData.OwnerId == neutralPassiveId && unitData.IsUnit() && unitData.IsPassiveBuilding(map.UnitObjectData);
         }
     }
 }

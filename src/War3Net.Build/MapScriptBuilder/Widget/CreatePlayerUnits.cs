@@ -68,7 +68,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(unitData));
             }
 
-            return unitData.OwnerId < MaxPlayerSlots && unitData.IsUnit() && !unitData.IsPlayerStartLocation() && !unitData.IsBuilding();
+            return unitData.OwnerId < MaxPlayerSlots && unitData.IsUnit() && !unitData.IsPlayerStartLocation() && !unitData.IsBuilding(map.UnitObjectData);
         }
     }
 }

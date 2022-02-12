@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using War3Net.Build.Object;
 using War3Net.Build.Resources;
 using War3Net.Build.Widget;
 using War3Net.Common.Extensions;
@@ -34,14 +35,38 @@ namespace War3Net.Build.Extensions
                 : $"ItemTable{unitData.MapItemTableId:D6}_DropItems";
         }
 
-        public static bool IsBuilding(this UnitData unitData)
+        public static bool IsBuilding(this UnitData unitData, UnitObjectData? unitObjectData)
         {
-            return unitData.IsRandomBuilding() || _buildingTypeIds.Value.Contains(unitData.TypeId);
+            if (unitData.IsRandomBuilding())
+            {
+                return true;
+            }
+
+            if (unitObjectData is not null)
+            {
+                var unit = unitObjectData.BaseUnits.FirstOrDefault(unit => unit.OldId == unitData.TypeId)
+                         ?? unitObjectData.NewUnits.FirstOrDefault(unit => unit.NewId == unitData.TypeId);
+
+                if (unit is not null)
+                {
+                    var isBuildingModification = unit.Modifications.FirstOrDefault(modification => modification.Id == "ubdg".FromRawcode());
+                    if (isBuildingModification is not null)
+                    {
+                        return isBuildingModification.ValueAsBool;
+                    }
+                    else
+                    {
+                        return _buildingTypeIds.Value.Contains(unit.OldId);
+                    }
+                }
+            }
+
+            return _buildingTypeIds.Value.Contains(unitData.TypeId);
         }
 
-        public static bool IsPassiveBuilding(this UnitData unitData)
+        public static bool IsPassiveBuilding(this UnitData unitData, UnitObjectData? unitObjectData)
         {
-            return unitData.IsBuilding();
+            return unitData.IsBuilding(unitObjectData);
         }
 
         public static bool TryGetDefaultPlayerColorId(this UnitData unitData, out int playerColorId)
