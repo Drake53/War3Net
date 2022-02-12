@@ -28,15 +28,18 @@ namespace War3Net.Build
         private readonly TextWriter _writer;
         private readonly TriggerData _triggerData;
         private readonly ImmutableDictionary<string, string> _variableTypes;
+        private readonly bool _isLuaTrigger;
 
         public TriggerRenderer(
             TextWriter writer,
             TriggerData triggerData,
-            IEnumerable<VariableDefinition> variables)
+            IEnumerable<VariableDefinition> variables,
+            bool isLuaTrigger = false)
         {
             _writer = writer;
             _triggerData = triggerData;
             _variableTypes = variables.ToImmutableDictionary(variable => variable.Name, variable => variable.Type, StringComparer.Ordinal);
+            _isLuaTrigger = isLuaTrigger;
         }
 
         public void RenderTrigger(TriggerDefinition triggerDefinition)

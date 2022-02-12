@@ -130,8 +130,22 @@ namespace War3Net.Build
                     break;
 
                 case "CustomScriptCode":
-                    context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
-                    context.Renderer.RenderNewLine();
+                    if (_isLuaTrigger)
+                    {
+                        context.Renderer.Render(new JassCommentSyntax("! beginusercode"));
+                        context.Renderer.RenderNewLine();
+
+                        context.Renderer.RenderLine(function.Parameters[0].Value);
+
+                        context.Renderer.Render(new JassCommentSyntax("! endusercode"));
+                        context.Renderer.RenderNewLine();
+                    }
+                    else
+                    {
+                        context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
+                        context.Renderer.RenderNewLine();
+                    }
+
                     break;
 
                 case "ReturnAction":
