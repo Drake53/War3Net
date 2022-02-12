@@ -80,7 +80,12 @@ namespace War3Net.CodeAnalysis.Transpilers
             _globalTypes.Add(field.Name, field.FieldType.ToJassType());
         }
 
-        private void RegisterFunctionReturnType(JassFunctionDeclaratorSyntax functionDeclarator)
+        internal void ClearLocalTypes()
+        {
+            _localTypes.Clear();
+        }
+
+        internal void RegisterFunctionReturnType(JassFunctionDeclaratorSyntax functionDeclarator)
         {
             _functionReturnTypes.Add(functionDeclarator.IdentifierName.Name, functionDeclarator.ReturnType);
         }

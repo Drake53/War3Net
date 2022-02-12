@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             functionExpression.Body.Statements.AddRange(Transpile(functionDeclaration.Body));
             functionExpression.RenderAsFunctionDefinition = true;
 
-            _localTypes.Clear();
+            ClearLocalTypes();
 
             var luaFunctionDeclaration = new LuaVariableDeclaratorSyntax(Transpile(functionDeclaration.FunctionDeclarator.IdentifierName), functionExpression);
             luaFunctionDeclaration.IsLocalDeclaration = false;

@@ -27,6 +27,8 @@ namespace War3Net.CodeAnalysis.Transpilers
                 JassEmptySyntax empty => Transpile(empty),
                 JassCommentSyntax comment => Transpile(comment),
                 JassGlobalDeclarationSyntax globalDeclaration => Transpile(globalDeclaration),
+
+                _ => throw new NotSupportedException(),
             });
         }
     }
