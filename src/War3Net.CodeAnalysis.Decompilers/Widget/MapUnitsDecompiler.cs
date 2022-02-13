@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Numerics;
 
 using War3Net.Build.Widget;
@@ -29,6 +28,14 @@ namespace War3Net.CodeAnalysis.Decompilers
             var createAllUnits = GetFunction("CreateAllUnits");
             var config = GetFunction("config");
             var initCustomPlayerSlots = GetFunction("InitCustomPlayerSlots");
+
+            if (createAllUnits is null ||
+                config is null ||
+                initCustomPlayerSlots is null)
+            {
+                mapUnits = null;
+                return false;
+            }
 
             if (TryDecompileMapUnits(
                 createAllUnits.FunctionDeclaration,
@@ -373,6 +380,51 @@ namespace War3Net.CodeAnalysis.Decompilers
                             callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
                         {
                             result[^1].HeroLevel = level;
+                        }
+                        else
+                        {
+                            units = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroStr", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 3 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
+                        {
+                            result[^1].HeroStrength = value;
+                        }
+                        else
+                        {
+                            units = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroAgi", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 3 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
+                        {
+                            result[^1].HeroAgility = value;
+                        }
+                        else
+                        {
+                            units = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroInt", StringComparison.Ordinal))
+                    {
+                        if (callStatement.Arguments.Arguments.Length == 3 &&
+                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
+                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
+                        {
+                            result[^1].HeroIntelligence = value;
                         }
                         else
                         {
