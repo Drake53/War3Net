@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using CSharpLua;
-
 using War3Net.Build.Extensions;
 using War3Net.IO.Mpq;
 
@@ -28,6 +26,8 @@ namespace War3Net.Build
             _encoding = null;
             _files = new List<MpqFile>();
         }
+
+        public Map Map => _map;
 
         public void AddFiles(MpqArchive archive)
         {
@@ -69,11 +69,6 @@ namespace War3Net.Build
         public void AddFiles(string directory, string searchPattern, SearchOption searchOption)
         {
             AddFiles(directory, Directory.EnumerateFiles(directory, searchPattern, searchOption));
-        }
-
-        public void Compile(Compiler compiler, IEnumerable<string> luaSystemLibs)
-        {
-            _map.CompileScript(compiler, luaSystemLibs);
         }
 
         public void Build(string path)
