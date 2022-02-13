@@ -50,6 +50,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             foreach (var statement in functionDeclaration.Body.Statements)
             {
                 if (statement is JassLocalVariableDeclarationStatementSyntax ||
+                    statement is JassCommentSyntax ||
                     statement is JassEmptySyntax)
                 {
                     continue;

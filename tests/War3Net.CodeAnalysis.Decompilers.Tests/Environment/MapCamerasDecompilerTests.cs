@@ -32,7 +32,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
                 var expectedCamera = map.Cameras.Cameras[i];
                 var actualCamera = decompiledMapCameras.Cameras[i];
 
-                const float delta = 0.0500001f;
+                //const float delta = 0.0500001f;
+                const float delta = 0.055f;
 
                 Assert.AreEqual(expectedCamera.Name.Replace('_', ' '), actualCamera.Name, ignoreCase: false, CultureInfo.InvariantCulture);
                 Assert.AreEqual(expectedCamera.ZOffset, actualCamera.ZOffset, delta);

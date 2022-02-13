@@ -47,7 +47,12 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             foreach (var statement in functionDeclaration.Body.Statements)
             {
-                if (statement is JassSetStatementSyntax setStatement)
+                if (statement is JassCommentSyntax ||
+                    statement is JassEmptySyntax)
+                {
+                    continue;
+                }
+                else if (statement is JassSetStatementSyntax setStatement)
                 {
                     if (setStatement.Indexer is null &&
                         setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal))
