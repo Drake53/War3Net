@@ -28,11 +28,27 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        public static void AreEqual(ICustomScriptAction? expected, ICustomScriptAction? actual)
+        public static void AreEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
         {
             if (!expected.NullableEquals(actual))
             {
-                Assert.Fail("Custom script actions are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+                Assert.Fail("Declaration lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+            }
+        }
+
+        public static void AreEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
+        {
+            if (!expected.NullableEquals(actual))
+            {
+                Assert.Fail("Global lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+            }
+        }
+
+        public static void AreEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
+        {
+            if (!expected.NullableEquals(actual))
+            {
+                Assert.Fail("Statement lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
             }
         }
 
@@ -68,11 +84,27 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        public static void AreNotEqual(ICustomScriptAction? expected, ICustomScriptAction? actual)
+        public static void AreNotEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
         {
             if (expected.NullableEquals(actual))
             {
-                Assert.Fail($"Custom script actions are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+                Assert.Fail($"Declaration lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+            }
+        }
+
+        public static void AreNotEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
+        {
+            if (expected.NullableEquals(actual))
+            {
+                Assert.Fail($"Global lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+            }
+        }
+
+        public static void AreNotEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
+        {
+            if (expected.NullableEquals(actual))
+            {
+                Assert.Fail($"Statement lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
             }
         }
 

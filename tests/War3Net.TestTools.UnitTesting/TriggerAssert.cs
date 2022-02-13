@@ -73,8 +73,8 @@ namespace War3Net.TestTools.UnitTesting
                 var expectedFunctionParameter = expectedFunction.Parameters.Single();
                 var actualFunctionParameter = actualFunction.Parameters.Single();
 
-                var expectedCustomScriptAction = JassSyntaxFactory.ParseCustomScriptAction(expectedFunctionParameter.Value);
-                var actualCustomScriptAction = JassSyntaxFactory.ParseCustomScriptAction(actualFunctionParameter.Value);
+                var expectedCustomScriptAction = JassSyntaxFactory.ParseStatementLine(expectedFunctionParameter.Value);
+                var actualCustomScriptAction = JassSyntaxFactory.ParseStatementLine(actualFunctionParameter.Value);
 
                 Assert.AreEqual(expectedFunctionParameter.Type, actualFunctionParameter.Type);
                 SyntaxAssert.AreEqual(expectedCustomScriptAction, actualCustomScriptAction);
