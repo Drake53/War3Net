@@ -81,6 +81,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             VariableDeclarations = variableDeclarationsBuilder.ToImmutable();
 
             ImportedFileNames = new(StringComparer.OrdinalIgnoreCase);
+
+            MaxPlayerSlots = map.Info.EditorVersion >= 6060 ? 24 : 12;
         }
 
         public ObjectDataContext ObjectData { get; }
@@ -92,5 +94,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         public ImmutableDictionary<string, VariableDeclarationContext> VariableDeclarations { get; }
 
         public HashSet<string> ImportedFileNames { get; }
+
+        public int MaxPlayerSlots { get; }
     }
 }

@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -45,6 +46,32 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 default:
                     value = default;
                     return false;
+            }
+        }
+
+        public static bool TryGetPlayerIdExpressionValue(this IExpressionSyntax expression, int maxPlayerSlots, out int value)
+        {
+            if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
+            {
+                if (string.Equals(variableReferenceExpression.IdentifierName.Name, "PLAYER_NEUTRAL_AGGRESSIVE", StringComparison.Ordinal))
+                {
+                    value = maxPlayerSlots;
+                    return true;
+                }
+                else if (string.Equals(variableReferenceExpression.IdentifierName.Name, "PLAYER_NEUTRAL_PASSIVE", StringComparison.Ordinal))
+                {
+                    value = maxPlayerSlots + 3;
+                    return true;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
+            }
+            else
+            {
+                return expression.TryGetIntegerExpressionValue(out value);
             }
         }
 
