@@ -37,208 +37,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             expression = expression.Deparenthesize();
 
-            switch (type)
-            {
-                case "abilcode":
-                    return TryDecompileTriggerFunctionAbilCodeParameter(expression, out functionParameter);
-
-                case "alliancesetting":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "attachpoint":
-                    return TryDecompileTriggerFunctionAttachPointParameter(expression, out functionParameter);
-
-                case "attacktype":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "buffcode":
-                    return TryDecompileTriggerFunctionBuffCodeParameter(expression, out functionParameter);
-
-                case "cameraapplyoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "camerafield":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "camerasetup":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter);
-
-                case "chatmatchtype":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "code":
-                    return TryDecompileTriggerFunctionCodeParameter(expression, out functionParameter);
-
-                case "damagetype":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "destructable":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "effect":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "enabledisableoption":
-                case "enableddisabledoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "fadedontoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "fogstate":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "force":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "group":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "hashtable":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "heroskillcode":
-                    return TryDecompileTriggerFunctionHeroSkillCodeParameter(expression, out functionParameter);
-
-                case "herostat":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "imagefile":
-                    return TryDecompileTriggerFunctionImageFileParameter(expression, out functionParameter);
-
-                case "includeoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "integer":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionIntegerParameter(expression, out functionParameter);
-
-                case "invulnerableoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "item":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "itemcode":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionItemCodeParameter(expression, out functionParameter);
-
-                case "location":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "minimizeoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "modelfile":
-                    return TryDecompileTriggerFunctionModelFileParameter(expression, out functionParameter);
-
-                case "modifymethod":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "musicfile":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionMusicFileParameter(expression, out functionParameter);
-
-                case "multiboard":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "onoffoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "pauseunpauseoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "player":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "playerflag":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "playerstate":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "playerunitevent":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "questtypeoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "real":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionRealParameter(expression, out functionParameter);
-
-                case "rect":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "showhideoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "skymodelstring":
-                    return TryDecompileTriggerFunctionSkyModelStringParameter(expression, out functionParameter);
-
-                case "sound":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter);
-
-                case "string":
-                case "StringExt":
-                    return TryDecompileTriggerFunctionStringParameter(expression, out functionParameter);
-
-                case "stringnoformat":
-                    return TryDecompileTriggerFunctionStringNoFormatParameter(expression, out functionParameter);
-
-                case "techcode":
-                    return TryDecompileTriggerFunctionTechCodeParameter(expression, out functionParameter);
-
-                case "texttag":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "trigger":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "unit":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "unitcode":
-                    return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
-                        || TryDecompileTriggerFunctionUnitCodeParameter(expression, out functionParameter);
-
-                case "unitevent":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "unitordernotarg":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "unitorderptarg":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "unitstate":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "unittype":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "useskipoption":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                case "weathereffect":
-                    return TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter);
-
-                case "weathereffectcode":
-                    return TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter);
-
-                default: throw new ArgumentException($"Unknown parameter type '{type}'.", nameof(type));
-            }
+            return TryDecompileTriggerFunctionParameterVariable(expression, type, out functionParameter)
+                || TryDecompileTriggerFunctionParameterPreset(expression, type, out functionParameter)
+                || TryDecompileTriggerFunctionParameterFunction(expression, type, out functionParameter)
+                || TryDecompileTriggerFunctionParameterValue(expression, type, out functionParameter);
         }
 
         private bool TryDecompileTriggerFunctionParameter(BinaryOperatorType binaryOperatorType, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
@@ -279,15 +81,19 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileTriggerFunctionParameterVariable(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
+            if (Context.TriggerData.TriggerData.TriggerTypes.TryGetValue(type, out var triggerType) &&
+                triggerType.UsableAsGlobalVariable)
             {
-                return TryDecompileVariableTriggerFunctionParameter(type, variableReferenceExpression.IdentifierName.Name, null, out functionParameter);
-            }
-            else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
-            {
-                if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
+                if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
                 {
-                    return TryDecompileVariableTriggerFunctionParameter(type, arrayReferenceExpression.IdentifierName.Name, arrayIndexer, out functionParameter);
+                    return TryDecompileVariableTriggerFunctionParameter(type, variableReferenceExpression.IdentifierName.Name, null, out functionParameter);
+                }
+                else if (expression is JassArrayReferenceExpressionSyntax arrayReferenceExpression)
+                {
+                    if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
+                    {
+                        return TryDecompileVariableTriggerFunctionParameter(type, arrayReferenceExpression.IdentifierName.Name, arrayIndexer, out functionParameter);
+                    }
                 }
             }
 
@@ -339,6 +145,66 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             functionParameter = null;
             return false;
+        }
+
+        private bool TryDecompileTriggerFunctionParameterValue(IExpressionSyntax expression, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+        {
+            switch (type)
+            {
+                case "abilcode":
+                    return TryDecompileTriggerFunctionAbilCodeParameter(expression, out functionParameter);
+
+                case "attachpoint":
+                    return TryDecompileTriggerFunctionAttachPointParameter(expression, out functionParameter);
+
+                case "buffcode":
+                    return TryDecompileTriggerFunctionBuffCodeParameter(expression, out functionParameter);
+
+                case "code":
+                    return TryDecompileTriggerFunctionCodeParameter(expression, out functionParameter);
+
+                case "heroskillcode":
+                    return TryDecompileTriggerFunctionHeroSkillCodeParameter(expression, out functionParameter);
+
+                case "imagefile":
+                    return TryDecompileTriggerFunctionImageFileParameter(expression, out functionParameter);
+
+                case "integer":
+                    return TryDecompileTriggerFunctionIntegerParameter(expression, out functionParameter);
+
+                case "itemcode":
+                    return TryDecompileTriggerFunctionItemCodeParameter(expression, out functionParameter);
+
+                case "modelfile":
+                    return TryDecompileTriggerFunctionModelFileParameter(expression, out functionParameter);
+
+                case "musicfile":
+                    return TryDecompileTriggerFunctionMusicFileParameter(expression, out functionParameter);
+
+                case "real":
+                    return TryDecompileTriggerFunctionRealParameter(expression, out functionParameter);
+
+                case "skymodelstring":
+                    return TryDecompileTriggerFunctionSkyModelStringParameter(expression, out functionParameter);
+
+                case "string":
+                case "StringExt":
+                    return TryDecompileTriggerFunctionStringParameter(expression, out functionParameter);
+
+                case "stringnoformat":
+                    return TryDecompileTriggerFunctionStringNoFormatParameter(expression, out functionParameter);
+
+                case "techcode":
+                    return TryDecompileTriggerFunctionTechCodeParameter(expression, out functionParameter);
+
+                case "unitcode":
+                    return TryDecompileTriggerFunctionUnitCodeParameter(expression, out functionParameter);
+
+                default:
+                    // throw new ArgumentException($"Unknown parameter type '{type}'.", nameof(type));
+                    functionParameter = null;
+                    return false;
+            }
         }
 
         private bool TryDecompileTriggerFunctionParameterStringForObjectCode(IExpressionSyntax expression, ImmutableHashSet<int> knownObjectCodes, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
