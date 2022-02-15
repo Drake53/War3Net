@@ -18,8 +18,8 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private bool TryDecompileTriggerCallFunction(JassInvocationExpressionSyntax invocationExpression, [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
-            var argumentTypes = Context.TriggerData.TriggerData.TriggerCalls[invocationExpression.IdentifierName.Name].ArgumentTypes;
-            if (argumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
+            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
+                triggerCall.ArgumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
             {
                 var function = new TriggerFunction
                 {
@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                 for (var i = 0; i < invocationExpression.Arguments.Arguments.Length; i++)
                 {
-                    if (TryDecompileTriggerFunctionParameter(invocationExpression.Arguments.Arguments[i], argumentTypes[i], out var functionParameter))
+                    if (TryDecompileTriggerFunctionParameter(invocationExpression.Arguments.Arguments[i], triggerCall.ArgumentTypes[i], out var functionParameter))
                     {
                         function.Parameters.Add(functionParameter);
                     }
