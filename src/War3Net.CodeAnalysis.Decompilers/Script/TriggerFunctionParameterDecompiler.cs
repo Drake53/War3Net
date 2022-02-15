@@ -46,7 +46,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         private bool TryDecompileTriggerFunctionParameter(BinaryOperatorType binaryOperatorType, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(type, out var triggerParamsForType) &&
-                triggerParamsForType.TryGetValue(binaryOperatorType.GetSymbol(), out var triggerParams))
+                triggerParamsForType.TryGetValue($"\"{binaryOperatorType.GetSymbol()}\"", out var triggerParams))
             {
                 functionParameter = new TriggerFunctionParameter
                 {

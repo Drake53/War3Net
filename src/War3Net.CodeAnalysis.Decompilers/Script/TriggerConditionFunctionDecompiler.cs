@@ -210,15 +210,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                         return false;
                     }
 
-                    if (Context.TriggerData.TriggerParams.TryGetValue(leftTriggerCondition.ArgumentTypes[1], out var triggerParamsForType) &&
-                        triggerParamsForType.TryGetValue($"\"{binaryExpression.Operator.GetSymbol()}\"", out var triggerParams))
+                    if (TryDecompileTriggerFunctionParameter(binaryExpression.Operator, leftTriggerCondition.ArgumentTypes[1], out var operatorFunctionParameter))
                     {
-                        var operatorFunctionParameter = new TriggerFunctionParameter
-                        {
-                            Type = TriggerFunctionParameterType.Preset,
-                            Value = triggerParams.Single().ParameterName,
-                        };
-
                         function.Name = leftTriggerCondition.FunctionName;
                         function.Parameters.Add(leftFunctionParameter);
                         function.Parameters.Add(operatorFunctionParameter);
