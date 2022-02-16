@@ -11,6 +11,7 @@ using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Decompilers.Extensions;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -58,7 +59,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 var returnExpression = returnStatement.Value.Deparenthesize();
 
-                return TryDecompileTriggerConditionFunction(returnExpression, out conditionFunction);
+                return TryDecompileConditionExpression(returnExpression, out conditionFunction);
             }
             else
             {
@@ -173,17 +174,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                 }
             }
-            else
-            {
-                return TryDecompileTriggerConditionFunction(expression, out conditionFunction);
-            }
-        }
-
-        private bool TryDecompileTriggerConditionFunction(IExpressionSyntax compareExpression, [NotNullWhen(true)] out TriggerFunction? conditionFunction)
-        {
-            conditionFunction = null;
-
-            if (compareExpression is JassBinaryExpressionSyntax binaryExpression)
+            else if (expression is JassBinaryExpressionSyntax binaryExpression)
             {
                 var function = new TriggerFunction
                 {
@@ -198,6 +189,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     {
                         if (rightTriggerCondition is null)
                         {
+                            conditionFunction = null;
                             return false;
                         }
                         else
@@ -207,6 +199,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (rightTriggerCondition is not null && !ReferenceEquals(leftTriggerCondition, rightTriggerCondition))
                     {
+                        conditionFunction = null;
                         return false;
                     }
 
@@ -222,16 +215,19 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
+                        conditionFunction = null;
                         return false;
                     }
                 }
                 else
                 {
+                    conditionFunction = null;
                     return false;
                 }
             }
             else
             {
+                conditionFunction = null;
                 return false;
             }
         }
@@ -257,7 +253,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                      Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
                      Context.TriggerData.TriggerConditions.TryGetValue(triggerCall.ReturnType, out triggerCondition))
             {
-                if (TryDecompileTriggerCallFunction(invocationExpression, out var callFunction))
+                if (TryDecompileTriggerCallFunction(invocationExpression, triggerCall, out var callFunction))
                 {
                     functionParameter = new TriggerFunctionParameter
                     {
