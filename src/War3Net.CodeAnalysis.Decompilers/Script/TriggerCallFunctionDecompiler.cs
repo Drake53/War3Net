@@ -16,10 +16,25 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
+        [Obsolete]
         private bool TryDecompileTriggerCallFunction(JassInvocationExpressionSyntax invocationExpression, [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
             if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
-                triggerCall.ArgumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
+                TryDecompileTriggerCallFunction(invocationExpression, triggerCall, out callFunction))
+            {
+                return true;
+            }
+
+            callFunction = null;
+            return false;
+        }
+
+        private bool TryDecompileTriggerCallFunction(
+            JassInvocationExpressionSyntax invocationExpression,
+            TriggerData.TriggerCall triggerCall,
+            [NotNullWhen(true)] out TriggerFunction? callFunction)
+        {
+            if (triggerCall.ArgumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
             {
                 var function = new TriggerFunction
                 {
