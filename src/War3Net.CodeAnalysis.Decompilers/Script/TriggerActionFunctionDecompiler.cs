@@ -159,19 +159,26 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassLoopStatementSyntax loopStatement)
                 {
-                    result.Add(DecompileCustomScriptAction(JassLoopCustomScriptAction.Value));
-
-                    if (TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActions))
+                    if (TryDecompileWaitForConditionActionFunction(loopStatement, out var waitForConditionFunction))
                     {
-                        result.AddRange(loopActions);
+                        result.Add(waitForConditionFunction);
                     }
                     else
                     {
-                        actionFunctions = null;
-                        return false;
-                    }
+                        result.Add(DecompileCustomScriptAction(JassLoopCustomScriptAction.Value));
 
-                    result.Add(DecompileCustomScriptAction(JassEndLoopCustomScriptAction.Value));
+                        if (TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActions))
+                        {
+                            result.AddRange(loopActions);
+                        }
+                        else
+                        {
+                            actionFunctions = null;
+                            return false;
+                        }
+
+                        result.Add(DecompileCustomScriptAction(JassEndLoopCustomScriptAction.Value));
+                    }
                 }
                 else if (statement is JassExitStatementSyntax exitStatement)
                 {
@@ -204,7 +211,19 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassReturnStatementSyntax returnStatement)
                 {
-                    result.Add(DecompileCustomScriptAction(returnStatement));
+                    if (returnStatement.Value is null)
+                    {
+                        result.Add(new TriggerFunction
+                        {
+                            Type = TriggerFunctionType.Action,
+                            IsEnabled = true,
+                            Name = "ReturnAction",
+                        });
+                    }
+                    else
+                    {
+                        result.Add(DecompileCustomScriptAction(returnStatement));
+                    }
                 }
                 else
                 {
