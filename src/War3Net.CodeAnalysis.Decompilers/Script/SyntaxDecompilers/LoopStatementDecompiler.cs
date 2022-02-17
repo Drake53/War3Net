@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (!TryDecompileTriggerActionFunctions(loopStatement.Body, out var loopActions))
+            if (!TryDecompileActionStatementList(loopStatement.Body, out var loopActions))
             {
                 return false;
             }

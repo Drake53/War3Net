@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 if (callStatement.Arguments.Arguments[^1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
                     Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var actionsFunctionDeclaration) &&
                     actionsFunctionDeclaration.IsActionsFunction &&
-                    TryDecompileTriggerActionFunctions(actionsFunctionDeclaration.FunctionDeclaration.Body, out var loopActionFunctions))
+                    TryDecompileActionStatementList(actionsFunctionDeclaration.FunctionDeclaration.Body, out var loopActionFunctions))
                 {
                     var function = new TriggerFunction
                     {

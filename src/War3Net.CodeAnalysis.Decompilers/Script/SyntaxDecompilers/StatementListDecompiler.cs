@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="TriggerActionFunctionDecompiler.cs" company="Drake53">
+// <copyright file="StatementListDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileTriggerActionFunctions(JassStatementListSyntax statementList, [NotNullWhen(true)] out List<TriggerFunction>? actionFunctions)
+        private bool TryDecompileActionStatementList(JassStatementListSyntax statementList, [NotNullWhen(true)] out List<TriggerFunction>? actionFunctions)
         {
             var result = new List<TriggerFunction>();
 

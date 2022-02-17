@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             functions.Add(DecompileCustomScriptAction(new JassIfCustomScriptAction(ifStatement.Condition)));
 
-            if (TryDecompileTriggerActionFunctions(ifStatement.Body, out var thenActions))
+            if (TryDecompileActionStatementList(ifStatement.Body, out var thenActions))
             {
                 functions.AddRange(thenActions);
             }
@@ -39,7 +39,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 functions.Add(DecompileCustomScriptAction(new JassElseIfCustomScriptAction(elseIfClause.Condition)));
 
-                if (TryDecompileTriggerActionFunctions(elseIfClause.Body, out var elseIfActions))
+                if (TryDecompileActionStatementList(elseIfClause.Body, out var elseIfActions))
                 {
                     functions.AddRange(elseIfActions);
                 }
@@ -53,7 +53,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 functions.Add(DecompileCustomScriptAction(JassElseCustomScriptAction.Value));
 
-                if (TryDecompileTriggerActionFunctions(ifStatement.ElseClause.Body, out var elseActions))
+                if (TryDecompileActionStatementList(ifStatement.ElseClause.Body, out var elseActions))
                 {
                     functions.AddRange(elseActions);
                 }

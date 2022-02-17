@@ -52,7 +52,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 var loopBody = new JassStatementListSyntax(ImmutableArray.CreateRange(loopStatement.Body.Statements, 1, loopStatement.Body.Statements.Length - 2, statement => statement));
                 if (TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
                     TryDecompileTriggerFunctionParameter(setIndexEndStatement.Value.Expression, JassKeyword.Integer, out var indexEndFunctionParameter) &&
-                    TryDecompileTriggerActionFunctions(loopBody, out var loopActionFunctions))
+                    TryDecompileActionStatementList(loopBody, out var loopActionFunctions))
                 {
                     loopFunction.Parameters.Add(indexFunctionParameter);
                     loopFunction.Parameters.Add(indexEndFunctionParameter);
@@ -159,7 +159,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 loopFunction.Parameters.Add(indexEndFunctionParameter);
 
                 var loopBody = new JassStatementListSyntax(ImmutableArray.CreateRange(loopStatement.Body.Statements, 1, loopStatement.Body.Statements.Length - 2, statement => statement));
-                if (TryDecompileTriggerActionFunctions(loopBody, out var loopActionFunctions))
+                if (TryDecompileActionStatementList(loopBody, out var loopActionFunctions))
                 {
                     foreach (var loopActionFunction in loopActionFunctions)
                     {

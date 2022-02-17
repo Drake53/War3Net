@@ -274,7 +274,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         {
                             var actionsFunction = actionsFunctionDeclaration.FunctionDeclaration;
 
-                            if (TryDecompileTriggerActionFunctions(actionsFunction.Body, out var actionFunctions))
+                            if (TryDecompileActionStatementList(actionsFunction.Body, out var actionFunctions))
                             {
                                 trigger.Functions.AddRange(actionFunctions);
                             }

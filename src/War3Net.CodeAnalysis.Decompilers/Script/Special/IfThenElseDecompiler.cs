@@ -28,8 +28,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     Name = "IfThenElseMultiple",
                 };
 
-                if (!TryDecompileTriggerActionFunctions(ifStatement.Body, out var thenActions) ||
-                    !TryDecompileTriggerActionFunctions(ifStatement.ElseClause.Body, out var elseActions))
+                if (!TryDecompileActionStatementList(ifStatement.Body, out var thenActions) ||
+                    !TryDecompileActionStatementList(ifStatement.ElseClause.Body, out var elseActions))
                 {
                     actionFunction = null;
                     return false;
