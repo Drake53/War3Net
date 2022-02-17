@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMap(Map map)
+        public void TestDecompileMapRegions(Map map)
         {
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapRegions(map.Regions.FormatVersion, out var decompiledMapRegions), "Failed to decompile map regions.");
 

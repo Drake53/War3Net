@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMap(Map map)
+        public void TestDecompileMapCameras(Map map)
         {
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapCameras(map.Cameras.FormatVersion, map.Cameras.UseNewFormat, out var decompiledMapCameras), "Failed to decompile map cameras.");
 

@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMap(Map map)
+        public void TestDecompileMapTriggers(Map map)
         {
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapTriggers(map.Triggers.FormatVersion, map.Triggers.SubVersion, out var decompiledMapTriggers), "Failed to decompile map triggers.");
 
