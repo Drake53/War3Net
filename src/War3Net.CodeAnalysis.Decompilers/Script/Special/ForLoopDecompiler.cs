@@ -6,8 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
@@ -18,7 +18,11 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileForLoopActionFunction(JassSetStatementSyntax setStatement, IStatementSyntax statement2, IStatementSyntax statement3, [NotNullWhen(true)] out TriggerFunction? actionFunction)
+        private bool TryDecompileForLoopActionFunction(
+            JassSetStatementSyntax setStatement,
+            IStatementSyntax? statement2,
+            IStatementSyntax? statement3,
+            ref List<TriggerFunction> functions)
         {
             if (statement2 is JassSetStatementSyntax setIndexEndStatement &&
                 statement3 is JassLoopStatementSyntax loopStatement &&
@@ -61,7 +65,6 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else
                 {
-                    actionFunction = null;
                     return false;
                 }
 
@@ -77,21 +80,22 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else
                 {
-                    actionFunction = null;
                     return false;
                 }
 
-                actionFunction = loopFunction;
+                functions.Add(loopFunction);
                 return true;
             }
             else
             {
-                actionFunction = null;
                 return false;
             }
         }
 
-        private bool TryDecompileForLoopVarActionFunction(JassSetStatementSyntax setStatement, IStatementSyntax statement2, [NotNullWhen(true)] out TriggerFunction? actionFunction)
+        private bool TryDecompileForLoopVarActionFunction(
+            JassSetStatementSyntax setStatement,
+            IStatementSyntax? statement2,
+            ref List<TriggerFunction> functions)
         {
             if (statement2 is JassLoopStatementSyntax loopStatement &&
                 loopStatement.Body.Statements.Length >= 2 &&
@@ -120,7 +124,6 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        actionFunction = null;
                         return false;
                     }
                 }
@@ -140,7 +143,6 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        actionFunction = null;
                         return false;
                     }
                 }
@@ -167,16 +169,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else
                 {
-                    actionFunction = null;
                     return false;
                 }
 
-                actionFunction = loopFunction;
+                functions.Add(loopFunction);
                 return true;
             }
             else
             {
-                actionFunction = null;
                 return false;
             }
         }
