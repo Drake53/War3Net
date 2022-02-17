@@ -65,11 +65,35 @@ namespace War3Net.TestTools.UnitTesting
         {
             Assert.AreEqual(expectedFunction.Type, actualFunction.Type);
             Assert.AreEqual(expectedFunction.Branch, actualFunction.Branch);
-            Assert.AreEqual(expectedFunction.Name, actualFunction.Name, ignoreCase: false, CultureInfo.InvariantCulture);
             Assert.AreEqual(expectedFunction.IsEnabled, actualFunction.IsEnabled);
 
-            if (string.Equals(expectedFunction.Name, "CustomScriptCode", StringComparison.Ordinal))
+            if (!string.Equals(expectedFunction.Name, actualFunction.Name, StringComparison.Ordinal))
             {
+                Assert.AreEqual(expectedFunction.Name + "Multiple", actualFunction.Name, ignoreCase: false, CultureInfo.InvariantCulture);
+                Assert.AreEqual(1, actualFunction.ChildFunctions.Count);
+
+                var actualParameters = new List<TriggerFunctionParameter>();
+                actualParameters.AddRange(actualFunction.Parameters);
+                actualParameters.Add(new TriggerFunctionParameter
+                {
+                    Type = TriggerFunctionParameterType.Function,
+                    Value = "DoNothing",
+                    Function = new TriggerFunction
+                    {
+                        Type = actualFunction.ChildFunctions[0].Type,
+                        Name = actualFunction.ChildFunctions[0].Name,
+                        IsEnabled = actualFunction.ChildFunctions[0].IsEnabled,
+                        Parameters = actualFunction.ChildFunctions[0].Parameters,
+                        ChildFunctions = actualFunction.ChildFunctions[0].ChildFunctions,
+                    },
+                });
+
+                AreEqual(expectedFunction.Parameters, actualParameters);
+            }
+            else if (string.Equals(expectedFunction.Name, "CustomScriptCode", StringComparison.Ordinal))
+            {
+                Assert.AreEqual(expectedFunction.Name, actualFunction.Name, ignoreCase: false, CultureInfo.InvariantCulture);
+
                 var expectedFunctionParameter = expectedFunction.Parameters.Single();
                 var actualFunctionParameter = actualFunction.Parameters.Single();
 
@@ -85,10 +109,11 @@ namespace War3Net.TestTools.UnitTesting
             }
             else
             {
-                AreEqual(expectedFunction.Parameters, actualFunction.Parameters);
-            }
+                Assert.AreEqual(expectedFunction.Name, actualFunction.Name, ignoreCase: false, CultureInfo.InvariantCulture);
 
-            AreEqual(expectedFunction.ChildFunctions, actualFunction.ChildFunctions);
+                AreEqual(expectedFunction.Parameters, actualFunction.Parameters);
+                AreEqual(expectedFunction.ChildFunctions, actualFunction.ChildFunctions);
+            }
         }
 
         public static void AreEqual(List<TriggerFunctionParameter> expected, List<TriggerFunctionParameter> actual)
@@ -102,10 +127,13 @@ namespace War3Net.TestTools.UnitTesting
 
         public static void AreEqual(List<TriggerFunction> expected, List<TriggerFunction> actual)
         {
-            Assert.AreEqual(expected.Count, actual.Count);
-            for (var j = 0; j < expected.Count; j++)
+            var expectedFunctions = expected.Where(triggerFunction => triggerFunction.IsEnabled).OrderBy(triggerFunction => triggerFunction.Branch).ToList();
+            var actualFunctions = actual.OrderBy(triggerFunction => triggerFunction.Branch).ToList();
+
+            Assert.AreEqual(expectedFunctions.Count, actualFunctions.Count);
+            for (var j = 0; j < expectedFunctions.Count; j++)
             {
-                AreEqual(expected[j], actual[j]);
+                AreEqual(expectedFunctions[j], actualFunctions[j]);
             }
         }
     }
