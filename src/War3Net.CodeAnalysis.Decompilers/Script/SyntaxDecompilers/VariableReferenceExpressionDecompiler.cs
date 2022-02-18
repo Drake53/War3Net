@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -22,18 +23,19 @@ namespace War3Net.CodeAnalysis.Decompilers
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams) &&
-                triggerParams.Length == 1)
+                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams))
             {
-                var triggerParam = triggerParams[0];
-
-                functionParameter = new TriggerFunctionParameter
+                var triggerParam = triggerParams.SingleOrDefault(param => string.Equals(param.VariableType, expectedType, StringComparison.Ordinal));
+                if (triggerParam is not null)
                 {
-                    Type = TriggerFunctionParameterType.Preset,
-                    Value = triggerParam.ParameterName,
-                };
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Preset,
+                        Value = triggerParam.ParameterName,
+                    };
 
-                return true;
+                    return true;
+                }
             }
 
             return TryDecompileVariableDeclarationReference(

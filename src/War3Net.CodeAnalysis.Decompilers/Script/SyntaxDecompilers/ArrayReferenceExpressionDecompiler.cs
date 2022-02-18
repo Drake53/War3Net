@@ -5,8 +5,10 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
@@ -22,16 +24,19 @@ namespace War3Net.CodeAnalysis.Decompilers
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(arrayReferenceExpression.ToString(), out var triggerParams) &&
-                triggerParams.Length == 1)
+                triggerParamsForAllTypes.TryGetValue(arrayReferenceExpression.ToString(), out var triggerParams))
             {
-                functionParameter = new TriggerFunctionParameter
+                var triggerParam = triggerParams.SingleOrDefault(param => string.Equals(param.VariableType, expectedType, StringComparison.Ordinal));
+                if (triggerParam is not null)
                 {
-                    Type = TriggerFunctionParameterType.Preset,
-                    Value = triggerParams[0].ParameterName,
-                };
+                    functionParameter = new TriggerFunctionParameter
+                    {
+                        Type = TriggerFunctionParameterType.Preset,
+                        Value = triggerParam.ParameterName,
+                    };
 
-                return true;
+                    return true;
+                }
             }
 
             if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
