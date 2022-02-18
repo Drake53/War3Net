@@ -37,15 +37,18 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
             }
 
             var expectedTriggerItems = map.Triggers.TriggerItems
-                .Where(triggerItem => triggerItem is not DeletedTriggerItem)
-                .Where(triggerItem => triggerItem is not TriggerDefinition triggerDefinition || triggerDefinition.IsEnabled)
+                .Where(triggerItem => triggerItem is TriggerDefinition triggerDefinition && triggerDefinition.IsEnabled)
                 .ToList();
 
-            Assert.AreEqual(expectedTriggerItems.Count, decompiledMapTriggers.TriggerItems.Count);
-            for (var i = 0; i < decompiledMapTriggers.TriggerItems.Count; i++)
+            var actualTriggerItems = decompiledMapTriggers.TriggerItems
+                .Where(triggerItem => triggerItem is TriggerDefinition triggerDefinition && triggerDefinition.IsEnabled)
+                .ToList();
+
+            Assert.AreEqual(expectedTriggerItems.Count, actualTriggerItems.Count);
+            for (var i = 0; i < actualTriggerItems.Count; i++)
             {
                 var expectedTrigger = expectedTriggerItems[i];
-                var actualTrigger = decompiledMapTriggers.TriggerItems[i];
+                var actualTrigger = actualTriggerItems[i];
 
                 Assert.AreEqual(expectedTrigger.Type, actualTrigger.Type);
                 // Assert.AreEqual(expectedTrigger.ParentId, actualTrigger.ParentId);
