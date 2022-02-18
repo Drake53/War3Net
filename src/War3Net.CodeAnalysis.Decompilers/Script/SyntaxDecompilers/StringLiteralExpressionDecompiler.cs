@@ -49,10 +49,21 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassStringLiteralExpressionSyntax stringLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
+            var value = Regex.Unescape(stringLiteralExpression.Value);
+
+            decompileOptions = new();
+            decompileOptions.Add(new DecompileOption
+            {
+                Type = JassKeyword.String,
+                Parameter = new TriggerFunctionParameter
+                {
+                    Type = TriggerFunctionParameterType.String,
+                    Value = value,
+                },
+            });
+
             if (Context.TriggerData.TriggerTypes.TryGetValue(JassKeyword.String, out var customTypes))
             {
-                decompileOptions = new();
-
                 foreach (var customType in customTypes)
                 {
                     if (TryDecompileTriggerFunctionParameterPreset($"`{stringLiteralExpression.Value}`", customType.Key, out _, out var functionParameter))
@@ -71,17 +82,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                             Parameter = new TriggerFunctionParameter
                             {
                                 Type = TriggerFunctionParameterType.String,
-                                Value = Regex.Unescape(stringLiteralExpression.Value),
+                                Value = value,
                             },
                         });
                     }
                 }
-
-                return true;
             }
 
-            decompileOptions = null;
-            return false;
+            return true;
         }
     }
 }
