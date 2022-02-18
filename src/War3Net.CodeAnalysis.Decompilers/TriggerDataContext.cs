@@ -28,8 +28,16 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         public TriggerData TriggerData { get; }
 
+        /// <summary>
+        /// Key 1: <see cref="TriggerData.TriggerType.BaseType"/>.
+        /// Key 2: <see cref="TriggerData.TriggerType.TypeName"/>.
+        /// </summary>
         public ImmutableDictionary<string, ImmutableDictionary<string, TriggerData.TriggerType>> TriggerTypes { get; }
 
+        /// <summary>
+        /// Key 1: <see cref="TriggerData.TriggerParam.VariableType"/>, or <see cref="string.Empty"/> to get TriggerParams for all types.
+        /// Key 2: <see cref="TriggerData.TriggerParam.ScriptText"/>.
+        /// </summary>
         public ImmutableDictionary<string, ImmutableDictionary<string, ImmutableArray<TriggerData.TriggerParam>>> TriggerParams { get; }
 
         public ImmutableDictionary<string, TriggerData.TriggerCondition> TriggerConditions { get; }
@@ -53,7 +61,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private static ImmutableDictionary<string, ImmutableDictionary<string, ImmutableArray<TriggerData.TriggerParam>>> GetTriggerParams(IEnumerable<TriggerData.TriggerParam> triggerParams)
         {
-            return triggerParams
+            var result = triggerParams
                 .GroupBy(param => param.VariableType)
                 .ToImmutableDictionary(
                     grouping => grouping.Key,
@@ -64,6 +72,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                             grouping => grouping.ToImmutableArray(),
                             StringComparer.Ordinal),
                     StringComparer.Ordinal);
+
+            return result.Add(string.Empty, triggerParams
+                .GroupBy(triggerParam => triggerParam.ScriptText)
+                .ToImmutableDictionary(
+                    grouping => grouping.Key,
+                    grouping => grouping.ToImmutableArray()));
         }
 
         private static ImmutableDictionary<string, TriggerData.TriggerCondition> GetTriggerConditions(IEnumerable<TriggerData.TriggerCondition> triggerConditions)
