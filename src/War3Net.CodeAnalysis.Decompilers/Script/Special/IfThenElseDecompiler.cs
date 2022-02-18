@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Extensions;
@@ -46,7 +45,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (conditionsFunction.Body.Statements.Length == 1 &&
                         thenActions.Count == 1 &&
                         elseActions.Count == 1 &&
-                        TryDecompileTriggerConditionFunction(conditionsFunction.Body.Statements[0], true, out var conditionFunction))
+                        TryDecompileConditionStatement(conditionsFunction.Body.Statements[0], true, out var conditionFunction))
                     {
                         function.Name = "IfThenElse";
 
@@ -76,24 +75,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
+                        if (TryDecompileConditionStatementList(conditionsFunction.Body, out var conditionFunctions))
                         {
-                            if (TryDecompileTriggerConditionFunction(conditionStatement, true, out conditionFunction))
+                            foreach (var condition in conditionFunctions)
                             {
-                                conditionFunction.Branch = 0;
-                                function.ChildFunctions.Add(conditionFunction);
+                                condition.Branch = 0;
                             }
-                            else
-                            {
-                                actionFunction = null;
-                                return false;
-                            }
-                        }
 
-                        // Last statement must be "return true"
-                        if (conditionsFunction.Body.Statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
-                            finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
-                            !returnBooleanLiteralExpression.Value)
+                            function.ChildFunctions.AddRange(conditionFunctions);
+                        }
+                        else
                         {
                             actionFunction = null;
                             return false;

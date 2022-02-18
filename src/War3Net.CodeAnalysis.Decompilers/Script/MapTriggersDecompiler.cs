@@ -304,22 +304,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                         {
                             var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
 
-                            foreach (var conditionStatement in conditionsFunction.Body.Statements.SkipLast(1))
+                            if (TryDecompileConditionStatementList(conditionsFunction.Body, out var conditionFunctions))
                             {
-                                if (TryDecompileTriggerConditionFunction(conditionStatement, true, out var conditionFunction))
-                                {
-                                    trigger.Functions.Add(conditionFunction);
-                                }
-                                else
-                                {
-                                    return false;
-                                }
+                                trigger.Functions.AddRange(conditionFunctions);
                             }
-
-                            // Last statement must be "return true"
-                            if (conditionsFunction.Body.Statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
-                                finalReturnStatement.Value is not JassBooleanLiteralExpressionSyntax returnBooleanLiteralExpression ||
-                                !returnBooleanLiteralExpression.Value)
+                            else
                             {
                                 return false;
                             }

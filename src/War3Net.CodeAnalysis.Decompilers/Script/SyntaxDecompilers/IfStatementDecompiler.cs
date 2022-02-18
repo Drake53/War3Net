@@ -6,8 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -66,6 +68,42 @@ namespace War3Net.CodeAnalysis.Decompilers
             functions.Add(DecompileCustomScriptAction(JassEndIfCustomScriptAction.Value));
 
             return true;
+        }
+
+        /// <param name="returnValue"><see langword="true"/> for AND conditions, <see langword="false"/> for OR conditions.</param>
+        private bool TryDecompileIfStatement(
+            JassIfStatementSyntax ifStatement,
+            bool returnValue,
+            [NotNullWhen(true)] out TriggerFunction? function)
+        {
+            if (ifStatement.ElseIfClauses.IsEmpty &&
+                ifStatement.ElseClause is null &&
+                ifStatement.Body.Statements.Length == 1 &&
+                ifStatement.Body.Statements[0] is JassReturnStatementSyntax returnStatement &&
+                returnStatement.Value is JassBooleanLiteralExpressionSyntax booleanLiteralExpression &&
+                booleanLiteralExpression.Value != returnValue)
+            {
+                var conditionExpression = ifStatement.Condition.Deparenthesize();
+
+                if (returnValue)
+                {
+                    if (conditionExpression is JassUnaryExpressionSyntax unaryExpression &&
+                        unaryExpression.Operator == UnaryOperatorType.Not)
+                    {
+                        conditionExpression = unaryExpression.Expression.Deparenthesize();
+                    }
+                    else
+                    {
+                        function = null;
+                        return false;
+                    }
+                }
+
+                return TryDecompileConditionExpression(conditionExpression, out function);
+            }
+
+            function = null;
+            return false;
         }
     }
 }

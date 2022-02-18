@@ -37,7 +37,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 var exitFunction = exitFunctionDeclaration.FunctionDeclaration;
 
                 if (exitFunction.Body.Statements.Length == 1 &&
-                    TryDecompileTriggerConditionFunction(exitFunction.Body.Statements[0], true, out var conditionFunction) &&
+                    TryDecompileConditionStatement(exitFunction.Body.Statements[0], true, out var conditionFunction) &&
                     TryDecompileTriggerFunctionParameter(callInvocationExpression.Arguments.Arguments[1], JassKeyword.Real, out var intervalParameter))
                 {
                     actionFunction = new TriggerFunction

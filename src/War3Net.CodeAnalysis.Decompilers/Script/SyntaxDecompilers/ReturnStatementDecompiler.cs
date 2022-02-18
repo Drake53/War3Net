@@ -6,8 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -31,6 +33,15 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             return false;
+        }
+
+        private bool TryDecompileReturnStatement(
+            JassReturnStatementSyntax returnStatement,
+            [NotNullWhen(true)] out TriggerFunction? function)
+        {
+            var returnExpression = returnStatement.Value.Deparenthesize();
+
+            return TryDecompileConditionExpression(returnExpression, out function);
         }
     }
 }
