@@ -46,7 +46,11 @@ namespace War3Net.TestTools.UnitTesting
         public static void AreEqual(TriggerFunctionParameter expectedFunctionParameter, TriggerFunctionParameter actualFunctionParameter)
         {
             Assert.AreEqual(expectedFunctionParameter.Type, actualFunctionParameter.Type);
-            Assert.AreEqual(expectedFunctionParameter.Value, actualFunctionParameter.Value, ignoreCase: false, CultureInfo.InvariantCulture);
+
+            if (expectedFunctionParameter.Type != TriggerFunctionParameterType.Function || !string.IsNullOrEmpty(expectedFunctionParameter.Value))
+            {
+                Assert.AreEqual(expectedFunctionParameter.Value, actualFunctionParameter.Value, ignoreCase: false, CultureInfo.InvariantCulture);
+            }
 
             Assert.AreEqual(expectedFunctionParameter.Function is null, actualFunctionParameter.Function is null);
             if (expectedFunctionParameter.Function is not null)
