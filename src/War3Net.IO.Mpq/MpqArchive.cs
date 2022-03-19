@@ -265,7 +265,7 @@ namespace War3Net.IO.Mpq
                 var mpqFixedPositionFiles = mpqFiles.Where(mpqFile => mpqFile.IsFilePositionFixed).OrderBy(mpqFile => mpqFile.MpqStream.FilePosition).ToArray();
                 if (mpqFixedPositionFiles.Length > 0)
                 {
-                    if (mpqFixedPositionFiles.First()!.MpqStream.FilePosition < 0)
+                    if (mpqFixedPositionFiles[0].MpqStream.FilePosition < 0)
                     {
                         throw new NotSupportedException($"Cannot place files in front of the header.");
                     }
