@@ -9,10 +9,10 @@ using System.IO;
 
 namespace War3Net.IO.Mpq.Extensions
 {
-    internal static class BinaryReaderExtensions
+    public static class BinaryReaderExtensions
     {
-        internal static Attributes ReadAttributes(this BinaryReader reader) => new Attributes(reader);
+        public static Attributes ReadAttributes(this BinaryReader reader) => new Attributes(reader);
 
-        internal static Signature ReadSignature(this BinaryReader reader) => new Signature(reader);
+        public static Signature ReadSignature(this BinaryReader reader) => new Signature(reader);
     }
 }

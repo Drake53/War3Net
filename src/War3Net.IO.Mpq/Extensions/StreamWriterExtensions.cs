@@ -9,8 +9,8 @@ using System.IO;
 
 namespace War3Net.IO.Mpq.Extensions
 {
-    internal static class StreamWriterExtensions
+    public static class StreamWriterExtensions
     {
-        internal static void WriteListFile(this StreamWriter writer, ListFile listFile) => listFile.WriteTo(writer);
+        public static void WriteListFile(this StreamWriter writer, ListFile listFile) => listFile.WriteTo(writer);
     }
 }

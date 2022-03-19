@@ -9,8 +9,8 @@ using System.IO;
 
 namespace War3Net.IO.Mpq.Extensions
 {
-    internal static class StreamReaderExtensions
+    public static class StreamReaderExtensions
     {
-        internal static ListFile ReadListFile(this StreamReader reader) => new ListFile(reader);
+        public static ListFile ReadListFile(this StreamReader reader) => new ListFile(reader);
     }
 }
