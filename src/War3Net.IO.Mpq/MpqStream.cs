@@ -86,39 +86,31 @@ namespace War3Net.IO.Mpq
                 // Compressed files start with an array of offsets to make seeking possible
                 if (_isCompressed)
                 {
-                    var blockposcount = (int)((_fileSize + _blockSize - 1) / _blockSize) + 1;
+                    var blockPositionsCount = (int)((_fileSize + _blockSize - 1) / _blockSize) + 1;
 
                     // Files with metadata have an extra block containing block checksums
-                    if ((_flags & MpqFileFlags.FileHasMetadata) != 0)
+                    if (_flags.HasFlag(MpqFileFlags.FileHasMetadata))
                     {
-                        blockposcount++;
+                        blockPositionsCount++;
                     }
 
-                    _blockPositions = new uint[blockposcount];
+                    _blockPositions = new uint[blockPositionsCount];
 
                     lock (_stream)
                     {
                         _stream.Seek(_filePosition, SeekOrigin.Begin);
                         using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
                         {
-                            for (var i = 0; i < blockposcount; i++)
+                            for (var i = 0; i < _blockPositions.Length; i++)
                             {
                                 _blockPositions[i] = br.ReadUInt32();
                             }
                         }
                     }
 
-                    var blockpossize = (uint)blockposcount * 4;
+                    var blockpossize = (uint)_blockPositions.Length * 4;
 
-                    /*
-                    if (_blockPositions[0] != blockpossize)
-                    {
-                        // _entry.Flags |= MpqFileFlags.Encrypted;
-                        throw new MpqParserException();
-                    }
-                     */
-
-                    if (_isEncrypted && blockposcount > 1)
+                    if (_isEncrypted && _blockPositions.Length > 1)
                     {
                         var maxOffset1 = (uint)_blockSize + blockpossize;
                         if (_encryptionSeed == 0)
@@ -133,32 +125,12 @@ namespace War3Net.IO.Mpq
                         _encryptionSeed = entry.EncryptionSeed;
                         _baseEncryptionSeed = entry.BaseEncryptionSeed;
                         StormBuffer.DecryptBlock(_blockPositions, _encryptionSeed - 1);
-
-                        /*
-                        if (_blockPositions[0] != blockpossize)
-                        {
-                            throw new MpqParserException($"Decryption failed{(string.IsNullOrEmpty(entry.FileName) ? string.Empty : $" for '{entry.FileName}'")} (block position 0).");
-                        }
-
-                        if (_blockPositions[1] > maxOffset1)
-                        {
-                            throw new MpqParserException($"Decryption failed{(string.IsNullOrEmpty(entry.FileName) ? string.Empty : $" for '{entry.FileName}'")} (block position 1).");
-                        }
-                        */
                     }
 
                     var currentPosition = _blockPositions[0];
-                    for (var i = 1; i < blockposcount; i++)
+                    for (var i = 1; i < _blockPositions.Length; i++)
                     {
                         var currentBlockSize = _blockPositions[i] - currentPosition;
-                        /*if (currentBlockSize > _blockSize)
-                        {
-                            throw new MpqParserException($"Size of block {i} exceeds maximum block size.");
-                        }
-                        else if (currentBlockSize <= 0)
-                        {
-                            throw new MpqParserException($"Size of block {i} must be greater than zero.");
-                        }*/
 
                         if (currentBlockSize <= 0 || currentBlockSize > _blockSize)
                         {
