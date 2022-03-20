@@ -212,7 +212,7 @@ namespace War3Net.IO.Mpq
             var seed = CalculateEncryptionSeed(fileName);
             if (blockOffsetAdjusted)
             {
-                seed = AdjustEncryptionSeed(seed, (uint)fileOffset, fileSize);
+                seed = AdjustEncryptionSeed(seed, fileOffset, fileSize);
             }
 
             return seed;

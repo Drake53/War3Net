@@ -561,7 +561,7 @@ namespace War3Net.IO.Mpq
                             var size = entry.CompressedSize;
                             var flags = entry.Flags;
 
-                            if (entry.IsEncrypted && entry.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
+                            if (entry.Flags.IsOffsetEncrypted())
                             {
                                 // To prevent encryption seed becoming incorrect, save file uncompressed and unencrypted.
                                 var pos = sourceStream.Position;

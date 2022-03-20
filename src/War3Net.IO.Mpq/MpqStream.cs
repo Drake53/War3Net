@@ -166,6 +166,9 @@ namespace War3Net.IO.Mpq
             _isStreamOwner = !leaveOpen;
         }
 
+        /// <summary>
+        /// Re-encodes the stream using the given parameters.
+        /// </summary>
         internal Stream Transform(MpqFileFlags targetFlags, MpqCompressionType compressionType, uint targetFilePosition, int targetBlockSize)
         {
             using var memoryStream = new MemoryStream();
@@ -327,6 +330,7 @@ namespace War3Net.IO.Mpq
 
         public bool IsEncrypted => _isEncrypted;
 
+        [Obsolete("Use CanRead instead.")]
         public bool CanBeDecrypted => !_isEncrypted || _fileSize < 4 || _encryptionSeed != 0;
 
         public uint CompressedSize => _compressedSize;

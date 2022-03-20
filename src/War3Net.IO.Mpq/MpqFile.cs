@@ -20,7 +20,7 @@ namespace War3Net.IO.Mpq
         private readonly MpqStream _mpqStream;
         private readonly bool _isStreamOwner;
 
-        private MpqFileFlags _flags;
+        private MpqFileFlags _targetFlags;
         private MpqLocale _locale;
         private MpqCompressionType _compressionType;
 
@@ -30,7 +30,7 @@ namespace War3Net.IO.Mpq
             _mpqStream = mpqStream ?? throw new ArgumentNullException(nameof(mpqStream));
             _isStreamOwner = !leaveOpen;
 
-            _flags = flags;
+            _targetFlags = flags;
             _locale = locale;
             _compressionType = MpqCompressionType.ZLib;
         }
@@ -41,7 +41,7 @@ namespace War3Net.IO.Mpq
 
         public MpqFileFlags TargetFlags
         {
-            get => _flags;
+            get => _targetFlags;
             set
             {
                 if ((value & MpqFileFlags.Garbage) != 0)
@@ -54,7 +54,7 @@ namespace War3Net.IO.Mpq
                     throw new ArgumentException("Cannot set encrypted flag when there is no encryption seed.", nameof(value));
                 }
 
-                _flags = value;
+                _targetFlags = value;
             }
         }
 
@@ -86,7 +86,7 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        internal bool IsFilePositionFixed => !_mpqStream.CanBeDecrypted && _mpqStream.Flags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey);
+        internal bool IsFilePositionFixed => !_mpqStream.CanRead && _mpqStream.Flags.IsOffsetEncrypted();
 
         /// <summary>
         /// Position in the <see cref="HashTable"/>.
@@ -286,20 +286,20 @@ namespace War3Net.IO.Mpq
             var absoluteFileOffset = (uint)mpqArchive.BaseStream.Position;
             var relativeFileOffset = absoluteFileOffset - headerOffset;
 
-            var mustChangePosition = _flags.HasFlag(MpqFileFlags.Encrypted | MpqFileFlags.BlockOffsetAdjustedKey) && _mpqStream.FilePosition != relativeFileOffset;
-            if (_flags == _mpqStream.Flags && mpqArchive.BlockSize == _mpqStream.BlockSize && !mustChangePosition)
+            var mustChangePosition = _targetFlags.IsOffsetEncrypted() && _mpqStream.FilePosition != relativeFileOffset;
+            if (_targetFlags == _mpqStream.Flags && mpqArchive.BlockSize == _mpqStream.BlockSize && !mustChangePosition)
             {
                 _mpqStream.CopyBaseStreamTo(mpqArchive.BaseStream);
                 GetTableEntries(mpqArchive, index, relativeFileOffset, _mpqStream.CompressedSize, _mpqStream.FileSize, out mpqEntry, out mpqHash);
             }
             else
             {
-                if (IsFilePositionFixed)
+                if (!_mpqStream.CanRead)
                 {
-                    throw new Exception();
+                    throw new InvalidOperationException("Unable to re-encode the mpq file, because its stream cannot be read.");
                 }
 
-                using var newStream = _mpqStream.Transform(_flags, _compressionType, relativeFileOffset, mpqArchive.BlockSize);
+                using var newStream = _mpqStream.Transform(_targetFlags, _compressionType, relativeFileOffset, mpqArchive.BlockSize);
                 newStream.CopyTo(mpqArchive.BaseStream);
                 GetTableEntries(mpqArchive, index, relativeFileOffset, (uint)newStream.Length, _mpqStream.FileSize, out mpqEntry, out mpqHash);
             }
