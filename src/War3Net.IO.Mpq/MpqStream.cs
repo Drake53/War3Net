@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -97,26 +98,27 @@ namespace War3Net.IO.Mpq
                     lock (_stream)
                     {
                         _stream.Seek(_filePosition, SeekOrigin.Begin);
-                        using (var br = new BinaryReader(_stream, new UTF8Encoding(), true))
+                        using (var binaryReader = new BinaryReader(_stream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < _blockPositions.Length; i++)
                             {
-                                _blockPositions[i] = br.ReadUInt32();
+                                _blockPositions[i] = binaryReader.ReadUInt32();
                             }
                         }
                     }
 
-                    var blockpossize = (uint)_blockPositions.Length * 4;
+                    var expectedOffsetFirstBlock = (uint)_blockPositions.Length * 4;
 
                     if (_isEncrypted && _blockPositions.Length > 1)
                     {
-                        var maxOffset1 = (uint)_blockSize + blockpossize;
+                        var maxOffsetSecondBlock = (uint)_blockSize + expectedOffsetFirstBlock;
                         if (_encryptionSeed == 0)
                         {
                             // This should only happen when the file name is not known.
-                            if (!entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], blockpossize, maxOffset1))
+                            if (!entry.TryUpdateEncryptionSeed(_blockPositions[0], _blockPositions[1], expectedOffsetFirstBlock, maxOffsetSecondBlock))
                             {
-                                throw new MpqParserException("Unable to determine encyption seed");
+                                _canRead = false;
+                                return;
                             }
                         }
 
@@ -364,7 +366,8 @@ namespace War3Net.IO.Mpq
                 SeekOrigin.Begin => offset,
                 SeekOrigin.Current => Position + offset,
                 SeekOrigin.End => Length + offset,
-                _ => throw new ArgumentException("Invalid SeekOrigin", nameof(origin)),
+
+                _ => throw new InvalidEnumArgumentException(nameof(origin), (int)origin, typeof(SeekOrigin)),
             };
 
             if (target < 0)
@@ -438,12 +441,7 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (!CanWrite)
-            {
-                throw new NotSupportedException();
-            }
-
-            throw new NotImplementedException();
+            throw new NotSupportedException("Write is not supported");
         }
 
         public override void Close()
@@ -480,13 +478,13 @@ namespace War3Net.IO.Mpq
                 MpqCompressionType.ZLib => (stream) => ZLibCompression.Decompress(stream, outputLength),
                 MpqCompressionType.PKLib => (stream) => PKDecompress(stream, outputLength),
                 MpqCompressionType.BZip2 => (stream) => BZip2Compression.Decompress(stream, outputLength),
-                MpqCompressionType.Lzma => throw new MpqParserException("LZMA compression is not yet supported"),
-                MpqCompressionType.Sparse => throw new MpqParserException("Sparse compression is not yet supported"),
+                MpqCompressionType.Lzma => throw new NotImplementedException("LZMA compression is not yet supported"),
+                MpqCompressionType.Sparse => throw new NotImplementedException("Sparse compression is not yet supported"),
                 MpqCompressionType.ImaAdpcmMono => (stream) => AdpcmCompression.Decompress(stream, 1),
                 MpqCompressionType.ImaAdpcmStereo => (stream) => AdpcmCompression.Decompress(stream, 2),
 
-                MpqCompressionType.Sparse | MpqCompressionType.ZLib => throw new MpqParserException("Sparse compression + Deflate compression is not yet supported"),
-                MpqCompressionType.Sparse | MpqCompressionType.BZip2 => throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported"),
+                MpqCompressionType.Sparse | MpqCompressionType.ZLib => throw new NotImplementedException("Sparse compression + Deflate compression is not yet supported"),
+                MpqCompressionType.Sparse | MpqCompressionType.BZip2 => throw new NotImplementedException("Sparse compression + BZip2 compression is not yet supported"),
 
                 MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 1),
                 MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 1),
@@ -494,7 +492,7 @@ namespace War3Net.IO.Mpq
                 MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 2),
                 MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 2),
 
-                _ => throw new MpqParserException($"Compression of type 0x{compressionType.ToString("X")} is not yet supported"),
+                _ => throw new NotSupportedException($"Compression of type 0x{compressionType.ToString("X")} is not yet supported"),
             };
         }
 
