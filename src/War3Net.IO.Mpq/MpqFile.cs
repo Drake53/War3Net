@@ -6,7 +6,11 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
 using System.IO;
+
+using War3Net.Common.Extensions;
+using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
 {
@@ -59,9 +63,9 @@ namespace War3Net.IO.Mpq
             get => _locale;
             set
             {
-                if (!Enum.IsDefined(typeof(MpqLocale), value))
+                if (!value.IsDefined())
                 {
-                    throw new ArgumentException("Invalid enum.", nameof(value));
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(MpqLocale));
                 }
 
                 _locale = value;
@@ -73,9 +77,9 @@ namespace War3Net.IO.Mpq
             get => _compressionType;
             set
             {
-                if (!Enum.IsDefined(typeof(MpqCompressionType), value))
+                if (!value.IsKnownMpqCompressionType())
                 {
-                    throw new ArgumentException("Invalid enum.", nameof(value));
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(MpqCompressionType));
                 }
 
                 _compressionType = value;

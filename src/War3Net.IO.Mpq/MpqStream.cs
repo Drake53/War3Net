@@ -6,13 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
 using War3Net.Common.Extensions;
 using War3Net.IO.Compression;
+using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
 {
@@ -21,8 +21,6 @@ namespace War3Net.IO.Mpq
     /// </summary>
     public class MpqStream : Stream
     {
-        private static readonly Lazy<HashSet<MpqCompressionType>> _knownMpqCompressionTypes = new(GetKnownMpqCompressionTypes);
-
         private readonly Stream _stream;
         private readonly int _blockSize;
         private readonly bool _canRead;
@@ -140,7 +138,7 @@ namespace War3Net.IO.Mpq
 
                         var expectedlength = Math.Min((int)(Length - ((i - 1) * _blockSize)), _blockSize);
                         if (!TryPeekCompressionType(i - 1, expectedlength, out var mpqCompressionType) ||
-                            (mpqCompressionType.HasValue && !_knownMpqCompressionTypes.Value.Contains(mpqCompressionType.Value)))
+                            (mpqCompressionType.HasValue && !mpqCompressionType.Value.IsKnownMpqCompressionType()))
                         {
                             _canRead = false;
                             break;
@@ -497,30 +495,6 @@ namespace War3Net.IO.Mpq
                 MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 2),
 
                 _ => throw new MpqParserException($"Compression of type 0x{compressionType.ToString("X")} is not yet supported"),
-            };
-        }
-
-        private static HashSet<MpqCompressionType> GetKnownMpqCompressionTypes()
-        {
-            return new HashSet<MpqCompressionType>
-            {
-                MpqCompressionType.Huffman,
-                MpqCompressionType.ZLib,
-                MpqCompressionType.PKLib,
-                MpqCompressionType.BZip2,
-                MpqCompressionType.Lzma,
-                MpqCompressionType.Sparse,
-                MpqCompressionType.ImaAdpcmMono,
-                MpqCompressionType.ImaAdpcmStereo,
-
-                MpqCompressionType.Sparse | MpqCompressionType.ZLib,
-                MpqCompressionType.Sparse | MpqCompressionType.BZip2,
-
-                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman,
-                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib,
-
-                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman,
-                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib,
             };
         }
 
