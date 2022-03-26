@@ -157,6 +157,10 @@ namespace War3Net.IO.Mpq
                         currentPosition = _blockPositions[i];
                     }
                 }
+                else if (_isEncrypted && _fileSize >= 4 && _encryptionSeed == 0)
+                {
+                    _canRead = false;
+                }
             }
         }
 

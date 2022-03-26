@@ -286,7 +286,7 @@ namespace War3Net.IO.Mpq
             var absoluteFileOffset = (uint)mpqArchive.BaseStream.Position;
             var relativeFileOffset = absoluteFileOffset - headerOffset;
 
-            var mustChangePosition = _targetFlags.IsOffsetEncrypted() && _mpqStream.FilePosition != relativeFileOffset;
+            var mustChangePosition = _targetFlags.IsOffsetEncrypted() && _mpqStream.FilePosition != absoluteFileOffset;
             if (_targetFlags == _mpqStream.Flags && mpqArchive.BlockSize == _mpqStream.BlockSize && !mustChangePosition)
             {
                 _mpqStream.CopyBaseStreamTo(mpqArchive.BaseStream);

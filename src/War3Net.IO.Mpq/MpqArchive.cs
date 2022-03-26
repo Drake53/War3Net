@@ -226,8 +226,11 @@ namespace War3Net.IO.Mpq
                     var crc32 = 0;
                     if (attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32) && allowMultiple)
                     {
-                        mpqFile.MpqStream.Position = 0;
-                        crc32 = new Ionic.Crc.CRC32().GetCrc32(mpqFile.MpqStream);
+                        if (mpqFile.MpqStream.CanSeek && mpqFile.MpqStream.CanRead)
+                        {
+                            mpqFile.MpqStream.Position = 0;
+                            crc32 = new Ionic.Crc.CRC32().GetCrc32(mpqFile.MpqStream);
+                        }
                     }
 
                     for (var i = 0; i < hashTableEntries; i++)
