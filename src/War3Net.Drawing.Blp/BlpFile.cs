@@ -196,14 +196,13 @@ namespace War3Net.Drawing.Blp
 
                     InvertChannelValues(pixelData);
 
-                    return BitmapSource.Create(bitmap.PixelWidth, bitmap.PixelHeight, bitmap.DpiX, bitmap.DpiY, bitmap.Format, null, pixelData, stride);
+                    var pixelFormat = bytesPerPixel == 3 ? PixelFormats.Bgr24 : PixelFormats.Bgra32;
+                    return BitmapSource.Create(bitmap.PixelWidth, bitmap.PixelHeight, bitmap.DpiX, bitmap.DpiY, pixelFormat, null, pixelData, stride);
 
                 case FileContent.Direct:
-                    var bgra = _colorEncoding != 3;
+                    pixelData = GetPixelsDirect(mipMapLevel, out var width, out var height);
 
-                    pixelData = GetPixelsDirect(mipMapLevel, out var width, out var height, bgra);
-
-                    return BitmapSource.Create(width, height, 96d, 96d, bgra ? PixelFormats.Bgra32 : PixelFormats.Rgb24, null, pixelData, width * 4);
+                    return BitmapSource.Create(width, height, 96d, 96d, PixelFormats.Bgra32, null, pixelData, width * 4);
 
                 default:
                     throw new IndexOutOfRangeException();
@@ -272,9 +271,9 @@ namespace War3Net.Drawing.Blp
             h = _height / scale;
 
             // This byte array stores the Pixel-Data
-            var pic = GetImageBytes(w, h, data);
+            var pic = GetImageBytes(w, h, data, out var isBgra);
 
-            if (bgra)
+            if (bgra != isBgra)
             {
                 ConvertBetweenRgbAndBgr(pic, 4);
             }
@@ -334,7 +333,7 @@ namespace War3Net.Drawing.Blp
             return jpgData;
         }
 
-        // Extracts the palettized Image Data from the given MipMap, and returns a byte array in the 32Bit RGBA-Format.
+        // Extracts the palettized Image Data from the given MipMap, and returns a byte array in the 32Bit BGRA-Format.
         private byte[] GetPictureUncompressedByteArray(int w, int h, byte[] data)
         {
             var length = w * h;
@@ -395,19 +394,23 @@ namespace War3Net.Drawing.Blp
             return null;
         }
 
-        // Returns the uncompressed image as a byte array in the 32Bit RGBA-Format.
-        private byte[] GetImageBytes(int w, int h, byte[] data)
+        // Returns the uncompressed image as a byte array in the 32Bit RGBA-Format or 32Bit BGRA-Format.
+        private byte[] GetImageBytes(int w, int h, byte[] data, out bool isBgra)
         {
             switch (_colorEncoding)
             {
                 case 1:
+                    isBgra = true;
                     return GetPictureUncompressedByteArray(w, h, data);
                 case 2:
+                    isBgra = false;
                     var flag = (_alphaDepth > 1) ? ((_alphaEncoding == 7) ? DxtDecompression.DxtFlags.DXT5 : DxtDecompression.DxtFlags.DXT3) : DxtDecompression.DxtFlags.DXT1;
                     return DxtDecompression.DecompressImage(w, h, data, flag);
                 case 3:
+                    isBgra = false;
                     return data;
                 default:
+                    isBgra = false;
                     return Array.Empty<byte>();
             }
         }

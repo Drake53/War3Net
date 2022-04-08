@@ -11,6 +11,8 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.TestTools.UnitTesting;
+
 namespace War3Net.Drawing.Blp.Tests
 {
     [TestClass]
@@ -23,8 +25,8 @@ namespace War3Net.Drawing.Blp.Tests
         {
             using (var fileStream = File.OpenRead(inputImagePath))
             {
-                var expectedImage = new Bitmap(expectedImagePath);
-                var blpFile = new BlpFile(fileStream);
+                using var expectedImage = new Bitmap(expectedImagePath);
+                using var blpFile = new BlpFile(fileStream);
                 var actualImage = blpFile.GetBitmapSource(mipMapLevel);
 
                 Assert.AreEqual(expectedImage.Width, actualImage.PixelWidth);
@@ -52,22 +54,19 @@ namespace War3Net.Drawing.Blp.Tests
                         }
                     }
                 }
-
-                expectedImage.Dispose();
-                blpFile.Dispose();
             }
         }
 #endif
 
         private static IEnumerable<object[]> GetBlpImageData()
         {
-            yield return new object[] { "TestData/colorJpg75Mip8Blp1.blp", "TestData/color.png", 0 };
-            yield return new object[] { "TestData/colorPalettedMip8Blp1.blp", "TestData/color.png", 0 };
+            yield return new object[] { TestDataProvider.GetPath("Blp/colorJpg75Mip8Blp1.blp"), TestDataProvider.GetPath("Blp/color.png"), 0 };
+            yield return new object[] { TestDataProvider.GetPath("Blp/colorPalettedMip8Blp1.blp"), TestDataProvider.GetPath("Blp/color.png"), 0 };
 
-            yield return new object[] { "TestData/colorDxtMip8Blp2.blp", "TestData/color.png", 0 };
-            yield return new object[] { "TestData/colorPalettedMip8Blp2.blp", "TestData/color.png", 0 };
+            yield return new object[] { TestDataProvider.GetPath("Blp/colorDxtMip8Blp2.blp"), TestDataProvider.GetPath("Blp/color.png"), 0 };
+            yield return new object[] { TestDataProvider.GetPath("Blp/colorPalettedMip8Blp2.blp"), TestDataProvider.GetPath("Blp/color.png"), 0 };
 
-            yield return new object[] { "TestData/map101.blp", "TestData/map101.png", 0 };
+            yield return new object[] { TestDataProvider.GetPath("Blp/map101.blp"), TestDataProvider.GetPath("Blp/map101.png"), 0 };
         }
     }
 }
