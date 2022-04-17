@@ -11,8 +11,7 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="War3Net.Build" Version="$(War3NetBuildVersion)" />
-    <!--<PackageReference Include="War3Net.CodeAnalysis.Decompilers" Version="$(War3NetCodeAnalysisDecompilersVersion)" />-->
-    <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.Decompilers\War3Net.CodeAnalysis.Decompilers.csproj" />
+    <PackageReference Include="War3Net.CodeAnalysis.Decompilers" Version="$(War3NetCodeAnalysisDecompilersVersion)" />
   </ItemGroup>
 
 </Project>
