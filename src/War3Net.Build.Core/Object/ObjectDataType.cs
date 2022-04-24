@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.Build.Object
 {
     public enum ObjectDataType
@@ -13,7 +15,7 @@ namespace War3Net.Build.Object
         Real = 1,
         Unreal = 2,
         String = 3,
-        Bool = 4,
-        Char = 5,
+        [Obsolete] Bool = 4,
+        [Obsolete] Char = 5,
     }
 }

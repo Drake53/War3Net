@@ -33,8 +33,10 @@ namespace War3Net.Build.Object
 
         public string ValueAsString => Value is string s ? s : throw new InvalidOperationException();
 
+        [Obsolete]
         public bool ValueAsBool => Value is bool b ? b : throw new InvalidOperationException();
 
+        [Obsolete]
         public char ValueAsChar => Value is char c ? c : throw new InvalidOperationException();
 
         public override string ToString() => Id.ToRawcode();

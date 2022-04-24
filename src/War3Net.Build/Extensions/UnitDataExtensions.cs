@@ -52,7 +52,7 @@ namespace War3Net.Build.Extensions
                     var isBuildingModification = unit.Modifications.FirstOrDefault(modification => modification.Id == "ubdg".FromRawcode());
                     if (isBuildingModification is not null)
                     {
-                        return isBuildingModification.ValueAsBool;
+                        return isBuildingModification.ValueAsInt == 1;
                     }
                     else
                     {
