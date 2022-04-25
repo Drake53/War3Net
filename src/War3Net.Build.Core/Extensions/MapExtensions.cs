@@ -30,7 +30,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Sounds);
@@ -46,7 +46,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Cameras);
@@ -62,7 +62,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Environment);
@@ -78,7 +78,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.PathingMap);
@@ -94,7 +94,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.PreviewIcons);
@@ -110,7 +110,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Regions);
@@ -126,7 +126,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.ShadowMap);
@@ -142,7 +142,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.ImportedFiles);
@@ -158,7 +158,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Info);
@@ -174,7 +174,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.AbilityObjectData);
@@ -190,7 +190,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.BuffObjectData);
@@ -206,7 +206,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.DestructableObjectData);
@@ -222,7 +222,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.DoodadObjectData);
@@ -238,7 +238,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.ItemObjectData);
@@ -254,7 +254,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.UnitObjectData);
@@ -270,7 +270,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.UpgradeObjectData);
@@ -286,7 +286,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.CustomTextTriggers, encoding ?? _defaultEncoding);
@@ -302,7 +302,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new StreamWriter(memoryStream, encoding ?? _defaultEncoding, leaveOpen: true);
 
             writer.Write(map.Script);
@@ -318,7 +318,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Triggers);
@@ -334,7 +334,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new StreamWriter(memoryStream, encoding ?? _defaultEncoding, leaveOpen: true);
 
             writer.WriteTriggerStrings(map.TriggerStrings);
@@ -350,7 +350,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Doodads);
@@ -366,7 +366,7 @@ namespace War3Net.Build.Extensions
                 return null;
             }
 
-            using var memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
             writer.Write(map.Units);
