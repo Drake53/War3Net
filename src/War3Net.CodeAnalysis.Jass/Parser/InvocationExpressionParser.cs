@@ -16,11 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, IExpressionSyntax> GetInvocationExpressionParser(
+            Parser<char, Unit> whitespaceParser,
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
-            return Try(identifierNameParser.Before(Symbol.LeftParenthesis))
-                .Then(GetArgumentListParser(expressionParser).Before(Symbol.RightParenthesis), (id, arguments) => (IExpressionSyntax)new JassInvocationExpressionSyntax(id, arguments));
+            return Try(identifierNameParser.Before(Symbol.LeftParenthesis.Before(whitespaceParser)))
+                .Then(GetArgumentListParser(whitespaceParser, expressionParser).Before(Symbol.RightParenthesis.Before(whitespaceParser)), (id, arguments) => (IExpressionSyntax)new JassInvocationExpressionSyntax(id, arguments));
         }
     }
 }

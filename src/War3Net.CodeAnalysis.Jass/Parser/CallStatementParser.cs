@@ -14,11 +14,12 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassCallStatementSyntax> GetCallStatementParser(
+            Parser<char, Unit> whitespaceParser,
             Parser<char, JassArgumentListSyntax> argumentListParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
             return Keyword.Call.Then(identifierNameParser).Then(
-                Symbol.LeftParenthesis.Then(argumentListParser).Before(Symbol.RightParenthesis),
+                Symbol.LeftParenthesis.Before(whitespaceParser).Then(argumentListParser).Before(Symbol.RightParenthesis.Before(whitespaceParser)),
                 (id, arguments) => new JassCallStatementSyntax(id, arguments));
         }
     }

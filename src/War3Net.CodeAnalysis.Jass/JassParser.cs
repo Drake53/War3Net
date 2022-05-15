@@ -7,7 +7,6 @@
 
 using Pidgin;
 
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
@@ -38,25 +37,26 @@ namespace War3Net.CodeAnalysis.Jass
 
         private JassParser()
         {
-            var identifierNameParser = GetIdentifierNameParser();
+            var whitespaceParser = GetWhitespaceParser();
+            var identifierNameParser = GetIdentifierNameParser(whitespaceParser);
             var typeParser = GetTypeParser(identifierNameParser);
-            var expressionParser = GetExpressionParser(identifierNameParser);
-            var equalsValueClauseParser = GetEqualsValueClauseParser(expressionParser);
+            var expressionParser = GetExpressionParser(whitespaceParser, identifierNameParser);
+            var equalsValueClauseParser = GetEqualsValueClauseParser(whitespaceParser, expressionParser);
 
-            var argumentListParser = GetArgumentListParser(expressionParser);
-            var parameterListParser = GetParameterListParser(GetParameterParser(identifierNameParser, typeParser));
+            var argumentListParser = GetArgumentListParser(whitespaceParser, expressionParser);
+            var parameterListParser = GetParameterListParser(whitespaceParser, GetParameterParser(identifierNameParser, typeParser));
             var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser);
             var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser);
 
             var commentStringParser = GetCommentStringParser();
-            var newLineParser = GetNewLineParser();
+            var newLineParser = GetNewLineParser(whitespaceParser);
             var endOfLineParser = GetEndOfLineParser(commentStringParser, newLineParser);
             var emptyParser = GetEmptyParser();
             var emptyLineParser = GetEmptyLineParser();
             var commentParser = GetCommentParser(commentStringParser);
 
-            var setStatementParser = GetSetStatementParser(expressionParser, equalsValueClauseParser, identifierNameParser);
-            var callStatementParser = GetCallStatementParser(argumentListParser, identifierNameParser);
+            var setStatementParser = GetSetStatementParser(whitespaceParser, expressionParser, equalsValueClauseParser, identifierNameParser);
+            var callStatementParser = GetCallStatementParser(whitespaceParser, argumentListParser, identifierNameParser);
             var exitStatementParser = GetExitStatementParser(expressionParser);
             var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableDeclaratorParser);
             var returnStatementParser = GetReturnStatementParser(expressionParser);
@@ -140,12 +140,10 @@ namespace War3Net.CodeAnalysis.Jass
                 commentStringParser,
                 newLineParser);
 
-            var whitespaceParser = Return(Unit.Value).SkipWhitespaces();
-
             Parser<char, T> Create<T>(Parser<char, T> parser) => whitespaceParser.Then(parser).Before(End);
 
             _argumentListParser = Create(argumentListParser);
-            _binaryOperatorParser = Create(GetBinaryOperatorParser());
+            _binaryOperatorParser = Create(GetBinaryOperatorParser(whitespaceParser));
             _commentParser = Create(commentParser);
             _compilationUnitParser = Create(compilationUnitParser);
             _declarationParser = Create(declarationParser);
@@ -159,7 +157,7 @@ namespace War3Net.CodeAnalysis.Jass
             _statementParser = Create(statementParser);
             _statementLineParser = Create(statementLineParser.Before(commentStringParser.Optional()));
             _typeParser = Create(typeParser);
-            _unaryOperatorParser = Create(GetUnaryOperatorParser());
+            _unaryOperatorParser = Create(GetUnaryOperatorParser(whitespaceParser));
         }
 
         internal static JassParser Instance => _parser;
@@ -198,49 +196,97 @@ namespace War3Net.CodeAnalysis.Jass
 
         private static class Keyword
         {
-            internal static readonly Parser<char, string> Alias = GetKeywordParser(JassKeyword.Alias);
-            internal static readonly Parser<char, string> And = GetKeywordParser(JassKeyword.And);
-            internal static readonly Parser<char, string> Array = GetKeywordParser(JassKeyword.Array);
-            internal static readonly Parser<char, string> Boolean = GetKeywordParser(JassKeyword.Boolean);
-            internal static readonly Parser<char, string> Call = GetKeywordParser(JassKeyword.Call);
-            internal static readonly Parser<char, string> Code = GetKeywordParser(JassKeyword.Code);
-            internal static readonly Parser<char, string> Constant = GetKeywordParser(JassKeyword.Constant);
-            internal static readonly Parser<char, string> Debug = GetKeywordParser(JassKeyword.Debug);
-            internal static readonly Parser<char, string> Else = GetKeywordParser(JassKeyword.Else);
-            internal static readonly Parser<char, string> ElseIf = GetKeywordParser(JassKeyword.ElseIf);
-            internal static readonly Parser<char, string> EndFunction = GetKeywordParser(JassKeyword.EndFunction);
-            internal static readonly Parser<char, string> EndGlobals = GetKeywordParser(JassKeyword.EndGlobals);
-            internal static readonly Parser<char, string> EndIf = GetKeywordParser(JassKeyword.EndIf);
-            internal static readonly Parser<char, string> EndLoop = GetKeywordParser(JassKeyword.EndLoop);
-            internal static readonly Parser<char, string> ExitWhen = GetKeywordParser(JassKeyword.ExitWhen);
-            internal static readonly Parser<char, string> Extends = GetKeywordParser(JassKeyword.Extends);
-            internal static readonly Parser<char, string> False = GetKeywordParser(JassKeyword.False);
-            internal static readonly Parser<char, string> Function = GetKeywordParser(JassKeyword.Function);
-            internal static readonly Parser<char, string> Globals = GetKeywordParser(JassKeyword.Globals);
-            internal static readonly Parser<char, string> Handle = GetKeywordParser(JassKeyword.Handle);
-            internal static readonly Parser<char, string> If = GetKeywordParser(JassKeyword.If);
-            internal static readonly Parser<char, string> Integer = GetKeywordParser(JassKeyword.Integer);
-            internal static readonly Parser<char, string> Local = GetKeywordParser(JassKeyword.Local);
-            internal static readonly Parser<char, string> Loop = GetKeywordParser(JassKeyword.Loop);
-            internal static readonly Parser<char, string> Native = GetKeywordParser(JassKeyword.Native);
-            internal static readonly Parser<char, string> Not = GetKeywordParser(JassKeyword.Not);
-            internal static readonly Parser<char, string> Nothing = GetKeywordParser(JassKeyword.Nothing);
-            internal static readonly Parser<char, string> Null = GetKeywordParser(JassKeyword.Null);
-            internal static readonly Parser<char, string> Or = GetKeywordParser(JassKeyword.Or);
-            internal static readonly Parser<char, string> Real = GetKeywordParser(JassKeyword.Real);
-            internal static readonly Parser<char, string> Return = GetKeywordParser(JassKeyword.Return);
-            internal static readonly Parser<char, string> Returns = GetKeywordParser(JassKeyword.Returns);
-            internal static readonly Parser<char, string> Set = GetKeywordParser(JassKeyword.Set);
-            internal static readonly Parser<char, string> String = GetKeywordParser(JassKeyword.String);
-            internal static readonly Parser<char, string> Takes = GetKeywordParser(JassKeyword.Takes);
-            internal static readonly Parser<char, string> Then = GetKeywordParser(JassKeyword.Then);
-            internal static readonly Parser<char, string> True = GetKeywordParser(JassKeyword.True);
-            internal static readonly Parser<char, string> Type = GetKeywordParser(JassKeyword.Type);
+            internal static readonly Parser<char, string> Alias;
+            internal static readonly Parser<char, string> And;
+            internal static readonly Parser<char, string> Array;
+            internal static readonly Parser<char, string> Boolean;
+            internal static readonly Parser<char, string> Call;
+            internal static readonly Parser<char, string> Code;
+            internal static readonly Parser<char, string> Constant;
+            internal static readonly Parser<char, string> Debug;
+            internal static readonly Parser<char, string> Else;
+            internal static readonly Parser<char, string> ElseIf;
+            internal static readonly Parser<char, string> EndFunction;
+            internal static readonly Parser<char, string> EndGlobals;
+            internal static readonly Parser<char, string> EndIf;
+            internal static readonly Parser<char, string> EndLoop;
+            internal static readonly Parser<char, string> ExitWhen;
+            internal static readonly Parser<char, string> Extends;
+            internal static readonly Parser<char, string> False;
+            internal static readonly Parser<char, string> Function;
+            internal static readonly Parser<char, string> Globals;
+            internal static readonly Parser<char, string> Handle;
+            internal static readonly Parser<char, string> If;
+            internal static readonly Parser<char, string> Integer;
+            internal static readonly Parser<char, string> Local;
+            internal static readonly Parser<char, string> Loop;
+            internal static readonly Parser<char, string> Native;
+            internal static readonly Parser<char, string> Not;
+            internal static readonly Parser<char, string> Nothing;
+            internal static readonly Parser<char, string> Null;
+            internal static readonly Parser<char, string> Or;
+            internal static readonly Parser<char, string> Real;
+            internal static readonly Parser<char, string> Return;
+            internal static readonly Parser<char, string> Returns;
+            internal static readonly Parser<char, string> Set;
+            internal static readonly Parser<char, string> String;
+            internal static readonly Parser<char, string> Takes;
+            internal static readonly Parser<char, string> Then;
+            internal static readonly Parser<char, string> True;
+            internal static readonly Parser<char, string> Type;
 
-            private static Parser<char, string> GetKeywordParser(string keyword)
+            static Keyword()
             {
-                return Try(String(keyword).AssertNotFollowedByLetterOrDigitOrUnderscore())
-                    .SkipWhitespaces()
+                var whitespaceParser = GetWhitespaceParser();
+                var keywordEndParser = Not(Token(JassSyntaxFacts.IsIdentifierPartCharacter));
+
+                Alias = GetKeywordParser(JassKeyword.Alias, keywordEndParser, whitespaceParser);
+                And = GetKeywordParser(JassKeyword.And, keywordEndParser, whitespaceParser);
+                Array = GetKeywordParser(JassKeyword.Array, keywordEndParser, whitespaceParser);
+                Boolean = GetKeywordParser(JassKeyword.Boolean, keywordEndParser, whitespaceParser);
+                Call = GetKeywordParser(JassKeyword.Call, keywordEndParser, whitespaceParser);
+                Code = GetKeywordParser(JassKeyword.Code, keywordEndParser, whitespaceParser);
+                Constant = GetKeywordParser(JassKeyword.Constant, keywordEndParser, whitespaceParser);
+                Debug = GetKeywordParser(JassKeyword.Debug, keywordEndParser, whitespaceParser);
+                Else = GetKeywordParser(JassKeyword.Else, keywordEndParser, whitespaceParser);
+                ElseIf = GetKeywordParser(JassKeyword.ElseIf, keywordEndParser, whitespaceParser);
+                EndFunction = GetKeywordParser(JassKeyword.EndFunction, keywordEndParser, whitespaceParser);
+                EndGlobals = GetKeywordParser(JassKeyword.EndGlobals, keywordEndParser, whitespaceParser);
+                EndIf = GetKeywordParser(JassKeyword.EndIf, keywordEndParser, whitespaceParser);
+                EndLoop = GetKeywordParser(JassKeyword.EndLoop, keywordEndParser, whitespaceParser);
+                ExitWhen = GetKeywordParser(JassKeyword.ExitWhen, keywordEndParser, whitespaceParser);
+                Extends = GetKeywordParser(JassKeyword.Extends, keywordEndParser, whitespaceParser);
+                False = GetKeywordParser(JassKeyword.False, keywordEndParser, whitespaceParser);
+                Function = GetKeywordParser(JassKeyword.Function, keywordEndParser, whitespaceParser);
+                Globals = GetKeywordParser(JassKeyword.Globals, keywordEndParser, whitespaceParser);
+                Handle = GetKeywordParser(JassKeyword.Handle, keywordEndParser, whitespaceParser);
+                If = GetKeywordParser(JassKeyword.If, keywordEndParser, whitespaceParser);
+                Integer = GetKeywordParser(JassKeyword.Integer, keywordEndParser, whitespaceParser);
+                Local = GetKeywordParser(JassKeyword.Local, keywordEndParser, whitespaceParser);
+                Loop = GetKeywordParser(JassKeyword.Loop, keywordEndParser, whitespaceParser);
+                Native = GetKeywordParser(JassKeyword.Native, keywordEndParser, whitespaceParser);
+                Not = GetKeywordParser(JassKeyword.Not, keywordEndParser, whitespaceParser);
+                Nothing = GetKeywordParser(JassKeyword.Nothing, keywordEndParser, whitespaceParser);
+                Null = GetKeywordParser(JassKeyword.Null, keywordEndParser, whitespaceParser);
+                Or = GetKeywordParser(JassKeyword.Or, keywordEndParser, whitespaceParser);
+                Real = GetKeywordParser(JassKeyword.Real, keywordEndParser, whitespaceParser);
+                Return = GetKeywordParser(JassKeyword.Return, keywordEndParser, whitespaceParser);
+                Returns = GetKeywordParser(JassKeyword.Returns, keywordEndParser, whitespaceParser);
+                Set = GetKeywordParser(JassKeyword.Set, keywordEndParser, whitespaceParser);
+                String = GetKeywordParser(JassKeyword.String, keywordEndParser, whitespaceParser);
+                Takes = GetKeywordParser(JassKeyword.Takes, keywordEndParser, whitespaceParser);
+                Then = GetKeywordParser(JassKeyword.Then, keywordEndParser, whitespaceParser);
+                True = GetKeywordParser(JassKeyword.True, keywordEndParser, whitespaceParser);
+                Type = GetKeywordParser(JassKeyword.Type, keywordEndParser, whitespaceParser);
+            }
+
+            private static Parser<char, string> GetKeywordParser(
+                string keyword,
+                Parser<char, Unit> keywordEndParser,
+                Parser<char, Unit> whitespaceParser)
+            {
+                return Try(String(keyword).Before(keywordEndParser))
+                    .Before(whitespaceParser)
                     .Labelled($"'{keyword}' keyword");
             }
         }
@@ -252,26 +298,26 @@ namespace War3Net.CodeAnalysis.Jass
             internal static readonly Parser<char, char> QuotationMark = Char(JassSymbol.QuotationMark);
             internal static readonly Parser<char, char> DollarSign = Char(JassSymbol.DollarSign);
             internal static readonly Parser<char, char> Apostrophe = Char(JassSymbol.Apostrophe);
-            internal static readonly Parser<char, char> LeftParenthesis = Char(JassSymbol.LeftParenthesis).SkipWhitespaces();
-            internal static readonly Parser<char, char> RightParenthesis = Char(JassSymbol.RightParenthesis).SkipWhitespaces();
-            internal static readonly Parser<char, char> Asterisk = Char(JassSymbol.Asterisk).SkipWhitespaces();
-            internal static readonly Parser<char, char> PlusSign = Char(JassSymbol.PlusSign).SkipWhitespaces();
-            internal static readonly Parser<char, char> Comma = Char(JassSymbol.Comma).SkipWhitespaces();
-            internal static readonly Parser<char, char> MinusSign = Char(JassSymbol.MinusSign).SkipWhitespaces();
+            internal static readonly Parser<char, char> LeftParenthesis = Char(JassSymbol.LeftParenthesis);
+            internal static readonly Parser<char, char> RightParenthesis = Char(JassSymbol.RightParenthesis);
+            internal static readonly Parser<char, char> Asterisk = Char(JassSymbol.Asterisk);
+            internal static readonly Parser<char, char> PlusSign = Char(JassSymbol.PlusSign);
+            internal static readonly Parser<char, char> Comma = Char(JassSymbol.Comma);
+            internal static readonly Parser<char, char> MinusSign = Char(JassSymbol.MinusSign);
             internal static readonly Parser<char, char> FullStop = Char(JassSymbol.FullStop);
-            internal static readonly Parser<char, char> Slash = Try(Char(JassSymbol.Slash).Before(Not(Lookahead(Char(JassSymbol.Slash))))).SkipWhitespaces();
+            internal static readonly Parser<char, char> Slash = Char(JassSymbol.Slash);
             internal static readonly Parser<char, char> Zero = Char(JassSymbol.Zero);
-            internal static readonly Parser<char, char> LessThanSign = Char(JassSymbol.LessThanSign).SkipWhitespaces();
-            internal static readonly Parser<char, char> EqualsSign = Char(JassSymbol.EqualsSign).SkipWhitespaces();
-            internal static readonly Parser<char, char> GreaterThanSign = Char(JassSymbol.GreaterThanSign).SkipWhitespaces();
-            internal static readonly Parser<char, char> LeftSquareBracket = Char(JassSymbol.LeftSquareBracket).SkipWhitespaces();
-            internal static readonly Parser<char, char> RightSquareBracket = Char(JassSymbol.RightSquareBracket).SkipWhitespaces();
+            internal static readonly Parser<char, char> LessThanSign = Char(JassSymbol.LessThanSign);
+            internal static readonly Parser<char, char> EqualsSign = Char(JassSymbol.EqualsSign);
+            internal static readonly Parser<char, char> GreaterThanSign = Char(JassSymbol.GreaterThanSign);
+            internal static readonly Parser<char, char> LeftSquareBracket = Char(JassSymbol.LeftSquareBracket);
+            internal static readonly Parser<char, char> RightSquareBracket = Char(JassSymbol.RightSquareBracket);
             internal static readonly Parser<char, char> X = CIChar(JassSymbol.X);
 
-            internal static readonly Parser<char, string> EqualsEquals = String($"{JassSymbol.EqualsSign}{JassSymbol.EqualsSign}").SkipWhitespaces();
-            internal static readonly Parser<char, string> LessOrEquals = Try(String($"{JassSymbol.LessThanSign}{JassSymbol.EqualsSign}")).SkipWhitespaces();
-            internal static readonly Parser<char, string> GreaterOrEquals = Try(String($"{JassSymbol.GreaterThanSign}{JassSymbol.EqualsSign}")).SkipWhitespaces();
-            internal static readonly Parser<char, string> NotEquals = String($"{JassSymbol.ExclamationMark}{JassSymbol.EqualsSign}").SkipWhitespaces();
+            internal static readonly Parser<char, string> EqualsEquals = String($"{JassSymbol.EqualsSign}{JassSymbol.EqualsSign}");
+            internal static readonly Parser<char, string> LessOrEquals = String($"{JassSymbol.LessThanSign}{JassSymbol.EqualsSign}");
+            internal static readonly Parser<char, string> GreaterOrEquals = String($"{JassSymbol.GreaterThanSign}{JassSymbol.EqualsSign}");
+            internal static readonly Parser<char, string> NotEquals = String($"{JassSymbol.ExclamationMark}{JassSymbol.EqualsSign}");
         }
     }
 }

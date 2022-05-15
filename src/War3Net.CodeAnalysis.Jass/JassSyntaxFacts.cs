@@ -11,6 +11,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassSyntaxFacts
     {
+        public static bool IsWhitespaceCharacter(char ch)
+        {
+            return char.IsWhiteSpace(ch)
+                && ch != JassSymbol.CarriageReturn
+                && ch != JassSymbol.LineFeed;
+        }
+
         /// <summary>
         /// Returns <see langword="true"/> if the character can be the starting character of a JASS identifier.
         /// </summary>

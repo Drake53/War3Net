@@ -16,6 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassSetStatementSyntax> GetSetStatementParser(
+            Parser<char, Unit> whitespaceParser,
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, JassEqualsValueClauseSyntax> equalsValueClauseParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
@@ -23,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             return Map(
                 (id, indexer, equals) => new JassSetStatementSyntax(id, indexer.GetValueOrDefault(), equals),
                 Keyword.Set.Then(identifierNameParser),
-                Symbol.LeftSquareBracket.Then(expressionParser).Before(Symbol.RightSquareBracket).Optional(),
+                Symbol.LeftSquareBracket.Before(whitespaceParser).Then(expressionParser).Before(Symbol.RightSquareBracket.Before(whitespaceParser)).Optional(),
                 equalsValueClauseParser);
         }
     }

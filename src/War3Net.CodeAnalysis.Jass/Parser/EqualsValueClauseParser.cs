@@ -13,9 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassEqualsValueClauseSyntax> GetEqualsValueClauseParser(Parser<char, IExpressionSyntax> expressionParser)
+        internal static Parser<char, JassEqualsValueClauseSyntax> GetEqualsValueClauseParser(
+            Parser<char, Unit> whitespaceParser,
+            Parser<char, IExpressionSyntax> expressionParser)
         {
-            return Symbol.EqualsSign.Then(expressionParser)
+            return Symbol.EqualsSign.Before(whitespaceParser).Then(expressionParser)
                 .Select(expression => new JassEqualsValueClauseSyntax(expression));
         }
     }

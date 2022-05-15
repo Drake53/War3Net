@@ -53,7 +53,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const string True = "true";
         public const string Type = "type";
 
-        private static readonly HashSet<string> _keywords = new HashSet<string>(StringComparer.Ordinal)
+        private static readonly HashSet<string> _keywords = new(StringComparer.Ordinal)
         {
             Alias,
             And,

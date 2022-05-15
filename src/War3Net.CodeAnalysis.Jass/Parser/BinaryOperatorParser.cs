@@ -15,71 +15,71 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser(Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
-                GetBinaryAddOperatorParser(),
-                GetBinarySubtractOperatorParser(),
-                GetBinaryMultiplicationOperatorParser(),
-                GetBinaryDivisionOperatorParser(),
-                GetBinaryGreaterOrEqualOperatorParser(),
-                GetBinaryLessOrEqualOperatorParser(),
-                GetBinaryEqualsOperatorParser(),
-                GetBinaryNotEqualsOperatorParser(),
-                GetBinaryGreaterThanOperatorParser(),
-                GetBinaryLessThanOperatorParser(),
+                GetBinaryAddOperatorParser(whitespaceParser),
+                GetBinarySubtractOperatorParser(whitespaceParser),
+                GetBinaryMultiplicationOperatorParser(whitespaceParser),
+                GetBinaryDivisionOperatorParser(whitespaceParser),
+                GetBinaryGreaterOrEqualOperatorParser(whitespaceParser),
+                GetBinaryLessOrEqualOperatorParser(whitespaceParser),
+                GetBinaryEqualsOperatorParser(whitespaceParser),
+                GetBinaryNotEqualsOperatorParser(whitespaceParser),
+                GetBinaryGreaterThanOperatorParser(whitespaceParser),
+                GetBinaryLessThanOperatorParser(whitespaceParser),
                 GetBinaryAndOperatorParser(),
                 GetBinaryOrOperatorParser());
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryAddOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryAddOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.PlusSign.ThenReturn(BinaryOperatorType.Add);
+            return Symbol.PlusSign.Before(whitespaceParser).ThenReturn(BinaryOperatorType.Add);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinarySubtractOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinarySubtractOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.MinusSign.ThenReturn(BinaryOperatorType.Subtract);
+            return Symbol.MinusSign.Before(whitespaceParser).ThenReturn(BinaryOperatorType.Subtract);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryMultiplicationOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryMultiplicationOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.Asterisk.ThenReturn(BinaryOperatorType.Multiplication);
+            return Symbol.Asterisk.Before(whitespaceParser).ThenReturn(BinaryOperatorType.Multiplication);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryDivisionOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryDivisionOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.Slash.ThenReturn(BinaryOperatorType.Division);
+            return Try(Symbol.Slash.Before(Not(Lookahead(Symbol.Slash)))).Before(whitespaceParser).ThenReturn(BinaryOperatorType.Division);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterOrEqualOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterOrEqualOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.GreaterOrEquals.ThenReturn(BinaryOperatorType.GreaterOrEqual);
+            return Try(Symbol.GreaterOrEquals).Before(whitespaceParser).ThenReturn(BinaryOperatorType.GreaterOrEqual);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryLessOrEqualOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryLessOrEqualOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.LessOrEquals.ThenReturn(BinaryOperatorType.LessOrEqual);
+            return Try(Symbol.LessOrEquals).Before(whitespaceParser).ThenReturn(BinaryOperatorType.LessOrEqual);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryEqualsOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryEqualsOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.EqualsEquals.ThenReturn(BinaryOperatorType.Equals);
+            return Symbol.EqualsEquals.Before(whitespaceParser).ThenReturn(BinaryOperatorType.Equals);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryNotEqualsOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryNotEqualsOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.NotEquals.ThenReturn(BinaryOperatorType.NotEquals);
+            return Symbol.NotEquals.Before(whitespaceParser).ThenReturn(BinaryOperatorType.NotEquals);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterThanOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterThanOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.GreaterThanSign.ThenReturn(BinaryOperatorType.GreaterThan);
+            return Symbol.GreaterThanSign.Before(whitespaceParser).ThenReturn(BinaryOperatorType.GreaterThan);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryLessThanOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryLessThanOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.LessThanSign.ThenReturn(BinaryOperatorType.LessThan);
+            return Symbol.LessThanSign.Before(whitespaceParser).ThenReturn(BinaryOperatorType.LessThan);
         }
 
         internal static Parser<char, BinaryOperatorType> GetBinaryAndOperatorParser()

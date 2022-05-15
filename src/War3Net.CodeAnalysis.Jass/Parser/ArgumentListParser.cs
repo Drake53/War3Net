@@ -15,9 +15,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassArgumentListSyntax> GetArgumentListParser(Parser<char, IExpressionSyntax> expressionParser)
+        internal static Parser<char, JassArgumentListSyntax> GetArgumentListParser(
+            Parser<char, Unit> whitespaceParser,
+            Parser<char, IExpressionSyntax> expressionParser)
         {
-            return expressionParser.Separated(Symbol.Comma)
+            return expressionParser.Separated(Symbol.Comma.Before(whitespaceParser))
                 .Select(arguments => new JassArgumentListSyntax(arguments.ToImmutableArray()));
         }
     }

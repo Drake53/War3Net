@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Globalization;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassDecimalLiteralExpressionSyntax : IExpressionSyntax
@@ -22,6 +24,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == decimalLiteralExpression.Value;
         }
 
-        public override string ToString() => Value.ToString();
+        public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
     }
 }

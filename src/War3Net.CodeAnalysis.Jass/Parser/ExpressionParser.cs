@@ -17,41 +17,43 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetExpressionParser(Parser<char, JassIdentifierNameSyntax> identifierNameParser)
+        internal static Parser<char, IExpressionSyntax> GetExpressionParser(
+            Parser<char, Unit> whitespaceParser,
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
             return Pidgin.Expression.ExpressionParser.Build<char, IExpressionSyntax>(
                 expressionParser =>
                 (
                     OneOf(
-                        GetCharacterLiteralExpressionParser().SkipWhitespaces(),
-                        GetFourCCLiteralExpressionParser().SkipWhitespaces(),
-                        GetHexadecimalLiteralExpressionParser().SkipWhitespaces(),
-                        GetRealLiteralExpressionParser().SkipWhitespaces(),
-                        GetOctalLiteralExpressionParser().SkipWhitespaces(),
-                        GetDecimalLiteralExpressionParser().SkipWhitespaces(),
+                        GetCharacterLiteralExpressionParser().Before(whitespaceParser),
+                        GetFourCCLiteralExpressionParser().Before(whitespaceParser),
+                        GetHexadecimalLiteralExpressionParser().Before(whitespaceParser),
+                        GetRealLiteralExpressionParser().Before(whitespaceParser),
+                        GetOctalLiteralExpressionParser().Before(whitespaceParser),
+                        GetDecimalLiteralExpressionParser().Before(whitespaceParser),
                         GetBooleanLiteralExpressionParser(),
-                        GetStringLiteralExpressionParser().SkipWhitespaces(),
+                        GetStringLiteralExpressionParser().Before(whitespaceParser),
                         GetNullLiteralExpressionParser(),
                         GetFunctionReferenceExpressionParser(identifierNameParser),
-                        GetInvocationExpressionParser(expressionParser, identifierNameParser),
-                        GetArrayReferenceExpressionParser(expressionParser, identifierNameParser),
+                        GetInvocationExpressionParser(whitespaceParser, expressionParser, identifierNameParser),
+                        GetArrayReferenceExpressionParser(whitespaceParser, expressionParser, identifierNameParser),
                         GetVariableReferenceExpressionParser(identifierNameParser),
-                        GetParenthesizedExpressionParser(expressionParser)),
+                        GetParenthesizedExpressionParser(whitespaceParser, expressionParser)),
                     new[]
                     {
                         // https://www.hiveworkshop.com/threads/precedence-in-jass.43500/#post-378439
                         Operator.PrefixChainable(GetUnaryNotOperatorParser().Prefix()),
-                        Operator.PrefixChainable(GetUnaryPlusOperatorParser().Prefix(), GetUnaryMinusOperatorParser().Prefix()),
-                        Operator.InfixL(GetBinaryMultiplicationOperatorParser().Infix())
-                            .And(Operator.InfixL(GetBinaryDivisionOperatorParser().Infix())),
-                        Operator.InfixL(GetBinaryAddOperatorParser().Infix())
-                            .And(Operator.InfixL(GetBinarySubtractOperatorParser().Infix())),
-                        Operator.InfixL(GetBinaryGreaterOrEqualOperatorParser().Infix())
-                            .And(Operator.InfixL(GetBinaryLessOrEqualOperatorParser().Infix()))
-                            .And(Operator.InfixL(GetBinaryEqualsOperatorParser().Infix()))
-                            .And(Operator.InfixL(GetBinaryNotEqualsOperatorParser().Infix()))
-                            .And(Operator.InfixL(GetBinaryGreaterThanOperatorParser().Infix()))
-                            .And(Operator.InfixL(GetBinaryLessThanOperatorParser().Infix())),
+                        Operator.PrefixChainable(GetUnaryPlusOperatorParser(whitespaceParser).Prefix(), GetUnaryMinusOperatorParser(whitespaceParser).Prefix()),
+                        Operator.InfixL(GetBinaryMultiplicationOperatorParser(whitespaceParser).Infix())
+                            .And(Operator.InfixL(GetBinaryDivisionOperatorParser(whitespaceParser).Infix())),
+                        Operator.InfixL(GetBinaryAddOperatorParser(whitespaceParser).Infix())
+                            .And(Operator.InfixL(GetBinarySubtractOperatorParser(whitespaceParser).Infix())),
+                        Operator.InfixL(GetBinaryGreaterOrEqualOperatorParser(whitespaceParser).Infix())
+                            .And(Operator.InfixL(GetBinaryLessOrEqualOperatorParser(whitespaceParser).Infix()))
+                            .And(Operator.InfixL(GetBinaryEqualsOperatorParser(whitespaceParser).Infix()))
+                            .And(Operator.InfixL(GetBinaryNotEqualsOperatorParser(whitespaceParser).Infix()))
+                            .And(Operator.InfixL(GetBinaryGreaterThanOperatorParser(whitespaceParser).Infix()))
+                            .And(Operator.InfixL(GetBinaryLessThanOperatorParser(whitespaceParser).Infix())),
                         Operator.InfixL(GetBinaryAndOperatorParser().Infix())
                             .And(Operator.InfixL(GetBinaryOrOperatorParser().Infix())),
                     }));

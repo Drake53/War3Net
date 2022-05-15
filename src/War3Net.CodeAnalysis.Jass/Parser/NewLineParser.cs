@@ -7,20 +7,18 @@
 
 using Pidgin;
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-
 using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, Unit> GetNewLineParser()
+        internal static Parser<char, Unit> GetNewLineParser(Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
                 Try(String($"{JassSymbol.CarriageReturn}{JassSymbol.LineFeed}")).IgnoreResult(),
                 Symbol.CarriageReturn.IgnoreResult(),
-                Symbol.LineFeed.IgnoreResult()).SkipWhitespaces().Labelled("newline");
+                Symbol.LineFeed.IgnoreResult()).Before(whitespaceParser).Labelled("newline");
         }
     }
 }
