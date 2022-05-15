@@ -9,8 +9,8 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.Common.Extensions;
 using War3Net.TestTools.UnitTesting;
 
 using static War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
@@ -108,7 +108,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests
             #endregion
 
             #region FourCCLiteralExpression
-            yield return new object?[] { @"'hpea'", new JassFourCCLiteralExpressionSyntax(@"hpea".FromRawcode()) };
+            yield return new object?[] { @"'hpea'", new JassFourCCLiteralExpressionSyntax(@"hpea".FromJassRawcode()) };
             yield return new object?[] { @"'hpeasant'" };
             yield return new object?[] { @"'pea'" };
             yield return new object?[] { @"''" };
@@ -116,9 +116,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests
             #endregion
 
             #region RealLiteralExpression
-            yield return new object?[] { @"0.", LiteralExpression(0f) };
+            yield return new object?[] { @"0.", LiteralExpression(0f, precision: 0) };
             yield return new object?[] { @".0", LiteralExpression(0f) };
-            yield return new object?[] { @"3.141", LiteralExpression(3.141f) };
+            yield return new object?[] { @"3.141", LiteralExpression(3.141f, precision: 3) };
             yield return new object?[] { @"." };
             yield return new object?[] { @"0.abc" };
             yield return new object?[] { @"0.0abc" };
@@ -135,7 +135,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests
             yield return new object?[] { "\"  \\\"true\\\"  \"", new JassStringLiteralExpressionSyntax("  \\\"true\\\"  ") };
             yield return new object?[] { "\"  \r\t\\\\  \"", new JassStringLiteralExpressionSyntax("  \r\t\\\\  ") };
             yield return new object?[] { "\"  true" };
-            yield return new object?[] { "\"  \n  \"" };
+            yield return new object?[] { "\"  \n  \"", new JassStringLiteralExpressionSyntax("  \n  ") };
             #endregion
 
             #region NullLiteralExpression
@@ -169,8 +169,8 @@ namespace War3Net.CodeAnalysis.Jass.Tests
                 @"(0 > foo())",
                 new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
                     BinaryOperatorType.GreaterThan,
-                    InvocationExpression("foo"),
-                    new JassOctalLiteralExpressionSyntax(0))),
+                    new JassOctalLiteralExpressionSyntax(0),
+                    InvocationExpression("foo"))),
             };
 
             yield return new object?[]

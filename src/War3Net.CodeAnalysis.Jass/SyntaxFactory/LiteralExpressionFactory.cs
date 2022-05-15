@@ -36,6 +36,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static IExpressionSyntax LiteralExpression(float value, int precision = 1)
         {
             var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture).Split('.', 2);
+            if (precision == 0 && valueAsString.Length == 1)
+            {
+                valueAsString = new string[] { valueAsString[0], string.Empty };
+            }
+
             if (valueAsString[0].StartsWith('-'))
             {
                 return UnaryMinusExpression(new JassRealLiteralExpressionSyntax(valueAsString[0].TrimStart('-'), valueAsString[1]));
