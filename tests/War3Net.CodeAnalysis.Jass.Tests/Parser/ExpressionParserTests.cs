@@ -15,7 +15,7 @@ using War3Net.TestTools.UnitTesting;
 
 using static War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
-namespace War3Net.CodeAnalysis.Jass.Tests
+namespace War3Net.CodeAnalysis.Jass.Tests.Parser
 {
     [TestClass]
     public class ExpressionParserTests
