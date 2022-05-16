@@ -5,10 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using Pidgin;
-using Pidgin.Expression;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -32,14 +29,14 @@ namespace War3Net.CodeAnalysis.Jass
             var setParser = setStatementParser.Cast<IStatementSyntax>();
             var callParser = callStatementParser.Cast<IStatementSyntax>();
 
-            return Pidgin.Expression.ExpressionParser.Build<char, IStatementSyntax>(
+            return Rec<char, IStatementSyntax>(
                 statementParser =>
                 {
                     var statementListParser = GetStatementListParser(
                         statementParser,
                         endOfLineParser);
 
-                    return (OneOf(
+                    return OneOf(
                         emptyParser.Cast<IStatementSyntax>(),
                         commentParser.Cast<IStatementSyntax>(),
                         localVariableDeclarationStatementParser.Cast<IStatementSyntax>(),
@@ -49,8 +46,7 @@ namespace War3Net.CodeAnalysis.Jass
                         GetLoopStatementParser(statementListParser, endOfLineParser),
                         exitStatementParser.Cast<IStatementSyntax>(),
                         returnStatementParser.Cast<IStatementSyntax>(),
-                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, endOfLineParser)),
-                    Array.Empty<OperatorTableRow<char, IStatementSyntax>>());
+                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, endOfLineParser));
                 });
         }
     }
