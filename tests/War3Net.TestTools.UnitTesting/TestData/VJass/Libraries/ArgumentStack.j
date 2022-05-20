@@ -1,0 +1,457 @@
+library ArgumentStack   /* v1.0.0 by Guhun
+*/  requires                                                                                      /*
+*/      Table,               /* https://www.hiveworkshop.com/threads/snippet-new-table.188084/
+*/      optional ConstTable  //
+
+/*                                        Introduction
+    While this system is not as fast as storing global variables in locals and restoring the values
+later, it has a much more convenient API while remaining light-weight.
+
+Global namespace usage (assuming an optimized map with inlined constants):
+ +Variables: 0
+ +Functions: 2 for each primitive type (10), 1 for Agent (total => 11). Only for types you use.
+What does it do?
+    Basically, it allows the creation of a number of stacks limited only by the number of Tables
+you can have in a single map. You can push values into this stack and then remove them (see example
+usage). Ideally, you should always use stack 0 for the type of variable that you need. If you are
+using more than one of the same variable type, then you can use stacks 2, 3, 4... These stacks are
+used to pass argumenTs between different Threads (ForGroup, TriggerEvaluate, etc.)
+*/
+
+//! novjass
+'                                                                                                  '
+'                                              API                                                 '
+//=============================
+// Example Usage
+
+// Using unit stack 0
+//! runtextmacro ArgumentStack_Wrapper(DamagingUnit, unit, 0)
+
+// Using unit stack 1, since we don't want to use the same stack twice.
+//! runtextmacro ArgumentStack_Wrapper(DamagedUnit, unit, 1)
+
+function EnumDealAoEDamage takes nothing returns boolean
+    local unit enumUnit = GetEnumUnit()
+   
+    /* Since we are dealing damage in this code, we could end up triggering OnDealDamage again. If
+    we used global variables instead of an argument stack, we would have lost the original values of
+    the global variables when getting the next EnumUnit() (unless we remembered to store the globals
+    in locals and restore them). */
+   
+   
+    // Deal damage to nearby living units in AoE.
+    if UnitAlive(enumUnit) then
+        call UnitDamageTarget(GetDamagingUnit(), GetEnumUnit(), Args.getReal(0), false, false, /*
+                           */ ATTACK_TYPE_CHAOS, DAMAGE_TYPE_ACID, WEAPON_TYPE_WHOKNOWS)
+       
+        // If a unit was killed by the AoE, kill original damaged unit.
+        if not UnitAlive(enumUnit) and UnitAlive(GetDamagedUnit()) then
+            call KillUnit(GetDamagedUnit())
+        endif
+    endif
+   
+   
+    set enumUnit = null
+    return false
+endfunction
+
+function OnDealDamage takes unit damageDealer, unit damagedUnit, real damage returns nothing
+    call SetDamagingUnit(damageDealer)
+    call SetDamagedUnit(damagedUnit)
+    call Args.setReal(0, damage)
+
+    call GroupEnumUnitsInRange(ENUM_GROUP, /*
+                            */ GetUnitX(damagedUnit), /*
+                            */ GetUnitY(damagedUnit), /*
+                            */ 300., /*
+                            */ Condition(function EnumDealAoEDamage))
+                           
+    call FreeDamagingUnit()
+    call FreeDamagedUnit()
+    call Args.freeReal(0)
+endfunction
+
+//=============================
+// Supported Types
+    real    integer     boolean     string      player      widget      destructable    item    unit
+    ability     timer   trigger     triggercondition    triggeraction   event   force   group
+    location    rect    boolexpr    sound   effect  unitpool    itempool    quest   questitem
+    defeatcondition     timerdialog     leaderboard     multiboard      multiboarditem     trackable
+    dialog      button      texttag     lightning       image     ubersplat     region      fogstate
+    fogmodifier     hashtable
+   
+//=============================
+// Struct (using unit as example, works for all types above).
+struct Args extends array
+    // Gets the current unit in the 'whichStack' stack. This method inlines (two hashtable lookups)
+    method unitGet takes integer whichStack
+   
+    // Sets the current unit in the 'whichStack' stack.
+    // You must call unitFree at the end of your function or routine when this method is called.
+    method unitSet takes integer whichStack, unit value
+   
+    // Removes the current unit from the top of the 'whichStack' stack.
+    method unitFree takes integer whichStack
+   
+    // Wrappers for the above methods. These wrappers all inline.
+    method getUnit
+    method setUnit
+    method freeUnit
+endstruct
+
+//=============================
+// Textmacros
+/*
+You can use the textmacros below to create convienient wrappers for the Args struct, allowing you to
+retrieve values from the stack without having to pass a number as an argument (this is handled by
+the NUMBER parameter of the textmacros). All the methods and functions generated by these textmacros
+are inlined by JassHelper.
+*/
+
+//! textmacro ArgumentStack_WrapperMethod takes NAME, type, NUMBER
+/*
+Creates a the following methods (NAME=EnumHero, type=unit, NUMBER=?)
+*/
+private method setEnumHero
+method getEnumHero
+private method freeEnumHero
+//! endtextmacro
+
+//! textmacro ArgumentStack_Wrapper takes NAME, type, NUMBER
+/*
+Creates a the following functions (NAME=EnumHero, type=unit, NUMBER=?)
+*/
+private function SetEnumHero
+function GetEnumHero
+private function FreeEnumHero
+//! endtextmacro
+
+// Same as ArgumentStack_WrapperMethod, but for Structs.
+//! textmacro ArgumentStack_StructWrapperMethod takes NAME, type, NUMBER
+
+// Same as ArgumentStack_Wrapper, but for Structs.
+//! textmacro ArgumentStack_StructWrapper takes NAME, type, NUMBER
+
+//=============================
+// Advanced Usage (using unit as example, works for all types).
+
+/*
+    If you need to look deeper into the stack (something that would not be possible when using locals
+to store global variables), you can use these methods of the Args struct.
+
+    When using these methods, it is recommended that you use a unique stack, to avoid retrieving values
+from other regions of code. This usually means that 'whichStack' will be a key.
+
+    All these functions inline.
+*/
+
+struct Args extends array
+
+    // Returns the depth of the 'i' stack of this type.
+    method unitGetDepth integer whichStack returns integer
+   
+    // Digs into a stack, returning an element 'depth' into it.
+    // With 'depth' == 0, same return value as unitGet.
+    // You should not dig deeper than the value returned by unitGetDepth.
+    method unitDig takes integer whichStack, integer depth returns unit
+   
+    // You should only destroy stacks that you have created. New stacks are automatically initialized.
+    method unitDestroyStack takes integer whichStack returns nothing
+endstruct
+'                                                                                                  '
+'                                         Source Code                                              '
+//! endnovjass
+
+//=============================
+// Determine type of Table to be used (ConstTable if library is present)
+static if LIBRARY_ConstTable then
+    private module Const
+        static method type takes integer i returns ConstTable
+            return i
+        endmethod
+    endmodule
+else
+    private module Dynmc
+        static method type takes integer i returns Table
+            return i
+        endmethod
+    endmodule
+endif
+private struct table extends array
+    static if LIBRARY_ConstTable then
+        implement Const
+    else
+        implement Dynmc
+    endif
+endstruct
+
+//=============================
+// API Textmacros
+
+//! textmacro ArgumentStack_WrapperMethod takes NAME, type, NUMBER
+private method set$NAME$ takes $type$ value returns nothing
+    call Args.$type$Set($NUMBER$, value)
+endmethod
+method get$NAME$ takes nothing returns $type$
+    return Args.$type$Get($NUMBER$)
+endmethod
+private method free$NAME$ takes nothing returns nothing
+    call Args.$type$Free($NUMBER$)
+endmethod
+//! endtextmacro
+
+//! textmacro ArgumentStack_Wrapper takes NAME, type, NUMBER
+private function  Set$NAME$ takes $type$ value returns nothing
+    call Args.$type$Set($NUMBER$, value)
+endfunction
+function Get$NAME$ takes nothing returns $type$
+    return Args.$type$Get($NUMBER$)
+endfunction
+private function  Free$NAME$ takes nothing returns nothing
+    call Args.$type$Free($NUMBER$)
+endfunction
+//! endtextmacro
+
+//! textmacro ArgumentStack_StructWrapperMethod takes NAME, type, NUMBER
+private method set$NAME$ takes $type$ value returns nothing
+    call Args.integerSet($NUMBER$, value)
+endmethod
+method get$NAME$ takes nothing returns $type$
+    return Args.integerGet($NUMBER$)
+endmethod
+private method free$NAME$ takes nothing returns nothing
+    call Args.integerFree($NUMBER$)
+endmethod
+//! endtextmacro
+
+//! textmacro ArgumentStack_StructWrapper takes NAME, type, NUMBER
+private function Set$NAME$ takes $type$ value returns nothing
+    call Args.integerSet($NUMBER$, value)
+endfunction
+function Get$NAME$ takes nothing returns $type$
+    return Args.integerGet($NUMBER$)
+endfunction
+private function Free$NAME$ takes nothing returns nothing
+    call Args.integerFree($NUMBER$)
+endfunction
+//! endtextmacro
+
+//=============================
+// Struct
+
+//! textmacro ArgumentStack_Field takes type, capitalized
+private static key $type$_impl
+static method set$capitalized$ takes integer i, $type$ value returns nothing
+    local Table stack = table.type($type$_impl)[i]
+    local integer current
+    if stack == 0 then
+        set stack = Table.create()
+        set table.type($type$_impl)[i] = stack
+        set stack[-1] = 0
+        set current = 0
+    else
+        set current = stack[-1] + 1
+        set stack[-1] = current
+    endif
+   
+    set stack.$type$[current] = value
+endmethod
+static method get$capitalized$ takes integer i returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1]]
+endmethod
+static method free$capitalized$ takes integer i returns nothing
+    local Table stack = table.type($type$_impl)[i]
+    local integer current = stack[-1]
+    call stack.$type$.remove(current)
+    set stack[-1] = current - 1
+endmethod
+
+// Methods that inline, for textmacros
+static method $type$Set takes integer i, $type$ value returns nothing
+    call set$capitalized$(i, value)
+endmethod
+static method $type$Get takes integer i returns $type$
+    return get$capitalized$(i)
+endmethod
+static method $type$Free takes integer i returns nothing
+    call free$capitalized$(i)
+endmethod
+
+// Advanced methods
+static method $type$GetDepth takes integer i returns integer
+    return table.type($type$_impl)[i][-1] + 1
+endmethod
+
+static method $type$Dig takes integer i, integer depth returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1] - depth]
+endmethod
+
+static method $type$DestroyStack takes integer whichStack returns nothing
+    call table.type($type$_impl)[whichStack].destroy()
+endmethod
+//! endtextmacro
+
+//! textmacro ArgumentStack_AgentField takes type, capitalized
+private static key $type$_impl
+static method set$capitalized$ takes integer i, $type$ value returns nothing
+    call .setAgent($type$_impl, i, value)
+endmethod
+static method get$capitalized$ takes integer i returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1]]
+endmethod
+static method free$capitalized$ takes integer i returns nothing
+    call .freeHandle($type$_impl, i)
+endmethod
+
+// Methods that inline, for textmacros
+static method $type$Set takes integer i, $type$ value returns nothing
+    call set$capitalized$(i, value)
+endmethod
+static method $type$Get takes integer i returns $type$
+    return get$capitalized$(i)
+endmethod
+static method $type$Free takes integer i returns nothing
+    call free$capitalized$(i)
+endmethod
+
+// Advanced methods
+static method $type$GetDepth takes integer i returns integer
+    return table.type($type$_impl)[i][-1] + 1
+endmethod
+
+static method $type$Dig takes integer i, integer depth returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1] - depth]
+endmethod
+
+static method $type$DestroyStack takes integer whichStack returns nothing
+    call table.type($type$_impl)[whichStack].destroy()
+endmethod
+//! endtextmacro
+
+//! textmacro ArgumentStack_HandleField takes type, capitalized
+private static key $type$_impl
+static method set$capitalized$ takes integer i, $type$ value returns nothing
+    call .setHandle($type$_impl, i, value)
+endmethod
+static method get$capitalized$ takes integer i returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1]]
+endmethod
+static method free$capitalized$ takes integer i returns nothing
+    call .freeHandle($type$_impl, i)
+endmethod
+
+// Methods that inline, for textmacros
+static method $type$Set takes integer i, $type$ value returns nothing
+    call set$capitalized$(i, value)
+endmethod
+static method $type$Get takes integer i returns $type$
+    return get$capitalized$(i)
+endmethod
+static method $type$Free takes integer i returns nothing
+    call free$capitalized$(i)
+endmethod
+
+// Advanced methods
+static method $type$GetDepth takes integer i returns integer
+    return table.type($type$_impl)[i][-1] + 1
+endmethod
+
+static method $type$Dig takes integer i, integer depth returns $type$
+    return table.type($type$_impl)[i].$type$[table.type($type$_impl)[i][-1] - depth]
+endmethod
+
+static method $type$DestroyStack takes integer whichStack returns nothing
+    call table.type($type$_impl)[whichStack].destroy()
+endmethod
+//! endtextmacro
+
+struct Args extends array
+    private static method setHandle takes integer tab, integer i, handle h returns nothing
+        local Table stack = table.type(tab)[i]
+        local integer current
+        if stack == 0 then
+            set stack = Table.create()
+            set table.type(tab)[i] = stack
+            set stack[-1] = 0
+            set current = 0
+        else
+            set current = stack[-1] + 1
+            set stack[-1] = current
+        endif
+       
+        set stack.fogstate[current] = ConvertFogState(GetHandleId(h))
+    endmethod
+   
+    private static method setAgent takes integer tab, integer i, agent a returns nothing
+        local Table stack = table.type(tab)[i]
+        local integer current
+        if stack == 0 then
+            set stack = Table.create()
+            set table.type(tab)[i] = stack
+            set stack[-1] = 0
+            set current = 0
+        else
+            set current = stack[-1] + 1
+            set stack[-1] = current
+        endif
+       
+        set stack.agent[current] = a
+    endmethod
+   
+    private static method freeHandle takes integer tab, integer i returns nothing
+        local Table stack = table.type(tab)[i]
+        local integer current = stack[-1]
+        call stack.handle.remove(current)
+        set stack[-1] = current - 1
+    endmethod
+
+
+    //! runtextmacro ArgumentStack_Field("real","Real")
+    //! runtextmacro ArgumentStack_Field("integer","Integer")
+    //! runtextmacro ArgumentStack_Field("boolean","Boolean")
+    //! runtextmacro ArgumentStack_Field("string","String")
+   
+    //! runtextmacro ArgumentStack_AgentField("player","Player")
+    //! runtextmacro ArgumentStack_AgentField("widget","Widget")
+    //! runtextmacro ArgumentStack_AgentField("destructable","Destructable")
+    //! runtextmacro ArgumentStack_AgentField("item","Item")
+    //! runtextmacro ArgumentStack_AgentField("unit","Unit")
+    //! runtextmacro ArgumentStack_AgentField("ability","Ability")
+    //! runtextmacro ArgumentStack_AgentField("timer","Timer")
+    //! runtextmacro ArgumentStack_AgentField("trigger","Trigger")
+    //! runtextmacro ArgumentStack_AgentField("triggercondition","Triggercondition")
+    //! runtextmacro ArgumentStack_AgentField("event","Event")
+    //! runtextmacro ArgumentStack_AgentField("force","Force")
+    //! runtextmacro ArgumentStack_AgentField("group","Group")
+    //! runtextmacro ArgumentStack_AgentField("location","Location")
+    //! runtextmacro ArgumentStack_AgentField("rect","Rect")
+    //! runtextmacro ArgumentStack_AgentField("boolexpr","Boolexpr")
+    //! runtextmacro ArgumentStack_AgentField("sound","Sound")
+    //! runtextmacro ArgumentStack_AgentField("effect","Effect")
+    //! runtextmacro ArgumentStack_AgentField("quest","Quest")
+    //! runtextmacro ArgumentStack_AgentField("questitem","Questitem")
+    //! runtextmacro ArgumentStack_AgentField("defeatcondition","Defeatcondition")
+    //! runtextmacro ArgumentStack_AgentField("timerdialog","Timerdialog")
+    //! runtextmacro ArgumentStack_AgentField("leaderboard","Leaderboard")
+    //! runtextmacro ArgumentStack_AgentField("multiboard","Multiboard")
+    //! runtextmacro ArgumentStack_AgentField("multiboarditem","Multiboarditem")
+    //! runtextmacro ArgumentStack_AgentField("trackable","Trackable")
+    //! runtextmacro ArgumentStack_AgentField("dialog","Dialog")
+    //! runtextmacro ArgumentStack_AgentField("button","Button")
+    //! runtextmacro ArgumentStack_AgentField("region","Region")
+    //! runtextmacro ArgumentStack_AgentField("fogmodifier","Fogmodifier")
+    //! runtextmacro ArgumentStack_AgentField("hashtable","Hashtable")
+   
+    //! runtextmacro ArgumentStack_HandleField("triggeraction","Triggeraction")
+    //! runtextmacro ArgumentStack_HandleField("unitpool","Unitpool")
+    //! runtextmacro ArgumentStack_HandleField("itempool","Itempool")
+    //! runtextmacro ArgumentStack_HandleField("texttag","Texttag")
+    //! runtextmacro ArgumentStack_HandleField("lightning","Lightning")
+    //! runtextmacro ArgumentStack_HandleField("image","Image")
+    //! runtextmacro ArgumentStack_HandleField("ubersplat","Ubersplat")
+    //! runtextmacro ArgumentStack_HandleField("fogstate","Fogstate")
+   
+   
+endstruct
+
+endlibrary
