@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             var isRenamed = false;
 
-            var declarationsBuilder = ImmutableArray.CreateBuilder<IDeclarationSyntax>();
+            var declarationsBuilder = ImmutableArray.CreateBuilder<ITopLevelDeclarationSyntax>();
             foreach (var declaration in compilationUnit.Declarations)
             {
                 if (TryRenameDeclaration(declaration, out var renamedDeclaration))

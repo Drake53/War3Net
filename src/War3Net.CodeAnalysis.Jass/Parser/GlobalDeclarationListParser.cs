@@ -15,12 +15,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IDeclarationSyntax> GetGlobalDeclarationListParser(
+        internal static Parser<char, ITopLevelDeclarationSyntax> GetGlobalDeclarationListParser(
             Parser<char, IGlobalDeclarationSyntax> globalDeclarationParser,
             Parser<char, Unit> endOfLineParser)
         {
             return Keyword.Globals.Then(endOfLineParser).Then(globalDeclarationParser.Many()).Before(Keyword.EndGlobals)
-                .Select<IDeclarationSyntax>(globals => new JassGlobalDeclarationListSyntax(globals.ToImmutableArray()));
+                .Select<ITopLevelDeclarationSyntax>(globals => new JassGlobalDeclarationListSyntax(globals.ToImmutableArray()));
         }
     }
 }

@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassFunctionDeclarationSyntax : IDeclarationSyntax
+    public class JassFunctionDeclarationSyntax : ITopLevelDeclarationSyntax
     {
         public JassFunctionDeclarationSyntax(JassFunctionDeclaratorSyntax functionDeclarator, JassStatementListSyntax body)
         {
@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassStatementListSyntax Body { get; init; }
 
-        public bool Equals(IDeclarationSyntax? other)
+        public bool Equals(ITopLevelDeclarationSyntax? other)
         {
             return other is JassFunctionDeclarationSyntax functionDeclaration
                 && FunctionDeclarator.Equals(functionDeclaration.FunctionDeclarator)

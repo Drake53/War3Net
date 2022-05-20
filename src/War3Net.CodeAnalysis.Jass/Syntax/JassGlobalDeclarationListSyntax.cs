@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationListSyntax : IDeclarationSyntax
+    public class JassGlobalDeclarationListSyntax : ITopLevelDeclarationSyntax
     {
         public JassGlobalDeclarationListSyntax(ImmutableArray<IGlobalDeclarationSyntax> globals)
         {
@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public ImmutableArray<IGlobalDeclarationSyntax> Globals { get; init; }
 
-        public bool Equals(IDeclarationSyntax? other)
+        public bool Equals(ITopLevelDeclarationSyntax? other)
         {
             return other is JassGlobalDeclarationListSyntax globalDeclarationList
                 && Globals.SequenceEqual(globalDeclarationList.Globals);

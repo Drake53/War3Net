@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEmptySyntax : IDeclarationSyntax, IGlobalDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
+    public class JassEmptySyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax, IGlobalDeclarationSyntax, IScopedGlobalDeclarationSyntax, IMemberDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
     {
         public static readonly JassEmptySyntax Value = new JassEmptySyntax();
 
@@ -15,9 +15,15 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
         }
 
-        public bool Equals(IDeclarationSyntax? other) => other is JassEmptySyntax;
+        public bool Equals(ITopLevelDeclarationSyntax? other) => other is JassEmptySyntax;
+
+        public bool Equals(IScopedDeclarationSyntax? other) => other is JassEmptySyntax;
 
         public bool Equals(IGlobalDeclarationSyntax? other) => other is JassEmptySyntax;
+
+        public bool Equals(IScopedGlobalDeclarationSyntax? other) => other is JassEmptySyntax;
+
+        public bool Equals(IMemberDeclarationSyntax? other) => other is JassEmptySyntax;
 
         public bool Equals(IStatementSyntax? other) => other is JassEmptySyntax;
 

@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.CompilationUnitParser.ParseOrThrow(compilationUnit);
         }
 
-        public static IDeclarationSyntax ParseDeclaration(string declaration)
+        public static ITopLevelDeclarationSyntax ParseDeclaration(string declaration)
         {
             return JassParser.Instance.DeclarationParser.ParseOrThrow(declaration);
         }
@@ -115,7 +115,7 @@ namespace War3Net.CodeAnalysis.Jass
             return TryParse(compilationUnit, JassParser.Instance.CompilationUnitParser, out result);
         }
 
-        public static bool TryParseDeclaration(string declaration, [NotNullWhen(true)] out IDeclarationSyntax? result)
+        public static bool TryParseDeclaration(string declaration, [NotNullWhen(true)] out ITopLevelDeclarationSyntax? result)
         {
             return TryParse(declaration, JassParser.Instance.DeclarationParser, out result);
         }

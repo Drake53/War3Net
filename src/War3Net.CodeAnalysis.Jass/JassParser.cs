@@ -22,7 +22,7 @@ namespace War3Net.CodeAnalysis.Jass
         private readonly Parser<char, BinaryOperatorType> _binaryOperatorParser;
         private readonly Parser<char, JassCommentSyntax> _commentParser;
         private readonly Parser<char, JassCompilationUnitSyntax> _compilationUnitParser;
-        private readonly Parser<char, IDeclarationSyntax> _declarationParser;
+        private readonly Parser<char, ITopLevelDeclarationSyntax> _declarationParser;
         private readonly Parser<char, IDeclarationLineSyntax> _declarationLineParser;
         private readonly Parser<char, IExpressionSyntax> _expressionParser;
         private readonly Parser<char, JassFunctionDeclarationSyntax> _functionDeclarationParser;
@@ -170,7 +170,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal Parser<char, JassCompilationUnitSyntax> CompilationUnitParser => _compilationUnitParser;
 
-        internal Parser<char, IDeclarationSyntax> DeclarationParser => _declarationParser;
+        internal Parser<char, ITopLevelDeclarationSyntax> DeclarationParser => _declarationParser;
 
         internal Parser<char, IDeclarationLineSyntax> DeclarationLineParser => _declarationLineParser;
 

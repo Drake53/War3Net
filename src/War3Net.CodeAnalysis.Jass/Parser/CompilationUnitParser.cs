@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassCompilationUnitSyntax> GetCompilationUnitParser(
-            Parser<char, IDeclarationSyntax> declarationParser,
+            Parser<char, ITopLevelDeclarationSyntax> declarationParser,
             Parser<char, string> commentStringParser,
             Parser<char, Unit> newlineParser)
         {

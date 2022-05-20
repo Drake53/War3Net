@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameDeclaration(IDeclarationSyntax declaration, [NotNullWhen(true)] out IDeclarationSyntax? renamedDeclaration)
+        private bool TryRenameDeclaration(ITopLevelDeclarationSyntax declaration, [NotNullWhen(true)] out ITopLevelDeclarationSyntax? renamedDeclaration)
         {
             return declaration switch
             {

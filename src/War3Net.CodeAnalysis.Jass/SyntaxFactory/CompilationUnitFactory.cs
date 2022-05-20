@@ -14,12 +14,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassCompilationUnitSyntax CompilationUnit(IEnumerable<IDeclarationSyntax> declarations)
+        public static JassCompilationUnitSyntax CompilationUnit(IEnumerable<ITopLevelDeclarationSyntax> declarations)
         {
             return new JassCompilationUnitSyntax(declarations.ToImmutableArray());
         }
 
-        public static JassCompilationUnitSyntax CompilationUnit(params IDeclarationSyntax[] declarations)
+        public static JassCompilationUnitSyntax CompilationUnit(params ITopLevelDeclarationSyntax[] declarations)
         {
             return new JassCompilationUnitSyntax(declarations.ToImmutableArray());
         }

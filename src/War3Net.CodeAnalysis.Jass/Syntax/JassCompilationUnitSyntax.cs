@@ -13,12 +13,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassCompilationUnitSyntax : IEquatable<JassCompilationUnitSyntax>
     {
-        public JassCompilationUnitSyntax(ImmutableArray<IDeclarationSyntax> declarations)
+        public JassCompilationUnitSyntax(ImmutableArray<ITopLevelDeclarationSyntax> declarations)
         {
             Declarations = declarations;
         }
 
-        public ImmutableArray<IDeclarationSyntax> Declarations { get; init; }
+        public ImmutableArray<ITopLevelDeclarationSyntax> Declarations { get; init; }
 
         public bool Equals(JassCompilationUnitSyntax? other)
         {

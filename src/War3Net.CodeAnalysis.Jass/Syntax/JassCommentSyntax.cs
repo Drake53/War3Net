@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassCommentSyntax : IDeclarationSyntax, IGlobalDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
+    public class JassCommentSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax, IGlobalDeclarationSyntax, IScopedGlobalDeclarationSyntax, IMemberDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
     {
         public JassCommentSyntax(string comment)
         {
@@ -18,13 +18,31 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public string Comment { get; init; }
 
-        public bool Equals(IDeclarationSyntax? other)
+        public bool Equals(ITopLevelDeclarationSyntax? other)
+        {
+            return other is JassCommentSyntax comment
+                && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
+        }
+
+        public bool Equals(IScopedDeclarationSyntax? other)
         {
             return other is JassCommentSyntax comment
                 && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
         }
 
         public bool Equals(IGlobalDeclarationSyntax? other)
+        {
+            return other is JassCommentSyntax comment
+                && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
+        }
+
+        public bool Equals(IScopedGlobalDeclarationSyntax? other)
+        {
+            return other is JassCommentSyntax comment
+                && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);
+        }
+
+        public bool Equals(IMemberDeclarationSyntax? other)
         {
             return other is JassCommentSyntax comment
                 && string.Equals(Comment, comment.Comment, StringComparison.Ordinal);

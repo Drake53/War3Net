@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameGlobalDeclarationList(JassGlobalDeclarationListSyntax globalDeclarationList, [NotNullWhen(true)] out IDeclarationSyntax? renamedGlobalDeclarationList)
+        private bool TryRenameGlobalDeclarationList(JassGlobalDeclarationListSyntax globalDeclarationList, [NotNullWhen(true)] out ITopLevelDeclarationSyntax? renamedGlobalDeclarationList)
         {
             var isRenamed = false;
 

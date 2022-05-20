@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameNativeFunctionDeclaration(JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration, [NotNullWhen(true)] out IDeclarationSyntax? renamedNativeFunctionDeclaration)
+        private bool TryRenameNativeFunctionDeclaration(JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration, [NotNullWhen(true)] out ITopLevelDeclarationSyntax? renamedNativeFunctionDeclaration)
         {
             if (TryRenameFunctionDeclarator(nativeFunctionDeclaration.FunctionDeclarator, out var renamedFunctionDeclarator))
             {

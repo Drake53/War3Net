@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IDeclarationSyntax> GetDeclarationParser(
+        internal static Parser<char, ITopLevelDeclarationSyntax> GetDeclarationParser(
             Parser<char, JassEmptySyntax> emptyParser,
             Parser<char, JassCommentSyntax> commentParser,
             Parser<char, JassTypeDeclarationSyntax> typeDeclarationParser,
@@ -25,12 +25,12 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, Unit> endOfLineParser)
         {
             return OneOf(
-                emptyParser.Cast<IDeclarationSyntax>(),
-                commentParser.Cast<IDeclarationSyntax>(),
-                typeDeclarationParser.Cast<IDeclarationSyntax>(),
+                emptyParser.Cast<ITopLevelDeclarationSyntax>(),
+                commentParser.Cast<ITopLevelDeclarationSyntax>(),
+                typeDeclarationParser.Cast<ITopLevelDeclarationSyntax>(),
                 GetGlobalDeclarationListParser(globalDeclarationParser, endOfLineParser),
-                nativeFunctionDeclarationParser.Cast<IDeclarationSyntax>(),
-                functionDeclarationParser.Cast<IDeclarationSyntax>());
+                nativeFunctionDeclarationParser.Cast<ITopLevelDeclarationSyntax>(),
+                functionDeclarationParser.Cast<ITopLevelDeclarationSyntax>());
         }
     }
 }
