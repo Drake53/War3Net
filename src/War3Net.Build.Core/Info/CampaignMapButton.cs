@@ -25,7 +25,7 @@ namespace War3Net.Build.Info
             ReadFrom(reader, formatVersion);
         }
 
-        public bool IsVisibleInitially { get; set; }
+        public int IsVisibleInitially { get; set; }
 
         public string Chapter { get; set; }
 
@@ -37,7 +37,7 @@ namespace War3Net.Build.Info
 
         internal void ReadFrom(BinaryReader reader, CampaignInfoFormatVersion formatVersion)
         {
-            IsVisibleInitially = reader.ReadBool();
+            IsVisibleInitially = reader.ReadInt32();
             Chapter = reader.ReadChars();
             Title = reader.ReadChars();
             MapFilePath = reader.ReadChars();
@@ -45,7 +45,7 @@ namespace War3Net.Build.Info
 
         internal void WriteTo(BinaryWriter writer, CampaignInfoFormatVersion formatVersion)
         {
-            writer.WriteBool(IsVisibleInitially);
+            writer.Write(IsVisibleInitially);
             writer.WriteString(Chapter);
             writer.WriteString(Title);
             writer.WriteString(MapFilePath);
