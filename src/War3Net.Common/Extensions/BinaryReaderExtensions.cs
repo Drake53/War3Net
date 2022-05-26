@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -109,7 +110,16 @@ namespace War3Net.Common.Extensions
             where TEnum : struct, Enum
         {
             var result = (TEnum)(object)i;
-            return result.IsDefined() ? result : throw new InvalidDataException($"Value '{i}' is not defined for enum of type {typeof(TEnum).Name}.");
+            if (result.IsDefined())
+            {
+                return result;
+            }
+
+            var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
+                ? i.ToString(CultureInfo.InvariantCulture)
+                : $"0b{Convert.ToString(i, 2).PadLeft(32, '0')}";
+
+            return result.IsDefined() ? result : throw new InvalidDataException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
         }
     }
 }

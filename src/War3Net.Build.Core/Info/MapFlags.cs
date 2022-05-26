@@ -12,28 +12,31 @@ namespace War3Net.Build.Info
     [Flags]
     public enum MapFlags
     {
-        HideMinimapInPreviewScreens = 0x0001,
-        ModifyAllyPriorities = 0x0002,
-        MeleeMap = 0x0004,
-        PlayableMapSizeWasLarge = 0x0008,
-        MaskedAreasArePartiallyVisible = 0x0010,
-        FixedPlayerSettingsForCustomForces = 0x0020,
-        UseCustomForces = 0x0040,
-        UseCustomTechtree = 0x0080,
-        UseCustomAbilities = 0x0100,
-        UseCustomUpgrades = 0x0200,
-        HasMapPropertiesMenuBeenOpened = 0x0400,
-        ShowWaterWavesOnCliffShores = 0x0800,
-        ShowWaterWavesOnRollingShores = 0x1000,
+        HideMinimapInPreviewScreens = 1 << 0,
+        ModifyAllyPriorities = 1 << 1,
+        MeleeMap = 1 << 2,
+        PlayableMapSizeWasLarge = 1 << 3,
+        MaskedAreasArePartiallyVisible = 1 << 4,
+        FixedPlayerSettingsForCustomForces = 1 << 5,
+        UseCustomForces = 1 << 6,
+        UseCustomTechtree = 1 << 7,
+        UseCustomAbilities = 1 << 8,
+        UseCustomUpgrades = 1 << 9,
+        HasMapPropertiesMenuBeenOpened = 1 << 10,
+        ShowWaterWavesOnCliffShores = 1 << 11,
+        ShowWaterWavesOnRollingShores = 1 << 12,
 
         // TFT only
-        HasTerrainFog = 0x2000,
-        RequiresExpansion = 0x4000,
-        UseItemClassificationSystem = 0x8000,
-        HasWaterTintingColor = 0x10000,
+        HasTerrainFog = 1 << 13,
+        RequiresExpansion = 1 << 14,
+        UseItemClassificationSystem = 1 << 15,
+        HasWaterTintingColor = 1 << 16,
 
         // Reforged only
-        AccurateProbabilityForCalculations = 0x20000,
-        CustomAbilitySkin = 0x40000,
+        AccurateProbabilityForCalculations = 1 << 17,
+        CustomAbilitySkin = 1 << 18,
+
+        Flag30 = 1 << 29,
+        Flag31 = 1 << 30,
     }
 }
