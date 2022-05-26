@@ -40,7 +40,7 @@ namespace War3Net.Build.Info
 
         public int MapVersion { get; set; }
 
-        public int EditorVersion { get; set; }
+        public EditorVersion EditorVersion { get; set; }
 
         public Version? GameVersion { get; set; }
 
@@ -153,7 +153,7 @@ namespace War3Net.Build.Info
             if (FormatVersion >= MapInfoFormatVersion.RoC)
             {
                 MapVersion = reader.ReadInt32();
-                EditorVersion = reader.ReadInt32();
+                EditorVersion = reader.ReadInt32<EditorVersion>();
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {
@@ -347,7 +347,7 @@ namespace War3Net.Build.Info
             if (FormatVersion >= MapInfoFormatVersion.RoC)
             {
                 writer.Write(MapVersion);
-                writer.Write(EditorVersion);
+                writer.Write((int)EditorVersion);
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {

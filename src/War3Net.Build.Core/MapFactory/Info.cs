@@ -70,7 +70,7 @@ namespace War3Net.Build
             var mapInfo = new MapInfo(MapInfoFormatVersion.Lua)
             {
                 MapVersion = 1,
-                EditorVersion = 6072,
+                EditorVersion = EditorVersion.v6072,
                 GameVersion = GamePatchVersionProvider.GetGameVersion(GamePatch.v1_31_1),
 
                 MapName = "Just another Warcraft III map",
