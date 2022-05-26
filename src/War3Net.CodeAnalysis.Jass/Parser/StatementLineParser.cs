@@ -23,12 +23,13 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassCallStatementSyntax> callCustomScriptActionParser,
             Parser<char, JassExitStatementSyntax> exitStatementParser,
             Parser<char, JassReturnStatementSyntax> returnStatementParser,
-            Parser<char, IExpressionSyntax> expressionParser)
+            Parser<char, IExpressionSyntax> expressionParser,
+            Parser<char, Unit> whitespaceParser)
         {
             var setParser = setCustomScriptActionParser.Cast<IStatementLineSyntax>();
             var callParser = callCustomScriptActionParser.Cast<IStatementLineSyntax>();
-            var ifCustomScriptActionParser = GetIfCustomScriptActionParser(expressionParser);
-            var loopCustomScriptActionParser = GetLoopCustomScriptActionParser();
+            var ifCustomScriptActionParser = GetIfCustomScriptActionParser(expressionParser, whitespaceParser);
+            var loopCustomScriptActionParser = GetLoopCustomScriptActionParser(whitespaceParser);
 
             return OneOf(
                 emptyLineParser.Cast<IStatementLineSyntax>(),
@@ -37,15 +38,15 @@ namespace War3Net.CodeAnalysis.Jass
                 setParser,
                 callParser,
                 ifCustomScriptActionParser,
-                GetElseIfCustomScriptActionParser(expressionParser),
-                GetElseCustomScriptActionParser(),
-                GetEndIfCustomScriptActionParser(),
+                GetElseIfCustomScriptActionParser(expressionParser, whitespaceParser),
+                GetElseCustomScriptActionParser(whitespaceParser),
+                GetEndIfCustomScriptActionParser(whitespaceParser),
                 loopCustomScriptActionParser,
-                GetEndLoopCustomScriptActionParser(),
+                GetEndLoopCustomScriptActionParser(whitespaceParser),
                 exitStatementParser.Cast<IStatementLineSyntax>(),
                 returnStatementParser.Cast<IStatementLineSyntax>(),
-                GetEndFunctionCustomScriptActionParser(),
-                GetDebugCustomScriptActionParser(setParser, callParser, ifCustomScriptActionParser, loopCustomScriptActionParser));
+                GetEndFunctionCustomScriptActionParser(whitespaceParser),
+                GetDebugCustomScriptActionParser(setParser, callParser, ifCustomScriptActionParser, loopCustomScriptActionParser, whitespaceParser));
         }
     }
 }

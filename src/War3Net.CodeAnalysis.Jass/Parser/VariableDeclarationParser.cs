@@ -18,9 +18,10 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassGlobalDeclarationSyntax> GetVariableDeclarationParser(
             Parser<char, JassEqualsValueClauseSyntax> equalsValueClauseParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassTypeSyntax> typeParser)
+            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, Try(typeParser))
+            return GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, Try(typeParser), whitespaceParser)
                 .Select(declarator => new JassGlobalDeclarationSyntax(declarator));
         }
     }

@@ -18,13 +18,14 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassGlobalDeclarationSyntax> GetConstantDeclarationParser(
             Parser<char, JassEqualsValueClauseSyntax> equalsValueClauseParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassTypeSyntax> typeParser)
+            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Constant.Then(Map(
+            return Map(
                 (type, id, value) => new JassGlobalDeclarationSyntax(new JassVariableDeclaratorSyntax(type, id, value)),
-                typeParser,
+                Keyword.Constant.Then(whitespaceParser).Then(typeParser),
                 identifierNameParser,
-                equalsValueClauseParser));
+                equalsValueClauseParser);
         }
     }
 }

@@ -18,13 +18,14 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassFunctionDeclaratorSyntax> GetFunctionDeclaratorParser(
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
             Parser<char, JassParameterListSyntax> parameterListParser,
-            Parser<char, JassTypeSyntax> typeParser)
+            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, Unit> whitespaceParser)
         {
             return Map(
                 (id, parameterList, returnType) => new JassFunctionDeclaratorSyntax(id, parameterList, returnType),
-                identifierNameParser.Before(Keyword.Takes),
-                Keyword.Nothing.ThenReturn(JassParameterListSyntax.Empty).Or(parameterListParser),
-                Keyword.Returns.Then(Keyword.Nothing.ThenReturn(JassTypeSyntax.Nothing).Or(typeParser)));
+                identifierNameParser,
+                Keyword.Takes.Then(whitespaceParser).Then(Keyword.Nothing.Then(whitespaceParser).ThenReturn(JassParameterListSyntax.Empty).Or(parameterListParser)),
+                Keyword.Returns.Then(whitespaceParser).Then(Keyword.Nothing.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Nothing).Or(typeParser)));
         }
     }
 }

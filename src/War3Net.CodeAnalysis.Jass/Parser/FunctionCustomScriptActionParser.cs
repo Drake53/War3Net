@@ -13,9 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IDeclarationLineSyntax> GetFunctionCustomScriptActionParser(Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser)
+        internal static Parser<char, IDeclarationLineSyntax> GetFunctionCustomScriptActionParser(
+            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Function.Then(functionDeclaratorParser)
+            return Keyword.Function.Then(whitespaceParser).Then(functionDeclaratorParser)
                 .Select<IDeclarationLineSyntax>(functionDeclarator => new JassFunctionCustomScriptAction(functionDeclarator));
         }
     }

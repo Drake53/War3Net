@@ -20,15 +20,16 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassCommentSyntax> commentParser,
             Parser<char, JassTypeDeclarationSyntax> typeDeclarationParser,
             Parser<char, JassNativeFunctionDeclarationSyntax> nativeFunctionDeclarationParser,
-            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser)
+            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
+            Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
                 emptyLineParser.Cast<IDeclarationLineSyntax>(),
                 commentParser.Cast<IDeclarationLineSyntax>(),
                 typeDeclarationParser.Cast<IDeclarationLineSyntax>(),
-                GetGlobalsCustomScriptActionParser(),
+                GetGlobalsCustomScriptActionParser(whitespaceParser),
                 nativeFunctionDeclarationParser.Cast<IDeclarationLineSyntax>(),
-                GetFunctionCustomScriptActionParser(functionDeclaratorParser));
+                GetFunctionCustomScriptActionParser(functionDeclaratorParser, whitespaceParser));
         }
     }
 }

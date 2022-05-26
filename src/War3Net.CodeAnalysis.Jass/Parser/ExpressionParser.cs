@@ -31,10 +31,10 @@ namespace War3Net.CodeAnalysis.Jass
                         GetRealLiteralExpressionParser().Before(whitespaceParser),
                         GetOctalLiteralExpressionParser().Before(whitespaceParser),
                         GetDecimalLiteralExpressionParser().Before(whitespaceParser),
-                        GetBooleanLiteralExpressionParser(),
+                        GetBooleanLiteralExpressionParser(whitespaceParser),
                         GetStringLiteralExpressionParser().Before(whitespaceParser),
-                        GetNullLiteralExpressionParser(),
-                        GetFunctionReferenceExpressionParser(identifierNameParser),
+                        GetNullLiteralExpressionParser(whitespaceParser),
+                        GetFunctionReferenceExpressionParser(identifierNameParser, whitespaceParser),
                         GetInvocationExpressionParser(whitespaceParser, expressionParser, identifierNameParser),
                         GetArrayReferenceExpressionParser(whitespaceParser, expressionParser, identifierNameParser),
                         GetVariableReferenceExpressionParser(identifierNameParser),
@@ -42,7 +42,7 @@ namespace War3Net.CodeAnalysis.Jass
                     new[]
                     {
                         // https://www.hiveworkshop.com/threads/precedence-in-jass.43500/#post-378439
-                        Operator.PrefixChainable(GetUnaryNotOperatorParser().Prefix()),
+                        Operator.PrefixChainable(GetUnaryNotOperatorParser(whitespaceParser).Prefix()),
                         Operator.PrefixChainable(GetUnaryPlusOperatorParser(whitespaceParser).Prefix(), GetUnaryMinusOperatorParser(whitespaceParser).Prefix()),
                         Operator.InfixL(GetBinaryMultiplicationOperatorParser(whitespaceParser).Infix())
                             .And(Operator.InfixL(GetBinaryDivisionOperatorParser(whitespaceParser).Infix())),
@@ -54,8 +54,8 @@ namespace War3Net.CodeAnalysis.Jass
                             .And(Operator.InfixL(GetBinaryNotEqualsOperatorParser(whitespaceParser).Infix()))
                             .And(Operator.InfixL(GetBinaryGreaterThanOperatorParser(whitespaceParser).Infix()))
                             .And(Operator.InfixL(GetBinaryLessThanOperatorParser(whitespaceParser).Infix())),
-                        Operator.InfixL(GetBinaryAndOperatorParser().Infix())
-                            .And(Operator.InfixL(GetBinaryOrOperatorParser().Infix())),
+                        Operator.InfixL(GetBinaryAndOperatorParser(whitespaceParser).Infix())
+                            .And(Operator.InfixL(GetBinaryOrOperatorParser(whitespaceParser).Infix())),
                     }));
         }
     }

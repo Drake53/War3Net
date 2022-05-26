@@ -13,9 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IStatementLineSyntax> GetEndFunctionCustomScriptActionParser()
+        internal static Parser<char, IStatementLineSyntax> GetEndFunctionCustomScriptActionParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.EndFunction.ThenReturn<IStatementLineSyntax>(JassEndFunctionCustomScriptAction.Value);
+            return Keyword.EndFunction.Then(whitespaceParser).ThenReturn<IStatementLineSyntax>(JassEndFunctionCustomScriptAction.Value);
         }
     }
 }

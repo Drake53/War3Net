@@ -15,10 +15,11 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, JassTypeDeclarationSyntax> GetTypeDeclarationParser(
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassTypeSyntax> typeParser)
+            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Type.Then(identifierNameParser).Then(
-                Keyword.Extends.Then(typeParser),
+            return Keyword.Type.Then(whitespaceParser).Then(identifierNameParser).Then(
+                Keyword.Extends.Then(whitespaceParser).Then(typeParser),
                 (@new, @base) => new JassTypeDeclarationSyntax(@new, @base));
         }
     }

@@ -28,8 +28,8 @@ namespace War3Net.CodeAnalysis.Jass
                 GetBinaryNotEqualsOperatorParser(whitespaceParser),
                 GetBinaryGreaterThanOperatorParser(whitespaceParser),
                 GetBinaryLessThanOperatorParser(whitespaceParser),
-                GetBinaryAndOperatorParser(),
-                GetBinaryOrOperatorParser());
+                GetBinaryAndOperatorParser(whitespaceParser),
+                GetBinaryOrOperatorParser(whitespaceParser));
         }
 
         internal static Parser<char, BinaryOperatorType> GetBinaryAddOperatorParser(Parser<char, Unit> whitespaceParser)
@@ -82,14 +82,14 @@ namespace War3Net.CodeAnalysis.Jass
             return Symbol.LessThanSign.Before(whitespaceParser).ThenReturn(BinaryOperatorType.LessThan);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryAndOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryAndOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.And.ThenReturn(BinaryOperatorType.And);
+            return Keyword.And.Then(whitespaceParser).ThenReturn(BinaryOperatorType.And);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryOrOperatorParser()
+        internal static Parser<char, BinaryOperatorType> GetBinaryOrOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Or.ThenReturn(BinaryOperatorType.Or);
+            return Keyword.Or.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Or);
         }
     }
 }

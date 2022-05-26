@@ -15,9 +15,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, JassElseClauseSyntax> GetElseClauseParser(
             Parser<char, JassStatementListSyntax> statementListParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
-            return Keyword.Else.Before(endOfLineParser)
+            return Keyword.Else.Then(whitespaceParser).Before(endOfLineParser)
                 .Then(statementListParser)
                 .Select(statementList => new JassElseClauseSyntax(statementList));
         }

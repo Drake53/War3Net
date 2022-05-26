@@ -15,10 +15,11 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, IStatementSyntax> GetLoopStatementParser(
             Parser<char, JassStatementListSyntax> statementListParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
-            return Keyword.Loop.Then(endOfLineParser)
-                .Then(statementListParser).Before(Keyword.EndLoop)
+            return Keyword.Loop.Then(whitespaceParser).Then(endOfLineParser)
+                .Then(statementListParser).Before(Keyword.EndLoop.Then(whitespaceParser))
                 .Select<IStatementSyntax>(statementList => new JassLoopStatementSyntax(statementList));
         }
     }

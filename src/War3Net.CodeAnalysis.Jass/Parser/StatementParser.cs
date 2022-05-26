@@ -24,6 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassSetStatementSyntax> setStatementParser,
             Parser<char, JassCallStatementSyntax> callStatementParser,
             Parser<char, IExpressionSyntax> expressionParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
             var setParser = setStatementParser.Cast<IStatementSyntax>();
@@ -42,11 +43,11 @@ namespace War3Net.CodeAnalysis.Jass
                         localVariableDeclarationStatementParser.Cast<IStatementSyntax>(),
                         setParser,
                         callParser,
-                        GetIfStatementParser(expressionParser, statementListParser, endOfLineParser),
-                        GetLoopStatementParser(statementListParser, endOfLineParser),
+                        GetIfStatementParser(expressionParser, statementListParser, whitespaceParser, endOfLineParser),
+                        GetLoopStatementParser(statementListParser, whitespaceParser, endOfLineParser),
                         exitStatementParser.Cast<IStatementSyntax>(),
                         returnStatementParser.Cast<IStatementSyntax>(),
-                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, endOfLineParser));
+                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, whitespaceParser, endOfLineParser));
                 });
         }
     }

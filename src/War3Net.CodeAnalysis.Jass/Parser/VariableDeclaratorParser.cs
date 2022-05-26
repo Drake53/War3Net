@@ -18,12 +18,13 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, IVariableDeclaratorSyntax> GetVariableDeclaratorParser(
             Parser<char, JassEqualsValueClauseSyntax> equalsValueClauseParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassTypeSyntax> typeParser)
+            Parser<char, JassTypeSyntax> typeParser,
+            Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
                 Map(
                     (type, id) => (IVariableDeclaratorSyntax)new JassArrayDeclaratorSyntax(type, id),
-                    Try(typeParser.Before(Keyword.Array)),
+                    Try(typeParser.Before(Keyword.Array)).Before(whitespaceParser),
                     identifierNameParser),
                 Map(
                     (type, id, value) => (IVariableDeclaratorSyntax)new JassVariableDeclaratorSyntax(type, id, value.GetValueOrDefault()),

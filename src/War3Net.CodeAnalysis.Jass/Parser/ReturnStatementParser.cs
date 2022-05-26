@@ -13,9 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassReturnStatementSyntax> GetReturnStatementParser(Parser<char, IExpressionSyntax> expressionParser)
+        internal static Parser<char, JassReturnStatementSyntax> GetReturnStatementParser(
+            Parser<char, IExpressionSyntax> expressionParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Return.Then(expressionParser.Optional())
+            return Keyword.Return.Then(whitespaceParser).Then(expressionParser.Optional())
                 .Select(expression => expression.HasValue ? new JassReturnStatementSyntax(expression.Value) : JassReturnStatementSyntax.Empty);
         }
     }

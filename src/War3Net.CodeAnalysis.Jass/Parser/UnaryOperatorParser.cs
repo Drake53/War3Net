@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
             return OneOf(
                 GetUnaryPlusOperatorParser(whitespaceParser),
                 GetUnaryMinusOperatorParser(whitespaceParser),
-                GetUnaryNotOperatorParser());
+                GetUnaryNotOperatorParser(whitespaceParser));
         }
 
         internal static Parser<char, UnaryOperatorType> GetUnaryPlusOperatorParser(Parser<char, Unit> whitespaceParser)
@@ -33,9 +33,9 @@ namespace War3Net.CodeAnalysis.Jass
             return Symbol.MinusSign.Before(whitespaceParser).ThenReturn(UnaryOperatorType.Minus);
         }
 
-        internal static Parser<char, UnaryOperatorType> GetUnaryNotOperatorParser()
+        internal static Parser<char, UnaryOperatorType> GetUnaryNotOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Not.ThenReturn(UnaryOperatorType.Not);
+            return Keyword.Not.Then(whitespaceParser).ThenReturn(UnaryOperatorType.Not);
         }
     }
 }

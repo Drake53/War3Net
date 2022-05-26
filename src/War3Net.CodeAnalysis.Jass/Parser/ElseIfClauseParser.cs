@@ -18,11 +18,12 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassElseIfClauseSyntax> GetElseIfClauseParser(
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, JassStatementListSyntax> statementListParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
             return Map(
                 (condition, statementList) => new JassElseIfClauseSyntax(condition, statementList),
-                Keyword.ElseIf.Then(expressionParser).Before(Keyword.Then).Before(endOfLineParser),
+                Keyword.ElseIf.Then(whitespaceParser).Then(expressionParser).Before(Keyword.Then.Then(whitespaceParser)).Before(endOfLineParser),
                 statementListParser);
         }
     }

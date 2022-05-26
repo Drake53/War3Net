@@ -19,14 +19,15 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassEmptySyntax> emptyLineParser,
             Parser<char, JassCommentSyntax> commentParser,
             Parser<char, JassGlobalDeclarationSyntax> constantDeclarationParser,
-            Parser<char, JassGlobalDeclarationSyntax> variableDeclarationParser)
+            Parser<char, JassGlobalDeclarationSyntax> variableDeclarationParser,
+            Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
                 emptyLineParser.Cast<IGlobalLineSyntax>(),
                 commentParser.Cast<IGlobalLineSyntax>(),
                 constantDeclarationParser.Cast<IGlobalLineSyntax>(),
                 variableDeclarationParser.Cast<IGlobalLineSyntax>(),
-                GetEndGlobalsCustomScriptActionParser());
+                GetEndGlobalsCustomScriptActionParser(whitespaceParser));
         }
     }
 }

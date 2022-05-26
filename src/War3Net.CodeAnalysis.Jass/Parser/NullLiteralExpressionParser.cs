@@ -13,9 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetNullLiteralExpressionParser()
+        internal static Parser<char, IExpressionSyntax> GetNullLiteralExpressionParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Null.ThenReturn<IExpressionSyntax>(JassNullLiteralExpressionSyntax.Value)
+            return Keyword.Null.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassNullLiteralExpressionSyntax.Value)
                 .Labelled("null literal");
         }
     }

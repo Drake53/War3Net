@@ -20,14 +20,15 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassStatementListSyntax> statementListParser,
             Parser<char, IStatementSyntax> setStatementParser,
             Parser<char, IStatementSyntax> callStatementParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
-            return Keyword.Debug.Then(
+            return Keyword.Debug.Then(whitespaceParser).Then(
                 OneOf(
                     setStatementParser,
                     callStatementParser,
-                    GetIfStatementParser(expressionParser, statementListParser, endOfLineParser),
-                    GetLoopStatementParser(statementListParser, endOfLineParser))
+                    GetIfStatementParser(expressionParser, statementListParser, whitespaceParser, endOfLineParser),
+                    GetLoopStatementParser(statementListParser, whitespaceParser, endOfLineParser))
                 .Select<IStatementSyntax>(statement => new JassDebugStatementSyntax(statement)));
         }
     }

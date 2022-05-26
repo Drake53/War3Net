@@ -13,10 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetBooleanLiteralExpressionParser()
+        internal static Parser<char, IExpressionSyntax> GetBooleanLiteralExpressionParser(Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.True.ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.True)
-                .Or(Keyword.False.ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.False));
+            return Keyword.True.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.True)
+                .Or(Keyword.False.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.False));
         }
     }
 }

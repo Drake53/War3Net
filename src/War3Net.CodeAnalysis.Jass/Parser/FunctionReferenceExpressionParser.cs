@@ -13,9 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetFunctionReferenceExpressionParser(Parser<char, JassIdentifierNameSyntax> identifierNameParser)
+        internal static Parser<char, IExpressionSyntax> GetFunctionReferenceExpressionParser(
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Function.Then(identifierNameParser)
+            return Keyword.Function.Then(whitespaceParser).Then(identifierNameParser)
                 .Select<IExpressionSyntax>(name => new JassFunctionReferenceExpressionSyntax(name))
                 .Labelled("function reference");
         }

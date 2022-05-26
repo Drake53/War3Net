@@ -39,14 +39,14 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var whitespaceParser = GetWhitespaceParser();
             var identifierNameParser = GetIdentifierNameParser(whitespaceParser);
-            var typeParser = GetTypeParser(identifierNameParser);
+            var typeParser = GetTypeParser(identifierNameParser, whitespaceParser);
             var expressionParser = GetExpressionParser(whitespaceParser, identifierNameParser);
             var equalsValueClauseParser = GetEqualsValueClauseParser(whitespaceParser, expressionParser);
 
             var argumentListParser = GetArgumentListParser(whitespaceParser, expressionParser);
             var parameterListParser = GetParameterListParser(whitespaceParser, GetParameterParser(identifierNameParser, typeParser));
-            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser);
-            var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser);
+            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser, whitespaceParser);
+            var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser, whitespaceParser);
 
             var commentStringParser = GetCommentStringParser();
             var newLineParser = GetNewLineParser(whitespaceParser);
@@ -57,9 +57,9 @@ namespace War3Net.CodeAnalysis.Jass
 
             var setStatementParser = GetSetStatementParser(whitespaceParser, expressionParser, equalsValueClauseParser, identifierNameParser);
             var callStatementParser = GetCallStatementParser(whitespaceParser, argumentListParser, identifierNameParser);
-            var exitStatementParser = GetExitStatementParser(expressionParser);
-            var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableDeclaratorParser);
-            var returnStatementParser = GetReturnStatementParser(expressionParser);
+            var exitStatementParser = GetExitStatementParser(expressionParser, whitespaceParser);
+            var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableDeclaratorParser, whitespaceParser);
+            var returnStatementParser = GetReturnStatementParser(expressionParser, whitespaceParser);
 
             var statementParser = GetStatementParser(
                 emptyParser,
@@ -70,6 +70,7 @@ namespace War3Net.CodeAnalysis.Jass
                 setStatementParser,
                 callStatementParser,
                 expressionParser,
+                whitespaceParser,
                 endOfLineParser);
 
             var statementLineParser = GetStatementLineParser(
@@ -80,17 +81,20 @@ namespace War3Net.CodeAnalysis.Jass
                 callStatementParser,
                 exitStatementParser,
                 returnStatementParser,
-                expressionParser);
+                expressionParser,
+                whitespaceParser);
 
             var constantDeclarationParser = GetConstantDeclarationParser(
                 equalsValueClauseParser,
                 identifierNameParser,
-                typeParser);
+                typeParser,
+                whitespaceParser);
 
             var variableDeclarationParser = GetVariableDeclarationParser(
                 equalsValueClauseParser,
                 identifierNameParser,
-                typeParser);
+                typeParser,
+                whitespaceParser);
 
             var globalDeclarationParser = GetGlobalDeclarationParser(
                 emptyParser,
@@ -102,7 +106,8 @@ namespace War3Net.CodeAnalysis.Jass
                 emptyLineParser,
                 commentParser,
                 constantDeclarationParser,
-                variableDeclarationParser);
+                variableDeclarationParser,
+                whitespaceParser);
 
             var statementListParser = GetStatementListParser(
                 statementParser,
@@ -111,13 +116,17 @@ namespace War3Net.CodeAnalysis.Jass
             var functionDeclarationParser = GetFunctionDeclarationParser(
                 functionDeclaratorParser,
                 statementListParser,
+                whitespaceParser,
                 endOfLineParser);
 
             var typeDeclarationParser = GetTypeDeclarationParser(
                 identifierNameParser,
-                typeParser);
+                typeParser,
+                whitespaceParser);
 
-            var nativeFunctionDeclarationParser = GetNativeFunctionDeclarationParser(functionDeclaratorParser);
+            var nativeFunctionDeclarationParser = GetNativeFunctionDeclarationParser(
+                functionDeclaratorParser,
+                whitespaceParser);
 
             var declarationParser = GetDeclarationParser(
                 emptyParser,
@@ -126,6 +135,7 @@ namespace War3Net.CodeAnalysis.Jass
                 nativeFunctionDeclarationParser,
                 functionDeclarationParser,
                 globalDeclarationParser.Before(endOfLineParser),
+                whitespaceParser,
                 endOfLineParser);
 
             var declarationLineParser = GetDeclarationLineParser(
@@ -133,7 +143,8 @@ namespace War3Net.CodeAnalysis.Jass
                 commentParser,
                 typeDeclarationParser,
                 nativeFunctionDeclarationParser,
-                functionDeclaratorParser);
+                functionDeclaratorParser,
+                whitespaceParser);
 
             var compilationUnitParser = GetCompilationUnitParser(
                 declarationParser,
@@ -237,57 +248,51 @@ namespace War3Net.CodeAnalysis.Jass
 
             static Keyword()
             {
-                var whitespaceParser = GetWhitespaceParser();
                 var keywordEndParser = Not(Token(JassSyntaxFacts.IsIdentifierPartCharacter));
 
-                Alias = GetKeywordParser(JassKeyword.Alias, keywordEndParser, whitespaceParser);
-                And = GetKeywordParser(JassKeyword.And, keywordEndParser, whitespaceParser);
-                Array = GetKeywordParser(JassKeyword.Array, keywordEndParser, whitespaceParser);
-                Boolean = GetKeywordParser(JassKeyword.Boolean, keywordEndParser, whitespaceParser);
-                Call = GetKeywordParser(JassKeyword.Call, keywordEndParser, whitespaceParser);
-                Code = GetKeywordParser(JassKeyword.Code, keywordEndParser, whitespaceParser);
-                Constant = GetKeywordParser(JassKeyword.Constant, keywordEndParser, whitespaceParser);
-                Debug = GetKeywordParser(JassKeyword.Debug, keywordEndParser, whitespaceParser);
-                Else = GetKeywordParser(JassKeyword.Else, keywordEndParser, whitespaceParser);
-                ElseIf = GetKeywordParser(JassKeyword.ElseIf, keywordEndParser, whitespaceParser);
-                EndFunction = GetKeywordParser(JassKeyword.EndFunction, keywordEndParser, whitespaceParser);
-                EndGlobals = GetKeywordParser(JassKeyword.EndGlobals, keywordEndParser, whitespaceParser);
-                EndIf = GetKeywordParser(JassKeyword.EndIf, keywordEndParser, whitespaceParser);
-                EndLoop = GetKeywordParser(JassKeyword.EndLoop, keywordEndParser, whitespaceParser);
-                ExitWhen = GetKeywordParser(JassKeyword.ExitWhen, keywordEndParser, whitespaceParser);
-                Extends = GetKeywordParser(JassKeyword.Extends, keywordEndParser, whitespaceParser);
-                False = GetKeywordParser(JassKeyword.False, keywordEndParser, whitespaceParser);
-                Function = GetKeywordParser(JassKeyword.Function, keywordEndParser, whitespaceParser);
-                Globals = GetKeywordParser(JassKeyword.Globals, keywordEndParser, whitespaceParser);
-                Handle = GetKeywordParser(JassKeyword.Handle, keywordEndParser, whitespaceParser);
-                If = GetKeywordParser(JassKeyword.If, keywordEndParser, whitespaceParser);
-                Integer = GetKeywordParser(JassKeyword.Integer, keywordEndParser, whitespaceParser);
-                Local = GetKeywordParser(JassKeyword.Local, keywordEndParser, whitespaceParser);
-                Loop = GetKeywordParser(JassKeyword.Loop, keywordEndParser, whitespaceParser);
-                Native = GetKeywordParser(JassKeyword.Native, keywordEndParser, whitespaceParser);
-                Not = GetKeywordParser(JassKeyword.Not, keywordEndParser, whitespaceParser);
-                Nothing = GetKeywordParser(JassKeyword.Nothing, keywordEndParser, whitespaceParser);
-                Null = GetKeywordParser(JassKeyword.Null, keywordEndParser, whitespaceParser);
-                Or = GetKeywordParser(JassKeyword.Or, keywordEndParser, whitespaceParser);
-                Real = GetKeywordParser(JassKeyword.Real, keywordEndParser, whitespaceParser);
-                Return = GetKeywordParser(JassKeyword.Return, keywordEndParser, whitespaceParser);
-                Returns = GetKeywordParser(JassKeyword.Returns, keywordEndParser, whitespaceParser);
-                Set = GetKeywordParser(JassKeyword.Set, keywordEndParser, whitespaceParser);
-                String = GetKeywordParser(JassKeyword.String, keywordEndParser, whitespaceParser);
-                Takes = GetKeywordParser(JassKeyword.Takes, keywordEndParser, whitespaceParser);
-                Then = GetKeywordParser(JassKeyword.Then, keywordEndParser, whitespaceParser);
-                True = GetKeywordParser(JassKeyword.True, keywordEndParser, whitespaceParser);
-                Type = GetKeywordParser(JassKeyword.Type, keywordEndParser, whitespaceParser);
+                Alias = GetKeywordParser(JassKeyword.Alias, keywordEndParser);
+                And = GetKeywordParser(JassKeyword.And, keywordEndParser);
+                Array = GetKeywordParser(JassKeyword.Array, keywordEndParser);
+                Boolean = GetKeywordParser(JassKeyword.Boolean, keywordEndParser);
+                Call = GetKeywordParser(JassKeyword.Call, keywordEndParser);
+                Code = GetKeywordParser(JassKeyword.Code, keywordEndParser);
+                Constant = GetKeywordParser(JassKeyword.Constant, keywordEndParser);
+                Debug = GetKeywordParser(JassKeyword.Debug, keywordEndParser);
+                Else = GetKeywordParser(JassKeyword.Else, keywordEndParser);
+                ElseIf = GetKeywordParser(JassKeyword.ElseIf, keywordEndParser);
+                EndFunction = GetKeywordParser(JassKeyword.EndFunction, keywordEndParser);
+                EndGlobals = GetKeywordParser(JassKeyword.EndGlobals, keywordEndParser);
+                EndIf = GetKeywordParser(JassKeyword.EndIf, keywordEndParser);
+                EndLoop = GetKeywordParser(JassKeyword.EndLoop, keywordEndParser);
+                ExitWhen = GetKeywordParser(JassKeyword.ExitWhen, keywordEndParser);
+                Extends = GetKeywordParser(JassKeyword.Extends, keywordEndParser);
+                False = GetKeywordParser(JassKeyword.False, keywordEndParser);
+                Function = GetKeywordParser(JassKeyword.Function, keywordEndParser);
+                Globals = GetKeywordParser(JassKeyword.Globals, keywordEndParser);
+                Handle = GetKeywordParser(JassKeyword.Handle, keywordEndParser);
+                If = GetKeywordParser(JassKeyword.If, keywordEndParser);
+                Integer = GetKeywordParser(JassKeyword.Integer, keywordEndParser);
+                Local = GetKeywordParser(JassKeyword.Local, keywordEndParser);
+                Loop = GetKeywordParser(JassKeyword.Loop, keywordEndParser);
+                Native = GetKeywordParser(JassKeyword.Native, keywordEndParser);
+                Not = GetKeywordParser(JassKeyword.Not, keywordEndParser);
+                Nothing = GetKeywordParser(JassKeyword.Nothing, keywordEndParser);
+                Null = GetKeywordParser(JassKeyword.Null, keywordEndParser);
+                Or = GetKeywordParser(JassKeyword.Or, keywordEndParser);
+                Real = GetKeywordParser(JassKeyword.Real, keywordEndParser);
+                Return = GetKeywordParser(JassKeyword.Return, keywordEndParser);
+                Returns = GetKeywordParser(JassKeyword.Returns, keywordEndParser);
+                Set = GetKeywordParser(JassKeyword.Set, keywordEndParser);
+                String = GetKeywordParser(JassKeyword.String, keywordEndParser);
+                Takes = GetKeywordParser(JassKeyword.Takes, keywordEndParser);
+                Then = GetKeywordParser(JassKeyword.Then, keywordEndParser);
+                True = GetKeywordParser(JassKeyword.True, keywordEndParser);
+                Type = GetKeywordParser(JassKeyword.Type, keywordEndParser);
             }
 
-            private static Parser<char, string> GetKeywordParser(
-                string keyword,
-                Parser<char, Unit> keywordEndParser,
-                Parser<char, Unit> whitespaceParser)
+            private static Parser<char, string> GetKeywordParser(string keyword, Parser<char, Unit> keywordEndParser)
             {
-                return Try(String(keyword).Before(keywordEndParser))
-                    .Before(whitespaceParser)
-                    .Labelled($"'{keyword}' keyword");
+                return Try(String(keyword).Before(keywordEndParser)).Labelled($"'{keyword}' keyword");
             }
         }
 

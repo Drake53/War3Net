@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return Map(
                 (id, indexer, equals) => new JassSetStatementSyntax(id, indexer.GetValueOrDefault(), equals),
-                Keyword.Set.Then(identifierNameParser),
+                Keyword.Set.Then(whitespaceParser).Then(identifierNameParser),
                 Symbol.LeftSquareBracket.Before(whitespaceParser).Then(expressionParser).Before(Symbol.RightSquareBracket.Before(whitespaceParser)).Optional(),
                 equalsValueClauseParser);
         }

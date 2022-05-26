@@ -17,9 +17,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, ITopLevelDeclarationSyntax> GetGlobalDeclarationListParser(
             Parser<char, IGlobalDeclarationSyntax> globalDeclarationParser,
+            Parser<char, Unit> whitespaceParser,
             Parser<char, Unit> endOfLineParser)
         {
-            return Keyword.Globals.Then(endOfLineParser).Then(globalDeclarationParser.Many()).Before(Keyword.EndGlobals)
+            return Keyword.Globals.Then(whitespaceParser).Then(endOfLineParser).Then(globalDeclarationParser.Many()).Before(Keyword.EndGlobals.Then(whitespaceParser))
                 .Select<ITopLevelDeclarationSyntax>(globals => new JassGlobalDeclarationListSyntax(globals.ToImmutableArray()));
         }
     }

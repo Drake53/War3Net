@@ -19,9 +19,10 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, IStatementLineSyntax> setCustomScriptActionParser,
             Parser<char, IStatementLineSyntax> callCustomScriptActionParser,
             Parser<char, IStatementLineSyntax> ifCustomScriptActionParser,
-            Parser<char, IStatementLineSyntax> loopCustomScriptActionParser)
+            Parser<char, IStatementLineSyntax> loopCustomScriptActionParser,
+            Parser<char, Unit> whitespaceParser)
         {
-            return Keyword.Debug.Then(
+            return Keyword.Debug.Then(whitespaceParser).Then(
                 OneOf(
                     setCustomScriptActionParser,
                     callCustomScriptActionParser,
