@@ -67,11 +67,13 @@ namespace War3Net.Build
                 | MapFlags.MaskedAreasArePartiallyVisible
                 | MapFlags.HasMapPropertiesMenuBeenOpened;
 
+            var gameBuild = GameBuildsProvider.GetGameBuilds(GamePatch.v1_31_1)[0];
+
             var mapInfo = new MapInfo(MapInfoFormatVersion.Lua)
             {
                 MapVersion = 1,
-                EditorVersion = EditorVersion.v6072,
-                GameVersion = GamePatchVersionProvider.GetGameVersion(GamePatch.v1_31_1),
+                EditorVersion = gameBuild.EditorVersion.Value,
+                GameVersion = gameBuild.Version,
 
                 MapName = "Just another Warcraft III map",
                 MapAuthor = "Unknown",

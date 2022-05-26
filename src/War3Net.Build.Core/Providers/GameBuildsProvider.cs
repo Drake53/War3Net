@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using War3Net.Build.Common;
+using War3Net.Build.Info;
 using War3Net.Build.Serialization;
 
 namespace War3Net.Build.Providers
@@ -20,6 +22,50 @@ namespace War3Net.Build.Providers
         private static readonly Lazy<List<GameBuildVersionInfo>> _builds = new(GetGameBuildsFromJson);
 
         public static List<GameBuildVersionInfo> GetGameBuilds() => _builds.Value;
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(GameExpansion expansion)
+        {
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.GameExpansion == expansion)
+                .ToList();
+        }
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(GameReleaseType releaseType)
+        {
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.GameReleaseType == releaseType)
+                .ToList();
+        }
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(DateTime releaseDate)
+        {
+            var date = releaseDate.Date;
+
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.ReleaseDate == date)
+                .ToList();
+        }
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(GamePatch patch)
+        {
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.GamePatch == patch)
+                .ToList();
+        }
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(Version version)
+        {
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.Version == version)
+                .ToList();
+        }
+
+        public static List<GameBuildVersionInfo> GetGameBuilds(EditorVersion editorVersion)
+        {
+            return GetGameBuilds()
+                .Where(gameBuild => gameBuild.EditorVersion == editorVersion)
+                .ToList();
+        }
 
         private static List<GameBuildVersionInfo> GetGameBuildsFromJson()
         {
