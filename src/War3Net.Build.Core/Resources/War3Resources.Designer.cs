@@ -61,6 +61,16 @@ namespace War3Net.Build.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] GameBuilds {
+            get {
+                object obj = ResourceManager.GetObject("GameBuilds", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //***************************************************************************
         ///[TriggerCategories]
         ///// Defines categories for organizing trigger functions
