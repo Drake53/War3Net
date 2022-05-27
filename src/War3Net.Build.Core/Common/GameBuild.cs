@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="GameBuildVersionInfo.cs" company="Drake53">
+// <copyright file="GameBuild.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,7 +12,7 @@ using War3Net.Build.Info;
 
 namespace War3Net.Build.Common
 {
-    public class GameBuildVersionInfo
+    public class GameBuild
     {
         [JsonInclude]
         public GameExpansion GameExpansion { get; private set; }

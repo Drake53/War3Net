@@ -19,25 +19,25 @@ namespace War3Net.Build.Providers
 {
     public static class GameBuildsProvider
     {
-        private static readonly Lazy<List<GameBuildVersionInfo>> _builds = new(GetGameBuildsFromJson);
+        private static readonly Lazy<List<GameBuild>> _builds = new(GetGameBuildsFromJson);
 
-        public static List<GameBuildVersionInfo> GetGameBuilds() => _builds.Value;
+        public static List<GameBuild> GetGameBuilds() => _builds.Value;
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(GameExpansion expansion)
+        public static List<GameBuild> GetGameBuilds(GameExpansion expansion)
         {
             return GetGameBuilds()
                 .Where(gameBuild => gameBuild.GameExpansion == expansion)
                 .ToList();
         }
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(GameReleaseType releaseType)
+        public static List<GameBuild> GetGameBuilds(GameReleaseType releaseType)
         {
             return GetGameBuilds()
                 .Where(gameBuild => gameBuild.GameReleaseType == releaseType)
                 .ToList();
         }
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(DateTime releaseDate)
+        public static List<GameBuild> GetGameBuilds(DateTime releaseDate)
         {
             var date = releaseDate.Date;
 
@@ -46,28 +46,28 @@ namespace War3Net.Build.Providers
                 .ToList();
         }
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(GamePatch patch)
+        public static List<GameBuild> GetGameBuilds(GamePatch patch)
         {
             return GetGameBuilds()
                 .Where(gameBuild => gameBuild.GamePatch == patch)
                 .ToList();
         }
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(Version version)
+        public static List<GameBuild> GetGameBuilds(Version version)
         {
             return GetGameBuilds()
                 .Where(gameBuild => gameBuild.Version == version)
                 .ToList();
         }
 
-        public static List<GameBuildVersionInfo> GetGameBuilds(EditorVersion editorVersion)
+        public static List<GameBuild> GetGameBuilds(EditorVersion editorVersion)
         {
             return GetGameBuilds()
                 .Where(gameBuild => gameBuild.EditorVersion == editorVersion)
                 .ToList();
         }
 
-        private static List<GameBuildVersionInfo> GetGameBuildsFromJson()
+        private static List<GameBuild> GetGameBuildsFromJson()
         {
             var options = new JsonSerializerOptions(JsonSerializerDefaults.General)
             {
@@ -77,7 +77,7 @@ namespace War3Net.Build.Providers
             options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new JsonStringVersionConverter());
 
-            return JsonSerializer.Deserialize<List<GameBuildVersionInfo>>(Resources.War3Resources.GameBuilds, options) ?? new();
+            return JsonSerializer.Deserialize<List<GameBuild>>(Resources.War3Resources.GameBuilds, options) ?? new();
         }
     }
 }
