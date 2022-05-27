@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public IEnumerable<LuaStatementSyntax> Transpile(IDeclarationSyntax declaration)
+        public IEnumerable<LuaStatementSyntax> Transpile(ITopLevelDeclarationSyntax declaration)
         {
             if (declaration is JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration)
             {

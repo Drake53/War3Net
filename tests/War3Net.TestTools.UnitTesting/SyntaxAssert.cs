@@ -60,7 +60,7 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        public static void AreEqual(IDeclarationSyntax? expected, IDeclarationSyntax? actual)
+        public static void AreEqual(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
         {
             if (!expected.NullableEquals(actual))
             {
@@ -108,7 +108,7 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        public static void AreNotEqual(IDeclarationSyntax? expected, IDeclarationSyntax? actual)
+        public static void AreNotEqual(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
         {
             if (expected.NullableEquals(actual))
             {
@@ -187,7 +187,7 @@ namespace War3Net.TestTools.UnitTesting
             return GetAssertFailedMessage((object?)expected, actual);
         }
 
-        private static string GetAssertFailedMessage(IDeclarationSyntax? expected, IDeclarationSyntax? actual)
+        private static string GetAssertFailedMessage(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
         {
             if (expected is JassFunctionDeclarationSyntax expectedFunctionDeclaration && actual is JassFunctionDeclarationSyntax actualFunctionDeclaration)
             {

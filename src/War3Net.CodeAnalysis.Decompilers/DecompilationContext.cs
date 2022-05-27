@@ -82,7 +82,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             ImportedFileNames = new(StringComparer.OrdinalIgnoreCase);
 
-            MaxPlayerSlots = map.Info.EditorVersion >= 6060 ? 24 : 12;
+            MaxPlayerSlots = map.Info.EditorVersion >= EditorVersion.v6060 ? 24 : 12;
         }
 
         public ObjectDataContext ObjectData { get; }

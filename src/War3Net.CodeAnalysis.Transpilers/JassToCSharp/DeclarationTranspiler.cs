@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public IEnumerable<MemberDeclarationSyntax> Transpile(IDeclarationSyntax declaration)
+        public IEnumerable<MemberDeclarationSyntax> Transpile(ITopLevelDeclarationSyntax declaration)
         {
             return declaration switch
             {

@@ -108,7 +108,7 @@ namespace War3Net.Build
             JassCommentSyntax commentLine2 = new("***************************************************************************");
             JassCommentSyntax commentLine3 = new("*");
 
-            List<IDeclarationSyntax> declarations = new();
+            List<ITopLevelDeclarationSyntax> declarations = new();
 
             void AppendBanner(string bannerText)
             {
@@ -135,7 +135,7 @@ namespace War3Net.Build
                 }
             }
 
-            void AppendBannerAndFunctions(string bannerText, Func<Map, IEnumerable<IDeclarationSyntax>> functions, Func<Map, bool> condition)
+            void AppendBannerAndFunctions(string bannerText, Func<Map, IEnumerable<ITopLevelDeclarationSyntax>> functions, Func<Map, bool> condition)
             {
                 if (condition(map))
                 {
