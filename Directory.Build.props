@@ -30,15 +30,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <War3NetBuildVersion>5.4.2</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.4.4</War3NetBuildCoreVersion>
-    <War3NetCodeAnalysisDecompilersVersion>5.4.2</War3NetCodeAnalysisDecompilersVersion>
-    <War3NetCodeAnalysisJassVersion>5.4.1</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.4.1</War3NetCodeAnalysisTranspilersVersion>
-    <War3NetCommonVersion>5.4.0</War3NetCommonVersion>
-    <War3NetDrawingBlpVersion>5.4.1</War3NetDrawingBlpVersion>
-    <War3NetIOCompressionVersion>5.4.0</War3NetIOCompressionVersion>
-    <War3NetIOMpqVersion>5.4.3</War3NetIOMpqVersion>
+    <War3NetBuildVersion>5.4.5</War3NetBuildVersion>
+    <War3NetBuildCoreVersion>5.4.5</War3NetBuildCoreVersion>
+    <War3NetCodeAnalysisDecompilersVersion>5.4.5</War3NetCodeAnalysisDecompilersVersion>
+    <War3NetCodeAnalysisJassVersion>5.4.5</War3NetCodeAnalysisJassVersion>
+    <War3NetCodeAnalysisTranspilersVersion>5.4.5</War3NetCodeAnalysisTranspilersVersion>
+    <War3NetCommonVersion>5.4.5</War3NetCommonVersion>
+    <War3NetDrawingBlpVersion>5.4.5</War3NetDrawingBlpVersion>
+    <War3NetIOCompressionVersion>5.4.5</War3NetIOCompressionVersion>
+    <War3NetIOMpqVersion>5.4.5</War3NetIOMpqVersion>
     <War3NetIOSlkVersion>5.4.0</War3NetIOSlkVersion>
     <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
     <!--
