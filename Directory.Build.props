@@ -35,6 +35,7 @@
     <War3NetCodeAnalysisDecompilersVersion>5.4.5</War3NetCodeAnalysisDecompilersVersion>
     <War3NetCodeAnalysisJassVersion>5.4.5</War3NetCodeAnalysisJassVersion>
     <War3NetCodeAnalysisTranspilersVersion>5.4.5</War3NetCodeAnalysisTranspilersVersion>
+    <War3NetCodeAnalysisVJassVersion>0.1.0</War3NetCodeAnalysisVJassVersion>
     <War3NetCommonVersion>5.4.5</War3NetCommonVersion>
     <War3NetDrawingBlpVersion>5.4.5</War3NetDrawingBlpVersion>
     <War3NetIOCompressionVersion>5.4.5</War3NetIOCompressionVersion>

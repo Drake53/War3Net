@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.VJass\War3Net.CodeAnalysis.VJass.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.CodeAnalysis.VJass" Version="$(War3NetCodeAnalysisVJassVersion)" />
+  </ItemGroup>
+
+</Project>
