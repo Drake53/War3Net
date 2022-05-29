@@ -32,6 +32,7 @@
   <PropertyGroup>
     <War3NetBuildVersion>5.4.5</War3NetBuildVersion>
     <War3NetBuildCoreVersion>5.4.5</War3NetBuildCoreVersion>
+    <War3NetCodeAnalysisVersion>0.1.0</War3NetCodeAnalysisVersion>
     <War3NetCodeAnalysisDecompilersVersion>5.4.5</War3NetCodeAnalysisDecompilersVersion>
     <War3NetCodeAnalysisJassVersion>5.4.5</War3NetCodeAnalysisJassVersion>
     <War3NetCodeAnalysisTranspilersVersion>5.4.5</War3NetCodeAnalysisTranspilersVersion>
