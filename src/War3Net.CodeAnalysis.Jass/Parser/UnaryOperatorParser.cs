@@ -25,12 +25,12 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal static Parser<char, UnaryOperatorType> GetUnaryPlusOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.PlusSign.Before(whitespaceParser).ThenReturn(UnaryOperatorType.Plus);
+            return Symbol.PlusSign.Then(whitespaceParser).ThenReturn(UnaryOperatorType.Plus);
         }
 
         internal static Parser<char, UnaryOperatorType> GetUnaryMinusOperatorParser(Parser<char, Unit> whitespaceParser)
         {
-            return Symbol.MinusSign.Before(whitespaceParser).ThenReturn(UnaryOperatorType.Minus);
+            return Symbol.MinusSign.Then(whitespaceParser).ThenReturn(UnaryOperatorType.Minus);
         }
 
         internal static Parser<char, UnaryOperatorType> GetUnaryNotOperatorParser(Parser<char, Unit> whitespaceParser)

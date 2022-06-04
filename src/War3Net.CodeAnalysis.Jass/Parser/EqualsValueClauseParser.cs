@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, Unit> whitespaceParser,
             Parser<char, IExpressionSyntax> expressionParser)
         {
-            return Symbol.EqualsSign.Before(whitespaceParser).Then(expressionParser)
+            return Symbol.EqualsSign.Then(whitespaceParser).Then(expressionParser)
                 .Select(expression => new JassEqualsValueClauseSyntax(expression));
         }
     }

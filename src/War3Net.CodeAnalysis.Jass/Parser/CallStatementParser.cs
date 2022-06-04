@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
             return Keyword.Call.Then(whitespaceParser).Then(identifierNameParser).Then(
-                Symbol.LeftParenthesis.Before(whitespaceParser).Then(argumentListParser).Before(Symbol.RightParenthesis.Before(whitespaceParser)),
+                Symbol.LeftParenthesis.Then(whitespaceParser).Then(argumentListParser).Before(Symbol.RightParenthesis.Then(whitespaceParser)),
                 (id, arguments) => new JassCallStatementSyntax(id, arguments));
         }
     }

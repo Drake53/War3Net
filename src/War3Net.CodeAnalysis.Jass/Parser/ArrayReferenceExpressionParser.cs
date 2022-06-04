@@ -20,9 +20,9 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
-            return Try(identifierNameParser.Before(Symbol.LeftSquareBracket.Before(whitespaceParser)))
+            return Try(identifierNameParser.Before(Symbol.LeftSquareBracket.Then(whitespaceParser)))
                 .Then(expressionParser, (id, indexer) => (IExpressionSyntax)new JassArrayReferenceExpressionSyntax(id, indexer))
-                .Before(Symbol.RightSquareBracket.Before(whitespaceParser));
+                .Before(Symbol.RightSquareBracket.Then(whitespaceParser));
         }
     }
 }

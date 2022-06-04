@@ -20,8 +20,8 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, IExpressionSyntax> expressionParser,
             Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
-            return Try(identifierNameParser.Before(Symbol.LeftParenthesis.Before(whitespaceParser)))
-                .Then(GetArgumentListParser(whitespaceParser, expressionParser).Before(Symbol.RightParenthesis.Before(whitespaceParser)), (id, arguments) => (IExpressionSyntax)new JassInvocationExpressionSyntax(id, arguments));
+            return Try(identifierNameParser.Before(Symbol.LeftParenthesis.Then(whitespaceParser)))
+                .Then(GetArgumentListParser(whitespaceParser, expressionParser).Before(Symbol.RightParenthesis.Then(whitespaceParser)), (id, arguments) => (IExpressionSyntax)new JassInvocationExpressionSyntax(id, arguments));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, Unit> whitespaceParser,
             Parser<char, JassParameterSyntax> parameterParser)
         {
-            return parameterParser.Separated(Symbol.Comma.Before(whitespaceParser))
+            return parameterParser.Separated(Symbol.Comma.Then(whitespaceParser))
                 .Select(parameters => new JassParameterListSyntax(parameters.ToImmutableArray()));
         }
     }

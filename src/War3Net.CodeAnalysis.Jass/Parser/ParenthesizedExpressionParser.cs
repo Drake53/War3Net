@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, Unit> whitespaceParser,
             Parser<char, IExpressionSyntax> expressionParser)
         {
-            return Symbol.LeftParenthesis.Before(whitespaceParser).Then(expressionParser).Before(Symbol.RightParenthesis.Before(whitespaceParser))
+            return Symbol.LeftParenthesis.Then(whitespaceParser).Then(expressionParser).Before(Symbol.RightParenthesis.Then(whitespaceParser))
                 .Select<IExpressionSyntax>(expression => new JassParenthesizedExpressionSyntax(expression))
                 .Labelled("parenthesized expression");
         }

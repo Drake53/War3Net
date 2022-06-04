@@ -16,9 +16,8 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, Unit> GetNewLineParser(Parser<char, Unit> whitespaceParser)
         {
             return OneOf(
-                Try(String($"{JassSymbol.CarriageReturn}{JassSymbol.LineFeed}")).IgnoreResult(),
-                Symbol.CarriageReturn.IgnoreResult(),
-                Symbol.LineFeed.IgnoreResult()).Before(whitespaceParser).Labelled("newline");
+                Symbol.CarriageReturn.Before(Symbol.LineFeed.Optional()),
+                Symbol.LineFeed).Then(whitespaceParser).Labelled("newline");
         }
     }
 }
