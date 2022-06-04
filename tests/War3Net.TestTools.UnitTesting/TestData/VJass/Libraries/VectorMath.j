@@ -383,7 +383,7 @@ library VectorMath /* v1.01
             debug call ThrowError(not vec.allocated,        "VectorMath", "inverse()", "thistype", vec, "Attempted to use an unallocated instance")
             return create(vec.x*sign, vec.y*sign, vec.z*sign)
         endmethod
-        method invert takes nothing returns thistype this
+        method invert takes nothing returns thistype
             debug call ThrowError(this.constant,            "VectorMath", "invert()", "thistype", this, "Attempted to invert a constant vector")
             debug call ThrowError(not this.allocated,       "VectorMath", "invert()", "thistype", this, "Attempted to use an unallocated instance")
             return this.scale(-1.00)
