@@ -15,12 +15,14 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class ParserExtensions
     {
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> Prefix(this Parser<char, UnaryOperatorType> parser)
+        public static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> Prefix(
+            this Parser<char, UnaryOperatorType> parser)
         {
             return parser.Select<Func<IExpressionSyntax, IExpressionSyntax>>(@operator => expression => new JassUnaryExpressionSyntax(@operator, expression));
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> Infix(this Parser<char, BinaryOperatorType> parser)
+        public static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> Infix(
+            this Parser<char, BinaryOperatorType> parser)
         {
             return parser.Select<Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>>(@operator => (left, right) => new JassBinaryExpressionSyntax(@operator, left, right));
         }
