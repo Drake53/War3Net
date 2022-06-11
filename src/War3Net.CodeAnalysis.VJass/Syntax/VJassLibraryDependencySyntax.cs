@@ -5,25 +5,81 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassLibraryDependencySyntax : IEquatable<VJassLibraryDependencySyntax>
+    public class VJassLibraryDependencySyntax : VJassSyntaxNode
     {
-        public VJassLibraryDependencySyntax(VJassIdentifierNameSyntax identifierName)
+        internal VJassLibraryDependencySyntax(
+            VJassSyntaxToken? optionalToken,
+            VJassIdentifierNameSyntax identifierName,
+            VJassSyntaxToken? commaToken)
         {
+            OptionalToken = optionalToken;
             IdentifierName = identifierName;
+            CommaToken = commaToken;
         }
+
+        public VJassSyntaxToken? OptionalToken { get; }
 
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(VJassLibraryDependencySyntax? other)
+        public VJassSyntaxToken? CommaToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && IdentifierName.Equals(other.IdentifierName);
+            return other is VJassLibraryDependencySyntax libraryDependency
+                && OptionalToken.NullableEquals(libraryDependency.OptionalToken)
+                && IdentifierName.IsEquivalentTo(libraryDependency.IdentifierName);
         }
 
-        public override string ToString() => IdentifierName.ToString();
+        public override void WriteTo(TextWriter writer)
+        {
+            OptionalToken?.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            CommaToken?.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{OptionalToken.OptionalSuffixed()}{IdentifierName}{CommaToken.Optional()}";
+
+        public override VJassSyntaxToken GetFirstToken() => OptionalToken ?? IdentifierName.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => CommaToken ?? IdentifierName.GetLastToken();
+
+        protected internal override VJassLibraryDependencySyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (OptionalToken is not null)
+            {
+                return new VJassLibraryDependencySyntax(
+                    newToken,
+                    IdentifierName,
+                    CommaToken);
+            }
+
+            return new VJassLibraryDependencySyntax(
+                null,
+                IdentifierName.ReplaceFirstToken(newToken),
+                CommaToken);
+        }
+
+        protected internal override VJassLibraryDependencySyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (CommaToken is not null)
+            {
+                return new VJassLibraryDependencySyntax(
+                    OptionalToken,
+                    IdentifierName,
+                    newToken);
+            }
+
+            return new VJassLibraryDependencySyntax(
+                OptionalToken,
+                IdentifierName.ReplaceLastToken(newToken),
+                null);
+        }
     }
 }

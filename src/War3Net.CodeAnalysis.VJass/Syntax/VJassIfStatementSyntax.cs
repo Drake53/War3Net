@@ -5,25 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassIfStatementSyntax : IStatementSyntax
+    public class VJassIfStatementSyntax : VJassStatementSyntax
     {
-        public VJassIfStatementSyntax(
+        internal VJassIfStatementSyntax(
             VJassStatementIfClauseSyntax ifClause,
             ImmutableArray<VJassStatementElseIfClauseSyntax> elseIfClauses,
-            VJassStatementElseClauseSyntax? elseClause)
+            VJassStatementElseClauseSyntax? elseClause,
+            VJassSyntaxToken endIfToken)
         {
             IfClause = ifClause;
             ElseIfClauses = elseIfClauses;
             ElseClause = elseClause;
+            EndIfToken = endIfToken;
         }
 
         public VJassStatementIfClauseSyntax IfClause { get; }
@@ -32,14 +33,46 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public VJassStatementElseClauseSyntax? ElseClause { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public VJassSyntaxToken EndIfToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassIfStatementSyntax ifStatement
-                && IfClause.Equals(ifStatement.IfClause)
-                && ElseIfClauses.SequenceEqual(ifStatement.ElseIfClauses)
+                && IfClause.IsEquivalentTo(ifStatement.IfClause)
+                && ElseIfClauses.IsEquivalentTo(ifStatement.ElseIfClauses)
                 && ElseClause.NullableEquals(ifStatement.ElseClause);
         }
 
+        public override void WriteTo(TextWriter writer)
+        {
+            IfClause.WriteTo(writer);
+            ElseIfClauses.WriteTo(writer);
+            ElseClause?.WriteTo(writer);
+            EndIfToken.WriteTo(writer);
+        }
+
         public override string ToString() => IfClause.ToString();
+
+        public override VJassSyntaxToken GetFirstToken() => IfClause.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndIfToken;
+
+        protected internal override VJassIfStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIfStatementSyntax(
+                IfClause.ReplaceFirstToken(newToken),
+                ElseIfClauses,
+                ElseClause,
+                EndIfToken);
+        }
+
+        protected internal override VJassIfStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIfStatementSyntax(
+                IfClause,
+                ElseIfClauses,
+                ElseClause,
+                newToken);
+        }
     }
 }

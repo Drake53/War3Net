@@ -5,25 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassScopedGlobalsDeclarationSyntax : IScopedDeclarationSyntax
+    public class VJassScopedGlobalsDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassScopedGlobalsDeclarationSyntax(VJassScopedGlobalDeclarationListSyntax globals)
+        internal VJassScopedGlobalsDeclarationSyntax(
+            VJassSyntaxToken globalsToken,
+            ImmutableArray<VJassScopedGlobalDeclarationSyntax> globals,
+            VJassSyntaxToken endGlobalsToken)
         {
+            GlobalsToken = globalsToken;
             Globals = globals;
+            EndGlobalsToken = endGlobalsToken;
         }
 
-        public VJassScopedGlobalDeclarationListSyntax Globals { get; }
+        public VJassSyntaxToken GlobalsToken { get; }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public ImmutableArray<VJassScopedGlobalDeclarationSyntax> Globals { get; }
+
+        public VJassSyntaxToken EndGlobalsToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassScopedGlobalsDeclarationSyntax scopedGlobalsDeclaration
-                && Globals.Equals(scopedGlobalsDeclaration.Globals);
+                && Globals.IsEquivalentTo(scopedGlobalsDeclaration.Globals);
         }
 
-        public override string ToString() => $"{VJassKeyword.Globals} [{Globals.Globals.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            GlobalsToken.WriteTo(writer);
+            Globals.WriteTo(writer);
+            EndGlobalsToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{GlobalsToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => GlobalsToken;
+
+        public override VJassSyntaxToken GetLastToken() => EndGlobalsToken;
+
+        protected internal override VJassScopedGlobalsDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopedGlobalsDeclarationSyntax(
+                newToken,
+                Globals,
+                EndGlobalsToken);
+        }
+
+        protected internal override VJassScopedGlobalsDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopedGlobalsDeclarationSyntax(
+                GlobalsToken,
+                Globals,
+                newToken);
+        }
     }
 }

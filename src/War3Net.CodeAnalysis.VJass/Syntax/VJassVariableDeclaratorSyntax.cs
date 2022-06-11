@@ -5,13 +5,16 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassVariableDeclaratorSyntax : IVariableDeclaratorSyntax
+    public class VJassVariableDeclaratorSyntax : VJassVariableOrArrayDeclaratorSyntax
     {
-        public VJassVariableDeclaratorSyntax(
+        internal VJassVariableDeclaratorSyntax(
             VJassTypeSyntax type,
             VJassIdentifierNameSyntax identifierName,
             VJassEqualsValueClauseSyntax? value)
@@ -21,22 +24,55 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Value = value;
         }
 
-        public VJassTypeSyntax Type { get; }
+        public override VJassTypeSyntax Type { get; }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public override VJassIdentifierNameSyntax IdentifierName { get; }
 
         public VJassEqualsValueClauseSyntax? Value { get; }
 
-        public bool Equals(IVariableDeclaratorSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassVariableDeclaratorSyntax variableDeclarator
-                && Type.Equals(variableDeclarator.Type)
-                && IdentifierName.Equals(variableDeclarator.IdentifierName)
+                && Type.IsEquivalentTo(variableDeclarator.Type)
+                && IdentifierName.IsEquivalentTo(variableDeclarator.IdentifierName)
                 && Value.NullableEquals(variableDeclarator.Value);
         }
 
-        public override string ToString() => Value is null
-            ? $"{Type} {IdentifierName}"
-            : $"{Type} {IdentifierName} {Value}";
+        public override void WriteTo(TextWriter writer)
+        {
+            Type.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            Value?.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Type} {IdentifierName}{Value.OptionalPrefixed()}";
+
+        public override VJassSyntaxToken GetFirstToken() => Type.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => ((VJassSyntaxNode?)Value ?? IdentifierName).GetLastToken();
+
+        protected internal override VJassVariableDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassVariableDeclaratorSyntax(
+                Type.ReplaceFirstToken(newToken),
+                IdentifierName,
+                Value);
+        }
+
+        protected internal override VJassVariableDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (Value is not null)
+            {
+                return new VJassVariableDeclaratorSyntax(
+                    Type,
+                    IdentifierName,
+                    Value.ReplaceLastToken(newToken));
+            }
+
+            return new VJassVariableDeclaratorSyntax(
+                Type,
+                IdentifierName.ReplaceLastToken(newToken),
+                null);
+        }
     }
 }

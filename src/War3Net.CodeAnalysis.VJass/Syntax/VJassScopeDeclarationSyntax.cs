@@ -5,47 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassScopeDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassScopeDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassScopeDeclarationSyntax(
-            VJassIdentifierNameSyntax identifierName,
-            VJassIdentifierNameSyntax? initializer,
-            VJassScopedDeclarationListSyntax declarations)
+        internal VJassScopeDeclarationSyntax(
+            VJassScopeDeclaratorSyntax declarator,
+            ImmutableArray<VJassScopedDeclarationSyntax> declarations,
+            VJassSyntaxToken endScopeToken)
         {
-            Initializer = identifierName;
-            Initializer = initializer;
+            Declarator = declarator;
             Declarations = declarations;
+            EndScopeToken = endScopeToken;
         }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public VJassScopeDeclaratorSyntax Declarator { get; }
 
-        public VJassIdentifierNameSyntax? Initializer { get; }
+        public ImmutableArray<VJassScopedDeclarationSyntax> Declarations { get; }
 
-        public VJassScopedDeclarationListSyntax Declarations { get; }
+        public VJassSyntaxToken EndScopeToken { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassScopeDeclarationSyntax scopeDeclaration
-                && IdentifierName.Equals(scopeDeclaration.IdentifierName)
-                && Initializer.NullableEquals(scopeDeclaration.Initializer)
-                && Declarations.Equals(scopeDeclaration.Declarations);
+                && Declarator.IsEquivalentTo(scopeDeclaration.Declarator)
+                && Declarations.IsEquivalentTo(scopeDeclaration.Declarations);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassScopeDeclarationSyntax scopeDeclaration
-                && IdentifierName.Equals(scopeDeclaration.IdentifierName)
-                && Initializer.NullableEquals(scopeDeclaration.Initializer)
-                && Declarations.Equals(scopeDeclaration.Declarations);
+            Declarator.WriteTo(writer);
+            Declarations.WriteTo(writer);
+            EndScopeToken.WriteTo(writer);
         }
 
-        public override string ToString() => Initializer is null
-            ? $"{VJassKeyword.Scope} {IdentifierName} [{Declarations.Declarations.Length}]"
-            : $"{VJassKeyword.Scope} {IdentifierName} {VJassKeyword.Initializer} {Initializer} [{Declarations.Declarations.Length}]";
+        public override string ToString() => $"{Declarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => Declarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndScopeToken;
+
+        protected internal override VJassScopeDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopeDeclarationSyntax(
+                Declarator.ReplaceFirstToken(newToken),
+                Declarations,
+                EndScopeToken);
+        }
+
+        protected internal override VJassScopeDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopeDeclarationSyntax(
+                Declarator,
+                Declarations,
+                newToken);
+        }
     }
 }

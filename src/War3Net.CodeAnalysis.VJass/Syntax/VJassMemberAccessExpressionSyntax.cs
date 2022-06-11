@@ -5,31 +5,63 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassMemberAccessExpressionSyntax : IExpressionSyntax
+    public class VJassMemberAccessExpressionSyntax : VJassExpressionSyntax
     {
-        public VJassMemberAccessExpressionSyntax(
-            IExpressionSyntax expression,
+        internal VJassMemberAccessExpressionSyntax(
+            VJassExpressionSyntax expression,
+            VJassSyntaxToken fullStopToken,
             VJassIdentifierNameSyntax memberName)
         {
             Expression = expression;
+            FullStopToken = fullStopToken;
             MemberName = memberName;
         }
 
-        public IExpressionSyntax Expression { get; }
+        public VJassExpressionSyntax Expression { get; }
+
+        public VJassSyntaxToken FullStopToken { get; }
 
         public VJassIdentifierNameSyntax MemberName { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassMemberAccessExpressionSyntax memberAccessExpression
-                && Expression.Equals(memberAccessExpression.Expression)
-                && MemberName.Equals(memberAccessExpression.MemberName);
+                && Expression.IsEquivalentTo(memberAccessExpression.Expression)
+                && MemberName.IsEquivalentTo(memberAccessExpression.MemberName);
         }
 
-        public override string ToString() => $"{Expression}{VJassSymbol.FullStop}{MemberName}";
+        public override void WriteTo(TextWriter writer)
+        {
+            Expression.WriteTo(writer);
+            FullStopToken.WriteTo(writer);
+            MemberName.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Expression}{FullStopToken}{MemberName}";
+
+        public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => MemberName.GetLastToken();
+
+        protected internal override VJassMemberAccessExpressionSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMemberAccessExpressionSyntax(
+                Expression.ReplaceFirstToken(newToken),
+                FullStopToken,
+                MemberName);
+        }
+
+        protected internal override VJassMemberAccessExpressionSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMemberAccessExpressionSyntax(
+                Expression,
+                FullStopToken,
+                MemberName.ReplaceLastToken(newToken));
+        }
     }
 }

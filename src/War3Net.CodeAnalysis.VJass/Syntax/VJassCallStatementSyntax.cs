@@ -5,25 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassCallStatementSyntax : IStatementSyntax
+    public class VJassCallStatementSyntax : VJassStatementSyntax
     {
-        public VJassCallStatementSyntax(IExpressionSyntax expression)
+        internal VJassCallStatementSyntax(
+            VJassSyntaxToken callToken,
+            VJassExpressionSyntax expression)
         {
+            CallToken = callToken;
             Expression = expression;
         }
 
-        public IExpressionSyntax Expression { get; }
+        public VJassSyntaxToken CallToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public VJassExpressionSyntax Expression { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassCallStatementSyntax callStatement
-                && Expression.Equals(callStatement.Expression);
+                && Expression.IsEquivalentTo(callStatement.Expression);
         }
 
-        public override string ToString() => $"{VJassKeyword.Call} {Expression}";
+        public override void WriteTo(TextWriter writer)
+        {
+            CallToken.WriteTo(writer);
+            Expression.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{CallToken} {Expression}";
+
+        public override VJassSyntaxToken GetFirstToken() => CallToken;
+
+        public override VJassSyntaxToken GetLastToken() => Expression.GetLastToken();
+
+        protected internal override VJassCallStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassCallStatementSyntax(
+                newToken,
+                Expression);
+        }
+
+        protected internal override VJassCallStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassCallStatementSyntax(
+                CallToken,
+                Expression.ReplaceLastToken(newToken));
+        }
     }
 }

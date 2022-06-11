@@ -5,33 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassStatementIfClauseSyntax : IEquatable<VJassStatementIfClauseSyntax>
+    public class VJassStatementIfClauseSyntax : VJassSyntaxNode
     {
-        public VJassStatementIfClauseSyntax(
-            IExpressionSyntax condition,
-            VJassStatementListSyntax body)
+        internal VJassStatementIfClauseSyntax(
+            VJassIfClauseDeclaratorSyntax ifClauseDeclarator,
+            ImmutableArray<VJassStatementSyntax> statements)
         {
-            Condition = condition;
-            Body = body;
+            IfClauseDeclarator = ifClauseDeclarator;
+            Statements = statements;
         }
 
-        public IExpressionSyntax Condition { get; }
+        public VJassIfClauseDeclaratorSyntax IfClauseDeclarator { get; }
 
-        public VJassStatementListSyntax Body { get; }
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
 
-        public bool Equals(VJassStatementIfClauseSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Condition.Equals(other.Condition)
-                && Body.Equals(other.Body);
+            return other is VJassStatementIfClauseSyntax statementIfClause
+                && IfClauseDeclarator.IsEquivalentTo(statementIfClause.IfClauseDeclarator)
+                && Statements.IsEquivalentTo(statementIfClause.Statements);
         }
 
-        public override string ToString() => $"{VJassKeyword.If} {Condition} {VJassKeyword.Then} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            IfClauseDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{IfClauseDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => IfClauseDeclarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => Statements.IsEmpty ? IfClauseDeclarator.GetLastToken() : Statements[^1].GetLastToken();
+
+        protected internal override VJassStatementIfClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStatementIfClauseSyntax(
+                IfClauseDeclarator.ReplaceFirstToken(newToken),
+                Statements);
+        }
+
+        protected internal override VJassStatementIfClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Statements.IsEmpty)
+            {
+                return new VJassStatementIfClauseSyntax(
+                    IfClauseDeclarator,
+                    Statements.ReplaceLastItem(Statements[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassStatementIfClauseSyntax(
+                IfClauseDeclarator.ReplaceLastToken(newToken),
+                Statements);
+        }
     }
 }

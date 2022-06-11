@@ -5,13 +5,14 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassParameterSyntax : IEquatable<VJassParameterSyntax>
+    public class VJassParameterSyntax : VJassSyntaxNode
     {
-        public VJassParameterSyntax(
+        internal VJassParameterSyntax(
             VJassTypeSyntax type,
             VJassIdentifierNameSyntax identifierName)
         {
@@ -23,13 +24,37 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(VJassParameterSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Type.Equals(other.Type)
-                && IdentifierName.Equals(other.IdentifierName);
+            return other is VJassParameterSyntax parameter
+                && Type.IsEquivalentTo(parameter.Type)
+                && IdentifierName.IsEquivalentTo(parameter.IdentifierName);
+        }
+
+        public override void WriteTo(TextWriter writer)
+        {
+            Type.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
         }
 
         public override string ToString() => $"{Type} {IdentifierName}";
+
+        public override VJassSyntaxToken GetFirstToken() => Type.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override VJassParameterSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassParameterSyntax(
+                Type.ReplaceFirstToken(newToken),
+                IdentifierName);
+        }
+
+        protected internal override VJassParameterSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassParameterSyntax(
+                Type,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

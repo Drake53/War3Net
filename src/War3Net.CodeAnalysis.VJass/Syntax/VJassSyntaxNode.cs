@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
@@ -14,6 +15,11 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         internal VJassSyntaxNode()
         {
         }
+
+        /// <summary>
+        /// Determines if two nodes are the same, disregarding trivia differences.
+        /// </summary>
+        public abstract bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other);
 
         public abstract void WriteTo(TextWriter writer);
 

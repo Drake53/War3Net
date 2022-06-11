@@ -5,34 +5,71 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassMethodDeclaratorSyntax : IMethodDeclaratorSyntax
+    public class VJassMethodDeclaratorSyntax : VJassMethodOrOperatorDeclaratorSyntax
     {
-        public VJassMethodDeclaratorSyntax(
+        internal VJassMethodDeclaratorSyntax(
+            VJassSyntaxToken methodToken,
             VJassIdentifierNameSyntax identifierName,
-            VJassParameterListSyntax parameterList,
-            VJassTypeSyntax returnType)
+            VJassParameterListOrEmptyParameterListSyntax parameterList,
+            VJassReturnClauseSyntax returnClause)
         {
+            MethodToken = methodToken;
             IdentifierName = identifierName;
             ParameterList = parameterList;
-            ReturnType = returnType;
+            ReturnClause = returnClause;
         }
+
+        public VJassSyntaxToken MethodToken { get; }
 
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public VJassParameterListSyntax ParameterList { get; }
+        public VJassParameterListOrEmptyParameterListSyntax ParameterList { get; }
 
-        public VJassTypeSyntax ReturnType { get; }
+        public VJassReturnClauseSyntax ReturnClause { get; }
 
-        public bool Equals(IMethodDeclaratorSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassMethodDeclaratorSyntax methodDeclarator
-                && IdentifierName.Equals(methodDeclarator.IdentifierName)
-                && ParameterList.Equals(methodDeclarator.ParameterList)
-                && ReturnType.Equals(methodDeclarator.ReturnType);
+                && IdentifierName.IsEquivalentTo(methodDeclarator.IdentifierName)
+                && ParameterList.IsEquivalentTo(methodDeclarator.ParameterList)
+                && ReturnClause.IsEquivalentTo(methodDeclarator.ReturnClause);
         }
 
-        public override string ToString() => $"{VJassKeyword.Method} {IdentifierName} {VJassKeyword.Takes} {ParameterList} {VJassKeyword.Returns} {ReturnType}";
+        public override void WriteTo(TextWriter writer)
+        {
+            MethodToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+            ReturnClause.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{MethodToken} {IdentifierName} {ParameterList} {ReturnClause}";
+
+        public override VJassSyntaxToken GetFirstToken() => MethodToken;
+
+        public override VJassSyntaxToken GetLastToken() => ReturnClause.GetLastToken();
+
+        protected internal override VJassMethodDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMethodDeclaratorSyntax(
+                newToken,
+                IdentifierName,
+                ParameterList,
+                ReturnClause);
+        }
+
+        protected internal override VJassMethodDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMethodDeclaratorSyntax(
+                MethodToken,
+                IdentifierName,
+                ParameterList,
+                ReturnClause.ReplaceLastToken(newToken));
+        }
     }
 }

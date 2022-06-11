@@ -5,33 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassGlobalDeclarationElseIfClauseSyntax : IEquatable<VJassGlobalDeclarationElseIfClauseSyntax>
+    public class VJassGlobalDeclarationElseIfClauseSyntax : VJassSyntaxNode
     {
-        public VJassGlobalDeclarationElseIfClauseSyntax(
-            IExpressionSyntax condition,
-            VJassGlobalDeclarationListSyntax body)
+        internal VJassGlobalDeclarationElseIfClauseSyntax(
+            VJassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator,
+            ImmutableArray<VJassGlobalDeclarationSyntax> globals)
         {
-            Condition = condition;
-            Body = body;
+            ElseIfClauseDeclarator = elseIfClauseDeclarator;
+            Globals = globals;
         }
 
-        public IExpressionSyntax Condition { get; }
+        public VJassElseIfClauseDeclaratorSyntax ElseIfClauseDeclarator { get; }
 
-        public VJassGlobalDeclarationListSyntax Body { get; }
+        public ImmutableArray<VJassGlobalDeclarationSyntax> Globals { get; }
 
-        public bool Equals(VJassGlobalDeclarationElseIfClauseSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Condition.Equals(other.Condition)
-                && Body.Equals(other.Body);
+            return other is VJassGlobalDeclarationElseIfClauseSyntax globalDeclarationElseIfClause
+                && ElseIfClauseDeclarator.IsEquivalentTo(globalDeclarationElseIfClause.ElseIfClauseDeclarator)
+                && Globals.IsEquivalentTo(globalDeclarationElseIfClause.Globals);
         }
 
-        public override string ToString() => $"{VJassKeyword.ElseIf} {Condition} {VJassKeyword.Then} [{Body.Globals.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseIfClauseDeclarator.WriteTo(writer);
+            Globals.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseIfClauseDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseIfClauseDeclarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => Globals.IsEmpty ? ElseIfClauseDeclarator.GetLastToken() : Globals[^1].GetLastToken();
+
+        protected internal override VJassGlobalDeclarationElseIfClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassGlobalDeclarationElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceFirstToken(newToken),
+                Globals);
+        }
+
+        protected internal override VJassGlobalDeclarationElseIfClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Globals.IsEmpty)
+            {
+                return new VJassGlobalDeclarationElseIfClauseSyntax(
+                    ElseIfClauseDeclarator,
+                    Globals.ReplaceLastItem(Globals[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassGlobalDeclarationElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceLastToken(newToken),
+                Globals);
+        }
     }
 }

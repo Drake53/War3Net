@@ -5,31 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassMemberDeclarationElseIfClauseSyntax : IEquatable<VJassMemberDeclarationElseIfClauseSyntax>
+    public class VJassMemberDeclarationElseIfClauseSyntax : VJassSyntaxNode
     {
-        public VJassMemberDeclarationElseIfClauseSyntax(IExpressionSyntax condition, VJassMemberDeclarationListSyntax body)
+        internal VJassMemberDeclarationElseIfClauseSyntax(
+            VJassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator,
+            ImmutableArray<VJassMemberDeclarationSyntax> memberDeclarations)
         {
-            Condition = condition;
-            Body = body;
+            ElseIfClauseDeclarator = elseIfClauseDeclarator;
+            MemberDeclarations = memberDeclarations;
         }
 
-        public IExpressionSyntax Condition { get; }
+        public VJassElseIfClauseDeclaratorSyntax ElseIfClauseDeclarator { get; }
 
-        public VJassMemberDeclarationListSyntax Body { get; }
+        public ImmutableArray<VJassMemberDeclarationSyntax> MemberDeclarations { get; }
 
-        public bool Equals(VJassMemberDeclarationElseIfClauseSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Condition.Equals(other.Condition)
-                && Body.Equals(other.Body);
+            return other is VJassMemberDeclarationElseIfClauseSyntax memberDeclarationElseIfClause
+                && ElseIfClauseDeclarator.IsEquivalentTo(memberDeclarationElseIfClause.ElseIfClauseDeclarator)
+                && MemberDeclarations.IsEquivalentTo(memberDeclarationElseIfClause.MemberDeclarations);
         }
 
-        public override string ToString() => $"{VJassKeyword.ElseIf} {Condition} {VJassKeyword.Then} [{Body.Declarations.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseIfClauseDeclarator.WriteTo(writer);
+            MemberDeclarations.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseIfClauseDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseIfClauseDeclarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => MemberDeclarations.IsEmpty ? ElseIfClauseDeclarator.GetLastToken() : MemberDeclarations[^1].GetLastToken();
+
+        protected internal override VJassMemberDeclarationElseIfClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMemberDeclarationElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceFirstToken(newToken),
+                MemberDeclarations);
+        }
+
+        protected internal override VJassMemberDeclarationElseIfClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!MemberDeclarations.IsEmpty)
+            {
+                return new VJassMemberDeclarationElseIfClauseSyntax(
+                    ElseIfClauseDeclarator,
+                    MemberDeclarations.ReplaceLastItem(MemberDeclarations[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassMemberDeclarationElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceLastToken(newToken),
+                MemberDeclarations);
+        }
     }
 }

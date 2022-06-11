@@ -5,25 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassScopedDeclarationElseClauseSyntax : IEquatable<VJassScopedDeclarationElseClauseSyntax>
+    public class VJassScopedDeclarationElseClauseSyntax : VJassSyntaxNode
     {
-        public VJassScopedDeclarationElseClauseSyntax(VJassScopedDeclarationListSyntax body)
+        internal VJassScopedDeclarationElseClauseSyntax(
+            VJassSyntaxToken elseToken,
+            ImmutableArray<VJassScopedDeclarationSyntax> declarations)
         {
-            Body = body;
+            ElseToken = elseToken;
+            Declarations = declarations;
         }
 
-        public VJassScopedDeclarationListSyntax Body { get; }
+        public VJassSyntaxToken ElseToken { get; }
 
-        public bool Equals(VJassScopedDeclarationElseClauseSyntax? other)
+        public ImmutableArray<VJassScopedDeclarationSyntax> Declarations { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Body.Equals(other.Body);
+            return other is VJassScopedDeclarationElseClauseSyntax scopedDeclarationElseClause
+                && Declarations.IsEquivalentTo(scopedDeclarationElseClause.Declarations);
         }
 
-        public override string ToString() => $"{VJassKeyword.Else} [{Body.Declarations.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseToken.WriteTo(writer);
+            Declarations.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseToken;
+
+        public override VJassSyntaxToken GetLastToken() => Declarations.IsEmpty ? ElseToken : Declarations[^1].GetLastToken();
+
+        protected internal override VJassScopedDeclarationElseClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopedDeclarationElseClauseSyntax(
+                newToken,
+                Declarations);
+        }
+
+        protected internal override VJassScopedDeclarationElseClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Declarations.IsEmpty)
+            {
+                return new VJassScopedDeclarationElseClauseSyntax(
+                    ElseToken,
+                    Declarations.ReplaceLastItem(Declarations[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassScopedDeclarationElseClauseSyntax(
+                newToken,
+                Declarations);
+        }
     }
 }

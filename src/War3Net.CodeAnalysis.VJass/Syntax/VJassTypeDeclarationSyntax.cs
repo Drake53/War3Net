@@ -5,36 +5,70 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassTypeDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassTypeDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassTypeDeclarationSyntax(VJassIdentifierNameSyntax identifierName, VJassTypeSyntax baseType)
+        internal VJassTypeDeclarationSyntax(
+            VJassSyntaxToken typeToken,
+            VJassIdentifierNameSyntax identifierName,
+            VJassSyntaxToken extendsToken,
+            VJassTypeSyntax baseType)
         {
+            TypeToken = typeToken;
             IdentifierName = identifierName;
+            ExtendsToken = extendsToken;
             BaseType = baseType;
         }
 
+        public VJassSyntaxToken TypeToken { get; }
+
         public VJassIdentifierNameSyntax IdentifierName { get; }
+
+        public VJassSyntaxToken ExtendsToken { get; }
 
         public VJassTypeSyntax BaseType { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassTypeDeclarationSyntax typeDeclaration
-                && IdentifierName.Equals(typeDeclaration.IdentifierName)
-                && BaseType.Equals(typeDeclaration.BaseType);
+                && IdentifierName.IsEquivalentTo(typeDeclaration.IdentifierName)
+                && BaseType.IsEquivalentTo(typeDeclaration.BaseType);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassTypeDeclarationSyntax typeDeclaration
-                && IdentifierName.Equals(typeDeclaration.IdentifierName)
-                && BaseType.Equals(typeDeclaration.BaseType);
+            TypeToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            ExtendsToken.WriteTo(writer);
+            BaseType.WriteTo(writer);
         }
 
-        public override string ToString() => $"{VJassKeyword.Type} {IdentifierName} {VJassKeyword.Extends} {BaseType}";
+        public override string ToString() => $"{TypeToken} {IdentifierName} {ExtendsToken} {BaseType}";
+
+        public override VJassSyntaxToken GetFirstToken() => TypeToken;
+
+        public override VJassSyntaxToken GetLastToken() => BaseType.GetLastToken();
+
+        protected internal override VJassTypeDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTypeDeclarationSyntax(
+                newToken,
+                IdentifierName,
+                ExtendsToken,
+                BaseType);
+        }
+
+        protected internal override VJassTypeDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTypeDeclarationSyntax(
+                TypeToken,
+                IdentifierName,
+                ExtendsToken,
+                BaseType.ReplaceLastToken(newToken));
+        }
     }
 }

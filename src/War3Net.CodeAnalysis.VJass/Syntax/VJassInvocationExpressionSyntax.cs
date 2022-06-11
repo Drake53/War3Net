@@ -5,31 +5,56 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassInvocationExpressionSyntax : IExpressionSyntax
+    public class VJassInvocationExpressionSyntax : VJassExpressionSyntax
     {
-        public VJassInvocationExpressionSyntax(
-            IExpressionSyntax expression,
-            VJassArgumentListSyntax arguments)
+        internal VJassInvocationExpressionSyntax(
+            VJassExpressionSyntax expression,
+            VJassArgumentListSyntax argumentList)
         {
             Expression = expression;
-            Arguments = arguments;
+            ArgumentList = argumentList;
         }
 
-        public IExpressionSyntax Expression { get; }
+        public VJassExpressionSyntax Expression { get; }
 
-        public VJassArgumentListSyntax Arguments { get; }
+        public VJassArgumentListSyntax ArgumentList { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassInvocationExpressionSyntax invocationExpression
-                && Expression.Equals(invocationExpression.Expression)
-                && Arguments.Equals(invocationExpression.Arguments);
+                && Expression.IsEquivalentTo(invocationExpression.Expression)
+                && ArgumentList.IsEquivalentTo(invocationExpression.ArgumentList);
         }
 
-        public override string ToString() => $"{Expression}{VJassSymbol.LeftParenthesis}{Arguments}{VJassSymbol.RightParenthesis}";
+        public override void WriteTo(TextWriter writer)
+        {
+            Expression.WriteTo(writer);
+            ArgumentList.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Expression}{ArgumentList}";
+
+        public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => ArgumentList.GetLastToken();
+
+        protected internal override VJassInvocationExpressionSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassInvocationExpressionSyntax(
+                Expression.ReplaceFirstToken(newToken),
+                ArgumentList);
+        }
+
+        protected internal override VJassInvocationExpressionSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassInvocationExpressionSyntax(
+                Expression,
+                ArgumentList.ReplaceLastToken(newToken));
+        }
     }
 }

@@ -5,25 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassExitStatementSyntax : IStatementSyntax
+    public class VJassExitStatementSyntax : VJassStatementSyntax
     {
-        public VJassExitStatementSyntax(IExpressionSyntax condition)
+        internal VJassExitStatementSyntax(
+            VJassSyntaxToken exitWhenToken,
+            VJassExpressionSyntax condition)
         {
+            ExitWhenToken = exitWhenToken;
             Condition = condition;
         }
 
-        public IExpressionSyntax Condition { get; }
+        public VJassSyntaxToken ExitWhenToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public VJassExpressionSyntax Condition { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassExitStatementSyntax exitStatement
-                && Condition.Equals(exitStatement.Condition);
+                && Condition.IsEquivalentTo(exitStatement.Condition);
         }
 
-        public override string ToString() => $"{VJassKeyword.ExitWhen} {Condition}";
+        public override void WriteTo(TextWriter writer)
+        {
+            ExitWhenToken.WriteTo(writer);
+            Condition.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ExitWhenToken} {Condition}";
+
+        public override VJassSyntaxToken GetFirstToken() => ExitWhenToken;
+
+        public override VJassSyntaxToken GetLastToken() => Condition.GetLastToken();
+
+        protected internal override VJassExitStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassExitStatementSyntax(
+                newToken,
+                Condition);
+        }
+
+        protected internal override VJassExitStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassExitStatementSyntax(
+                ExitWhenToken,
+                Condition.ReplaceLastToken(newToken));
+        }
     }
 }

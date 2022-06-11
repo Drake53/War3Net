@@ -5,26 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassLocalVariableDeclarationStatementSyntax : IStatementSyntax
+    public class VJassLocalVariableDeclarationStatementSyntax : VJassStatementSyntax
     {
-        public VJassLocalVariableDeclarationStatementSyntax(
-            IVariableDeclaratorSyntax declarator)
+        internal VJassLocalVariableDeclarationStatementSyntax(
+            VJassSyntaxToken localToken,
+            VJassVariableOrArrayDeclaratorSyntax declarator)
         {
+            LocalToken = localToken;
             Declarator = declarator;
         }
 
-        public IVariableDeclaratorSyntax Declarator { get; }
+        public VJassSyntaxToken LocalToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public VJassVariableOrArrayDeclaratorSyntax Declarator { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement
-                && Declarator.Equals(localVariableDeclarationStatement.Declarator);
+                && Declarator.IsEquivalentTo(localVariableDeclarationStatement.Declarator);
         }
 
-        public override string ToString() => $"{VJassKeyword.Local} {Declarator}";
+        public override void WriteTo(TextWriter writer)
+        {
+            LocalToken.WriteTo(writer);
+            Declarator.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{LocalToken} {Declarator}";
+
+        public override VJassSyntaxToken GetFirstToken() => LocalToken;
+
+        public override VJassSyntaxToken GetLastToken() => Declarator.GetLastToken();
+
+        protected internal override VJassLocalVariableDeclarationStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLocalVariableDeclarationStatementSyntax(
+                newToken,
+                Declarator);
+        }
+
+        protected internal override VJassLocalVariableDeclarationStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLocalVariableDeclarationStatementSyntax(
+                LocalToken,
+                Declarator.ReplaceLastToken(newToken));
+        }
     }
 }

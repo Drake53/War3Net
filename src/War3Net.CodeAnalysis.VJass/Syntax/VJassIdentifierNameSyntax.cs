@@ -5,25 +5,46 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassIdentifierNameSyntax : IEquatable<VJassIdentifierNameSyntax>
+    public class VJassIdentifierNameSyntax : VJassSyntaxNode
     {
-        public VJassIdentifierNameSyntax(string name)
+        internal VJassIdentifierNameSyntax(
+            VJassSyntaxToken token)
         {
-            Name = name;
+            Token = token;
         }
 
-        public string Name { get; }
+        public VJassSyntaxToken Token { get; }
 
-        public bool Equals(VJassIdentifierNameSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && string.Equals(Name, other.Name, StringComparison.Ordinal);
+            return other is VJassIdentifierNameSyntax identifierName
+                && Token.IsEquivalentTo(identifierName.Token);
         }
 
-        public override string ToString() => Name;
+        public override void WriteTo(TextWriter writer)
+        {
+            Token.WriteTo(writer);
+        }
+
+        public override string ToString() => Token.ToString();
+
+        public override VJassSyntaxToken GetFirstToken() => Token;
+
+        public override VJassSyntaxToken GetLastToken() => Token;
+
+        protected internal override VJassIdentifierNameSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIdentifierNameSyntax(newToken);
+        }
+
+        protected internal override VJassIdentifierNameSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIdentifierNameSyntax(newToken);
+        }
     }
 }

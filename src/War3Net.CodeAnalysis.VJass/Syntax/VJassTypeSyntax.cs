@@ -5,25 +5,46 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassTypeSyntax : IEquatable<VJassTypeSyntax>
+    public class VJassTypeSyntax : VJassSyntaxNode
     {
-        public VJassTypeSyntax(VJassIdentifierNameSyntax typeName)
+        internal VJassTypeSyntax(
+            VJassIdentifierNameSyntax typeName)
         {
             TypeName = typeName;
         }
 
         public VJassIdentifierNameSyntax TypeName { get; }
 
-        public bool Equals(VJassTypeSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && TypeName.Equals(other.TypeName);
+            return other is VJassTypeSyntax type
+                && TypeName.IsEquivalentTo(type.TypeName);
+        }
+
+        public override void WriteTo(TextWriter writer)
+        {
+            TypeName.WriteTo(writer);
         }
 
         public override string ToString() => TypeName.ToString();
+
+        public override VJassSyntaxToken GetFirstToken() => TypeName.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => TypeName.GetLastToken();
+
+        protected internal override VJassTypeSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTypeSyntax(TypeName.ReplaceFirstToken(newToken));
+        }
+
+        protected internal override VJassTypeSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTypeSyntax(TypeName.ReplaceLastToken(newToken));
+        }
     }
 }

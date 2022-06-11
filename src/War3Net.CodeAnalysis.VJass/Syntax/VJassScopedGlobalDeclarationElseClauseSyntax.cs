@@ -5,25 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassScopedGlobalDeclarationElseClauseSyntax : IEquatable<VJassScopedGlobalDeclarationElseClauseSyntax>
+    public class VJassScopedGlobalDeclarationElseClauseSyntax : VJassSyntaxNode
     {
-        public VJassScopedGlobalDeclarationElseClauseSyntax(VJassScopedGlobalDeclarationListSyntax body)
+        internal VJassScopedGlobalDeclarationElseClauseSyntax(
+            VJassSyntaxToken elseToken,
+            ImmutableArray<VJassScopedGlobalDeclarationSyntax> globals)
         {
-            Body = body;
+            ElseToken = elseToken;
+            Globals = globals;
         }
 
-        public VJassScopedGlobalDeclarationListSyntax Body { get; }
+        public VJassSyntaxToken ElseToken { get; }
 
-        public bool Equals(VJassScopedGlobalDeclarationElseClauseSyntax? other)
+        public ImmutableArray<VJassScopedGlobalDeclarationSyntax> Globals { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Body.Equals(other.Body);
+            return other is VJassScopedGlobalDeclarationElseClauseSyntax scopedGlobalDeclarationElseClause
+                && Globals.IsEquivalentTo(scopedGlobalDeclarationElseClause.Globals);
         }
 
-        public override string ToString() => $"{VJassKeyword.Else} [{Body.Globals.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseToken.WriteTo(writer);
+            Globals.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseToken;
+
+        public override VJassSyntaxToken GetLastToken() => Globals.IsEmpty ? ElseToken : Globals[^1].GetLastToken();
+
+        protected internal override VJassScopedGlobalDeclarationElseClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassScopedGlobalDeclarationElseClauseSyntax(
+                newToken,
+                Globals);
+        }
+
+        protected internal override VJassScopedGlobalDeclarationElseClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Globals.IsEmpty)
+            {
+                return new VJassScopedGlobalDeclarationElseClauseSyntax(
+                    ElseToken,
+                    Globals.ReplaceLastItem(Globals[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassScopedGlobalDeclarationElseClauseSyntax(
+                newToken,
+                Globals);
+        }
     }
 }

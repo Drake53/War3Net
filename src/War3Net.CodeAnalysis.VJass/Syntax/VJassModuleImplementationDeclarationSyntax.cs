@@ -5,26 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassModuleImplementationDeclarationSyntax : IMemberDeclarationSyntax
+    public class VJassModuleImplementationDeclarationSyntax : VJassMemberDeclarationSyntax
     {
-        public VJassModuleImplementationDeclarationSyntax(
+        internal VJassModuleImplementationDeclarationSyntax(
+            VJassSyntaxToken implementToken,
+            VJassSyntaxToken? optionalToken,
             VJassIdentifierNameSyntax identifierName)
         {
+            ImplementToken = implementToken;
+            OptionalToken = optionalToken;
             IdentifierName = identifierName;
         }
 
+        public VJassSyntaxToken ImplementToken { get; }
+
+        public VJassSyntaxToken? OptionalToken { get; }
+
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(IMemberDeclarationSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassModuleImplementationDeclarationSyntax moduleImplementationDeclaration
-                && IdentifierName.Equals(moduleImplementationDeclaration.IdentifierName);
+                && OptionalToken.NullableEquals(moduleImplementationDeclaration.OptionalToken)
+                && IdentifierName.IsEquivalentTo(moduleImplementationDeclaration.IdentifierName);
         }
 
-        public override string ToString() => $"{VJassKeyword.Implement} {IdentifierName}";
+        public override void WriteTo(TextWriter writer)
+        {
+            ImplementToken.WriteTo(writer);
+            OptionalToken?.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ImplementToken} {OptionalToken.OptionalSuffixed()}{IdentifierName}";
+
+        public override VJassSyntaxToken GetFirstToken() => ImplementToken;
+
+        public override VJassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override VJassModuleImplementationDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassModuleImplementationDeclarationSyntax(
+                newToken,
+                OptionalToken,
+                IdentifierName);
+        }
+
+        protected internal override VJassModuleImplementationDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassModuleImplementationDeclarationSyntax(
+                ImplementToken,
+                OptionalToken,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

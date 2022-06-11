@@ -5,29 +5,67 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassCompilationUnitSyntax : IEquatable<VJassCompilationUnitSyntax>
+    public sealed class VJassCompilationUnitSyntax : VJassSyntaxNode
     {
-        public VJassCompilationUnitSyntax(ImmutableArray<ITopLevelDeclarationSyntax> declarations)
+        internal VJassCompilationUnitSyntax(
+            ImmutableArray<VJassTopLevelDeclarationSyntax> declarations,
+            VJassSyntaxToken endOfFileToken)
         {
             Declarations = declarations;
+            EndOfFileToken = endOfFileToken;
         }
 
-        public ImmutableArray<ITopLevelDeclarationSyntax> Declarations { get; }
+        public ImmutableArray<VJassTopLevelDeclarationSyntax> Declarations { get; }
 
-        public bool Equals(VJassCompilationUnitSyntax? other)
+        public VJassSyntaxToken EndOfFileToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Declarations.SequenceEqual(other.Declarations);
+            return other is VJassCompilationUnitSyntax compilationUnit
+                && Declarations.IsEquivalentTo(compilationUnit.Declarations);
         }
 
-        public override string ToString() => $"<{base.ToString()}> [{Declarations.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            for (var i = 0; i < Declarations.Length; i++)
+            {
+                Declarations[i].WriteTo(writer);
+            }
+
+            EndOfFileToken.WriteTo(writer);
+        }
+
+        public override VJassSyntaxToken GetFirstToken() => Declarations.IsEmpty ? EndOfFileToken : Declarations[0].GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndOfFileToken;
+
+        protected internal override VJassCompilationUnitSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Declarations.IsEmpty)
+            {
+                return new VJassCompilationUnitSyntax(
+                    Declarations.ReplaceFirstItem(Declarations[0].ReplaceFirstToken(newToken)),
+                    EndOfFileToken);
+            }
+
+            return new VJassCompilationUnitSyntax(
+                Declarations,
+                newToken);
+        }
+
+        protected internal override VJassCompilationUnitSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassCompilationUnitSyntax(
+                Declarations,
+                newToken);
+        }
     }
 }

@@ -5,37 +5,78 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.VJass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassIndexerMethodDeclaratorSyntax : IMethodDeclaratorSyntax
+    public class VJassIndexerMethodDeclaratorSyntax : VJassMethodOrOperatorDeclaratorSyntax
     {
-        public VJassIndexerMethodDeclaratorSyntax(
-            AccessorType accessorType,
-            VJassParameterListSyntax parameterList,
-            VJassTypeSyntax returnType)
+        internal VJassIndexerMethodDeclaratorSyntax(
+            VJassSyntaxToken methodToken,
+            VJassSyntaxToken operatorToken,
+            VJassSyntaxToken indexerToken,
+            VJassParameterListOrEmptyParameterListSyntax parameterList,
+            VJassReturnClauseSyntax returnClause)
         {
-            AccessorType = accessorType;
+            MethodToken = methodToken;
+            OperatorToken = operatorToken;
+            IndexerToken = indexerToken;
             ParameterList = parameterList;
-            ReturnType = returnType;
+            ReturnClause = returnClause;
         }
 
-        public AccessorType AccessorType { get; }
+        public VJassSyntaxToken MethodToken { get; }
 
-        public VJassParameterListSyntax ParameterList { get; }
+        public VJassSyntaxToken OperatorToken { get; }
 
-        public VJassTypeSyntax ReturnType { get; }
+        public VJassSyntaxToken IndexerToken { get; }
 
-        public bool Equals(IMethodDeclaratorSyntax? other)
+        public VJassParameterListOrEmptyParameterListSyntax ParameterList { get; }
+
+        public VJassReturnClauseSyntax ReturnClause { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassIndexerMethodDeclaratorSyntax indexerMethodDeclarator
-                && AccessorType.Equals(indexerMethodDeclarator.AccessorType)
-                && ParameterList.Equals(indexerMethodDeclarator.ParameterList)
-                && ReturnType.Equals(indexerMethodDeclarator.ReturnType);
+                && IndexerToken.IsEquivalentTo(indexerMethodDeclarator.IndexerToken)
+                && ParameterList.IsEquivalentTo(indexerMethodDeclarator.ParameterList)
+                && ReturnClause.IsEquivalentTo(indexerMethodDeclarator.ReturnClause);
         }
 
-        public override string ToString() => $"{VJassKeyword.Method} {VJassKeyword.Operator} {VJassSymbol.LeftSquareBracket}{VJassSymbol.RightSquareBracket}{AccessorType.GetSymbol()} {VJassKeyword.Takes} {ParameterList} {VJassKeyword.Returns} {ReturnType}";
+        public override void WriteTo(TextWriter writer)
+        {
+            MethodToken.WriteTo(writer);
+            OperatorToken.WriteTo(writer);
+            IndexerToken.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+            ReturnClause.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{MethodToken} {OperatorToken} {IndexerToken} {ParameterList} {ReturnClause}";
+
+        public override VJassSyntaxToken GetFirstToken() => MethodToken;
+
+        public override VJassSyntaxToken GetLastToken() => ReturnClause.GetLastToken();
+
+        protected internal override VJassIndexerMethodDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIndexerMethodDeclaratorSyntax(
+                newToken,
+                OperatorToken,
+                IndexerToken,
+                ParameterList,
+                ReturnClause);
+        }
+
+        protected internal override VJassIndexerMethodDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassIndexerMethodDeclaratorSyntax(
+                MethodToken,
+                OperatorToken,
+                IndexerToken,
+                ParameterList,
+                ReturnClause.ReplaceLastToken(newToken));
+        }
     }
 }

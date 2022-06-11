@@ -5,47 +5,83 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassModuleDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassModuleDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassModuleDeclarationSyntax(
-            VJassIdentifierNameSyntax identifierName,
-            VJassIdentifierNameSyntax? initializer,
-            VJassMemberDeclarationListSyntax memberDeclarations)
+        internal VJassModuleDeclarationSyntax(
+            ImmutableArray<VJassModifierSyntax> modifiers,
+            VJassModuleDeclaratorSyntax declarator,
+            ImmutableArray<VJassMemberDeclarationSyntax> memberDeclarations,
+            VJassSyntaxToken endModuleToken)
         {
-            IdentifierName = identifierName;
-            Initializer = initializer;
+            Modifiers = modifiers;
+            Declarator = declarator;
             MemberDeclarations = memberDeclarations;
+            EndModuleToken = endModuleToken;
         }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public ImmutableArray<VJassModifierSyntax> Modifiers { get; }
 
-        public VJassIdentifierNameSyntax? Initializer { get; }
+        public VJassModuleDeclaratorSyntax Declarator { get; }
 
-        public VJassMemberDeclarationListSyntax MemberDeclarations { get; }
+        public ImmutableArray<VJassMemberDeclarationSyntax> MemberDeclarations { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public VJassSyntaxToken EndModuleToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassModuleDeclarationSyntax moduleDeclaration
-                && IdentifierName.Equals(moduleDeclaration.IdentifierName)
-                && Initializer.NullableEquals(moduleDeclaration.Initializer)
-                && MemberDeclarations.Equals(moduleDeclaration.MemberDeclarations);
+                && Modifiers.IsEquivalentTo(moduleDeclaration.Modifiers)
+                && Declarator.IsEquivalentTo(moduleDeclaration.Declarator)
+                && MemberDeclarations.IsEquivalentTo(moduleDeclaration.MemberDeclarations);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassModuleDeclarationSyntax moduleDeclaration
-                && IdentifierName.Equals(moduleDeclaration.IdentifierName)
-                && Initializer.NullableEquals(moduleDeclaration.Initializer)
-                && MemberDeclarations.Equals(moduleDeclaration.MemberDeclarations);
+            Modifiers.WriteTo(writer);
+            Declarator.WriteTo(writer);
+            MemberDeclarations.WriteTo(writer);
+            EndModuleToken.WriteTo(writer);
         }
 
-        public override string ToString() => Initializer is null
-            ? $"{VJassKeyword.Module} {IdentifierName} [{MemberDeclarations.Declarations.Length}]"
-            : $"{VJassKeyword.Module} {IdentifierName} {VJassKeyword.Initializer} {Initializer} [{MemberDeclarations.Declarations.Length}]";
+        public override string ToString() => $"{Modifiers.Join()}{Declarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndModuleToken;
+
+        protected internal override VJassModuleDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Modifiers.IsEmpty)
+            {
+                return new VJassModuleDeclarationSyntax(
+                    Modifiers.ReplaceFirstItem(Modifiers[0].ReplaceFirstToken(newToken)),
+                    Declarator,
+                    MemberDeclarations,
+                    EndModuleToken);
+            }
+
+            return new VJassModuleDeclarationSyntax(
+                Modifiers,
+                Declarator.ReplaceFirstToken(newToken),
+                MemberDeclarations,
+                EndModuleToken);
+        }
+
+        protected internal override VJassModuleDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassModuleDeclarationSyntax(
+                Modifiers,
+                Declarator,
+                MemberDeclarations,
+                newToken);
+        }
     }
 }

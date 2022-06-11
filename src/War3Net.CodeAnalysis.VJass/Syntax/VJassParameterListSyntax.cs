@@ -5,29 +5,57 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassParameterListSyntax : IEquatable<VJassParameterListSyntax>
+    public class VJassParameterListSyntax : VJassParameterListOrEmptyParameterListSyntax
     {
-        public static readonly VJassParameterListSyntax Empty = new(ImmutableArray<VJassParameterSyntax>.Empty);
-
-        public VJassParameterListSyntax(ImmutableArray<VJassParameterSyntax> parameters)
+        internal VJassParameterListSyntax(
+            VJassSyntaxToken takesToken,
+            SeparatedSyntaxList<VJassParameterSyntax, VJassSyntaxToken> parameterList)
         {
-            Parameters = parameters;
+            TakesToken = takesToken;
+            ParameterList = parameterList;
         }
 
-        public ImmutableArray<VJassParameterSyntax> Parameters { get; }
+        public VJassSyntaxToken TakesToken { get; }
 
-        public bool Equals(VJassParameterListSyntax? other)
+        public SeparatedSyntaxList<VJassParameterSyntax, VJassSyntaxToken> ParameterList { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Parameters.SequenceEqual(other.Parameters);
+            return other is VJassParameterListSyntax parameterList
+                && ParameterList.IsEquivalentTo(parameterList.ParameterList);
         }
 
-        public override string ToString() => Parameters.Any() ? string.Join($"{VJassSymbol.Comma} ", Parameters) : VJassKeyword.Nothing;
+        public override void WriteTo(TextWriter writer)
+        {
+            TakesToken.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{TakesToken} {ParameterList}";
+
+        public override VJassSyntaxToken GetFirstToken() => TakesToken;
+
+        public override VJassSyntaxToken GetLastToken() => ParameterList.Items[^1].GetLastToken();
+
+        protected internal override VJassParameterListSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassParameterListSyntax(
+                newToken,
+                ParameterList);
+        }
+
+        protected internal override VJassParameterListSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassParameterListSyntax(
+                TakesToken,
+                ParameterList.ReplaceLastItem(ParameterList.Items[^1].ReplaceLastToken(newToken)));
+        }
     }
 }

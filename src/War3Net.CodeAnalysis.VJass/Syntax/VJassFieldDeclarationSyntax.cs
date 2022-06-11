@@ -5,25 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassFieldDeclarationSyntax : IMemberDeclarationSyntax
+    public class VJassFieldDeclarationSyntax : VJassMemberDeclarationSyntax
     {
-        public VJassFieldDeclarationSyntax(IVariableDeclaratorSyntax declarator)
+        internal VJassFieldDeclarationSyntax(
+            ImmutableArray<VJassModifierSyntax> modifiers,
+            VJassVariableOrArrayDeclaratorSyntax declarator)
         {
+            Modifiers = modifiers;
             Declarator = declarator;
         }
 
-        public IVariableDeclaratorSyntax Declarator { get; }
+        public ImmutableArray<VJassModifierSyntax> Modifiers { get; }
 
-        public bool Equals(IMemberDeclarationSyntax? other)
+        public VJassVariableOrArrayDeclaratorSyntax Declarator { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassFieldDeclarationSyntax fieldDeclaration
-                && Declarator.Equals(fieldDeclaration.Declarator);
+                && Modifiers.IsEquivalentTo(fieldDeclaration.Modifiers)
+                && Declarator.IsEquivalentTo(fieldDeclaration.Declarator);
         }
 
-        public override string ToString() => Declarator.ToString();
+        public override string ToString() => $"{Modifiers.Join()}{Declarator}";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => Declarator.GetLastToken();
+
+        public override void WriteTo(TextWriter writer)
+        {
+            Modifiers.WriteTo(writer);
+            Declarator.WriteTo(writer);
+        }
+
+        protected internal override VJassFieldDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Modifiers.IsEmpty)
+            {
+                return new VJassFieldDeclarationSyntax(
+                    Modifiers.ReplaceFirstItem(Modifiers[0].ReplaceFirstToken(newToken)),
+                    Declarator);
+            }
+
+            return new VJassFieldDeclarationSyntax(
+                Modifiers,
+                Declarator.ReplaceFirstToken(newToken));
+        }
+
+        protected internal override VJassFieldDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassFieldDeclarationSyntax(
+                Modifiers,
+                Declarator.ReplaceLastToken(newToken));
+        }
     }
 }

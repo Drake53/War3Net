@@ -5,28 +5,64 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassReturnStatementSyntax : IStatementSyntax
+    public class VJassReturnStatementSyntax : VJassStatementSyntax
     {
-        public static readonly VJassReturnStatementSyntax Empty = new(null);
-
-        public VJassReturnStatementSyntax(IExpressionSyntax? value)
+        internal VJassReturnStatementSyntax(
+            VJassSyntaxToken returnToken,
+            VJassExpressionSyntax? value)
         {
+            ReturnToken = returnToken;
             Value = value;
         }
 
-        public IExpressionSyntax? Value { get; }
+        public VJassSyntaxToken ReturnToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public VJassExpressionSyntax? Value { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassReturnStatementSyntax returnStatement
                 && Value.NullableEquals(returnStatement.Value);
         }
 
-        public override string ToString() => Value is null ? VJassKeyword.Return : $"{VJassKeyword.Return} {Value}";
+        public override void WriteTo(TextWriter writer)
+        {
+            ReturnToken.WriteTo(writer);
+            Value?.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ReturnToken}{Value.OptionalPrefixed()}";
+
+        public override VJassSyntaxToken GetFirstToken() => ReturnToken;
+
+        public override VJassSyntaxToken GetLastToken() => Value?.GetLastToken() ?? ReturnToken;
+
+        protected internal override VJassReturnStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassReturnStatementSyntax(
+                newToken,
+                Value);
+        }
+
+        protected internal override VJassReturnStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (Value is not null)
+            {
+                return new VJassReturnStatementSyntax(
+                    ReturnToken,
+                    Value.ReplaceLastToken(newToken));
+            }
+
+            return new VJassReturnStatementSyntax(
+                newToken,
+                null);
+        }
     }
 }

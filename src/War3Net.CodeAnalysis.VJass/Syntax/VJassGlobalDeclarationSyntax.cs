@@ -5,25 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassGlobalDeclarationSyntax : IGlobalDeclarationSyntax
+    public abstract class VJassGlobalDeclarationSyntax : VJassSyntaxNode
     {
-        public VJassGlobalDeclarationSyntax(IVariableDeclaratorSyntax declarator)
-        {
-            Declarator = declarator;
-        }
+        protected internal override abstract VJassGlobalDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken);
 
-        public IVariableDeclaratorSyntax Declarator { get; }
-
-        public bool Equals(IGlobalDeclarationSyntax? other)
-        {
-            return other is VJassGlobalDeclarationSyntax globalDeclaration
-                && Declarator.Equals(globalDeclaration.Declarator);
-        }
-
-        public override string ToString() => Declarator.ToString();
+        protected internal override abstract VJassGlobalDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken);
     }
 }

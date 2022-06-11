@@ -5,31 +5,63 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassSetStatementSyntax : IStatementSyntax
+    public class VJassSetStatementSyntax : VJassStatementSyntax
     {
-        public VJassSetStatementSyntax(
-            IExpressionSyntax identifier,
+        internal VJassSetStatementSyntax(
+            VJassSyntaxToken setToken,
+            VJassExpressionSyntax identifier,
             VJassEqualsValueClauseSyntax value)
         {
+            SetToken = setToken;
             Identifier = identifier;
             Value = value;
         }
 
-        public IExpressionSyntax Identifier { get; }
+        public VJassSyntaxToken SetToken { get; }
+
+        public VJassExpressionSyntax Identifier { get; }
 
         public VJassEqualsValueClauseSyntax Value { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassSetStatementSyntax setStatement
-                && Identifier.Equals(setStatement.Identifier)
-                && Value.Equals(setStatement.Value);
+                && Identifier.IsEquivalentTo(setStatement.Identifier)
+                && Value.IsEquivalentTo(setStatement.Value);
         }
 
-        public override string ToString() => $"{VJassKeyword.Set} {Identifier} {Value}";
+        public override void WriteTo(TextWriter writer)
+        {
+            SetToken.WriteTo(writer);
+            Identifier.WriteTo(writer);
+            Value.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{SetToken} {Identifier} {Value}";
+
+        public override VJassSyntaxToken GetFirstToken() => SetToken;
+
+        public override VJassSyntaxToken GetLastToken() => Value.GetLastToken();
+
+        protected internal override VJassSetStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassSetStatementSyntax(
+                newToken,
+                Identifier,
+                Value);
+        }
+
+        protected internal override VJassSetStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassSetStatementSyntax(
+                SetToken,
+                Identifier,
+                Value.ReplaceLastToken(newToken));
+        }
     }
 }

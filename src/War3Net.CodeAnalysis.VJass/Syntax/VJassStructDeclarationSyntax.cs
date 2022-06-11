@@ -5,47 +5,83 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassStructDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassStructDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassStructDeclarationSyntax(
-            VJassIdentifierNameSyntax identifierName,
-            VJassIdentifierNameSyntax? extends,
-            VJassMemberDeclarationListSyntax memberDeclarations)
+        internal VJassStructDeclarationSyntax(
+            ImmutableArray<VJassModifierSyntax> modifiers,
+            VJassStructDeclaratorSyntax declarator,
+            ImmutableArray<VJassMemberDeclarationSyntax> memberDeclarations,
+            VJassSyntaxToken endStructToken)
         {
-            IdentifierName = identifierName;
-            Extends = extends;
+            Modifiers = modifiers;
+            Declarator = declarator;
             MemberDeclarations = memberDeclarations;
+            EndStructToken = endStructToken;
         }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public ImmutableArray<VJassModifierSyntax> Modifiers { get; }
 
-        public VJassIdentifierNameSyntax? Extends { get; }
+        public VJassStructDeclaratorSyntax Declarator { get; }
 
-        public VJassMemberDeclarationListSyntax MemberDeclarations { get; }
+        public ImmutableArray<VJassMemberDeclarationSyntax> MemberDeclarations { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public VJassSyntaxToken EndStructToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassStructDeclarationSyntax structDeclaration
-                && IdentifierName.Equals(structDeclaration.IdentifierName)
-                && Extends.NullableEquals(structDeclaration.Extends)
-                && MemberDeclarations.Equals(structDeclaration.MemberDeclarations);
+                && Modifiers.IsEquivalentTo(structDeclaration.Modifiers)
+                && Declarator.IsEquivalentTo(structDeclaration.Declarator)
+                && MemberDeclarations.IsEquivalentTo(structDeclaration.MemberDeclarations);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassStructDeclarationSyntax structDeclaration
-                && IdentifierName.Equals(structDeclaration.IdentifierName)
-                && Extends.NullableEquals(structDeclaration.Extends)
-                && MemberDeclarations.Equals(structDeclaration.MemberDeclarations);
+            Modifiers.WriteTo(writer);
+            Declarator.WriteTo(writer);
+            MemberDeclarations.WriteTo(writer);
+            EndStructToken.WriteTo(writer);
         }
 
-        public override string ToString() => Extends is null
-            ? $"{VJassKeyword.Struct} {IdentifierName} [{MemberDeclarations.Declarations.Length}]"
-            : $"{VJassKeyword.Struct} {IdentifierName} {VJassKeyword.Extends} {Extends} [{MemberDeclarations.Declarations.Length}]";
+        public override string ToString() => $"{Modifiers.Join()}{Declarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndStructToken;
+
+        protected internal override VJassStructDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Modifiers.IsEmpty)
+            {
+                return new VJassStructDeclarationSyntax(
+                    Modifiers.ReplaceFirstItem(Modifiers[0].ReplaceFirstToken(newToken)),
+                    Declarator,
+                    MemberDeclarations,
+                    EndStructToken);
+            }
+
+            return new VJassStructDeclarationSyntax(
+                Modifiers,
+                Declarator.ReplaceFirstToken(newToken),
+                MemberDeclarations,
+                EndStructToken);
+        }
+
+        protected internal override VJassStructDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStructDeclarationSyntax(
+                Modifiers,
+                Declarator,
+                MemberDeclarations,
+                newToken);
+        }
     }
 }

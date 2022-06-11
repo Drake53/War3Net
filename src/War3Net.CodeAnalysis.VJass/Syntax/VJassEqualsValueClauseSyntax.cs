@@ -5,28 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassEqualsValueClauseSyntax : IEquatable<VJassEqualsValueClauseSyntax>
+    public class VJassEqualsValueClauseSyntax : VJassSyntaxNode
     {
-        public VJassEqualsValueClauseSyntax(
-            IExpressionSyntax expression)
+        internal VJassEqualsValueClauseSyntax(
+            VJassSyntaxToken equalsSignToken,
+            VJassExpressionSyntax expression)
         {
+            EqualsSignToken = equalsSignToken;
             Expression = expression;
         }
 
-        public IExpressionSyntax Expression { get; }
+        public VJassSyntaxToken EqualsSignToken { get; }
 
-        public bool Equals(VJassEqualsValueClauseSyntax? other)
+        public VJassExpressionSyntax Expression { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Expression.Equals(other.Expression);
+            return other is VJassEqualsValueClauseSyntax equalsValueClause
+                && Expression.IsEquivalentTo(equalsValueClause.Expression);
         }
 
-        public override string ToString() => $"{VJassSymbol.EqualsSign} {Expression}";
+        public override void WriteTo(TextWriter writer)
+        {
+            EqualsSignToken.WriteTo(writer);
+            Expression.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{EqualsSignToken} {Expression}";
+
+        public override VJassSyntaxToken GetFirstToken() => EqualsSignToken;
+
+        public override VJassSyntaxToken GetLastToken() => Expression.GetLastToken();
+
+        protected internal override VJassEqualsValueClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassEqualsValueClauseSyntax(
+                newToken,
+                Expression);
+        }
+
+        protected internal override VJassEqualsValueClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassEqualsValueClauseSyntax(
+                EqualsSignToken,
+                Expression.ReplaceLastToken(newToken));
+        }
     }
 }

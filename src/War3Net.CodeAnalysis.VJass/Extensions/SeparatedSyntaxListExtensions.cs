@@ -13,6 +13,12 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
 {
     public static class SeparatedSyntaxListExtensions
     {
+        public static bool IsEquivalentTo<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, VJassSyntaxToken> list, SeparatedSyntaxList<TSyntaxNode, VJassSyntaxToken> other)
+            where TSyntaxNode : VJassSyntaxNode
+        {
+            return list.Items.IsEquivalentTo(other.Items);
+        }
+
         public static void WriteTo<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, VJassSyntaxToken> list, TextWriter writer)
             where TSyntaxNode : VJassSyntaxNode
         {
@@ -27,6 +33,18 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
                 list.Separators[i - 1].WriteTo(writer);
                 list.Items[i].WriteTo(writer);
             }
+        }
+
+        internal static SeparatedSyntaxList<TItem, TSeparator> ReplaceFirstItem<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list, TItem newItem)
+        {
+            var items = list.Items.ReplaceFirstItem(newItem);
+            return SeparatedSyntaxList<TItem, TSeparator>.Create(items, list.Separators);
+        }
+
+        internal static SeparatedSyntaxList<TItem, TSeparator> ReplaceLastItem<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list, TItem newItem)
+        {
+            var items = list.Items.ReplaceLastItem(newItem);
+            return SeparatedSyntaxList<TItem, TSeparator>.Create(items, list.Separators);
         }
     }
 }

@@ -5,38 +5,84 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassFunctionDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassFunctionDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassFunctionDeclarationSyntax(
+        internal VJassFunctionDeclarationSyntax(
+            ImmutableArray<VJassModifierSyntax> modifiers,
             VJassFunctionDeclaratorSyntax functionDeclarator,
-            VJassStatementListSyntax body)
+            ImmutableArray<VJassStatementSyntax> statements,
+            VJassSyntaxToken endFunctionToken)
         {
+            Modifiers = modifiers;
             FunctionDeclarator = functionDeclarator;
-            Body = body;
+            Statements = statements;
+            EndFunctionToken = endFunctionToken;
         }
+
+        public ImmutableArray<VJassModifierSyntax> Modifiers { get; }
 
         public VJassFunctionDeclaratorSyntax FunctionDeclarator { get; }
 
-        public VJassStatementListSyntax Body { get; }
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public VJassSyntaxToken EndFunctionToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassFunctionDeclarationSyntax functionDeclaration
-                && FunctionDeclarator.Equals(functionDeclaration.FunctionDeclarator)
-                && Body.Equals(functionDeclaration.Body);
+                && Modifiers.IsEquivalentTo(functionDeclaration.Modifiers)
+                && FunctionDeclarator.IsEquivalentTo(functionDeclaration.FunctionDeclarator)
+                && Statements.IsEquivalentTo(functionDeclaration.Statements);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassFunctionDeclarationSyntax functionDeclaration
-                && FunctionDeclarator.Equals(functionDeclaration.FunctionDeclarator)
-                && Body.Equals(functionDeclaration.Body);
+            Modifiers.WriteTo(writer);
+            FunctionDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+            EndFunctionToken.WriteTo(writer);
         }
 
-        public override string ToString() => $"{FunctionDeclarator} [{Body.Statements.Length}]";
+        public override string ToString() => $"{Modifiers.Join()}{FunctionDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)FunctionDeclarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndFunctionToken;
+
+        protected internal override VJassFunctionDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Modifiers.IsEmpty)
+            {
+                return new VJassFunctionDeclarationSyntax(
+                    Modifiers.ReplaceFirstItem(Modifiers[0].ReplaceFirstToken(newToken)),
+                    FunctionDeclarator,
+                    Statements,
+                    EndFunctionToken);
+            }
+
+            return new VJassFunctionDeclarationSyntax(
+                Modifiers,
+                FunctionDeclarator.ReplaceFirstToken(newToken),
+                Statements,
+                EndFunctionToken);
+        }
+
+        protected internal override VJassFunctionDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassFunctionDeclarationSyntax(
+                Modifiers,
+                FunctionDeclarator,
+                Statements,
+                newToken);
+        }
     }
 }

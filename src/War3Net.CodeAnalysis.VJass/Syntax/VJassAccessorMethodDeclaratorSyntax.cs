@@ -5,42 +5,78 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.VJass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassAccessorMethodDeclaratorSyntax : IMethodDeclaratorSyntax
+    public class VJassAccessorMethodDeclaratorSyntax : VJassMethodOrOperatorDeclaratorSyntax
     {
-        public VJassAccessorMethodDeclaratorSyntax(
-            VJassIdentifierNameSyntax identifierName,
-            AccessorType accessorType,
-            VJassParameterListSyntax parameterList,
-            VJassTypeSyntax returnType)
+        internal VJassAccessorMethodDeclaratorSyntax(
+            VJassSyntaxToken methodToken,
+            VJassSyntaxToken operatorToken,
+            VJassIdentifierNameSyntax propertyIdentifierName,
+            VJassParameterListOrEmptyParameterListSyntax parameterList,
+            VJassReturnClauseSyntax returnClause)
         {
-            IdentifierName = identifierName;
-            AccessorType = accessorType;
+            MethodToken = methodToken;
+            OperatorToken = operatorToken;
+            PropertyIdentifierName = propertyIdentifierName;
             ParameterList = parameterList;
-            ReturnType = returnType;
+            ReturnClause = returnClause;
         }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public VJassSyntaxToken MethodToken { get; }
 
-        public AccessorType AccessorType { get; }
+        public VJassSyntaxToken OperatorToken { get; }
 
-        public VJassParameterListSyntax ParameterList { get; }
+        public VJassIdentifierNameSyntax PropertyIdentifierName { get; }
 
-        public VJassTypeSyntax ReturnType { get; }
+        public VJassParameterListOrEmptyParameterListSyntax ParameterList { get; }
 
-        public bool Equals(IMethodDeclaratorSyntax? other)
+        public VJassReturnClauseSyntax ReturnClause { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassAccessorMethodDeclaratorSyntax accessorMethodDeclarator
-                && IdentifierName.Equals(accessorMethodDeclarator.IdentifierName)
-                && AccessorType.Equals(accessorMethodDeclarator.AccessorType)
-                && ParameterList.Equals(accessorMethodDeclarator.ParameterList)
-                && ReturnType.Equals(accessorMethodDeclarator.ReturnType);
+                && PropertyIdentifierName.IsEquivalentTo(accessorMethodDeclarator.PropertyIdentifierName)
+                && ParameterList.IsEquivalentTo(accessorMethodDeclarator.ParameterList)
+                && ReturnClause.IsEquivalentTo(accessorMethodDeclarator.ReturnClause);
         }
 
-        public override string ToString() => $"{VJassKeyword.Method} {VJassKeyword.Operator} {IdentifierName}{AccessorType.GetSymbol()} {VJassKeyword.Takes} {ParameterList} {VJassKeyword.Returns} {ReturnType}";
+        public override void WriteTo(TextWriter writer)
+        {
+            MethodToken.WriteTo(writer);
+            OperatorToken.WriteTo(writer);
+            PropertyIdentifierName.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+            ReturnClause.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{MethodToken} {OperatorToken} {PropertyIdentifierName} {ParameterList} {ReturnClause}";
+
+        public override VJassSyntaxToken GetFirstToken() => MethodToken;
+
+        public override VJassSyntaxToken GetLastToken() => ReturnClause.GetLastToken();
+
+        protected internal override VJassAccessorMethodDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassAccessorMethodDeclaratorSyntax(
+                newToken,
+                OperatorToken,
+                PropertyIdentifierName,
+                ParameterList,
+                ReturnClause);
+        }
+
+        protected internal override VJassAccessorMethodDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassAccessorMethodDeclaratorSyntax(
+                MethodToken,
+                OperatorToken,
+                PropertyIdentifierName,
+                ParameterList,
+                ReturnClause.ReplaceLastToken(newToken));
+        }
     }
 }

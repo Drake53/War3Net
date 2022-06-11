@@ -5,48 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassLibraryDeclarationSyntax : ITopLevelDeclarationSyntax
+    public class VJassLibraryDeclarationSyntax : VJassTopLevelDeclarationSyntax
     {
-        public VJassLibraryDeclarationSyntax(
-            VJassIdentifierNameSyntax identifierName,
-            VJassIdentifierNameSyntax? initializer,
-            VJassLibraryDependencyListSyntax? dependencies,
-            VJassScopedDeclarationListSyntax declarations)
+        internal VJassLibraryDeclarationSyntax(
+            VJassLibraryDeclaratorSyntax declarator,
+            ImmutableArray<VJassScopedDeclarationSyntax> declarations,
+            VJassSyntaxToken endLibraryToken)
         {
-            IdentifierName = identifierName;
-            Initializer = initializer;
-            Dependencies = dependencies;
+            Declarator = declarator;
             Declarations = declarations;
+            EndLibraryToken = endLibraryToken;
         }
 
-        public VJassIdentifierNameSyntax IdentifierName { get; }
+        public VJassLibraryDeclaratorSyntax Declarator { get; }
 
-        public VJassIdentifierNameSyntax? Initializer { get; }
+        public ImmutableArray<VJassScopedDeclarationSyntax> Declarations { get; }
 
-        public VJassLibraryDependencyListSyntax? Dependencies { get; }
+        public VJassSyntaxToken EndLibraryToken { get; }
 
-        public VJassScopedDeclarationListSyntax Declarations { get; }
-
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassLibraryDeclarationSyntax libraryDeclaration
-                && IdentifierName.Equals(libraryDeclaration.IdentifierName)
-                && Initializer.NullableEquals(libraryDeclaration.Initializer)
-                && Dependencies.NullableEquals(libraryDeclaration.Dependencies)
-                && Declarations.Equals(libraryDeclaration.Declarations);
+                && Declarator.IsEquivalentTo(libraryDeclaration.Declarator)
+                && Declarations.IsEquivalentTo(libraryDeclaration.Declarations);
         }
 
-        public override string ToString() => Dependencies is null
-            ? Initializer is null
-                ? $"{VJassKeyword.Library} {IdentifierName} [{Declarations.Declarations.Length}]"
-                : $"{VJassKeyword.Library} {IdentifierName} {VJassKeyword.Initializer} {Initializer} [{Declarations.Declarations.Length}]"
-            : Initializer is null
-                ? $"{VJassKeyword.Library} {IdentifierName} {Dependencies} [{Declarations.Declarations.Length}]"
-                : $"{VJassKeyword.Library} {IdentifierName} {VJassKeyword.Initializer} {Initializer} {Dependencies} [{Declarations.Declarations.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            Declarator.WriteTo(writer);
+            Declarations.WriteTo(writer);
+            EndLibraryToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Declarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => Declarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndLibraryToken;
+
+        protected internal override VJassLibraryDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLibraryDeclarationSyntax(
+                Declarator.ReplaceFirstToken(newToken),
+                Declarations,
+                EndLibraryToken);
+        }
+
+        protected internal override VJassLibraryDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLibraryDeclarationSyntax(
+                Declarator,
+                Declarations,
+                newToken);
+        }
     }
 }

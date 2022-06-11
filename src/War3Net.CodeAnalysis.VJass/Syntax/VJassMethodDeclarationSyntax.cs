@@ -5,31 +5,84 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassMethodDeclarationSyntax : IMemberDeclarationSyntax
+    public class VJassMethodDeclarationSyntax : VJassMemberDeclarationSyntax
     {
-        public VJassMethodDeclarationSyntax(
-            IMethodDeclaratorSyntax methodDeclarator,
-            VJassStatementListSyntax body)
+        internal VJassMethodDeclarationSyntax(
+            ImmutableArray<VJassModifierSyntax> modifiers,
+            VJassMethodOrOperatorDeclaratorSyntax methodDeclarator,
+            ImmutableArray<VJassStatementSyntax> statements,
+            VJassSyntaxToken endMethodToken)
         {
+            Modifiers = modifiers;
             MethodDeclarator = methodDeclarator;
-            Body = body;
+            Statements = statements;
+            EndMethodToken = endMethodToken;
         }
 
-        public IMethodDeclaratorSyntax MethodDeclarator { get; }
+        public ImmutableArray<VJassModifierSyntax> Modifiers { get; }
 
-        public VJassStatementListSyntax Body { get; }
+        public VJassMethodOrOperatorDeclaratorSyntax MethodDeclarator { get; }
 
-        public bool Equals(IMemberDeclarationSyntax? other)
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
+
+        public VJassSyntaxToken EndMethodToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassMethodDeclarationSyntax functionDeclaration
-                && MethodDeclarator.Equals(functionDeclaration.MethodDeclarator)
-                && Body.Equals(functionDeclaration.Body);
+                && Modifiers.IsEquivalentTo(functionDeclaration.Modifiers)
+                && MethodDeclarator.IsEquivalentTo(functionDeclaration.MethodDeclarator)
+                && Statements.IsEquivalentTo(functionDeclaration.Statements);
         }
 
-        public override string ToString() => $"{MethodDeclarator} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            Modifiers.WriteTo(writer);
+            MethodDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+            EndMethodToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Modifiers.Join()}{MethodDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)MethodDeclarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndMethodToken;
+
+        protected internal override VJassMethodDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            if (!Modifiers.IsEmpty)
+            {
+                return new VJassMethodDeclarationSyntax(
+                    Modifiers.ReplaceFirstItem(Modifiers[0].ReplaceFirstToken(newToken)),
+                    MethodDeclarator,
+                    Statements,
+                    EndMethodToken);
+            }
+
+            return new VJassMethodDeclarationSyntax(
+                Modifiers,
+                MethodDeclarator.ReplaceFirstToken(newToken),
+                Statements,
+                EndMethodToken);
+        }
+
+        protected internal override VJassMethodDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassMethodDeclarationSyntax(
+                Modifiers,
+                MethodDeclarator,
+                Statements,
+                newToken);
+        }
     }
 }

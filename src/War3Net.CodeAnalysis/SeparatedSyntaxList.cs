@@ -5,7 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Immutable;
+using System.Text;
 
 namespace War3Net.CodeAnalysis
 {
@@ -32,9 +34,46 @@ namespace War3Net.CodeAnalysis
 
         public ImmutableArray<TSeparator> Separators => _separators;
 
+        public static SeparatedSyntaxList<TItem, TSeparator> Create(ImmutableArray<TItem> items, ImmutableArray<TSeparator> separators)
+        {
+            if (items.IsEmpty)
+            {
+                if (!separators.IsEmpty)
+                {
+                    throw new ArgumentException("Separators must be empty if items is empty.", nameof(separators));
+                }
+            }
+            else if (items.Length - 1 != separators.Length)
+            {
+                throw new ArgumentException("Amount of separators must be 1 less than amount of items.", nameof(separators));
+            }
+
+            return new SeparatedSyntaxList<TItem, TSeparator>(items, separators);
+        }
+
         public static Builder CreateBuilder(TItem firstItem)
         {
             return new Builder(firstItem);
+        }
+
+        public override string ToString()
+        {
+            if (Items.IsEmpty)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            sb.Append(Items[0]);
+            for (var i = 1; i < Items.Length; i++)
+            {
+                sb.Append(Separators[i - 1]);
+                sb.Append(' ');
+                sb.Append(Items[i]);
+            }
+
+            return sb.ToString();
         }
 
         public class Builder

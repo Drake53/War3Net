@@ -5,27 +5,30 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassSyntaxTriviaList
     {
         public static readonly VJassSyntaxTriviaList Empty = new(ImmutableArray<ISyntaxTrivia>.Empty);
+        public static readonly VJassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create<ISyntaxTrivia>(new VJassWhitespaceTrivia(" ")));
 
-        public VJassSyntaxTriviaList(ImmutableArray<ISyntaxTrivia> trivia)
+        internal VJassSyntaxTriviaList(
+            ImmutableArray<ISyntaxTrivia> trivia)
         {
             Trivia = trivia;
         }
 
         public ImmutableArray<ISyntaxTrivia> Trivia { get; }
 
-        public bool Equals(VJassSyntaxTriviaList? other)
+        public void WriteTo(TextWriter writer)
         {
-            return other is not null
-                && Trivia.SequenceEqual(other.Trivia);
+            for (var i = 0; i < Trivia.Length; i++)
+            {
+                Trivia[i].WriteTo(writer);
+            }
         }
 
         public override string ToString() => string.Concat(Trivia);

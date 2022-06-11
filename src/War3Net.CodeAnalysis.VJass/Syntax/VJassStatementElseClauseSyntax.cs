@@ -5,26 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassStatementElseClauseSyntax : IEquatable<VJassStatementElseClauseSyntax>
+    public class VJassStatementElseClauseSyntax : VJassSyntaxNode
     {
-        public VJassStatementElseClauseSyntax(
-            VJassStatementListSyntax body)
+        internal VJassStatementElseClauseSyntax(
+            VJassSyntaxToken elseToken,
+            ImmutableArray<VJassStatementSyntax> statements)
         {
-            Body = body;
+            ElseToken = elseToken;
+            Statements = statements;
         }
 
-        public VJassStatementListSyntax Body { get; }
+        public VJassSyntaxToken ElseToken { get; }
 
-        public bool Equals(VJassStatementElseClauseSyntax? other)
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Body.Equals(other.Body);
+            return other is VJassStatementElseClauseSyntax statementElseClause
+                && Statements.IsEquivalentTo(statementElseClause.Statements);
         }
 
-        public override string ToString() => $"{VJassKeyword.Else} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseToken.WriteTo(writer);
+            Statements.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseToken;
+
+        public override VJassSyntaxToken GetLastToken() => Statements.IsEmpty ? ElseToken : Statements[^1].GetLastToken();
+
+        protected internal override VJassStatementElseClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStatementElseClauseSyntax(
+                newToken,
+                Statements);
+        }
+
+        protected internal override VJassStatementElseClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Statements.IsEmpty)
+            {
+                return new VJassStatementElseClauseSyntax(
+                    ElseToken,
+                    Statements.ReplaceLastItem(Statements[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassStatementElseClauseSyntax(
+                newToken,
+                Statements);
+        }
     }
 }

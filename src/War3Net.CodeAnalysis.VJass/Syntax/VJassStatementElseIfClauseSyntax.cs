@@ -5,33 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassStatementElseIfClauseSyntax : IEquatable<VJassStatementElseIfClauseSyntax>
+    public class VJassStatementElseIfClauseSyntax : VJassSyntaxNode
     {
-        public VJassStatementElseIfClauseSyntax(
-            IExpressionSyntax condition,
-            VJassStatementListSyntax body)
+        internal VJassStatementElseIfClauseSyntax(
+            VJassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator,
+            ImmutableArray<VJassStatementSyntax> statements)
         {
-            Condition = condition;
-            Body = body;
+            ElseIfClauseDeclarator = elseIfClauseDeclarator;
+            Statements = statements;
         }
 
-        public IExpressionSyntax Condition { get; }
+        public VJassElseIfClauseDeclaratorSyntax ElseIfClauseDeclarator { get; }
 
-        public VJassStatementListSyntax Body { get; }
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
 
-        public bool Equals(VJassStatementElseIfClauseSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Condition.Equals(other.Condition)
-                && Body.Equals(other.Body);
+            return other is VJassStatementElseIfClauseSyntax statementElseIfClause
+                && ElseIfClauseDeclarator.IsEquivalentTo(statementElseIfClause.ElseIfClauseDeclarator)
+                && Statements.IsEquivalentTo(statementElseIfClause.Statements);
         }
 
-        public override string ToString() => $"{VJassKeyword.ElseIf} {Condition} {VJassKeyword.Then} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseIfClauseDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseIfClauseDeclarator} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => ElseIfClauseDeclarator.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => Statements.IsEmpty ? ElseIfClauseDeclarator.GetLastToken() : Statements[^1].GetLastToken();
+
+        protected internal override VJassStatementElseIfClauseSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStatementElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceFirstToken(newToken),
+                Statements);
+        }
+
+        protected internal override VJassStatementElseIfClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            if (!Statements.IsEmpty)
+            {
+                return new VJassStatementElseIfClauseSyntax(
+                    ElseIfClauseDeclarator,
+                    Statements.ReplaceLastItem(Statements[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new VJassStatementElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceLastToken(newToken),
+                Statements);
+        }
     }
 }

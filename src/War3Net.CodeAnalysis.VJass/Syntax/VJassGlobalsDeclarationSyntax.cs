@@ -5,25 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassGlobalsDeclarationSyntax : ITopLevelDeclarationSyntax
+    public class VJassGlobalsDeclarationSyntax : VJassTopLevelDeclarationSyntax
     {
-        public VJassGlobalsDeclarationSyntax(VJassGlobalDeclarationListSyntax globals)
+        internal VJassGlobalsDeclarationSyntax(
+            VJassSyntaxToken globalsToken,
+            ImmutableArray<VJassGlobalDeclarationSyntax> globals,
+            VJassSyntaxToken endGlobalsToken)
         {
+            GlobalsToken = globalsToken;
             Globals = globals;
+            EndGlobalsToken = endGlobalsToken;
         }
 
-        public VJassGlobalDeclarationListSyntax Globals { get; }
+        public VJassSyntaxToken GlobalsToken { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public ImmutableArray<VJassGlobalDeclarationSyntax> Globals { get; }
+
+        public VJassSyntaxToken EndGlobalsToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassGlobalsDeclarationSyntax globalsDeclaration
-                && Globals.Equals(globalsDeclaration.Globals);
+                && Globals.IsEquivalentTo(globalsDeclaration.Globals);
         }
 
-        public override string ToString() => $"{VJassKeyword.Globals} [{Globals.Globals.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            GlobalsToken.WriteTo(writer);
+            Globals.WriteTo(writer);
+            EndGlobalsToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{GlobalsToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => GlobalsToken;
+
+        public override VJassSyntaxToken GetLastToken() => EndGlobalsToken;
+
+        protected internal override VJassGlobalsDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassGlobalsDeclarationSyntax(
+                newToken,
+                Globals,
+                EndGlobalsToken);
+        }
+
+        protected internal override VJassGlobalsDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassGlobalsDeclarationSyntax(
+                GlobalsToken,
+                Globals,
+                newToken);
+        }
     }
 }

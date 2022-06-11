@@ -5,31 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassMemberDeclarationSyntax : IMemberDeclarationSyntax
+    public abstract class VJassMemberDeclarationSyntax : VJassSyntaxNode
     {
-        public VJassMemberDeclarationSyntax(
-            VJassModifierListSyntax modifiers,
-            IMemberDeclarationSyntax declaration)
-        {
-            Modifiers = modifiers;
-            Declaration = declaration;
-        }
+        protected internal override abstract VJassMemberDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken);
 
-        public VJassModifierListSyntax Modifiers { get; }
-
-        public IMemberDeclarationSyntax Declaration { get; }
-
-        public bool Equals(IMemberDeclarationSyntax? other)
-        {
-            return other is VJassMemberDeclarationSyntax memberDeclaration
-                && Modifiers.Equals(memberDeclaration.Modifiers)
-                && Declaration.Equals(memberDeclaration.Declaration);
-        }
-
-        public override string ToString() => $"{Modifiers} {Declaration}";
+        protected internal override abstract VJassMemberDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken);
     }
 }

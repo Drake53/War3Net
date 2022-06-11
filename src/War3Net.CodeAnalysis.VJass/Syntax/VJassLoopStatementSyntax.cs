@@ -5,26 +5,65 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassLoopStatementSyntax : IStatementSyntax
+    public class VJassLoopStatementSyntax : VJassStatementSyntax
     {
-        public VJassLoopStatementSyntax(
-            VJassStatementListSyntax body)
+        internal VJassLoopStatementSyntax(
+            VJassSyntaxToken loopToken,
+            ImmutableArray<VJassStatementSyntax> statements,
+            VJassSyntaxToken endLoopToken)
         {
-            Body = body;
+            LoopToken = loopToken;
+            Statements = statements;
+            EndLoopToken = endLoopToken;
         }
 
-        public VJassStatementListSyntax Body { get; }
+        public VJassSyntaxToken LoopToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public ImmutableArray<VJassStatementSyntax> Statements { get; }
+
+        public VJassSyntaxToken EndLoopToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassLoopStatementSyntax loopStatement
-                && Body.Equals(loopStatement.Body);
+                && Statements.IsEquivalentTo(loopStatement.Statements);
         }
 
-        public override string ToString() => $"{VJassKeyword.Loop} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            LoopToken.WriteTo(writer);
+            Statements.WriteTo(writer);
+            EndLoopToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{LoopToken} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => LoopToken;
+
+        public override VJassSyntaxToken GetLastToken() => EndLoopToken;
+
+        protected internal override VJassLoopStatementSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLoopStatementSyntax(
+                newToken,
+                Statements,
+                EndLoopToken);
+        }
+
+        protected internal override VJassLoopStatementSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassLoopStatementSyntax(
+                LoopToken,
+                Statements,
+                newToken);
+        }
     }
 }

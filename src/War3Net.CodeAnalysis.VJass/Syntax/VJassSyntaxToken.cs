@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
@@ -41,6 +43,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         public string Text { get; }
 
         public VJassSyntaxTriviaList TrailingTrivia { get; }
+
+        public bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxToken? other)
+        {
+            return other is not null
+                && SyntaxKind == other.SyntaxKind
+                && string.Equals(Text, other.Text, StringComparison.Ordinal);
+        }
 
         public void WriteTo(TextWriter writer)
         {

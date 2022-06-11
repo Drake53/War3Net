@@ -7,6 +7,7 @@
 
 using System.Collections.Immutable;
 using System.IO;
+using System.Text;
 
 using War3Net.CodeAnalysis.VJass.Syntax;
 
@@ -14,6 +15,25 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
 {
     public static class ImmutableArrayExtensions
     {
+        public static bool IsEquivalentTo<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array, ImmutableArray<TSyntaxNode> other)
+            where TSyntaxNode : VJassSyntaxNode
+        {
+            if (array.Length != other.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < array.Length; i++)
+            {
+                if (!array[i].IsEquivalentTo(other[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static void WriteTo<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array, TextWriter writer)
             where TSyntaxNode : VJassSyntaxNode
         {
@@ -21,6 +41,32 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
             {
                 array[i].WriteTo(writer);
             }
+        }
+
+        internal static ImmutableArray<T> ReplaceFirstItem<T>(this ImmutableArray<T> array, T newItem)
+        {
+            var builder = array.ToBuilder();
+            builder[0] = newItem;
+            return builder.ToImmutable();
+        }
+
+        internal static ImmutableArray<T> ReplaceLastItem<T>(this ImmutableArray<T> array, T newItem)
+        {
+            var builder = array.ToBuilder();
+            builder[^1] = newItem;
+            return builder.ToImmutable();
+        }
+
+        internal static string Join(this ImmutableArray<VJassModifierSyntax> modifiers)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < modifiers.Length; i++)
+            {
+                sb.Append(modifiers[i]);
+                sb.Append(' ');
+            }
+
+            return sb.ToString();
         }
     }
 }

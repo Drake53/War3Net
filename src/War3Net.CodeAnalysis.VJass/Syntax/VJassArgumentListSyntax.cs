@@ -5,29 +5,69 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassArgumentListSyntax : IEquatable<VJassArgumentListSyntax>
+    public class VJassArgumentListSyntax : VJassSyntaxNode
     {
-        public VJassArgumentListSyntax(ImmutableArray<IExpressionSyntax> arguments)
+        public static readonly VJassArgumentListSyntax Empty = new(
+            VJassSyntaxFactory.Token(SyntaxKind.LeftParenthesisToken),
+            SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken>.Empty,
+            VJassSyntaxFactory.Token(SyntaxKind.RightParenthesisToken));
+
+        internal VJassArgumentListSyntax(
+            VJassSyntaxToken leftParenthesisToken,
+            SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken> argumentList,
+            VJassSyntaxToken rightParenthesisToken)
         {
-            Arguments = arguments;
+            LeftParenthesisToken = leftParenthesisToken;
+            ArgumentList = argumentList;
+            RightParenthesisToken = rightParenthesisToken;
         }
 
-        public ImmutableArray<IExpressionSyntax> Arguments { get; init; }
+        public VJassSyntaxToken LeftParenthesisToken { get; }
 
-        public bool Equals(VJassArgumentListSyntax? other)
+        public SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken> ArgumentList { get; }
+
+        public VJassSyntaxToken RightParenthesisToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && Arguments.SequenceEqual(other.Arguments);
+            return other is VJassArgumentListSyntax argumentList
+                && ArgumentList.Items.IsEquivalentTo(argumentList.ArgumentList.Items);
         }
 
-        public override string ToString() => string.Join($"{VJassSymbol.Comma} ", Arguments);
+        public override void WriteTo(TextWriter writer)
+        {
+            LeftParenthesisToken.WriteTo(writer);
+            ArgumentList.WriteTo(writer);
+            RightParenthesisToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{LeftParenthesisToken}{ArgumentList}{RightParenthesisToken}";
+
+        public override VJassSyntaxToken GetFirstToken() => LeftParenthesisToken;
+
+        public override VJassSyntaxToken GetLastToken() => RightParenthesisToken;
+
+        protected internal override VJassArgumentListSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassArgumentListSyntax(
+                newToken,
+                ArgumentList,
+                RightParenthesisToken);
+        }
+
+        protected internal override VJassArgumentListSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassArgumentListSyntax(
+                LeftParenthesisToken,
+                ArgumentList,
+                newToken);
+        }
     }
 }

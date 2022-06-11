@@ -6,39 +6,73 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassStaticIfMemberDeclarationSyntax : IMemberDeclarationSyntax
+    public class VJassStaticIfMemberDeclarationSyntax : VJassMemberDeclarationSyntax
     {
-        public VJassStaticIfMemberDeclarationSyntax(
-            VJassMemberDeclarationIfClauseSyntax ifClause,
+        internal VJassStaticIfMemberDeclarationSyntax(
+            VJassMemberDeclarationStaticIfClauseSyntax staticIfClause,
             ImmutableArray<VJassMemberDeclarationElseIfClauseSyntax> elseIfClauses,
-            VJassMemberDeclarationElseClauseSyntax? elseClause)
+            VJassMemberDeclarationElseClauseSyntax? elseClause,
+            VJassSyntaxToken endIfToken)
         {
-            IfClause = ifClause;
+            StaticIfClause = staticIfClause;
             ElseIfClauses = elseIfClauses;
             ElseClause = elseClause;
+            EndIfToken = endIfToken;
         }
 
-        public VJassMemberDeclarationIfClauseSyntax IfClause { get; }
+        public VJassMemberDeclarationStaticIfClauseSyntax StaticIfClause { get; }
 
         public ImmutableArray<VJassMemberDeclarationElseIfClauseSyntax> ElseIfClauses { get; }
 
         public VJassMemberDeclarationElseClauseSyntax? ElseClause { get; }
 
-        public bool Equals(IMemberDeclarationSyntax? other)
+        public VJassSyntaxToken EndIfToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassStaticIfMemberDeclarationSyntax staticIfMemberDeclaration
-                && IfClause.Equals(staticIfMemberDeclaration.IfClause)
-                && ElseIfClauses.SequenceEqual(staticIfMemberDeclaration.ElseIfClauses)
+                && StaticIfClause.IsEquivalentTo(staticIfMemberDeclaration.StaticIfClause)
+                && ElseIfClauses.IsEquivalentTo(staticIfMemberDeclaration.ElseIfClauses)
                 && ElseClause.NullableEquals(staticIfMemberDeclaration.ElseClause);
         }
 
-        public override string ToString() => $"{VJassKeyword.Static} {IfClause}";
+        public override void WriteTo(TextWriter writer)
+        {
+            StaticIfClause.WriteTo(writer);
+            ElseIfClauses.WriteTo(writer);
+            ElseClause?.WriteTo(writer);
+            EndIfToken.WriteTo(writer);
+        }
+
+        public override string ToString() => StaticIfClause.ToString();
+
+        public override VJassSyntaxToken GetFirstToken() => StaticIfClause.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => EndIfToken;
+
+        protected internal override VJassStaticIfMemberDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStaticIfMemberDeclarationSyntax(
+                StaticIfClause.ReplaceFirstToken(newToken),
+                ElseIfClauses,
+                ElseClause,
+                EndIfToken);
+        }
+
+        protected internal override VJassStaticIfMemberDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassStaticIfMemberDeclarationSyntax(
+                StaticIfClause,
+                ElseIfClauses,
+                ElseClause,
+                newToken);
+        }
     }
 }

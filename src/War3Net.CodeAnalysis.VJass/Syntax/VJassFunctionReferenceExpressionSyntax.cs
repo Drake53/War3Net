@@ -5,26 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassFunctionReferenceExpressionSyntax : IExpressionSyntax
+    public class VJassFunctionReferenceExpressionSyntax : VJassExpressionSyntax
     {
-        public VJassFunctionReferenceExpressionSyntax(
+        internal VJassFunctionReferenceExpressionSyntax(
+            VJassSyntaxToken functionToken,
             VJassIdentifierNameSyntax identifierName)
         {
+            FunctionToken = functionToken;
             IdentifierName = identifierName;
         }
 
+        public VJassSyntaxToken FunctionToken { get; }
+
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassFunctionReferenceExpressionSyntax functionReferenceExpression
-                && IdentifierName.Equals(functionReferenceExpression.IdentifierName);
+                && IdentifierName.IsEquivalentTo(functionReferenceExpression.IdentifierName);
         }
 
-        public override string ToString() => $"{VJassKeyword.Function} {IdentifierName}";
+        public override void WriteTo(TextWriter writer)
+        {
+            FunctionToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{FunctionToken} {IdentifierName}";
+
+        public override VJassSyntaxToken GetFirstToken() => FunctionToken;
+
+        public override VJassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override VJassFunctionReferenceExpressionSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassFunctionReferenceExpressionSyntax(
+                newToken,
+                IdentifierName);
+        }
+
+        protected internal override VJassFunctionReferenceExpressionSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassFunctionReferenceExpressionSyntax(
+                FunctionToken,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

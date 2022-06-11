@@ -5,37 +5,78 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.VJass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassOperatorMethodDeclaratorSyntax : IMethodDeclaratorSyntax
+    public class VJassOperatorMethodDeclaratorSyntax : VJassMethodOrOperatorDeclaratorSyntax
     {
-        public VJassOperatorMethodDeclaratorSyntax(
-            OperatorOverloadType operatorOverloadType,
-            VJassParameterListSyntax parameterList,
-            VJassTypeSyntax returnType)
+        internal VJassOperatorMethodDeclaratorSyntax(
+            VJassSyntaxToken methodToken,
+            VJassSyntaxToken operatorToken,
+            VJassSyntaxToken operatorOverloadToken,
+            VJassParameterListOrEmptyParameterListSyntax parameterList,
+            VJassReturnClauseSyntax returnClause)
         {
-            OperatorOverloadType = operatorOverloadType;
+            MethodToken = methodToken;
+            OperatorToken = operatorToken;
+            OperatorOverloadToken = operatorOverloadToken;
             ParameterList = parameterList;
-            ReturnType = returnType;
+            ReturnClause = returnClause;
         }
 
-        public OperatorOverloadType OperatorOverloadType { get; }
+        public VJassSyntaxToken MethodToken { get; }
 
-        public VJassParameterListSyntax ParameterList { get; }
+        public VJassSyntaxToken OperatorToken { get; }
 
-        public VJassTypeSyntax ReturnType { get; }
+        public VJassSyntaxToken OperatorOverloadToken { get; }
 
-        public bool Equals(IMethodDeclaratorSyntax? other)
+        public VJassParameterListOrEmptyParameterListSyntax ParameterList { get; }
+
+        public VJassReturnClauseSyntax ReturnClause { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassOperatorMethodDeclaratorSyntax operatorMethodDeclarator
-                && OperatorOverloadType.Equals(operatorMethodDeclarator.OperatorOverloadType)
-                && ParameterList.Equals(operatorMethodDeclarator.ParameterList)
-                && ReturnType.Equals(operatorMethodDeclarator.ReturnType);
+                && OperatorOverloadToken.IsEquivalentTo(operatorMethodDeclarator.OperatorOverloadToken)
+                && ParameterList.IsEquivalentTo(operatorMethodDeclarator.ParameterList)
+                && ReturnClause.IsEquivalentTo(operatorMethodDeclarator.ReturnClause);
         }
 
-        public override string ToString() => $"{VJassKeyword.Method} {VJassKeyword.Operator} {OperatorOverloadType.GetSymbol()} {VJassKeyword.Takes} {ParameterList} {VJassKeyword.Returns} {ReturnType}";
+        public override void WriteTo(TextWriter writer)
+        {
+            MethodToken.WriteTo(writer);
+            OperatorToken.WriteTo(writer);
+            OperatorOverloadToken.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+            ReturnClause.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{MethodToken} {OperatorToken} {OperatorOverloadToken} {ParameterList} {ReturnClause}";
+
+        public override VJassSyntaxToken GetFirstToken() => MethodToken;
+
+        public override VJassSyntaxToken GetLastToken() => ReturnClause.GetLastToken();
+
+        protected internal override VJassOperatorMethodDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassOperatorMethodDeclaratorSyntax(
+                newToken,
+                OperatorToken,
+                OperatorOverloadToken,
+                ParameterList,
+                ReturnClause);
+        }
+
+        protected internal override VJassOperatorMethodDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassOperatorMethodDeclaratorSyntax(
+                MethodToken,
+                OperatorToken,
+                OperatorOverloadToken,
+                ParameterList,
+                ReturnClause.ReplaceLastToken(newToken));
+        }
     }
 }

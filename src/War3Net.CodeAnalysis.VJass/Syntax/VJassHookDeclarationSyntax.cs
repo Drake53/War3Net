@@ -5,38 +5,63 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassHookDeclarationSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax
+    public class VJassHookDeclarationSyntax : VJassScopedDeclarationSyntax
     {
-        public VJassHookDeclarationSyntax(
+        internal VJassHookDeclarationSyntax(
+            VJassSyntaxToken hookToken,
             VJassIdentifierNameSyntax hookedFunction,
             VJassIdentifierNameSyntax identifierName)
         {
+            HookToken = hookToken;
             HookedFunction = hookedFunction;
             IdentifierName = identifierName;
         }
+
+        public VJassSyntaxToken HookToken { get; }
 
         public VJassIdentifierNameSyntax HookedFunction { get; }
 
         public VJassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassHookDeclarationSyntax hookDeclaration
-                && HookedFunction.Equals(hookDeclaration.HookedFunction)
-                && IdentifierName.Equals(hookDeclaration.IdentifierName);
+                && HookedFunction.IsEquivalentTo(hookDeclaration.HookedFunction)
+                && IdentifierName.IsEquivalentTo(hookDeclaration.IdentifierName);
         }
 
-        public bool Equals(IScopedDeclarationSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is VJassHookDeclarationSyntax hookDeclaration
-                && HookedFunction.Equals(hookDeclaration.HookedFunction)
-                && IdentifierName.Equals(hookDeclaration.IdentifierName);
+            HookToken.WriteTo(writer);
+            HookedFunction.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
         }
 
-        public override string ToString() => $"{VJassKeyword.Hook} {HookedFunction} {IdentifierName}";
+        public override string ToString() => $"{HookToken} {HookedFunction} {IdentifierName}";
+
+        public override VJassSyntaxToken GetFirstToken() => HookToken;
+
+        public override VJassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override VJassHookDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassHookDeclarationSyntax(
+                newToken,
+                HookedFunction,
+                IdentifierName);
+        }
+
+        protected internal override VJassHookDeclarationSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassHookDeclarationSyntax(
+                HookToken,
+                HookedFunction,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

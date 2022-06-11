@@ -6,10 +6,12 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public interface ISyntaxTrivia : IEquatable<ISyntaxTrivia>
     {
+        void WriteTo(TextWriter writer);
     }
 }
