@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         {
             return other is VJassModuleDeclaratorSyntax moduleDeclarator
                 && IdentifierName.IsEquivalentTo(moduleDeclarator.IdentifierName)
-                && Initializer.NullableEquals(moduleDeclarator.Initializer);
+                && Initializer.NullableEquivalentTo(moduleDeclarator.Initializer);
         }
 
         public override void WriteTo(TextWriter writer)

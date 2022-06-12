@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             return other is VJassVariableDeclaratorSyntax variableDeclarator
                 && Type.IsEquivalentTo(variableDeclarator.Type)
                 && IdentifierName.IsEquivalentTo(variableDeclarator.IdentifierName)
-                && Value.NullableEquals(variableDeclarator.Value);
+                && Value.NullableEquivalentTo(variableDeclarator.Value);
         }
 
         public override void WriteTo(TextWriter writer)

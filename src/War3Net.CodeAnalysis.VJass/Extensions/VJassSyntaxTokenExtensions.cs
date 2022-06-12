@@ -36,5 +36,10 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
             var newTrivia = new VJassSyntaxTriviaList(builder.ToImmutable());
             return token.WithTrailingTrivia(newTrivia);
         }
+
+        internal static bool NullableEquals(this VJassSyntaxToken? objA, VJassSyntaxToken? objB)
+        {
+            return (objA is null) == (objB is null);
+        }
     }
 }

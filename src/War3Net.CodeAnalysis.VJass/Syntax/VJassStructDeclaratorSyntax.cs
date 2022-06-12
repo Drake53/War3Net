@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         {
             return other is VJassStructDeclaratorSyntax structDeclarator
                 && IdentifierName.IsEquivalentTo(structDeclarator.IdentifierName)
-                && ExtendsClause.NullableEquals(structDeclarator.ExtendsClause);
+                && ExtendsClause.NullableEquivalentTo(structDeclarator.ExtendsClause);
         }
 
         public override void WriteTo(TextWriter writer)

@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             return other is VJassStaticIfScopedDeclarationSyntax staticIfScopedDeclaration
                 && StaticIfClause.IsEquivalentTo(staticIfScopedDeclaration.StaticIfClause)
                 && ElseIfClauses.IsEquivalentTo(staticIfScopedDeclaration.ElseIfClauses)
-                && ElseClause.NullableEquals(staticIfScopedDeclaration.ElseClause);
+                && ElseClause.NullableEquivalentTo(staticIfScopedDeclaration.ElseClause);
         }
 
         public override void WriteTo(TextWriter writer)

@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassReturnStatementSyntax returnStatement
-                && Value.NullableEquals(returnStatement.Value);
+                && Value.NullableEquivalentTo(returnStatement.Value);
         }
 
         public override void WriteTo(TextWriter writer)

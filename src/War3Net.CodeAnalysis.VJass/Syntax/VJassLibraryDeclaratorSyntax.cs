@@ -38,8 +38,8 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         {
             return other is VJassLibraryDeclaratorSyntax libraryDeclarator
                 && IdentifierName.IsEquivalentTo(libraryDeclarator.IdentifierName)
-                && Initializer.NullableEquals(libraryDeclarator.Initializer)
-                && Dependencies.NullableEquals(libraryDeclarator.Dependencies);
+                && Initializer.NullableEquivalentTo(libraryDeclarator.Initializer)
+                && Dependencies.NullableEquivalentTo(libraryDeclarator.Dependencies);
         }
 
         public override void WriteTo(TextWriter writer)

@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             return other is VJassIfStatementSyntax ifStatement
                 && IfClause.IsEquivalentTo(ifStatement.IfClause)
                 && ElseIfClauses.IsEquivalentTo(ifStatement.ElseIfClauses)
-                && ElseClause.NullableEquals(ifStatement.ElseClause);
+                && ElseClause.NullableEquivalentTo(ifStatement.ElseClause);
         }
 
         public override void WriteTo(TextWriter writer)
