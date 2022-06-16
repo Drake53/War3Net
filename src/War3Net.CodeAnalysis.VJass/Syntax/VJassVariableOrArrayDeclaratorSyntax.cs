@@ -9,10 +9,6 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public abstract class VJassVariableOrArrayDeclaratorSyntax : VJassSyntaxNode
     {
-        public abstract VJassTypeSyntax Type { get; }
-
-        public abstract VJassIdentifierNameSyntax IdentifierName { get; }
-
         protected internal override abstract VJassVariableOrArrayDeclaratorSyntax ReplaceFirstToken(VJassSyntaxToken newToken);
 
         protected internal override abstract VJassVariableOrArrayDeclaratorSyntax ReplaceLastToken(VJassSyntaxToken newToken);

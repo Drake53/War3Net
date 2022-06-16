@@ -22,11 +22,11 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             IdentifierName = identifierName;
         }
 
-        public override VJassTypeSyntax Type { get; }
+        public VJassTypeSyntax Type { get; }
 
         public VJassSyntaxToken ArrayToken { get; }
 
-        public override VJassIdentifierNameSyntax IdentifierName { get; }
+        public VJassIdentifierNameSyntax IdentifierName { get; }
 
         public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {

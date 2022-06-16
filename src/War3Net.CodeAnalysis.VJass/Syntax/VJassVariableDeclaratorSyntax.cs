@@ -24,9 +24,9 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Value = value;
         }
 
-        public override VJassTypeSyntax Type { get; }
+        public VJassTypeSyntax Type { get; }
 
-        public override VJassIdentifierNameSyntax IdentifierName { get; }
+        public VJassIdentifierNameSyntax IdentifierName { get; }
 
         public VJassEqualsValueClauseSyntax? Value { get; }
 
