@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     public class VJassSyntaxToken
     {
         internal VJassSyntaxToken(
-            SyntaxKind syntaxKind,
+            VJassSyntaxKind syntaxKind,
             string text,
             VJassSyntaxTriviaList trailingTrivia)
         {
@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         internal VJassSyntaxToken(
             VJassSyntaxTriviaList leadingTrivia,
-            SyntaxKind syntaxKind,
+            VJassSyntaxKind syntaxKind,
             string text,
             VJassSyntaxTriviaList trailingTrivia)
         {
@@ -38,7 +38,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public VJassSyntaxTriviaList LeadingTrivia { get; }
 
-        public SyntaxKind SyntaxKind { get; }
+        public VJassSyntaxKind SyntaxKind { get; }
 
         public string Text { get; }
 
