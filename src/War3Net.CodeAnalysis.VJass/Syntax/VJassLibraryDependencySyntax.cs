@@ -44,6 +44,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             CommaToken?.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            OptionalToken?.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+            CommaToken?.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{OptionalToken.OptionalSuffixed()}{IdentifierName}{CommaToken.Optional()}";
 
         public override VJassSyntaxToken GetFirstToken() => OptionalToken ?? IdentifierName.GetFirstToken();

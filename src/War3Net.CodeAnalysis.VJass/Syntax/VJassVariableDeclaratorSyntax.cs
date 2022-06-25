@@ -45,6 +45,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Value?.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Type.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+            Value?.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Type} {IdentifierName}{Value.OptionalPrefixed()}";
 
         public override VJassSyntaxToken GetFirstToken() => Type.GetFirstToken();

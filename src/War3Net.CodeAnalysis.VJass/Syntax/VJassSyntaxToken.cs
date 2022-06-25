@@ -58,6 +58,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             TrailingTrivia.WriteTo(writer);
         }
 
+        public void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            LeadingTrivia.ProcessTo(writer, context);
+            writer.Write(Text);
+            TrailingTrivia.ProcessTo(writer, context);
+        }
+
         public override string ToString() => Text;
     }
 }

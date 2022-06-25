@@ -53,6 +53,15 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ReturnClause.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            MethodToken.ProcessTo(writer, context);
+            OperatorToken.ProcessTo(writer, context);
+            OperatorOverloadToken.ProcessTo(writer, context);
+            ParameterList.ProcessTo(writer, context);
+            ReturnClause.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{MethodToken} {OperatorToken} {OperatorOverloadToken} {ParameterList} {ReturnClause}";
 
         public override VJassSyntaxToken GetFirstToken() => MethodToken;

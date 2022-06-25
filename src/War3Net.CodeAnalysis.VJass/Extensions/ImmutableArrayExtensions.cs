@@ -43,6 +43,15 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
             }
         }
 
+        public static void ProcessTo<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array, TextWriter writer, VJassPreprocessorContext context)
+            where TSyntaxNode : VJassSyntaxNode
+        {
+            for (var i = 0; i < array.Length; i++)
+            {
+                array[i].ProcessTo(writer, context);
+            }
+        }
+
         internal static ImmutableArray<T> ReplaceFirstItem<T>(this ImmutableArray<T> array, T newItem)
         {
             var builder = array.ToBuilder();

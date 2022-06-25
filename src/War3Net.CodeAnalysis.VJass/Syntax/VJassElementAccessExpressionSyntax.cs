@@ -47,6 +47,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             RightBracketToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Expression.ProcessTo(writer, context);
+            LeftBracketToken.ProcessTo(writer, context);
+            Indexer.ProcessTo(writer, context);
+            RightBracketToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Expression}{LeftBracketToken}{Indexer}{RightBracketToken}";
 
         public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();

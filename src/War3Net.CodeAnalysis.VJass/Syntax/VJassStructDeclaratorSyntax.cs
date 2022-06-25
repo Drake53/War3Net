@@ -44,6 +44,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ExtendsClause?.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            StructToken.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+            ExtendsClause?.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{StructToken} {IdentifierName}{ExtendsClause.OptionalPrefixed()}";
 
         public override VJassSyntaxToken GetFirstToken() => StructToken;

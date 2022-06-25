@@ -36,6 +36,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Expression.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            CallToken.ProcessTo(writer, context);
+            Expression.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{CallToken} {Expression}";
 
         public override VJassSyntaxToken GetFirstToken() => CallToken;

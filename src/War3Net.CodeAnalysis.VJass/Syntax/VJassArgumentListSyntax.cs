@@ -48,6 +48,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             RightParenthesisToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            LeftParenthesisToken.ProcessTo(writer, context);
+            ArgumentList.ProcessTo(writer, context);
+            RightParenthesisToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{LeftParenthesisToken}{ArgumentList}{RightParenthesisToken}";
 
         public override VJassSyntaxToken GetFirstToken() => LeftParenthesisToken;

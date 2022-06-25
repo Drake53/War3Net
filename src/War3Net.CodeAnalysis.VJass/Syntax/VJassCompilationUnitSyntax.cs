@@ -35,12 +35,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public override void WriteTo(TextWriter writer)
         {
-            for (var i = 0; i < Declarations.Length; i++)
-            {
-                Declarations[i].WriteTo(writer);
-            }
-
+            Declarations.WriteTo(writer);
             EndOfFileToken.WriteTo(writer);
+        }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Declarations.ProcessTo(writer, context);
+            EndOfFileToken.ProcessTo(writer, context);
         }
 
         public override VJassSyntaxToken GetFirstToken() => Declarations.IsEmpty ? EndOfFileToken : Declarations[0].GetFirstToken();

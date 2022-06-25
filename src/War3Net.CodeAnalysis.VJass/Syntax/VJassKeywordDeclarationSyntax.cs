@@ -45,6 +45,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Keyword.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Modifiers.ProcessTo(writer, context);
+            KeywordToken.ProcessTo(writer, context);
+            Keyword.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Modifiers.Join()}{KeywordToken} {Keyword}";
 
         public override VJassSyntaxToken GetFirstToken() => Modifiers.IsEmpty ? KeywordToken : Modifiers[0].GetFirstToken();

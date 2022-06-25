@@ -36,6 +36,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Expression.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            EqualsSignToken.ProcessTo(writer, context);
+            Expression.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{EqualsSignToken} {Expression}";
 
         public override VJassSyntaxToken GetFirstToken() => EqualsSignToken;

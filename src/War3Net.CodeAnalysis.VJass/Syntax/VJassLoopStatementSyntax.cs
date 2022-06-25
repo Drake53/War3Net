@@ -44,6 +44,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             EndLoopToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            LoopToken.ProcessTo(writer, context);
+            Statements.ProcessTo(writer, context);
+            EndLoopToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{LoopToken} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => LoopToken;

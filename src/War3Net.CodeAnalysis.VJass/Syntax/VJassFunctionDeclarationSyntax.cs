@@ -52,6 +52,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             EndFunctionToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Modifiers.ProcessTo(writer, context);
+            FunctionDeclarator.ProcessTo(writer, context);
+            Statements.ProcessTo(writer, context);
+            EndFunctionToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Modifiers.Join()}{FunctionDeclarator} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)FunctionDeclarator : Modifiers[0]).GetFirstToken();

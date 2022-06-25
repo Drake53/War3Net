@@ -23,6 +23,8 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public abstract void WriteTo(TextWriter writer);
 
+        public abstract void ProcessTo(TextWriter writer, VJassPreprocessorContext context);
+
         public abstract VJassSyntaxToken GetFirstToken();
 
         public abstract VJassSyntaxToken GetLastToken();

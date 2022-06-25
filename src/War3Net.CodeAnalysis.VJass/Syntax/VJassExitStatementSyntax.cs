@@ -36,6 +36,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Condition.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ExitWhenToken.ProcessTo(writer, context);
+            Condition.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{ExitWhenToken} {Condition}";
 
         public override VJassSyntaxToken GetFirstToken() => ExitWhenToken;

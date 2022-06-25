@@ -51,6 +51,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             EndIfToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            StaticIfClause.ProcessTo(writer, context);
+            ElseIfClauses.ProcessTo(writer, context);
+            ElseClause?.ProcessTo(writer, context);
+            EndIfToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => StaticIfClause.ToString();
 
         public override VJassSyntaxToken GetFirstToken() => StaticIfClause.GetFirstToken();

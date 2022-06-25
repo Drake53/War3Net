@@ -37,6 +37,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Expression.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            OperatorToken.ProcessTo(writer, context);
+            Expression.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == VJassSyntaxKind.NotKeyword ? " " : string.Empty)}{Expression}";
 
         public override VJassSyntaxToken GetFirstToken() => OperatorToken;

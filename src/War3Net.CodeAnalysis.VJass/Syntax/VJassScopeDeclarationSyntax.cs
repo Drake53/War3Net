@@ -45,6 +45,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             EndScopeToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Declarator.ProcessTo(writer, context);
+            Declarations.ProcessTo(writer, context);
+            EndScopeToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Declarator} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => Declarator.GetFirstToken();

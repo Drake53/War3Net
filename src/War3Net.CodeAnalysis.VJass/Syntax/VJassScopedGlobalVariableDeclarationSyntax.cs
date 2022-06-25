@@ -40,6 +40,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Declarator.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Modifiers.ProcessTo(writer, context);
+            Declarator.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Modifiers.Join()}{Declarator}";
 
         public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();

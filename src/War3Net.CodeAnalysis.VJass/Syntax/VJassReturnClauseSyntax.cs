@@ -36,6 +36,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ReturnType.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ReturnsToken.ProcessTo(writer, context);
+            ReturnType.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{ReturnsToken} {ReturnType}";
 
         public override VJassSyntaxToken GetFirstToken() => ReturnsToken;

@@ -34,17 +34,23 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
                 && Declarator.IsEquivalentTo(fieldDeclaration.Declarator);
         }
 
-        public override string ToString() => $"{Modifiers.Join()}{Declarator}";
-
-        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();
-
-        public override VJassSyntaxToken GetLastToken() => Declarator.GetLastToken();
-
         public override void WriteTo(TextWriter writer)
         {
             Modifiers.WriteTo(writer);
             Declarator.WriteTo(writer);
         }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Modifiers.ProcessTo(writer, context);
+            Declarator.ProcessTo(writer, context);
+        }
+
+        public override string ToString() => $"{Modifiers.Join()}{Declarator}";
+
+        public override VJassSyntaxToken GetFirstToken() => (Modifiers.IsEmpty ? (VJassSyntaxNode)Declarator : Modifiers[0]).GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => Declarator.GetLastToken();
 
         protected internal override VJassFieldDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
         {

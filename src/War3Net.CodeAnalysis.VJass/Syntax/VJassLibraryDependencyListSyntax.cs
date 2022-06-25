@@ -39,6 +39,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Dependencies.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            RequiresToken.ProcessTo(writer, context);
+            Dependencies.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{RequiresToken} {string.Join(' ', Dependencies)}";
 
         public override VJassSyntaxToken GetFirstToken() => RequiresToken;

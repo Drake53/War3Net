@@ -42,6 +42,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             IdentifierName.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            HookToken.ProcessTo(writer, context);
+            HookedFunction.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{HookToken} {HookedFunction} {IdentifierName}";
 
         public override VJassSyntaxToken GetFirstToken() => HookToken;

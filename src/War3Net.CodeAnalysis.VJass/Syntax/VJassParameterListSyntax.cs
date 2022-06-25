@@ -38,6 +38,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ParameterList.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            TakesToken.ProcessTo(writer, context);
+            ParameterList.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{TakesToken} {ParameterList}";
 
         public override VJassSyntaxToken GetFirstToken() => TakesToken;

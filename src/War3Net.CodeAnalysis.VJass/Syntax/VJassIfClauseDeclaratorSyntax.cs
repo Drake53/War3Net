@@ -41,6 +41,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ThenToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            IfToken.ProcessTo(writer, context);
+            Condition.ProcessTo(writer, context);
+            ThenToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{IfToken} {Condition} {ThenToken}";
 
         public override VJassSyntaxToken GetFirstToken() => IfToken;

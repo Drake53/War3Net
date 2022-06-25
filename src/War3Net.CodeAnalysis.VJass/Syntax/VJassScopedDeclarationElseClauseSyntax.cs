@@ -39,6 +39,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Declarations.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ElseToken.ProcessTo(writer, context);
+            Declarations.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{ElseToken} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => ElseToken;

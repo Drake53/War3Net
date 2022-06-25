@@ -44,6 +44,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             EndGlobalsToken.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            GlobalsToken.ProcessTo(writer, context);
+            Globals.ProcessTo(writer, context);
+            EndGlobalsToken.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{GlobalsToken} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => GlobalsToken;

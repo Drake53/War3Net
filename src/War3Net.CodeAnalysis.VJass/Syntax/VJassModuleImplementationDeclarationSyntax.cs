@@ -44,6 +44,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             IdentifierName.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ImplementToken.ProcessTo(writer, context);
+            OptionalToken?.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{ImplementToken} {OptionalToken.OptionalSuffixed()}{IdentifierName}";
 
         public override VJassSyntaxToken GetFirstToken() => ImplementToken;

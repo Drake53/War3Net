@@ -35,6 +35,22 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
             }
         }
 
+        public static void ProcessTo<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, VJassSyntaxToken> list, TextWriter writer, VJassPreprocessorContext context)
+            where TSyntaxNode : VJassSyntaxNode
+        {
+            if (list.Items.IsEmpty)
+            {
+                return;
+            }
+
+            list.Items[0].ProcessTo(writer, context);
+            for (var i = 1; i < list.Items.Length; i++)
+            {
+                list.Separators[i - 1].ProcessTo(writer, context);
+                list.Items[i].ProcessTo(writer, context);
+            }
+        }
+
         internal static SeparatedSyntaxList<TItem, TSeparator> ReplaceFirstItem<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list, TItem newItem)
         {
             var items = list.Items.ReplaceFirstItem(newItem);

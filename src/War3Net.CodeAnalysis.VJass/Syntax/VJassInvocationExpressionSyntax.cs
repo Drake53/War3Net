@@ -37,6 +37,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ArgumentList.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Expression.ProcessTo(writer, context);
+            ArgumentList.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Expression}{ArgumentList}";
 
         public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();

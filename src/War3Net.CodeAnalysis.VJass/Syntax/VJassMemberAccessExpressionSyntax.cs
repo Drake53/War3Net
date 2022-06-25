@@ -42,6 +42,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             MemberName.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Expression.ProcessTo(writer, context);
+            FullStopToken.ProcessTo(writer, context);
+            MemberName.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Expression}{FullStopToken}{MemberName}";
 
         public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();

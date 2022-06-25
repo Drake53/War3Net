@@ -43,6 +43,13 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Right.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            Left.ProcessTo(writer, context);
+            OperatorToken.ProcessTo(writer, context);
+            Right.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{Left} {OperatorToken} {Right}";
 
         public override VJassSyntaxToken GetFirstToken() => Left.GetFirstToken();

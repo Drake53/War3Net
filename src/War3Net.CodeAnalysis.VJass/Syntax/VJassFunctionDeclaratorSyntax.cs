@@ -56,6 +56,15 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             ReturnClause.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ConstantToken?.ProcessTo(writer, context);
+            FunctionToken.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+            ParameterList.ProcessTo(writer, context);
+            ReturnClause.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{ConstantToken.OptionalSuffixed()}{FunctionToken} {IdentifierName} {ParameterList} {ReturnClause}";
 
         public override VJassSyntaxToken GetFirstToken() => ConstantToken ?? FunctionToken;

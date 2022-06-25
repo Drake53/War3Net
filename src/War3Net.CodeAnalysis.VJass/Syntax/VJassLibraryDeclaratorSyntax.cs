@@ -50,6 +50,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Dependencies?.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            LibraryToken.ProcessTo(writer, context);
+            IdentifierName.ProcessTo(writer, context);
+            Initializer?.ProcessTo(writer, context);
+            Dependencies?.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{LibraryToken} {IdentifierName}{Initializer.OptionalPrefixed()}{Dependencies.OptionalPrefixed()}";
 
         public override VJassSyntaxToken GetFirstToken() => LibraryToken;

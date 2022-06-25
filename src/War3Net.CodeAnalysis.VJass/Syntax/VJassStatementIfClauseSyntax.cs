@@ -40,6 +40,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             Statements.WriteTo(writer);
         }
 
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            IfClauseDeclarator.ProcessTo(writer, context);
+            Statements.ProcessTo(writer, context);
+        }
+
         public override string ToString() => $"{IfClauseDeclarator} [...]";
 
         public override VJassSyntaxToken GetFirstToken() => IfClauseDeclarator.GetFirstToken();
