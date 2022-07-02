@@ -6,43 +6,99 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassTextMacroPreprocessorDirectiveTrivia : ISyntaxTrivia
+    public class VJassTextMacroPreprocessorDirectiveTrivia : VJassStructuredTriviaSyntax
     {
-        public VJassTextMacroPreprocessorDirectiveTrivia(
-            string name,
-            ImmutableArray<string> parameters,
-            string body)
+        internal VJassTextMacroPreprocessorDirectiveTrivia(
+            VJassSyntaxToken preprocessorDirectiveStartToken,
+            VJassSyntaxToken textMacroToken,
+            VJassIdentifierNameSyntax identifierName,
+            VJassTextMacroParameterListSyntax? parameterList,
+            string body,
+            VJassSyntaxToken preprocessorDirectiveEndToken,
+            VJassSyntaxToken endTextMacroToken)
         {
-            Name = name;
-            Parameters = parameters;
+            PreprocessorDirectiveStartToken = preprocessorDirectiveStartToken;
+            TextMacroToken = textMacroToken;
+            IdentifierName = identifierName;
+            ParameterList = parameterList;
             Body = body;
+            PreprocessorDirectiveEndToken = preprocessorDirectiveEndToken;
+            EndTextMacroToken = endTextMacroToken;
         }
 
-        public string Name { get; }
+        public VJassSyntaxToken PreprocessorDirectiveStartToken { get; }
 
-        public ImmutableArray<string> Parameters { get; }
+        public VJassSyntaxToken TextMacroToken { get; }
+
+        public VJassIdentifierNameSyntax IdentifierName { get; }
+
+        public VJassTextMacroParameterListSyntax? ParameterList { get; }
 
         public string Body { get; }
 
-        public bool Equals(ISyntaxTrivia? other)
+        public VJassSyntaxToken PreprocessorDirectiveEndToken { get; }
+
+        public VJassSyntaxToken EndTextMacroToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassTextMacroPreprocessorDirectiveTrivia textMacroPreprocessorDirectiveTrivia
-                && string.Equals(Name, textMacroPreprocessorDirectiveTrivia.Name, StringComparison.Ordinal)
-                && Parameters.SequenceEqual(textMacroPreprocessorDirectiveTrivia.Parameters, StringComparer.Ordinal)
+                && IdentifierName.IsEquivalentTo(textMacroPreprocessorDirectiveTrivia.IdentifierName)
+                && ParameterList.NullableEquivalentTo(textMacroPreprocessorDirectiveTrivia.ParameterList)
                 && string.Equals(Body, textMacroPreprocessorDirectiveTrivia.Body, StringComparison.Ordinal);
         }
 
-        public override string ToString() => Parameters.IsEmpty
-            ? $@"{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.TextMacro} {Name}
-{Body}
-{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.EndTextMacro}"
-            : $@"{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.TextMacro} {Name} {VJassKeyword.Takes} {string.Join($"{VJassSymbol.Comma} ", Parameters)}
-{Body}
-{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.EndTextMacro}";
+        public override void WriteTo(TextWriter writer)
+        {
+            PreprocessorDirectiveStartToken.WriteTo(writer);
+            TextMacroToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            ParameterList?.WriteTo(writer);
+            writer.Write(Body);
+            PreprocessorDirectiveEndToken.WriteTo(writer);
+            EndTextMacroToken.WriteTo(writer);
+        }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            context.TextMacros.Add(IdentifierName.Token.Text, this);
+        }
+
+        public override string ToString() => $"{PreprocessorDirectiveStartToken} {TextMacroToken} {IdentifierName}{ParameterList.OptionalPrefixed()} [...]";
+
+        public override VJassSyntaxToken GetFirstToken() => PreprocessorDirectiveStartToken;
+
+        public override VJassSyntaxToken GetLastToken() => EndTextMacroToken;
+
+        protected internal override VJassTextMacroPreprocessorDirectiveTrivia ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTextMacroPreprocessorDirectiveTrivia(
+                newToken,
+                TextMacroToken,
+                IdentifierName,
+                ParameterList,
+                Body,
+                PreprocessorDirectiveEndToken,
+                EndTextMacroToken);
+        }
+
+        protected internal override VJassTextMacroPreprocessorDirectiveTrivia ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassTextMacroPreprocessorDirectiveTrivia(
+                PreprocessorDirectiveStartToken,
+                TextMacroToken,
+                IdentifierName,
+                ParameterList,
+                Body,
+                PreprocessorDirectiveEndToken,
+                newToken);
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     public class VJassSyntaxTriviaList
     {
         public static readonly VJassSyntaxTriviaList Empty = new(ImmutableArray<ISyntaxTrivia>.Empty);
-        public static readonly VJassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create<ISyntaxTrivia>(new VJassWhitespaceTrivia(" ")));
+        public static readonly VJassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create<ISyntaxTrivia>(new VJassSyntaxTrivia(VJassSyntaxKind.WhitespaceTrivia, " ")));
 
         internal VJassSyntaxTriviaList(
             ImmutableArray<ISyntaxTrivia> trivia)
@@ -28,6 +28,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
             for (var i = 0; i < Trivia.Length; i++)
             {
                 Trivia[i].WriteTo(writer);
+            }
+        }
+
+        public void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            for (var i = 0; i < Trivia.Length; i++)
+            {
+                Trivia[i].ProcessTo(writer, context);
             }
         }
 

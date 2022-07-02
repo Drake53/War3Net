@@ -5,25 +5,51 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassImportScriptTypeSyntax : IEquatable<VJassImportScriptTypeSyntax>
+    public class VJassImportScriptTypeSyntax : VJassSyntaxNode
     {
-        public VJassImportScriptTypeSyntax(string scriptTypeName)
+        internal VJassImportScriptTypeSyntax(
+            VJassIdentifierNameSyntax scriptTypeName)
         {
             ScriptTypeName = scriptTypeName;
         }
 
-        public string ScriptTypeName { get; }
+        public VJassIdentifierNameSyntax ScriptTypeName { get; }
 
-        public bool Equals(VJassImportScriptTypeSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
-            return other is not null
-                && string.Equals(ScriptTypeName, other.ScriptTypeName, StringComparison.Ordinal);
+            return other is VJassImportScriptTypeSyntax importScriptType
+                && ScriptTypeName.IsEquivalentTo(importScriptType.ScriptTypeName);
         }
 
-        public override string ToString() => ScriptTypeName;
+        public override void WriteTo(TextWriter writer)
+        {
+            ScriptTypeName.WriteTo(writer);
+        }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            ScriptTypeName.ProcessTo(writer, context);
+        }
+
+        public override string ToString() => ScriptTypeName.ToString();
+
+        public override VJassSyntaxToken GetFirstToken() => ScriptTypeName.GetFirstToken();
+
+        public override VJassSyntaxToken GetLastToken() => ScriptTypeName.GetLastToken();
+
+        protected internal override VJassImportScriptTypeSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassImportScriptTypeSyntax(ScriptTypeName.ReplaceFirstToken(newToken));
+        }
+
+        protected internal override VJassImportScriptTypeSyntax ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassImportScriptTypeSyntax(ScriptTypeName.ReplaceLastToken(newToken));
+        }
     }
 }

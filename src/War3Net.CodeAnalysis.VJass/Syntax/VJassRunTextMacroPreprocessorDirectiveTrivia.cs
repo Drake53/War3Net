@@ -6,32 +6,85 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassRunTextMacroPreprocessorDirectiveTrivia : ISyntaxTrivia
+    public class VJassRunTextMacroPreprocessorDirectiveTrivia : VJassStructuredTriviaSyntax
     {
-        public VJassRunTextMacroPreprocessorDirectiveTrivia(
-            string name,
-            ImmutableArray<string> arguments)
+        internal VJassRunTextMacroPreprocessorDirectiveTrivia(
+            VJassSyntaxToken preprocessorDirectiveToken,
+            VJassSyntaxToken runTextMacroToken,
+            VJassSyntaxToken? optionalToken,
+            VJassIdentifierNameSyntax identifierName,
+            VJassArgumentListSyntax argumentList)
         {
-            Name = name;
-            Arguments = arguments;
+            PreprocessorDirectiveToken = preprocessorDirectiveToken;
+            RunTextMacroToken = runTextMacroToken;
+            OptionalToken = optionalToken;
+            IdentifierName = identifierName;
+            ArgumentList = argumentList;
         }
 
-        public string Name { get; }
+        public VJassSyntaxToken PreprocessorDirectiveToken { get; }
 
-        public ImmutableArray<string> Arguments { get; }
+        public VJassSyntaxToken RunTextMacroToken { get; }
 
-        public bool Equals(ISyntaxTrivia? other)
+        public VJassSyntaxToken? OptionalToken { get; }
+
+        public VJassIdentifierNameSyntax IdentifierName { get; }
+
+        public VJassArgumentListSyntax ArgumentList { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassRunTextMacroPreprocessorDirectiveTrivia runTextMacroPreprocessorDirectiveTrivia
-                && string.Equals(Name, runTextMacroPreprocessorDirectiveTrivia.Name, StringComparison.Ordinal)
-                && Arguments.SequenceEqual(runTextMacroPreprocessorDirectiveTrivia.Arguments, StringComparer.Ordinal);
+                && OptionalToken.NullableEquals(runTextMacroPreprocessorDirectiveTrivia.OptionalToken)
+                && IdentifierName.IsEquivalentTo(runTextMacroPreprocessorDirectiveTrivia.IdentifierName)
+                && ArgumentList.IsEquivalentTo(runTextMacroPreprocessorDirectiveTrivia.ArgumentList);
         }
 
-        public override string ToString() => $"{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.RunTextMacro} {Name}({string.Join($"{VJassSymbol.Comma} ", Arguments.Select(arg => $"{VJassSymbol.QuotationMark}{arg}{VJassSymbol.QuotationMark}"))})";
+        public override void WriteTo(TextWriter writer)
+        {
+            PreprocessorDirectiveToken.WriteTo(writer);
+            RunTextMacroToken.WriteTo(writer);
+            OptionalToken?.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            ArgumentList.WriteTo(writer);
+        }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString() => $"{PreprocessorDirectiveToken} {RunTextMacroToken} {OptionalToken.OptionalSuffixed()}{IdentifierName}{ArgumentList}";
+
+        public override VJassSyntaxToken GetFirstToken() => PreprocessorDirectiveToken;
+
+        public override VJassSyntaxToken GetLastToken() => ArgumentList.GetLastToken();
+
+        protected internal override VJassRunTextMacroPreprocessorDirectiveTrivia ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassRunTextMacroPreprocessorDirectiveTrivia(
+                newToken,
+                RunTextMacroToken,
+                OptionalToken,
+                IdentifierName,
+                ArgumentList);
+        }
+
+        protected internal override VJassRunTextMacroPreprocessorDirectiveTrivia ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassRunTextMacroPreprocessorDirectiveTrivia(
+                PreprocessorDirectiveToken,
+                RunTextMacroToken,
+                OptionalToken,
+                IdentifierName,
+                ArgumentList.ReplaceLastToken(newToken));
+        }
     }
 }

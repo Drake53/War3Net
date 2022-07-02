@@ -6,31 +6,77 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using War3Net.CodeAnalysis.VJass.Extensions;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassImportPreprocessorDirectiveTrivia : ISyntaxTrivia
+    public class VJassImportPreprocessorDirectiveTrivia : VJassStructuredTriviaSyntax
     {
-        public VJassImportPreprocessorDirectiveTrivia(
+        internal VJassImportPreprocessorDirectiveTrivia(
+            VJassSyntaxToken preprocessorDirectiveToken,
+            VJassSyntaxToken importToken,
             VJassImportScriptTypeSyntax? importScriptType,
-            string scriptFilePath)
+            VJassExpressionSyntax scriptFilePath)
         {
+            PreprocessorDirectiveToken = preprocessorDirectiveToken;
+            ImportToken = importToken;
             ImportScriptType = importScriptType;
             ScriptFilePath = scriptFilePath;
         }
 
+        public VJassSyntaxToken PreprocessorDirectiveToken { get; }
+
+        public VJassSyntaxToken ImportToken { get; }
+
         public VJassImportScriptTypeSyntax? ImportScriptType { get; }
 
-        public string ScriptFilePath { get; }
+        public VJassExpressionSyntax ScriptFilePath { get; }
 
-        public bool Equals(ISyntaxTrivia? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
             return other is VJassImportPreprocessorDirectiveTrivia importPreprocessorDirectiveTrivia
-                && ImportScriptType.Equals(importPreprocessorDirectiveTrivia.ImportScriptType)
-                && string.Equals(Path.GetFullPath(ScriptFilePath), Path.GetFullPath(importPreprocessorDirectiveTrivia.ScriptFilePath), StringComparison.OrdinalIgnoreCase);
+                && ImportScriptType.NullableEquivalentTo(importPreprocessorDirectiveTrivia.ImportScriptType)
+                && ScriptFilePath.IsEquivalentTo(importPreprocessorDirectiveTrivia.ScriptFilePath);
         }
 
-        public override string ToString() => $"{VJassSymbol.Slash}{VJassSymbol.Slash}{VJassSymbol.ExclamationMark} {VJassKeyword.Import} {ImportScriptType} \"{ScriptFilePath}\"";
+        public override void WriteTo(TextWriter writer)
+        {
+            PreprocessorDirectiveToken.WriteTo(writer);
+            ImportToken.WriteTo(writer);
+            ImportScriptType?.WriteTo(writer);
+            ScriptFilePath.WriteTo(writer);
+        }
+
+        public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString() => $"{PreprocessorDirectiveToken} {ImportToken} {ImportScriptType.OptionalSuffixed()}{ScriptFilePath}";
+
+        public override VJassSyntaxToken GetFirstToken() => PreprocessorDirectiveToken;
+
+        public override VJassSyntaxToken GetLastToken() => ScriptFilePath.GetLastToken();
+
+        protected internal override VJassImportPreprocessorDirectiveTrivia ReplaceFirstToken(VJassSyntaxToken newToken)
+        {
+            return new VJassImportPreprocessorDirectiveTrivia(
+                newToken,
+                ImportToken,
+                ImportScriptType,
+                ScriptFilePath);
+        }
+
+        protected internal override VJassImportPreprocessorDirectiveTrivia ReplaceLastToken(VJassSyntaxToken newToken)
+        {
+            return new VJassImportPreprocessorDirectiveTrivia(
+                PreprocessorDirectiveToken,
+                ImportToken,
+                ImportScriptType,
+                ScriptFilePath.ReplaceLastToken(newToken));
+        }
     }
 }
