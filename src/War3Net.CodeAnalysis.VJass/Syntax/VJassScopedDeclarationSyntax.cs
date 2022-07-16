@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public abstract class VJassScopedDeclarationSyntax : VJassSyntaxNode
+    public abstract class VJassScopedDeclarationSyntax : VJassTopLevelDeclarationSyntax
     {
         protected internal override abstract VJassScopedDeclarationSyntax ReplaceFirstToken(VJassSyntaxToken newToken);
 

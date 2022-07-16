@@ -10,7 +10,7 @@ using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax
 {
-    public class VJassIdentifierNameSyntax : VJassSyntaxNode
+    public class VJassIdentifierNameSyntax : VJassExpressionSyntax
     {
         internal VJassIdentifierNameSyntax(
             VJassSyntaxToken token)
