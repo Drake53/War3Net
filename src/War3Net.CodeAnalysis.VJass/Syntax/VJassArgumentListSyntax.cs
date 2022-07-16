@@ -15,20 +15,20 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     public class VJassArgumentListSyntax : VJassSyntaxNode
     {
         internal VJassArgumentListSyntax(
-            VJassSyntaxToken leftParenthesisToken,
+            VJassSyntaxToken openParenthesisToken,
             SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken> argumentList,
-            VJassSyntaxToken rightParenthesisToken)
+            VJassSyntaxToken closeParenthesisToken)
         {
-            LeftParenthesisToken = leftParenthesisToken;
+            OpenParenthesisToken = openParenthesisToken;
             ArgumentList = argumentList;
-            RightParenthesisToken = rightParenthesisToken;
+            CloseParenthesisToken = closeParenthesisToken;
         }
 
-        public VJassSyntaxToken LeftParenthesisToken { get; }
+        public VJassSyntaxToken OpenParenthesisToken { get; }
 
         public SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken> ArgumentList { get; }
 
-        public VJassSyntaxToken RightParenthesisToken { get; }
+        public VJassSyntaxToken CloseParenthesisToken { get; }
 
         public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
@@ -38,36 +38,36 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public override void WriteTo(TextWriter writer)
         {
-            LeftParenthesisToken.WriteTo(writer);
+            OpenParenthesisToken.WriteTo(writer);
             ArgumentList.WriteTo(writer);
-            RightParenthesisToken.WriteTo(writer);
+            CloseParenthesisToken.WriteTo(writer);
         }
 
         public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
         {
-            LeftParenthesisToken.ProcessTo(writer, context);
+            OpenParenthesisToken.ProcessTo(writer, context);
             ArgumentList.ProcessTo(writer, context);
-            RightParenthesisToken.ProcessTo(writer, context);
+            CloseParenthesisToken.ProcessTo(writer, context);
         }
 
-        public override string ToString() => $"{LeftParenthesisToken}{ArgumentList}{RightParenthesisToken}";
+        public override string ToString() => $"{OpenParenthesisToken}{ArgumentList}{CloseParenthesisToken}";
 
-        public override VJassSyntaxToken GetFirstToken() => LeftParenthesisToken;
+        public override VJassSyntaxToken GetFirstToken() => OpenParenthesisToken;
 
-        public override VJassSyntaxToken GetLastToken() => RightParenthesisToken;
+        public override VJassSyntaxToken GetLastToken() => CloseParenthesisToken;
 
         protected internal override VJassArgumentListSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
         {
             return new VJassArgumentListSyntax(
                 newToken,
                 ArgumentList,
-                RightParenthesisToken);
+                CloseParenthesisToken);
         }
 
         protected internal override VJassArgumentListSyntax ReplaceLastToken(VJassSyntaxToken newToken)
         {
             return new VJassArgumentListSyntax(
-                LeftParenthesisToken,
+                OpenParenthesisToken,
                 ArgumentList,
                 newToken);
         }

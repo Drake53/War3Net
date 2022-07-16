@@ -14,23 +14,23 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     {
         internal VJassElementAccessExpressionSyntax(
             VJassExpressionSyntax expression,
-            VJassSyntaxToken leftBracketToken,
+            VJassSyntaxToken openBracketToken,
             VJassExpressionSyntax indexer,
-            VJassSyntaxToken rightBracketToken)
+            VJassSyntaxToken closeBracketToken)
         {
             Expression = expression;
-            LeftBracketToken = leftBracketToken;
+            OpenBracketToken = openBracketToken;
             Indexer = indexer;
-            RightBracketToken = rightBracketToken;
+            CloseBracketToken = closeBracketToken;
         }
 
         public VJassExpressionSyntax Expression { get; }
 
-        public VJassSyntaxToken LeftBracketToken { get; }
+        public VJassSyntaxToken OpenBracketToken { get; }
 
         public VJassExpressionSyntax Indexer { get; }
 
-        public VJassSyntaxToken RightBracketToken { get; }
+        public VJassSyntaxToken CloseBracketToken { get; }
 
         public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
@@ -42,39 +42,39 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         public override void WriteTo(TextWriter writer)
         {
             Expression.WriteTo(writer);
-            LeftBracketToken.WriteTo(writer);
+            OpenBracketToken.WriteTo(writer);
             Indexer.WriteTo(writer);
-            RightBracketToken.WriteTo(writer);
+            CloseBracketToken.WriteTo(writer);
         }
 
         public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
         {
             Expression.ProcessTo(writer, context);
-            LeftBracketToken.ProcessTo(writer, context);
+            OpenBracketToken.ProcessTo(writer, context);
             Indexer.ProcessTo(writer, context);
-            RightBracketToken.ProcessTo(writer, context);
+            CloseBracketToken.ProcessTo(writer, context);
         }
 
-        public override string ToString() => $"{Expression}{LeftBracketToken}{Indexer}{RightBracketToken}";
+        public override string ToString() => $"{Expression}{OpenBracketToken}{Indexer}{CloseBracketToken}";
 
         public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();
 
-        public override VJassSyntaxToken GetLastToken() => RightBracketToken;
+        public override VJassSyntaxToken GetLastToken() => CloseBracketToken;
 
         protected internal override VJassElementAccessExpressionSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
         {
             return new VJassElementAccessExpressionSyntax(
                 Expression.ReplaceFirstToken(newToken),
-                LeftBracketToken,
+                OpenBracketToken,
                 Indexer,
-                RightBracketToken);
+                CloseBracketToken);
         }
 
         protected internal override VJassElementAccessExpressionSyntax ReplaceLastToken(VJassSyntaxToken newToken)
         {
             return new VJassElementAccessExpressionSyntax(
                 Expression,
-                LeftBracketToken,
+                OpenBracketToken,
                 Indexer,
                 newToken);
         }
