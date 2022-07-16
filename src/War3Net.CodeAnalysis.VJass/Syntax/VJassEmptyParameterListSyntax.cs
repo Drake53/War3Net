@@ -12,6 +12,10 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassEmptyParameterListSyntax : VJassParameterListOrEmptyParameterListSyntax
     {
+        public static readonly VJassEmptyParameterListSyntax Value = new(
+            new VJassSyntaxToken(VJassSyntaxKind.TakesKeyword, VJassKeyword.Takes, VJassSyntaxTriviaList.SingleSpace),
+            new VJassSyntaxToken(VJassSyntaxKind.NothingKeyword, VJassKeyword.Nothing, VJassSyntaxTriviaList.SingleSpace));
+
         internal VJassEmptyParameterListSyntax(
             VJassSyntaxToken takesToken,
             VJassSyntaxToken nothingToken)

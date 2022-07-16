@@ -12,6 +12,10 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassImportScriptTypeSyntax : VJassSyntaxNode
     {
+        public static readonly VJassImportScriptTypeSyntax VJass = new(new(new VJassSyntaxToken(VJassSyntaxKind.VJassKeyword, VJassKeyword.VJass, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassImportScriptTypeSyntax Zinc = new(new(new VJassSyntaxToken(VJassSyntaxKind.ZincKeyword, VJassKeyword.Zinc, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassImportScriptTypeSyntax Comment = new(new(new VJassSyntaxToken(VJassSyntaxKind.CommentKeyword, VJassKeyword.Comment, VJassSyntaxTriviaList.SingleSpace)));
+
         internal VJassImportScriptTypeSyntax(
             VJassIdentifierNameSyntax scriptTypeName)
         {

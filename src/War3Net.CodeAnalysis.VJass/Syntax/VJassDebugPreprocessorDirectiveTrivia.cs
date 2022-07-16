@@ -12,6 +12,8 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassDebugPreprocessorDirectiveTrivia : VJassStructuredTriviaSyntax
     {
+        public static readonly VJassDebugPreprocessorDirectiveTrivia Value = new(new VJassSyntaxToken(VJassSyntaxKind.DebugKeyword, VJassKeyword.Debug, VJassSyntaxTriviaList.Empty));
+
         internal VJassDebugPreprocessorDirectiveTrivia(
             VJassSyntaxToken debugToken)
         {

@@ -14,6 +14,10 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassReturnStatementSyntax : VJassStatementSyntax
     {
+        public static readonly VJassReturnStatementSyntax Empty = new(
+            new VJassSyntaxToken(VJassSyntaxKind.ReturnKeyword, VJassKeyword.Return, VJassSyntaxTriviaList.Empty),
+            null);
+
         internal VJassReturnStatementSyntax(
             VJassSyntaxToken returnToken,
             VJassExpressionSyntax? value)

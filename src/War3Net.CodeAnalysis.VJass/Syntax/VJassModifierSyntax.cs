@@ -12,6 +12,12 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassModifierSyntax : VJassSyntaxNode
     {
+        public static readonly VJassModifierSyntax Private = new(new(new VJassSyntaxToken(VJassSyntaxKind.PrivateKeyword, VJassKeyword.Private, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassModifierSyntax Public = new(new(new VJassSyntaxToken(VJassSyntaxKind.PublicKeyword, VJassKeyword.Public, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassModifierSyntax Static = new(new(new VJassSyntaxToken(VJassSyntaxKind.StaticKeyword, VJassKeyword.Static, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassModifierSyntax ReadOnly = new(new(new VJassSyntaxToken(VJassSyntaxKind.ReadOnlyKeyword, VJassKeyword.ReadOnly, VJassSyntaxTriviaList.SingleSpace)));
+        public static readonly VJassModifierSyntax Constant = new(new(new VJassSyntaxToken(VJassSyntaxKind.ConstantKeyword, VJassKeyword.Constant, VJassSyntaxTriviaList.SingleSpace)));
+
         internal VJassModifierSyntax(
             VJassIdentifierNameSyntax modifierName)
         {

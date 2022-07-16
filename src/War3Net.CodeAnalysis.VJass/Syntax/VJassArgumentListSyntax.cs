@@ -14,6 +14,11 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassArgumentListSyntax : VJassSyntaxNode
     {
+        public static readonly VJassArgumentListSyntax Empty = new(
+            new VJassSyntaxToken(VJassSyntaxKind.OpenParenToken, VJassSymbol.OpenParen, VJassSyntaxTriviaList.Empty),
+            SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken>.Empty,
+            new VJassSyntaxToken(VJassSyntaxKind.CloseParenToken, VJassSymbol.CloseParen, VJassSyntaxTriviaList.Empty));
+
         internal VJassArgumentListSyntax(
             VJassSyntaxToken openParenthesisToken,
             SeparatedSyntaxList<VJassExpressionSyntax, VJassSyntaxToken> argumentList,
