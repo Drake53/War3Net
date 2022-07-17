@@ -37,6 +37,11 @@ namespace War3Net.Build.Core.Tests.Object
             .Concat(TestDataProvider.GetDynamicArchiveData(
                 MapUpgradeObjectData.FileName,
                 SearchOption.AllDirectories,
+                "Maps"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                "war3mapSkin.w3q",
+                SearchOption.AllDirectories,
                 "Maps"));
         }
     }
