@@ -11,5 +11,6 @@ namespace War3Net.Build.Object
     {
         V1 = 1,
         Normal = 2,
+        V3 = 3,
     }
 }

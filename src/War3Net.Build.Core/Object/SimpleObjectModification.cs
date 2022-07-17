@@ -31,6 +31,10 @@ namespace War3Net.Build.Object
 
         public int NewId { get; set; }
 
+        public int Unk1 { get; set; }
+
+        public int Unk2 { get; set; }
+
         public List<SimpleObjectDataModification> Modifications { get; init; } = new();
 
         public override string ToString() => NewId == 0 ? OldId.ToRawcode() : $"{NewId.ToRawcode()}:{OldId.ToRawcode()}";
@@ -39,6 +43,12 @@ namespace War3Net.Build.Object
         {
             OldId = reader.ReadInt32();
             NewId = reader.ReadInt32();
+
+            if (formatVersion >= ObjectDataFormatVersion.V3)
+            {
+                Unk1 = reader.ReadInt32();
+                Unk2 = reader.ReadInt32();
+            }
 
             nint modificationCount = reader.ReadInt32();
             for (nint i = 0; i < modificationCount; i++)
@@ -51,6 +61,12 @@ namespace War3Net.Build.Object
         {
             writer.Write(OldId);
             writer.Write(NewId);
+
+            if (formatVersion >= ObjectDataFormatVersion.V3)
+            {
+                writer.Write(Unk1);
+                writer.Write(Unk2);
+            }
 
             writer.Write(Modifications.Count);
             foreach (var modification in Modifications)
