@@ -63,6 +63,7 @@ namespace War3Net.CodeAnalysis.VJass
         public const string Implement = "implement";
         public const string Initializer = "initializer";
         public const string Interface = "interface";
+        public const string Key = "key";
         public const string Keyword = "keyword";
         public const string Library = "library";
         public const string Method = "method";
