@@ -33,6 +33,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
 | [War3Net.CodeAnalysis.Jass]       | War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.                       | [![VCodeJass]][PCodeJass]     |
 | [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
+| [War3Net.CodeAnalysis.VJass]      | War3Net.CodeAnalysis.VJass is a library for parsing and rendering vJASS source files.                     | *Coming soon*                 |
 | [War3Net.Common]                  | Contains some methods used by several other War3Net projects.                                             | [![VCommon]][PCommon]         |
 | [War3Net.Drawing.Blp]             | War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.                             | [![VBlp]][PBlp]               |
 | [War3Net.IO.Compression]          | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
@@ -78,6 +79,7 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.CodeAnalysis.Decompilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Decompilers
 [War3Net.CodeAnalysis.Jass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass
 [War3Net.CodeAnalysis.Transpilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Transpilers
+[War3Net.CodeAnalysis.VJass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.VJass
 [War3Net.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Common
 [War3Net.Drawing.Blp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp
 [War3Net.IO.Compression]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Compression
@@ -97,6 +99,7 @@ Projects from NuGet packages and submodules may have a different license.
 [PCodeDecomp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Decompilers
 [PCodeJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass
 [PCodeTrans]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Transpilers
+[PCodeVJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.VJass
 [PCommon]: https://www.nuget.org/packages/War3Net.Common
 [PBlp]: https://www.nuget.org/packages/War3Net.Drawing.Blp
 [PCompress]: https://www.nuget.org/packages/War3Net.IO.Compression
@@ -116,6 +119,7 @@ Projects from NuGet packages and submodules may have a different license.
 [VCodeDecomp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Decompilers.svg
 [VCodeJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Jass.svg
 [VCodeTrans]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Transpilers.svg
+[VCodeVJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.VJass.svg
 [VCommon]: https://img.shields.io/nuget/v/War3Net.Common.svg
 [VBlp]: https://img.shields.io/nuget/v/War3Net.Drawing.Blp.svg
 [VCompress]: https://img.shields.io/nuget/v/War3Net.IO.Compression.svg
