@@ -36,6 +36,14 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
         }
 
         internal static Parser<char, VJassSyntaxToken> AsToken(
+            this Parser<char, string> tokenSymbolParser,
+            VJassSyntaxKind syntaxKind,
+            string symbol)
+        {
+            return tokenSymbolParser.ThenReturn(new VJassSyntaxToken(syntaxKind, symbol, VJassSyntaxTriviaList.Empty));
+        }
+
+        internal static Parser<char, VJassSyntaxToken> AsToken(
             this Parser<char, char> tokenSymbolParser,
             Parser<char, ISyntaxTrivia> trailingTriviaParser,
             VJassSyntaxKind syntaxKind,
@@ -63,6 +71,13 @@ namespace War3Net.CodeAnalysis.VJass.Extensions
                     trailingTrivia),
                 tokenSymbolParser,
                 trailingTriviaParser);
+        }
+
+        internal static Parser<char, VJassSyntaxToken> AsToken(
+            this Parser<char, string> tokenTextParser,
+            VJassSyntaxKind syntaxKind)
+        {
+            return tokenTextParser.Map(text => new VJassSyntaxToken(syntaxKind, text, VJassSyntaxTriviaList.Empty));
         }
 
         internal static Parser<char, VJassSyntaxToken> AsToken(

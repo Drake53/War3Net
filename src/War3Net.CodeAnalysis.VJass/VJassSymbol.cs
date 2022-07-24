@@ -30,5 +30,31 @@ namespace War3Net.CodeAnalysis.VJass
         public const char OpenBracketChar = '[';
         public const char CloseBracketChar = ']';
         public const char XChar = 'x';
+
+        public const string Dollar = "$";
+        public const string OpenParen = "(";
+        public const string CloseParen = ")";
+        public const string Asterisk = "*";
+        public const string Plus = "+";
+        public const string Comma = ",";
+        public const string Minus = "-";
+        public const string Dot = ".";
+        public const string Slash = "/";
+        public const string LessThan = "<";
+        public new const string Equals = "=";
+        public const string GreaterThan = ">";
+        public const string OpenBracket = "[";
+        public const string CloseBracket = "]";
+
+        public const string SlashSlash = "//";
+        public const string SlashSlashExclamation = "//!";
+        public const string ExclamationEquals = "!=";
+        public const string LessThanEquals = "<=";
+        public const string GreaterThanEquals = ">=";
+        public const string EqualsEquals = "==";
+        public const string SlashAsterisk = "/*";
+        public const string AsteriskSlash = "*/";
+        public const string OpenBracketCloseBracket = "[]";
+        public const string OpenBracketCloseBracketEquals = "[]=";
     }
 }
