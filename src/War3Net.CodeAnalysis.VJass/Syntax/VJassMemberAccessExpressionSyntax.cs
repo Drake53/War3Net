@@ -14,17 +14,17 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     {
         internal VJassMemberAccessExpressionSyntax(
             VJassExpressionSyntax expression,
-            VJassSyntaxToken fullStopToken,
+            VJassSyntaxToken dotToken,
             VJassIdentifierNameSyntax memberName)
         {
             Expression = expression;
-            FullStopToken = fullStopToken;
+            DotToken = dotToken;
             MemberName = memberName;
         }
 
         public VJassExpressionSyntax Expression { get; }
 
-        public VJassSyntaxToken FullStopToken { get; }
+        public VJassSyntaxToken DotToken { get; }
 
         public VJassIdentifierNameSyntax MemberName { get; }
 
@@ -38,18 +38,18 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         public override void WriteTo(TextWriter writer)
         {
             Expression.WriteTo(writer);
-            FullStopToken.WriteTo(writer);
+            DotToken.WriteTo(writer);
             MemberName.WriteTo(writer);
         }
 
         public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
         {
             Expression.ProcessTo(writer, context);
-            FullStopToken.ProcessTo(writer, context);
+            DotToken.ProcessTo(writer, context);
             MemberName.ProcessTo(writer, context);
         }
 
-        public override string ToString() => $"{Expression}{FullStopToken}{MemberName}";
+        public override string ToString() => $"{Expression}{DotToken}{MemberName}";
 
         public override VJassSyntaxToken GetFirstToken() => Expression.GetFirstToken();
 
@@ -59,7 +59,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         {
             return new VJassMemberAccessExpressionSyntax(
                 Expression.ReplaceFirstToken(newToken),
-                FullStopToken,
+                DotToken,
                 MemberName);
         }
 
@@ -67,7 +67,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         {
             return new VJassMemberAccessExpressionSyntax(
                 Expression,
-                FullStopToken,
+                DotToken,
                 MemberName.ReplaceLastToken(newToken));
         }
     }

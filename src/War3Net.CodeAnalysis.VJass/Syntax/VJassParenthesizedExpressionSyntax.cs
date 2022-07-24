@@ -13,20 +13,20 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     public class VJassParenthesizedExpressionSyntax : VJassExpressionSyntax
     {
         public VJassParenthesizedExpressionSyntax(
-            VJassSyntaxToken openParenthesisToken,
+            VJassSyntaxToken openParenToken,
             VJassExpressionSyntax expression,
-            VJassSyntaxToken closeParenthesisToken)
+            VJassSyntaxToken closeParenToken)
         {
-            OpenParenthesisToken = openParenthesisToken;
+            OpenParenToken = openParenToken;
             Expression = expression;
-            CloseParenthesisToken = closeParenthesisToken;
+            CloseParenToken = closeParenToken;
         }
 
-        public VJassSyntaxToken OpenParenthesisToken { get; }
+        public VJassSyntaxToken OpenParenToken { get; }
 
         public VJassExpressionSyntax Expression { get; }
 
-        public VJassSyntaxToken CloseParenthesisToken { get; }
+        public VJassSyntaxToken CloseParenToken { get; }
 
         public override bool IsEquivalentTo([NotNullWhen(true)] VJassSyntaxNode? other)
         {
@@ -36,36 +36,36 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public override void WriteTo(TextWriter writer)
         {
-            OpenParenthesisToken.WriteTo(writer);
+            OpenParenToken.WriteTo(writer);
             Expression.WriteTo(writer);
-            CloseParenthesisToken.WriteTo(writer);
+            CloseParenToken.WriteTo(writer);
         }
 
         public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
         {
-            OpenParenthesisToken.ProcessTo(writer, context);
+            OpenParenToken.ProcessTo(writer, context);
             Expression.ProcessTo(writer, context);
-            CloseParenthesisToken.ProcessTo(writer, context);
+            CloseParenToken.ProcessTo(writer, context);
         }
 
-        public override string ToString() => $"{OpenParenthesisToken}{Expression}{CloseParenthesisToken}";
+        public override string ToString() => $"{OpenParenToken}{Expression}{CloseParenToken}";
 
-        public override VJassSyntaxToken GetFirstToken() => OpenParenthesisToken;
+        public override VJassSyntaxToken GetFirstToken() => OpenParenToken;
 
-        public override VJassSyntaxToken GetLastToken() => CloseParenthesisToken;
+        public override VJassSyntaxToken GetLastToken() => CloseParenToken;
 
         protected internal override VJassParenthesizedExpressionSyntax ReplaceFirstToken(VJassSyntaxToken newToken)
         {
             return new VJassParenthesizedExpressionSyntax(
                 newToken,
                 Expression,
-                CloseParenthesisToken);
+                CloseParenToken);
         }
 
         protected internal override VJassParenthesizedExpressionSyntax ReplaceLastToken(VJassSyntaxToken newToken)
         {
             return new VJassParenthesizedExpressionSyntax(
-                OpenParenthesisToken,
+                OpenParenToken,
                 Expression,
                 newToken);
         }

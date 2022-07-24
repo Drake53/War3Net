@@ -13,14 +13,14 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
     public class VJassEqualsValueClauseSyntax : VJassSyntaxNode
     {
         internal VJassEqualsValueClauseSyntax(
-            VJassSyntaxToken equalsSignToken,
+            VJassSyntaxToken equalsToken,
             VJassExpressionSyntax expression)
         {
-            EqualsSignToken = equalsSignToken;
+            EqualsToken = equalsToken;
             Expression = expression;
         }
 
-        public VJassSyntaxToken EqualsSignToken { get; }
+        public VJassSyntaxToken EqualsToken { get; }
 
         public VJassExpressionSyntax Expression { get; }
 
@@ -32,19 +32,19 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
 
         public override void WriteTo(TextWriter writer)
         {
-            EqualsSignToken.WriteTo(writer);
+            EqualsToken.WriteTo(writer);
             Expression.WriteTo(writer);
         }
 
         public override void ProcessTo(TextWriter writer, VJassPreprocessorContext context)
         {
-            EqualsSignToken.ProcessTo(writer, context);
+            EqualsToken.ProcessTo(writer, context);
             Expression.ProcessTo(writer, context);
         }
 
-        public override string ToString() => $"{EqualsSignToken} {Expression}";
+        public override string ToString() => $"{EqualsToken} {Expression}";
 
-        public override VJassSyntaxToken GetFirstToken() => EqualsSignToken;
+        public override VJassSyntaxToken GetFirstToken() => EqualsToken;
 
         public override VJassSyntaxToken GetLastToken() => Expression.GetLastToken();
 
@@ -58,7 +58,7 @@ namespace War3Net.CodeAnalysis.VJass.Syntax
         protected internal override VJassEqualsValueClauseSyntax ReplaceLastToken(VJassSyntaxToken newToken)
         {
             return new VJassEqualsValueClauseSyntax(
-                EqualsSignToken,
+                EqualsToken,
                 Expression.ReplaceLastToken(newToken));
         }
     }
