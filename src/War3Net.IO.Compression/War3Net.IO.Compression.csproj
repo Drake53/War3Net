@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
