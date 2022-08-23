@@ -59,6 +59,13 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(MapItemObjectData.FileName);
             archive.AddFileName(MapUnitObjectData.FileName);
             archive.AddFileName(MapUpgradeObjectData.FileName);
+            archive.AddFileName("war3mapSkin.w3a");
+            archive.AddFileName("war3mapSkin.w3h");
+            archive.AddFileName("war3mapSkin.w3b");
+            archive.AddFileName("war3mapSkin.w3d");
+            archive.AddFileName("war3mapSkin.w3t");
+            archive.AddFileName("war3mapSkin.w3u");
+            archive.AddFileName("war3mapSkin.w3q");
 
             archive.AddFileName(CampaignTriggerStrings.FileName);
             archive.AddFileName(MapCustomTextTriggers.FileName);
