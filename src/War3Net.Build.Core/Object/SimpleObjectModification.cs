@@ -31,9 +31,7 @@ namespace War3Net.Build.Object
 
         public int NewId { get; set; }
 
-        public int Unk1 { get; set; }
-
-        public int Unk2 { get; set; }
+        public List<int> Unk { get; init; } = new();
 
         public List<SimpleObjectDataModification> Modifications { get; init; } = new();
 
@@ -46,8 +44,11 @@ namespace War3Net.Build.Object
 
             if (formatVersion >= ObjectDataFormatVersion.V3)
             {
-                Unk1 = reader.ReadInt32();
-                Unk2 = reader.ReadInt32();
+                nint unkCount = reader.ReadInt32();
+                for (nint i = 0; i < unkCount; i++)
+                {
+                    Unk.Add(reader.ReadInt32());
+                }
             }
 
             nint modificationCount = reader.ReadInt32();
@@ -64,8 +65,11 @@ namespace War3Net.Build.Object
 
             if (formatVersion >= ObjectDataFormatVersion.V3)
             {
-                writer.Write(Unk1);
-                writer.Write(Unk2);
+                writer.Write(Unk.Count);
+                foreach (var unk in Unk)
+                {
+                    writer.Write(unk);
+                }
             }
 
             writer.Write(Modifications.Count);
