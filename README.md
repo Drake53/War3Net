@@ -29,6 +29,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 | --------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | [War3Net.Build]                   | Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.  | [![VBuild]][PBuild]           |
 | [War3Net.Build.Core]              | Parsers and serializers for war3map files.                                                                | [![VBuildCore]][PBuildCore]   |
+| [War3Net.CodeAnalysis]            | Helper methods for Pidgin parsers.                                                                        | [![VCode]][PCode]             |
 | [War3Net.CodeAnalysis.CSharp]     | *deprecated*                                                                                              | [![VCodeCSharp]][PCodeCSharp] |
 | [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
 | [War3Net.CodeAnalysis.Jass]       | War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.                       | [![VCodeJass]][PCodeJass]     |
@@ -74,6 +75,7 @@ Projects from NuGet packages and submodules may have a different license.
 
 [War3Net.Build]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build
 [War3Net.Build.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build.Core
+[War3Net.CodeAnalysis]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis
 [War3Net.CodeAnalysis.CSharp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.CSharp
 [War3Net.CodeAnalysis.Decompilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Decompilers
 [War3Net.CodeAnalysis.Jass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass
@@ -93,6 +95,7 @@ Projects from NuGet packages and submodules may have a different license.
 
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
 [PBuildCore]: https://www.nuget.org/packages/War3Net.Build.Core
+[PCode]: https://www.nuget.org/packages/War3Net.CodeAnalysis
 [PCodeCSharp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.CSharp 
 [PCodeDecomp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Decompilers
 [PCodeJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass
@@ -112,6 +115,7 @@ Projects from NuGet packages and submodules may have a different license.
 
 [VBuild]: https://img.shields.io/nuget/v/War3Net.Build.svg
 [VBuildCore]: https://img.shields.io/nuget/v/War3Net.Build.Core.svg
+[VCode]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.svg 
 [VCodeCSharp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.CSharp.svg 
 [VCodeDecomp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Decompilers.svg
 [VCodeJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Jass.svg
