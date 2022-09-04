@@ -88,4 +88,6 @@
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2021-12-03", "GamePatch": "v1_32_10", "Version": "1.32.10.18067", "EditorVersion": 6114, },
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-06-09", "GamePatch": "v1_32_10", "Version": "1.32.10.18820", "EditorVersion": 6114, },
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-08-18", "GamePatch": "v1_33_0",  "Version": "1.33.0.19194",  "EditorVersion": 6114, },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-08-19", "GamePatch": "v1_33_0",  "Version": "1.33.0.19203",  "EditorVersion": 6114, },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-08-30", "GamePatch": "v1_33_0",  "Version": "1.33.0.19252",  "EditorVersion": 6114, },
 ]
