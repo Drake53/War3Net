@@ -12,6 +12,7 @@ using System.Text;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
+using War3Net.Build.Configuration;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;
 using War3Net.Build.Info;
@@ -40,6 +41,10 @@ namespace War3Net.Build.Extensions
         public static RandomItemSetItem ReadRandomItemSetItem(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => new RandomItemSetItem(reader, formatVersion, subVersion, useNewFormat);
 
         public static RectangleMargins ReadRectangleMargins(this BinaryReader reader) => new RectangleMargins(reader);
+
+        public static GameConfiguration ReadGameConfiguration(this BinaryReader reader) => new GameConfiguration(reader);
+
+        public static GameConfigurationPlayerInfo ReadGameConfigurationPlayerInfo(this BinaryReader reader, GameConfigurationFormatVersion formatVersion) => new GameConfigurationPlayerInfo(reader, formatVersion);
 
         public static MapCameras ReadMapCameras(this BinaryReader reader) => new MapCameras(reader);
 
