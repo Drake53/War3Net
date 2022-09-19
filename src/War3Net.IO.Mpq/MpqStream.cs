@@ -146,8 +146,8 @@ namespace War3Net.IO.Mpq
                             break;
                         }
 
-                        var expectedlength = Math.Min((int)(Length - ((i - 1) * _blockSize)), _blockSize);
-                        if (!TryPeekCompressionType(i - 1, expectedlength, out var mpqCompressionType) ||
+                        var expectedLength = Math.Min((int)(Length - ((i - 1) * _blockSize)), _blockSize);
+                        if (!TryPeekCompressionType(i - 1, expectedLength, out var mpqCompressionType) ||
                             (mpqCompressionType.HasValue && !mpqCompressionType.Value.IsKnownMpqCompressionType()))
                         {
                             _canRead = false;
@@ -460,6 +460,7 @@ namespace War3Net.IO.Mpq
             throw new NotSupportedException("Write is not supported");
         }
 
+        /// <inheritdoc/>
         public override void Close()
         {
             base.Close();
@@ -559,18 +560,18 @@ namespace War3Net.IO.Mpq
 
             BufferData();
 
-            var localposition = _isSingleUnit ? _position : (_position & (_blockSize - 1));
-            var canRead = (int)(_currentData.Length - localposition);
-            var bytestocopy = canRead > count ? count : canRead;
-            if (bytestocopy <= 0)
+            var localPosition = _isSingleUnit ? _position : (_position & (_blockSize - 1));
+            var canRead = (int)(_currentData.Length - localPosition);
+            var bytesToCopy = canRead > count ? count : canRead;
+            if (bytesToCopy <= 0)
             {
                 return 0;
             }
 
-            Array.Copy(_currentData, localposition, buffer, offset, bytestocopy);
+            Array.Copy(_currentData, localPosition, buffer, offset, bytesToCopy);
 
-            _position += bytestocopy;
-            return bytestocopy;
+            _position += bytesToCopy;
+            return bytesToCopy;
         }
 
         [MemberNotNull(nameof(_currentData))]
@@ -578,12 +579,12 @@ namespace War3Net.IO.Mpq
         {
             if (!_isSingleUnit)
             {
-                var requiredblock = (int)(_position / _blockSize);
-                if (requiredblock != _currentBlockIndex || _currentData is null)
+                var requiredBlock = (int)(_position / _blockSize);
+                if (requiredBlock != _currentBlockIndex || _currentData is null)
                 {
-                    var expectedlength = Math.Min((int)(Length - (requiredblock * _blockSize)), _blockSize);
-                    _currentData = LoadBlock(requiredblock, expectedlength);
-                    _currentBlockIndex = requiredblock;
+                    var expectedLength = Math.Min((int)(Length - (requiredBlock * _blockSize)), _blockSize);
+                    _currentData = LoadBlock(requiredBlock, expectedLength);
+                    _currentBlockIndex = requiredBlock;
                 }
             }
             else if (_currentData is null)
