@@ -5,18 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#define USING_DOTNETZIP
-
 using System;
 using System.IO;
 
-using War3Net.Common.Extensions;
-
-#if USING_DOTNETZIP
 using Ionic.Zlib;
-#else
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-#endif
+
+using War3Net.Common.Extensions;
 
 namespace War3Net.IO.Compression
 {
@@ -38,26 +32,10 @@ namespace War3Net.IO.Compression
 
             var outputStream = new MemoryStream();
 
-#if USING_DOTNETZIP
             using (var deflater = new ZlibStream(outputStream, CompressionMode.Compress, CompressionLevel.BestCompression, true))
             {
                 inputStream.CopyTo(deflater, bytes, StreamExtensions.DefaultBufferSize);
             }
-#else
-            using (var stream = new MemoryStream())
-            {
-                using (var deflater = new DeflaterOutputStream(stream))
-                {
-                    inputStream.CopyTo(deflater, bytes, StreamExtensions.DefaultBufferSize);
-
-                    deflater.Finish();
-                    deflater.Flush();
-
-                    stream.Position = 0;
-                    stream.CopyTo(outputStream);
-                }
-            }
-#endif
 
             if (!leaveOpen)
             {
@@ -72,11 +50,15 @@ namespace War3Net.IO.Compression
         /// </summary>
         /// <param name="data">Byte array containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <param name="throwOnLessBytesThanExpected">
+        /// If <see langword="true"/> and the decompressed data is less than <paramref name="expectedLength"/>, an exception of type <see cref="ArgumentException"/> is thrown.
+        /// If <see langword="false"/> and the decompressed data is less than <paramref name="expectedLength"/>, the result array will be resized to the amount of bytes read.
+        /// </param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(byte[] data, uint expectedLength)
+        public static byte[] Decompress(byte[] data, uint expectedLength, bool throwOnLessBytesThanExpected = true)
         {
             using var memoryStream = new MemoryStream(data);
-            return Decompress(memoryStream, expectedLength);
+            return Decompress(memoryStream, expectedLength, throwOnLessBytesThanExpected);
         }
 
         /// <summary>
@@ -84,32 +66,23 @@ namespace War3Net.IO.Compression
         /// </summary>
         /// <param name="data">Stream containing compressed data.</param>
         /// <param name="expectedLength">The expected length (in bytes) of the decompressed data.</param>
+        /// <param name="throwOnLessBytesThanExpected">
+        /// If <see langword="true"/> and the decompressed data is less than <paramref name="expectedLength"/>, an exception of type <see cref="ArgumentException"/> is thrown.
+        /// If <see langword="false"/> and the decompressed data is less than <paramref name="expectedLength"/>, the result array will be resized to the amount of bytes read.
+        /// </param>
         /// <returns>Byte array containing the decompressed data.</returns>
-        public static byte[] Decompress(Stream data, uint expectedLength)
+        public static byte[] Decompress(Stream data, uint expectedLength, bool throwOnLessBytesThanExpected = true)
         {
-            var output = new byte[expectedLength];
-#if USING_DOTNETZIP
             using var inflater = new ZlibStream(data, CompressionMode.Decompress, true);
-#else
-            var inflater = new InflaterInputStream(data);
-#endif
-            var offset = 0;
 
-            // expectedLength makes this unable to be combined with other compression algorithms?
-            var remaining = (int)expectedLength;
-            while (remaining > 0)
+            if (throwOnLessBytesThanExpected)
             {
-                var size = inflater.Read(output, offset, remaining);
-                if (size == 0)
-                {
-                    break;
-                }
-
-                offset += size;
-                remaining -= size;
+                var output = new byte[expectedLength];
+                inflater.CopyTo(output, 0, (int)expectedLength);
+                return output;
             }
 
-            return output;
+            return inflater.Copy((int)expectedLength);
         }
     }
 }
