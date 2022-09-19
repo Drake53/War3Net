@@ -83,6 +83,7 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(@"war3mapExtra.txt");
             archive.AddFileName(@"war3mapMisc.txt");
             archive.AddFileName(@"war3mapSkin.txt");
+            archive.AddFileName(CampaignImportedFiles.FileName);
             archive.AddFileName(MapImportedFiles.FileName);
 
             if (archive.IsCampaignArchive(out var campaignInfo))
