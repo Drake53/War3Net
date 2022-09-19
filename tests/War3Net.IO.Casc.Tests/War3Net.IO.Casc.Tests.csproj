@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\War3Net.IO.Casc\War3Net.IO.Casc.csproj" />
+  </ItemGroup>
+
+  <!--<ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\War3Net.IO.Casc\War3Net.IO.Casc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="War3Net.IO.Casc" Version="$(War3NetIOCascVersion)" />
+  </ItemGroup>-->
+
+</Project>
