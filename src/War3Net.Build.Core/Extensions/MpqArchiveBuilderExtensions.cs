@@ -11,6 +11,7 @@ using System.Text;
 
 using War3Net.Build.Info;
 using War3Net.Build.Script;
+using War3Net.Common.Providers;
 using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Extensions
@@ -22,7 +23,7 @@ namespace War3Net.Build.Extensions
         private static readonly ulong MapInfoHashedFileName = MpqHash.GetHashedFileName(MapInfo.FileName);
         private static readonly ulong MapTriggerStringsHashedFileName = MpqHash.GetHashedFileName(MapTriggerStrings.FileName);
 
-        private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
+        private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
         public static void SaveWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName)
         {

@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 
 using War3Net.Common.Extensions;
+using War3Net.Common.Providers;
 using War3Net.IO.Compression;
 using War3Net.IO.Mpq.Extensions;
 
@@ -196,7 +197,7 @@ namespace War3Net.IO.Mpq
                 {
                     for (var blockIndex = 0; blockIndex < blockPosCount; blockIndex++)
                     {
-                        using (var br = new BinaryReader(compressedStream, new UTF8Encoding(), true))
+                        using (var br = new BinaryReader(compressedStream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < blockPosCount; i++)
                             {
@@ -230,7 +231,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 var currentOffset = 0;
-                using (var writer = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
                 {
                     for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
                     {
@@ -315,7 +316,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 resultStream.Position = 0;
-                using (var writer = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
                 {
                     for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {

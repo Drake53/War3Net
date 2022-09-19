@@ -15,12 +15,13 @@ using CSharpLua;
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Transpilers;
+using War3Net.Common.Providers;
 
 namespace War3Net.Build.Extensions
 {
     public static class MapExtensions
     {
-        private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
+        private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
         public static void CompileScript(this Map map)
         {

@@ -15,13 +15,14 @@ using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
 using War3Net.Build.Widget;
+using War3Net.Common.Providers;
 using War3Net.IO.Mpq;
 
 namespace War3Net.Build.Extensions
 {
     public static class MapExtensions
     {
-        private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
+        private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
         public static MpqFile? GetSoundsFile(this Map map, Encoding? encoding = null)
         {

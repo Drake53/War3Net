@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
+using War3Net.Common.Providers;
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
@@ -151,7 +152,7 @@ namespace War3Net.IO.Mpq
 
         public void SerializeTo(Stream stream)
         {
-            using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(stream, UTF8EncodingProvider.StrictUTF8, true))
             {
                 WriteTo(writer);
             }

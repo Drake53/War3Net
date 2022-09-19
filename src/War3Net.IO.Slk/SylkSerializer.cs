@@ -6,7 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
+
+using War3Net.Common.Providers;
 
 namespace War3Net.IO.Slk
 {
@@ -21,7 +22,7 @@ namespace War3Net.IO.Slk
 
         public void SerializeTo(Stream stream, bool leaveOpen)
         {
-            using var writer = new StreamWriter(stream, new UTF8Encoding(false, true), 1024, leaveOpen);
+            using var writer = new StreamWriter(stream, UTF8EncodingProvider.StrictUTF8, 1024, leaveOpen);
 
             writer.WriteLine("ID;P");
             writer.WriteLine($"B;X{_table.Width};Y{_table.Height}");

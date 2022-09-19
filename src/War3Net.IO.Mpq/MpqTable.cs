@@ -7,6 +7,8 @@
 
 using System.IO;
 
+using War3Net.Common.Providers;
+
 namespace War3Net.IO.Mpq
 {
     /// <summary>
@@ -65,7 +67,7 @@ namespace War3Net.IO.Mpq
         /// <param name="stream">The <see cref="Stream"/> to write the contents to.</param>
         internal void SerializeTo(Stream stream)
         {
-            using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(stream, UTF8EncodingProvider.StrictUTF8, true))
             {
                 WriteTo(writer);
             }
@@ -103,7 +105,7 @@ namespace War3Net.IO.Mpq
 
             using (var memoryStream = new MemoryStream())
             {
-                using (var writer = new BinaryWriter(memoryStream, new System.Text.UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(memoryStream, UTF8EncodingProvider.StrictUTF8, true))
                 {
                     for (var i = 0; i < Size; i++)
                     {
