@@ -12,7 +12,7 @@ namespace War3Net.Common.Extensions
 {
     public static class DictionaryExtensions
     {
-        public static void SetValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+        public static void SetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
             where TKey : notnull
         {
             if (dict is null)
