@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace War3Net.IO.Mpq
 {
@@ -149,10 +150,11 @@ namespace War3Net.IO.Mpq
         /// Reads from the given stream to create a new MPQ header.
         /// </summary>
         /// <param name="stream">The stream from which to read.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the stream open; otherwise, <see langword="false"/>.</param>
         /// <returns>The parsed <see cref="MpqHeader"/>.</returns>
-        public static MpqHeader Parse(Stream stream)
+        public static MpqHeader Parse(Stream stream, bool leaveOpen = false)
         {
-            using var reader = new BinaryReader(stream);
+            using var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen);
             return FromReader(reader);
         }
 
