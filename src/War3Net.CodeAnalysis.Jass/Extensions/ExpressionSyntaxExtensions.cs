@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="IExpressionSyntaxExtensions.cs" company="Drake53">
+// <copyright file="ExpressionSyntaxExtensions.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,7 +12,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
 {
-    public static class IExpressionSyntaxExtensions
+    public static class ExpressionSyntaxExtensions
     {
         public static IExpressionSyntax Deparenthesize(this IExpressionSyntax expression)
         {

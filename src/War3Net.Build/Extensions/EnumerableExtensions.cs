@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="IEnumerableExtensions.cs" company="Drake53">
+// <copyright file="EnumerableExtensions.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace War3Net.Build.Extensions
 {
-    public static class IEnumerableExtensions
+    public static class EnumerableExtensions
     {
         public static IEnumerable<(T Obj, int Id)> IncludeId<T>(this IEnumerable<T> enumerable)
         {
