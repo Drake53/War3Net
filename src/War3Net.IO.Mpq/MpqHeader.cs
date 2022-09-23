@@ -188,9 +188,9 @@ namespace War3Net.IO.Mpq
             {
                 // TODO: support v1
                 // The extended block table is an array of Int16 - higher bits of the offests in the block table.
-                // header.ExtendedBlockTableOffset = br.ReadInt64();
-                // header.HashTableOffsetHigh = br.ReadInt16();
-                // header.BlockTableOffsetHigh = br.ReadInt16();
+                // header.ExtendedBlockTableOffset = reader.ReadInt64();
+                // header.HashTableOffsetHigh = reader.ReadInt16();
+                // header.BlockTableOffsetHigh = reader.ReadInt16();
 
                 // TODO: validate v1
                 const bool IsInvalidVersion1 = true;

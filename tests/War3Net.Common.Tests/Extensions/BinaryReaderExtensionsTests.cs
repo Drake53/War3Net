@@ -23,9 +23,9 @@ namespace War3Net.Common.Tests.Extensions
         public void TestReadString(string? s)
         {
             using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
+            using var writer = new BinaryWriter(memoryStream);
 
-            binaryWriter.WriteString(s);
+            writer.WriteString(s);
 
             var expectedString = s ?? string.Empty;
             if (expectedString.EndsWith(char.MinValue))
@@ -34,8 +34,8 @@ namespace War3Net.Common.Tests.Extensions
             }
 
             memoryStream.Position = 0;
-            using var binaryReader = new BinaryReader(memoryStream);
-            Assert.AreEqual(expectedString, binaryReader.ReadChars());
+            using var reader = new BinaryReader(memoryStream);
+            Assert.AreEqual(expectedString, reader.ReadChars());
         }
 
         [DataTestMethod]
@@ -43,13 +43,13 @@ namespace War3Net.Common.Tests.Extensions
         public void TestReadInt24(byte[] bytes, int expected)
         {
             using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
+            using var writer = new BinaryWriter(memoryStream);
 
-            binaryWriter.Write(bytes);
+            writer.Write(bytes);
 
             memoryStream.Position = 0;
-            using var binaryReader = new BinaryReader(memoryStream);
-            Assert.AreEqual(expected, binaryReader.ReadInt24());
+            using var reader = new BinaryReader(memoryStream);
+            Assert.AreEqual(expected, reader.ReadInt24());
         }
 
         private static IEnumerable<object?[]> GetTestReadStrings()

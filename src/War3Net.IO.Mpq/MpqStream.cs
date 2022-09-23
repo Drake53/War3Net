@@ -107,11 +107,11 @@ namespace War3Net.IO.Mpq
                     lock (_stream)
                     {
                         _stream.Seek(_filePosition, SeekOrigin.Begin);
-                        using (var binaryReader = new BinaryReader(_stream, Encoding.UTF8, true))
+                        using (var reader = new BinaryReader(_stream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < _blockPositions.Length; i++)
                             {
-                                _blockPositions[i] = binaryReader.ReadUInt32();
+                                _blockPositions[i] = reader.ReadUInt32();
                             }
                         }
                     }
@@ -197,11 +197,11 @@ namespace War3Net.IO.Mpq
                 {
                     for (var blockIndex = 0; blockIndex < blockPosCount; blockIndex++)
                     {
-                        using (var br = new BinaryReader(compressedStream, Encoding.UTF8, true))
+                        using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < blockPosCount; i++)
                             {
-                                blockPositions[i] = (int)br.ReadUInt32();
+                                blockPositions[i] = (int)reader.ReadUInt32();
                             }
                         }
 
@@ -597,7 +597,7 @@ namespace War3Net.IO.Mpq
         private byte[] LoadSingleUnit()
         {
             // Read the entire file into memory
-            var filedata = new byte[_compressedSize];
+            var fileData = new byte[_compressedSize];
             lock (_stream)
             {
                 _stream.Seek(_filePosition, SeekOrigin.Begin);
@@ -615,12 +615,12 @@ namespace War3Net.IO.Mpq
                     throw new MpqParserException("Unable to determine encryption key");
                 }
 
-                StormBuffer.DecryptBlock(filedata, _encryptionSeed);
+                StormBuffer.DecryptBlock(fileData, _encryptionSeed);
             }
 
             return _flags.HasFlag(MpqFileFlags.CompressedMulti) && _compressedSize > 0
-                ? DecompressMulti(filedata, _fileSize)
-                : filedata;
+                ? DecompressMulti(fileData, _fileSize)
+                : fileData;
         }
 
         private byte[] LoadBlock(int blockIndex, int expectedLength)

@@ -45,8 +45,8 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
-        public MpqHash(BinaryReader br, uint mask)
-            : this(br.ReadUInt64(), (MpqLocale)br.ReadUInt32(), br.ReadUInt32())
+        public MpqHash(BinaryReader reader, uint mask)
+            : this(reader.ReadUInt64(), (MpqLocale)reader.ReadUInt32(), reader.ReadUInt32())
         {
             Mask = mask;
         }
