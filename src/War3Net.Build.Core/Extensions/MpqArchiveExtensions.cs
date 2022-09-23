@@ -26,7 +26,7 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(Attributes.FileName);
             archive.AddFileName(ListFile.FileName);
             archive.AddFileName(Signature.FileName);
-            archive.AddFileName(@"(user data)");
+            archive.AddFileName(UserData.FileName);
 
             archive.AddFileName(MapSounds.FileName);
 

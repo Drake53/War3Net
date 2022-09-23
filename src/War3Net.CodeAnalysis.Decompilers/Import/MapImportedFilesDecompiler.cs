@@ -57,7 +57,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Attributes.FileName,
                 ListFile.FileName,
                 Signature.FileName,
-                "(user data)",
+                UserData.FileName,
                 "conversation.json",
                 MapSounds.FileName,
                 MapCameras.FileName,
