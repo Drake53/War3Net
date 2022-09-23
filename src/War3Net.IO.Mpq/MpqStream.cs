@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Text;
 
 using War3Net.Common.Extensions;
@@ -31,6 +32,7 @@ namespace War3Net.IO.Mpq
 
         // MpqEntry data
         private readonly uint _filePosition;
+        private readonly uint _streamOffset;
         private readonly uint _fileSize;
         private readonly uint _compressedSize;
         private readonly MpqFileFlags _flags;
@@ -50,7 +52,7 @@ namespace War3Net.IO.Mpq
         /// <param name="archive">The archive from which to load a file.</param>
         /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
         internal MpqStream(MpqArchive archive, MpqEntry entry)
-            : this(entry, archive.BaseStream, archive.BlockSize)
+            : this(entry, GetStreamFromMpqArchive(archive, entry), archive.BlockSize)
         {
         }
 
@@ -66,6 +68,7 @@ namespace War3Net.IO.Mpq
             _isStreamOwner = false;
 
             _filePosition = entry.FilePosition;
+            _streamOffset = baseStream is MemoryMappedViewStream ? 0 : _filePosition;
             _fileSize = entry.FileSize;
             _compressedSize = entry.CompressedSize;
             _flags = entry.Flags;
@@ -106,7 +109,7 @@ namespace War3Net.IO.Mpq
 
                     lock (_stream)
                     {
-                        _stream.Seek(_filePosition, SeekOrigin.Begin);
+                        _stream.Seek(_streamOffset, SeekOrigin.Begin);
                         using (var reader = new BinaryReader(_stream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < _blockPositions.Length; i++)
@@ -169,6 +172,16 @@ namespace War3Net.IO.Mpq
             : this(new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
         {
             _isStreamOwner = !leaveOpen;
+        }
+
+        private static Stream GetStreamFromMpqArchive(MpqArchive archive, MpqEntry entry)
+        {
+            if (archive.MemoryMappedFile is null)
+            {
+                return archive.BaseStream;
+            }
+
+            return archive.MemoryMappedFile.CreateViewStream(entry.FilePosition, entry.CompressedSize, MemoryMappedFileAccess.Read);
         }
 
         /// <summary>
@@ -478,7 +491,7 @@ namespace War3Net.IO.Mpq
         {
             lock (_stream)
             {
-                _stream.CopyTo(target, _filePosition, (int)_compressedSize, StreamExtensions.DefaultBufferSize);
+                _stream.CopyTo(target, _streamOffset, (int)_compressedSize, StreamExtensions.DefaultBufferSize);
             }
         }
 
@@ -600,7 +613,7 @@ namespace War3Net.IO.Mpq
             var fileData = new byte[_compressedSize];
             lock (_stream)
             {
-                _stream.Seek(_filePosition, SeekOrigin.Begin);
+                _stream.Seek(_streamOffset, SeekOrigin.Begin);
                 _stream.CopyTo(fileData, 0, fileData.Length);
             }
 
@@ -635,7 +648,7 @@ namespace War3Net.IO.Mpq
                 bufferSize = expectedLength;
             }
 
-            offset += _filePosition;
+            offset += _streamOffset;
 
             var buffer = new byte[bufferSize];
             lock (_stream)
@@ -671,7 +684,7 @@ namespace War3Net.IO.Mpq
             var buffer = new byte[bufferSize];
             lock (_stream)
             {
-                _stream.Seek(_filePosition, SeekOrigin.Begin);
+                _stream.Seek(_streamOffset, SeekOrigin.Begin);
                 var read = _stream.Read(buffer, 0, bufferSize);
                 if (read != bufferSize)
                 {
@@ -712,7 +725,7 @@ namespace War3Net.IO.Mpq
                 return !_isEncrypted || bufferSize < 4 || _encryptionSeed != 0;
             }
 
-            offset += _filePosition;
+            offset += _streamOffset;
             bufferSize = Math.Min(bufferSize, 4);
 
             var buffer = new byte[bufferSize];

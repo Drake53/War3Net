@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -29,6 +30,7 @@ namespace War3Net.IO.Mpq
         private const int BlockSizeModifier = 0x200;
 
         private readonly Stream _baseStream;
+        private readonly MemoryMappedFile? _memoryMappedFile;
         private readonly long _headerOffset;
         private readonly int _blockSize;
         private readonly bool _archiveFollowsHeader;
@@ -69,6 +71,11 @@ namespace War3Net.IO.Mpq
                 // Load entry table
                 _baseStream.Seek(_mpqHeader.BlockTablePosition, SeekOrigin.Begin);
                 _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
+            }
+
+            if (_baseStream is FileStream fileStream)
+            {
+                _memoryMappedFile = MemoryMappedFile.CreateFromFile(fileStream, null, 0, MemoryMappedFileAccess.Read, HandleInheritability.None, !_isStreamOwner);
             }
 
             AddFileName(Signature.FileName);
@@ -400,6 +407,8 @@ namespace War3Net.IO.Mpq
         }
 
         internal Stream BaseStream => _baseStream;
+
+        internal MemoryMappedFile? MemoryMappedFile => _memoryMappedFile;
 
         internal uint HeaderOffset => (uint)_headerOffset;
 
@@ -806,6 +815,11 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public void Dispose()
         {
+            if (_memoryMappedFile is not null)
+            {
+                _memoryMappedFile.Dispose();
+            }
+
             if (_isStreamOwner)
             {
                 _baseStream?.Close();
