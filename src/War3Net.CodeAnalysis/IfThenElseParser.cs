@@ -13,7 +13,7 @@ using Pidgin;
 
 namespace War3Net.CodeAnalysis
 {
-    internal class IfThenElseParser<TToken, TLeading, TItem, TIfDeclarator, TElseIfDeclarator, TElseDeclarator, TEndIf, TIfClause, TElseIfClause, TElseClause, TResult> : Parser<TToken, TResult>
+    internal sealed class IfThenElseParser<TToken, TLeading, TItem, TIfDeclarator, TElseIfDeclarator, TElseDeclarator, TEndIf, TIfClause, TElseIfClause, TElseClause, TResult> : Parser<TToken, TResult>
         where TElseIfDeclarator : class
         where TElseDeclarator : class
         where TIfClause : class

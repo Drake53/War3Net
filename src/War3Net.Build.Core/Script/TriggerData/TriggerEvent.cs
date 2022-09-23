@@ -54,7 +54,7 @@ namespace War3Net.Build.Script
 
             public override string ToString() => FunctionName;
 
-            internal class Builder
+            internal sealed class Builder
             {
                 public Builder(
                     string functionName,

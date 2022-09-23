@@ -9,7 +9,7 @@ using War3Net.Build.Script;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal class BinaryDecompileOption
+    internal sealed class BinaryDecompileOption
     {
         public string Type { get; set; }
 

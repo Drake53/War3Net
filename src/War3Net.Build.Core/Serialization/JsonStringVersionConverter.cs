@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace War3Net.Build.Serialization
 {
-    internal class JsonStringVersionConverter : JsonConverterFactory
+    internal sealed class JsonStringVersionConverter : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {

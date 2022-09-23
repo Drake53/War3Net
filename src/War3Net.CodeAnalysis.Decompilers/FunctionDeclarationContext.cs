@@ -12,7 +12,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal class FunctionDeclarationContext
+    internal sealed class FunctionDeclarationContext
     {
         public FunctionDeclarationContext(JassFunctionDeclarationSyntax functionDeclaration, IEnumerable<JassCommentSyntax> comments)
         {

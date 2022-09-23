@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace War3Net.IO.Mpq
 {
-    internal class StormBuffer
+    internal sealed class StormBuffer
     {
         private static readonly Lazy<StormBuffer> _stormBuffer = new Lazy<StormBuffer>(() => new StormBuffer());
 

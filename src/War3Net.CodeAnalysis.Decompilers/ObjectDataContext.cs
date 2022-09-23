@@ -11,7 +11,7 @@ using War3Net.Build;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal class ObjectDataContext
+    internal sealed class ObjectDataContext
     {
         public ObjectDataContext(Map map, Campaign? campaign)
         {
