@@ -601,11 +601,7 @@ namespace War3Net.IO.Mpq
             lock (_stream)
             {
                 _stream.Seek(_filePosition, SeekOrigin.Begin);
-                var read = _stream.Read(filedata, 0, filedata.Length);
-                if (read != filedata.Length)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
+                _stream.CopyTo(fileData, 0, fileData.Length);
             }
 
             if (_isEncrypted && _fileSize > 3)
@@ -645,11 +641,7 @@ namespace War3Net.IO.Mpq
             lock (_stream)
             {
                 _stream.Seek(offset, SeekOrigin.Begin);
-                var read = _stream.Read(buffer, 0, bufferSize);
-                if (read != bufferSize)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
+                _stream.CopyTo(buffer, 0, bufferSize);
             }
 
             if (_isEncrypted && bufferSize > 3)
