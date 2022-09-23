@@ -472,7 +472,7 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        /// Copy the base stream, so that the contents do not get decompressed not decrypted.
+        /// Copy the base stream, so that the contents do not get decompressed nor decrypted.
         /// </summary>
         internal void CopyBaseStreamTo(Stream target)
         {
