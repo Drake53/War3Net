@@ -8,11 +8,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
+using War3Net.Common.Providers;
 using War3Net.IO.Mpq;
 using War3Net.TestTools.UnitTesting;
 
@@ -79,7 +79,7 @@ namespace War3Net.Build.Core.Tests
             Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
 
             using var expectedStream = MpqFile.OpenRead(filePath);
-            using var reader = new StreamReader(expectedStream, new UTF8Encoding(false, true));
+            using var reader = new StreamReader(expectedStream, UTF8EncodingProvider.StrictUTF8);
             var parsedFile = readMethod!.Invoke(null, new[] { reader });
             Assert.AreEqual(type, parsedFile!.GetType());
 
