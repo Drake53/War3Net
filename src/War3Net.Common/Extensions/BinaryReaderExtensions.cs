@@ -91,35 +91,19 @@ namespace War3Net.Common.Extensions
         public static TEnum ReadByte<TEnum>(this BinaryReader reader)
             where TEnum : struct, Enum
         {
-            return ToEnum<TEnum>(reader.ReadByte());
+            return EnumConvert<TEnum>.FromByte(reader.ReadByte());
         }
 
         public static TEnum ReadChar<TEnum>(this BinaryReader reader)
             where TEnum : struct, Enum
         {
-            return ToEnum<TEnum>(reader.ReadChar());
+            return EnumConvert<TEnum>.FromChar(reader.ReadChar());
         }
 
         public static TEnum ReadInt32<TEnum>(this BinaryReader reader)
             where TEnum : struct, Enum
         {
-            return ToEnum<TEnum>(reader.ReadInt32());
-        }
-
-        private static TEnum ToEnum<TEnum>(int i)
-            where TEnum : struct, Enum
-        {
-            var result = (TEnum)(object)i;
-            if (result.IsDefined())
-            {
-                return result;
-            }
-
-            var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
-                ? i.ToString(CultureInfo.InvariantCulture)
-                : $"0b{Convert.ToString(i, 2).PadLeft(32, '0')}";
-
-            return result.IsDefined() ? result : throw new InvalidDataException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
+            return EnumConvert<TEnum>.FromInt32(reader.ReadInt32());
         }
     }
 }
