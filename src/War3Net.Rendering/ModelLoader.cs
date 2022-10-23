@@ -22,7 +22,7 @@ namespace War3Net.Rendering
         {
             var model = BinaryModelParser.IsBinaryModel(stream)
                 ? BinaryModelParser.Parse(stream, leaveOpen)
-                : TextModelParser.ParseModel(stream, leaveOpen);
+                : throw new NotImplementedException();
 
             var vertices = new Vertex[model.Geosets.Length][];
             var indices = new ushort[model.Geosets.Length][];
