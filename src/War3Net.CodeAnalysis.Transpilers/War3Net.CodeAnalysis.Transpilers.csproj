@@ -20,4 +20,19 @@
     <PackageReference Include="War3Net.CSharpLua" Version="$(War3NetCSharpLuaVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\JassToLuaCompatibility.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JassToLuaCompatibility.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\JassToLuaCompatibility.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>JassToLuaCompatibility.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
