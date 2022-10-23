@@ -6,15 +6,14 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
+
+using Pfim;
 
 using Veldrid;
 
 using War3Net.Drawing.Blp;
-using War3Net.Drawing.Tga;
 
 namespace War3Net.Rendering
 {
@@ -98,21 +97,35 @@ namespace War3Net.Rendering
             Stream stream,
             Veldrid.PixelFormat pixelFormat = Veldrid.PixelFormat.B8_G8_R8_A8_UNorm)
         {
-            using var bitmap = new TgaImage(stream, true).GetBitmap();
+            using var tgaTexture = Targa.Create(stream, new PfimConfig());
 
-            var width = (uint)bitmap.Width;
-            var height = (uint)bitmap.Height;
+            var newData = tgaTexture.Data;
+            if (tgaTexture.Format == Pfim.ImageFormat.Rgb24)
+            {
+                var pixelCount = tgaTexture.DataLen / 3;
+                newData = new byte[pixelCount * 4];
+
+                var i = 0;
+                for (var y = 0; y < tgaTexture.Height; y++)
+                {
+                    var offset = y * tgaTexture.Stride;
+                    for (var x = 0; x < tgaTexture.Width; x++)
+                    {
+                        newData[i++] = tgaTexture.Data[offset++];
+                        newData[i++] = tgaTexture.Data[offset++];
+                        newData[i++] = tgaTexture.Data[offset++];
+                        newData[i++] = 255;
+                    }
+                }
+            }
+
+            var width = (uint)tgaTexture.Width;
+            var height = (uint)tgaTexture.Height;
 
             var sampledTexture = resourceFactory.CreateTexture(TextureDescription.Texture2D(width, height, 1, 1, pixelFormat, TextureUsage.Sampled));
             var stagingTexture = resourceFactory.CreateTexture(TextureDescription.Texture2D(width, height, 1, 1, pixelFormat, TextureUsage.Staging));
 
-            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            var byteCount = bitmapData.Stride * bitmap.Height;
-            var pixelData = new byte[byteCount];
-            var pointer = bitmapData.Scan0;
-            Marshal.Copy(pointer, pixelData, 0, byteCount);
-
-            graphicsDevice.UpdateTexture(stagingTexture, pixelData, 0, 0, 0, width, height, 1, 0, 0);
+            graphicsDevice.UpdateTexture(stagingTexture, newData, 0, 0, 0, width, height, 1, 0, 0);
 
             CreateCommandList(graphicsDevice, resourceFactory, stagingTexture, sampledTexture);
 
