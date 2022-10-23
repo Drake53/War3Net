@@ -33,6 +33,23 @@ namespace War3Net.Modeling
         private static readonly Dictionary<int, OptionalModelProperty> _ribbonEmitterProperties = GetRibbonEmitterProperties().ToDictionary(property => property.Tag);
         private static readonly Dictionary<int, OptionalModelProperty> _cameraProperties = GetCameraProperties().ToDictionary(property => property.Tag);
 
+        public static bool IsBinaryModel(Stream input)
+        {
+            if (input is null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            var oldPosition = input.Position;
+
+            using var reader = new BinaryReader(input, Encoding.UTF8, true);
+            var header = reader.ReadUInt32();
+
+            input.Position = oldPosition;
+
+            return header == BinaryConstants.Header;
+        }
+
         public static Model Parse(Stream input, bool leaveOpen)
         {
             if (input is null)
