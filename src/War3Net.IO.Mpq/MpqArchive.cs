@@ -395,6 +395,8 @@ namespace War3Net.IO.Mpq
             }
         }
 
+        public ushort HashTableSize => (ushort)_hashTable.Size;
+
         internal Stream BaseStream => _baseStream;
 
         internal uint HeaderOffset => (uint)_headerOffset;
