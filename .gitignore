@@ -342,3 +342,4 @@ healthchecksdb
 # Local Test Data
 /tests/*/TestData/Local
 /tests/*/TestData/WebCache
+/tests/War3Net.Common.Testing/TestOutput
