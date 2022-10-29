@@ -107,7 +107,7 @@ namespace War3Net.Common
 
         public static TEnum FromChar(char value)
         {
-            var result = (TEnum)(object)value;
+            var result = (TEnum)(object)(int)value;
             if (!result.IsDefined())
             {
                 throw new ArgumentException($"Value '{value}' is not defined for enum of type {typeof(TEnum).Name}.");
