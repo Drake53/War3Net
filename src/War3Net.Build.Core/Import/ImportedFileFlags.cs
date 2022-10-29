@@ -10,7 +10,7 @@ using System;
 namespace War3Net.Build.Import
 {
     [Flags]
-    public enum ImportedFileFlags
+    public enum ImportedFileFlags : byte
     {
         UNK1 = 1 << 0,
         UNK2 = 1 << 1,
