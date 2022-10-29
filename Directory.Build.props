@@ -30,19 +30,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <War3NetBuildVersion>5.5.2</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.5.2</War3NetBuildCoreVersion>
-    <War3NetCodeAnalysisVersion>5.5.2</War3NetCodeAnalysisVersion>
-    <War3NetCodeAnalysisDecompilersVersion>5.5.2</War3NetCodeAnalysisDecompilersVersion>
-    <War3NetCodeAnalysisJassVersion>5.5.2</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.5.2</War3NetCodeAnalysisTranspilersVersion>
+    <War3NetBuildVersion>5.5.3</War3NetBuildVersion>
+    <War3NetBuildCoreVersion>5.5.3</War3NetBuildCoreVersion>
+    <War3NetCodeAnalysisVersion>5.5.3</War3NetCodeAnalysisVersion>
+    <War3NetCodeAnalysisDecompilersVersion>5.5.3</War3NetCodeAnalysisDecompilersVersion>
+    <War3NetCodeAnalysisJassVersion>5.5.3</War3NetCodeAnalysisJassVersion>
+    <War3NetCodeAnalysisTranspilersVersion>5.5.3</War3NetCodeAnalysisTranspilersVersion>
     <War3NetCodeAnalysisVJassVersion>0.1.0</War3NetCodeAnalysisVJassVersion>
-    <War3NetCommonVersion>5.5.2</War3NetCommonVersion>
-    <War3NetDrawingBlpVersion>5.5.2</War3NetDrawingBlpVersion>
+    <War3NetCommonVersion>5.5.3</War3NetCommonVersion>
+    <War3NetDrawingBlpVersion>5.5.3</War3NetDrawingBlpVersion>
     <War3NetIOCascVersion>0.1.0</War3NetIOCascVersion>
-    <War3NetIOCompressionVersion>5.5.2</War3NetIOCompressionVersion>
-    <War3NetIOMpqVersion>5.5.2</War3NetIOMpqVersion>
-    <War3NetIOSlkVersion>5.5.2</War3NetIOSlkVersion>
+    <War3NetIOCompressionVersion>5.5.3</War3NetIOCompressionVersion>
+    <War3NetIOMpqVersion>5.5.3</War3NetIOMpqVersion>
+    <War3NetIOSlkVersion>5.5.3</War3NetIOSlkVersion>
     <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
     <!--
     <War3NetRenderingVersion></War3NetRenderingVersion>
