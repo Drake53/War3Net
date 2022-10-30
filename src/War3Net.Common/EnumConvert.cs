@@ -37,7 +37,7 @@ namespace War3Net.Common
             {
                 var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
                     ? value.ToString(CultureInfo.InvariantCulture)
-                    : $"0b{Convert.ToString(value, 2).PadLeft(8, '0')}";
+                    : $"0b{Convert.ToString((byte)value, 2).PadLeft(8, '0')}";
 
                 throw new ArgumentException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
             }
@@ -67,7 +67,7 @@ namespace War3Net.Common
             {
                 var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
                     ? value.ToString(CultureInfo.InvariantCulture)
-                    : $"0b{Convert.ToString(value, 2).PadLeft(16, '0')}";
+                    : $"0b{Convert.ToString((short)value, 2).PadLeft(16, '0')}";
 
                 throw new ArgumentException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
             }
@@ -97,7 +97,37 @@ namespace War3Net.Common
             {
                 var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
                     ? value.ToString(CultureInfo.InvariantCulture)
-                    : $"0b{Convert.ToString(value, 2).PadLeft(32, '0')}";
+                    : $"0b{Convert.ToString((int)value, 2).PadLeft(32, '0')}";
+
+                throw new ArgumentException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
+            }
+
+            return result;
+        }
+
+        public static TEnum FromInt64(long value, bool allowNoFlags = true)
+        {
+            var result = (TEnum)(object)value;
+            if (!result.IsDefined(allowNoFlags))
+            {
+                var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
+                    ? value.ToString(CultureInfo.InvariantCulture)
+                    : $"0b{Convert.ToString(value, 2).PadLeft(64, '0')}";
+
+                throw new ArgumentException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
+            }
+
+            return result;
+        }
+
+        public static TEnum FromUInt64(ulong value, bool allowNoFlags = true)
+        {
+            var result = (TEnum)(object)value;
+            if (!result.IsDefined(allowNoFlags))
+            {
+                var displayValue = Attribute.GetCustomAttribute(typeof(TEnum), typeof(FlagsAttribute)) is null
+                    ? value.ToString(CultureInfo.InvariantCulture)
+                    : $"0b{Convert.ToString((long)value, 2).PadLeft(64, '0')}";
 
                 throw new ArgumentException($"Value '{displayValue}' is not defined for enum of type {typeof(TEnum).Name}.");
             }
