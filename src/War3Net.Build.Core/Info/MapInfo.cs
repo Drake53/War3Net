@@ -191,7 +191,7 @@ namespace War3Net.Build.Info
             }
 
             MapFlags = reader.ReadInt32<MapFlags>();
-            Tileset = reader.ReadChar<Tileset>();
+            Tileset = reader.ReadByte<Tileset>();
 
             if (FormatVersion >= MapInfoFormatVersion.v23)
             {
@@ -254,7 +254,7 @@ namespace War3Net.Build.Info
                     }
 
                     SoundEnvironment = reader.ReadChars();
-                    LightEnvironment = reader.ReadChar<Tileset>();
+                    LightEnvironment = reader.ReadByte<Tileset>();
                     WaterTintingColor = reader.ReadColorBgra();
                 }
 
@@ -398,7 +398,7 @@ namespace War3Net.Build.Info
             }
 
             writer.Write((int)MapFlags);
-            writer.Write((char)Tileset);
+            writer.Write((byte)Tileset);
 
             if (FormatVersion >= MapInfoFormatVersion.v23)
             {
@@ -461,7 +461,7 @@ namespace War3Net.Build.Info
                     }
 
                     writer.WriteString(SoundEnvironment);
-                    writer.Write((char)LightEnvironment);
+                    writer.Write((byte)LightEnvironment);
 
                     writer.Write(WaterTintingColor.ToBgra());
                 }

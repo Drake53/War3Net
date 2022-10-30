@@ -89,7 +89,7 @@ namespace War3Net.Build.Environment
             }
 
             FormatVersion = reader.ReadInt32<MapEnvironmentFormatVersion>();
-            Tileset = (Tileset)reader.ReadChar();
+            Tileset = reader.ReadByte<Tileset>();
             IsCustomTileset = reader.ReadBool();
 
             nint terrainTypeCount = reader.ReadInt32();
@@ -122,7 +122,7 @@ namespace War3Net.Build.Environment
         {
             writer.Write(FileFormatSignature);
             writer.Write((int)FormatVersion);
-            writer.Write((char)Tileset);
+            writer.Write((byte)Tileset);
             writer.WriteBool(IsCustomTileset);
 
             writer.Write(TerrainTypes.Count);
