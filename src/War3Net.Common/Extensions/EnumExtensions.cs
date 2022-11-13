@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 
 namespace War3Net.Common.Extensions
 {
@@ -26,12 +25,13 @@ namespace War3Net.Common.Extensions
                 return false;
             }
 
-            if (allowNoFlags && (int)(object)@enum == 0)
+            var enumString = @enum.ToString();
+            if (allowNoFlags && string.Equals(enumString, "0", StringComparison.Ordinal))
             {
                 return true;
             }
 
-            var firstChar = @enum.ToString().First();
+            var firstChar = enumString[0];
             return !char.IsDigit(firstChar) && firstChar != '-';
         }
     }
