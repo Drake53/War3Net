@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -104,18 +105,18 @@ namespace War3Net.IO.Slk
                 throw new InvalidDataException("Row for cell is not defined.");
             }
 
-            var xi = int.Parse(x) - 1;
-            var yi = y == null ? _lastY.Value : (int.Parse(y) - 1);
+            var xi = int.Parse(x, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1;
+            var yi = y == null ? _lastY.Value : (int.Parse(y, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1);
 
             if (value.StartsWith('"') && value.EndsWith('"'))
             {
                 _table[xi, yi] = value[1..^1];
             }
-            else if (int.TryParse(value, out var @int))
+            else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var @int))
             {
                 _table[xi, yi] = @int;
             }
-            else if (float.TryParse(value, out var @float))
+            else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var @float))
             {
                 _table[xi, yi] = @float;
             }
