@@ -55,6 +55,7 @@ namespace War3Net.Build.Info
         v6111 = 6111,
         v6112 = 6112,
         v6114 = 6114,
+        v6115 = 6115,
 
         // Other
         v6008 = 6008,
