@@ -30,8 +30,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <War3NetBuildVersion>5.5.6</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.5.6</War3NetBuildCoreVersion>
+    <War3NetBuildVersion>5.5.7</War3NetBuildVersion>
+    <War3NetBuildCoreVersion>5.5.7</War3NetBuildCoreVersion>
     <War3NetCodeAnalysisVersion>5.5.5</War3NetCodeAnalysisVersion>
     <War3NetCodeAnalysisDecompilersVersion>5.5.5</War3NetCodeAnalysisDecompilersVersion>
     <War3NetCodeAnalysisJassVersion>5.5.5</War3NetCodeAnalysisJassVersion>
