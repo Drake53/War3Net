@@ -10,7 +10,7 @@ using System.Numerics;
 
 namespace War3Net.Build.Common
 {
-    public sealed class Quadrilateral
+    public sealed partial class Quadrilateral
     {
         public Quadrilateral(float left, float right, float top, float bottom)
         {
@@ -48,25 +48,5 @@ namespace War3Net.Build.Common
         public Vector2 TopLeft { get; set; }
 
         public Vector2 BottomRight { get; set; }
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            BottomLeft = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-            TopRight = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-            TopLeft = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-            BottomRight = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(BottomLeft.X);
-            writer.Write(BottomLeft.Y);
-            writer.Write(TopRight.X);
-            writer.Write(TopRight.Y);
-            writer.Write(TopLeft.X);
-            writer.Write(TopLeft.Y);
-            writer.Write(BottomRight.X);
-            writer.Write(BottomRight.Y);
-        }
     }
 }

@@ -8,12 +8,11 @@
 using System.IO;
 
 using War3Net.Build.Common;
-using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
-    public sealed class TechData
+    public sealed partial class TechData
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TechData"/> class.
@@ -32,17 +31,5 @@ namespace War3Net.Build.Info
         public int Id { get; set; }
 
         public override string ToString() => Id.ToRawcode();
-
-        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            Players = reader.ReadBitmask32();
-            Id = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
-        {
-            writer.Write(Players);
-            writer.Write(Id);
-        }
     }
 }
