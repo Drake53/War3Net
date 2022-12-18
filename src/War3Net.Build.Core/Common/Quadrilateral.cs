@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
 using System.Numerics;
 
 namespace War3Net.Build.Common
@@ -34,11 +33,6 @@ namespace War3Net.Build.Common
             TopRight = topRight;
             TopLeft = topLeft;
             BottomRight = bottomRight;
-        }
-
-        internal Quadrilateral(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public Vector2 BottomLeft { get; set; }

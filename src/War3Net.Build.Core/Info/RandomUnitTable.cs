@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
 
 namespace War3Net.Build.Info
 {
@@ -17,11 +16,6 @@ namespace War3Net.Build.Info
         /// </summary>
         public RandomUnitTable()
         {
-        }
-
-        internal RandomUnitTable(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public int Index { get; set; }

@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 
 namespace War3Net.Build.Common
 {
@@ -52,11 +51,6 @@ namespace War3Net.Build.Common
 
                 _mask |= 1 << i;
             }
-        }
-
-        internal Bitmask32(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public bool this[int index]

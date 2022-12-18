@@ -6,10 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
-
-using War3Net.Build.Info;
-using War3Net.Build.Widget;
 
 namespace War3Net.Build.Common
 {
@@ -20,16 +16,6 @@ namespace War3Net.Build.Common
         /// </summary>
         public RandomItemSet()
         {
-        }
-
-        internal RandomItemSet(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
-        }
-
-        internal RandomItemSet(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
         public List<RandomItemSetItem> Items { get; init; } = new();

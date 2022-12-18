@@ -13,6 +13,11 @@ namespace War3Net.Build.Info
 {
     public sealed partial class TechData
     {
+        internal TechData(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Players = reader.ReadBitmask32();

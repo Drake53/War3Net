@@ -15,6 +15,16 @@ namespace War3Net.Build.Common
 {
     public sealed partial class RandomItemSet
     {
+        internal RandomItemSet(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
+        }
+
+        internal RandomItemSet(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        {
+            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             nint itemCount = reader.ReadInt32();

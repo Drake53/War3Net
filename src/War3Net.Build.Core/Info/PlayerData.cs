@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
 using System.Numerics;
 
 using War3Net.Build.Common;
@@ -31,11 +30,6 @@ namespace War3Net.Build.Info
         {
             Id = id;
             Name = $"Player {id + 1}";
-        }
-
-        internal PlayerData(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public int Id { get; set; }

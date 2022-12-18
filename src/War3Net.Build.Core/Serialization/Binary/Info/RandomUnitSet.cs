@@ -11,6 +11,12 @@ namespace War3Net.Build.Info
 {
     public sealed partial class RandomUnitSet
     {
+        internal RandomUnitSet(BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize)
+        {
+            UnitIds = new int[setSize];
+            ReadFrom(reader, formatVersion);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Chance = reader.ReadInt32();

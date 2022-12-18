@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
 using System.Linq;
 
 using War3Net.Common.Extensions;
@@ -19,12 +18,6 @@ namespace War3Net.Build.Info
         /// </summary>
         public RandomUnitSet()
         {
-        }
-
-        internal RandomUnitSet(BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize)
-        {
-            UnitIds = new int[setSize];
-            ReadFrom(reader, formatVersion);
         }
 
         public int Chance { get; set; }

@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 using War3Net.Build.Common;
 
 namespace War3Net.Build.Info
@@ -18,11 +16,6 @@ namespace War3Net.Build.Info
         /// </summary>
         public ForceData()
         {
-        }
-
-        internal ForceData(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public ForceFlags Flags { get; set; }

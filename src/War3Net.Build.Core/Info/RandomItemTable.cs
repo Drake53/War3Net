@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
 
 using War3Net.Build.Common;
 
@@ -19,11 +18,6 @@ namespace War3Net.Build.Info
         /// </summary>
         public RandomItemTable()
         {
-        }
-
-        internal RandomItemTable(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public int Index { get; set; }

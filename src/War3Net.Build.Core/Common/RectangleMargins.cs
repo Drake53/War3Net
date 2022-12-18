@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Common
 {
     public sealed partial class RectangleMargins
@@ -17,11 +15,6 @@ namespace War3Net.Build.Common
             Right = right;
             Bottom = bottom;
             Top = top;
-        }
-
-        internal RectangleMargins(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public int Left { get; set; }

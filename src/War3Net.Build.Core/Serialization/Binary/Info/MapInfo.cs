@@ -16,6 +16,11 @@ namespace War3Net.Build.Info
 {
     public sealed partial class MapInfo
     {
+        internal MapInfo(BinaryReader reader)
+        {
+            ReadFrom(reader);
+        }
+
         internal void ReadFrom(BinaryReader reader)
         {
             FormatVersion = reader.ReadInt32<MapInfoFormatVersion>();

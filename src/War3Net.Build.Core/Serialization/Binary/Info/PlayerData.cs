@@ -16,6 +16,11 @@ namespace War3Net.Build.Info
 {
     public sealed partial class PlayerData
     {
+        internal PlayerData(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Id = reader.ReadInt32();

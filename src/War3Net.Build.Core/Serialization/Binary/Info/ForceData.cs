@@ -14,6 +14,11 @@ namespace War3Net.Build.Info
 {
     public sealed partial class ForceData
     {
+        internal ForceData(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Flags = reader.ReadInt32<ForceFlags>();

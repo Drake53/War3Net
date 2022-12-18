@@ -11,6 +11,11 @@ namespace War3Net.Build.Common
 {
     public sealed partial class RectangleMargins
     {
+        internal RectangleMargins(BinaryReader reader)
+        {
+            ReadFrom(reader);
+        }
+
         internal void ReadFrom(BinaryReader reader)
         {
             Left = reader.ReadInt32();

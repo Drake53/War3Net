@@ -14,6 +14,11 @@ namespace War3Net.Build.Info
 {
     public sealed partial class RandomItemTable
     {
+        internal RandomItemTable(BinaryReader reader, MapInfoFormatVersion formatVersion)
+        {
+            ReadFrom(reader, formatVersion);
+        }
+
         internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
         {
             Index = reader.ReadInt32();

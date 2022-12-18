@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 
 using War3Net.Build.Common;
 
@@ -27,11 +26,6 @@ namespace War3Net.Build.Info
         public MapInfo(MapInfoFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
-        }
-
-        internal MapInfo(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public MapInfoFormatVersion FormatVersion { get; set; }

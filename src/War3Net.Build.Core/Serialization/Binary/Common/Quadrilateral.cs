@@ -12,6 +12,11 @@ namespace War3Net.Build.Common
 {
     public sealed partial class Quadrilateral
     {
+        internal Quadrilateral(BinaryReader reader)
+        {
+            ReadFrom(reader);
+        }
+
         internal void ReadFrom(BinaryReader reader)
         {
             BottomLeft = new Vector2(reader.ReadSingle(), reader.ReadSingle());

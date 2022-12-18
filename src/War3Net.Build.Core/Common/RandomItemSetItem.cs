@@ -5,10 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
-using War3Net.Build.Info;
-using War3Net.Build.Widget;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Common
@@ -20,16 +16,6 @@ namespace War3Net.Build.Common
         /// </summary>
         public RandomItemSetItem()
         {
-        }
-
-        internal RandomItemSetItem(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
-        }
-
-        internal RandomItemSetItem(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
         public int Chance { get; set; }

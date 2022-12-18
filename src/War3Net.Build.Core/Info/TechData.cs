@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 using War3Net.Build.Common;
 using War3Net.Common.Extensions;
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Info
         /// </summary>
         public TechData()
         {
-        }
-
-        internal TechData(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public Bitmask32 Players { get; set; }
