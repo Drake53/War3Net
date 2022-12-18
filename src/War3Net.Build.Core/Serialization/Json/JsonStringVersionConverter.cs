@@ -9,7 +9,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace War3Net.Build.Serialization
+namespace War3Net.Build.Serialization.Json
 {
     internal sealed class JsonStringVersionConverter : JsonConverterFactory
     {
