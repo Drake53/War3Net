@@ -6,13 +6,16 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using War3Net.Build.Common;
 using War3Net.Build.Extensions;
+using War3Net.Build.Serialization.Json;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
+    [JsonConverter(typeof(JsonMapInfoConverter))]
     public sealed partial class MapInfo
     {
         internal MapInfo(JsonElement jsonElement)
