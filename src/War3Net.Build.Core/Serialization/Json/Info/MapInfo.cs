@@ -5,18 +5,189 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Text.Json;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
     public sealed partial class MapInfo
     {
+        internal MapInfo(JsonElement jsonElement)
+        {
+            GetFrom(jsonElement);
+        }
+
+        internal MapInfo(ref Utf8JsonReader reader)
+        {
+            ReadFrom(ref reader);
+        }
+
+        internal void GetFrom(JsonElement jsonElement)
+        {
+            FormatVersion = jsonElement.GetInt32<MapInfoFormatVersion>(nameof(FormatVersion));
+            if (FormatVersion >= MapInfoFormatVersion.RoC)
+            {
+                MapVersion = jsonElement.GetInt32(nameof(MapVersion));
+                EditorVersion = jsonElement.GetInt32<EditorVersion>(nameof(EditorVersion));
+
+                if (FormatVersion >= MapInfoFormatVersion.v27)
+                {
+                    GameVersion = jsonElement.GetVersion(nameof(GameVersion));
+                }
+            }
+
+            MapName = jsonElement.GetString(nameof(MapName));
+            MapAuthor = jsonElement.GetString(nameof(MapAuthor));
+            MapDescription = jsonElement.GetString(nameof(MapDescription));
+            RecommendedPlayers = jsonElement.GetString(nameof(RecommendedPlayers));
+
+            if (FormatVersion == MapInfoFormatVersion.v8)
+            {
+                Unk1 = jsonElement.GetSingle(nameof(Unk1));
+                Unk2 = jsonElement.GetInt32(nameof(Unk2));
+                Unk3 = jsonElement.GetSingle(nameof(Unk3));
+                Unk4 = jsonElement.GetSingle(nameof(Unk4));
+                Unk5 = jsonElement.GetSingle(nameof(Unk5));
+                Unk6 = jsonElement.GetInt32(nameof(Unk6));
+            }
+
+            CameraBounds = jsonElement.GetQuadrilateral(nameof(CameraBounds));
+            if (FormatVersion >= MapInfoFormatVersion.v15)
+            {
+                CameraBoundsComplements = jsonElement.GetRectangleMargins(nameof(CameraBoundsComplements));
+            }
+
+            PlayableMapAreaWidth = jsonElement.GetInt32(nameof(PlayableMapAreaWidth));
+            PlayableMapAreaHeight = jsonElement.GetInt32(nameof(PlayableMapAreaHeight));
+
+            if (FormatVersion == MapInfoFormatVersion.v8)
+            {
+                Unk7 = jsonElement.GetInt32(nameof(Unk7));
+            }
+
+            MapFlags = jsonElement.GetInt32<MapFlags>(nameof(MapFlags));
+            Tileset = jsonElement.GetByte<Tileset>(nameof(Tileset));
+
+            if (FormatVersion >= MapInfoFormatVersion.v23)
+            {
+                LoadingScreenBackgroundNumber = jsonElement.GetInt32(nameof(LoadingScreenBackgroundNumber));
+                LoadingScreenPath = jsonElement.GetString(nameof(LoadingScreenPath));
+            }
+            else if (FormatVersion >= MapInfoFormatVersion.RoC)
+            {
+                CampaignBackgroundNumber = jsonElement.GetInt32(nameof(CampaignBackgroundNumber));
+            }
+            else if (FormatVersion >= MapInfoFormatVersion.v15)
+            {
+                LoadingScreenPath = jsonElement.GetString(nameof(LoadingScreenPath));
+            }
+
+            if (FormatVersion >= MapInfoFormatVersion.v10)
+            {
+                LoadingScreenText = jsonElement.GetString(nameof(LoadingScreenText));
+                LoadingScreenTitle = jsonElement.GetString(nameof(LoadingScreenTitle));
+                if (FormatVersion >= MapInfoFormatVersion.v15)
+                {
+                    LoadingScreenSubtitle = jsonElement.GetString(nameof(LoadingScreenSubtitle));
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v23)
+                {
+                    GameDataSet = jsonElement.GetInt32<GameDataSet>(nameof(GameDataSet));
+                    PrologueScreenPath = jsonElement.GetString(nameof(PrologueScreenPath));
+                }
+                else if (FormatVersion >= MapInfoFormatVersion.RoC)
+                {
+                    LoadingScreenNumber = jsonElement.GetInt32(nameof(LoadingScreenNumber));
+                }
+                else if (FormatVersion >= MapInfoFormatVersion.v15)
+                {
+                    PrologueScreenPath = jsonElement.GetString(nameof(PrologueScreenPath));
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v11)
+                {
+                    PrologueScreenText = jsonElement.GetString(nameof(PrologueScreenText));
+                    PrologueScreenTitle = jsonElement.GetString(nameof(PrologueScreenTitle));
+                    if (FormatVersion >= MapInfoFormatVersion.v15)
+                    {
+                        PrologueScreenSubtitle = jsonElement.GetString(nameof(PrologueScreenSubtitle));
+                    }
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v23)
+                {
+                    FogStyle = jsonElement.GetInt32<FogStyle>(nameof(FogStyle));
+                    FogStartZ = jsonElement.GetSingle(nameof(FogStartZ));
+                    FogEndZ = jsonElement.GetSingle(nameof(FogEndZ));
+                    FogDensity = jsonElement.GetSingle(nameof(FogDensity));
+                    FogColor = jsonElement.GetColor(nameof(FogColor));
+
+                    if (FormatVersion >= MapInfoFormatVersion.Tft)
+                    {
+                        GlobalWeather = jsonElement.GetInt32<WeatherType>(nameof(GlobalWeather));
+                    }
+
+                    SoundEnvironment = jsonElement.GetString(nameof(SoundEnvironment));
+                    LightEnvironment = jsonElement.GetByte<Tileset>(nameof(LightEnvironment));
+                    WaterTintingColor = jsonElement.GetColor(nameof(WaterTintingColor));
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.Lua)
+                {
+                    ScriptLanguage = jsonElement.GetInt32<ScriptLanguage>(nameof(ScriptLanguage));
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.Reforged)
+                {
+                    SupportedModes = jsonElement.GetInt32<SupportedModes>(nameof(SupportedModes));
+                    GameDataVersion = jsonElement.GetInt32<GameDataVersion>(nameof(GameDataVersion));
+                }
+            }
+
+            foreach (var element in jsonElement.EnumerateArray(nameof(Players)))
+            {
+                Players.Add(element.GetPlayerData(FormatVersion));
+            }
+
+            foreach (var element in jsonElement.EnumerateArray(nameof(Forces)))
+            {
+                Forces.Add(element.GetForceData(FormatVersion));
+            }
+
+            foreach (var element in jsonElement.EnumerateArray(nameof(UpgradeData)))
+            {
+                UpgradeData.Add(element.GetUpgradeData(FormatVersion));
+            }
+
+            foreach (var element in jsonElement.EnumerateArray(nameof(TechData)))
+            {
+                TechData.Add(element.GetTechData(FormatVersion));
+            }
+
+            if (FormatVersion >= MapInfoFormatVersion.v15)
+            {
+                foreach (var element in jsonElement.EnumerateArray(nameof(RandomUnitTables)))
+                {
+                    RandomUnitTables.Add(element.GetRandomUnitTable(FormatVersion));
+                }
+            }
+
+            if (FormatVersion >= MapInfoFormatVersion.v24)
+            {
+                foreach (var element in jsonElement.EnumerateArray(nameof(RandomItemTables)))
+                {
+                    RandomItemTables.Add(element.GetRandomItemTable(FormatVersion));
+                }
+            }
+        }
+
         internal void ReadFrom(ref Utf8JsonReader reader)
         {
-            throw new NotImplementedException();
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
