@@ -12,11 +12,11 @@ namespace War3Net.Build.Info
     [Flags]
     public enum ForceFlags
     {
-        Allied = 0x01,
-        AlliedVictory = 0x02,
-        UNK4 = 0x04,
-        ShareVision = 0x08,
-        ShareUnitControl = 0x10,
-        ShareAdvancedUnitControl = 0x20,
+        Allied = 1 << 0,
+        AlliedVictory = 1 << 1,
+        UNK4 = 1 << 2,
+        ShareVision = 1 << 3,
+        ShareUnitControl = 1 << 4,
+        ShareAdvancedUnitControl = 1 << 5,
     }
 }

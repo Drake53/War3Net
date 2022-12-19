@@ -12,12 +12,12 @@ namespace War3Net.Build.Environment
     [Flags]
     public enum PathingType : byte
     {
-        Walk = 0x02,
-        Fly = 0x04,
-        Build = 0x08,
+        Walk = 1 << 1,
+        Fly = 1 << 2,
+        Build = 1 << 3,
 
-        Blight = 0x20,
-        Water = 0x40,
-        UNK = 0x80,
+        Blight = 1 << 5,
+        Water = 1 << 6,
+        UNK = 1 << 7,
     }
 }

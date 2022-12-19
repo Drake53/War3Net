@@ -12,7 +12,7 @@ namespace War3Net.Build.Info
     [Flags]
     public enum PlayerFlags
     {
-        FixedStartPosition = 0x01,
-        RaceSelectable = 0x02,
+        FixedStartPosition = 1 << 0,
+        RaceSelectable = 1 << 1,
     }
 }

@@ -12,7 +12,7 @@ namespace War3Net.Build.Info
     [Flags]
     public enum CampaignFlags
     {
-        VariableDifficultyLevels = 0x0001,
-        RequiresExpansion = 0x0002,
+        VariableDifficultyLevels = 1 << 0,
+        RequiresExpansion = 1 << 1,
     }
 }
