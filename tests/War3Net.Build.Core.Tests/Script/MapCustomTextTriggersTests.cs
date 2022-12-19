@@ -48,9 +48,9 @@ namespace War3Net.Build.Core.Tests.Script
             ParseTestHelper.RunBinaryRWTest(mapCustomTextTriggersFilePath, typeof(MapCustomTextTriggers), additionalReadParameters: new object[] { Encoding.UTF8 }, additionalWriteParameters: new object[] { Encoding.UTF8 });
         }
 
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.RoC);
+        private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.v0);
 
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataTft() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.Tft);
+        private static IEnumerable<object[]> GetMapCustomTextTriggersDataTft() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.v1);
 
         private static IEnumerable<object[]> GetMapCustomTextTriggersDataNew() => GetMapCustomTextTriggersDataSpecificFormatVersion(null);
 

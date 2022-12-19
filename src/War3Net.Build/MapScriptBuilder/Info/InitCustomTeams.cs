@@ -88,7 +88,7 @@ namespace War3Net.Build
 
                     if (forceData.Flags.HasFlag(ForceFlags.Allied))
                     {
-                        if (mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged)
+                        if (mapInfo.FormatVersion >= MapInfoFormatVersion.v31)
                         {
                             statements.Add(JassEmptySyntax.Value);
                             statements.Add(new JassCommentSyntax("   Allied"));

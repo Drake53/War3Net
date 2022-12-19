@@ -47,7 +47,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            if (map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.v15 && map.Info.FormatVersion < MapInfoFormatVersion.Lua)
+            if (map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.v15 && map.Info.FormatVersion < MapInfoFormatVersion.v28)
             {
                 return true;
             }

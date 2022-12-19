@@ -71,7 +71,7 @@ namespace War3Net.Build.Script
                 Parameters.Add(reader.ReadTriggerFunctionParameter(triggerData, formatVersion, subVersion));
             }
 
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 var nestedfunctionCount = reader.ReadInt32();
                 if (nestedfunctionCount > 0)
@@ -100,7 +100,7 @@ namespace War3Net.Build.Script
                 writer.Write(parameter, formatVersion, subVersion);
             }
 
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 writer.Write(ChildFunctions.Count);
                 foreach (var childFunction in ChildFunctions)

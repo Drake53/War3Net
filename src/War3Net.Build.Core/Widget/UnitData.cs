@@ -105,7 +105,7 @@ namespace War3Net.Build.Widget
             HP = reader.ReadInt32();
             MP = reader.ReadInt32();
 
-            if (formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11)
+            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 MapItemTableId = reader.ReadInt32();
             }
@@ -120,7 +120,7 @@ namespace War3Net.Build.Widget
             TargetAcquisition = reader.ReadSingle();
 
             HeroLevel = reader.ReadInt32();
-            if ((formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11) || subVersion == MapWidgetsSubVersion.V10)
+            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 HeroStrength = reader.ReadInt32();
                 HeroAgility = reader.ReadInt32();
@@ -148,7 +148,7 @@ namespace War3Net.Build.Widget
                 _ => null,
             };
 
-            if (formatVersion > MapWidgetsFormatVersion.RoCBETA && subVersion > MapWidgetsSubVersion.V7)
+            if (formatVersion > MapWidgetsFormatVersion.v6 && subVersion > MapWidgetsSubVersion.v7)
             {
                 CustomPlayerColorId = reader.ReadInt32();
                 WaygateDestinationRegionId = reader.ReadInt32();
@@ -180,7 +180,7 @@ namespace War3Net.Build.Widget
             writer.Write(HP);
             writer.Write(MP);
 
-            if (formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11)
+            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 writer.Write(MapItemTableId);
             }
@@ -195,7 +195,7 @@ namespace War3Net.Build.Widget
             writer.Write(TargetAcquisition);
 
             writer.Write(HeroLevel);
-            if ((formatVersion == MapWidgetsFormatVersion.TFT && subVersion == MapWidgetsSubVersion.V11) || subVersion == MapWidgetsSubVersion.V10)
+            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 writer.Write(HeroStrength);
                 writer.Write(HeroAgility);
@@ -228,7 +228,7 @@ namespace War3Net.Build.Widget
                 writer.Write(RandomData, formatVersion, subVersion, useNewFormat);
             }
 
-            if (formatVersion > MapWidgetsFormatVersion.RoCBETA && subVersion > MapWidgetsSubVersion.V7)
+            if (formatVersion > MapWidgetsFormatVersion.v6 && subVersion > MapWidgetsSubVersion.v7)
             {
                 writer.Write(CustomPlayerColorId);
                 writer.Write(WaygateDestinationRegionId);

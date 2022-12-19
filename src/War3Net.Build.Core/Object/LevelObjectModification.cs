@@ -42,7 +42,7 @@ namespace War3Net.Build.Object
             OldId = reader.ReadInt32();
             NewId = reader.ReadInt32();
 
-            if (formatVersion >= ObjectDataFormatVersion.V3)
+            if (formatVersion >= ObjectDataFormatVersion.v3)
             {
                 nint unkCount = reader.ReadInt32();
                 for (nint i = 0; i < unkCount; i++)
@@ -63,7 +63,7 @@ namespace War3Net.Build.Object
             writer.Write(OldId);
             writer.Write(NewId);
 
-            if (formatVersion >= ObjectDataFormatVersion.V3)
+            if (formatVersion >= ObjectDataFormatVersion.v3)
             {
                 writer.Write(Unk.Count);
                 foreach (var unk in Unk)

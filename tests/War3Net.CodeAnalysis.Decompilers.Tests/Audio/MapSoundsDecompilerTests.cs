@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
                 Assert.AreEqual(expectedSound.FadeInRate, actualSound.FadeInRate);
                 Assert.AreEqual(expectedSound.FadeOutRate, actualSound.FadeOutRate);
 
-                if (map.Sounds.FormatVersion >= MapSoundsFormatVersion.Reforged)
+                if (map.Sounds.FormatVersion >= MapSoundsFormatVersion.v2)
                 {
                     Assert.AreEqual(expectedSound.DialogueTextKey, actualSound.DialogueTextKey);
                     Assert.AreEqual(expectedSound.DialogueSpeakerNameKey, actualSound.DialogueSpeakerNameKey);

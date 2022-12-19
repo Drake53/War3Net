@@ -65,13 +65,13 @@ namespace War3Net.Build.Script
                 throw new NotSupportedException($"Unknown version of '{FileName}': {version}");
             }
 
-            if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
+            if (FormatVersion >= MapCustomTextTriggersFormatVersion.v1)
             {
                 GlobalCustomScriptComment = reader.ReadChars();
                 GlobalCustomScriptCode = reader.ReadCustomTextTrigger(encoding, FormatVersion, SubVersion);
             }
 
-            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.NewBETA)
+            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.v1)
             {
                 nint customTextTriggerCount = reader.ReadInt32();
                 for (nint i = 0; i < customTextTriggerCount; i++)
@@ -96,13 +96,13 @@ namespace War3Net.Build.Script
             }
 
             writer.Write((int)FormatVersion);
-            if (FormatVersion >= MapCustomTextTriggersFormatVersion.Tft)
+            if (FormatVersion >= MapCustomTextTriggersFormatVersion.v1)
             {
                 writer.WriteString(GlobalCustomScriptComment);
                 writer.Write(GlobalCustomScriptCode, encoding, FormatVersion, SubVersion);
             }
 
-            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.NewBETA)
+            if (SubVersion is null || SubVersion == MapCustomTextTriggersSubVersion.v1)
             {
                 writer.Write(CustomTextTriggers.Count);
             }

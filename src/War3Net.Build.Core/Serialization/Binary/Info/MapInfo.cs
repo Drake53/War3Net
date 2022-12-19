@@ -24,7 +24,7 @@ namespace War3Net.Build.Info
         internal void ReadFrom(BinaryReader reader)
         {
             FormatVersion = reader.ReadInt32<MapInfoFormatVersion>();
-            if (FormatVersion >= MapInfoFormatVersion.RoC)
+            if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 MapVersion = reader.ReadInt32();
                 EditorVersion = reader.ReadInt32<EditorVersion>();
@@ -72,7 +72,7 @@ namespace War3Net.Build.Info
                 LoadingScreenBackgroundNumber = reader.ReadInt32();
                 LoadingScreenPath = reader.ReadChars();
             }
-            else if (FormatVersion >= MapInfoFormatVersion.RoC)
+            else if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 CampaignBackgroundNumber = reader.ReadInt32();
             }
@@ -95,7 +95,7 @@ namespace War3Net.Build.Info
                     GameDataSet = reader.ReadInt32<GameDataSet>();
                     PrologueScreenPath = reader.ReadChars();
                 }
-                else if (FormatVersion >= MapInfoFormatVersion.RoC)
+                else if (FormatVersion >= MapInfoFormatVersion.v18)
                 {
                     LoadingScreenNumber = reader.ReadInt32();
                 }
@@ -122,7 +122,7 @@ namespace War3Net.Build.Info
                     FogDensity = reader.ReadSingle();
                     FogColor = reader.ReadColorBgra();
 
-                    if (FormatVersion >= MapInfoFormatVersion.Tft)
+                    if (FormatVersion >= MapInfoFormatVersion.v25)
                     {
                         GlobalWeather = reader.ReadInt32<WeatherType>();
                     }
@@ -132,12 +132,12 @@ namespace War3Net.Build.Info
                     WaterTintingColor = reader.ReadColorBgra();
                 }
 
-                if (FormatVersion >= MapInfoFormatVersion.Lua)
+                if (FormatVersion >= MapInfoFormatVersion.v28)
                 {
                     ScriptLanguage = reader.ReadInt32<ScriptLanguage>();
                 }
 
-                if (FormatVersion >= MapInfoFormatVersion.Reforged)
+                if (FormatVersion >= MapInfoFormatVersion.v31)
                 {
                     SupportedModes = reader.ReadInt32<SupportedModes>();
                     GameDataVersion = reader.ReadInt32<GameDataVersion>();
@@ -199,7 +199,7 @@ namespace War3Net.Build.Info
                     }
                 }
 
-                if (FormatVersion >= MapInfoFormatVersion.v26 && FormatVersion < MapInfoFormatVersion.Lua)
+                if (FormatVersion >= MapInfoFormatVersion.v26 && FormatVersion < MapInfoFormatVersion.v28)
                 {
                     if (reader.ReadInt32() != 0)
                     {
@@ -218,7 +218,7 @@ namespace War3Net.Build.Info
 
             writer.Write((int)FormatVersion);
 
-            if (FormatVersion >= MapInfoFormatVersion.RoC)
+            if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 writer.Write(MapVersion);
                 writer.Write((int)EditorVersion);
@@ -279,7 +279,7 @@ namespace War3Net.Build.Info
                 writer.Write(LoadingScreenBackgroundNumber);
                 writer.WriteString(LoadingScreenPath);
             }
-            else if (FormatVersion >= MapInfoFormatVersion.RoC)
+            else if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 writer.Write(CampaignBackgroundNumber);
             }
@@ -302,7 +302,7 @@ namespace War3Net.Build.Info
                     writer.Write((int)GameDataSet);
                     writer.WriteString(PrologueScreenPath);
                 }
-                else if (FormatVersion >= MapInfoFormatVersion.RoC)
+                else if (FormatVersion >= MapInfoFormatVersion.v18)
                 {
                     writer.Write(LoadingScreenNumber);
                 }
@@ -329,7 +329,7 @@ namespace War3Net.Build.Info
                     writer.Write(FogDensity);
                     writer.Write(FogColor.ToBgra());
 
-                    if (FormatVersion >= MapInfoFormatVersion.Tft)
+                    if (FormatVersion >= MapInfoFormatVersion.v25)
                     {
                         writer.Write((int)GlobalWeather);
                     }
@@ -340,12 +340,12 @@ namespace War3Net.Build.Info
                     writer.Write(WaterTintingColor.ToBgra());
                 }
 
-                if (FormatVersion >= MapInfoFormatVersion.Lua)
+                if (FormatVersion >= MapInfoFormatVersion.v28)
                 {
                     writer.Write((int)ScriptLanguage);
                 }
 
-                if (FormatVersion >= MapInfoFormatVersion.Reforged)
+                if (FormatVersion >= MapInfoFormatVersion.v31)
                 {
                     writer.Write((int)SupportedModes);
                     writer.Write((int)GameDataVersion);
@@ -410,7 +410,7 @@ namespace War3Net.Build.Info
                 }
             }
 
-            if (FormatVersion >= MapInfoFormatVersion.v26 && FormatVersion < MapInfoFormatVersion.Lua)
+            if (FormatVersion >= MapInfoFormatVersion.v26 && FormatVersion < MapInfoFormatVersion.v28)
             {
                 writer.Write(0);
             }

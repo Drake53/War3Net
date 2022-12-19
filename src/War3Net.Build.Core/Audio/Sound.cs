@@ -112,7 +112,7 @@ namespace War3Net.Build.Audio
             ConeOutsideVolume = reader.ReadInt32();
             ConeOrientation = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
-            if (formatVersion >= MapSoundsFormatVersion.Reforged)
+            if (formatVersion >= MapSoundsFormatVersion.v2)
             {
                 var repeatVariableName = reader.ReadChars();
                 SoundName = reader.ReadChars();
@@ -139,7 +139,7 @@ namespace War3Net.Build.Audio
                 FacialAnimationGroupLabel = reader.ReadChars();
                 FacialAnimationSetFilepath = reader.ReadChars();
 
-                if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
+                if (formatVersion >= MapSoundsFormatVersion.v3)
                 {
                     Unk11 = reader.ReadInt32();
                 }
@@ -169,7 +169,7 @@ namespace War3Net.Build.Audio
             writer.Write(ConeOrientation.Y);
             writer.Write(ConeOrientation.Z);
 
-            if (formatVersion >= MapSoundsFormatVersion.Reforged)
+            if (formatVersion >= MapSoundsFormatVersion.v2)
             {
                 writer.WriteString(Name);
                 writer.WriteString(SoundName);
@@ -191,7 +191,7 @@ namespace War3Net.Build.Audio
                 writer.WriteString(FacialAnimationGroupLabel);
                 writer.WriteString(FacialAnimationSetFilepath);
 
-                if (formatVersion >= MapSoundsFormatVersion.ReforgedV3)
+                if (formatVersion >= MapSoundsFormatVersion.v3)
                 {
                     writer.Write(Unk11);
                 }

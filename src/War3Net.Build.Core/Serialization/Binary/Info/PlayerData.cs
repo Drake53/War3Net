@@ -32,7 +32,7 @@ namespace War3Net.Build.Info
             AllyLowPriorityFlags = reader.ReadBitmask32();
             AllyHighPriorityFlags = reader.ReadBitmask32();
 
-            if (formatVersion >= MapInfoFormatVersion.Reforged)
+            if (formatVersion >= MapInfoFormatVersion.v31)
             {
                 EnemyLowPriorityFlags = reader.ReadBitmask32();
                 EnemyHighPriorityFlags = reader.ReadBitmask32();
@@ -56,7 +56,7 @@ namespace War3Net.Build.Info
             writer.Write(AllyLowPriorityFlags);
             writer.Write(AllyHighPriorityFlags);
 
-            if (formatVersion >= MapInfoFormatVersion.Reforged)
+            if (formatVersion >= MapInfoFormatVersion.v31)
             {
                 writer.Write(EnemyLowPriorityFlags);
                 writer.Write(EnemyHighPriorityFlags);

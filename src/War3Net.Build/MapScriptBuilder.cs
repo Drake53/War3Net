@@ -90,8 +90,8 @@ namespace War3Net.Build
             MaxPlayerSlots = map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v26 ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
             ForceGenerateGlobalDestructableVariable = false;
-            ForceGenerateUnitWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.Reforged;
-            ForceGenerateDestructableWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.Reforged;
+            ForceGenerateUnitWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.v31;
+            ForceGenerateDestructableWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.v31;
             UseCSharpLua = false;
             UseLifeVariable = true;
             UseWeatherEffectVariable = true;

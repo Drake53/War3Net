@@ -36,7 +36,7 @@ namespace War3Net.Build.Info
             AllyLowPriorityFlags = jsonElement.GetBitmask32(nameof(AllyLowPriorityFlags));
             AllyHighPriorityFlags = jsonElement.GetBitmask32(nameof(AllyHighPriorityFlags));
 
-            if (formatVersion >= MapInfoFormatVersion.Reforged)
+            if (formatVersion >= MapInfoFormatVersion.v31)
             {
                 EnemyLowPriorityFlags = jsonElement.GetBitmask32(nameof(EnemyLowPriorityFlags));
                 EnemyHighPriorityFlags = jsonElement.GetBitmask32(nameof(EnemyHighPriorityFlags));
@@ -66,7 +66,7 @@ namespace War3Net.Build.Info
             writer.Write(nameof(AllyLowPriorityFlags), AllyLowPriorityFlags, options);
             writer.Write(nameof(AllyHighPriorityFlags), AllyHighPriorityFlags, options);
 
-            if (formatVersion >= MapInfoFormatVersion.Reforged)
+            if (formatVersion >= MapInfoFormatVersion.v31)
             {
                 writer.Write(nameof(EnemyLowPriorityFlags), EnemyLowPriorityFlags, options);
                 writer.Write(nameof(EnemyHighPriorityFlags), EnemyHighPriorityFlags, options);

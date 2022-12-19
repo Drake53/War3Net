@@ -5,8 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-#pragma warning disable SA1602 // Enumeration items should be documented
+#pragma warning disable CA1008
+#pragma warning disable SA1300
 
 namespace War3Net.Build.Info
 {

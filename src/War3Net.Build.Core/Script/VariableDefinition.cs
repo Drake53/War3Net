@@ -51,7 +51,7 @@ namespace War3Net.Build.Script
             Type = reader.ReadChars();
             Unk = reader.ReadInt32();
             IsArray = reader.ReadBool();
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 ArraySize = reader.ReadInt32();
             }
@@ -72,7 +72,7 @@ namespace War3Net.Build.Script
             writer.WriteString(Type);
             writer.Write(Unk);
             writer.WriteBool(IsArray);
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 writer.Write(ArraySize);
             }

@@ -71,7 +71,7 @@ namespace War3Net.Build
             var width = mapInfo.PlayableMapAreaWidth + leftBound + rightBound;
             var height = mapInfo.PlayableMapAreaHeight + bottomBound + topBound;
 
-            var mapEnvironment = new MapEnvironment(MapEnvironmentFormatVersion.Normal)
+            var mapEnvironment = new MapEnvironment(MapEnvironmentFormatVersion.v11)
             {
                 Tileset = mapInfo.Tileset,
                 TerrainTypes = terrainTypes,

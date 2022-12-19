@@ -47,9 +47,9 @@ namespace War3Net.Build.Core.Tests.Script
             ParseTestHelper.RunBinaryRWTest(mapTriggersFilePath, typeof(MapTriggers), additionalReadParameters: TriggerData.Default);
         }
 
-        private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.RoC);
+        private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.v4);
 
-        private static IEnumerable<object[]> GetMapTriggersDataTft() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.Tft);
+        private static IEnumerable<object[]> GetMapTriggersDataTft() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.v7);
 
         private static IEnumerable<object[]> GetMapTriggersDataNew() => GetMapTriggersDataSpecificFormatVersion(null);
 

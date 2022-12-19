@@ -23,15 +23,15 @@ namespace War3Net.Build.Core.Tests.Object
         [TestMethod]
         public void TestCreateNewObjectDataCampaign()
         {
-            var objectData = new ObjectData(ObjectDataFormatVersion.Normal)
+            var objectData = new ObjectData(ObjectDataFormatVersion.v2)
             {
-                UnitData = new CampaignUnitObjectData(ObjectDataFormatVersion.Normal),
-                ItemData = new CampaignItemObjectData(ObjectDataFormatVersion.Normal),
-                DestructableData = new CampaignDestructableObjectData(ObjectDataFormatVersion.Normal),
-                DoodadData = new CampaignDoodadObjectData(ObjectDataFormatVersion.Normal),
-                AbilityData = new CampaignAbilityObjectData(ObjectDataFormatVersion.Normal),
-                BuffData = new CampaignBuffObjectData(ObjectDataFormatVersion.Normal),
-                UpgradeData = new CampaignUpgradeObjectData(ObjectDataFormatVersion.Normal),
+                UnitData = new CampaignUnitObjectData(ObjectDataFormatVersion.v2),
+                ItemData = new CampaignItemObjectData(ObjectDataFormatVersion.v2),
+                DestructableData = new CampaignDestructableObjectData(ObjectDataFormatVersion.v2),
+                DoodadData = new CampaignDoodadObjectData(ObjectDataFormatVersion.v2),
+                AbilityData = new CampaignAbilityObjectData(ObjectDataFormatVersion.v2),
+                BuffData = new CampaignBuffObjectData(ObjectDataFormatVersion.v2),
+                UpgradeData = new CampaignUpgradeObjectData(ObjectDataFormatVersion.v2),
             };
 
             using var memoryStream = new MemoryStream();
@@ -47,15 +47,15 @@ namespace War3Net.Build.Core.Tests.Object
         [TestMethod]
         public void TestCreateNewObjectDataMap()
         {
-            var objectData = new ObjectData(ObjectDataFormatVersion.Normal)
+            var objectData = new ObjectData(ObjectDataFormatVersion.v2)
             {
-                UnitData = new MapUnitObjectData(ObjectDataFormatVersion.Normal),
-                ItemData = new MapItemObjectData(ObjectDataFormatVersion.Normal),
-                DestructableData = new MapDestructableObjectData(ObjectDataFormatVersion.Normal),
-                DoodadData = new MapDoodadObjectData(ObjectDataFormatVersion.Normal),
-                AbilityData = new MapAbilityObjectData(ObjectDataFormatVersion.Normal),
-                BuffData = new MapBuffObjectData(ObjectDataFormatVersion.Normal),
-                UpgradeData = new MapUpgradeObjectData(ObjectDataFormatVersion.Normal),
+                UnitData = new MapUnitObjectData(ObjectDataFormatVersion.v2),
+                ItemData = new MapItemObjectData(ObjectDataFormatVersion.v2),
+                DestructableData = new MapDestructableObjectData(ObjectDataFormatVersion.v2),
+                DoodadData = new MapDoodadObjectData(ObjectDataFormatVersion.v2),
+                AbilityData = new MapAbilityObjectData(ObjectDataFormatVersion.v2),
+                BuffData = new MapBuffObjectData(ObjectDataFormatVersion.v2),
+                UpgradeData = new MapUpgradeObjectData(ObjectDataFormatVersion.v2),
             };
 
             using var memoryStream = new MemoryStream();

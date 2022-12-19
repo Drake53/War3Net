@@ -43,7 +43,7 @@ namespace War3Net.Build.Widget
             useNewFormat = reader.PeekChar() >= 0x20;
             SkinId = useNewFormat ? reader.ReadInt32() : TypeId;
 
-            if (formatVersion > MapWidgetsFormatVersion.RoCBETA)
+            if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 State = (DoodadState)reader.ReadByte();
                 if ((int)State >= 8)
@@ -54,7 +54,7 @@ namespace War3Net.Build.Widget
 
             Life = reader.ReadByte();
 
-            if (formatVersion == MapWidgetsFormatVersion.TFT)
+            if (formatVersion == MapWidgetsFormatVersion.v8)
             {
                 MapItemTableId = reader.ReadInt32();
 
@@ -85,14 +85,14 @@ namespace War3Net.Build.Widget
                 writer.Write(SkinId);
             }
 
-            if (formatVersion > MapWidgetsFormatVersion.RoCBETA)
+            if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 writer.Write((byte)State);
             }
 
             writer.Write(Life);
 
-            if (formatVersion == MapWidgetsFormatVersion.TFT)
+            if (formatVersion == MapWidgetsFormatVersion.v8)
             {
                 writer.Write(MapItemTableId);
 

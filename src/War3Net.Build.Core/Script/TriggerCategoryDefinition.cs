@@ -35,7 +35,7 @@ namespace War3Net.Build.Script
         {
             Id = reader.ReadInt32();
             Name = reader.ReadChars();
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 IsComment = reader.ReadBool();
             }
@@ -51,7 +51,7 @@ namespace War3Net.Build.Script
         {
             writer.Write(Id);
             writer.WriteString(Name);
-            if (formatVersion >= MapTriggersFormatVersion.Tft)
+            if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 writer.WriteBool(IsComment);
             }
