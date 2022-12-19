@@ -87,7 +87,7 @@ namespace War3Net.Build
             }
 
             LobbyMusic = null;
-            MaxPlayerSlots = map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v26 ? 24 : 12;
+            MaxPlayerSlots = map.Info is null || map.Info.EditorVersion >= EditorVersion.v6060 ? 24 : 12;
             ForceGenerateGlobalUnitVariable = false;
             ForceGenerateGlobalDestructableVariable = false;
             ForceGenerateUnitWithSkin = map.Info is not null && map.Info.FormatVersion >= MapInfoFormatVersion.v31;
