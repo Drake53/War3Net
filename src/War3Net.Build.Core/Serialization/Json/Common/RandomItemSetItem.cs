@@ -15,26 +15,34 @@ namespace War3Net.Build.Common
 {
     public sealed partial class RandomItemSetItem
     {
-        internal void ReadFrom(Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
         {
             throw new NotImplementedException();
         }
 
-        internal void ReadFrom(Utf8JsonReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Chance), Chance);
             writer.WriteNumber(nameof(ItemId), ItemId);
+
+            writer.WriteEndObject();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(ItemId), ItemId);
             writer.WriteNumber(nameof(Chance), Chance);
+
+            writer.WriteEndObject();
         }
     }
 }

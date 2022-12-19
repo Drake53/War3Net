@@ -25,10 +25,14 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this Utf8JsonWriter writer, Color color)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Color.R), color.R);
             writer.WriteNumber(nameof(Color.G), color.G);
             writer.WriteNumber(nameof(Color.B), color.B);
             writer.WriteNumber(nameof(Color.A), color.A);
+
+            writer.WriteEndObject();
         }
 
         public static void Write(this Utf8JsonWriter writer, string propertyName, Color color)
@@ -39,8 +43,12 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this Utf8JsonWriter writer, Vector2 vector)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Vector2.X), vector.X);
             writer.WriteNumber(nameof(Vector2.Y), vector.Y);
+
+            writer.WriteEndObject();
         }
 
         public static void Write(this Utf8JsonWriter writer, string propertyName, Vector2 vector)
@@ -75,13 +83,21 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this Utf8JsonWriter writer, RectangleMargins rectangleMargins) => rectangleMargins.WriteTo(writer);
 
-        public static void Write(this Utf8JsonWriter writer, string propertyName, RectangleMargins rectangleMargins)
+        public static void Write(this Utf8JsonWriter writer, string propertyName, RectangleMargins? rectangleMargins)
         {
             writer.WritePropertyName(propertyName);
-            writer.Write(rectangleMargins);
+
+            if (rectangleMargins is null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.Write(rectangleMargins);
+            }
         }
 
-        public static void Write(this Utf8JsonWriter writer, MapInfo mapInfo) => mapInfo.WriteTo(writer);
+        public static void Write(this Utf8JsonWriter writer, MapInfo mapInfo, JsonSerializerOptions options) => mapInfo.WriteTo(writer, options);
 
         public static void Write(this Utf8JsonWriter writer, PlayerData playerData, MapInfoFormatVersion formatVersion) => playerData.WriteTo(writer, formatVersion);
 

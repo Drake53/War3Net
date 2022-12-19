@@ -14,17 +14,21 @@ namespace War3Net.Build.Common
 {
     public sealed partial class Quadrilateral
     {
-        internal void ReadFrom(Utf8JsonReader reader)
+        internal void ReadFrom(ref Utf8JsonReader reader)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer)
         {
+            writer.WriteStartObject();
+
             writer.Write(nameof(BottomLeft), BottomLeft);
             writer.Write(nameof(TopRight), TopRight);
             writer.Write(nameof(TopLeft), TopLeft);
             writer.Write(nameof(BottomRight), BottomRight);
+
+            writer.WriteEndObject();
         }
     }
 }

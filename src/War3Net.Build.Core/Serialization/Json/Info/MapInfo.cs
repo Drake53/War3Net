@@ -14,23 +14,25 @@ namespace War3Net.Build.Info
 {
     public sealed partial class MapInfo
     {
-        internal void ReadFrom(Utf8JsonReader reader)
+        internal void ReadFrom(ref Utf8JsonReader reader)
         {
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
         {
-            writer.WriteNumber(nameof(FormatVersion), (int)FormatVersion);
+            writer.WriteStartObject();
+
+            writer.WriteObject(nameof(FormatVersion), FormatVersion, options);
 
             if (FormatVersion >= MapInfoFormatVersion.RoC)
             {
                 writer.WriteNumber(nameof(MapVersion), MapVersion);
-                writer.WriteNumber(nameof(EditorVersion), (int)EditorVersion);
+                writer.WriteObject(nameof(EditorVersion), EditorVersion, options);
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {
-                    writer.WriteObject(nameof(GameVersion), GameVersion);
+                    writer.WriteObject(nameof(GameVersion), GameVersion, options);
                 }
             }
 
@@ -63,8 +65,8 @@ namespace War3Net.Build.Info
                 writer.WriteNumber(nameof(Unk7), Unk7);
             }
 
-            writer.WriteNumber(nameof(MapFlags), (int)MapFlags);
-            writer.WriteNumber(nameof(Tileset), (byte)Tileset);
+            writer.WriteObject(nameof(MapFlags), MapFlags, options);
+            writer.WriteObject(nameof(Tileset), Tileset, options);
 
             if (FormatVersion >= MapInfoFormatVersion.v23)
             {
@@ -91,7 +93,7 @@ namespace War3Net.Build.Info
 
                 if (FormatVersion >= MapInfoFormatVersion.v23)
                 {
-                    writer.WriteNumber(nameof(GameDataSet), (int)GameDataSet);
+                    writer.WriteObject(nameof(GameDataSet), GameDataSet, options);
                     writer.WriteString(nameof(PrologueScreenPath), PrologueScreenPath);
                 }
                 else if (FormatVersion >= MapInfoFormatVersion.RoC)
@@ -115,7 +117,7 @@ namespace War3Net.Build.Info
 
                 if (FormatVersion >= MapInfoFormatVersion.v23)
                 {
-                    writer.WriteNumber(nameof(FogStyle), (int)FogStyle);
+                    writer.WriteObject(nameof(FogStyle), FogStyle, options);
                     writer.WriteNumber(nameof(FogStartZ), FogStartZ);
                     writer.WriteNumber(nameof(FogEndZ), FogEndZ);
                     writer.WriteNumber(nameof(FogDensity), FogDensity);
@@ -123,24 +125,24 @@ namespace War3Net.Build.Info
 
                     if (FormatVersion >= MapInfoFormatVersion.Tft)
                     {
-                        writer.WriteNumber(nameof(GlobalWeather), (int)GlobalWeather);
+                        writer.WriteObject(nameof(GlobalWeather), GlobalWeather, options);
                     }
 
                     writer.WriteString(nameof(SoundEnvironment), SoundEnvironment);
-                    writer.WriteNumber(nameof(LightEnvironment), (byte)LightEnvironment);
+                    writer.WriteObject(nameof(LightEnvironment), LightEnvironment, options);
 
                     writer.Write(nameof(WaterTintingColor), WaterTintingColor);
                 }
 
                 if (FormatVersion >= MapInfoFormatVersion.Lua)
                 {
-                    writer.WriteNumber(nameof(ScriptLanguage), (int)ScriptLanguage);
+                    writer.WriteObject(nameof(ScriptLanguage), ScriptLanguage, options);
                 }
 
                 if (FormatVersion >= MapInfoFormatVersion.Reforged)
                 {
-                    writer.WriteNumber(nameof(SupportedModes), (int)SupportedModes);
-                    writer.WriteNumber(nameof(GameDataVersion), (int)GameDataVersion);
+                    writer.WriteObject(nameof(SupportedModes), SupportedModes, options);
+                    writer.WriteObject(nameof(GameDataVersion), GameDataVersion, options);
                 }
             }
 
@@ -211,6 +213,8 @@ namespace War3Net.Build.Info
                     writer.WriteEndArray();
                 }
             }
+
+            writer.WriteEndObject();
         }
     }
 }

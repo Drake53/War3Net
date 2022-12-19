@@ -14,13 +14,15 @@ namespace War3Net.Build.Info
 {
     public sealed partial class PlayerData
     {
-        internal void ReadFrom(Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Id), Id);
             writer.WriteNumber(nameof(Controller), (int)Controller);
             writer.WriteNumber(nameof(Race), (int)Race);
@@ -35,6 +37,8 @@ namespace War3Net.Build.Info
                 writer.Write(nameof(EnemyLowPriorityFlags), EnemyLowPriorityFlags);
                 writer.Write(nameof(EnemyHighPriorityFlags), EnemyHighPriorityFlags);
             }
+
+            writer.WriteEndObject();
         }
     }
 }

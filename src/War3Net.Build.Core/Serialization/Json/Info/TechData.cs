@@ -14,15 +14,19 @@ namespace War3Net.Build.Info
 {
     public sealed partial class TechData
     {
-        internal void ReadFrom(Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
         {
+            writer.WriteStartObject();
+
             writer.Write(nameof(Players), Players);
             writer.WriteNumber(nameof(Id), Id);
+
+            writer.WriteEndObject();
         }
     }
 }

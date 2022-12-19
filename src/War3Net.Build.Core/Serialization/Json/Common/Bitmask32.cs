@@ -11,7 +11,7 @@ namespace War3Net.Build.Common
 {
     public sealed partial class Bitmask32
     {
-        internal void ReadFrom(Utf8JsonReader reader)
+        internal void ReadFrom(ref Utf8JsonReader reader)
         {
             _mask = reader.GetInt32();
         }

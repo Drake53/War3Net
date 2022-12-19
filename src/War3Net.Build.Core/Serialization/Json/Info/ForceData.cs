@@ -14,16 +14,20 @@ namespace War3Net.Build.Info
 {
     public sealed partial class ForceData
     {
-        internal void ReadFrom(Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Flags), (int)Flags);
             writer.Write(nameof(Players), Players);
             writer.WriteString(nameof(Name), Name);
+
+            writer.WriteEndObject();
         }
     }
 }

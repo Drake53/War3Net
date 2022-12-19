@@ -14,13 +14,15 @@ namespace War3Net.Build.Info
 {
     public sealed partial class RandomItemTable
     {
-        internal void ReadFrom(Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapInfoFormatVersion formatVersion)
         {
             throw new NotImplementedException();
         }
 
         internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
         {
+            writer.WriteStartObject();
+
             writer.WriteNumber(nameof(Index), Index);
             writer.WriteString(nameof(Name), Name);
 
@@ -31,6 +33,8 @@ namespace War3Net.Build.Info
             }
 
             writer.WriteEndArray();
+
+            writer.WriteEndObject();
         }
     }
 }
