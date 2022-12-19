@@ -8,6 +8,8 @@
 using System;
 using System.Text.Json;
 
+using War3Net.Build.Extensions;
+
 namespace War3Net.Build.Info
 {
     public sealed partial class RandomUnitSet
@@ -17,19 +19,13 @@ namespace War3Net.Build.Info
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
             writer.WriteNumber(nameof(Chance), Chance);
 
-            writer.WriteStartArray(nameof(UnitIds));
-            for (nint i = 0; i < UnitIds.Length; i++)
-            {
-                writer.WriteNumberValue(UnitIds[i]);
-            }
-
-            writer.WriteEndArray();
+            writer.WriteObject(nameof(UnitIds), UnitIds, options);
 
             writer.WriteEndObject();
         }

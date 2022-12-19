@@ -26,14 +26,14 @@ namespace War3Net.Build.Common
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
             writer.WriteStartArray(nameof(Items));
             foreach (var item in Items)
             {
-                writer.Write(item, formatVersion);
+                writer.Write(item, options, formatVersion);
             }
 
             writer.WriteEndArray();
@@ -41,14 +41,14 @@ namespace War3Net.Build.Common
             writer.WriteEndObject();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             writer.WriteStartObject();
 
             writer.WriteStartArray(nameof(Items));
             foreach (var item in Items)
             {
-                writer.Write(item, formatVersion, subVersion, useNewFormat);
+                writer.Write(item, options, formatVersion, subVersion, useNewFormat);
             }
 
             writer.WriteEndArray();

@@ -19,12 +19,12 @@ namespace War3Net.Build.Info
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
-            writer.WriteNumber(nameof(Flags), (int)Flags);
-            writer.Write(nameof(Players), Players);
+            writer.WriteObject(nameof(Flags), Flags, options);
+            writer.Write(nameof(Players), Players, options);
             writer.WriteString(nameof(Name), Name);
 
             writer.WriteEndObject();

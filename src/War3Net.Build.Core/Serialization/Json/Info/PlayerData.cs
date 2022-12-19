@@ -19,23 +19,23 @@ namespace War3Net.Build.Info
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
             writer.WriteNumber(nameof(Id), Id);
-            writer.WriteNumber(nameof(Controller), (int)Controller);
-            writer.WriteNumber(nameof(Race), (int)Race);
-            writer.WriteNumber(nameof(Flags), (int)Flags);
+            writer.WriteObject(nameof(Controller), Controller, options);
+            writer.WriteObject(nameof(Race), Race, options);
+            writer.WriteObject(nameof(Flags), Flags, options);
             writer.WriteString(nameof(Name), Name);
             writer.Write(nameof(StartPosition), StartPosition);
-            writer.Write(nameof(AllyLowPriorityFlags), AllyLowPriorityFlags);
-            writer.Write(nameof(AllyHighPriorityFlags), AllyHighPriorityFlags);
+            writer.Write(nameof(AllyLowPriorityFlags), AllyLowPriorityFlags, options);
+            writer.Write(nameof(AllyHighPriorityFlags), AllyHighPriorityFlags, options);
 
             if (formatVersion >= MapInfoFormatVersion.Reforged)
             {
-                writer.Write(nameof(EnemyLowPriorityFlags), EnemyLowPriorityFlags);
-                writer.Write(nameof(EnemyHighPriorityFlags), EnemyHighPriorityFlags);
+                writer.Write(nameof(EnemyLowPriorityFlags), EnemyLowPriorityFlags, options);
+                writer.Write(nameof(EnemyHighPriorityFlags), EnemyHighPriorityFlags, options);
             }
 
             writer.WriteEndObject();

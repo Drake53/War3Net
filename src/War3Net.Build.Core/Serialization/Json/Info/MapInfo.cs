@@ -51,10 +51,10 @@ namespace War3Net.Build.Info
                 writer.WriteNumber(nameof(Unk6), Unk6);
             }
 
-            writer.Write(nameof(CameraBounds), CameraBounds);
+            writer.Write(nameof(CameraBounds), CameraBounds, options);
             if (FormatVersion >= MapInfoFormatVersion.v15)
             {
-                writer.Write(nameof(CameraBoundsComplements), CameraBoundsComplements);
+                writer.Write(nameof(CameraBoundsComplements), CameraBoundsComplements, options);
             }
 
             writer.WriteNumber(nameof(PlayableMapAreaWidth), PlayableMapAreaWidth);
@@ -149,7 +149,7 @@ namespace War3Net.Build.Info
             writer.WriteStartArray(nameof(Players));
             foreach (var player in Players)
             {
-                writer.Write(player, FormatVersion);
+                writer.Write(player, options, FormatVersion);
             }
 
             writer.WriteEndArray();
@@ -157,7 +157,7 @@ namespace War3Net.Build.Info
             writer.WriteStartArray(nameof(Forces));
             foreach (var force in Forces)
             {
-                writer.Write(force, FormatVersion);
+                writer.Write(force, options, FormatVersion);
             }
 
             writer.WriteEndArray();
@@ -165,7 +165,7 @@ namespace War3Net.Build.Info
             writer.WriteStartArray(nameof(UpgradeData));
             foreach (var upgrade in UpgradeData)
             {
-                writer.Write(upgrade, FormatVersion);
+                writer.Write(upgrade, options, FormatVersion);
             }
 
             writer.WriteEndArray();
@@ -173,7 +173,7 @@ namespace War3Net.Build.Info
             writer.WriteStartArray(nameof(TechData));
             foreach (var tech in TechData)
             {
-                writer.Write(tech, FormatVersion);
+                writer.Write(tech, options, FormatVersion);
             }
 
             writer.WriteEndArray();
@@ -189,7 +189,7 @@ namespace War3Net.Build.Info
                     writer.WriteStartArray(nameof(RandomUnitTables));
                     foreach (var unitTable in RandomUnitTables)
                     {
-                        writer.Write(unitTable, FormatVersion);
+                        writer.Write(unitTable, options, FormatVersion);
                     }
 
                     writer.WriteEndArray();
@@ -207,7 +207,7 @@ namespace War3Net.Build.Info
                     writer.WriteStartArray(nameof(RandomItemTables));
                     foreach (var itemTable in RandomItemTables)
                     {
-                        writer.Write(itemTable, FormatVersion);
+                        writer.Write(itemTable, options, FormatVersion);
                     }
 
                     writer.WriteEndArray();

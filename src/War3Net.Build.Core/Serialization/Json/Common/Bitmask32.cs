@@ -16,7 +16,7 @@ namespace War3Net.Build.Common
             _mask = reader.GetInt32();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
         {
             writer.WriteNumberValue(_mask);
         }

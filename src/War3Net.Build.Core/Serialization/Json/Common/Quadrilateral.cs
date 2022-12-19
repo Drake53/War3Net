@@ -19,7 +19,7 @@ namespace War3Net.Build.Common
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
 

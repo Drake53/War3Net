@@ -19,7 +19,7 @@ namespace War3Net.Build.Info
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
@@ -29,7 +29,7 @@ namespace War3Net.Build.Info
             writer.WriteStartArray(nameof(ItemSets));
             foreach (var itemSet in ItemSets)
             {
-                writer.Write(itemSet, formatVersion);
+                writer.Write(itemSet, options, formatVersion);
             }
 
             writer.WriteEndArray();

@@ -19,25 +19,19 @@ namespace War3Net.Build.Info
             throw new NotImplementedException();
         }
 
-        internal void WriteTo(Utf8JsonWriter writer, MapInfoFormatVersion formatVersion)
+        internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapInfoFormatVersion formatVersion)
         {
             writer.WriteStartObject();
 
             writer.WriteNumber(nameof(Index), Index);
             writer.WriteString(nameof(Name), Name);
 
-            writer.WriteStartArray(nameof(Types));
-            foreach (var type in Types)
-            {
-                writer.WriteNumberValue((int)type);
-            }
-
-            writer.WriteEndArray();
+            writer.WriteObject(nameof(Types), Types, options);
 
             writer.WriteStartArray(nameof(UnitSets));
             foreach (var unitSet in UnitSets)
             {
-                writer.Write(unitSet, formatVersion);
+                writer.Write(unitSet, options, formatVersion);
             }
 
             writer.WriteEndArray();

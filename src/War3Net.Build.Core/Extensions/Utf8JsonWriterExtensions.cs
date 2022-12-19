@@ -57,33 +57,33 @@ namespace War3Net.Build.Extensions
             writer.Write(vector);
         }
 
-        public static void Write(this Utf8JsonWriter writer, Bitmask32 bitmask) => bitmask.WriteTo(writer);
+        public static void Write(this Utf8JsonWriter writer, Bitmask32 bitmask, JsonSerializerOptions options) => bitmask.WriteTo(writer, options);
 
-        public static void Write(this Utf8JsonWriter writer, string propertyName, Bitmask32 bitmask)
+        public static void Write(this Utf8JsonWriter writer, string propertyName, Bitmask32 bitmask, JsonSerializerOptions options)
         {
             writer.WritePropertyName(propertyName);
-            writer.Write(bitmask);
+            writer.Write(bitmask, options);
         }
 
-        public static void Write(this Utf8JsonWriter writer, Quadrilateral quadrilateral) => quadrilateral.WriteTo(writer);
+        public static void Write(this Utf8JsonWriter writer, Quadrilateral quadrilateral, JsonSerializerOptions options) => quadrilateral.WriteTo(writer, options);
 
-        public static void Write(this Utf8JsonWriter writer, string propertyName, Quadrilateral quadrilateral)
+        public static void Write(this Utf8JsonWriter writer, string propertyName, Quadrilateral quadrilateral, JsonSerializerOptions options)
         {
             writer.WritePropertyName(propertyName);
-            writer.Write(quadrilateral);
+            writer.Write(quadrilateral, options);
         }
 
-        public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, MapInfoFormatVersion formatVersion) => randomItemSet.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomItemSet.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSet.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, JsonSerializerOptions options, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSet.WriteTo(writer, options, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this Utf8JsonWriter writer, RandomItemSetItem randomItemSetItem, MapInfoFormatVersion formatVersion) => randomItemSetItem.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, RandomItemSetItem randomItemSetItem, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomItemSetItem.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, RandomItemSetItem randomItemSetItem, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSetItem.WriteTo(writer, formatVersion, subVersion, useNewFormat);
+        public static void Write(this Utf8JsonWriter writer, RandomItemSetItem randomItemSetItem, JsonSerializerOptions options, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSetItem.WriteTo(writer, options, formatVersion, subVersion, useNewFormat);
 
-        public static void Write(this Utf8JsonWriter writer, RectangleMargins rectangleMargins) => rectangleMargins.WriteTo(writer);
+        public static void Write(this Utf8JsonWriter writer, RectangleMargins rectangleMargins, JsonSerializerOptions options) => rectangleMargins.WriteTo(writer, options);
 
-        public static void Write(this Utf8JsonWriter writer, string propertyName, RectangleMargins? rectangleMargins)
+        public static void Write(this Utf8JsonWriter writer, string propertyName, RectangleMargins? rectangleMargins, JsonSerializerOptions options)
         {
             writer.WritePropertyName(propertyName);
 
@@ -93,24 +93,24 @@ namespace War3Net.Build.Extensions
             }
             else
             {
-                writer.Write(rectangleMargins);
+                writer.Write(rectangleMargins, options);
             }
         }
 
         public static void Write(this Utf8JsonWriter writer, MapInfo mapInfo, JsonSerializerOptions options) => mapInfo.WriteTo(writer, options);
 
-        public static void Write(this Utf8JsonWriter writer, PlayerData playerData, MapInfoFormatVersion formatVersion) => playerData.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, PlayerData playerData, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => playerData.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, ForceData forceData, MapInfoFormatVersion formatVersion) => forceData.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, ForceData forceData, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => forceData.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, UpgradeData upgradeData, MapInfoFormatVersion formatVersion) => upgradeData.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, UpgradeData upgradeData, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => upgradeData.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, TechData techData, MapInfoFormatVersion formatVersion) => techData.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, TechData techData, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => techData.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, RandomUnitTable randomUnitTable, MapInfoFormatVersion formatVersion) => randomUnitTable.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, RandomUnitTable randomUnitTable, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomUnitTable.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, RandomItemTable randomItemTable, MapInfoFormatVersion formatVersion) => randomItemTable.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, RandomItemTable randomItemTable, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomItemTable.WriteTo(writer, options, formatVersion);
 
-        public static void Write(this Utf8JsonWriter writer, RandomUnitSet randomUnitSet, MapInfoFormatVersion formatVersion) => randomUnitSet.WriteTo(writer, formatVersion);
+        public static void Write(this Utf8JsonWriter writer, RandomUnitSet randomUnitSet, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomUnitSet.WriteTo(writer, options, formatVersion);
     }
 }
