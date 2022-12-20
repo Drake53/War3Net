@@ -5,24 +5,15 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
-using War3Net.Common.Extensions;
-
 namespace War3Net.Build.Widget
 {
-    public sealed class RandomUnitAny : RandomUnitData
+    public sealed partial class RandomUnitAny : RandomUnitData
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomUnitAny"/> class.
         /// </summary>
         public RandomUnitAny()
         {
-        }
-
-        internal RandomUnitAny(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
         /// <summary>
@@ -33,17 +24,5 @@ namespace War3Net.Build.Widget
         public ItemClass Class { get; set; }
 
         public override string ToString() => $"Level {Level} ({Class})";
-
-        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            Level = reader.ReadInt24();
-            Class = (ItemClass)reader.ReadByte();
-        }
-
-        internal override void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            writer.WriteInt24(Level);
-            writer.Write((byte)Class);
-        }
     }
 }

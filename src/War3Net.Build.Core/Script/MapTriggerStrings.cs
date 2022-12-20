@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Script
 {
-    public sealed class MapTriggerStrings : TriggerStrings
+    public sealed partial class MapTriggerStrings : TriggerStrings
     {
         public const string FileName = "war3map.wts";
 
@@ -17,11 +15,6 @@ namespace War3Net.Build.Script
         /// Initializes a new instance of the <see cref="MapTriggerStrings"/> class.
         /// </summary>
         public MapTriggerStrings()
-        {
-        }
-
-        internal MapTriggerStrings(StreamReader reader)
-            : base(reader)
         {
         }
 

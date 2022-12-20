@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapAbilityObjectData : AbilityObjectData
+    public sealed partial class MapAbilityObjectData : AbilityObjectData
     {
         public const string FileName = "war3map.w3a";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapAbilityObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapAbilityObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

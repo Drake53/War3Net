@@ -6,24 +6,16 @@
 // ------------------------------------------------------------------------------
 
 using System.Drawing;
-using System.IO;
-
-using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class PreviewIcon
+    public sealed partial class PreviewIcon
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PreviewIcon"/> class.
         /// </summary>
         public PreviewIcon()
         {
-        }
-
-        internal PreviewIcon(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public PreviewIconType IconType { get; set; }
@@ -35,21 +27,5 @@ namespace War3Net.Build.Environment
         public Color Color { get; set; }
 
         public override string ToString() => IconType.ToString();
-
-        internal void ReadFrom(BinaryReader reader, MapPreviewIconsFormatVersion formatVersion)
-        {
-            IconType = reader.ReadInt32<PreviewIconType>();
-            X = reader.ReadInt32();
-            Y = reader.ReadInt32();
-            Color = reader.ReadColorBgra();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapPreviewIconsFormatVersion formatVersion)
-        {
-            writer.Write((int)IconType);
-            writer.Write(X);
-            writer.Write(Y);
-            writer.Write(Color.ToBgra());
-        }
     }
 }

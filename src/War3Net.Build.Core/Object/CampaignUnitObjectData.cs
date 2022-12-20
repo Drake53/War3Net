@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class CampaignUnitObjectData : UnitObjectData
+    public sealed partial class CampaignUnitObjectData : UnitObjectData
     {
         public const string FileName = "war3campaign.w3u";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public CampaignUnitObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignUnitObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

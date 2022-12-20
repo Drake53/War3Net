@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class CampaignBuffObjectData : BuffObjectData
+    public sealed partial class CampaignBuffObjectData : BuffObjectData
     {
         public const string FileName = "war3campaign.w3h";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public CampaignBuffObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignBuffObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

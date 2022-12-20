@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapUnitObjectData : UnitObjectData
+    public sealed partial class MapUnitObjectData : UnitObjectData
     {
         public const string FileName = "war3map.w3u";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapUnitObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapUnitObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

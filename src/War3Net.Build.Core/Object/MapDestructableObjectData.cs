@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapDestructableObjectData : DestructableObjectData
+    public sealed partial class MapDestructableObjectData : DestructableObjectData
     {
         public const string FileName = "war3map.w3b";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapDestructableObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapDestructableObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

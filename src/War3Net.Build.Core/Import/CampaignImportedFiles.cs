@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Import
 {
-    public sealed class CampaignImportedFiles : ImportedFiles
+    public sealed partial class CampaignImportedFiles : ImportedFiles
     {
         public const string FileName = "war3campaign.imp";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Import
         /// <param name="formatVersion"></param>
         public CampaignImportedFiles(ImportedFilesFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignImportedFiles(BinaryReader reader)
-            : base(reader)
         {
         }
 

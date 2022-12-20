@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class CampaignDestructableObjectData : DestructableObjectData
+    public sealed partial class CampaignDestructableObjectData : DestructableObjectData
     {
         public const string FileName = "war3campaign.w3b";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public CampaignDestructableObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignDestructableObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

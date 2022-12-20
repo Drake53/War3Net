@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class CampaignAbilityObjectData : AbilityObjectData
+    public sealed partial class CampaignAbilityObjectData : AbilityObjectData
     {
         public const string FileName = "war3campaign.w3a";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public CampaignAbilityObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignAbilityObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

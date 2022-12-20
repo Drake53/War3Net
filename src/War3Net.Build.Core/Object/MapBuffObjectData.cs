@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapBuffObjectData : BuffObjectData
+    public sealed partial class MapBuffObjectData : BuffObjectData
     {
         public const string FileName = "war3map.w3h";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapBuffObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapBuffObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

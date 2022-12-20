@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapUpgradeObjectData : UpgradeObjectData
+    public sealed partial class MapUpgradeObjectData : UpgradeObjectData
     {
         public const string FileName = "war3map.w3q";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapUpgradeObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapUpgradeObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class CampaignDoodadObjectData : DoodadObjectData
+    public sealed partial class CampaignDoodadObjectData : DoodadObjectData
     {
         public const string FileName = "war3campaign.w3d";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public CampaignDoodadObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal CampaignDoodadObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

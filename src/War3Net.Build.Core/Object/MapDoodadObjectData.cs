@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Object
 {
-    public sealed class MapDoodadObjectData : DoodadObjectData
+    public sealed partial class MapDoodadObjectData : DoodadObjectData
     {
         public const string FileName = "war3map.w3d";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Object
         /// <param name="formatVersion"></param>
         public MapDoodadObjectData(ObjectDataFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapDoodadObjectData(BinaryReader reader)
-            : base(reader)
         {
         }
 

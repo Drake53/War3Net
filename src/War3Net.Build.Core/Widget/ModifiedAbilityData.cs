@@ -5,24 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
-    public sealed class ModifiedAbilityData
+    public sealed partial class ModifiedAbilityData
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifiedAbilityData"/> class.
         /// </summary>
         public ModifiedAbilityData()
         {
-        }
-
-        internal ModifiedAbilityData(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
         public int AbilityId { get; set; }
@@ -32,19 +25,5 @@ namespace War3Net.Build.Widget
         public int HeroAbilityLevel { get; set; }
 
         public override string ToString() => AbilityId.ToRawcode();
-
-        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            AbilityId = reader.ReadInt32();
-            IsAutocastActive = reader.ReadBool();
-            HeroAbilityLevel = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            writer.Write(AbilityId);
-            writer.WriteBool(IsAutocastActive);
-            writer.Write(HeroAbilityLevel);
-        }
     }
 }

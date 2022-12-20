@@ -6,11 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
 
 namespace War3Net.Build.Environment
 {
-    public class MapShadowMap
+    public sealed partial class MapShadowMap
     {
         public const string FileName = "war3map.shd";
 
@@ -21,24 +20,9 @@ namespace War3Net.Build.Environment
         {
         }
 
-        internal MapShadowMap(BinaryReader reader)
-        {
-            ReadFrom(reader);
-        }
-
         // True = 0xff, false = 0x00
         public List<byte> Cells { get; init; } = new();
 
         public override string ToString() => FileName;
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            Cells.AddRange(reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position)));
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(Cells.ToArray());
-        }
     }
 }

@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Script
 {
-    public sealed class CampaignTriggerStrings : TriggerStrings
+    public sealed partial class CampaignTriggerStrings : TriggerStrings
     {
         public const string FileName = "war3campaign.wts";
 
@@ -17,11 +15,6 @@ namespace War3Net.Build.Script
         /// Initializes a new instance of the <see cref="CampaignTriggerStrings"/> class.
         /// </summary>
         public CampaignTriggerStrings()
-        {
-        }
-
-        internal CampaignTriggerStrings(StreamReader reader)
-            : base(reader)
         {
         }
 

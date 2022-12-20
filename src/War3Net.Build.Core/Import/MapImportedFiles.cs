@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Import
 {
-    public sealed class MapImportedFiles : ImportedFiles
+    public sealed partial class MapImportedFiles : ImportedFiles
     {
         public const string FileName = "war3map.imp";
 
@@ -19,11 +17,6 @@ namespace War3Net.Build.Import
         /// <param name="formatVersion"></param>
         public MapImportedFiles(ImportedFilesFormatVersion formatVersion)
             : base(formatVersion)
-        {
-        }
-
-        internal MapImportedFiles(BinaryReader reader)
-            : base(reader)
         {
         }
 

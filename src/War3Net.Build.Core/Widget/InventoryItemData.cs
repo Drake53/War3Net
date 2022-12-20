@@ -5,24 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
-    public sealed class InventoryItemData
+    public sealed partial class InventoryItemData
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InventoryItemData"/> class.
         /// </summary>
         public InventoryItemData()
         {
-        }
-
-        internal InventoryItemData(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
         }
 
         // 0-indexed
@@ -32,17 +25,5 @@ namespace War3Net.Build.Widget
         public int ItemId { get; set; }
 
         public override string ToString() => ItemId.ToRawcode();
-
-        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            Slot = reader.ReadInt32();
-            ItemId = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            writer.Write(Slot);
-            writer.Write(ItemId);
-        }
     }
 }
