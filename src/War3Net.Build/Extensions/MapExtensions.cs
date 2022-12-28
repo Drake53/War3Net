@@ -119,7 +119,7 @@ namespace War3Net.Build.Extensions
             {
                 compiler.CompileSingleFile(stream, luaSystemLibs);
             }
-            catch (CompilationErrorException e)
+            catch (CompilationErrorException e) when (e.EmitResult is not null)
             {
                 return new CompileResult(e.EmitResult);
             }
