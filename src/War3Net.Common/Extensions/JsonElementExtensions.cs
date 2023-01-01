@@ -44,9 +44,13 @@ namespace War3Net.Common.Extensions
 
         public static int GetArrayLength(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetArrayLength();
 
+        public static bool GetBoolean(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetBoolean();
+
         public static byte GetByte(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetByte();
 
         public static int GetInt32(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetInt32();
+
+        public static uint GetUInt32(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetUInt32();
 
         public static float GetSingle(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetSingle();
 

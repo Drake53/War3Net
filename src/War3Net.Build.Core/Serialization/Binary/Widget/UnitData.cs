@@ -148,15 +148,7 @@ namespace War3Net.Build.Widget
                 writer.Write(ability, formatVersion, subVersion, useNewFormat);
             }
 
-            var mode = RandomData switch
-            {
-                RandomUnitAny => RandomUnitDataMode.Any,
-                RandomUnitGlobalTable => RandomUnitDataMode.GlobalTable,
-                RandomUnitCustomTable => RandomUnitDataMode.CustomTable,
-                _ => RandomUnitDataMode.None,
-            };
-
-            writer.Write((int)mode);
+            writer.Write((int)RandomDataMode);
             if (RandomData is not null)
             {
                 writer.Write(RandomData, formatVersion, subVersion, useNewFormat);

@@ -67,6 +67,14 @@ namespace War3Net.Build.Widget
 
         public List<ModifiedAbilityData> AbilityData { get; init; } = new();
 
+        public RandomUnitDataMode RandomDataMode => RandomData switch
+        {
+            RandomUnitAny => RandomUnitDataMode.Any,
+            RandomUnitGlobalTable => RandomUnitDataMode.GlobalTable,
+            RandomUnitCustomTable => RandomUnitDataMode.CustomTable,
+            _ => RandomUnitDataMode.None,
+        };
+
         public RandomUnitData? RandomData { get; set; }
 
         public int CustomPlayerColorId { get; set; } = -1;
