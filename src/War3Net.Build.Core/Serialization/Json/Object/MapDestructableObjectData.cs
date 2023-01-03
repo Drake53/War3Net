@@ -6,9 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Object
 {
+    [JsonConverter(typeof(JsonMapDestructableObjectDataConverter))]
     public sealed partial class MapDestructableObjectData : DestructableObjectData
     {
         internal MapDestructableObjectData(JsonElement jsonElement)

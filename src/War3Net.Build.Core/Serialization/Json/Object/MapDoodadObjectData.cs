@@ -6,9 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Object
 {
+    [JsonConverter(typeof(JsonMapDoodadObjectDataConverter))]
     public sealed partial class MapDoodadObjectData : DoodadObjectData
     {
         internal MapDoodadObjectData(JsonElement jsonElement)

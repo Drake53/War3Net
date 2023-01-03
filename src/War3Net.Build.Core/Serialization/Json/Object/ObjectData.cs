@@ -6,12 +6,15 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Serialization.Json;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
+    [JsonConverter(typeof(JsonObjectDataConverter))]
     public sealed partial class ObjectData
     {
         internal ObjectData(JsonElement jsonElement, bool fromCampaign)

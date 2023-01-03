@@ -6,9 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Import
 {
+    [JsonConverter(typeof(JsonCampaignImportedFilesConverter))]
     public sealed partial class CampaignImportedFiles : ImportedFiles
     {
         internal CampaignImportedFiles(JsonElement jsonElement)

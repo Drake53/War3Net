@@ -7,9 +7,13 @@
 
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Script
 {
+    [JsonConverter(typeof(JsonMapTriggersConverter))]
     public sealed partial class MapTriggers
     {
         internal MapTriggers(JsonElement jsonElement, TriggerData triggerData)

@@ -6,9 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Object
 {
+    [JsonConverter(typeof(JsonCampaignUnitObjectDataConverter))]
     public sealed partial class CampaignUnitObjectData : UnitObjectData
     {
         internal CampaignUnitObjectData(JsonElement jsonElement)
