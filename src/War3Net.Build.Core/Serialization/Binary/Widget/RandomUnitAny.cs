@@ -21,7 +21,7 @@ namespace War3Net.Build.Widget
         internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
         {
             Level = reader.ReadInt24();
-            Class = (ItemClass)reader.ReadByte();
+            Class = reader.ReadByte<ItemClass>();
         }
 
         internal override void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)

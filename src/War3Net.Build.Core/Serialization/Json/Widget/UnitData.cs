@@ -159,6 +159,7 @@ namespace War3Net.Build.Widget
             writer.WriteObject(nameof(RandomDataMode), RandomDataMode, options);
             if (RandomData is not null)
             {
+                writer.WritePropertyName(nameof(RandomData));
                 writer.Write(RandomData, options, formatVersion, subVersion, useNewFormat);
             }
 

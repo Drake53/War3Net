@@ -7,7 +7,7 @@
 
 namespace War3Net.Build.Widget
 {
-    public enum ItemClass
+    public enum ItemClass : byte
     {
         Permanent = 0,
         Charged = 1,

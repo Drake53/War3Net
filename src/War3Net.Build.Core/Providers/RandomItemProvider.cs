@@ -17,7 +17,7 @@ namespace War3Net.Build.Providers
         // use -1 for 'any level'
         public static int GetRandomItemTypeCode(ItemClass itemClass, int level)
         {
-            return $"Y{(itemClass == ItemClass.Any ? 'Y' : (char)('i' + itemClass))}I{(char)('0' + level)}".FromRawcode();
+            return $"Y{(itemClass == ItemClass.Any ? 'Y' : (char)('i' + (int)itemClass))}I{(char)('0' + level)}".FromRawcode();
         }
 
         public static bool IsRandomItem(int code, out ItemClass itemClass, out int level)
