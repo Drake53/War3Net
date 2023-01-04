@@ -25,18 +25,18 @@ namespace War3Net.Build.Environment
 
         internal void GetFrom(JsonElement jsonElement, MapEnvironmentFormatVersion formatVersion)
         {
-            jsonElement.GetSingle(nameof(Height));
-            jsonElement.GetSingle(nameof(WaterHeight));
-            jsonElement.GetBoolean(nameof(IsEdgeTile));
-            jsonElement.GetInt32(nameof(Texture));
-            jsonElement.GetBoolean(nameof(IsRamp));
-            jsonElement.GetBoolean(nameof(IsBlighted));
-            jsonElement.GetBoolean(nameof(IsWater));
-            jsonElement.GetBoolean(nameof(IsBoundary));
-            jsonElement.GetInt32(nameof(Variation));
-            jsonElement.GetInt32(nameof(CliffVariation));
-            jsonElement.GetInt32(nameof(CliffLevel));
-            jsonElement.GetInt32(nameof(CliffTexture));
+            Height = jsonElement.GetSingle(nameof(Height));
+            WaterHeight = jsonElement.GetSingle(nameof(WaterHeight));
+            IsEdgeTile = jsonElement.GetBoolean(nameof(IsEdgeTile));
+            Texture = jsonElement.GetInt32(nameof(Texture));
+            IsRamp = jsonElement.GetBoolean(nameof(IsRamp));
+            IsBlighted = jsonElement.GetBoolean(nameof(IsBlighted));
+            IsWater = jsonElement.GetBoolean(nameof(IsWater));
+            IsBoundary = jsonElement.GetBoolean(nameof(IsBoundary));
+            Variation = jsonElement.GetInt32(nameof(Variation));
+            CliffVariation = jsonElement.GetInt32(nameof(CliffVariation));
+            CliffLevel = jsonElement.GetInt32(nameof(CliffLevel));
+            CliffTexture = jsonElement.GetInt32(nameof(CliffTexture));
         }
 
         internal void ReadFrom(ref Utf8JsonReader reader, MapEnvironmentFormatVersion formatVersion)
