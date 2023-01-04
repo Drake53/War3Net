@@ -72,12 +72,11 @@ namespace War3Net.Build.Widget
             }
 
             var randomDataMode = jsonElement.GetInt32<RandomUnitDataMode>(nameof(RandomDataMode));
-            var randomDataElement = jsonElement.GetProperty(nameof(RandomData));
             RandomData = randomDataMode switch
             {
-                RandomUnitDataMode.Any => randomDataElement.GetRandomUnitNeutral(formatVersion, subVersion, useNewFormat),
-                RandomUnitDataMode.GlobalTable => randomDataElement.GetRandomUnitGlobalTable(formatVersion, subVersion, useNewFormat),
-                RandomUnitDataMode.CustomTable => randomDataElement.GetRandomUnitCustomTable(formatVersion, subVersion, useNewFormat),
+                RandomUnitDataMode.Any => jsonElement.GetProperty(nameof(RandomData)).GetRandomUnitNeutral(formatVersion, subVersion, useNewFormat),
+                RandomUnitDataMode.GlobalTable => jsonElement.GetProperty(nameof(RandomData)).GetRandomUnitGlobalTable(formatVersion, subVersion, useNewFormat),
+                RandomUnitDataMode.CustomTable => jsonElement.GetProperty(nameof(RandomData)).GetRandomUnitCustomTable(formatVersion, subVersion, useNewFormat),
                 _ => null,
             };
 
