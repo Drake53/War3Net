@@ -9,6 +9,7 @@ using System.IO;
 using System.Numerics;
 
 using War3Net.Build.Extensions;
+using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
@@ -33,11 +34,7 @@ namespace War3Net.Build.Widget
 
             if (formatVersion > MapWidgetsFormatVersion.v6)
             {
-                State = (DoodadState)reader.ReadByte();
-                if ((int)State >= 8)
-                {
-                    throw new InvalidDataException($"Invalid doodad state: {State}.");
-                }
+                State = reader.ReadByte<DoodadState>();
             }
 
             Life = reader.ReadByte();
