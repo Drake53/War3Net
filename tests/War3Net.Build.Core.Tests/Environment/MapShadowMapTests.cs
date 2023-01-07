@@ -16,11 +16,23 @@ namespace War3Net.Build.Core.Tests.Environment
     {
         [DataTestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
-        public void TestParseMapShadowMap(string mapShadowMapFilePath)
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(
-                mapShadowMapFilePath,
-                typeof(MapShadowMap));
+            SerializationTestHelper<MapShadowMap>.RunBinaryRWTest(filePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
+        {
+            SerializationTestHelper<MapShadowMap>.RunJsonRWTest(filePath, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapShadowMap>.RunJsonRWTest(filePath, true);
         }
     }
 }

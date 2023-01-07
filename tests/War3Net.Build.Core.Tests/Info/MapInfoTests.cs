@@ -57,11 +57,23 @@ namespace War3Net.Build.Core.Tests.Info
 
         [DataTestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
-        public void TestParseMapInfo(string mapInfoFilePath)
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(
-                mapInfoFilePath,
-                typeof(MapInfo));
+            SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
+        {
+            SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
         }
 
         [DataTestMethod]

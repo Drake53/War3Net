@@ -11,8 +11,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Object;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Object
 {
@@ -45,18 +43,23 @@ namespace War3Net.Build.Core.Tests.Object
 
         [DataTestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
-        public void TestParseObjectData(string objectDataFilePath)
+        public void TestBinarySerialization(string filePath)
         {
-            using var original = MpqFile.OpenRead(objectDataFilePath);
-            using var recreated = new MemoryStream();
+            SerializationTestHelper<ObjectData>.RunBinaryRWTest(filePath);
+        }
 
-            using var objectDataReader = new BinaryReader(original);
-            var objectData = objectDataReader.ReadObjectData();
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
+        {
+            SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, false);
+        }
 
-            using var objectDataWriter = new BinaryWriter(recreated);
-            objectDataWriter.Write(objectData);
-
-            StreamAssert.AreEqual(original, recreated, true, true);
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, true);
         }
     }
 }
