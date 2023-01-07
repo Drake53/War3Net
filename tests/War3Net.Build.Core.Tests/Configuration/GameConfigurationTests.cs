@@ -5,13 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Configuration;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Configuration
 {
@@ -19,18 +15,12 @@ namespace War3Net.Build.Core.Tests.Configuration
     public class GameConfigurationTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetGameConfigurationFiles), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(TestDataFileProvider.GetGameConfigurationFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestParseGameConfiguration(string gameConfigurationFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(gameConfigurationFilePath, typeof(GameConfiguration));
-        }
-
-        private static IEnumerable<object[]> GetGameConfigurationFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                "*.wgc",
-                SearchOption.AllDirectories,
-                Path.Combine("Configuration"));
+            ParseTestHelper.RunBinaryRWTest(
+                gameConfigurationFilePath,
+                typeof(GameConfiguration));
         }
     }
 }

@@ -35,6 +35,14 @@ namespace War3Net.Build.Core.Tests
                 "Maps"));
         }
 
+        public static IEnumerable<object[]> GetGameConfigurationFilePaths()
+        {
+            return TestDataProvider.GetDynamicData(
+                "*.wgc",
+                SearchOption.AllDirectories,
+                Path.Combine("Configuration"));
+        }
+
         public static IEnumerable<object[]> GetMapCamerasFilePaths()
         {
             return TestDataProvider.GetDynamicData(
