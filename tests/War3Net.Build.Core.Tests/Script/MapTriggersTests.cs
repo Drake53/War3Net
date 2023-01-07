@@ -44,8 +44,7 @@ namespace War3Net.Build.Core.Tests.Script
         {
             ParseTestHelper.RunBinaryRWTest(
                 mapTriggersFilePath,
-                typeof(MapTriggers),
-                additionalReadParameters: TriggerData.Default);
+                typeof(MapTriggers));
         }
 
         private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.v4);

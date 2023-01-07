@@ -156,7 +156,9 @@ namespace War3Net.Build.Core.Tests.Info
 
         private static void TestParseMapInfoInternal(string mapInfoFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapInfoFilePath, typeof(MapInfo));
+            ParseTestHelper.RunBinaryRWTest(
+                mapInfoFilePath,
+                typeof(MapInfo));
         }
 
         private static IEnumerable<object[]> GetMapInfoDataFolder(string versionFolder)

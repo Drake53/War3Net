@@ -45,9 +45,7 @@ namespace War3Net.Build.Core.Tests.Script
         {
             ParseTestHelper.RunBinaryRWTest(
                 mapCustomTextTriggersFilePath,
-                typeof(MapCustomTextTriggers),
-                additionalReadParameters: new object[] { Encoding.UTF8 },
-                additionalWriteParameters: new object[] { Encoding.UTF8 });
+                typeof(MapCustomTextTriggers));
         }
 
         private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.v0);
