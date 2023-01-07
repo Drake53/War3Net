@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapDoodadObjectDataTests.cs" company="Drake53">
+// <copyright file="TriggerStringsTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,35 +12,38 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
-using War3Net.Build.Object;
+using War3Net.Build.Script;
 using War3Net.TestTools.UnitTesting;
 
-namespace War3Net.Build.Core.Tests.Object
+namespace War3Net.Build.Core.Tests.Script
 {
     [TestClass]
-    public class MapDoodadObjectDataTests
+    public class TriggerStringsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapDoodadObjectData), DynamicDataSourceType.Method)]
-        public void TestParseMapDoodadObjectData(string mapDoodadObjectDataFilePath)
+        [DynamicData(nameof(GetTriggerStringsData), DynamicDataSourceType.Method)]
+        public void TestParseTriggerStrings(string triggerStringsFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapDoodadObjectDataFilePath, typeof(MapDoodadObjectData), nameof(BinaryReaderExtensions.ReadDoodadObjectData), false);
+            ParseTestHelper.RunStreamRWTest(
+                triggerStringsFilePath,
+                typeof(TriggerStrings),
+                nameof(StreamWriterExtensions.WriteTriggerStrings));
         }
 
-        private static IEnumerable<object[]> GetMapDoodadObjectData()
+        private static IEnumerable<object[]> GetTriggerStringsData()
         {
             return TestDataProvider.GetDynamicData(
-                MapDoodadObjectData.FileName.GetSearchPattern(),
+                $"*{TriggerStrings.FileExtension}",
                 SearchOption.AllDirectories,
-                Path.Combine("Object", "Doodad"))
+                Path.Combine("Triggers"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapDoodadObjectData.FileName,
+                TriggerStrings.CampaignFileName,
                 SearchOption.AllDirectories,
-                "Maps"))
+                "Campaigns"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                "war3mapSkin.w3d",
+                TriggerStrings.MapFileName,
                 SearchOption.AllDirectories,
                 "Maps"));
         }

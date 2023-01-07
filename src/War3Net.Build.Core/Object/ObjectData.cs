@@ -9,6 +9,8 @@ namespace War3Net.Build.Object
 {
     public sealed partial class ObjectData
     {
+        public const string FileExtension = ".w3o";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectData"/> class.
         /// </summary>
@@ -33,5 +35,7 @@ namespace War3Net.Build.Object
         public BuffObjectData? BuffData { get; set; }
 
         public UpgradeObjectData? UpgradeData { get; set; }
+
+        public override string ToString() => $"{FileExtension} file";
     }
 }

@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapBuffObjectDataTests.cs" company="Drake53">
+// <copyright file="BuffObjectDataTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,29 +18,42 @@ using War3Net.TestTools.UnitTesting;
 namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
-    public class MapBuffObjectDataTests
+    public class BuffObjectDataTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapBuffObjectData), DynamicDataSourceType.Method)]
-        public void TestParseMapBuffObjectData(string mapBuffObjectDataFilePath)
+        [DynamicData(nameof(GetBuffObjectData), DynamicDataSourceType.Method)]
+        public void TestParseBuffObjectData(string buffObjectDataFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapBuffObjectDataFilePath, typeof(MapBuffObjectData), nameof(BinaryReaderExtensions.ReadBuffObjectData), false);
+            ParseTestHelper.RunBinaryRWTest(
+                buffObjectDataFilePath,
+                typeof(BuffObjectData),
+                nameof(BinaryReaderExtensions.ReadBuffObjectData));
         }
 
-        private static IEnumerable<object[]> GetMapBuffObjectData()
+        private static IEnumerable<object[]> GetBuffObjectData()
         {
             return TestDataProvider.GetDynamicData(
-                MapBuffObjectData.FileName.GetSearchPattern(),
+                $"*{BuffObjectData.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Object", "Buff"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapBuffObjectData.FileName,
+                BuffObjectData.CampaignFileName,
+                SearchOption.AllDirectories,
+                "Campaigns"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                BuffObjectData.CampaignSkinFileName,
+                SearchOption.AllDirectories,
+                "Campaigns"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                BuffObjectData.MapFileName,
                 SearchOption.AllDirectories,
                 "Maps"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                "war3mapSkin.w3h",
+                BuffObjectData.MapSkinFileName,
                 SearchOption.AllDirectories,
                 "Maps"));
         }

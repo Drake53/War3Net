@@ -21,17 +21,17 @@ namespace War3Net.Build.Core.Tests.Object
     public class ObjectDataTests
     {
         [TestMethod]
-        public void TestCreateNewObjectDataCampaign()
+        public void TestCreateNewObjectData()
         {
             var objectData = new ObjectData(ObjectDataFormatVersion.v2)
             {
-                UnitData = new CampaignUnitObjectData(ObjectDataFormatVersion.v2),
-                ItemData = new CampaignItemObjectData(ObjectDataFormatVersion.v2),
-                DestructableData = new CampaignDestructableObjectData(ObjectDataFormatVersion.v2),
-                DoodadData = new CampaignDoodadObjectData(ObjectDataFormatVersion.v2),
-                AbilityData = new CampaignAbilityObjectData(ObjectDataFormatVersion.v2),
-                BuffData = new CampaignBuffObjectData(ObjectDataFormatVersion.v2),
-                UpgradeData = new CampaignUpgradeObjectData(ObjectDataFormatVersion.v2),
+                UnitData = new UnitObjectData(ObjectDataFormatVersion.v2),
+                ItemData = new ItemObjectData(ObjectDataFormatVersion.v2),
+                DestructableData = new DestructableObjectData(ObjectDataFormatVersion.v2),
+                DoodadData = new DoodadObjectData(ObjectDataFormatVersion.v2),
+                AbilityData = new AbilityObjectData(ObjectDataFormatVersion.v2),
+                BuffData = new BuffObjectData(ObjectDataFormatVersion.v2),
+                UpgradeData = new UpgradeObjectData(ObjectDataFormatVersion.v2),
             };
 
             using var memoryStream = new MemoryStream();
@@ -41,54 +41,18 @@ namespace War3Net.Build.Core.Tests.Object
             memoryStream.Position = 0;
 
             using var reader = new BinaryReader(memoryStream);
-            reader.ReadObjectData(true);
-        }
-
-        [TestMethod]
-        public void TestCreateNewObjectDataMap()
-        {
-            var objectData = new ObjectData(ObjectDataFormatVersion.v2)
-            {
-                UnitData = new MapUnitObjectData(ObjectDataFormatVersion.v2),
-                ItemData = new MapItemObjectData(ObjectDataFormatVersion.v2),
-                DestructableData = new MapDestructableObjectData(ObjectDataFormatVersion.v2),
-                DoodadData = new MapDoodadObjectData(ObjectDataFormatVersion.v2),
-                AbilityData = new MapAbilityObjectData(ObjectDataFormatVersion.v2),
-                BuffData = new MapBuffObjectData(ObjectDataFormatVersion.v2),
-                UpgradeData = new MapUpgradeObjectData(ObjectDataFormatVersion.v2),
-            };
-
-            using var memoryStream = new MemoryStream();
-            using var writer = new BinaryWriter(memoryStream);
-            writer.Write(objectData);
-
-            memoryStream.Position = 0;
-
-            using var reader = new BinaryReader(memoryStream);
-            reader.ReadObjectData(false);
+            reader.ReadObjectData();
         }
 
         [DataTestMethod]
         [DynamicData(nameof(GetObjectData), DynamicDataSourceType.Method)]
-        public void TestParseCampaignObjectData(string objectDataFilePath)
-        {
-            TestParseObjectDataInternal(objectDataFilePath, true);
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(GetObjectData), DynamicDataSourceType.Method)]
-        public void TestParseMapObjectData(string objectDataFilePath)
-        {
-            TestParseObjectDataInternal(objectDataFilePath, false);
-        }
-
-        private void TestParseObjectDataInternal(string objectDataFilePath, bool fromCampaign)
+        public void TestParseObjectData(string objectDataFilePath)
         {
             using var original = MpqFile.OpenRead(objectDataFilePath);
             using var recreated = new MemoryStream();
 
             using var objectDataReader = new BinaryReader(original);
-            var objectData = objectDataReader.ReadObjectData(fromCampaign);
+            var objectData = objectDataReader.ReadObjectData();
 
             using var objectDataWriter = new BinaryWriter(recreated);
             objectDataWriter.Write(objectData);
@@ -99,7 +63,7 @@ namespace War3Net.Build.Core.Tests.Object
         private static IEnumerable<object[]> GetObjectData()
         {
             return TestDataProvider.GetDynamicData(
-                "*.w3o",
+                $"*{ObjectData.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Object", "All"));
         }

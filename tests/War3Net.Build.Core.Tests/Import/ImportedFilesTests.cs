@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapAbilityObjectDataTests.cs" company="Drake53">
+// <copyright file="ImportedFilesTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,35 +12,38 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
-using War3Net.Build.Object;
+using War3Net.Build.Import;
 using War3Net.TestTools.UnitTesting;
 
-namespace War3Net.Build.Core.Tests.Object
+namespace War3Net.Build.Core.Tests.Import
 {
     [TestClass]
-    public class MapAbilityObjectDataTests
+    public class ImportedFilesTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapAbilityObjectData), DynamicDataSourceType.Method)]
-        public void TestParseMapAbilityObjectData(string mapAbilityObjectDataFilePath)
+        [DynamicData(nameof(GetImportedFilesData), DynamicDataSourceType.Method)]
+        public void TestParseImportedFiles(string importedFilesFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapAbilityObjectDataFilePath, typeof(MapAbilityObjectData), nameof(BinaryReaderExtensions.ReadAbilityObjectData), false);
+            ParseTestHelper.RunBinaryRWTest(
+                importedFilesFilePath,
+                typeof(ImportedFiles),
+                nameof(BinaryReaderExtensions.ReadImportedFiles));
         }
 
-        private static IEnumerable<object[]> GetMapAbilityObjectData()
+        private static IEnumerable<object[]> GetImportedFilesData()
         {
             return TestDataProvider.GetDynamicData(
-                MapAbilityObjectData.FileName.GetSearchPattern(),
+                $"*{ImportedFiles.FileExtension}",
                 SearchOption.AllDirectories,
-                Path.Combine("Object", "Ability"))
+                Path.Combine("Import"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapAbilityObjectData.FileName,
+                ImportedFiles.CampaignFileName,
                 SearchOption.AllDirectories,
-                "Maps"))
+                "Campaigns"))
 
             .Concat(TestDataProvider.GetDynamicArchiveData(
-                "war3mapSkin.w3a",
+                ImportedFiles.MapFileName,
                 SearchOption.AllDirectories,
                 "Maps"));
         }
