@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -20,10 +15,12 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapPreviewIconsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapPreviewIconsFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapPreviewIcons(string iconsFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapPreviewIconsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestParseMapPreviewIcons(string mapPreviewIconsFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(iconsFilePath, typeof(MapPreviewIcons));
+            ParseTestHelper.RunBinaryRWTest(
+                mapPreviewIconsFilePath,
+                typeof(MapPreviewIcons));
         }
 
 #if false
@@ -50,25 +47,12 @@ namespace War3Net.Build.Core.Tests.Environment
                 Assert.AreEqual(expectedIcon.Color.ToArgb(), actualIcon.Color.ToArgb());
             }
         }
-#endif
-
-        private static IEnumerable<object[]> GetMapPreviewIconsFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapPreviewIcons.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Icons"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapPreviewIcons.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
-        }
 
         private static IEnumerable<object[]> GetMapPreviewIconsMapFolders()
         {
             yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons1") };
             yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons2") };
         }
+#endif
     }
 }

@@ -5,13 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -19,18 +15,12 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapShadowMapTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapShadowMapFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapShadowMap(string mapShadowMapFile)
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestParseMapShadowMap(string mapShadowMapFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapShadowMapFile, typeof(MapShadowMap));
-        }
-
-        private static IEnumerable<object[]> GetMapShadowMapFiles()
-        {
-            return TestDataProvider.GetDynamicArchiveData(
-                MapShadowMap.FileName,
-                SearchOption.AllDirectories,
-                "Maps");
+            ParseTestHelper.RunBinaryRWTest(
+                mapShadowMapFilePath,
+                typeof(MapShadowMap));
         }
     }
 }

@@ -5,15 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Build.Extensions;
 using War3Net.Build.Object;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Object
 {
@@ -21,41 +15,12 @@ namespace War3Net.Build.Core.Tests.Object
     public class UpgradeObjectDataTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetUpgradeObjectData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(TestDataFileProvider.GetUpgradeObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestParseUpgradeObjectData(string upgradeObjectDataFilePath)
         {
             ParseTestHelper.RunBinaryRWTest(
                 upgradeObjectDataFilePath,
-                typeof(UpgradeObjectData),
-                nameof(BinaryReaderExtensions.ReadUpgradeObjectData));
-        }
-
-        private static IEnumerable<object[]> GetUpgradeObjectData()
-        {
-            return TestDataProvider.GetDynamicData(
-                $"*{UpgradeObjectData.FileExtension}",
-                SearchOption.AllDirectories,
-                Path.Combine("Object", "Upgrade"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                UpgradeObjectData.CampaignFileName,
-                SearchOption.AllDirectories,
-                "Campaigns"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                UpgradeObjectData.CampaignSkinFileName,
-                SearchOption.AllDirectories,
-                "Campaigns"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                UpgradeObjectData.MapFileName,
-                SearchOption.AllDirectories,
-                "Maps"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                UpgradeObjectData.MapSkinFileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+                typeof(UpgradeObjectData));
         }
     }
 }

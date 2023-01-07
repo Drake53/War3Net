@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -20,23 +15,12 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapPathingMapTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapPathingMapFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapPathingMap(string mapPathingMapFile)
+        [DynamicData(nameof(TestDataFileProvider.GetMapPathingMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestParseMapPathingMap(string mapPathingMapFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapPathingMapFile, typeof(MapPathingMap));
-        }
-
-        private static IEnumerable<object[]> GetMapPathingMapFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapPathingMap.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Pathing"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapPathingMap.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            ParseTestHelper.RunBinaryRWTest(
+                mapPathingMapFilePath,
+                typeof(MapPathingMap));
         }
     }
 }

@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -57,10 +56,12 @@ namespace War3Net.Build.Core.Tests.Info
 #endif
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapInfoData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestParseMapInfo(string mapInfoFilePath)
         {
-            TestParseMapInfoInternal(mapInfoFilePath);
+            ParseTestHelper.RunBinaryRWTest(
+                mapInfoFilePath,
+                typeof(MapInfo));
         }
 
         [DataTestMethod]
@@ -156,19 +157,6 @@ namespace War3Net.Build.Core.Tests.Info
         private static void TestParseMapInfoInternal(string mapInfoFilePath)
         {
             ParseTestHelper.RunBinaryRWTest(mapInfoFilePath, typeof(MapInfo));
-        }
-
-        private static IEnumerable<object[]> GetMapInfoData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapInfo.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Info"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapInfo.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
         }
 
         private static IEnumerable<object[]> GetMapInfoDataFolder(string versionFolder)

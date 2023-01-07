@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,10 +51,12 @@ namespace War3Net.Build.Core.Tests.Environment
 #endif
 
         [DataTestMethod]
-        [DynamicData(nameof(GetEnvironmentFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapEnvironment(string environmentFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestParseMapEnvironment(string mapEnvironmentFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(environmentFilePath, typeof(MapEnvironment));
+            ParseTestHelper.RunBinaryRWTest(
+                mapEnvironmentFilePath,
+                typeof(MapEnvironment));
         }
 
         [DataTestMethod]
@@ -66,19 +67,6 @@ namespace War3Net.Build.Core.Tests.Environment
             using var reader = new BinaryReader(fileStream);
             var environment = reader.ReadMapEnvironment();
             Assert.IsTrue(environment.IsDefaultTileset());
-        }
-
-        private static IEnumerable<object[]> GetEnvironmentFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapEnvironment.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Environment"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapEnvironment.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
         }
 
         private static IEnumerable<object[]> GetDefaultEnvironmentFiles()

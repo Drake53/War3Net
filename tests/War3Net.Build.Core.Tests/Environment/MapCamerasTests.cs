@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -20,23 +15,12 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapCamerasTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetCameraFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapCameras(string camerasFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapCamerasFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestParseMapCameras(string mapCamerasFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(camerasFilePath, typeof(MapCameras));
-        }
-
-        private static IEnumerable<object[]> GetCameraFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapCameras.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Camera"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapCameras.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            ParseTestHelper.RunBinaryRWTest(
+                mapCamerasFilePath,
+                typeof(MapCameras));
         }
     }
 }

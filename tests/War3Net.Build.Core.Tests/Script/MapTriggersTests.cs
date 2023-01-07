@@ -8,13 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
 using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
@@ -44,7 +42,10 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static void TestParseMapTriggers(string mapTriggersFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapTriggersFilePath, typeof(MapTriggers), additionalReadParameters: TriggerData.Default);
+            ParseTestHelper.RunBinaryRWTest(
+                mapTriggersFilePath,
+                typeof(MapTriggers),
+                additionalReadParameters: TriggerData.Default);
         }
 
         private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.v4);
@@ -55,7 +56,7 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static IEnumerable<object[]> GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion? formatVersion)
         {
-            foreach (var testData in GetMapTriggersData())
+            foreach (var testData in TestDataFileProvider.GetMapTriggersFilePaths())
             {
                 using var original = MpqFile.OpenRead((string)testData[0]);
                 using var reader = new BinaryReader(original);
@@ -77,19 +78,6 @@ namespace War3Net.Build.Core.Tests.Script
                     }
                 }
             }
-        }
-
-        private static IEnumerable<object[]> GetMapTriggersData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapTriggers.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Triggers"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapTriggers.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
         }
     }
 }

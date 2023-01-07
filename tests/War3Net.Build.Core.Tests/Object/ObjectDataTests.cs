@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,7 +44,7 @@ namespace War3Net.Build.Core.Tests.Object
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetObjectData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestParseObjectData(string objectDataFilePath)
         {
             using var original = MpqFile.OpenRead(objectDataFilePath);
@@ -58,14 +57,6 @@ namespace War3Net.Build.Core.Tests.Object
             objectDataWriter.Write(objectData);
 
             StreamAssert.AreEqual(original, recreated, true, true);
-        }
-
-        private static IEnumerable<object[]> GetObjectData()
-        {
-            return TestDataProvider.GetDynamicData(
-                $"*{ObjectData.FileExtension}",
-                SearchOption.AllDirectories,
-                Path.Combine("Object", "All"));
         }
     }
 }

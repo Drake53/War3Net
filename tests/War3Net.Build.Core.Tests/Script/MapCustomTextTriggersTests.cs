@@ -8,14 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
 using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
@@ -45,7 +43,11 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static void TestParseMapCustomTextTriggers(string mapCustomTextTriggersFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapCustomTextTriggersFilePath, typeof(MapCustomTextTriggers), additionalReadParameters: new object[] { Encoding.UTF8 }, additionalWriteParameters: new object[] { Encoding.UTF8 });
+            ParseTestHelper.RunBinaryRWTest(
+                mapCustomTextTriggersFilePath,
+                typeof(MapCustomTextTriggers),
+                additionalReadParameters: new object[] { Encoding.UTF8 },
+                additionalWriteParameters: new object[] { Encoding.UTF8 });
         }
 
         private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.v0);
@@ -56,7 +58,7 @@ namespace War3Net.Build.Core.Tests.Script
 
         private static IEnumerable<object[]> GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion? formatVersion)
         {
-            foreach (var testData in GetMapCustomTextTriggersData())
+            foreach (var testData in TestDataFileProvider.GetMapCustomTextTriggersFilePaths())
             {
                 using var original = MpqFile.OpenRead((string)testData[0]);
                 using var reader = new BinaryReader(original);
@@ -75,19 +77,6 @@ namespace War3Net.Build.Core.Tests.Script
                     }
                 }
             }
-        }
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapCustomTextTriggers.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Triggers"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapCustomTextTriggers.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
         }
     }
 }
