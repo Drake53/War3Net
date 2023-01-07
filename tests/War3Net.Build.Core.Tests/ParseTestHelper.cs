@@ -7,10 +7,13 @@
 
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Serialization.Json;
 using War3Net.Common.Providers;
 using War3Net.IO.Mpq;
 using War3Net.TestTools.UnitTesting;
@@ -40,6 +43,46 @@ namespace War3Net.Build.Core.Tests
             writer.Flush();
 
             StreamAssert.AreEqual(expectedStream, actualStream, true);
+        }
+
+        internal static void RunJsonRWTest(
+            string filePath,
+            Type type,
+            bool useStringEnumConverter)
+        {
+            var expectedReadTypes = new[] { typeof(BinaryReader) };
+            var readMethod = typeof(BinaryReaderExtensions).GetMethod($"Read{type.Name}", expectedReadTypes);
+            Assert.IsNotNull(readMethod, $"Could not find extension method to read {type.Name}.");
+
+            var expectedWriteTypes = new[] { typeof(BinaryWriter), type };
+            var writeMethod = typeof(BinaryWriterExtensions).GetMethod(nameof(BinaryWriter.Write), expectedWriteTypes);
+            Assert.IsNotNull(writeMethod, $"Could not find extension method to write {type.Name}.");
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+
+            options.Converters.Add(new JsonStringVersionConverter());
+            if (useStringEnumConverter)
+            {
+                options.Converters.Add(new JsonStringEnumConverter());
+            }
+
+            using var expectedStream = MpqFile.OpenRead(filePath);
+            using var reader = new BinaryReader(expectedStream);
+            var parsedFile = readMethod!.Invoke(null, new object?[] { reader });
+            Assert.AreEqual(type, parsedFile!.GetType());
+
+            var json = JsonSerializer.Serialize(parsedFile, options);
+            var deserializedFile = JsonSerializer.Deserialize(json, type, options);
+
+            using var actualStream = new MemoryStream();
+            using var writer = new BinaryWriter(actualStream);
+            writeMethod!.Invoke(null, new object?[] { writer, deserializedFile });
+            writer.Flush();
+
+            StreamAssert.AreEqual(expectedStream, actualStream, true, false);
         }
 
         internal static void RunStreamRWTest(
