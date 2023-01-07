@@ -120,6 +120,8 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, VariationObjectDataModification variationObjectDataModification, ObjectDataFormatVersion formatVersion) => variationObjectDataModification.WriteTo(writer, formatVersion);
 
+        public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers) => writer.Write(mapCustomTextTriggers, Encoding.UTF8);
+
         public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers, Encoding encoding) => mapCustomTextTriggers.WriteTo(writer, encoding);
 
         public static void Write(this BinaryWriter writer, CustomTextTrigger customTextTrigger, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => customTextTrigger.WriteTo(writer, encoding, formatVersion, subVersion);

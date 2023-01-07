@@ -120,6 +120,8 @@ namespace War3Net.Build.Extensions
 
         public static VariationObjectDataModification ReadVariationObjectDataModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new VariationObjectDataModification(reader, formatVersion);
 
+        public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader) => reader.ReadMapCustomTextTriggers(Encoding.UTF8);
+
         public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader, Encoding encoding) => new MapCustomTextTriggers(reader, encoding);
 
         public static CustomTextTrigger ReadCustomTextTrigger(this BinaryReader reader, Encoding encoding, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => new CustomTextTrigger(reader, encoding, formatVersion, subVersion);
