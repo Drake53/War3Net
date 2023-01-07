@@ -15,17 +15,17 @@ namespace War3Net.Build.Script
 {
     public sealed partial class TriggerFunctionParameter
     {
-        internal TriggerFunctionParameter(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal TriggerFunctionParameter(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            GetFrom(jsonElement, triggerData, formatVersion, subVersion);
+            GetFrom(jsonElement, formatVersion, subVersion);
         }
 
-        internal TriggerFunctionParameter(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal TriggerFunctionParameter(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            ReadFrom(ref reader, triggerData, formatVersion, subVersion);
+            ReadFrom(ref reader, formatVersion, subVersion);
         }
 
-        internal void GetFrom(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void GetFrom(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Type = jsonElement.GetInt32<TriggerFunctionParameterType>(nameof(Type));
             Value = jsonElement.GetString(nameof(Value));
@@ -37,7 +37,7 @@ namespace War3Net.Build.Script
                     throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Function}' to have a function.");
                 }
 
-                Function = functionElement.GetTriggerFunction(triggerData, formatVersion, subVersion, false);
+                Function = functionElement.GetTriggerFunction(formatVersion, subVersion, false);
             }
 
             if (jsonElement.TryGetProperty(nameof(ArrayIndexer), out var arrayIndexerElement))
@@ -47,13 +47,13 @@ namespace War3Net.Build.Script
                     throw new InvalidDataException($"Parameter must be of type '{TriggerFunctionParameterType.Variable}' to have an array indexer.");
                 }
 
-                ArrayIndexer = arrayIndexerElement.GetTriggerFunctionParameter(triggerData, formatVersion, subVersion);
+                ArrayIndexer = arrayIndexerElement.GetTriggerFunctionParameter(formatVersion, subVersion);
             }
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, triggerData, formatVersion, subVersion);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, formatVersion, subVersion);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)

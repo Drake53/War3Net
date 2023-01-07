@@ -73,7 +73,7 @@ namespace War3Net.Build.Extensions
 
         public static MapCustomTextTriggers ReadMapCustomTextTriggers(this ref Utf8JsonReader reader) => new MapCustomTextTriggers(ref reader);
 
-        public static MapTriggers ReadMapTriggers(this ref Utf8JsonReader reader, TriggerData triggerData) => new MapTriggers(ref reader, triggerData);
+        public static MapTriggers ReadMapTriggers(this ref Utf8JsonReader reader) => new MapTriggers(ref reader);
 
         public static MapDoodads ReadMapDoodads(this ref Utf8JsonReader reader) => new MapDoodads(ref reader);
 

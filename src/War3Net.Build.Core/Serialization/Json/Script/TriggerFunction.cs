@@ -14,17 +14,17 @@ namespace War3Net.Build.Script
 {
     public sealed partial class TriggerFunction
     {
-        internal TriggerFunction(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
+        internal TriggerFunction(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
-            GetFrom(jsonElement, triggerData, formatVersion, subVersion, isChildFunction);
+            GetFrom(jsonElement, formatVersion, subVersion, isChildFunction);
         }
 
-        internal TriggerFunction(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
+        internal TriggerFunction(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
-            ReadFrom(ref reader, triggerData, formatVersion, subVersion, isChildFunction);
+            ReadFrom(ref reader, formatVersion, subVersion, isChildFunction);
         }
 
-        internal void GetFrom(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
+        internal void GetFrom(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
             Type = jsonElement.GetInt32<TriggerFunctionType>(nameof(Type));
             if (isChildFunction)
@@ -37,21 +37,21 @@ namespace War3Net.Build.Script
 
             foreach (var element in jsonElement.EnumerateArray(nameof(Parameters)))
             {
-                Parameters.Add(element.GetTriggerFunctionParameter(triggerData, formatVersion, subVersion));
+                Parameters.Add(element.GetTriggerFunctionParameter(formatVersion, subVersion));
             }
 
             if (formatVersion >= MapTriggersFormatVersion.v7)
             {
                 foreach (var element in jsonElement.EnumerateArray(nameof(ChildFunctions)))
                 {
-                    ChildFunctions.Add(element.GetTriggerFunction(triggerData, formatVersion, subVersion, true));
+                    ChildFunctions.Add(element.GetTriggerFunction(formatVersion, subVersion, true));
                 }
             }
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, triggerData, formatVersion, subVersion, isChildFunction);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, formatVersion, subVersion, isChildFunction);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)

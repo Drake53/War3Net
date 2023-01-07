@@ -13,17 +13,17 @@ namespace War3Net.Build.Script
 {
     public sealed partial class VariableDefinition
     {
-        internal VariableDefinition(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal VariableDefinition(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            GetFrom(jsonElement, triggerData, formatVersion, subVersion);
+            GetFrom(jsonElement, formatVersion, subVersion);
         }
 
-        internal VariableDefinition(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal VariableDefinition(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            ReadFrom(ref reader, triggerData, formatVersion, subVersion);
+            ReadFrom(ref reader, formatVersion, subVersion);
         }
 
-        internal void GetFrom(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void GetFrom(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Name = jsonElement.GetString(nameof(Name));
             Type = jsonElement.GetString(nameof(Type));
@@ -44,9 +44,9 @@ namespace War3Net.Build.Script
             }
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, triggerData, formatVersion, subVersion);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, formatVersion, subVersion);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)

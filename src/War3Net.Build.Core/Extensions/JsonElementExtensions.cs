@@ -196,23 +196,21 @@ namespace War3Net.Build.Extensions
 
         public static CustomTextTrigger GetCustomTextTrigger(this JsonElement jsonElement, MapCustomTextTriggersFormatVersion formatVersion, MapCustomTextTriggersSubVersion? subVersion) => new CustomTextTrigger(jsonElement, formatVersion, subVersion);
 
-        public static MapTriggers GetMapTriggers(this JsonElement jsonElement) => jsonElement.GetMapTriggers(TriggerData.Default);
+        public static MapTriggers GetMapTriggers(this JsonElement jsonElement) => new MapTriggers(jsonElement);
 
-        public static MapTriggers GetMapTriggers(this JsonElement jsonElement, TriggerData triggerData) => new MapTriggers(jsonElement, triggerData);
+        public static DeletedTriggerItem GetDeletedTriggerItem(this JsonElement jsonElement, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new DeletedTriggerItem(jsonElement, triggerItemType, formatVersion, subVersion);
 
-        public static DeletedTriggerItem GetDeletedTriggerItem(this JsonElement jsonElement, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new DeletedTriggerItem(jsonElement, triggerItemType, triggerData, formatVersion, subVersion);
+        public static TriggerCategoryDefinition GetTriggerCategoryDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerCategoryDefinition(jsonElement, triggerItemType, formatVersion, subVersion);
 
-        public static TriggerCategoryDefinition GetTriggerCategoryDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerCategoryDefinition(jsonElement, triggerItemType, triggerData, formatVersion, subVersion);
+        public static TriggerDefinition GetTriggerDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerDefinition(jsonElement, triggerItemType, formatVersion, subVersion);
 
-        public static TriggerDefinition GetTriggerDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerDefinition(jsonElement, triggerItemType, triggerData, formatVersion, subVersion);
+        public static TriggerVariableDefinition GetTriggerVariableDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerVariableDefinition(jsonElement, triggerItemType, formatVersion, subVersion);
 
-        public static TriggerVariableDefinition GetTriggerVariableDefinition(this JsonElement jsonElement, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerVariableDefinition(jsonElement, triggerItemType, triggerData, formatVersion, subVersion);
+        public static VariableDefinition GetVariableDefinition(this JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new VariableDefinition(jsonElement, formatVersion, subVersion);
 
-        public static VariableDefinition GetVariableDefinition(this JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new VariableDefinition(jsonElement, triggerData, formatVersion, subVersion);
+        public static TriggerFunction GetTriggerFunction(this JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction) => new TriggerFunction(jsonElement, formatVersion, subVersion, isChildFunction);
 
-        public static TriggerFunction GetTriggerFunction(this JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion, bool isChildFunction) => new TriggerFunction(jsonElement, triggerData, formatVersion, subVersion, isChildFunction);
-
-        public static TriggerFunctionParameter GetTriggerFunctionParameter(this JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerFunctionParameter(jsonElement, triggerData, formatVersion, subVersion);
+        public static TriggerFunctionParameter GetTriggerFunctionParameter(this JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion) => new TriggerFunctionParameter(jsonElement, formatVersion, subVersion);
 
         public static MapDoodads GetMapDoodads(this JsonElement jsonElement) => new MapDoodads(jsonElement);
 

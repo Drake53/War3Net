@@ -19,17 +19,17 @@ namespace War3Net.Build.Script
     [JsonConverter(typeof(JsonMapTriggersConverter))]
     public sealed partial class MapTriggers
     {
-        internal MapTriggers(JsonElement jsonElement, TriggerData triggerData)
+        internal MapTriggers(JsonElement jsonElement)
         {
-            GetFrom(jsonElement, triggerData);
+            GetFrom(jsonElement);
         }
 
-        internal MapTriggers(ref Utf8JsonReader reader, TriggerData triggerData)
+        internal MapTriggers(ref Utf8JsonReader reader)
         {
-            ReadFrom(ref reader, triggerData);
+            ReadFrom(ref reader);
         }
 
-        internal void GetFrom(JsonElement jsonElement, TriggerData triggerData)
+        internal void GetFrom(JsonElement jsonElement)
         {
             FormatVersion = jsonElement.GetInt32<MapTriggersFormatVersion>(nameof(FormatVersion));
             if (jsonElement.TryGetProperty(nameof(SubVersion), out var subVersionElement))
@@ -41,7 +41,7 @@ namespace War3Net.Build.Script
 
             foreach (var element in jsonElement.EnumerateArray(nameof(Variables)))
             {
-                Variables.Add(element.GetVariableDefinition(triggerData, FormatVersion, SubVersion));
+                Variables.Add(element.GetVariableDefinition(FormatVersion, SubVersion));
             }
 
             foreach (var element in jsonElement.EnumerateArray(nameof(TriggerItems)))
@@ -54,17 +54,17 @@ namespace War3Net.Build.Script
                     {
                         case TriggerItemType.RootCategory:
                         case TriggerItemType.Category:
-                            TriggerItems.Add(element.GetTriggerCategoryDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
+                            TriggerItems.Add(element.GetTriggerCategoryDefinition(triggerItemType, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.Gui:
                         case TriggerItemType.Comment:
                         case TriggerItemType.Script:
-                            TriggerItems.Add(element.GetTriggerDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
+                            TriggerItems.Add(element.GetTriggerDefinition(triggerItemType, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.Variable:
-                            TriggerItems.Add(element.GetTriggerVariableDefinition(triggerItemType, triggerData, FormatVersion, SubVersion));
+                            TriggerItems.Add(element.GetTriggerVariableDefinition(triggerItemType, FormatVersion, SubVersion));
                             break;
 
                         case TriggerItemType.UNK1:
@@ -77,7 +77,7 @@ namespace War3Net.Build.Script
                 }
                 else
                 {
-                    TriggerItems.Add(element.GetDeletedTriggerItem(triggerItemType, triggerData, FormatVersion, SubVersion));
+                    TriggerItems.Add(element.GetDeletedTriggerItem(triggerItemType, FormatVersion, SubVersion));
                 }
             }
 
@@ -90,9 +90,9 @@ namespace War3Net.Build.Script
             }
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, TriggerData triggerData)
+        internal void ReadFrom(ref Utf8JsonReader reader)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, triggerData);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)

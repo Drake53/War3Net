@@ -34,7 +34,7 @@ namespace War3Net.Build.Serialization.Json
 
             public override MapTriggers? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                return reader.ReadMapTriggers(TriggerData.Default);
+                return reader.ReadMapTriggers();
             }
 
             public override void Write(Utf8JsonWriter writer, MapTriggers value, JsonSerializerOptions options)

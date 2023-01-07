@@ -14,28 +14,28 @@ namespace War3Net.Build.Script
 {
     public sealed partial class TriggerVariableDefinition : TriggerItem
     {
-        internal TriggerVariableDefinition(JsonElement jsonElement, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal TriggerVariableDefinition(JsonElement jsonElement, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
             : base(triggerItemType)
         {
-            GetFrom(jsonElement, triggerData, formatVersion, subVersion);
+            GetFrom(jsonElement, formatVersion, subVersion);
         }
 
-        internal TriggerVariableDefinition(ref Utf8JsonReader reader, TriggerItemType triggerItemType, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal TriggerVariableDefinition(ref Utf8JsonReader reader, TriggerItemType triggerItemType, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
             : base(triggerItemType)
         {
-            ReadFrom(ref reader, triggerData, formatVersion, subVersion);
+            ReadFrom(ref reader, formatVersion, subVersion);
         }
 
-        internal void GetFrom(JsonElement jsonElement, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void GetFrom(JsonElement jsonElement, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             Id = jsonElement.GetInt32(nameof(Id));
             Name = jsonElement.GetString(nameof(Name));
             ParentId = jsonElement.GetInt32(nameof(ParentId));
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, TriggerData triggerData, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
+        internal void ReadFrom(ref Utf8JsonReader reader, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, triggerData, formatVersion, subVersion);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, formatVersion, subVersion);
         }
 
         internal override void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
