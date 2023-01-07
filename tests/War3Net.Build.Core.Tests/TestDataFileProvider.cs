@@ -87,7 +87,7 @@ namespace War3Net.Build.Core.Tests
                 "Maps"));
         }
 
-        public static IEnumerable<object[]> GetMapRegionFilePaths()
+        public static IEnumerable<object[]> GetMapRegionsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
                 MapRegions.FileName.GetSearchPattern(),
