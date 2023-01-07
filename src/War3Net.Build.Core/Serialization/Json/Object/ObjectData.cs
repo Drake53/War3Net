@@ -17,66 +17,66 @@ namespace War3Net.Build.Object
     [JsonConverter(typeof(JsonObjectDataConverter))]
     public sealed partial class ObjectData
     {
-        internal ObjectData(JsonElement jsonElement, bool fromCampaign)
+        internal ObjectData(JsonElement jsonElement)
         {
-            GetFrom(jsonElement, fromCampaign);
+            GetFrom(jsonElement);
         }
 
-        internal ObjectData(ref Utf8JsonReader reader, bool fromCampaign)
+        internal ObjectData(ref Utf8JsonReader reader)
         {
-            ReadFrom(ref reader, fromCampaign);
+            ReadFrom(ref reader);
         }
 
-        internal void GetFrom(JsonElement jsonElement, bool fromCampaign)
+        internal void GetFrom(JsonElement jsonElement)
         {
             FormatVersion = jsonElement.GetInt32<ObjectDataFormatVersion>(nameof(FormatVersion));
 
             var unitDataElement = jsonElement.GetProperty(nameof(UnitData));
             if (unitDataElement.ValueKind != JsonValueKind.Null)
             {
-                UnitData = unitDataElement.GetUnitObjectData(fromCampaign);
+                UnitData = unitDataElement.GetUnitObjectData();
             }
 
             var itemDataElement = jsonElement.GetProperty(nameof(ItemData));
             if (itemDataElement.ValueKind != JsonValueKind.Null)
             {
-                ItemData = itemDataElement.GetItemObjectData(fromCampaign);
+                ItemData = itemDataElement.GetItemObjectData();
             }
 
             var destructableDataElement = jsonElement.GetProperty(nameof(DestructableData));
             if (destructableDataElement.ValueKind != JsonValueKind.Null)
             {
-                DestructableData = destructableDataElement.GetDestructableObjectData(fromCampaign);
+                DestructableData = destructableDataElement.GetDestructableObjectData();
             }
 
             var doodadDataElement = jsonElement.GetProperty(nameof(DoodadData));
             if (doodadDataElement.ValueKind != JsonValueKind.Null)
             {
-                DoodadData = doodadDataElement.GetDoodadObjectData(fromCampaign);
+                DoodadData = doodadDataElement.GetDoodadObjectData();
             }
 
             var abilityDataElement = jsonElement.GetProperty(nameof(AbilityData));
             if (abilityDataElement.ValueKind != JsonValueKind.Null)
             {
-                AbilityData = abilityDataElement.GetAbilityObjectData(fromCampaign);
+                AbilityData = abilityDataElement.GetAbilityObjectData();
             }
 
             var buffDataElement = jsonElement.GetProperty(nameof(BuffData));
             if (buffDataElement.ValueKind != JsonValueKind.Null)
             {
-                BuffData = buffDataElement.GetBuffObjectData(fromCampaign);
+                BuffData = buffDataElement.GetBuffObjectData();
             }
 
             var upgradeDataElement = jsonElement.GetProperty(nameof(UpgradeData));
             if (upgradeDataElement.ValueKind != JsonValueKind.Null)
             {
-                UpgradeData = upgradeDataElement.GetUpgradeObjectData(fromCampaign);
+                UpgradeData = upgradeDataElement.GetUpgradeObjectData();
             }
         }
 
-        internal void ReadFrom(ref Utf8JsonReader reader, bool fromCampaign)
+        internal void ReadFrom(ref Utf8JsonReader reader)
         {
-            GetFrom(JsonDocument.ParseValue(ref reader).RootElement, fromCampaign);
+            GetFrom(JsonDocument.ParseValue(ref reader).RootElement);
         }
 
         internal void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options)

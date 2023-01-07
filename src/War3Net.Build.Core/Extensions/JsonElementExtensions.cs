@@ -106,11 +106,7 @@ namespace War3Net.Build.Extensions
 
         public static MapShadowMap GetMapShadowMap(this JsonElement jsonElement) => new MapShadowMap(jsonElement);
 
-        public static ImportedFiles GetImportedFiles(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignImportedFiles() : jsonElement.GetMapImportedFiles();
-
-        public static CampaignImportedFiles GetCampaignImportedFiles(this JsonElement jsonElement) => new CampaignImportedFiles(jsonElement);
-
-        public static MapImportedFiles GetMapImportedFiles(this JsonElement jsonElement) => new MapImportedFiles(jsonElement);
+        public static ImportedFiles GetImportedFiles(this JsonElement jsonElement) => new ImportedFiles(jsonElement);
 
         public static ImportedFile GetImportedFile(this JsonElement jsonElement, ImportedFilesFormatVersion formatVersion) => new ImportedFile(jsonElement, formatVersion);
 
@@ -136,49 +132,21 @@ namespace War3Net.Build.Extensions
 
         public static RandomUnitSet GetRandomUnitSet(this JsonElement jsonElement, MapInfoFormatVersion formatVersion, int setSize) => new RandomUnitSet(jsonElement, formatVersion, setSize);
 
-        public static ObjectData GetObjectData(this JsonElement jsonElement, bool fromCampaign) => new ObjectData(jsonElement, fromCampaign);
+        public static ObjectData GetObjectData(this JsonElement jsonElement) => new ObjectData(jsonElement);
 
-        public static AbilityObjectData GetAbilityObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignAbilityObjectData() : jsonElement.GetMapAbilityObjectData();
+        public static AbilityObjectData GetAbilityObjectData(this JsonElement jsonElement) => new AbilityObjectData(jsonElement);
 
-        public static BuffObjectData GetBuffObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignBuffObjectData() : jsonElement.GetMapBuffObjectData();
+        public static BuffObjectData GetBuffObjectData(this JsonElement jsonElement) => new BuffObjectData(jsonElement);
 
-        public static DestructableObjectData GetDestructableObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignDestructableObjectData() : jsonElement.GetMapDestructableObjectData();
+        public static DestructableObjectData GetDestructableObjectData(this JsonElement jsonElement) => new DestructableObjectData(jsonElement);
 
-        public static DoodadObjectData GetDoodadObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignDoodadObjectData() : jsonElement.GetMapDoodadObjectData();
+        public static DoodadObjectData GetDoodadObjectData(this JsonElement jsonElement) => new DoodadObjectData(jsonElement);
 
-        public static ItemObjectData GetItemObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignItemObjectData() : jsonElement.GetMapItemObjectData();
+        public static ItemObjectData GetItemObjectData(this JsonElement jsonElement) => new ItemObjectData(jsonElement);
 
-        public static UnitObjectData GetUnitObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignUnitObjectData() : jsonElement.GetMapUnitObjectData();
+        public static UnitObjectData GetUnitObjectData(this JsonElement jsonElement) => new UnitObjectData(jsonElement);
 
-        public static UpgradeObjectData GetUpgradeObjectData(this JsonElement jsonElement, bool fromCampaign) => fromCampaign ? jsonElement.GetCampaignUpgradeObjectData() : jsonElement.GetMapUpgradeObjectData();
-
-        public static CampaignAbilityObjectData GetCampaignAbilityObjectData(this JsonElement jsonElement) => new CampaignAbilityObjectData(jsonElement);
-
-        public static CampaignBuffObjectData GetCampaignBuffObjectData(this JsonElement jsonElement) => new CampaignBuffObjectData(jsonElement);
-
-        public static CampaignDestructableObjectData GetCampaignDestructableObjectData(this JsonElement jsonElement) => new CampaignDestructableObjectData(jsonElement);
-
-        public static CampaignDoodadObjectData GetCampaignDoodadObjectData(this JsonElement jsonElement) => new CampaignDoodadObjectData(jsonElement);
-
-        public static CampaignItemObjectData GetCampaignItemObjectData(this JsonElement jsonElement) => new CampaignItemObjectData(jsonElement);
-
-        public static CampaignUnitObjectData GetCampaignUnitObjectData(this JsonElement jsonElement) => new CampaignUnitObjectData(jsonElement);
-
-        public static CampaignUpgradeObjectData GetCampaignUpgradeObjectData(this JsonElement jsonElement) => new CampaignUpgradeObjectData(jsonElement);
-
-        public static MapAbilityObjectData GetMapAbilityObjectData(this JsonElement jsonElement) => new MapAbilityObjectData(jsonElement);
-
-        public static MapBuffObjectData GetMapBuffObjectData(this JsonElement jsonElement) => new MapBuffObjectData(jsonElement);
-
-        public static MapDestructableObjectData GetMapDestructableObjectData(this JsonElement jsonElement) => new MapDestructableObjectData(jsonElement);
-
-        public static MapDoodadObjectData GetMapDoodadObjectData(this JsonElement jsonElement) => new MapDoodadObjectData(jsonElement);
-
-        public static MapItemObjectData GetMapItemObjectData(this JsonElement jsonElement) => new MapItemObjectData(jsonElement);
-
-        public static MapUnitObjectData GetMapUnitObjectData(this JsonElement jsonElement) => new MapUnitObjectData(jsonElement);
-
-        public static MapUpgradeObjectData GetMapUpgradeObjectData(this JsonElement jsonElement) => new MapUpgradeObjectData(jsonElement);
+        public static UpgradeObjectData GetUpgradeObjectData(this JsonElement jsonElement) => new UpgradeObjectData(jsonElement);
 
         public static LevelObjectModification GetLevelObjectModification(this JsonElement jsonElement, ObjectDataFormatVersion formatVersion) => new LevelObjectModification(jsonElement, formatVersion);
 

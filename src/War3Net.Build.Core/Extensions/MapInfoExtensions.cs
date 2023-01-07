@@ -24,7 +24,7 @@ namespace War3Net.Build.Extensions
             mapInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, TriggerStrings? mapTriggerStrings)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, _defaultEncoding);
         }
@@ -34,7 +34,7 @@ namespace War3Net.Build.Extensions
             mapInfo.WriteArchiveHeaderToStream(stream, null, encoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings, Encoding encoding)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, TriggerStrings? mapTriggerStrings, Encoding encoding)
         {
             using (var writer = new BinaryWriter(stream, encoding, true))
             {

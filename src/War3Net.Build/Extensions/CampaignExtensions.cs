@@ -44,7 +44,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.AbilityObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignAbilityObjectData.FileName);
+            return MpqFile.New(memoryStream, AbilityObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetBuffObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -60,7 +60,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.BuffObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignBuffObjectData.FileName);
+            return MpqFile.New(memoryStream, BuffObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetDestructableObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -76,7 +76,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.DestructableObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignDestructableObjectData.FileName);
+            return MpqFile.New(memoryStream, DestructableObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetDoodadObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -92,7 +92,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.DoodadObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignDoodadObjectData.FileName);
+            return MpqFile.New(memoryStream, DoodadObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetItemObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -108,7 +108,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.ItemObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignItemObjectData.FileName);
+            return MpqFile.New(memoryStream, ItemObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetUnitObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -124,7 +124,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.UnitObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignUnitObjectData.FileName);
+            return MpqFile.New(memoryStream, UnitObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetUpgradeObjectDataFile(this Campaign campaign, Encoding? encoding = null)
@@ -140,7 +140,7 @@ namespace War3Net.Build.Extensions
             writer.Write(campaign.UpgradeObjectData);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignUpgradeObjectData.FileName);
+            return MpqFile.New(memoryStream, UpgradeObjectData.CampaignFileName);
         }
 
         public static MpqFile? GetTriggerStringsFile(this Campaign campaign, Encoding? encoding = null)
@@ -156,7 +156,7 @@ namespace War3Net.Build.Extensions
             writer.WriteTriggerStrings(campaign.TriggerStrings);
             writer.Flush();
 
-            return MpqFile.New(memoryStream, CampaignTriggerStrings.FileName);
+            return MpqFile.New(memoryStream, TriggerStrings.CampaignFileName);
         }
 
         public static void SetInfoFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
@@ -168,49 +168,49 @@ namespace War3Net.Build.Extensions
         public static void SetAbilityObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.AbilityObjectData = reader.ReadCampaignAbilityObjectData();
+            campaign.AbilityObjectData = reader.ReadAbilityObjectData();
         }
 
         public static void SetBuffObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.BuffObjectData = reader.ReadCampaignBuffObjectData();
+            campaign.BuffObjectData = reader.ReadBuffObjectData();
         }
 
         public static void SetDestructableObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.DestructableObjectData = reader.ReadCampaignDestructableObjectData();
+            campaign.DestructableObjectData = reader.ReadDestructableObjectData();
         }
 
         public static void SetDoodadObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.DoodadObjectData = reader.ReadCampaignDoodadObjectData();
+            campaign.DoodadObjectData = reader.ReadDoodadObjectData();
         }
 
         public static void SetItemObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.ItemObjectData = reader.ReadCampaignItemObjectData();
+            campaign.ItemObjectData = reader.ReadItemObjectData();
         }
 
         public static void SetUnitObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.UnitObjectData = reader.ReadCampaignUnitObjectData();
+            campaign.UnitObjectData = reader.ReadUnitObjectData();
         }
 
         public static void SetUpgradeObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
-            campaign.UpgradeObjectData = reader.ReadCampaignUpgradeObjectData();
+            campaign.UpgradeObjectData = reader.ReadUpgradeObjectData();
         }
 
         public static void SetTriggerStringsFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new StreamReader(stream, encoding ?? _defaultEncoding, leaveOpen: leaveOpen);
-            campaign.TriggerStrings = reader.ReadCampaignTriggerStrings();
+            campaign.TriggerStrings = reader.ReadTriggerStrings();
         }
 
         /// <returns><see langword="true"/> if the file was recognized as a war3campaign file.</returns>
@@ -220,14 +220,14 @@ namespace War3Net.Build.Extensions
             {
 #pragma warning disable IDE0011, SA1503
                 case CampaignInfo.FileName: if (overwriteFile) campaign.SetInfoFile(stream, encoding, leaveOpen); break;
-                case CampaignAbilityObjectData.FileName: if (campaign.AbilityObjectData is null || overwriteFile) campaign.SetAbilityObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignBuffObjectData.FileName: if (campaign.BuffObjectData is null || overwriteFile) campaign.SetBuffObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignDestructableObjectData.FileName: if (campaign.DestructableObjectData is null || overwriteFile) campaign.SetDestructableObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignDoodadObjectData.FileName: if (campaign.DoodadObjectData is null || overwriteFile) campaign.SetDoodadObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignItemObjectData.FileName: if (campaign.ItemObjectData is null || overwriteFile) campaign.SetItemObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignUnitObjectData.FileName: if (campaign.UnitObjectData is null || overwriteFile) campaign.SetUnitObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignUpgradeObjectData.FileName: if (campaign.UpgradeObjectData is null || overwriteFile) campaign.SetUpgradeObjectDataFile(stream, encoding, leaveOpen); break;
-                case CampaignTriggerStrings.FileName: if (campaign.TriggerStrings is null || overwriteFile) campaign.SetTriggerStringsFile(stream, encoding, leaveOpen); break;
+                case AbilityObjectData.CampaignFileName: if (campaign.AbilityObjectData is null || overwriteFile) campaign.SetAbilityObjectDataFile(stream, encoding, leaveOpen); break;
+                case BuffObjectData.CampaignFileName: if (campaign.BuffObjectData is null || overwriteFile) campaign.SetBuffObjectDataFile(stream, encoding, leaveOpen); break;
+                case DestructableObjectData.CampaignFileName: if (campaign.DestructableObjectData is null || overwriteFile) campaign.SetDestructableObjectDataFile(stream, encoding, leaveOpen); break;
+                case DoodadObjectData.CampaignFileName: if (campaign.DoodadObjectData is null || overwriteFile) campaign.SetDoodadObjectDataFile(stream, encoding, leaveOpen); break;
+                case ItemObjectData.CampaignFileName: if (campaign.ItemObjectData is null || overwriteFile) campaign.SetItemObjectDataFile(stream, encoding, leaveOpen); break;
+                case UnitObjectData.CampaignFileName: if (campaign.UnitObjectData is null || overwriteFile) campaign.SetUnitObjectDataFile(stream, encoding, leaveOpen); break;
+                case UpgradeObjectData.CampaignFileName: if (campaign.UpgradeObjectData is null || overwriteFile) campaign.SetUpgradeObjectDataFile(stream, encoding, leaveOpen); break;
+                case TriggerStrings.CampaignFileName: if (campaign.TriggerStrings is null || overwriteFile) campaign.SetTriggerStringsFile(stream, encoding, leaveOpen); break;
 #pragma warning restore IDE0011, SA1503
 
                 default: return false;

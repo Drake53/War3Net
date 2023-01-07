@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="JsonCampaignImportedFilesConverter.cs" company="Drake53">
+// <copyright file="JsonAbilityObjectDataConverter.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,15 +10,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using War3Net.Build.Extensions;
-using War3Net.Build.Import;
+using War3Net.Build.Object;
 
 namespace War3Net.Build.Serialization.Json
 {
-    internal sealed class JsonCampaignImportedFilesConverter : JsonConverterFactory
+    internal sealed class JsonAbilityObjectDataConverter : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert == typeof(CampaignImportedFiles);
+            return typeToConvert == typeof(AbilityObjectData);
         }
 
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -26,18 +26,18 @@ namespace War3Net.Build.Serialization.Json
             return new Converter(options);
         }
 
-        private class Converter : JsonConverter<CampaignImportedFiles>
+        private class Converter : JsonConverter<AbilityObjectData>
         {
             public Converter(JsonSerializerOptions options)
             {
             }
 
-            public override CampaignImportedFiles? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override AbilityObjectData? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                return reader.ReadCampaignImportedFiles();
+                return reader.ReadAbilityObjectData();
             }
 
-            public override void Write(Utf8JsonWriter writer, CampaignImportedFiles value, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, AbilityObjectData value, JsonSerializerOptions options)
             {
                 writer.Write(value, options);
             }

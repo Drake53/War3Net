@@ -19,9 +19,9 @@ namespace War3Net.Build.Extensions
     public static class MpqArchiveBuilderExtensions
     {
         private static readonly ulong CampaignInfoHashedFileName = MpqHash.GetHashedFileName(CampaignInfo.FileName);
-        private static readonly ulong CampaignTriggerStringsHashedFileName = MpqHash.GetHashedFileName(CampaignTriggerStrings.FileName);
+        private static readonly ulong CampaignTriggerStringsHashedFileName = MpqHash.GetHashedFileName(TriggerStrings.CampaignFileName);
         private static readonly ulong MapInfoHashedFileName = MpqHash.GetHashedFileName(MapInfo.FileName);
-        private static readonly ulong MapTriggerStringsHashedFileName = MpqHash.GetHashedFileName(MapTriggerStrings.FileName);
+        private static readonly ulong MapTriggerStringsHashedFileName = MpqHash.GetHashedFileName(TriggerStrings.MapFileName);
 
         private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
@@ -39,7 +39,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(fileName, campaignInfo, campaignTriggerStrings);
@@ -62,7 +62,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(fileName, mapInfo, mapTriggerStrings);
@@ -93,7 +93,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(fileName, createOptions, campaignInfo, campaignTriggerStrings);
@@ -116,7 +116,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(fileName, createOptions, mapInfo, mapTriggerStrings);
@@ -147,7 +147,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(fileName, campaignInfo, campaignTriggerStrings, encoding);
@@ -170,7 +170,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(fileName, mapInfo, mapTriggerStrings, encoding);
@@ -201,7 +201,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(fileName, createOptions, campaignInfo, campaignTriggerStrings, encoding);
@@ -224,7 +224,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(fileName, createOptions, mapInfo, mapTriggerStrings, encoding);
@@ -255,7 +255,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(stream, campaignInfo, campaignTriggerStrings, leaveOpen);
@@ -278,7 +278,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(stream, mapInfo, mapTriggerStrings, leaveOpen);
@@ -309,7 +309,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(stream, createOptions, campaignInfo, campaignTriggerStrings, leaveOpen);
@@ -332,7 +332,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, _defaultEncoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(stream, createOptions, mapInfo, mapTriggerStrings, leaveOpen);
@@ -363,7 +363,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(stream, campaignInfo, campaignTriggerStrings, encoding, leaveOpen);
@@ -386,7 +386,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(stream, mapInfo, mapTriggerStrings, encoding, leaveOpen);
@@ -417,7 +417,7 @@ namespace War3Net.Build.Extensions
                 if (campaignTriggerStringsFile is not null)
                 {
                     using var triggerStringsReader = new StreamReader(campaignTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                    var campaignTriggerStrings = triggerStringsReader.ReadCampaignTriggerStrings();
+                    var campaignTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                     campaignTriggerStringsFile.MpqStream.Position = 0;
 
                     mpqArchiveBuilder.SaveCampaignWithPreArchiveData(stream, createOptions, campaignInfo, campaignTriggerStrings, encoding, leaveOpen);
@@ -440,7 +440,7 @@ namespace War3Net.Build.Extensions
                     if (mapTriggerStringsFile is not null)
                     {
                         using var triggerStringsReader = new StreamReader(mapTriggerStringsFile.MpqStream, encoding, leaveOpen: true);
-                        var mapTriggerStrings = triggerStringsReader.ReadMapTriggerStrings();
+                        var mapTriggerStrings = triggerStringsReader.ReadTriggerStrings();
                         mapTriggerStringsFile.MpqStream.Position = 0;
 
                         mpqArchiveBuilder.SaveMapWithPreArchiveData(stream, createOptions, mapInfo, mapTriggerStrings, encoding, leaveOpen);
@@ -475,7 +475,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -484,7 +484,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -511,7 +511,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, Encoding encoding)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -520,7 +520,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, Encoding encoding)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -541,13 +541,13 @@ namespace War3Net.Build.Extensions
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, bool leaveOpen = false)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, bool leaveOpen = false)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings);
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
@@ -565,13 +565,13 @@ namespace War3Net.Build.Extensions
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding, bool leaveOpen = false)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, Encoding encoding, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings, encoding);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
         }
 
-        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding, bool leaveOpen = false)
+        public static void SaveCampaignWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, CampaignInfo campaignInfo, TriggerStrings? campaignTriggerStrings, Encoding encoding, bool leaveOpen = false)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings, encoding);
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
@@ -595,7 +595,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MapInfo mapInfo, TriggerStrings? mapTriggerStrings)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -604,7 +604,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, TriggerStrings? mapTriggerStrings)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -631,7 +631,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, Encoding encoding)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, Encoding encoding)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -640,7 +640,7 @@ namespace War3Net.Build.Extensions
             }
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, Encoding encoding)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, string fileName, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, Encoding encoding)
         {
             using (var stream = FileProvider.CreateFileAndFolder(fileName))
             {
@@ -661,13 +661,13 @@ namespace War3Net.Build.Extensions
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, bool leaveOpen = false)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, bool leaveOpen = false)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, bool leaveOpen = false)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, bool leaveOpen = false)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings);
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
@@ -685,13 +685,13 @@ namespace War3Net.Build.Extensions
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, Encoding encoding, bool leaveOpen = false)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, Encoding encoding, bool leaveOpen = false)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, encoding);
             mpqArchiveBuilder.SaveTo(stream, leaveOpen);
         }
 
-        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, MapTriggerStrings? mapTriggerStrings, Encoding encoding, bool leaveOpen = false)
+        public static void SaveMapWithPreArchiveData(this MpqArchiveBuilder mpqArchiveBuilder, Stream stream, MpqArchiveCreateOptions createOptions, MapInfo mapInfo, TriggerStrings? mapTriggerStrings, Encoding encoding, bool leaveOpen = false)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, encoding);
             mpqArchiveBuilder.SaveTo(stream, createOptions, leaveOpen);

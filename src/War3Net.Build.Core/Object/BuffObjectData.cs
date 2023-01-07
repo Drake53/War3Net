@@ -9,9 +9,19 @@ using System.Collections.Generic;
 
 namespace War3Net.Build.Object
 {
-    public abstract partial class BuffObjectData
+    public sealed partial class BuffObjectData
     {
-        internal BuffObjectData(ObjectDataFormatVersion formatVersion)
+        public const string FileExtension = ".w3h";
+        public const string CampaignFileName = "war3campaign.w3h";
+        public const string CampaignSkinFileName = "war3campaignSkin.w3h";
+        public const string MapFileName = "war3map.w3h";
+        public const string MapSkinFileName = "war3mapSkin.w3h";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuffObjectData"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public BuffObjectData(ObjectDataFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
         }
@@ -21,5 +31,7 @@ namespace War3Net.Build.Object
         public List<SimpleObjectModification> BaseBuffs { get; init; } = new();
 
         public List<SimpleObjectModification> NewBuffs { get; init; } = new();
+
+        public override string ToString() => $"{FileExtension} file";
     }
 }

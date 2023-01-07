@@ -24,7 +24,7 @@ namespace War3Net.Build.Extensions
             campaignInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, TriggerStrings? campaignTriggerStrings)
         {
             campaignInfo.WriteArchiveHeaderToStream(stream, campaignTriggerStrings, _defaultEncoding);
         }
@@ -34,7 +34,7 @@ namespace War3Net.Build.Extensions
             campaignInfo.WriteArchiveHeaderToStream(stream, null, encoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, CampaignTriggerStrings? campaignTriggerStrings, Encoding encoding)
+        public static void WriteArchiveHeaderToStream(this CampaignInfo campaignInfo, Stream stream, TriggerStrings? campaignTriggerStrings, Encoding encoding)
         {
             using (var writer = new BinaryWriter(stream, encoding, true))
             {

@@ -34,7 +34,7 @@ namespace War3Net.Build.Serialization.Json
 
             public override ObjectData? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                return reader.ReadObjectData(false);
+                return reader.ReadObjectData();
             }
 
             public override void Write(Utf8JsonWriter writer, ObjectData value, JsonSerializerOptions options)

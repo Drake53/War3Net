@@ -33,43 +33,27 @@ namespace War3Net.Build.Extensions
 
         public static MapShadowMap ReadMapShadowMap(this ref Utf8JsonReader reader) => new MapShadowMap(ref reader);
 
-        public static CampaignImportedFiles ReadCampaignImportedFiles(this ref Utf8JsonReader reader) => new CampaignImportedFiles(ref reader);
-
-        public static MapImportedFiles ReadMapImportedFiles(this ref Utf8JsonReader reader) => new MapImportedFiles(ref reader);
+        public static ImportedFiles ReadImportedFiles(this ref Utf8JsonReader reader) => new ImportedFiles(ref reader);
 
         public static CampaignInfo ReadCampaignInfo(this ref Utf8JsonReader reader) => new CampaignInfo(ref reader);
 
         public static MapInfo ReadMapInfo(this ref Utf8JsonReader reader) => new MapInfo(ref reader);
 
-        public static CampaignAbilityObjectData ReadCampaignAbilityObjectData(this ref Utf8JsonReader reader) => new CampaignAbilityObjectData(ref reader);
+        public static AbilityObjectData ReadAbilityObjectData(this ref Utf8JsonReader reader) => new AbilityObjectData(ref reader);
 
-        public static CampaignBuffObjectData ReadCampaignBuffObjectData(this ref Utf8JsonReader reader) => new CampaignBuffObjectData(ref reader);
+        public static BuffObjectData ReadBuffObjectData(this ref Utf8JsonReader reader) => new BuffObjectData(ref reader);
 
-        public static CampaignDestructableObjectData ReadCampaignDestructableObjectData(this ref Utf8JsonReader reader) => new CampaignDestructableObjectData(ref reader);
+        public static DestructableObjectData ReadDestructableObjectData(this ref Utf8JsonReader reader) => new DestructableObjectData(ref reader);
 
-        public static CampaignDoodadObjectData ReadCampaignDoodadObjectData(this ref Utf8JsonReader reader) => new CampaignDoodadObjectData(ref reader);
+        public static DoodadObjectData ReadDoodadObjectData(this ref Utf8JsonReader reader) => new DoodadObjectData(ref reader);
 
-        public static CampaignItemObjectData ReadCampaignItemObjectData(this ref Utf8JsonReader reader) => new CampaignItemObjectData(ref reader);
+        public static ItemObjectData ReadItemObjectData(this ref Utf8JsonReader reader) => new ItemObjectData(ref reader);
 
-        public static CampaignUnitObjectData ReadCampaignUnitObjectData(this ref Utf8JsonReader reader) => new CampaignUnitObjectData(ref reader);
+        public static UnitObjectData ReadUnitObjectData(this ref Utf8JsonReader reader) => new UnitObjectData(ref reader);
 
-        public static CampaignUpgradeObjectData ReadCampaignUpgradeObjectData(this ref Utf8JsonReader reader) => new CampaignUpgradeObjectData(ref reader);
+        public static UpgradeObjectData ReadUpgradeObjectData(this ref Utf8JsonReader reader) => new UpgradeObjectData(ref reader);
 
-        public static MapAbilityObjectData ReadMapAbilityObjectData(this ref Utf8JsonReader reader) => new MapAbilityObjectData(ref reader);
-
-        public static MapBuffObjectData ReadMapBuffObjectData(this ref Utf8JsonReader reader) => new MapBuffObjectData(ref reader);
-
-        public static MapDestructableObjectData ReadMapDestructableObjectData(this ref Utf8JsonReader reader) => new MapDestructableObjectData(ref reader);
-
-        public static MapDoodadObjectData ReadMapDoodadObjectData(this ref Utf8JsonReader reader) => new MapDoodadObjectData(ref reader);
-
-        public static MapItemObjectData ReadMapItemObjectData(this ref Utf8JsonReader reader) => new MapItemObjectData(ref reader);
-
-        public static MapUnitObjectData ReadMapUnitObjectData(this ref Utf8JsonReader reader) => new MapUnitObjectData(ref reader);
-
-        public static MapUpgradeObjectData ReadMapUpgradeObjectData(this ref Utf8JsonReader reader) => new MapUpgradeObjectData(ref reader);
-
-        public static ObjectData ReadObjectData(this ref Utf8JsonReader reader, bool fromCampaign) => new ObjectData(ref reader, fromCampaign);
+        public static ObjectData ReadObjectData(this ref Utf8JsonReader reader) => new ObjectData(ref reader);
 
         public static MapCustomTextTriggers ReadMapCustomTextTriggers(this ref Utf8JsonReader reader) => new MapCustomTextTriggers(ref reader);
 

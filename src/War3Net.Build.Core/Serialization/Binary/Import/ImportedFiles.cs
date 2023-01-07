@@ -12,7 +12,7 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Import
 {
-    public abstract partial class ImportedFiles
+    public sealed partial class ImportedFiles
     {
         internal ImportedFiles(BinaryReader reader)
         {

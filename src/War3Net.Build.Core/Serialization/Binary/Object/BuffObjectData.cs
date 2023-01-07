@@ -12,7 +12,7 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
-    public abstract partial class BuffObjectData
+    public sealed partial class BuffObjectData
     {
         internal BuffObjectData(BinaryReader reader)
         {

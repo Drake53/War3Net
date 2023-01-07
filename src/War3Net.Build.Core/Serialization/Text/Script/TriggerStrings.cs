@@ -11,7 +11,7 @@ using War3Net.Build.Extensions;
 
 namespace War3Net.Build.Script
 {
-    public abstract partial class TriggerStrings
+    public sealed partial class TriggerStrings
     {
         internal TriggerStrings(StreamReader reader)
         {

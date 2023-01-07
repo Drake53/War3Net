@@ -149,13 +149,13 @@ namespace War3Net.Build
                 MapSounds.FileName => MapSounds,
                 MapPreviewIcons.FileName => MapIcons,
 
-                MapUnitObjectData.FileName => MapUnitData,
-                MapItemObjectData.FileName => MapItemData,
-                MapDestructableObjectData.FileName => MapDestructableData,
-                MapDoodadObjectData.FileName => MapDoodadData,
-                MapAbilityObjectData.FileName => MapAbilityData,
-                MapBuffObjectData.FileName => MapBuffData,
-                MapUpgradeObjectData.FileName => MapUpgradeData,
+                UnitObjectData.MapFileName => MapUnitData,
+                ItemObjectData.MapFileName => MapItemData,
+                DestructableObjectData.MapFileName => MapDestructableData,
+                DoodadObjectData.MapFileName => MapDoodadData,
+                AbilityObjectData.MapFileName => MapAbilityData,
+                BuffObjectData.MapFileName => MapBuffData,
+                UpgradeObjectData.MapFileName => MapUpgradeData,
 
                 _ => null,
             };
@@ -195,31 +195,31 @@ namespace War3Net.Build
             {
                 MapIcons = mapIcons;
             }
-            else if (file is MapUnitObjectData mapUnitData)
+            else if (file is UnitObjectData mapUnitData)
             {
                 MapUnitData = mapUnitData;
             }
-            else if (file is MapItemObjectData mapItemData)
+            else if (file is ItemObjectData mapItemData)
             {
                 MapItemData = mapItemData;
             }
-            else if (file is MapDestructableObjectData mapDestructableData)
+            else if (file is DestructableObjectData mapDestructableData)
             {
                 MapDestructableData = mapDestructableData;
             }
-            else if (file is MapDoodadObjectData mapDoodadData)
+            else if (file is DoodadObjectData mapDoodadData)
             {
                 MapDoodadData = mapDoodadData;
             }
-            else if (file is MapAbilityObjectData mapAbilityData)
+            else if (file is AbilityObjectData mapAbilityData)
             {
                 MapAbilityData = mapAbilityData;
             }
-            else if (file is MapBuffObjectData mapBuffData)
+            else if (file is BuffObjectData mapBuffData)
             {
                 MapBuffData = mapBuffData;
             }
-            else if (file is MapUpgradeObjectData mapUpgradeData)
+            else if (file is UpgradeObjectData mapUpgradeData)
             {
                 MapUpgradeData = mapUpgradeData;
             }

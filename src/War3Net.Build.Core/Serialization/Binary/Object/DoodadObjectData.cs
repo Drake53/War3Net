@@ -12,7 +12,7 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
-    public abstract partial class DoodadObjectData
+    public sealed partial class DoodadObjectData
     {
         internal DoodadObjectData(BinaryReader reader)
         {

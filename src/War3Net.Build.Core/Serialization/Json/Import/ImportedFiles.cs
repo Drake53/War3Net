@@ -6,13 +6,16 @@
 // ------------------------------------------------------------------------------
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using War3Net.Build.Extensions;
+using War3Net.Build.Serialization.Json;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Import
 {
-    public abstract partial class ImportedFiles
+    [JsonConverter(typeof(JsonImportedFilesConverter))]
+    public sealed partial class ImportedFiles
     {
         internal ImportedFiles(JsonElement jsonElement)
         {

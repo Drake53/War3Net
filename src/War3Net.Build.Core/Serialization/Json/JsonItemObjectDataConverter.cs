@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="JsonCampaignDestructableObjectDataConverter.cs" company="Drake53">
+// <copyright file="JsonItemObjectDataConverter.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,11 +14,11 @@ using War3Net.Build.Object;
 
 namespace War3Net.Build.Serialization.Json
 {
-    internal sealed class JsonCampaignDestructableObjectDataConverter : JsonConverterFactory
+    internal sealed class JsonItemObjectDataConverter : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert == typeof(CampaignDestructableObjectData);
+            return typeToConvert == typeof(ItemObjectData);
         }
 
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -26,18 +26,18 @@ namespace War3Net.Build.Serialization.Json
             return new Converter(options);
         }
 
-        private class Converter : JsonConverter<CampaignDestructableObjectData>
+        private class Converter : JsonConverter<ItemObjectData>
         {
             public Converter(JsonSerializerOptions options)
             {
             }
 
-            public override CampaignDestructableObjectData? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override ItemObjectData? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                return reader.ReadCampaignDestructableObjectData();
+                return reader.ReadItemObjectData();
             }
 
-            public override void Write(Utf8JsonWriter writer, CampaignDestructableObjectData value, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, ItemObjectData value, JsonSerializerOptions options)
             {
                 writer.Write(value, options);
             }

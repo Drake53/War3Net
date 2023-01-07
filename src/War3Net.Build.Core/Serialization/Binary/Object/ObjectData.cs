@@ -14,22 +14,22 @@ namespace War3Net.Build.Object
 {
     public sealed partial class ObjectData
     {
-        internal ObjectData(BinaryReader reader, bool fromCampaign)
+        internal ObjectData(BinaryReader reader)
         {
-            ReadFrom(reader, fromCampaign);
+            ReadFrom(reader);
         }
 
-        internal void ReadFrom(BinaryReader reader, bool fromCampaign)
+        internal void ReadFrom(BinaryReader reader)
         {
             FormatVersion = reader.ReadInt32<ObjectDataFormatVersion>();
 
-            UnitData = reader.ReadBool() ? reader.ReadUnitObjectData(fromCampaign) : null;
-            ItemData = reader.ReadBool() ? reader.ReadItemObjectData(fromCampaign) : null;
-            DestructableData = reader.ReadBool() ? reader.ReadDestructableObjectData(fromCampaign) : null;
-            DoodadData = reader.ReadBool() ? reader.ReadDoodadObjectData(fromCampaign) : null;
-            AbilityData = reader.ReadBool() ? reader.ReadAbilityObjectData(fromCampaign) : null;
-            BuffData = reader.ReadBool() ? reader.ReadBuffObjectData(fromCampaign) : null;
-            UpgradeData = reader.ReadBool() ? reader.ReadUpgradeObjectData(fromCampaign) : null;
+            UnitData = reader.ReadBool() ? reader.ReadUnitObjectData() : null;
+            ItemData = reader.ReadBool() ? reader.ReadItemObjectData() : null;
+            DestructableData = reader.ReadBool() ? reader.ReadDestructableObjectData() : null;
+            DoodadData = reader.ReadBool() ? reader.ReadDoodadObjectData() : null;
+            AbilityData = reader.ReadBool() ? reader.ReadAbilityObjectData() : null;
+            BuffData = reader.ReadBool() ? reader.ReadBuffObjectData() : null;
+            UpgradeData = reader.ReadBool() ? reader.ReadUpgradeObjectData() : null;
         }
 
         internal void WriteTo(BinaryWriter writer)

@@ -12,7 +12,7 @@ using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
-    public abstract partial class UnitObjectData
+    public sealed partial class UnitObjectData
     {
         internal UnitObjectData(BinaryReader reader)
         {

@@ -9,9 +9,19 @@ using System.Collections.Generic;
 
 namespace War3Net.Build.Object
 {
-    public abstract partial class AbilityObjectData
+    public sealed partial class AbilityObjectData
     {
-        internal AbilityObjectData(ObjectDataFormatVersion formatVersion)
+        public const string FileExtension = ".w3a";
+        public const string CampaignFileName = "war3campaign.w3a";
+        public const string CampaignSkinFileName = "war3campaignSkin.w3a";
+        public const string MapFileName = "war3map.w3a";
+        public const string MapSkinFileName = "war3mapSkin.w3a";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AbilityObjectData"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public AbilityObjectData(ObjectDataFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
         }
@@ -21,5 +31,7 @@ namespace War3Net.Build.Object
         public List<LevelObjectModification> BaseAbilities { get; init; } = new();
 
         public List<LevelObjectModification> NewAbilities { get; init; } = new();
+
+        public override string ToString() => $"{FileExtension} file";
     }
 }
