@@ -7,6 +7,7 @@
 
 using System.Text.Json;
 
+using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Script
@@ -49,6 +50,8 @@ namespace War3Net.Build.Script
         internal override void WriteTo(Utf8JsonWriter writer, JsonSerializerOptions options, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion)
         {
             writer.WriteStartObject();
+
+            writer.WriteObject(nameof(Type), Type, options);
 
             writer.WriteNumber(nameof(Id), Id);
             writer.WriteString(nameof(Name), Name);

@@ -64,6 +64,8 @@ namespace War3Net.Build.Script
         {
             writer.WriteStartObject();
 
+            writer.WriteObject(nameof(Type), Type, options);
+
             writer.WriteString(nameof(Name), Name);
             writer.WriteString(nameof(Description), Description);
             if (formatVersion >= MapTriggersFormatVersion.v7)

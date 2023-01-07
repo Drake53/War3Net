@@ -42,6 +42,8 @@ namespace War3Net.Common.Extensions
 
         public static JsonElement.ArrayEnumerator EnumerateArray(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).EnumerateArray();
 
+        public static JsonElement.ObjectEnumerator EnumerateObject(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).EnumerateObject();
+
         public static int GetArrayLength(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetArrayLength();
 
         public static bool GetBoolean(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).GetBoolean();
