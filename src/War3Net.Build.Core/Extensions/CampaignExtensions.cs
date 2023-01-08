@@ -165,6 +165,118 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, UpgradeObjectData.CampaignFileName);
         }
 
+        public static MpqFile? GetAbilitySkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.AbilitySkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.AbilitySkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, AbilityObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetBuffSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.BuffSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.BuffSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, BuffObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetDestructableSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.DestructableSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.DestructableSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, DestructableObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetDoodadSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.DoodadSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.DoodadSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, DoodadObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetItemSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.ItemSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.ItemSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, ItemObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetUnitSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.UnitSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.UnitSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, UnitObjectData.CampaignSkinFileName);
+        }
+
+        public static MpqFile? GetUpgradeSkinObjectDataFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.UpgradeSkinObjectData is null)
+            {
+                return null;
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.UpgradeSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, UpgradeObjectData.CampaignSkinFileName);
+        }
+
         public static MpqFile? GetTriggerStringsFile(this Campaign campaign, Encoding? encoding = null)
         {
             if (campaign.TriggerStrings is null)
@@ -235,6 +347,48 @@ namespace War3Net.Build.Extensions
             campaign.UpgradeObjectData = reader.ReadUpgradeObjectData();
         }
 
+        public static void SetAbilitySkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.AbilitySkinObjectData = reader.ReadAbilityObjectData();
+        }
+
+        public static void SetBuffSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.BuffSkinObjectData = reader.ReadBuffObjectData();
+        }
+
+        public static void SetDestructableSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.DestructableSkinObjectData = reader.ReadDestructableObjectData();
+        }
+
+        public static void SetDoodadSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.DoodadSkinObjectData = reader.ReadDoodadObjectData();
+        }
+
+        public static void SetItemSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.ItemSkinObjectData = reader.ReadItemObjectData();
+        }
+
+        public static void SetUnitSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.UnitSkinObjectData = reader.ReadUnitObjectData();
+        }
+
+        public static void SetUpgradeSkinObjectDataFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+        }
+
         public static void SetTriggerStringsFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new StreamReader(stream, encoding ?? _defaultEncoding, leaveOpen: leaveOpen);
@@ -256,6 +410,13 @@ namespace War3Net.Build.Extensions
                 case ItemObjectData.CampaignFileName: if (campaign.ItemObjectData is null || overwriteFile) campaign.SetItemObjectDataFile(stream, encoding, leaveOpen); break;
                 case UnitObjectData.CampaignFileName: if (campaign.UnitObjectData is null || overwriteFile) campaign.SetUnitObjectDataFile(stream, encoding, leaveOpen); break;
                 case UpgradeObjectData.CampaignFileName: if (campaign.UpgradeObjectData is null || overwriteFile) campaign.SetUpgradeObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*AbilityObjectData.CampaignSkinFileName*/ "war3campaignskin.w3a": if (campaign.AbilitySkinObjectData is null || overwriteFile) campaign.SetAbilitySkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*BuffObjectData.CampaignSkinFileName*/ "war3campaignskin.w3h": if (campaign.BuffSkinObjectData is null || overwriteFile) campaign.SetBuffSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*DestructableObjectData.CampaignSkinFileName*/ "war3campaignskin.w3b": if (campaign.DestructableSkinObjectData is null || overwriteFile) campaign.SetDestructableSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*DoodadObjectData.CampaignSkinFileName*/ "war3campaignskin.w3d": if (campaign.DoodadSkinObjectData is null || overwriteFile) campaign.SetDoodadSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*ItemObjectData.CampaignSkinFileName*/ "war3campaignskin.w3t": if (campaign.ItemSkinObjectData is null || overwriteFile) campaign.SetItemSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*UnitObjectData.CampaignSkinFileName*/ "war3campaignskin.w3u": if (campaign.UnitSkinObjectData is null || overwriteFile) campaign.SetUnitSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*UpgradeObjectData.CampaignSkinFileName*/ "war3campaignskin.w3q": if (campaign.UpgradeSkinObjectData is null || overwriteFile) campaign.SetUpgradeSkinObjectDataFile(stream, encoding, leaveOpen); break;
                 case TriggerStrings.CampaignFileName: if (campaign.TriggerStrings is null || overwriteFile) campaign.SetTriggerStringsFile(stream, encoding, leaveOpen); break;
 #pragma warning restore IDE0011, SA1503
 

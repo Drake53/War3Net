@@ -57,53 +57,123 @@ namespace War3Net.Build
                 Info = reader.ReadCampaignInfo();
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.AbilityObjectData) && File.Exists(Path.Combine(campaignFolder, AbilityObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.AbilityObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, AbilityObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                AbilityObjectData = reader.ReadAbilityObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, AbilityObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, AbilityObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    AbilityObjectData = reader.ReadAbilityObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, AbilityObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, AbilityObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    AbilitySkinObjectData = reader.ReadAbilityObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.BuffObjectData) && File.Exists(Path.Combine(campaignFolder, BuffObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.BuffObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, BuffObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                BuffObjectData = reader.ReadBuffObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, BuffObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, BuffObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    BuffObjectData = reader.ReadBuffObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, BuffObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, BuffObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    BuffSkinObjectData = reader.ReadBuffObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.DestructableObjectData) && File.Exists(Path.Combine(campaignFolder, DestructableObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.DestructableObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DestructableObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                DestructableObjectData = reader.ReadDestructableObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, DestructableObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DestructableObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableObjectData = reader.ReadDestructableObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, DestructableObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DestructableObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableSkinObjectData = reader.ReadDestructableObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.DoodadObjectData) && File.Exists(Path.Combine(campaignFolder, DoodadObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.DoodadObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DoodadObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                DoodadObjectData = reader.ReadDoodadObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, DoodadObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DoodadObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadObjectData = reader.ReadDoodadObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, DoodadObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, DoodadObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadSkinObjectData = reader.ReadDoodadObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.ItemObjectData) && File.Exists(Path.Combine(campaignFolder, ItemObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.ItemObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, ItemObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                ItemObjectData = reader.ReadItemObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, ItemObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, ItemObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    ItemObjectData = reader.ReadItemObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, ItemObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, ItemObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    ItemSkinObjectData = reader.ReadItemObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.UnitObjectData) && File.Exists(Path.Combine(campaignFolder, UnitObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.UnitObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UnitObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                UnitObjectData = reader.ReadUnitObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, UnitObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UnitObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UnitObjectData = reader.ReadUnitObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, UnitObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UnitObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UnitSkinObjectData = reader.ReadUnitObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.UpgradeObjectData) && File.Exists(Path.Combine(campaignFolder, UpgradeObjectData.CampaignFileName)))
+            if (campaignFiles.HasFlag(CampaignFiles.UpgradeObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UpgradeObjectData.CampaignFileName));
-                using var reader = new BinaryReader(fileStream);
-                UpgradeObjectData = reader.ReadUpgradeObjectData();
+                if (File.Exists(Path.Combine(campaignFolder, UpgradeObjectData.CampaignFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UpgradeObjectData.CampaignFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeObjectData = reader.ReadUpgradeObjectData();
+                }
+
+                if (File.Exists(Path.Combine(campaignFolder, UpgradeObjectData.CampaignSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(campaignFolder, UpgradeObjectData.CampaignSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+                }
             }
 
             if (campaignFiles.HasFlag(CampaignFiles.TriggerStrings) && File.Exists(Path.Combine(campaignFolder, TriggerStrings.CampaignFileName)))
@@ -132,53 +202,123 @@ namespace War3Net.Build
                 Info = reader.ReadCampaignInfo();
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.AbilityObjectData) && MpqFile.Exists(campaignArchive, AbilityObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.AbilityObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, AbilityObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                AbilityObjectData = reader.ReadAbilityObjectData();
+                if (MpqFile.Exists(campaignArchive, AbilityObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, AbilityObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    AbilityObjectData = reader.ReadAbilityObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, AbilityObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, AbilityObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    AbilitySkinObjectData = reader.ReadAbilityObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.BuffObjectData) && MpqFile.Exists(campaignArchive, BuffObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.BuffObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, BuffObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                BuffObjectData = reader.ReadBuffObjectData();
+                if (MpqFile.Exists(campaignArchive, BuffObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, BuffObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    BuffObjectData = reader.ReadBuffObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, BuffObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, BuffObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    BuffSkinObjectData = reader.ReadBuffObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.DestructableObjectData) && MpqFile.Exists(campaignArchive, DestructableObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.DestructableObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, DestructableObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                DestructableObjectData = reader.ReadDestructableObjectData();
+                if (MpqFile.Exists(campaignArchive, DestructableObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, DestructableObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableObjectData = reader.ReadDestructableObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, DestructableObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, DestructableObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableSkinObjectData = reader.ReadDestructableObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.DoodadObjectData) && MpqFile.Exists(campaignArchive, DoodadObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.DoodadObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, DoodadObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                DoodadObjectData = reader.ReadDoodadObjectData();
+                if (MpqFile.Exists(campaignArchive, DoodadObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, DoodadObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadObjectData = reader.ReadDoodadObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, DoodadObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, DoodadObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadSkinObjectData = reader.ReadDoodadObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.ItemObjectData) && MpqFile.Exists(campaignArchive, ItemObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.ItemObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, ItemObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                ItemObjectData = reader.ReadItemObjectData();
+                if (MpqFile.Exists(campaignArchive, ItemObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, ItemObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    ItemObjectData = reader.ReadItemObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, ItemObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, ItemObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    ItemSkinObjectData = reader.ReadItemObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.UnitObjectData) && MpqFile.Exists(campaignArchive, UnitObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.UnitObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, UnitObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                UnitObjectData = reader.ReadUnitObjectData();
+                if (MpqFile.Exists(campaignArchive, UnitObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, UnitObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UnitObjectData = reader.ReadUnitObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, UnitObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, UnitObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UnitSkinObjectData = reader.ReadUnitObjectData();
+                }
             }
 
-            if (campaignFiles.HasFlag(CampaignFiles.UpgradeObjectData) && MpqFile.Exists(campaignArchive, UpgradeObjectData.CampaignFileName))
+            if (campaignFiles.HasFlag(CampaignFiles.UpgradeObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(campaignArchive, UpgradeObjectData.CampaignFileName);
-                using var reader = new BinaryReader(fileStream);
-                UpgradeObjectData = reader.ReadUpgradeObjectData();
+                if (MpqFile.Exists(campaignArchive, UpgradeObjectData.CampaignFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, UpgradeObjectData.CampaignFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeObjectData = reader.ReadUpgradeObjectData();
+                }
+
+                if (MpqFile.Exists(campaignArchive, UpgradeObjectData.CampaignSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(campaignArchive, UpgradeObjectData.CampaignSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+                }
             }
 
             if (campaignFiles.HasFlag(CampaignFiles.TriggerStrings) && MpqFile.Exists(campaignArchive, TriggerStrings.CampaignFileName))
@@ -206,6 +346,20 @@ namespace War3Net.Build
         public UnitObjectData? UnitObjectData { get; set; }
 
         public UpgradeObjectData? UpgradeObjectData { get; set; }
+
+        public AbilityObjectData? AbilitySkinObjectData { get; set; }
+
+        public BuffObjectData? BuffSkinObjectData { get; set; }
+
+        public DestructableObjectData? DestructableSkinObjectData { get; set; }
+
+        public DoodadObjectData? DoodadSkinObjectData { get; set; }
+
+        public ItemObjectData? ItemSkinObjectData { get; set; }
+
+        public UnitObjectData? UnitSkinObjectData { get; set; }
+
+        public UpgradeObjectData? UpgradeSkinObjectData { get; set; }
 
         public TriggerStrings? TriggerStrings { get; set; }
 

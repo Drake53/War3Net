@@ -280,6 +280,118 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, UpgradeObjectData.MapFileName);
         }
 
+        public static MpqFile? GetAbilitySkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.AbilitySkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.AbilitySkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, AbilityObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetBuffSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.BuffSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.BuffSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, BuffObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetDestructableSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.DestructableSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.DestructableSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, DestructableObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetDoodadSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.DoodadSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.DoodadSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, DoodadObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetItemSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.ItemSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.ItemSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, ItemObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetUnitSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.UnitSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.UnitSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, UnitObjectData.MapSkinFileName);
+        }
+
+        public static MpqFile? GetUpgradeSkinObjectDataFile(this Map map, Encoding? encoding = null)
+        {
+            if (map.UpgradeSkinObjectData is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(map.UpgradeSkinObjectData);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, UpgradeObjectData.MapSkinFileName);
+        }
+
         public static MpqFile? GetCustomTextTriggersFile(this Map map, Encoding? encoding = null)
         {
             if (map.CustomTextTriggers is null)
@@ -472,6 +584,48 @@ namespace War3Net.Build.Extensions
             map.UpgradeObjectData = reader.ReadUpgradeObjectData();
         }
 
+        public static void SetAbilitySkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.AbilitySkinObjectData = reader.ReadAbilityObjectData();
+        }
+
+        public static void SetBuffSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.BuffSkinObjectData = reader.ReadBuffObjectData();
+        }
+
+        public static void SetDestructableSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.DestructableSkinObjectData = reader.ReadDestructableObjectData();
+        }
+
+        public static void SetDoodadSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.DoodadSkinObjectData = reader.ReadDoodadObjectData();
+        }
+
+        public static void SetItemSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.ItemSkinObjectData = reader.ReadItemObjectData();
+        }
+
+        public static void SetUnitSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.UnitSkinObjectData = reader.ReadUnitObjectData();
+        }
+
+        public static void SetUpgradeSkinObjectDataFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            map.UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+        }
+
         public static void SetCustomTextTriggersFile(this Map map, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
@@ -536,6 +690,13 @@ namespace War3Net.Build.Extensions
                 case ItemObjectData.MapFileName: if (map.ItemObjectData is null || overwriteFile) map.SetItemObjectDataFile(stream, encoding, leaveOpen); break;
                 case UnitObjectData.MapFileName: if (map.UnitObjectData is null || overwriteFile) map.SetUnitObjectDataFile(stream, encoding, leaveOpen); break;
                 case UpgradeObjectData.MapFileName: if (map.UpgradeObjectData is null || overwriteFile) map.SetUpgradeObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*AbilityObjectData.MapSkinFileName*/ "war3mapskin.w3a": if (map.AbilitySkinObjectData is null || overwriteFile) map.SetAbilitySkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*BuffObjectData.MapSkinFileName*/ "war3mapskin.w3h": if (map.BuffSkinObjectData is null || overwriteFile) map.SetBuffSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*DestructableObjectData.MapSkinFileName*/ "war3mapskin.w3b": if (map.DestructableSkinObjectData is null || overwriteFile) map.SetDestructableSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*DoodadObjectData.MapSkinFileName*/ "war3mapskin.w3d": if (map.DoodadSkinObjectData is null || overwriteFile) map.SetDoodadSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*ItemObjectData.MapSkinFileName*/ "war3mapskin.w3t": if (map.ItemSkinObjectData is null || overwriteFile) map.SetItemSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*UnitObjectData.MapSkinFileName*/ "war3mapskin.w3u": if (map.UnitSkinObjectData is null || overwriteFile) map.SetUnitSkinObjectDataFile(stream, encoding, leaveOpen); break;
+                case /*UpgradeObjectData.MapSkinFileName*/ "war3mapskin.w3q": if (map.UpgradeSkinObjectData is null || overwriteFile) map.SetUpgradeSkinObjectDataFile(stream, encoding, leaveOpen); break;
                 case MapCustomTextTriggers.FileName: if (map.CustomTextTriggers is null || overwriteFile) map.SetCustomTextTriggersFile(stream, encoding, leaveOpen); break;
                 case MapTriggers.FileName: if (map.Triggers is null || overwriteFile) map.SetTriggersFile(stream, encoding, leaveOpen); break;
                 case TriggerStrings.MapFileName: if (map.TriggerStrings is null || overwriteFile) map.SetTriggerStringsFile(stream, encoding, leaveOpen); break;
