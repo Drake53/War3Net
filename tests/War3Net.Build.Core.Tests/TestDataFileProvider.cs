@@ -111,10 +111,15 @@ namespace War3Net.Build.Core.Tests
 
         public static IEnumerable<object[]> GetMapShadowMapFilePaths()
         {
-            return TestDataProvider.GetDynamicArchiveData(
+            return TestDataProvider.GetDynamicData(
                 $"*{MapShadowMap.FileExtension}",
                 SearchOption.AllDirectories,
-                "Maps");
+                Path.Combine("Shadow"))
+
+            .Concat(TestDataProvider.GetDynamicArchiveData(
+                MapShadowMap.FileName,
+                SearchOption.AllDirectories,
+                "Maps"));
         }
 
         public static IEnumerable<object[]> GetImportedFilesFilePaths()
