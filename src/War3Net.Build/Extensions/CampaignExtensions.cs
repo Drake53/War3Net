@@ -8,6 +8,7 @@
 using System.IO;
 using System.Text;
 
+using War3Net.Build.Import;
 using War3Net.Build.Info;
 using War3Net.Build.Object;
 using War3Net.Build.Script;
@@ -20,8 +21,29 @@ namespace War3Net.Build.Extensions
     {
         private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
-        public static MpqFile GetInfoFile(this Campaign campaign, Encoding? encoding = null)
+        public static MpqFile? GetImportedFilesFile(this Campaign campaign, Encoding? encoding = null)
         {
+            if (campaign.ImportedFiles is null)
+            {
+                return null;
+            }
+
+            var memoryStream = new MemoryStream();
+            using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
+
+            writer.Write(campaign.ImportedFiles);
+            writer.Flush();
+
+            return MpqFile.New(memoryStream, ImportedFiles.CampaignFileName);
+        }
+
+        public static MpqFile? GetInfoFile(this Campaign campaign, Encoding? encoding = null)
+        {
+            if (campaign.Info is null)
+            {
+                return null;
+            }
+
             using var memoryStream = new MemoryStream();
             using var writer = new BinaryWriter(memoryStream, encoding ?? _defaultEncoding, true);
 
@@ -159,6 +181,12 @@ namespace War3Net.Build.Extensions
             return MpqFile.New(memoryStream, TriggerStrings.CampaignFileName);
         }
 
+        public static void SetImportedFilesFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
+        {
+            using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
+            campaign.ImportedFiles = reader.ReadImportedFiles();
+        }
+
         public static void SetInfoFile(this Campaign campaign, Stream stream, Encoding? encoding = null, bool leaveOpen = false)
         {
             using var reader = new BinaryReader(stream, encoding ?? _defaultEncoding, leaveOpen);
@@ -219,7 +247,8 @@ namespace War3Net.Build.Extensions
             switch (fileName.ToLowerInvariant())
             {
 #pragma warning disable IDE0011, SA1503
-                case CampaignInfo.FileName: if (overwriteFile) campaign.SetInfoFile(stream, encoding, leaveOpen); break;
+                case ImportedFiles.CampaignFileName: if (campaign.ImportedFiles is null || overwriteFile) campaign.SetImportedFilesFile(stream, encoding, leaveOpen); break;
+                case CampaignInfo.FileName: if (campaign.Info is null || overwriteFile) campaign.SetInfoFile(stream, encoding, leaveOpen); break;
                 case AbilityObjectData.CampaignFileName: if (campaign.AbilityObjectData is null || overwriteFile) campaign.SetAbilityObjectDataFile(stream, encoding, leaveOpen); break;
                 case BuffObjectData.CampaignFileName: if (campaign.BuffObjectData is null || overwriteFile) campaign.SetBuffObjectDataFile(stream, encoding, leaveOpen); break;
                 case DestructableObjectData.CampaignFileName: if (campaign.DestructableObjectData is null || overwriteFile) campaign.SetDestructableObjectDataFile(stream, encoding, leaveOpen); break;
@@ -234,6 +263,49 @@ namespace War3Net.Build.Extensions
             }
 
             return true;
+        }
+
+        public static void LocalizeInfo(this Campaign campaign)
+        {
+            var info = campaign.Info;
+            var strings = campaign.TriggerStrings;
+            if (info is null || strings is null)
+            {
+                return;
+            }
+
+            if (strings.TryGetValue(info.CampaignName, out var campaignName))
+            {
+                info.CampaignName = campaignName;
+            }
+
+            if (strings.TryGetValue(info.CampaignDifficulty, out var campaignDifficulty))
+            {
+                info.CampaignDifficulty = campaignDifficulty;
+            }
+
+            if (strings.TryGetValue(info.CampaignAuthor, out var campaignAuthor))
+            {
+                info.CampaignAuthor = campaignAuthor;
+            }
+
+            if (strings.TryGetValue(info.CampaignDescription, out var campaignDescription))
+            {
+                info.CampaignDescription = campaignDescription;
+            }
+
+            foreach (var mapButton in info.MapButtons)
+            {
+                if (strings.TryGetValue(mapButton.Chapter, out var chapter))
+                {
+                    mapButton.Chapter = chapter;
+                }
+
+                if (strings.TryGetValue(mapButton.Title, out var title))
+                {
+                    mapButton.Title = title;
+                }
+            }
         }
     }
 }
