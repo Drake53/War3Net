@@ -42,7 +42,7 @@ namespace War3Net.Build.Tests
         }
 
         [TestMethod]
-        public void TestGenerateLuaScriptWithUnitData()
+        public void TestGenerateLuaScriptWithUnitDataLegacy()
         {
             const string OutputMapName = "TestOutput.w3x";
             const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
@@ -74,7 +74,7 @@ namespace War3Net.Build.Tests
         }
 
         [TestMethod]
-        public void TestCreateNewTemplateMap()
+        public void TestCreateNewTemplateMapLegacy()
         {
             const string OutputMapName = "Template.w3x";
 
