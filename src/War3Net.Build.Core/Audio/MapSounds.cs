@@ -11,6 +11,7 @@ namespace War3Net.Build.Audio
 {
     public sealed partial class MapSounds
     {
+        public const string FileExtension = ".w3s";
         public const string FileName = "war3map.w3s";
 
         /// <summary>

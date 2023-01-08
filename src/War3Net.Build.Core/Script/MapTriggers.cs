@@ -15,6 +15,7 @@ namespace War3Net.Build.Script
     // http://www.wc3c.net/tools/specs/index.html
     public sealed partial class MapTriggers
     {
+        public const string FileExtension = ".wtg";
         public const string FileName = "war3map.wtg";
 
         public static readonly int FileFormatSignature = "WTG!".FromRawcode();

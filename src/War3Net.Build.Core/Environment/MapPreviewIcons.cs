@@ -11,6 +11,7 @@ namespace War3Net.Build.Environment
 {
     public sealed partial class MapPreviewIcons
     {
+        public const string FileExtension = ".mmp";
         public const string FileName = "war3map.mmp";
 
         /// <summary>

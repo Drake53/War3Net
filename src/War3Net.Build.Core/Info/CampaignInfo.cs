@@ -12,6 +12,7 @@ namespace War3Net.Build.Info
 {
     public sealed partial class CampaignInfo
     {
+        public const string FileExtension = ".w3f";
         public const string FileName = "war3campaign.w3f";
 
         /// <summary>

@@ -15,6 +15,7 @@ namespace War3Net.Build.Info
 {
     public sealed partial class MapInfo
     {
+        public const string FileExtension = ".w3i";
         public const string FileName = "war3map.w3i";
 
         private bool _skipData;

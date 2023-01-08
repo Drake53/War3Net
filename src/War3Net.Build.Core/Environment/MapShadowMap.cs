@@ -11,6 +11,7 @@ namespace War3Net.Build.Environment
 {
     public sealed partial class MapShadowMap
     {
+        public const string FileExtension = ".shd";
         public const string FileName = "war3map.shd";
 
         /// <summary>

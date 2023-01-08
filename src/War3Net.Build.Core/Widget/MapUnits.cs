@@ -13,6 +13,7 @@ namespace War3Net.Build.Widget
 {
     public sealed partial class MapUnits
     {
+        public const string FileExtension = ".doo";
         public const string FileName = "war3mapUnits.doo";
 
         public static readonly int FileFormatSignature = "W3do".FromRawcode();

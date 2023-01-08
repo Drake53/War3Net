@@ -13,6 +13,7 @@ namespace War3Net.Build.Environment
 {
     public sealed partial class MapRegions
     {
+        public const string FileExtension = ".w3r";
         public const string FileName = "war3map.w3r";
 
         private static readonly int ProtectionSignature = "FUCK".FromRawcode();

@@ -11,6 +11,8 @@ namespace War3Net.Build.Configuration
 {
     public sealed partial class GameConfiguration
     {
+        public const string FileExtension = ".wgc";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GameConfiguration"/> class.
         /// </summary>

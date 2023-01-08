@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 
 using War3Net.Build.Audio;
+using War3Net.Build.Configuration;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;
 using War3Net.Build.Info;
@@ -25,7 +26,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapSoundsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapSounds.FileName.GetSearchPattern(),
+                $"*{MapSounds.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Audio"))
 
@@ -38,7 +39,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetGameConfigurationFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                "*.wgc",
+                $"*{GameConfiguration.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Configuration"));
         }
@@ -46,7 +47,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapCamerasFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapCameras.FileName.GetSearchPattern(),
+                $"*{MapCameras.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Camera"))
 
@@ -59,7 +60,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapEnvironmentFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapEnvironment.FileName.GetSearchPattern(),
+                $"*{MapEnvironment.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Environment"))
 
@@ -72,7 +73,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapPathingMapFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapPathingMap.FileName.GetSearchPattern(),
+                $"*{MapPathingMap.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Pathing"))
 
@@ -85,7 +86,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapPreviewIconsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapPreviewIcons.FileName.GetSearchPattern(),
+                $"*{MapPreviewIcons.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Icons"))
 
@@ -98,7 +99,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapRegionsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapRegions.FileName.GetSearchPattern(),
+                $"*{MapRegions.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Region"))
 
@@ -111,7 +112,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapShadowMapFilePaths()
         {
             return TestDataProvider.GetDynamicArchiveData(
-                MapShadowMap.FileName,
+                $"*{MapShadowMap.FileExtension}",
                 SearchOption.AllDirectories,
                 "Maps");
         }
@@ -137,7 +138,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetCampaignInfoFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                CampaignInfo.FileName.GetSearchPattern(),
+                $"*{CampaignInfo.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Info", "Campaign"))
 
@@ -150,7 +151,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapInfoFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapInfo.FileName.GetSearchPattern(),
+                $"*{MapInfo.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Info"))
 
@@ -367,7 +368,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapCustomTextTriggersFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapCustomTextTriggers.FileName.GetSearchPattern(),
+                $"*{MapCustomTextTriggers.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Triggers"))
 
@@ -380,7 +381,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapTriggersFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapTriggers.FileName.GetSearchPattern(),
+                $"*{MapTriggers.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Triggers"))
 
@@ -411,7 +412,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapDoodadsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapDoodads.FileName.GetSearchPattern(),
+                $"*{MapDoodads.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Widget", "Doodads"))
 
@@ -424,7 +425,7 @@ namespace War3Net.Build.Core.Tests
         public static IEnumerable<object[]> GetMapUnitsFilePaths()
         {
             return TestDataProvider.GetDynamicData(
-                MapUnits.FileName.GetSearchPattern(),
+                $"*{MapUnits.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Widget", "Units"))
 

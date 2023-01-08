@@ -17,6 +17,7 @@ namespace War3Net.Build.Environment
 {
     public sealed partial class MapEnvironment
     {
+        public const string FileExtension = ".w3e";
         public const string FileName = "war3map.w3e";
 
         public static readonly int FileFormatSignature = "W3E!".FromRawcode();

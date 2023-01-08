@@ -84,7 +84,7 @@ namespace War3Net.Build.Core.Tests.Environment
         private static IEnumerable<object[]> GetDefaultEnvironmentFiles()
         {
             return TestDataProvider.GetDynamicData(
-                MapEnvironment.FileName.GetSearchPattern(),
+                $"*{MapEnvironment.FileExtension}",
                 SearchOption.TopDirectoryOnly,
                 Path.Combine("Environment", "Default"));
         }

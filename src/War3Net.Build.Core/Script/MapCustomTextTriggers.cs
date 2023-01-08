@@ -11,6 +11,7 @@ namespace War3Net.Build.Script
 {
     public sealed partial class MapCustomTextTriggers
     {
+        public const string FileExtension = ".wct";
         public const string FileName = "war3map.wct";
 
         /// <summary>
