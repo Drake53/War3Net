@@ -12,8 +12,8 @@ namespace War3Net.IO.Mpq
     [Flags]
     public enum AttributesFlags
     {
-        Crc32 = 0x01,
-        DateTime = 0x02,
-        Unk0x04 = 0x04,
+        Crc32 = 1 << 0,
+        DateTime = 1 << 1,
+        Unk0x04 = 1 << 2,
     }
 }

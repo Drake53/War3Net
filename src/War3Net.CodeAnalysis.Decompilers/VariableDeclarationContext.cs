@@ -10,7 +10,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal class VariableDeclarationContext
+    internal sealed class VariableDeclarationContext
     {
         public VariableDeclarationContext(JassGlobalDeclarationSyntax globalDeclaration)
         {

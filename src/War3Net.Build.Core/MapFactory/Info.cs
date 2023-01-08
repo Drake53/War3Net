@@ -69,7 +69,7 @@ namespace War3Net.Build
 
             var gameBuild = GameBuildsProvider.GetGameBuilds(GamePatch.v1_31_1)[0];
 
-            var mapInfo = new MapInfo(MapInfoFormatVersion.Lua)
+            var mapInfo = new MapInfo(MapInfoFormatVersion.v28)
             {
                 MapVersion = 1,
                 EditorVersion = gameBuild.EditorVersion.Value,

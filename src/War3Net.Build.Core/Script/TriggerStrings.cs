@@ -6,41 +6,24 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
-
-using War3Net.Build.Extensions;
 
 namespace War3Net.Build.Script
 {
-    public abstract class TriggerStrings
+    public sealed partial class TriggerStrings
     {
-        internal TriggerStrings()
-        {
-        }
+        public const string FileExtension = ".wts";
+        public const string CampaignFileName = "war3campaign.wts";
+        public const string MapFileName = "war3map.wts";
 
-        internal TriggerStrings(StreamReader reader)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggerStrings"/> class.
+        /// </summary>
+        public TriggerStrings()
         {
-            ReadFrom(reader);
         }
 
         public List<TriggerString> Strings { get; init; } = new();
 
-        internal void ReadFrom(StreamReader reader)
-        {
-            while (!reader.EndOfStream)
-            {
-                Strings.Add(reader.ReadTriggerString());
-            }
-
-            // _encoding = reader.CurrentEncoding;
-        }
-
-        internal void WriteTo(StreamWriter writer)
-        {
-            foreach (var triggerString in Strings)
-            {
-                writer.WriteTriggerString(triggerString);
-            }
-        }
+        public override string ToString() => $"{FileExtension} file";
     }
 }

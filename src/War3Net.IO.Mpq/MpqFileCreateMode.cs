@@ -12,8 +12,8 @@ namespace War3Net.IO.Mpq
     [Flags]
     public enum MpqFileCreateMode
     {
-        AddFlag = 0x01,
-        RemoveFlag = 0x02,
+        AddFlag = 1 << 0,
+        RemoveFlag = 1 << 1,
 
         /// <summary>
         /// Do not generate the file, but allow it to be added to the <see cref="MpqArchive"/> if it exists among the input files.

@@ -5,41 +5,52 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+#pragma warning disable CA1008
+#pragma warning disable SA1300
+
+using System.ComponentModel;
+
 namespace War3Net.Build.Info
 {
+    /// <summary>
+    /// File format version for <see cref="MapInfo"/>.
+    /// </summary>
     public enum MapInfoFormatVersion
     {
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v8 = 8,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v10 = 10,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v11 = 11,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v15 = 15,
-        v18 = RoC,
+
+        /// <summary>Reign of Chaos format.</summary>
+        v18 = 18,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v23 = 23,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v24 = 24,
-        v25 = Tft,
+
+        /// <summary>The Frozen Throne format.</summary>
+        v25 = 25,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v26 = 26,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         v27 = 27,
-        v28 = Lua,
-        v31 = Reforged,
 
-        /// <summary>
-        /// Reign of Chaos format.
-        /// </summary>
-        RoC = 18,
+        /// <summary>Introduced in patch 1.31.</summary>
+        v28 = 28,
 
-        /// <summary>
-        /// The Frozen Throne format.
-        /// </summary>
-        Tft = 25,
-
-        /// <summary>
-        /// Format introduced with lua in patch 1.31.
-        /// </summary>
-        Lua = 28,
-
-        /// <summary>
-        /// Warcraft III Reforged format, introduced in patch 1.32.
-        /// </summary>
-        Reforged = 31,
+        /// <summary>Introduced in patch 1.32.</summary>
+        v31 = 31,
     }
 }

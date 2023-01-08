@@ -23,11 +23,11 @@ namespace War3Net.Common.Tests.Extensions
         public void TestWriteString(string? s, Type? expectedExceptionType = null)
         {
             using var memoryStream = new MemoryStream();
-            using var binaryWriter = new BinaryWriter(memoryStream);
+            using var writer = new BinaryWriter(memoryStream);
 
             try
             {
-                binaryWriter.WriteString(s);
+                writer.WriteString(s);
             }
             catch (Exception e)
             {
@@ -60,8 +60,8 @@ namespace War3Net.Common.Tests.Extensions
             Assert.AreEqual(expectedStringLength, memoryStream.Length);
 
             memoryStream.Position = 0;
-            using var binaryReader = new BinaryReader(memoryStream);
-            Assert.AreEqual(s, new string(binaryReader.ReadChars(expectedStringLength)));
+            using var reader = new BinaryReader(memoryStream);
+            Assert.AreEqual(s, new string(reader.ReadChars(expectedStringLength)));
         }
 
         private static IEnumerable<object?[]> GetTestWriteStrings()

@@ -6,11 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class TerrainTile
+    public sealed partial class TerrainTile
     {
         public const int TileWidth = 128;
         public const int TileHeight = 128;
@@ -31,11 +30,6 @@ namespace War3Net.Build.Environment
         /// </summary>
         public TerrainTile()
         {
-        }
-
-        internal TerrainTile(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
-        {
-            ReadFrom(reader, formatVersion);
         }
 
         public float Height
@@ -108,24 +102,6 @@ namespace War3Net.Build.Environment
         {
             get => (_cliffData & 0xF0) >> 4;
             set => _cliffData = (value >= 0 && value <= 0x0F) ? (byte)((value << 4) | (_cliffData & 0x0F)) : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        internal void ReadFrom(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
-        {
-            _heightData = reader.ReadUInt16();
-            _waterDataAndEdgeFlag = reader.ReadUInt16();
-            _textureDataAndFlags = reader.ReadByte();
-            _variationData = reader.ReadByte();
-            _cliffData = reader.ReadByte();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapEnvironmentFormatVersion formatVersion)
-        {
-            writer.Write(_heightData);
-            writer.Write(_waterDataAndEdgeFlag);
-            writer.Write(_textureDataAndFlags);
-            writer.Write(_variationData);
-            writer.Write(_cliffData);
         }
     }
 }

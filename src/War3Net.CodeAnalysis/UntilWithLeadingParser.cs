@@ -13,7 +13,7 @@ using Pidgin;
 
 namespace War3Net.CodeAnalysis
 {
-    internal class UntilWithLeadingParser<TToken, TLeading, TOpen, TItem, TClose, TResult> : Parser<TToken, TResult>
+    internal sealed class UntilWithLeadingParser<TToken, TLeading, TOpen, TItem, TClose, TResult> : Parser<TToken, TResult>
         where TResult : class
     {
         private readonly Parser<TToken, TLeading> _leadingParser;

@@ -13,7 +13,7 @@ using System.Text.Json.Serialization;
 
 using War3Net.Build.Common;
 using War3Net.Build.Info;
-using War3Net.Build.Serialization;
+using War3Net.Build.Serialization.Json;
 
 namespace War3Net.Build.Providers
 {

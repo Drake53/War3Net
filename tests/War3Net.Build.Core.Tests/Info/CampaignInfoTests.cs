@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Info
 {
@@ -20,23 +15,24 @@ namespace War3Net.Build.Core.Tests.Info
     public class CampaignInfoTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetCampaignInfoData), DynamicDataSourceType.Method)]
-        public void TestParseCampaignInfo(string campaignInfoFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(campaignInfoFilePath, typeof(CampaignInfo));
+            SerializationTestHelper<CampaignInfo>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetCampaignInfoData()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicData(
-                CampaignInfo.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Info", "Campaign"))
+            SerializationTestHelper<CampaignInfo>.RunJsonRWTest(filePath, false);
+        }
 
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                CampaignInfo.FileName,
-                SearchOption.AllDirectories,
-                "Campaigns"));
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<CampaignInfo>.RunJsonRWTest(filePath, true);
         }
     }
 }

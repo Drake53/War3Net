@@ -12,6 +12,7 @@ using System.Text;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
+using War3Net.Build.Configuration;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;
 using War3Net.Build.Info;
@@ -40,6 +41,10 @@ namespace War3Net.Build.Extensions
         public static void Write(this BinaryWriter writer, RandomItemSetItem randomItemSetItem, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSetItem.WriteTo(writer, formatVersion, subVersion, useNewFormat);
 
         public static void Write(this BinaryWriter writer, RectangleMargins rectangleMargins) => rectangleMargins.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, GameConfiguration gameConfiguration) => gameConfiguration.WriteTo(writer);
+
+        public static void Write(this BinaryWriter writer, GameConfigurationPlayerInfo gameConfigurationPlayerInfo, GameConfigurationFormatVersion formatVersion) => gameConfigurationPlayerInfo.WriteTo(writer, formatVersion);
 
         public static void Write(this BinaryWriter writer, MapCameras mapCameras) => mapCameras.WriteTo(writer);
 
@@ -114,6 +119,8 @@ namespace War3Net.Build.Extensions
         public static void Write(this BinaryWriter writer, VariationObjectModification variationObjectModification, ObjectDataFormatVersion formatVersion) => variationObjectModification.WriteTo(writer, formatVersion);
 
         public static void Write(this BinaryWriter writer, VariationObjectDataModification variationObjectDataModification, ObjectDataFormatVersion formatVersion) => variationObjectDataModification.WriteTo(writer, formatVersion);
+
+        public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers) => writer.Write(mapCustomTextTriggers, Encoding.UTF8);
 
         public static void Write(this BinaryWriter writer, MapCustomTextTriggers mapCustomTextTriggers, Encoding encoding) => mapCustomTextTriggers.WriteTo(writer, encoding);
 

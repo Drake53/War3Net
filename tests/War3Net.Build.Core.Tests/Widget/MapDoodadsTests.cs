@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Widget;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Widget
 {
@@ -20,23 +15,24 @@ namespace War3Net.Build.Core.Tests.Widget
     public class MapDoodadsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapDoodadsData), DynamicDataSourceType.Method)]
-        public void TestParseMapDoodads(string mapDoodadsFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapDoodadsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapDoodadsFilePath, typeof(MapDoodads));
+            SerializationTestHelper<MapDoodads>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetMapDoodadsData()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapDoodadsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicData(
-                MapDoodads.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Widget", "Doodads"))
+            SerializationTestHelper<MapDoodads>.RunJsonRWTest(filePath, false);
+        }
 
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapDoodads.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapDoodadsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapDoodads>.RunJsonRWTest(filePath, true);
         }
     }
 }

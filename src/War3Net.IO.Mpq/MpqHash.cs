@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Linq;
 
+using War3Net.Common.Providers;
+
 namespace War3Net.IO.Mpq
 {
     /// <summary>
@@ -43,8 +45,8 @@ namespace War3Net.IO.Mpq
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqHash"/> struct.
         /// </summary>
-        public MpqHash(BinaryReader br, uint mask)
-            : this(br.ReadUInt64(), (MpqLocale)br.ReadUInt32(), br.ReadUInt32())
+        public MpqHash(BinaryReader reader, uint mask)
+            : this(reader.ReadUInt64(), (MpqLocale)reader.ReadUInt32(), reader.ReadUInt32())
         {
             Mask = mask;
         }
@@ -129,7 +131,7 @@ namespace War3Net.IO.Mpq
 
         public void SerializeTo(Stream stream)
         {
-            using (var writer = new BinaryWriter(stream, new System.Text.UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(stream, UTF8EncodingProvider.StrictUTF8, true))
             {
                 WriteTo(writer);
             }

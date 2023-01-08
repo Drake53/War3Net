@@ -11,19 +11,20 @@ using System.Text;
 using War3Net.Build.Info;
 using War3Net.Build.Script;
 using War3Net.Common.Extensions;
+using War3Net.Common.Providers;
 
 namespace War3Net.Build.Extensions
 {
     public static class MapInfoExtensions
     {
-        private static readonly Encoding _defaultEncoding = new UTF8Encoding(false, true);
+        private static readonly Encoding _defaultEncoding = UTF8EncodingProvider.StrictUTF8;
 
         public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, null, _defaultEncoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, TriggerStrings? mapTriggerStrings)
         {
             mapInfo.WriteArchiveHeaderToStream(stream, mapTriggerStrings, _defaultEncoding);
         }
@@ -33,7 +34,7 @@ namespace War3Net.Build.Extensions
             mapInfo.WriteArchiveHeaderToStream(stream, null, encoding);
         }
 
-        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, MapTriggerStrings? mapTriggerStrings, Encoding encoding)
+        public static void WriteArchiveHeaderToStream(this MapInfo mapInfo, Stream stream, TriggerStrings? mapTriggerStrings, Encoding encoding)
         {
             using (var writer = new BinaryWriter(stream, encoding, true))
             {

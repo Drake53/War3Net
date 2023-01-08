@@ -15,7 +15,7 @@ namespace War3Net.IO.Compression
     /// <summary>
     /// A node which is both hierachcical (parent/child) and doubly linked (next/prev).
     /// </summary>
-    internal class LinkedNode
+    internal sealed class LinkedNode
     {
         private readonly int _decompressedValue;
         private int _weight;

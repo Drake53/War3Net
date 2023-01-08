@@ -77,7 +77,7 @@ namespace War3Net.Build
                 }
             }
 
-            return new MapPreviewIcons(MapPreviewIconsFormatVersion.Normal)
+            return new MapPreviewIcons(MapPreviewIconsFormatVersion.v0)
             {
                 Icons = icons,
             };

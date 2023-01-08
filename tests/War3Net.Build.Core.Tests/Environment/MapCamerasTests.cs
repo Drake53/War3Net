@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -20,23 +15,24 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapCamerasTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetCameraFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapCameras(string camerasFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapCamerasFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(camerasFilePath, typeof(MapCameras));
+            SerializationTestHelper<MapCameras>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetCameraFiles()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapCamerasFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicData(
-                MapCameras.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Camera"))
+            SerializationTestHelper<MapCameras>.RunJsonRWTest(filePath, false);
+        }
 
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapCameras.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapCamerasFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapCameras>.RunJsonRWTest(filePath, true);
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Text;
 
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
+using War3Net.Build.Configuration;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;
 using War3Net.Build.Info;
@@ -41,6 +42,10 @@ namespace War3Net.Build.Extensions
 
         public static RectangleMargins ReadRectangleMargins(this BinaryReader reader) => new RectangleMargins(reader);
 
+        public static GameConfiguration ReadGameConfiguration(this BinaryReader reader) => new GameConfiguration(reader);
+
+        public static GameConfigurationPlayerInfo ReadGameConfigurationPlayerInfo(this BinaryReader reader, GameConfigurationFormatVersion formatVersion) => new GameConfigurationPlayerInfo(reader, formatVersion);
+
         public static MapCameras ReadMapCameras(this BinaryReader reader) => new MapCameras(reader);
 
         public static Camera ReadCamera(this BinaryReader reader, MapCamerasFormatVersion formatVersion, bool useNewFormat) => new Camera(reader, formatVersion, useNewFormat);
@@ -61,11 +66,7 @@ namespace War3Net.Build.Extensions
 
         public static MapShadowMap ReadMapShadowMap(this BinaryReader reader) => new MapShadowMap(reader);
 
-        public static ImportedFiles ReadImportedFiles(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignImportedFiles() : reader.ReadMapImportedFiles();
-
-        public static CampaignImportedFiles ReadCampaignImportedFiles(this BinaryReader reader) => new CampaignImportedFiles(reader);
-
-        public static MapImportedFiles ReadMapImportedFiles(this BinaryReader reader) => new MapImportedFiles(reader);
+        public static ImportedFiles ReadImportedFiles(this BinaryReader reader) => new ImportedFiles(reader);
 
         public static ImportedFile ReadImportedFile(this BinaryReader reader, ImportedFilesFormatVersion formatVersion) => new ImportedFile(reader, formatVersion);
 
@@ -91,49 +92,21 @@ namespace War3Net.Build.Extensions
 
         public static RandomUnitSet ReadRandomUnitSet(this BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize) => new RandomUnitSet(reader, formatVersion, setSize);
 
-        public static ObjectData ReadObjectData(this BinaryReader reader, bool fromCampaign) => new ObjectData(reader, fromCampaign);
+        public static ObjectData ReadObjectData(this BinaryReader reader) => new ObjectData(reader);
 
-        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignAbilityObjectData() : reader.ReadMapAbilityObjectData();
+        public static AbilityObjectData ReadAbilityObjectData(this BinaryReader reader) => new AbilityObjectData(reader);
 
-        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignBuffObjectData() : reader.ReadMapBuffObjectData();
+        public static BuffObjectData ReadBuffObjectData(this BinaryReader reader) => new BuffObjectData(reader);
 
-        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignDestructableObjectData() : reader.ReadMapDestructableObjectData();
+        public static DestructableObjectData ReadDestructableObjectData(this BinaryReader reader) => new DestructableObjectData(reader);
 
-        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignDoodadObjectData() : reader.ReadMapDoodadObjectData();
+        public static DoodadObjectData ReadDoodadObjectData(this BinaryReader reader) => new DoodadObjectData(reader);
 
-        public static ItemObjectData ReadItemObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignItemObjectData() : reader.ReadMapItemObjectData();
+        public static ItemObjectData ReadItemObjectData(this BinaryReader reader) => new ItemObjectData(reader);
 
-        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignUnitObjectData() : reader.ReadMapUnitObjectData();
+        public static UnitObjectData ReadUnitObjectData(this BinaryReader reader) => new UnitObjectData(reader);
 
-        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader, bool fromCampaign) => fromCampaign ? reader.ReadCampaignUpgradeObjectData() : reader.ReadMapUpgradeObjectData();
-
-        public static CampaignAbilityObjectData ReadCampaignAbilityObjectData(this BinaryReader reader) => new CampaignAbilityObjectData(reader);
-
-        public static CampaignBuffObjectData ReadCampaignBuffObjectData(this BinaryReader reader) => new CampaignBuffObjectData(reader);
-
-        public static CampaignDestructableObjectData ReadCampaignDestructableObjectData(this BinaryReader reader) => new CampaignDestructableObjectData(reader);
-
-        public static CampaignDoodadObjectData ReadCampaignDoodadObjectData(this BinaryReader reader) => new CampaignDoodadObjectData(reader);
-
-        public static CampaignItemObjectData ReadCampaignItemObjectData(this BinaryReader reader) => new CampaignItemObjectData(reader);
-
-        public static CampaignUnitObjectData ReadCampaignUnitObjectData(this BinaryReader reader) => new CampaignUnitObjectData(reader);
-
-        public static CampaignUpgradeObjectData ReadCampaignUpgradeObjectData(this BinaryReader reader) => new CampaignUpgradeObjectData(reader);
-
-        public static MapAbilityObjectData ReadMapAbilityObjectData(this BinaryReader reader) => new MapAbilityObjectData(reader);
-
-        public static MapBuffObjectData ReadMapBuffObjectData(this BinaryReader reader) => new MapBuffObjectData(reader);
-
-        public static MapDestructableObjectData ReadMapDestructableObjectData(this BinaryReader reader) => new MapDestructableObjectData(reader);
-
-        public static MapDoodadObjectData ReadMapDoodadObjectData(this BinaryReader reader) => new MapDoodadObjectData(reader);
-
-        public static MapItemObjectData ReadMapItemObjectData(this BinaryReader reader) => new MapItemObjectData(reader);
-
-        public static MapUnitObjectData ReadMapUnitObjectData(this BinaryReader reader) => new MapUnitObjectData(reader);
-
-        public static MapUpgradeObjectData ReadMapUpgradeObjectData(this BinaryReader reader) => new MapUpgradeObjectData(reader);
+        public static UpgradeObjectData ReadUpgradeObjectData(this BinaryReader reader) => new UpgradeObjectData(reader);
 
         public static LevelObjectModification ReadLevelObjectModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new LevelObjectModification(reader, formatVersion);
 
@@ -146,6 +119,8 @@ namespace War3Net.Build.Extensions
         public static VariationObjectModification ReadVariationObjectModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new VariationObjectModification(reader, formatVersion);
 
         public static VariationObjectDataModification ReadVariationObjectDataModification(this BinaryReader reader, ObjectDataFormatVersion formatVersion) => new VariationObjectDataModification(reader, formatVersion);
+
+        public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader) => reader.ReadMapCustomTextTriggers(Encoding.UTF8);
 
         public static MapCustomTextTriggers ReadMapCustomTextTriggers(this BinaryReader reader, Encoding encoding) => new MapCustomTextTriggers(reader, encoding);
 

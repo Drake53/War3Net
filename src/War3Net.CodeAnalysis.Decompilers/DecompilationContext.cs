@@ -17,7 +17,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal class DecompilationContext
+    internal sealed class DecompilationContext
     {
         public DecompilationContext(Map map, Campaign? campaign, TriggerData? triggerData)
         {

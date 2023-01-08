@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Widget
 {
-    public sealed class RandomUnitGlobalTable : RandomUnitData
+    public sealed partial class RandomUnitGlobalTable : RandomUnitData
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomUnitGlobalTable"/> class.
@@ -18,25 +16,8 @@ namespace War3Net.Build.Widget
         {
         }
 
-        internal RandomUnitGlobalTable(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
-        }
-
         public int TableId { get; set; }
 
         public int Column { get; set; }
-
-        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            TableId = reader.ReadInt32();
-            Column = reader.ReadInt32();
-        }
-
-        internal override void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            writer.Write(TableId);
-            writer.Write(Column);
-        }
     }
 }

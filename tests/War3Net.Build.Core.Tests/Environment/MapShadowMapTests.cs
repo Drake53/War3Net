@@ -5,13 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Environment;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Environment
 {
@@ -19,18 +15,24 @@ namespace War3Net.Build.Core.Tests.Environment
     public class MapShadowMapTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapShadowMapFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapShadowMap(string mapShadowMapFile)
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapShadowMapFile, typeof(MapShadowMap));
+            SerializationTestHelper<MapShadowMap>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetMapShadowMapFiles()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicArchiveData(
-                MapShadowMap.FileName,
-                SearchOption.AllDirectories,
-                "Maps");
+            SerializationTestHelper<MapShadowMap>.RunJsonRWTest(filePath, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapShadowMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapShadowMap>.RunJsonRWTest(filePath, true);
         }
     }
 }

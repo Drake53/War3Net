@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Audio;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Audio
 {
@@ -20,23 +15,24 @@ namespace War3Net.Build.Core.Tests.Audio
     public class MapSoundsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetDefaultAudioFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapAudio(string mapSoundsFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapSoundsFilePath, typeof(MapSounds));
+            SerializationTestHelper<MapSounds>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetDefaultAudioFiles()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicData(
-                MapSounds.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Audio"))
+            SerializationTestHelper<MapSounds>.RunJsonRWTest(filePath, false);
+        }
 
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapSounds.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapSounds>.RunJsonRWTest(filePath, true);
         }
     }
 }

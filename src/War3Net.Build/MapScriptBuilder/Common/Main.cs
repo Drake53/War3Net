@@ -102,7 +102,7 @@ namespace War3Net.Build
 
             if (SetTerrainFogExCondition(map))
             {
-                var precision = mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged ? 3 : 1;
+                var precision = mapInfo.FormatVersion >= MapInfoFormatVersion.v31 ? 3 : 1;
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetTerrainFogEx,

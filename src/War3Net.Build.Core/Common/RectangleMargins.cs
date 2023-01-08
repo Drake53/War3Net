@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Common
 {
-    public sealed class RectangleMargins
+    public sealed partial class RectangleMargins
     {
         public RectangleMargins(int left, int right, int bottom, int top)
         {
@@ -17,11 +15,6 @@ namespace War3Net.Build.Common
             Right = right;
             Bottom = bottom;
             Top = top;
-        }
-
-        internal RectangleMargins(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public int Left { get; set; }
@@ -33,21 +26,5 @@ namespace War3Net.Build.Common
         public int Top { get; set; }
 
         public override string ToString() => $"{nameof(Left)} = {Left} {nameof(Right)} = {Right} {nameof(Bottom)} = {Bottom} {nameof(Top)} = {Top}";
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            Left = reader.ReadInt32();
-            Right = reader.ReadInt32();
-            Bottom = reader.ReadInt32();
-            Top = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(Left);
-            writer.Write(Right);
-            writer.Write(Bottom);
-            writer.Write(Top);
-        }
     }
 }

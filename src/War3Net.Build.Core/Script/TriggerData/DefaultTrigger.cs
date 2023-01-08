@@ -44,7 +44,7 @@ namespace War3Net.Build.Script
 
             public override string ToString() => TriggerName;
 
-            internal class Builder
+            internal sealed class Builder
             {
                 public Builder(int triggerNumber)
                 {

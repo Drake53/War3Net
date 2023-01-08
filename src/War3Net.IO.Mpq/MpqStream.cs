@@ -9,9 +9,11 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Text;
 
 using War3Net.Common.Extensions;
+using War3Net.Common.Providers;
 using War3Net.IO.Compression;
 using War3Net.IO.Mpq.Extensions;
 
@@ -30,6 +32,7 @@ namespace War3Net.IO.Mpq
 
         // MpqEntry data
         private readonly uint _filePosition;
+        private readonly uint _streamOffset;
         private readonly uint _fileSize;
         private readonly uint _compressedSize;
         private readonly MpqFileFlags _flags;
@@ -49,7 +52,7 @@ namespace War3Net.IO.Mpq
         /// <param name="archive">The archive from which to load a file.</param>
         /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
         internal MpqStream(MpqArchive archive, MpqEntry entry)
-            : this(entry, archive.BaseStream, archive.BlockSize)
+            : this(entry, GetStreamFromMpqArchive(archive, entry), archive.BlockSize)
         {
         }
 
@@ -65,6 +68,7 @@ namespace War3Net.IO.Mpq
             _isStreamOwner = false;
 
             _filePosition = entry.FilePosition;
+            _streamOffset = baseStream is MemoryMappedViewStream ? 0 : _filePosition;
             _fileSize = entry.FileSize;
             _compressedSize = entry.CompressedSize;
             _flags = entry.Flags;
@@ -105,12 +109,12 @@ namespace War3Net.IO.Mpq
 
                     lock (_stream)
                     {
-                        _stream.Seek(_filePosition, SeekOrigin.Begin);
-                        using (var binaryReader = new BinaryReader(_stream, Encoding.UTF8, true))
+                        _stream.Seek(_streamOffset, SeekOrigin.Begin);
+                        using (var reader = new BinaryReader(_stream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < _blockPositions.Length; i++)
                             {
-                                _blockPositions[i] = binaryReader.ReadUInt32();
+                                _blockPositions[i] = reader.ReadUInt32();
                             }
                         }
                     }
@@ -146,8 +150,8 @@ namespace War3Net.IO.Mpq
                             break;
                         }
 
-                        var expectedlength = Math.Min((int)(Length - ((i - 1) * _blockSize)), _blockSize);
-                        if (!TryPeekCompressionType(i - 1, expectedlength, out var mpqCompressionType) ||
+                        var expectedLength = Math.Min((int)(Length - ((i - 1) * _blockSize)), _blockSize);
+                        if (!TryPeekCompressionType(i - 1, expectedLength, out var mpqCompressionType) ||
                             (mpqCompressionType.HasValue && !mpqCompressionType.Value.IsKnownMpqCompressionType()))
                         {
                             _canRead = false;
@@ -168,6 +172,16 @@ namespace War3Net.IO.Mpq
             : this(new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
         {
             _isStreamOwner = !leaveOpen;
+        }
+
+        private static Stream GetStreamFromMpqArchive(MpqArchive archive, MpqEntry entry)
+        {
+            if (archive.MemoryMappedFile is null)
+            {
+                return archive.BaseStream;
+            }
+
+            return archive.MemoryMappedFile.CreateViewStream(entry.FilePosition, entry.CompressedSize, MemoryMappedFileAccess.Read);
         }
 
         /// <summary>
@@ -196,11 +210,11 @@ namespace War3Net.IO.Mpq
                 {
                     for (var blockIndex = 0; blockIndex < blockPosCount; blockIndex++)
                     {
-                        using (var br = new BinaryReader(compressedStream, new UTF8Encoding(), true))
+                        using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
                         {
                             for (var i = 0; i < blockPosCount; i++)
                             {
-                                blockPositions[i] = (int)br.ReadUInt32();
+                                blockPositions[i] = (int)reader.ReadUInt32();
                             }
                         }
 
@@ -230,7 +244,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 var currentOffset = 0;
-                using (var writer = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
                 {
                     for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
                     {
@@ -315,7 +329,7 @@ namespace War3Net.IO.Mpq
                 }
 
                 resultStream.Position = 0;
-                using (var writer = new BinaryWriter(resultStream, new UTF8Encoding(false, true), true))
+                using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
                 {
                     for (var blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
@@ -460,6 +474,7 @@ namespace War3Net.IO.Mpq
             throw new NotSupportedException("Write is not supported");
         }
 
+        /// <inheritdoc/>
         public override void Close()
         {
             base.Close();
@@ -470,13 +485,13 @@ namespace War3Net.IO.Mpq
         }
 
         /// <summary>
-        /// Copy the base stream, so that the contents do not get decompressed not decrypted.
+        /// Copy the base stream, so that the contents do not get decompressed nor decrypted.
         /// </summary>
         internal void CopyBaseStreamTo(Stream target)
         {
             lock (_stream)
             {
-                _stream.CopyTo(target, _filePosition, (int)_compressedSize, StreamExtensions.DefaultBufferSize);
+                _stream.CopyTo(target, _streamOffset, (int)_compressedSize, StreamExtensions.DefaultBufferSize);
             }
         }
 
@@ -559,18 +574,18 @@ namespace War3Net.IO.Mpq
 
             BufferData();
 
-            var localposition = _isSingleUnit ? _position : (_position & (_blockSize - 1));
-            var canRead = (int)(_currentData.Length - localposition);
-            var bytestocopy = canRead > count ? count : canRead;
-            if (bytestocopy <= 0)
+            var localPosition = _isSingleUnit ? _position : (_position & (_blockSize - 1));
+            var canRead = (int)(_currentData.Length - localPosition);
+            var bytesToCopy = canRead > count ? count : canRead;
+            if (bytesToCopy <= 0)
             {
                 return 0;
             }
 
-            Array.Copy(_currentData, localposition, buffer, offset, bytestocopy);
+            Array.Copy(_currentData, localPosition, buffer, offset, bytesToCopy);
 
-            _position += bytestocopy;
-            return bytestocopy;
+            _position += bytesToCopy;
+            return bytesToCopy;
         }
 
         [MemberNotNull(nameof(_currentData))]
@@ -578,12 +593,12 @@ namespace War3Net.IO.Mpq
         {
             if (!_isSingleUnit)
             {
-                var requiredblock = (int)(_position / _blockSize);
-                if (requiredblock != _currentBlockIndex || _currentData is null)
+                var requiredBlock = (int)(_position / _blockSize);
+                if (requiredBlock != _currentBlockIndex || _currentData is null)
                 {
-                    var expectedlength = Math.Min((int)(Length - (requiredblock * _blockSize)), _blockSize);
-                    _currentData = LoadBlock(requiredblock, expectedlength);
-                    _currentBlockIndex = requiredblock;
+                    var expectedLength = Math.Min((int)(Length - (requiredBlock * _blockSize)), _blockSize);
+                    _currentData = LoadBlock(requiredBlock, expectedLength);
+                    _currentBlockIndex = requiredBlock;
                 }
             }
             else if (_currentData is null)
@@ -595,15 +610,11 @@ namespace War3Net.IO.Mpq
         private byte[] LoadSingleUnit()
         {
             // Read the entire file into memory
-            var filedata = new byte[_compressedSize];
+            var fileData = new byte[_compressedSize];
             lock (_stream)
             {
-                _stream.Seek(_filePosition, SeekOrigin.Begin);
-                var read = _stream.Read(filedata, 0, filedata.Length);
-                if (read != filedata.Length)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
+                _stream.Seek(_streamOffset, SeekOrigin.Begin);
+                _stream.CopyTo(fileData, 0, fileData.Length);
             }
 
             if (_isEncrypted && _fileSize > 3)
@@ -613,12 +624,12 @@ namespace War3Net.IO.Mpq
                     throw new MpqParserException("Unable to determine encryption key");
                 }
 
-                StormBuffer.DecryptBlock(filedata, _encryptionSeed);
+                StormBuffer.DecryptBlock(fileData, _encryptionSeed);
             }
 
             return _flags.HasFlag(MpqFileFlags.CompressedMulti) && _compressedSize > 0
-                ? DecompressMulti(filedata, _fileSize)
-                : filedata;
+                ? DecompressMulti(fileData, _fileSize)
+                : fileData;
         }
 
         private byte[] LoadBlock(int blockIndex, int expectedLength)
@@ -637,17 +648,13 @@ namespace War3Net.IO.Mpq
                 bufferSize = expectedLength;
             }
 
-            offset += _filePosition;
+            offset += _streamOffset;
 
             var buffer = new byte[bufferSize];
             lock (_stream)
             {
                 _stream.Seek(offset, SeekOrigin.Begin);
-                var read = _stream.Read(buffer, 0, bufferSize);
-                if (read != bufferSize)
-                {
-                    throw new MpqParserException("Insufficient data or invalid data length");
-                }
+                _stream.CopyTo(buffer, 0, bufferSize);
             }
 
             if (_isEncrypted && bufferSize > 3)
@@ -677,7 +684,7 @@ namespace War3Net.IO.Mpq
             var buffer = new byte[bufferSize];
             lock (_stream)
             {
-                _stream.Seek(_filePosition, SeekOrigin.Begin);
+                _stream.Seek(_streamOffset, SeekOrigin.Begin);
                 var read = _stream.Read(buffer, 0, bufferSize);
                 if (read != bufferSize)
                 {
@@ -718,7 +725,7 @@ namespace War3Net.IO.Mpq
                 return !_isEncrypted || bufferSize < 4 || _encryptionSeed != 0;
             }
 
-            offset += _filePosition;
+            offset += _streamOffset;
             bufferSize = Math.Min(bufferSize, 4);
 
             var buffer = new byte[bufferSize];

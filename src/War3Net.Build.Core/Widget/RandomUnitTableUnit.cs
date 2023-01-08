@@ -5,13 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Widget
 {
-    public sealed class RandomUnitTableUnit
+    public sealed partial class RandomUnitTableUnit
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomUnitTableUnit"/> class.
@@ -20,27 +18,10 @@ namespace War3Net.Build.Widget
         {
         }
 
-        internal RandomUnitTableUnit(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            ReadFrom(reader, formatVersion, subVersion, useNewFormat);
-        }
-
         public int UnitId { get; set; }
 
         public int Chance { get; set; }
 
         public override string ToString() => $"{UnitId.ToRawcode()} ({Chance}%)";
-
-        internal void ReadFrom(BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            UnitId = reader.ReadInt32();
-            Chance = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
-        {
-            writer.Write(UnitId);
-            writer.Write(Chance);
-        }
     }
 }

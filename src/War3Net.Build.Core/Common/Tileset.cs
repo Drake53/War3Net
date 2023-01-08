@@ -7,26 +7,26 @@
 
 namespace War3Net.Build.Common
 {
-    public enum Tileset
+    public enum Tileset : byte
     {
         Unspecified = 0,
-        Ashenvale = 'A',
-        Barrens = 'B',
-        BlackCitadel = 'K',
-        Cityscape = 'Y',
-        Dalaran = 'X',
-        DalaranRuins = 'J',
-        Dungeon = 'D',
-        Felwood = 'C',
-        IcecrownGlacier = 'I',
-        LordaeronFall = 'F',
-        LordaeronSummer = 'L',
-        LordaeronWinter = 'W',
-        Northrend = 'N',
-        Outland = 'O',
-        SunkenRuins = 'Z',
-        Underground = 'G',
-        Village = 'V',
-        VillageFall = 'Q',
+        Ashenvale = (byte)'A',
+        Barrens = (byte)'B',
+        BlackCitadel = (byte)'K',
+        Cityscape = (byte)'Y',
+        Dalaran = (byte)'X',
+        DalaranRuins = (byte)'J',
+        Dungeon = (byte)'D',
+        Felwood = (byte)'C',
+        IcecrownGlacier = (byte)'I',
+        LordaeronFall = (byte)'F',
+        LordaeronSummer = (byte)'L',
+        LordaeronWinter = (byte)'W',
+        Northrend = (byte)'N',
+        Outland = (byte)'O',
+        SunkenRuins = (byte)'Z',
+        Underground = (byte)'G',
+        Village = (byte)'V',
+        VillageFall = (byte)'Q',
     }
 }

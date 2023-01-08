@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace War3Net.IO.Mpq
 {
@@ -149,10 +150,11 @@ namespace War3Net.IO.Mpq
         /// Reads from the given stream to create a new MPQ header.
         /// </summary>
         /// <param name="stream">The stream from which to read.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the stream open; otherwise, <see langword="false"/>.</param>
         /// <returns>The parsed <see cref="MpqHeader"/>.</returns>
-        public static MpqHeader Parse(Stream stream)
+        public static MpqHeader Parse(Stream stream, bool leaveOpen = false)
         {
-            using var reader = new BinaryReader(stream);
+            using var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen);
             return FromReader(reader);
         }
 
@@ -186,9 +188,9 @@ namespace War3Net.IO.Mpq
             {
                 // TODO: support v1
                 // The extended block table is an array of Int16 - higher bits of the offests in the block table.
-                // header.ExtendedBlockTableOffset = br.ReadInt64();
-                // header.HashTableOffsetHigh = br.ReadInt16();
-                // header.BlockTableOffsetHigh = br.ReadInt16();
+                // header.ExtendedBlockTableOffset = reader.ReadInt64();
+                // header.HashTableOffsetHigh = reader.ReadInt16();
+                // header.BlockTableOffsetHigh = reader.ReadInt16();
 
                 // TODO: validate v1
                 const bool IsInvalidVersion1 = true;

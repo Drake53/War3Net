@@ -6,11 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 
 namespace War3Net.Build.Common
 {
-    public sealed class Bitmask32
+    public sealed partial class Bitmask32
     {
         private int _mask;
 
@@ -54,11 +53,6 @@ namespace War3Net.Build.Common
             }
         }
 
-        internal Bitmask32(BinaryReader reader)
-        {
-            ReadFrom(reader);
-        }
-
         public bool this[int index]
         {
             get => index >= 0 && index < 32 ? (_mask & 1 << index) != 0 : throw new ArgumentOutOfRangeException(nameof(index));
@@ -72,15 +66,5 @@ namespace War3Net.Build.Common
         public int ToInt32() => _mask;
 
         public override string ToString() => Convert.ToString(_mask, 2).PadLeft(32, '0');
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            _mask = reader.ReadInt32();
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(_mask);
-        }
     }
 }

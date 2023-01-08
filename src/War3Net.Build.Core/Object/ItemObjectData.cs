@@ -6,23 +6,24 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
-
-using War3Net.Build.Extensions;
-using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object
 {
-    public abstract class ItemObjectData
+    public sealed partial class ItemObjectData
     {
-        internal ItemObjectData(ObjectDataFormatVersion formatVersion)
+        public const string FileExtension = ".w3t";
+        public const string CampaignFileName = "war3campaign.w3t";
+        public const string CampaignSkinFileName = "war3campaignSkin.w3t";
+        public const string MapFileName = "war3map.w3t";
+        public const string MapSkinFileName = "war3mapSkin.w3t";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemObjectData"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public ItemObjectData(ObjectDataFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
-        }
-
-        internal ItemObjectData(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public ObjectDataFormatVersion FormatVersion { get; set; }
@@ -31,38 +32,6 @@ namespace War3Net.Build.Object
 
         public List<SimpleObjectModification> NewItems { get; init; } = new();
 
-        internal void ReadFrom(BinaryReader reader)
-        {
-            FormatVersion = reader.ReadInt32<ObjectDataFormatVersion>();
-
-            nint baseItemsCount = reader.ReadInt32();
-            for (nint i = 0; i < baseItemsCount; i++)
-            {
-                BaseItems.Add(reader.ReadSimpleObjectModification(FormatVersion));
-            }
-
-            nint newItemsCount = reader.ReadInt32();
-            for (nint i = 0; i < newItemsCount; i++)
-            {
-                NewItems.Add(reader.ReadSimpleObjectModification(FormatVersion));
-            }
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write((int)FormatVersion);
-
-            writer.Write(BaseItems.Count);
-            foreach (var item in BaseItems)
-            {
-                writer.Write(item, FormatVersion);
-            }
-
-            writer.Write(NewItems.Count);
-            foreach (var item in NewItems)
-            {
-                writer.Write(item, FormatVersion);
-            }
-        }
+        public override string ToString() => $"{FileExtension} file";
     }
 }

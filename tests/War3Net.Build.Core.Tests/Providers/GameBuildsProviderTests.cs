@@ -71,7 +71,7 @@ namespace War3Net.Build.Core.Tests.Providers
         private static IEnumerable<object[]> GetMapInfoData()
         {
             return TestDataProvider.GetDynamicData(
-                MapInfo.FileName.GetSearchPattern(),
+                $"*{MapInfo.FileExtension}",
                 SearchOption.AllDirectories,
                 Path.Combine("Info"))
 

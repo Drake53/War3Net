@@ -13,7 +13,7 @@ using JpegLibrary;
 
 namespace War3Net.Drawing.Blp
 {
-    internal class JpegBlockOutputWriter8Bit : JpegBlockOutputWriter
+    internal sealed class JpegBlockOutputWriter8Bit : JpegBlockOutputWriter
     {
         private readonly int _width;
         private readonly int _height;

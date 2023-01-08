@@ -5,14 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Widget;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Widget
 {
@@ -20,23 +15,24 @@ namespace War3Net.Build.Core.Tests.Widget
     public class MapUnitsTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapUnitsData), DynamicDataSourceType.Method)]
-        public void TestParseMapUnits(string mapUnitsFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapUnitsFilePath, typeof(MapUnits));
+            SerializationTestHelper<MapUnits>.RunBinaryRWTest(filePath);
         }
 
-        private static IEnumerable<object[]> GetMapUnitsData()
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            return TestDataProvider.GetDynamicData(
-                MapUnits.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Widget", "Units"))
+            SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, false);
+        }
 
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapUnits.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, true);
         }
     }
 }

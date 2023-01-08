@@ -39,7 +39,7 @@ namespace War3Net.Build
 
             if (mapTriggers.Variables.Any(variable =>
                 (variable.IsArray ||
-                 map.Info.FormatVersion >= MapInfoFormatVersion.Reforged) &&
+                 map.Info.FormatVersion >= MapInfoFormatVersion.v31) &&
                 (variable.IsInitialized ||
                  TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out _) ||
                  string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))

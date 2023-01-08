@@ -338,9 +338,24 @@ namespace War3Net.Build.Providers
         {
             return tileset switch
             {
+                Tileset.Ashenvale => TerrainType.A_Dirt,
+                Tileset.Barrens => TerrainType.B_Dirt,
+                Tileset.BlackCitadel => TerrainType.K_Dirt,
+                Tileset.Cityscape => TerrainType.Y_Dirt,
+                Tileset.Dalaran => TerrainType.X_Dirt,
+                Tileset.DalaranRuins => TerrainType.J_Dirt,
+                Tileset.Dungeon => TerrainType.D_Dirt,
+                Tileset.Felwood => TerrainType.C_Dirt,
+                Tileset.IcecrownGlacier => TerrainType.I_Dirt,
+                Tileset.LordaeronFall => TerrainType.F_Dirt,
                 Tileset.LordaeronSummer => TerrainType.L_Dirt,
-
-                // TODO
+                Tileset.LordaeronWinter => TerrainType.W_Dirt,
+                Tileset.Northrend => TerrainType.N_Dirt,
+                Tileset.Outland => TerrainType.O_Dirt,
+                Tileset.SunkenRuins => TerrainType.Z_Dirt,
+                Tileset.Underground => TerrainType.G_Dirt,
+                Tileset.Village => TerrainType.V_Dirt,
+                Tileset.VillageFall => TerrainType.Q_Dirt,
 
                 _ => throw new InvalidEnumArgumentException(nameof(tileset), (int)tileset, typeof(Tileset)),
             };

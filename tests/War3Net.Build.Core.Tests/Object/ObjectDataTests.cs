@@ -5,15 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Object;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Object
 {
@@ -21,17 +18,17 @@ namespace War3Net.Build.Core.Tests.Object
     public class ObjectDataTests
     {
         [TestMethod]
-        public void TestCreateNewObjectDataCampaign()
+        public void TestCreateNewObjectData()
         {
-            var objectData = new ObjectData(ObjectDataFormatVersion.Normal)
+            var objectData = new ObjectData(ObjectDataFormatVersion.v2)
             {
-                UnitData = new CampaignUnitObjectData(ObjectDataFormatVersion.Normal),
-                ItemData = new CampaignItemObjectData(ObjectDataFormatVersion.Normal),
-                DestructableData = new CampaignDestructableObjectData(ObjectDataFormatVersion.Normal),
-                DoodadData = new CampaignDoodadObjectData(ObjectDataFormatVersion.Normal),
-                AbilityData = new CampaignAbilityObjectData(ObjectDataFormatVersion.Normal),
-                BuffData = new CampaignBuffObjectData(ObjectDataFormatVersion.Normal),
-                UpgradeData = new CampaignUpgradeObjectData(ObjectDataFormatVersion.Normal),
+                UnitData = new UnitObjectData(ObjectDataFormatVersion.v2),
+                ItemData = new ItemObjectData(ObjectDataFormatVersion.v2),
+                DestructableData = new DestructableObjectData(ObjectDataFormatVersion.v2),
+                DoodadData = new DoodadObjectData(ObjectDataFormatVersion.v2),
+                AbilityData = new AbilityObjectData(ObjectDataFormatVersion.v2),
+                BuffData = new BuffObjectData(ObjectDataFormatVersion.v2),
+                UpgradeData = new UpgradeObjectData(ObjectDataFormatVersion.v2),
             };
 
             using var memoryStream = new MemoryStream();
@@ -41,67 +38,28 @@ namespace War3Net.Build.Core.Tests.Object
             memoryStream.Position = 0;
 
             using var reader = new BinaryReader(memoryStream);
-            reader.ReadObjectData(true);
-        }
-
-        [TestMethod]
-        public void TestCreateNewObjectDataMap()
-        {
-            var objectData = new ObjectData(ObjectDataFormatVersion.Normal)
-            {
-                UnitData = new MapUnitObjectData(ObjectDataFormatVersion.Normal),
-                ItemData = new MapItemObjectData(ObjectDataFormatVersion.Normal),
-                DestructableData = new MapDestructableObjectData(ObjectDataFormatVersion.Normal),
-                DoodadData = new MapDoodadObjectData(ObjectDataFormatVersion.Normal),
-                AbilityData = new MapAbilityObjectData(ObjectDataFormatVersion.Normal),
-                BuffData = new MapBuffObjectData(ObjectDataFormatVersion.Normal),
-                UpgradeData = new MapUpgradeObjectData(ObjectDataFormatVersion.Normal),
-            };
-
-            using var memoryStream = new MemoryStream();
-            using var writer = new BinaryWriter(memoryStream);
-            writer.Write(objectData);
-
-            memoryStream.Position = 0;
-
-            using var reader = new BinaryReader(memoryStream);
-            reader.ReadObjectData(false);
+            reader.ReadObjectData();
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetObjectData), DynamicDataSourceType.Method)]
-        public void TestParseCampaignObjectData(string objectDataFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            TestParseObjectDataInternal(objectDataFilePath, true);
+            SerializationTestHelper<ObjectData>.RunBinaryRWTest(filePath);
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetObjectData), DynamicDataSourceType.Method)]
-        public void TestParseMapObjectData(string objectDataFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            TestParseObjectDataInternal(objectDataFilePath, false);
+            SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, false);
         }
 
-        private void TestParseObjectDataInternal(string objectDataFilePath, bool fromCampaign)
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
         {
-            using var original = MpqFile.OpenRead(objectDataFilePath);
-            using var recreated = new MemoryStream();
-
-            using var objectDataReader = new BinaryReader(original);
-            var objectData = objectDataReader.ReadObjectData(fromCampaign);
-
-            using var objectDataWriter = new BinaryWriter(recreated);
-            objectDataWriter.Write(objectData);
-
-            StreamAssert.AreEqual(original, recreated, true, true);
-        }
-
-        private static IEnumerable<object[]> GetObjectData()
-        {
-            return TestDataProvider.GetDynamicData(
-                "*.w3o",
-                SearchOption.AllDirectories,
-                Path.Combine("Object", "All"));
+            SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, true);
         }
     }
 }

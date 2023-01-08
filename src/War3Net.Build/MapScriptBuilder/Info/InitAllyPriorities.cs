@@ -57,7 +57,7 @@ namespace War3Net.Build
                             SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                     }
 
-                    if (mapInfo.FormatVersion >= MapInfoFormatVersion.Reforged)
+                    if (mapInfo.FormatVersion >= MapInfoFormatVersion.v31)
                     {
                         hasLowFlag = playerData.EnemyLowPriorityFlags[j];
                         hasHighFlag = playerData.EnemyHighPriorityFlags[j];

@@ -5,11 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
-
 namespace War3Net.Build.Script
 {
-    public abstract class TriggerItem
+    public abstract partial class TriggerItem
     {
         internal TriggerItem(TriggerItemType triggerItemType)
         {
@@ -25,7 +23,5 @@ namespace War3Net.Build.Script
         public int ParentId { get; set; }
 
         public override string ToString() => Name;
-
-        internal abstract void WriteTo(BinaryWriter writer, MapTriggersFormatVersion formatVersion, MapTriggersSubVersion? subVersion);
     }
 }

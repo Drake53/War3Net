@@ -26,7 +26,7 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(Attributes.FileName);
             archive.AddFileName(ListFile.FileName);
             archive.AddFileName(Signature.FileName);
-            archive.AddFileName(@"(user data)");
+            archive.AddFileName(UserData.FileName);
 
             archive.AddFileName(MapSounds.FileName);
 
@@ -45,25 +45,39 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(CampaignInfo.FileName);
             archive.AddFileName(MapInfo.FileName);
 
-            archive.AddFileName(CampaignAbilityObjectData.FileName);
-            archive.AddFileName(CampaignBuffObjectData.FileName);
-            archive.AddFileName(CampaignDestructableObjectData.FileName);
-            archive.AddFileName(CampaignDoodadObjectData.FileName);
-            archive.AddFileName(CampaignItemObjectData.FileName);
-            archive.AddFileName(CampaignUnitObjectData.FileName);
-            archive.AddFileName(CampaignUpgradeObjectData.FileName);
-            archive.AddFileName(MapAbilityObjectData.FileName);
-            archive.AddFileName(MapBuffObjectData.FileName);
-            archive.AddFileName(MapDestructableObjectData.FileName);
-            archive.AddFileName(MapDoodadObjectData.FileName);
-            archive.AddFileName(MapItemObjectData.FileName);
-            archive.AddFileName(MapUnitObjectData.FileName);
-            archive.AddFileName(MapUpgradeObjectData.FileName);
+            archive.AddFileName(AbilityObjectData.CampaignFileName);
+            archive.AddFileName(BuffObjectData.CampaignFileName);
+            archive.AddFileName(DestructableObjectData.CampaignFileName);
+            archive.AddFileName(DoodadObjectData.CampaignFileName);
+            archive.AddFileName(ItemObjectData.CampaignFileName);
+            archive.AddFileName(UnitObjectData.CampaignFileName);
+            archive.AddFileName(UpgradeObjectData.CampaignFileName);
+            archive.AddFileName(AbilityObjectData.CampaignSkinFileName);
+            archive.AddFileName(BuffObjectData.CampaignSkinFileName);
+            archive.AddFileName(DestructableObjectData.CampaignSkinFileName);
+            archive.AddFileName(DoodadObjectData.CampaignSkinFileName);
+            archive.AddFileName(ItemObjectData.CampaignSkinFileName);
+            archive.AddFileName(UnitObjectData.CampaignSkinFileName);
+            archive.AddFileName(UpgradeObjectData.CampaignSkinFileName);
+            archive.AddFileName(AbilityObjectData.MapFileName);
+            archive.AddFileName(BuffObjectData.MapFileName);
+            archive.AddFileName(DestructableObjectData.MapFileName);
+            archive.AddFileName(DoodadObjectData.MapFileName);
+            archive.AddFileName(ItemObjectData.MapFileName);
+            archive.AddFileName(UnitObjectData.MapFileName);
+            archive.AddFileName(UpgradeObjectData.MapFileName);
+            archive.AddFileName(AbilityObjectData.MapSkinFileName);
+            archive.AddFileName(BuffObjectData.MapSkinFileName);
+            archive.AddFileName(DestructableObjectData.MapSkinFileName);
+            archive.AddFileName(DoodadObjectData.MapSkinFileName);
+            archive.AddFileName(ItemObjectData.MapSkinFileName);
+            archive.AddFileName(UnitObjectData.MapSkinFileName);
+            archive.AddFileName(UpgradeObjectData.MapSkinFileName);
 
-            archive.AddFileName(CampaignTriggerStrings.FileName);
+            archive.AddFileName(TriggerStrings.CampaignFileName);
             archive.AddFileName(MapCustomTextTriggers.FileName);
             archive.AddFileName(MapTriggers.FileName);
-            archive.AddFileName(MapTriggerStrings.FileName);
+            archive.AddFileName(TriggerStrings.MapFileName);
             archive.AddFileName(JassMapScript.FileName);
             archive.AddFileName(JassMapScript.FullName);
             archive.AddFileName(LuaMapScript.FileName);
@@ -76,7 +90,8 @@ namespace War3Net.Build.Extensions
             archive.AddFileName(@"war3mapExtra.txt");
             archive.AddFileName(@"war3mapMisc.txt");
             archive.AddFileName(@"war3mapSkin.txt");
-            archive.AddFileName(MapImportedFiles.FileName);
+            archive.AddFileName(ImportedFiles.CampaignFileName);
+            archive.AddFileName(ImportedFiles.MapFileName);
 
             if (archive.IsCampaignArchive(out var campaignInfo))
             {

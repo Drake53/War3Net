@@ -7,18 +7,17 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using War3Net.Build.Common;
-using War3Net.Build.Extensions;
 using War3Net.Build.Providers;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapEnvironment
+    public sealed partial class MapEnvironment
     {
+        public const string FileExtension = ".w3e";
         public const string FileName = "war3map.w3e";
 
         public static readonly int FileFormatSignature = "W3E!".FromRawcode();
@@ -30,11 +29,6 @@ namespace War3Net.Build.Environment
         public MapEnvironment(MapEnvironmentFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
-        }
-
-        internal MapEnvironment(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public MapEnvironmentFormatVersion FormatVersion { get; set; }
@@ -80,73 +74,6 @@ namespace War3Net.Build.Environment
         }
 
         public override string ToString() => FileName;
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            if (reader.ReadInt32() != FileFormatSignature)
-            {
-                throw new InvalidDataException($"Expected file header signature at the start of a '{FileName}' file.");
-            }
-
-            FormatVersion = reader.ReadInt32<MapEnvironmentFormatVersion>();
-            Tileset = (Tileset)reader.ReadChar();
-            IsCustomTileset = reader.ReadBool();
-
-            nint terrainTypeCount = reader.ReadInt32();
-            for (nint i = 0; i < terrainTypeCount; i++)
-            {
-                TerrainTypes.Add(reader.ReadInt32<TerrainType>());
-            }
-
-            nint cliffTypeCount = reader.ReadInt32();
-            for (nint i = 0; i < cliffTypeCount; i++)
-            {
-                CliffTypes.Add(reader.ReadInt32<CliffType>());
-            }
-
-            Width = reader.ReadUInt32() - 1;
-            Height = reader.ReadUInt32() - 1;
-            Left = reader.ReadSingle();
-            Bottom = reader.ReadSingle();
-
-            for (nint y = 0; y <= Width; y++)
-            {
-                for (nint x = 0; x <= Height; x++)
-                {
-                    TerrainTiles.Add(reader.ReadTerrainTile(FormatVersion));
-                }
-            }
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write(FileFormatSignature);
-            writer.Write((int)FormatVersion);
-            writer.Write((char)Tileset);
-            writer.WriteBool(IsCustomTileset);
-
-            writer.Write(TerrainTypes.Count);
-            foreach (var terrainType in TerrainTypes)
-            {
-                writer.Write((int)terrainType);
-            }
-
-            writer.Write(CliffTypes.Count);
-            foreach (var cliffType in CliffTypes)
-            {
-                writer.Write((int)cliffType);
-            }
-
-            writer.Write(Width + 1);
-            writer.Write(Height + 1);
-            writer.Write(Left);
-            writer.Write(Bottom);
-
-            foreach (var terrainTile in TerrainTiles)
-            {
-                writer.Write(terrainTile, FormatVersion);
-            }
-        }
 
         private static bool AreListsEqual(IList list1, IList list2)
         {

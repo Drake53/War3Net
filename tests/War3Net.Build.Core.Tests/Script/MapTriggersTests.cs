@@ -5,16 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
@@ -22,74 +15,24 @@ namespace War3Net.Build.Core.Tests.Script
     public class MapTriggersTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapTriggersDataRoC), DynamicDataSourceType.Method)]
-        public void TestParseMapTriggersRoC(string mapTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            TestParseMapTriggers(mapTriggersFilePath);
+            SerializationTestHelper<MapTriggers>.RunBinaryRWTest(filePath);
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapTriggersDataTft), DynamicDataSourceType.Method)]
-        public void TestParseMapTriggersTft(string mapTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            TestParseMapTriggers(mapTriggersFilePath);
+            SerializationTestHelper<MapTriggers>.RunJsonRWTest(filePath, false);
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapTriggersDataNew), DynamicDataSourceType.Method)]
-        public void TestParseMapTriggersNew(string mapTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
         {
-            TestParseMapTriggers(mapTriggersFilePath);
-        }
-
-        private static void TestParseMapTriggers(string mapTriggersFilePath)
-        {
-            ParseTestHelper.RunBinaryRWTest(mapTriggersFilePath, typeof(MapTriggers), additionalReadParameters: TriggerData.Default);
-        }
-
-        private static IEnumerable<object[]> GetMapTriggersDataRoC() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.RoC);
-
-        private static IEnumerable<object[]> GetMapTriggersDataTft() => GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion.Tft);
-
-        private static IEnumerable<object[]> GetMapTriggersDataNew() => GetMapTriggersDataSpecificFormatVersion(null);
-
-        private static IEnumerable<object[]> GetMapTriggersDataSpecificFormatVersion(MapTriggersFormatVersion? formatVersion)
-        {
-            foreach (var testData in GetMapTriggersData())
-            {
-                using var original = MpqFile.OpenRead((string)testData[0]);
-                using var reader = new BinaryReader(original);
-
-                if (original.Length >= 8)
-                {
-                    if (reader.ReadInt32() == MapTriggers.FileFormatSignature)
-                    {
-                        var actualVersion = (MapTriggersFormatVersion?)reader.ReadInt32();
-                        if (!Enum.IsDefined(typeof(MapTriggersFormatVersion), actualVersion))
-                        {
-                            actualVersion = null;
-                        }
-
-                        if (formatVersion == actualVersion)
-                        {
-                            yield return testData;
-                        }
-                    }
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetMapTriggersData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapTriggers.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Triggers"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapTriggers.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            SerializationTestHelper<MapTriggers>.RunJsonRWTest(filePath, true);
         }
     }
 }

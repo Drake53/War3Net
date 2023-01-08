@@ -6,49 +6,28 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO;
-
-using War3Net.Build.Extensions;
-using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Import
 {
-    public abstract class ImportedFiles
+    public sealed partial class ImportedFiles
     {
-        internal ImportedFiles(ImportedFilesFormatVersion formatVersion)
+        public const string FileExtension = ".imp";
+        public const string CampaignFileName = "war3campaign.imp";
+        public const string MapFileName = "war3map.imp";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportedFiles"/> class.
+        /// </summary>
+        /// <param name="formatVersion"></param>
+        public ImportedFiles(ImportedFilesFormatVersion formatVersion)
         {
             FormatVersion = formatVersion;
-        }
-
-        internal ImportedFiles(BinaryReader reader)
-        {
-            ReadFrom(reader);
         }
 
         public ImportedFilesFormatVersion FormatVersion { get; set; }
 
         public List<ImportedFile> Files { get; init; } = new();
 
-        internal void ReadFrom(BinaryReader reader)
-        {
-            FormatVersion = reader.ReadInt32<ImportedFilesFormatVersion>();
-
-            nint importedFileCount = reader.ReadInt32();
-            for (nint i = 0; i < importedFileCount; i++)
-            {
-                Files.Add(reader.ReadImportedFile(FormatVersion));
-            }
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write((int)FormatVersion);
-
-            writer.Write(Files.Count);
-            foreach (var file in Files)
-            {
-                writer.Write(file, FormatVersion);
-            }
-        }
+        public override string ToString() => $"{FileExtension} file";
     }
 }

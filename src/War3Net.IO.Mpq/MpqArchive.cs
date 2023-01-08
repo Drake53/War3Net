@@ -10,10 +10,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+using War3Net.Common.Providers;
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
@@ -28,6 +30,7 @@ namespace War3Net.IO.Mpq
         private const int BlockSizeModifier = 0x200;
 
         private readonly Stream _baseStream;
+        private readonly MemoryMappedFile? _memoryMappedFile;
         private readonly long _headerOffset;
         private readonly int _blockSize;
         private readonly bool _archiveFollowsHeader;
@@ -59,7 +62,7 @@ namespace War3Net.IO.Mpq
             _blockSize = BlockSizeModifier << _mpqHeader.BlockSize;
             _archiveFollowsHeader = _mpqHeader.IsArchiveAfterHeader();
 
-            using (var reader = new BinaryReader(_baseStream, new UTF8Encoding(), true))
+            using (var reader = new BinaryReader(_baseStream, Encoding.UTF8, true))
             {
                 // Load hash table
                 _baseStream.Seek(_mpqHeader.HashTablePosition, SeekOrigin.Begin);
@@ -68,6 +71,11 @@ namespace War3Net.IO.Mpq
                 // Load entry table
                 _baseStream.Seek(_mpqHeader.BlockTablePosition, SeekOrigin.Begin);
                 _blockTable = new BlockTable(reader, _mpqHeader.BlockTableSize, (uint)_headerOffset);
+            }
+
+            if (_baseStream is FileStream fileStream)
+            {
+                _memoryMappedFile = MemoryMappedFile.CreateFromFile(fileStream, null, 0, MemoryMappedFileAccess.Read, HandleInheritability.None, !_isStreamOwner);
             }
 
             AddFileName(Signature.FileName);
@@ -197,7 +205,7 @@ namespace War3Net.IO.Mpq
             _hashTable = new HashTable(Math.Max(fileCount, createOptions.HashTableSize ?? Math.Min(fileCount * 8, MpqTable.MaxSize)));
             _blockTable = new BlockTable();
 
-            using (var writer = new BinaryWriter(_baseStream, new UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(_baseStream, UTF8EncodingProvider.StrictUTF8, true))
             {
                 // Skip the MPQ header, since its contents will be calculated afterwards.
                 writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
@@ -400,6 +408,8 @@ namespace War3Net.IO.Mpq
 
         internal Stream BaseStream => _baseStream;
 
+        internal MemoryMappedFile? MemoryMappedFile => _memoryMappedFile;
+
         internal uint HeaderOffset => (uint)_headerOffset;
 
         /// <summary>
@@ -527,7 +537,7 @@ namespace War3Net.IO.Mpq
             }
 
             var memoryStream = new MemoryStream();
-            using (var writer = new BinaryWriter(memoryStream, new UTF8Encoding(false, true), true))
+            using (var writer = new BinaryWriter(memoryStream, UTF8EncodingProvider.StrictUTF8, true))
             {
                 // Skip the MPQ header, since its contents will be calculated afterwards.
                 writer.Seek((int)MpqHeader.Size, SeekOrigin.Current);
@@ -545,7 +555,7 @@ namespace War3Net.IO.Mpq
                 var hashTable = (HashTable?)null;
                 var blockTable = (BlockTable?)null;
 
-                using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
+                using (var reader = new BinaryReader(sourceStream, Encoding.UTF8, true))
                 {
                     // Load hash table
                     sourceStream.Seek(mpqHeader.HashTablePosition, SeekOrigin.Begin);
@@ -805,6 +815,11 @@ namespace War3Net.IO.Mpq
         /// <inheritdoc/>
         public void Dispose()
         {
+            if (_memoryMappedFile is not null)
+            {
+                _memoryMappedFile.Dispose();
+            }
+
             if (_isStreamOwner)
             {
                 _baseStream?.Close();
@@ -848,7 +863,7 @@ namespace War3Net.IO.Mpq
             out long headerOffset)
         {
             sourceStream.Seek(0, SeekOrigin.Begin);
-            using (var reader = new BinaryReader(sourceStream, new UTF8Encoding(), true))
+            using (var reader = new BinaryReader(sourceStream, Encoding.UTF8, true))
             {
                 for (headerOffset = 0; headerOffset <= sourceStream.Length - MpqHeader.Size; headerOffset += PreArchiveAlignBytes)
                 {

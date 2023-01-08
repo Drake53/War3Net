@@ -128,60 +128,130 @@ namespace War3Net.Build
                 ShadowMap = reader.ReadMapShadowMap();
             }
 
-            if (mapFiles.HasFlag(MapFiles.ImportedFiles) && File.Exists(Path.Combine(mapFolder, MapImportedFiles.FileName)))
+            if (mapFiles.HasFlag(MapFiles.ImportedFiles) && File.Exists(Path.Combine(mapFolder, ImportedFiles.MapFileName)))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapImportedFiles.FileName));
+                using var fileStream = File.OpenRead(Path.Combine(mapFolder, ImportedFiles.MapFileName));
                 using var reader = new BinaryReader(fileStream);
-                ImportedFiles = reader.ReadMapImportedFiles();
+                ImportedFiles = reader.ReadImportedFiles();
             }
 
-            if (mapFiles.HasFlag(MapFiles.AbilityObjectData) && File.Exists(Path.Combine(mapFolder, MapAbilityObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.AbilityObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapAbilityObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                AbilityObjectData = reader.ReadMapAbilityObjectData();
+                if (File.Exists(Path.Combine(mapFolder, AbilityObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, AbilityObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    AbilityObjectData = reader.ReadAbilityObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, AbilityObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, AbilityObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    AbilitySkinObjectData = reader.ReadAbilityObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.BuffObjectData) && File.Exists(Path.Combine(mapFolder, MapBuffObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.BuffObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapBuffObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                BuffObjectData = reader.ReadMapBuffObjectData();
+                if (File.Exists(Path.Combine(mapFolder, BuffObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, BuffObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    BuffObjectData = reader.ReadBuffObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, BuffObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, BuffObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    BuffSkinObjectData = reader.ReadBuffObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.DestructableObjectData) && File.Exists(Path.Combine(mapFolder, MapDestructableObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.DestructableObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapDestructableObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                DestructableObjectData = reader.ReadMapDestructableObjectData();
+                if (File.Exists(Path.Combine(mapFolder, DestructableObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, DestructableObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableObjectData = reader.ReadDestructableObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, DestructableObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, DestructableObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableSkinObjectData = reader.ReadDestructableObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.DoodadObjectData) && File.Exists(Path.Combine(mapFolder, MapDoodadObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.DoodadObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapDoodadObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                DoodadObjectData = reader.ReadMapDoodadObjectData();
+                if (File.Exists(Path.Combine(mapFolder, DoodadObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, DoodadObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadObjectData = reader.ReadDoodadObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, DoodadObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, DoodadObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadSkinObjectData = reader.ReadDoodadObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.ItemObjectData) && File.Exists(Path.Combine(mapFolder, MapItemObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.ItemObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapItemObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                ItemObjectData = reader.ReadMapItemObjectData();
+                if (File.Exists(Path.Combine(mapFolder, ItemObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, ItemObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    ItemObjectData = reader.ReadItemObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, ItemObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, ItemObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    ItemSkinObjectData = reader.ReadItemObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.UnitObjectData) && File.Exists(Path.Combine(mapFolder, MapUnitObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.UnitObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapUnitObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                UnitObjectData = reader.ReadMapUnitObjectData();
+                if (File.Exists(Path.Combine(mapFolder, UnitObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, UnitObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UnitObjectData = reader.ReadUnitObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, UnitObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, UnitObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UnitSkinObjectData = reader.ReadUnitObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.UpgradeObjectData) && File.Exists(Path.Combine(mapFolder, MapUpgradeObjectData.FileName)))
+            if (mapFiles.HasFlag(MapFiles.UpgradeObjectData))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapUpgradeObjectData.FileName));
-                using var reader = new BinaryReader(fileStream);
-                UpgradeObjectData = reader.ReadMapUpgradeObjectData();
+                if (File.Exists(Path.Combine(mapFolder, UpgradeObjectData.MapFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, UpgradeObjectData.MapFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeObjectData = reader.ReadUpgradeObjectData();
+                }
+
+                if (File.Exists(Path.Combine(mapFolder, UpgradeObjectData.MapSkinFileName)))
+                {
+                    using var fileStream = File.OpenRead(Path.Combine(mapFolder, UpgradeObjectData.MapSkinFileName));
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+                }
             }
 
             if (mapFiles.HasFlag(MapFiles.CustomTextTriggers) && File.Exists(Path.Combine(mapFolder, MapCustomTextTriggers.FileName)))
@@ -198,11 +268,11 @@ namespace War3Net.Build
                 Triggers = reader.ReadMapTriggers(TriggerData.Default);
             }
 
-            if (mapFiles.HasFlag(MapFiles.TriggerStrings) && File.Exists(Path.Combine(mapFolder, MapTriggerStrings.FileName)))
+            if (mapFiles.HasFlag(MapFiles.TriggerStrings) && File.Exists(Path.Combine(mapFolder, TriggerStrings.MapFileName)))
             {
-                using var fileStream = File.OpenRead(Path.Combine(mapFolder, MapTriggerStrings.FileName));
+                using var fileStream = File.OpenRead(Path.Combine(mapFolder, TriggerStrings.MapFileName));
                 using var reader = new StreamReader(fileStream);
-                TriggerStrings = reader.ReadMapTriggerStrings();
+                TriggerStrings = reader.ReadTriggerStrings();
             }
 
             if (mapFiles.HasFlag(MapFiles.Doodads) && File.Exists(Path.Combine(mapFolder, MapDoodads.FileName)))
@@ -312,60 +382,130 @@ namespace War3Net.Build
                 ShadowMap = reader.ReadMapShadowMap();
             }
 
-            if (mapFiles.HasFlag(MapFiles.ImportedFiles) && MpqFile.Exists(mapArchive, MapImportedFiles.FileName))
+            if (mapFiles.HasFlag(MapFiles.ImportedFiles) && MpqFile.Exists(mapArchive, ImportedFiles.MapFileName))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapImportedFiles.FileName);
+                using var fileStream = MpqFile.OpenRead(mapArchive, ImportedFiles.MapFileName);
                 using var reader = new BinaryReader(fileStream);
-                ImportedFiles = reader.ReadMapImportedFiles();
+                ImportedFiles = reader.ReadImportedFiles();
             }
 
-            if (mapFiles.HasFlag(MapFiles.AbilityObjectData) && MpqFile.Exists(mapArchive, MapAbilityObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.AbilityObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapAbilityObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                AbilityObjectData = reader.ReadAbilityObjectData(false);
+                if (MpqFile.Exists(mapArchive, AbilityObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, AbilityObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    AbilityObjectData = reader.ReadAbilityObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, AbilityObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, AbilityObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    AbilitySkinObjectData = reader.ReadAbilityObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.BuffObjectData) && MpqFile.Exists(mapArchive, MapBuffObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.BuffObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapBuffObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                BuffObjectData = reader.ReadBuffObjectData(false);
+                if (MpqFile.Exists(mapArchive, BuffObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, BuffObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    BuffObjectData = reader.ReadBuffObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, BuffObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, BuffObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    BuffSkinObjectData = reader.ReadBuffObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.DestructableObjectData) && MpqFile.Exists(mapArchive, MapDestructableObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.DestructableObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapDestructableObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                DestructableObjectData = reader.ReadDestructableObjectData(false);
+                if (MpqFile.Exists(mapArchive, DestructableObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, DestructableObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableObjectData = reader.ReadDestructableObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, DestructableObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, DestructableObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DestructableSkinObjectData = reader.ReadDestructableObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.DoodadObjectData) && MpqFile.Exists(mapArchive, MapDoodadObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.DoodadObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapDoodadObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                DoodadObjectData = reader.ReadDoodadObjectData(false);
+                if (MpqFile.Exists(mapArchive, DoodadObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, DoodadObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadObjectData = reader.ReadDoodadObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, DoodadObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, DoodadObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    DoodadSkinObjectData = reader.ReadDoodadObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.ItemObjectData) && MpqFile.Exists(mapArchive, MapItemObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.ItemObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapItemObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                ItemObjectData = reader.ReadItemObjectData(false);
+                if (MpqFile.Exists(mapArchive, ItemObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, ItemObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    ItemObjectData = reader.ReadItemObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, ItemObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, ItemObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    ItemSkinObjectData = reader.ReadItemObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.UnitObjectData) && MpqFile.Exists(mapArchive, MapUnitObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.UnitObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapUnitObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                UnitObjectData = reader.ReadUnitObjectData(false);
+                if (MpqFile.Exists(mapArchive, UnitObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, UnitObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UnitObjectData = reader.ReadUnitObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, UnitObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, UnitObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UnitSkinObjectData = reader.ReadUnitObjectData();
+                }
             }
 
-            if (mapFiles.HasFlag(MapFiles.UpgradeObjectData) && MpqFile.Exists(mapArchive, MapUpgradeObjectData.FileName))
+            if (mapFiles.HasFlag(MapFiles.UpgradeObjectData))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapUpgradeObjectData.FileName);
-                using var reader = new BinaryReader(fileStream);
-                UpgradeObjectData = reader.ReadUpgradeObjectData(false);
+                if (MpqFile.Exists(mapArchive, UpgradeObjectData.MapFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, UpgradeObjectData.MapFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeObjectData = reader.ReadUpgradeObjectData();
+                }
+
+                if (MpqFile.Exists(mapArchive, UpgradeObjectData.MapSkinFileName))
+                {
+                    using var fileStream = MpqFile.OpenRead(mapArchive, UpgradeObjectData.MapSkinFileName);
+                    using var reader = new BinaryReader(fileStream);
+                    UpgradeSkinObjectData = reader.ReadUpgradeObjectData();
+                }
             }
 
             if (mapFiles.HasFlag(MapFiles.CustomTextTriggers) && MpqFile.Exists(mapArchive, MapCustomTextTriggers.FileName))
@@ -382,11 +522,11 @@ namespace War3Net.Build
                 Triggers = reader.ReadMapTriggers(TriggerData.Default);
             }
 
-            if (mapFiles.HasFlag(MapFiles.TriggerStrings) && MpqFile.Exists(mapArchive, MapTriggerStrings.FileName))
+            if (mapFiles.HasFlag(MapFiles.TriggerStrings) && MpqFile.Exists(mapArchive, TriggerStrings.MapFileName))
             {
-                using var fileStream = MpqFile.OpenRead(mapArchive, MapTriggerStrings.FileName);
+                using var fileStream = MpqFile.OpenRead(mapArchive, TriggerStrings.MapFileName);
                 using var reader = new StreamReader(fileStream);
-                TriggerStrings = reader.ReadTriggerStrings(false);
+                TriggerStrings = reader.ReadTriggerStrings();
             }
 
             if (mapFiles.HasFlag(MapFiles.Doodads) && MpqFile.Exists(mapArchive, MapDoodads.FileName))
@@ -418,7 +558,7 @@ namespace War3Net.Build
 
         public MapShadowMap? ShadowMap { get; set; }
 
-        public MapImportedFiles? ImportedFiles { get; set; }
+        public ImportedFiles? ImportedFiles { get; set; }
 
         public MapInfo? Info { get; set; }
 
@@ -435,6 +575,20 @@ namespace War3Net.Build
         public UnitObjectData? UnitObjectData { get; set; }
 
         public UpgradeObjectData? UpgradeObjectData { get; set; }
+
+        public AbilityObjectData? AbilitySkinObjectData { get; set; }
+
+        public BuffObjectData? BuffSkinObjectData { get; set; }
+
+        public DestructableObjectData? DestructableSkinObjectData { get; set; }
+
+        public DoodadObjectData? DoodadSkinObjectData { get; set; }
+
+        public ItemObjectData? ItemSkinObjectData { get; set; }
+
+        public UnitObjectData? UnitSkinObjectData { get; set; }
+
+        public UpgradeObjectData? UpgradeSkinObjectData { get; set; }
 
         public MapCustomTextTriggers? CustomTextTriggers { get; set; }
 

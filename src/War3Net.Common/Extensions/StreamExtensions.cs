@@ -67,6 +67,57 @@ namespace War3Net.Common.Extensions
             stream.CopyTo(destination, bytesToCopy, bufferSize);
         }
 
+        public static byte[] Copy(this Stream stream, int maxLength)
+        {
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
+
+            var output = new byte[maxLength];
+
+            var bytesRead = 0;
+            var lengthRemaining = maxLength;
+            while (lengthRemaining > 0)
+            {
+                var read = stream.Read(output, bytesRead, lengthRemaining);
+                if (read == 0)
+                {
+                    break;
+                }
+
+                bytesRead += read;
+                lengthRemaining -= read;
+            }
+
+            if (lengthRemaining > 0)
+            {
+                Array.Resize(ref output, bytesRead);
+            }
+
+            return output;
+        }
+
+        public static void CopyTo(this Stream stream, byte[] destination, int offset, int bytesToCopy)
+        {
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
+            _ = destination ?? throw new ArgumentNullException(nameof(destination));
+
+            if (destination.Length < offset + bytesToCopy)
+            {
+                throw new ArgumentException("Destination array is too small.", nameof(destination));
+            }
+
+            while (bytesToCopy > 0)
+            {
+                var read = stream.Read(destination, offset, bytesToCopy);
+                if (read == 0)
+                {
+                    throw new ArgumentException("Could not read enough data from the stream.", nameof(stream));
+                }
+
+                offset += read;
+                bytesToCopy -= read;
+            }
+        }
+
         public static ushort ReadWord(this Stream stream)
         {
             var b1 = stream.ReadByte();

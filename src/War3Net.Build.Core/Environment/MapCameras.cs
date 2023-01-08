@@ -5,18 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-using War3Net.Build.Extensions;
-using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Environment
 {
-    public sealed class MapCameras
+    public sealed partial class MapCameras
     {
+        public const string FileExtension = ".w3c";
         public const string FileName = "war3map.w3c";
 
         /// <summary>
@@ -29,11 +24,6 @@ namespace War3Net.Build.Environment
             UseNewFormat = useNewFormat;
         }
 
-        internal MapCameras(BinaryReader reader)
-        {
-            ReadFrom(reader);
-        }
-
         public MapCamerasFormatVersion FormatVersion { get; set; }
 
         public bool UseNewFormat { get; set; }
@@ -41,43 +31,5 @@ namespace War3Net.Build.Environment
         public List<Camera> Cameras { get; init; } = new();
 
         public override string ToString() => FileName;
-
-        internal void ReadFrom(BinaryReader reader)
-        {
-            FormatVersion = reader.ReadInt32<MapCamerasFormatVersion>();
-            UseNewFormat = true;
-
-            nint cameraCount = reader.ReadInt32();
-            var oldStreamPosition = reader.BaseStream.Position;
-            try
-            {
-                for (nint i = 0; i < cameraCount; i++)
-                {
-                    Cameras.Add(reader.ReadCamera(FormatVersion, UseNewFormat));
-                }
-            }
-            catch (Exception e) when (e is DecoderFallbackException || e is EndOfStreamException || e is InvalidDataException)
-            {
-                reader.BaseStream.Position = oldStreamPosition;
-
-                UseNewFormat = false;
-                Cameras.Clear();
-                for (nint i = 0; i < cameraCount; i++)
-                {
-                    Cameras.Add(reader.ReadCamera(FormatVersion, UseNewFormat));
-                }
-            }
-        }
-
-        internal void WriteTo(BinaryWriter writer)
-        {
-            writer.Write((int)FormatVersion);
-
-            writer.Write(Cameras.Count);
-            foreach (var camera in Cameras)
-            {
-                writer.Write(camera, FormatVersion, UseNewFormat);
-            }
-        }
     }
 }

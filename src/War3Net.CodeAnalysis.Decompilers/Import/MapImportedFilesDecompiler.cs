@@ -23,14 +23,14 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapImportedFiles(MpqArchive mpqArchive, ImportedFilesFormatVersion formatVersion, [NotNullWhen(true)] out MapImportedFiles? mapImportedFiles)
+        public bool TryDecompileMapImportedFiles(MpqArchive mpqArchive, ImportedFilesFormatVersion formatVersion, [NotNullWhen(true)] out ImportedFiles? mapImportedFiles)
         {
             if (mpqArchive is null)
             {
                 throw new ArgumentNullException(nameof(mpqArchive));
             }
 
-            mapImportedFiles = new MapImportedFiles(formatVersion);
+            mapImportedFiles = new ImportedFiles(formatVersion);
 
             var ignoreList = GetIgnoreList();
 
@@ -57,7 +57,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Attributes.FileName,
                 ListFile.FileName,
                 Signature.FileName,
-                "(user data)",
+                UserData.FileName,
                 "conversation.json",
                 MapSounds.FileName,
                 MapCameras.FileName,
@@ -66,18 +66,25 @@ namespace War3Net.CodeAnalysis.Decompilers
                 MapPreviewIcons.FileName,
                 MapRegions.FileName,
                 MapShadowMap.FileName,
-                MapImportedFiles.FileName,
+                ImportedFiles.MapFileName,
                 MapInfo.FileName,
-                MapAbilityObjectData.FileName,
-                MapBuffObjectData.FileName,
-                MapDestructableObjectData.FileName,
-                MapDoodadObjectData.FileName,
-                MapItemObjectData.FileName,
-                MapUnitObjectData.FileName,
-                MapUpgradeObjectData.FileName,
+                AbilityObjectData.MapFileName,
+                BuffObjectData.MapFileName,
+                DestructableObjectData.MapFileName,
+                DoodadObjectData.MapFileName,
+                ItemObjectData.MapFileName,
+                UnitObjectData.MapFileName,
+                UpgradeObjectData.MapFileName,
+                AbilityObjectData.MapSkinFileName,
+                BuffObjectData.MapSkinFileName,
+                DestructableObjectData.MapSkinFileName,
+                DoodadObjectData.MapSkinFileName,
+                ItemObjectData.MapSkinFileName,
+                UnitObjectData.MapSkinFileName,
+                UpgradeObjectData.MapSkinFileName,
                 MapCustomTextTriggers.FileName,
                 MapTriggers.FileName,
-                MapTriggerStrings.FileName,
+                TriggerStrings.MapFileName,
                 MapDoodads.FileName,
                 MapUnits.FileName,
                 JassMapScript.FileName,

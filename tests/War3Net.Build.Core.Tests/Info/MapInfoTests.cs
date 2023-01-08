@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -57,10 +56,24 @@ namespace War3Net.Build.Core.Tests.Info
 #endif
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapInfoData), DynamicDataSourceType.Method)]
-        public void TestParseMapInfo(string mapInfoFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            TestParseMapInfoInternal(mapInfoFilePath);
+            SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
+        {
+            SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
         }
 
         [DataTestMethod]
@@ -155,20 +168,9 @@ namespace War3Net.Build.Core.Tests.Info
 
         private static void TestParseMapInfoInternal(string mapInfoFilePath)
         {
-            ParseTestHelper.RunBinaryRWTest(mapInfoFilePath, typeof(MapInfo));
-        }
-
-        private static IEnumerable<object[]> GetMapInfoData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapInfo.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Info"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapInfo.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            ParseTestHelper.RunBinaryRWTest(
+                mapInfoFilePath,
+                typeof(MapInfo));
         }
 
         private static IEnumerable<object[]> GetMapInfoDataFolder(string versionFolder)

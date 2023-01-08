@@ -64,7 +64,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.Lua)
+            if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v28)
             {
                 return map.Units is not null
                     && map.Units.Units.Any(unit => CreateAllUnitsConditionSingleUnit(map, unit));

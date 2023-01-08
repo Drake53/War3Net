@@ -73,8 +73,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                 if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Triggers) &&
                     map.Info is not null &&
                     map.Triggers is not null &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.RoCBETA &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.TftBETA &&
+                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v3 &&
+                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v6 &&
                     (map.Triggers.Variables.Count > 0 || map.Triggers.TriggerItems.Any(triggerItem => triggerItem is not DeletedTriggerItem)) &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))

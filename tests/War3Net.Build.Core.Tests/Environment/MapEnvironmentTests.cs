@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,10 +51,24 @@ namespace War3Net.Build.Core.Tests.Environment
 #endif
 
         [DataTestMethod]
-        [DynamicData(nameof(GetEnvironmentFiles), DynamicDataSourceType.Method)]
-        public void TestParseMapEnvironment(string environmentFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            ParseTestHelper.RunBinaryRWTest(environmentFilePath, typeof(MapEnvironment));
+            SerializationTestHelper<MapEnvironment>.RunBinaryRWTest(filePath);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
+        {
+            SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
+        {
+            SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, true);
         }
 
         [DataTestMethod]
@@ -68,23 +81,10 @@ namespace War3Net.Build.Core.Tests.Environment
             Assert.IsTrue(environment.IsDefaultTileset());
         }
 
-        private static IEnumerable<object[]> GetEnvironmentFiles()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapEnvironment.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Environment"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapEnvironment.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
-        }
-
         private static IEnumerable<object[]> GetDefaultEnvironmentFiles()
         {
             return TestDataProvider.GetDynamicData(
-                MapEnvironment.FileName.GetSearchPattern(),
+                $"*{MapEnvironment.FileExtension}",
                 SearchOption.TopDirectoryOnly,
                 Path.Combine("Environment", "Default"));
         }

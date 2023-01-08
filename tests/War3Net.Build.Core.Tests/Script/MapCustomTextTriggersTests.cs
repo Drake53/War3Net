@@ -5,17 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
@@ -23,71 +15,24 @@ namespace War3Net.Build.Core.Tests.Script
     public class MapCustomTextTriggersTests
     {
         [DataTestMethod]
-        [DynamicData(nameof(GetMapCustomTextTriggersDataRoC), DynamicDataSourceType.Method)]
-        public void TestParseMapCustomTextTriggersRoC(string mapCustomTextTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestBinarySerialization(string filePath)
         {
-            TestParseMapCustomTextTriggers(mapCustomTextTriggersFilePath);
+            SerializationTestHelper<MapCustomTextTriggers>.RunBinaryRWTest(filePath);
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapCustomTextTriggersDataTft), DynamicDataSourceType.Method)]
-        public void TestParseMapCustomTextTriggersTft(string mapCustomTextTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerialization(string filePath)
         {
-            TestParseMapCustomTextTriggers(mapCustomTextTriggersFilePath);
+            SerializationTestHelper<MapCustomTextTriggers>.RunJsonRWTest(filePath, false);
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(GetMapCustomTextTriggersDataNew), DynamicDataSourceType.Method)]
-        public void TestParseMapCustomTextTriggersNew(string mapCustomTextTriggersFilePath)
+        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        public void TestJsonSerializationStringEnums(string filePath)
         {
-            TestParseMapCustomTextTriggers(mapCustomTextTriggersFilePath);
-        }
-
-        private static void TestParseMapCustomTextTriggers(string mapCustomTextTriggersFilePath)
-        {
-            ParseTestHelper.RunBinaryRWTest(mapCustomTextTriggersFilePath, typeof(MapCustomTextTriggers), additionalReadParameters: new object[] { Encoding.UTF8 }, additionalWriteParameters: new object[] { Encoding.UTF8 });
-        }
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataRoC() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.RoC);
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataTft() => GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion.Tft);
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataNew() => GetMapCustomTextTriggersDataSpecificFormatVersion(null);
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersDataSpecificFormatVersion(MapCustomTextTriggersFormatVersion? formatVersion)
-        {
-            foreach (var testData in GetMapCustomTextTriggersData())
-            {
-                using var original = MpqFile.OpenRead((string)testData[0]);
-                using var reader = new BinaryReader(original);
-
-                if (original.Length >= 4)
-                {
-                    var actualVersion = (MapCustomTextTriggersFormatVersion?)reader.ReadInt32();
-                    if (!Enum.IsDefined(typeof(MapCustomTextTriggersFormatVersion), actualVersion))
-                    {
-                        actualVersion = null;
-                    }
-
-                    if (formatVersion == actualVersion)
-                    {
-                        yield return testData;
-                    }
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetMapCustomTextTriggersData()
-        {
-            return TestDataProvider.GetDynamicData(
-                MapCustomTextTriggers.FileName.GetSearchPattern(),
-                SearchOption.AllDirectories,
-                Path.Combine("Triggers"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapCustomTextTriggers.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            SerializationTestHelper<MapCustomTextTriggers>.RunJsonRWTest(filePath, true);
         }
     }
 }

@@ -5,14 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.IO;
 using System.Linq;
 
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Info
 {
-    public sealed class RandomUnitSet
+    public sealed partial class RandomUnitSet
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomUnitSet"/> class.
@@ -21,34 +20,10 @@ namespace War3Net.Build.Info
         {
         }
 
-        internal RandomUnitSet(BinaryReader reader, MapInfoFormatVersion formatVersion, int setSize)
-        {
-            UnitIds = new int[setSize];
-            ReadFrom(reader, formatVersion);
-        }
-
         public int Chance { get; set; }
 
         public int[] UnitIds { get; set; }
 
         public override string ToString() => $"{string.Join(", ", UnitIds.Select(id => id.ToRawcode()))} ({Chance}%)";
-
-        internal void ReadFrom(BinaryReader reader, MapInfoFormatVersion formatVersion)
-        {
-            Chance = reader.ReadInt32();
-            for (nint i = 0; i < UnitIds.Length; i++)
-            {
-                UnitIds[i] = reader.ReadInt32();
-            }
-        }
-
-        internal void WriteTo(BinaryWriter writer, MapInfoFormatVersion formatVersion)
-        {
-            writer.Write(Chance);
-            for (nint i = 0; i < UnitIds.Length; i++)
-            {
-                writer.Write(UnitIds[i]);
-            }
-        }
     }
 }
