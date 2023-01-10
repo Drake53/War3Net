@@ -5,38 +5,74 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassVariableDeclaratorSyntax : IVariableDeclaratorSyntax
+    public class JassVariableDeclaratorSyntax : JassVariableOrArrayDeclaratorSyntax
     {
-        public JassVariableDeclaratorSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax? value)
+        internal JassVariableDeclaratorSyntax(
+            JassTypeSyntax type,
+            JassIdentifierNameSyntax identifierName,
+            JassEqualsValueClauseSyntax? value)
         {
             Type = type;
             IdentifierName = identifierName;
             Value = value;
         }
 
-        public JassTypeSyntax Type { get; init; }
+        public JassTypeSyntax Type { get; }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public JassEqualsValueClauseSyntax? Value { get; init; }
+        public JassEqualsValueClauseSyntax? Value { get; }
 
-        public bool Equals(IVariableDeclaratorSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassVariableDeclaratorSyntax variableDeclarator
-                && Type.Equals(variableDeclarator.Type)
-                && IdentifierName.Equals(variableDeclarator.IdentifierName)
-                && Value.NullableEquals(variableDeclarator.Value);
+                && Type.IsEquivalentTo(variableDeclarator.Type)
+                && IdentifierName.IsEquivalentTo(variableDeclarator.IdentifierName)
+                && Value.NullableEquivalentTo(variableDeclarator.Value);
         }
 
-        public override string ToString()
+        public override void WriteTo(TextWriter writer)
         {
-            return Value is null
-                ? $"{Type} {IdentifierName}"
-                : $"{Type} {IdentifierName} {Value}";
+            Type.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            Value?.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Type} {IdentifierName}{Value.OptionalPrefixed()}";
+
+        public override JassSyntaxToken GetFirstToken() => Type.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => ((JassSyntaxNode?)Value ?? IdentifierName).GetLastToken();
+
+        protected internal override JassVariableDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassVariableDeclaratorSyntax(
+                Type.ReplaceFirstToken(newToken),
+                IdentifierName,
+                Value);
+        }
+
+        protected internal override JassVariableDeclaratorSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            if (Value is not null)
+            {
+                return new JassVariableDeclaratorSyntax(
+                    Type,
+                    IdentifierName,
+                    Value.ReplaceLastToken(newToken));
+            }
+
+            return new JassVariableDeclaratorSyntax(
+                Type,
+                IdentifierName.ReplaceLastToken(newToken),
+                null);
         }
     }
 }

@@ -5,29 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassExitStatementSyntax : IStatementSyntax, IStatementLineSyntax
+    public class JassExitStatementSyntax : JassStatementSyntax
     {
-        public JassExitStatementSyntax(IExpressionSyntax condition)
+        internal JassExitStatementSyntax(
+            JassSyntaxToken exitWhenToken,
+            JassExpressionSyntax condition)
         {
+            ExitWhenToken = exitWhenToken;
             Condition = condition;
         }
 
-        public IExpressionSyntax Condition { get; init; }
+        public JassSyntaxToken ExitWhenToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public JassExpressionSyntax Condition { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassExitStatementSyntax exitStatement
-                && Condition.Equals(exitStatement.Condition);
+                && Condition.IsEquivalentTo(exitStatement.Condition);
         }
 
-        public bool Equals(IStatementLineSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is JassExitStatementSyntax exitStatement
-                && Condition.Equals(exitStatement.Condition);
+            ExitWhenToken.WriteTo(writer);
+            Condition.WriteTo(writer);
         }
 
-        public override string ToString() => $"{JassKeyword.ExitWhen} {Condition}";
+        public override string ToString() => $"{ExitWhenToken} {Condition}";
+
+        public override JassSyntaxToken GetFirstToken() => ExitWhenToken;
+
+        public override JassSyntaxToken GetLastToken() => Condition.GetLastToken();
+
+        protected internal override JassExitStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassExitStatementSyntax(
+                newToken,
+                Condition);
+        }
+
+        protected internal override JassExitStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassExitStatementSyntax(
+                ExitWhenToken,
+                Condition.ReplaceLastToken(newToken));
+        }
     }
 }

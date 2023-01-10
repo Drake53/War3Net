@@ -5,25 +5,46 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassIdentifierNameSyntax : IEquatable<JassIdentifierNameSyntax>
+    public class JassIdentifierNameSyntax : JassExpressionSyntax
     {
-        public JassIdentifierNameSyntax(string name)
+        internal JassIdentifierNameSyntax(
+            JassSyntaxToken token)
         {
-            Name = name;
+            Token = token;
         }
 
-        public string Name { get; init; }
+        public JassSyntaxToken Token { get; }
 
-        public virtual bool Equals(JassIdentifierNameSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && string.Equals(Name, other.Name, StringComparison.Ordinal);
+            return other is JassIdentifierNameSyntax identifierName
+                && Token.IsEquivalentTo(identifierName.Token);
         }
 
-        public override string ToString() => Name;
+        public override void WriteTo(TextWriter writer)
+        {
+            Token.WriteTo(writer);
+        }
+
+        public override string ToString() => Token.ToString();
+
+        public override JassSyntaxToken GetFirstToken() => Token;
+
+        public override JassSyntaxToken GetLastToken() => Token;
+
+        protected internal override JassIdentifierNameSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassIdentifierNameSyntax(newToken);
+        }
+
+        protected internal override JassIdentifierNameSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassIdentifierNameSyntax(newToken);
+        }
     }
 }

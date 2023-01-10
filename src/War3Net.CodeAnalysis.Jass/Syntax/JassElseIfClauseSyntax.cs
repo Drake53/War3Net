@@ -5,29 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassElseIfClauseSyntax : IEquatable<JassElseIfClauseSyntax>
+    public class JassElseIfClauseSyntax : JassSyntaxNode
     {
-        public JassElseIfClauseSyntax(IExpressionSyntax condition, JassStatementListSyntax body)
+        internal JassElseIfClauseSyntax(
+            JassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator,
+            ImmutableArray<JassStatementSyntax> statements)
         {
-            Condition = condition;
-            Body = body;
+            ElseIfClauseDeclarator = elseIfClauseDeclarator;
+            Statements = statements;
         }
 
-        public IExpressionSyntax Condition { get; init; }
+        public JassElseIfClauseDeclaratorSyntax ElseIfClauseDeclarator { get; }
 
-        public JassStatementListSyntax Body { get; init; }
+        public ImmutableArray<JassStatementSyntax> Statements { get; }
 
-        public bool Equals(JassElseIfClauseSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && Condition.Equals(other.Condition)
-                && Body.Equals(other.Body);
+            return other is JassElseIfClauseSyntax statementElseIfClause
+                && ElseIfClauseDeclarator.IsEquivalentTo(statementElseIfClause.ElseIfClauseDeclarator)
+                && Statements.IsEquivalentTo(statementElseIfClause.Statements);
         }
 
-        public override string ToString() => $"{JassKeyword.ElseIf} {Condition} {JassKeyword.Then} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            ElseIfClauseDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{ElseIfClauseDeclarator} [...]";
+
+        public override JassSyntaxToken GetFirstToken() => ElseIfClauseDeclarator.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => Statements.IsEmpty ? ElseIfClauseDeclarator.GetLastToken() : Statements[^1].GetLastToken();
+
+        protected internal override JassElseIfClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceFirstToken(newToken),
+                Statements);
+        }
+
+        protected internal override JassElseIfClauseSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            if (!Statements.IsEmpty)
+            {
+                return new JassElseIfClauseSyntax(
+                    ElseIfClauseDeclarator,
+                    Statements.ReplaceLastItem(Statements[^1].ReplaceLastToken(newToken)));
+            }
+
+            return new JassElseIfClauseSyntax(
+                ElseIfClauseDeclarator.ReplaceLastToken(newToken),
+                Statements);
+        }
     }
 }

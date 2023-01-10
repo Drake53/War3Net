@@ -5,27 +5,63 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArrayDeclaratorSyntax : IVariableDeclaratorSyntax
+    public class JassArrayDeclaratorSyntax : JassVariableOrArrayDeclaratorSyntax
     {
-        public JassArrayDeclaratorSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
+        internal JassArrayDeclaratorSyntax(
+            JassTypeSyntax type,
+            JassSyntaxToken arrayToken,
+            JassIdentifierNameSyntax identifierName)
         {
             Type = type;
+            ArrayToken = arrayToken;
             IdentifierName = identifierName;
         }
 
-        public JassTypeSyntax Type { get; init; }
+        public JassTypeSyntax Type { get; }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassSyntaxToken ArrayToken { get; }
 
-        public bool Equals(IVariableDeclaratorSyntax? other)
+        public JassIdentifierNameSyntax IdentifierName { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassArrayDeclaratorSyntax arrayDeclarator
-                && Type.Equals(arrayDeclarator.Type)
-                && IdentifierName.Equals(arrayDeclarator.IdentifierName);
+                && Type.IsEquivalentTo(arrayDeclarator.Type)
+                && IdentifierName.IsEquivalentTo(arrayDeclarator.IdentifierName);
         }
 
-        public override string ToString() => $"{Type} {JassKeyword.Array} {IdentifierName}";
+        public override void WriteTo(TextWriter writer)
+        {
+            Type.WriteTo(writer);
+            ArrayToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Type} {ArrayToken} {IdentifierName}";
+
+        public override JassSyntaxToken GetFirstToken() => Type.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override JassArrayDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassArrayDeclaratorSyntax(
+                Type.ReplaceFirstToken(newToken),
+                ArrayToken,
+                IdentifierName);
+        }
+
+        protected internal override JassArrayDeclaratorSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassArrayDeclaratorSyntax(
+                Type,
+                ArrayToken,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

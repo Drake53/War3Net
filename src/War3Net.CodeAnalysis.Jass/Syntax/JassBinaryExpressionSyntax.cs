@@ -5,33 +5,64 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassBinaryExpressionSyntax : IExpressionSyntax
+    public class JassBinaryExpressionSyntax : JassExpressionSyntax
     {
-        public JassBinaryExpressionSyntax(BinaryOperatorType @operator, IExpressionSyntax left, IExpressionSyntax right)
+        public JassBinaryExpressionSyntax(
+            JassExpressionSyntax left,
+            JassSyntaxToken operatorToken,
+            JassExpressionSyntax right)
         {
-            Operator = @operator;
             Left = left;
+            OperatorToken = operatorToken;
             Right = right;
         }
 
-        public BinaryOperatorType Operator { get; init; }
+        public JassExpressionSyntax Left { get; }
 
-        public IExpressionSyntax Left { get; init; }
+        public JassSyntaxToken OperatorToken { get; }
 
-        public IExpressionSyntax Right { get; init; }
+        public JassExpressionSyntax Right { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassBinaryExpressionSyntax binaryExpression
-                && Operator == binaryExpression.Operator
-                && Left.Equals(binaryExpression.Left)
-                && Right.Equals(binaryExpression.Right);
+                && Left.IsEquivalentTo(binaryExpression.Left)
+                && OperatorToken.IsEquivalentTo(binaryExpression.OperatorToken)
+                && Right.IsEquivalentTo(binaryExpression.Right);
         }
 
-        public override string ToString() => $"{Left} {Operator.GetSymbol()} {Right}";
+        public override void WriteTo(TextWriter writer)
+        {
+            Left.WriteTo(writer);
+            OperatorToken.WriteTo(writer);
+            Right.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{Left} {OperatorToken} {Right}";
+
+        public override JassSyntaxToken GetFirstToken() => Left.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => Right.GetLastToken();
+
+        protected internal override JassBinaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassBinaryExpressionSyntax(
+                Left.ReplaceFirstToken(newToken),
+                OperatorToken,
+                Right);
+        }
+
+        protected internal override JassBinaryExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassBinaryExpressionSyntax(
+                Left,
+                OperatorToken,
+                Right.ReplaceLastToken(newToken));
+        }
     }
 }

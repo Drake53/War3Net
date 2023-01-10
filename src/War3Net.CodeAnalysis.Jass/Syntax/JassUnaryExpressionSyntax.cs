@@ -5,34 +5,56 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassUnaryExpressionSyntax : IExpressionSyntax
+    public class JassUnaryExpressionSyntax : JassExpressionSyntax
     {
-        public JassUnaryExpressionSyntax(UnaryOperatorType @operator, IExpressionSyntax expression)
+        public JassUnaryExpressionSyntax(
+            JassSyntaxToken operatorToken,
+            JassExpressionSyntax expression)
         {
-            Operator = @operator;
+            OperatorToken = operatorToken;
             Expression = expression;
         }
 
-        public UnaryOperatorType Operator { get; init; }
+        public JassSyntaxToken OperatorToken { get; }
 
-        public IExpressionSyntax Expression { get; init; }
+        public JassExpressionSyntax Expression { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassUnaryExpressionSyntax unaryExpression
-                && Operator == unaryExpression.Operator
-                && Expression.Equals(unaryExpression.Expression);
+                && OperatorToken.IsEquivalentTo(unaryExpression.OperatorToken)
+                && Expression.IsEquivalentTo(unaryExpression.Expression);
         }
 
-        public override string ToString()
+        public override void WriteTo(TextWriter writer)
         {
-            return Operator == UnaryOperatorType.Not
-                ? $"{Operator.GetSymbol()} {Expression}"
-                : $"{Operator.GetSymbol()}{Expression}";
+            OperatorToken.WriteTo(writer);
+            Expression.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? " " : string.Empty)}{Expression}";
+
+        public override JassSyntaxToken GetFirstToken() => OperatorToken;
+
+        public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
+
+        protected internal override JassUnaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassUnaryExpressionSyntax(
+                newToken,
+                Expression);
+        }
+
+        protected internal override JassUnaryExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassUnaryExpressionSyntax(
+                OperatorToken,
+                Expression.ReplaceLastToken(newToken));
         }
     }
 }

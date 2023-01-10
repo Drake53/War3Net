@@ -5,29 +5,56 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassParameterSyntax : IEquatable<JassParameterSyntax>
+    public class JassParameterSyntax : JassSyntaxNode
     {
-        public JassParameterSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
+        internal JassParameterSyntax(
+            JassTypeSyntax type,
+            JassIdentifierNameSyntax identifierName)
         {
             Type = type;
             IdentifierName = identifierName;
         }
 
-        public JassTypeSyntax Type { get; init; }
+        public JassTypeSyntax Type { get; }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(JassParameterSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && Type.Equals(other.Type)
-                && IdentifierName.Equals(other.IdentifierName);
+            return other is JassParameterSyntax parameter
+                && Type.IsEquivalentTo(parameter.Type)
+                && IdentifierName.IsEquivalentTo(parameter.IdentifierName);
+        }
+
+        public override void WriteTo(TextWriter writer)
+        {
+            Type.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
         }
 
         public override string ToString() => $"{Type} {IdentifierName}";
+
+        public override JassSyntaxToken GetFirstToken() => Type.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override JassParameterSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassParameterSyntax(
+                Type.ReplaceFirstToken(newToken),
+                IdentifierName);
+        }
+
+        protected internal override JassParameterSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassParameterSyntax(
+                Type,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

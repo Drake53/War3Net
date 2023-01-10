@@ -5,23 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassFunctionReferenceExpressionSyntax : IExpressionSyntax
+    public class JassFunctionReferenceExpressionSyntax : JassExpressionSyntax
     {
-        public JassFunctionReferenceExpressionSyntax(JassIdentifierNameSyntax identifierName)
+        internal JassFunctionReferenceExpressionSyntax(
+            JassSyntaxToken functionToken,
+            JassIdentifierNameSyntax identifierName)
         {
+            FunctionToken = functionToken;
             IdentifierName = identifierName;
         }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassSyntaxToken FunctionToken { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public JassIdentifierNameSyntax IdentifierName { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassFunctionReferenceExpressionSyntax functionReferenceExpression
-                && IdentifierName.Equals(functionReferenceExpression.IdentifierName);
+                && IdentifierName.IsEquivalentTo(functionReferenceExpression.IdentifierName);
         }
 
-        public override string ToString() => $"{JassKeyword.Function} {IdentifierName}";
+        public override void WriteTo(TextWriter writer)
+        {
+            FunctionToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{FunctionToken} {IdentifierName}";
+
+        public override JassSyntaxToken GetFirstToken() => FunctionToken;
+
+        public override JassSyntaxToken GetLastToken() => IdentifierName.GetLastToken();
+
+        protected internal override JassFunctionReferenceExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassFunctionReferenceExpressionSyntax(
+                newToken,
+                IdentifierName);
+        }
+
+        protected internal override JassFunctionReferenceExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassFunctionReferenceExpressionSyntax(
+                FunctionToken,
+                IdentifierName.ReplaceLastToken(newToken));
+        }
     }
 }

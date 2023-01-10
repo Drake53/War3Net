@@ -5,41 +5,74 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassIfStatementSyntax : IStatementSyntax
+    public class JassIfStatementSyntax : JassStatementSyntax
     {
-        public JassIfStatementSyntax(IExpressionSyntax condition, JassStatementListSyntax body, ImmutableArray<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
+        internal JassIfStatementSyntax(
+            JassIfClauseSyntax ifClause,
+            ImmutableArray<JassElseIfClauseSyntax> elseIfClauses,
+            JassElseClauseSyntax? elseClause,
+            JassSyntaxToken endIfToken)
         {
-            Condition = condition;
-            Body = body;
+            IfClause = ifClause;
             ElseIfClauses = elseIfClauses;
             ElseClause = elseClause;
+            EndIfToken = endIfToken;
         }
 
-        public IExpressionSyntax Condition { get; init; }
+        public JassIfClauseSyntax IfClause { get; }
 
-        public JassStatementListSyntax Body { get; init; }
+        public ImmutableArray<JassElseIfClauseSyntax> ElseIfClauses { get; }
 
-        public ImmutableArray<JassElseIfClauseSyntax> ElseIfClauses { get; init; }
+        public JassElseClauseSyntax? ElseClause { get; }
 
-        public JassElseClauseSyntax? ElseClause { get; init; }
+        public JassSyntaxToken EndIfToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassIfStatementSyntax ifStatement
-                && Condition.Equals(ifStatement.Condition)
-                && Body.Equals(ifStatement.Body)
-                && ElseIfClauses.SequenceEqual(ifStatement.ElseIfClauses)
-                && ElseClause.NullableEquals(ifStatement.ElseClause);
+                && IfClause.IsEquivalentTo(ifStatement.IfClause)
+                && ElseIfClauses.IsEquivalentTo(ifStatement.ElseIfClauses)
+                && ElseClause.NullableEquivalentTo(ifStatement.ElseClause);
         }
 
-        public override string ToString() => $"{JassKeyword.If} {Condition} {JassKeyword.Then} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            IfClause.WriteTo(writer);
+            ElseIfClauses.WriteTo(writer);
+            ElseClause?.WriteTo(writer);
+            EndIfToken.WriteTo(writer);
+        }
+
+        public override string ToString() => IfClause.ToString();
+
+        public override JassSyntaxToken GetFirstToken() => IfClause.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => EndIfToken;
+
+        protected internal override JassIfStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassIfStatementSyntax(
+                IfClause.ReplaceFirstToken(newToken),
+                ElseIfClauses,
+                ElseClause,
+                EndIfToken);
+        }
+
+        protected internal override JassIfStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassIfStatementSyntax(
+                IfClause,
+                ElseIfClauses,
+                ElseClause,
+                newToken);
+        }
     }
 }

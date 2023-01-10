@@ -5,29 +5,57 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassParameterListSyntax : IEquatable<JassParameterListSyntax>
+    public class JassParameterListSyntax : JassParameterListOrEmptyParameterListSyntax
     {
-        public static readonly JassParameterListSyntax Empty = new JassParameterListSyntax(ImmutableArray<JassParameterSyntax>.Empty);
-
-        public JassParameterListSyntax(ImmutableArray<JassParameterSyntax> parameters)
+        internal JassParameterListSyntax(
+            JassSyntaxToken takesToken,
+            SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameterList)
         {
-            Parameters = parameters;
+            TakesToken = takesToken;
+            ParameterList = parameterList;
         }
 
-        public ImmutableArray<JassParameterSyntax> Parameters { get; init; }
+        public JassSyntaxToken TakesToken { get; }
 
-        public bool Equals(JassParameterListSyntax? other)
+        public SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> ParameterList { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && Parameters.SequenceEqual(other.Parameters);
+            return other is JassParameterListSyntax parameterList
+                && ParameterList.IsEquivalentTo(parameterList.ParameterList);
         }
 
-        public override string ToString() => Parameters.Any() ? string.Join($"{JassSymbol.Comma} ", Parameters) : JassKeyword.Nothing;
+        public override void WriteTo(TextWriter writer)
+        {
+            TakesToken.WriteTo(writer);
+            ParameterList.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{TakesToken} {ParameterList}";
+
+        public override JassSyntaxToken GetFirstToken() => TakesToken;
+
+        public override JassSyntaxToken GetLastToken() => ParameterList.Items[^1].GetLastToken();
+
+        protected internal override JassParameterListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassParameterListSyntax(
+                newToken,
+                ParameterList);
+        }
+
+        protected internal override JassParameterListSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassParameterListSyntax(
+                TakesToken,
+                ParameterList.ReplaceLastItem(ParameterList.Items[^1].ReplaceLastToken(newToken)));
+        }
     }
 }

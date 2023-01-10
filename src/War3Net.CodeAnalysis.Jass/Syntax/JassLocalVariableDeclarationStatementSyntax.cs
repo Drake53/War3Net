@@ -5,29 +5,55 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, IStatementLineSyntax
+    public class JassLocalVariableDeclarationStatementSyntax : JassStatementSyntax
     {
-        public JassLocalVariableDeclarationStatementSyntax(IVariableDeclaratorSyntax declarator)
+        internal JassLocalVariableDeclarationStatementSyntax(
+            JassSyntaxToken localToken,
+            JassVariableOrArrayDeclaratorSyntax declarator)
         {
+            LocalToken = localToken;
             Declarator = declarator;
         }
 
-        public IVariableDeclaratorSyntax Declarator { get; init; }
+        public JassSyntaxToken LocalToken { get; }
 
-        public bool Equals(IStatementSyntax? other)
+        public JassVariableOrArrayDeclaratorSyntax Declarator { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement
-                && Declarator.Equals(localVariableDeclarationStatement.Declarator);
+                && Declarator.IsEquivalentTo(localVariableDeclarationStatement.Declarator);
         }
 
-        public bool Equals(IStatementLineSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement
-                && Declarator.Equals(localVariableDeclarationStatement.Declarator);
+            LocalToken.WriteTo(writer);
+            Declarator.WriteTo(writer);
         }
 
-        public override string ToString() => $"{JassKeyword.Local} {Declarator}";
+        public override string ToString() => $"{LocalToken} {Declarator}";
+
+        public override JassSyntaxToken GetFirstToken() => LocalToken;
+
+        public override JassSyntaxToken GetLastToken() => Declarator.GetLastToken();
+
+        protected internal override JassLocalVariableDeclarationStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                newToken,
+                Declarator);
+        }
+
+        protected internal override JassLocalVariableDeclarationStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                LocalToken,
+                Declarator.ReplaceLastToken(newToken));
+        }
     }
 }

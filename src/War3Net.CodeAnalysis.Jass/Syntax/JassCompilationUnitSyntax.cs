@@ -5,27 +5,63 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassCompilationUnitSyntax : IEquatable<JassCompilationUnitSyntax>
+    public class JassCompilationUnitSyntax : JassSyntaxNode
     {
-        public JassCompilationUnitSyntax(ImmutableArray<ITopLevelDeclarationSyntax> declarations)
+        internal JassCompilationUnitSyntax(
+            ImmutableArray<JassTopLevelDeclarationSyntax> declarations,
+            JassSyntaxToken endOfFileToken)
         {
             Declarations = declarations;
+            EndOfFileToken = endOfFileToken;
         }
 
-        public ImmutableArray<ITopLevelDeclarationSyntax> Declarations { get; init; }
+        public ImmutableArray<JassTopLevelDeclarationSyntax> Declarations { get; }
 
-        public bool Equals(JassCompilationUnitSyntax? other)
+        public JassSyntaxToken EndOfFileToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && Declarations.SequenceEqual(other.Declarations);
+            return other is JassCompilationUnitSyntax compilationUnit
+                && Declarations.IsEquivalentTo(compilationUnit.Declarations);
         }
 
-        public override string ToString() => $"<{base.ToString()}> [{Declarations.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            Declarations.WriteTo(writer);
+            EndOfFileToken.WriteTo(writer);
+        }
+
+        public override JassSyntaxToken GetFirstToken() => Declarations.IsEmpty ? EndOfFileToken : Declarations[0].GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => EndOfFileToken;
+
+        protected internal override JassCompilationUnitSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            if (!Declarations.IsEmpty)
+            {
+                return new JassCompilationUnitSyntax(
+                    Declarations.ReplaceFirstItem(Declarations[0].ReplaceFirstToken(newToken)),
+                    EndOfFileToken);
+            }
+
+            return new JassCompilationUnitSyntax(
+                Declarations,
+                newToken);
+        }
+
+        protected internal override JassCompilationUnitSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassCompilationUnitSyntax(
+                Declarations,
+                newToken);
+        }
     }
 }

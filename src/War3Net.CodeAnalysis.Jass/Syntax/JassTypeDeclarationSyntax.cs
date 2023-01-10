@@ -5,34 +5,70 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassTypeDeclarationSyntax : ITopLevelDeclarationSyntax, IDeclarationLineSyntax
+    public class JassTypeDeclarationSyntax : JassTopLevelDeclarationSyntax
     {
-        public JassTypeDeclarationSyntax(JassIdentifierNameSyntax identifierName, JassTypeSyntax baseType)
+        internal JassTypeDeclarationSyntax(
+            JassSyntaxToken typeToken,
+            JassIdentifierNameSyntax identifierName,
+            JassSyntaxToken extendsToken,
+            JassTypeSyntax baseType)
         {
+            TypeToken = typeToken;
             IdentifierName = identifierName;
+            ExtendsToken = extendsToken;
             BaseType = baseType;
         }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassSyntaxToken TypeToken { get; }
 
-        public JassTypeSyntax BaseType { get; init; }
+        public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public JassSyntaxToken ExtendsToken { get; }
+
+        public JassTypeSyntax BaseType { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassTypeDeclarationSyntax typeDeclaration
-                && IdentifierName.Equals(typeDeclaration.IdentifierName)
-                && BaseType.Equals(typeDeclaration.BaseType);
+                && IdentifierName.IsEquivalentTo(typeDeclaration.IdentifierName)
+                && BaseType.IsEquivalentTo(typeDeclaration.BaseType);
         }
 
-        public bool Equals(IDeclarationLineSyntax? other)
+        public override void WriteTo(TextWriter writer)
         {
-            return other is JassTypeDeclarationSyntax typeDeclaration
-                && IdentifierName.Equals(typeDeclaration.IdentifierName)
-                && BaseType.Equals(typeDeclaration.BaseType);
+            TypeToken.WriteTo(writer);
+            IdentifierName.WriteTo(writer);
+            ExtendsToken.WriteTo(writer);
+            BaseType.WriteTo(writer);
         }
 
-        public override string ToString() => $"{JassKeyword.Type} {IdentifierName} {JassKeyword.Extends} {BaseType}";
+        public override string ToString() => $"{TypeToken} {IdentifierName} {ExtendsToken} {BaseType}";
+
+        public override JassSyntaxToken GetFirstToken() => TypeToken;
+
+        public override JassSyntaxToken GetLastToken() => BaseType.GetLastToken();
+
+        protected internal override JassTypeDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassTypeDeclarationSyntax(
+                newToken,
+                IdentifierName,
+                ExtendsToken,
+                BaseType);
+        }
+
+        protected internal override JassTypeDeclarationSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassTypeDeclarationSyntax(
+                TypeToken,
+                IdentifierName,
+                ExtendsToken,
+                BaseType.ReplaceLastToken(newToken));
+        }
     }
 }

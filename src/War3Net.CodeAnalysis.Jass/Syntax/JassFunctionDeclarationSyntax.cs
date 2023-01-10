@@ -5,27 +5,66 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
+using War3Net.CodeAnalysis.Jass.Extensions;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassFunctionDeclarationSyntax : ITopLevelDeclarationSyntax
+    public class JassFunctionDeclarationSyntax : JassTopLevelDeclarationSyntax
     {
-        public JassFunctionDeclarationSyntax(JassFunctionDeclaratorSyntax functionDeclarator, JassStatementListSyntax body)
+        internal JassFunctionDeclarationSyntax(
+            JassFunctionDeclaratorSyntax functionDeclarator,
+            ImmutableArray<JassStatementSyntax> statements,
+            JassSyntaxToken endFunctionToken)
         {
             FunctionDeclarator = functionDeclarator;
-            Body = body;
+            Statements = statements;
+            EndFunctionToken = endFunctionToken;
         }
 
-        public JassFunctionDeclaratorSyntax FunctionDeclarator { get; init; }
+        public JassFunctionDeclaratorSyntax FunctionDeclarator { get; }
 
-        public JassStatementListSyntax Body { get; init; }
+        public ImmutableArray<JassStatementSyntax> Statements { get; }
 
-        public bool Equals(ITopLevelDeclarationSyntax? other)
+        public JassSyntaxToken EndFunctionToken { get; }
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassFunctionDeclarationSyntax functionDeclaration
-                && FunctionDeclarator.Equals(functionDeclaration.FunctionDeclarator)
-                && Body.Equals(functionDeclaration.Body);
+                && FunctionDeclarator.IsEquivalentTo(functionDeclaration.FunctionDeclarator)
+                && Statements.IsEquivalentTo(functionDeclaration.Statements);
         }
 
-        public override string ToString() => $"{FunctionDeclarator} [{Body.Statements.Length}]";
+        public override void WriteTo(TextWriter writer)
+        {
+            FunctionDeclarator.WriteTo(writer);
+            Statements.WriteTo(writer);
+            EndFunctionToken.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{FunctionDeclarator} [...]";
+
+        public override JassSyntaxToken GetFirstToken() => FunctionDeclarator.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => EndFunctionToken;
+
+        protected internal override JassFunctionDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassFunctionDeclarationSyntax(
+                FunctionDeclarator.ReplaceFirstToken(newToken),
+                Statements,
+                EndFunctionToken);
+        }
+
+        protected internal override JassFunctionDeclarationSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassFunctionDeclarationSyntax(
+                FunctionDeclarator,
+                Statements,
+                newToken);
+        }
     }
 }
