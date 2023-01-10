@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public enum BinaryOperatorType
     {
         Add,

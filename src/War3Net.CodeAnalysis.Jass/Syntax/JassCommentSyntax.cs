@@ -9,6 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassCommentSyntax : ITopLevelDeclarationSyntax, IScopedDeclarationSyntax, IGlobalDeclarationSyntax, IScopedGlobalDeclarationSyntax, IMemberDeclarationSyntax, IStatementSyntax, IDeclarationLineSyntax, IGlobalLineSyntax, IStatementLineSyntax
     {
         public JassCommentSyntax(string comment)

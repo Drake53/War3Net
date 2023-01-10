@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassNullLiteralExpressionSyntax : IExpressionSyntax
     {
         public static readonly JassNullLiteralExpressionSyntax Value = new JassNullLiteralExpressionSyntax();

@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassCharacterLiteralExpressionSyntax : IExpressionSyntax
     {
         public JassCharacterLiteralExpressionSyntax(char value)
@@ -22,6 +25,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == characterLiteralExpression.Value;
         }
 
-        public override string ToString() => $"{JassSymbol.Apostrophe}{Value}{JassSymbol.Apostrophe}";
+        public override string ToString() => $"{JassSymbol.SingleQuoteChar}{Value}{JassSymbol.SingleQuoteChar}";
     }
 }

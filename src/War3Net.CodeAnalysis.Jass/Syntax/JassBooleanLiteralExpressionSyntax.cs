@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassBooleanLiteralExpressionSyntax : IExpressionSyntax
     {
         public static readonly JassBooleanLiteralExpressionSyntax True = new JassBooleanLiteralExpressionSyntax(true);

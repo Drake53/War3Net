@@ -5,10 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassFourCCLiteralExpressionSyntax : IExpressionSyntax
     {
         public JassFourCCLiteralExpressionSyntax(int value)
@@ -24,6 +27,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == fourCCLiteralExpression.Value;
         }
 
-        public override string ToString() => $"{JassSymbol.Apostrophe}{Value.ToJassRawcode()}{JassSymbol.Apostrophe}";
+        public override string ToString() => $"{JassSymbol.SingleQuoteChar}{Value.ToJassRawcode()}{JassSymbol.SingleQuoteChar}";
     }
 }

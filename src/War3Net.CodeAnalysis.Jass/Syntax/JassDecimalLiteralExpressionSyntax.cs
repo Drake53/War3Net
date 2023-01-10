@@ -5,10 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassDecimalLiteralExpressionSyntax : IExpressionSyntax
     {
         public JassDecimalLiteralExpressionSyntax(int value)

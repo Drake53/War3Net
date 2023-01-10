@@ -9,6 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassStringLiteralExpressionSyntax : IExpressionSyntax
     {
         public JassStringLiteralExpressionSyntax(string value)
@@ -24,6 +25,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && string.Equals(Value, stringLiteralExpression.Value, StringComparison.Ordinal);
         }
 
-        public override string ToString() => $"{JassSymbol.QuotationMark}{Value}{JassSymbol.QuotationMark}";
+        public override string ToString() => $"{JassSymbol.DoubleQuoteChar}{Value}{JassSymbol.DoubleQuoteChar}";
     }
 }

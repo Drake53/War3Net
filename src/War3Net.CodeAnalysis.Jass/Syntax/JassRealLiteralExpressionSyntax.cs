@@ -10,6 +10,7 @@ using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassRealLiteralExpressionSyntax : IExpressionSyntax
     {
 #if true
@@ -46,8 +47,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override string ToString()
         {
             return string.IsNullOrEmpty(FracPart)
-                ? $"{IntPart}{JassSymbol.FullStop}"
-                : $"{IntPart}{JassSymbol.FullStop}{FracPart}";
+                ? $"{IntPart}{JassSymbol.DotChar}"
+                : $"{IntPart}{JassSymbol.DotChar}{FracPart}";
         }
 #else
         public JassRealLiteralExpressionSyntax(float value)
