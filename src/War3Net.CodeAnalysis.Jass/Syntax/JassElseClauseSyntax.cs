@@ -29,8 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is JassElseClauseSyntax statementElseClause
-                && Statements.IsEquivalentTo(statementElseClause.Statements);
+            return other is JassElseClauseSyntax elseClause
+                && Statements.IsEquivalentTo(elseClause.Statements);
         }
 
         public override void WriteTo(TextWriter writer)

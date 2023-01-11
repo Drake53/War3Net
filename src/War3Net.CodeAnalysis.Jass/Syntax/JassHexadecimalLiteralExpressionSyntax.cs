@@ -9,6 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
+    [Obsolete]
     public class JassHexadecimalLiteralExpressionSyntax : IExpressionSyntax
     {
         public JassHexadecimalLiteralExpressionSyntax(int value)
@@ -24,6 +25,6 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 && Value == hexadecimalLiteralExpression.Value;
         }
 
-        public override string ToString() => $"{JassSymbol.Zero}{JassSymbol.X}" + Convert.ToString(Value, 16).ToUpperInvariant();
+        public override string ToString() => $"{JassSymbol.ZeroChar}{JassSymbol.XChar}" + Convert.ToString(Value, 16).ToUpperInvariant();
     }
 }

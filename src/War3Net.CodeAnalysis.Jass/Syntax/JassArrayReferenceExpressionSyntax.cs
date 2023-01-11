@@ -5,27 +5,56 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArrayReferenceExpressionSyntax : IExpressionSyntax
+    public class JassArrayReferenceExpressionSyntax : JassExpressionSyntax
     {
-        public JassArrayReferenceExpressionSyntax(JassIdentifierNameSyntax identifierName, IExpressionSyntax indexer)
+        internal JassArrayReferenceExpressionSyntax(
+            JassIdentifierNameSyntax identifierName,
+            JassElementAccessClauseSyntax elementAccessClause)
         {
             IdentifierName = identifierName;
-            Indexer = indexer;
+            ElementAccessClause = elementAccessClause;
         }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public IExpressionSyntax Indexer { get; init; }
+        public JassElementAccessClauseSyntax ElementAccessClause { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassArrayReferenceExpressionSyntax arrayReferenceExpression
-                && IdentifierName.Equals(arrayReferenceExpression.IdentifierName)
-                && Indexer.Equals(arrayReferenceExpression.Indexer);
+                && IdentifierName.IsEquivalentTo(arrayReferenceExpression.IdentifierName)
+                && ElementAccessClause.IsEquivalentTo(arrayReferenceExpression.ElementAccessClause);
         }
 
-        public override string ToString() => $"{IdentifierName}{JassSymbol.LeftSquareBracket}{Indexer}{JassSymbol.RightSquareBracket}";
+        public override void WriteTo(TextWriter writer)
+        {
+            IdentifierName.WriteTo(writer);
+            ElementAccessClause.WriteTo(writer);
+        }
+
+        public override string ToString() => $"{IdentifierName}{ElementAccessClause}";
+
+        public override JassSyntaxToken GetFirstToken() => IdentifierName.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => ElementAccessClause.GetLastToken();
+
+        protected internal override JassArrayReferenceExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassArrayReferenceExpressionSyntax(
+                IdentifierName.ReplaceFirstToken(newToken),
+                ElementAccessClause);
+        }
+
+        protected internal override JassArrayReferenceExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassArrayReferenceExpressionSyntax(
+                IdentifierName,
+                ElementAccessClause.ReplaceLastToken(newToken));
+        }
     }
 }
