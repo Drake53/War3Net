@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
         {
             return unaryOperator switch
             {
-                UnaryOperatorType.Plus => $"{JassSymbol.PlusSign}",
-                UnaryOperatorType.Minus => $"{JassSymbol.MinusSign}",
+                UnaryOperatorType.Plus => JassSymbol.Plus,
+                UnaryOperatorType.Minus => JassSymbol.Minus,
                 UnaryOperatorType.Not => JassKeyword.Not,
 
                 _ => throw new InvalidEnumArgumentException(nameof(unaryOperator), (int)unaryOperator, typeof(UnaryOperatorType)),

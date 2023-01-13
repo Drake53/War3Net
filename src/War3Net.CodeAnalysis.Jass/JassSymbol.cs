@@ -11,26 +11,47 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassSymbol
     {
-        public const char LineFeed = '\n';
-        public const char CarriageReturn = '\r';
-        public const char ExclamationMark = '!';
-        public const char QuotationMark = '"';
-        public const char DollarSign = '$';
-        public const char Apostrophe = '\'';
-        public const char LeftParenthesis = '(';
-        public const char RightParenthesis = ')';
-        public const char Asterisk = '*';
-        public const char PlusSign = '+';
-        public const char Comma = ',';
-        public const char MinusSign = '-';
-        public const char FullStop = '.';
-        public const char Slash = '/';
-        public const char Zero = '0';
-        public const char LessThanSign = '<';
-        public const char EqualsSign = '=';
-        public const char GreaterThanSign = '>';
-        public const char LeftSquareBracket = '[';
-        public const char RightSquareBracket = ']';
-        public const char X = 'x';
+        public const char LineFeedChar = '\n';
+        public const char CarriageReturnChar = '\r';
+        public const char ExclamationChar = '!';
+        public const char DoubleQuoteChar = '"';
+        public const char DollarChar = '$';
+        public const char SingleQuoteChar = '\'';
+        public const char OpenParenChar = '(';
+        public const char CloseParenChar = ')';
+        public const char AsteriskChar = '*';
+        public const char PlusChar = '+';
+        public const char CommaChar = ',';
+        public const char MinusChar = '-';
+        public const char DotChar = '.';
+        public const char SlashChar = '/';
+        public const char ZeroChar = '0';
+        public const char LessThanChar = '<';
+        public const char EqualsChar = '=';
+        public const char GreaterThanChar = '>';
+        public const char OpenBracketChar = '[';
+        public const char CloseBracketChar = ']';
+        public const char XChar = 'x';
+
+        public const string Dollar = "$";
+        public const string OpenParen = "(";
+        public const string CloseParen = ")";
+        public const string Asterisk = "*";
+        public const string Plus = "+";
+        public const string Comma = ",";
+        public const string Minus = "-";
+        public const string Dot = ".";
+        public const string Slash = "/";
+        public const string LessThan = "<";
+        public new const string Equals = "=";
+        public const string GreaterThan = ">";
+        public const string OpenBracket = "[";
+        public const string CloseBracket = "]";
+
+        public const string SlashSlash = "//";
+        public const string ExclamationEquals = "!=";
+        public const string LessThanEquals = "<=";
+        public const string GreaterThanEquals = ">=";
+        public const string EqualsEquals = "==";
     }
 }

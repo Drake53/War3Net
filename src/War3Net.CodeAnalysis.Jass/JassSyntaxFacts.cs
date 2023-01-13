@@ -14,8 +14,8 @@ namespace War3Net.CodeAnalysis.Jass
         public static bool IsWhitespaceCharacter(char ch)
         {
             return char.IsWhiteSpace(ch)
-                && ch != JassSymbol.CarriageReturn
-                && ch != JassSymbol.LineFeed;
+                && ch != JassSymbol.CarriageReturnChar
+                && ch != JassSymbol.LineFeedChar;
         }
 
         /// <summary>
