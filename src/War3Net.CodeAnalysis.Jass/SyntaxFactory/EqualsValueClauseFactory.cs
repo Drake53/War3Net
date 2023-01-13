@@ -1,20 +1,21 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="FourCCLiteralExpressionFactory.cs" company="Drake53">
+// <copyright file="EqualsValueClauseFactory.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassFourCCLiteralExpressionSyntax FourCCLiteralExpression(int value)
+        public static JassEqualsValueClauseSyntax EqualsValueClause(JassExpressionSyntax expression)
         {
-            return new JassFourCCLiteralExpressionSyntax(value.InvertEndianness());
+            return new JassEqualsValueClauseSyntax(
+                Token(JassSyntaxKind.EqualsToken),
+                expression);
         }
     }
 }

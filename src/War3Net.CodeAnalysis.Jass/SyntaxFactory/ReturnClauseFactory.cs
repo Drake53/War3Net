@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="VariableReferenceFactory.cs" company="Drake53">
+// <copyright file="ReturnClauseFactory.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassVariableReferenceExpressionSyntax VariableReferenceExpression(string name)
+        public static JassReturnClauseSyntax ReturnClause(JassTypeSyntax returnType)
         {
-            return new JassVariableReferenceExpressionSyntax(ParseIdentifierName(name));
+            return new JassReturnClauseSyntax(
+                Token(JassSyntaxKind.ReturnsKeyword),
+                returnType);
         }
     }
 }

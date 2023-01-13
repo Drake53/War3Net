@@ -14,17 +14,21 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassFunctionDeclaratorSyntax FunctionDeclarator(string name)
         {
             return new JassFunctionDeclaratorSyntax(
+                null,
+                Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name),
-                JassParameterListSyntax.Empty,
-                JassTypeSyntax.Nothing);
+                JassEmptyParameterListSyntax.Value,
+                ReturnClause(JassTypeSyntax.Nothing));
         }
 
         public static JassFunctionDeclaratorSyntax ConditionFunctionDeclarator(string name)
         {
             return new JassFunctionDeclaratorSyntax(
+                null,
+                Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name),
-                JassParameterListSyntax.Empty,
-                JassTypeSyntax.Boolean);
+                JassEmptyParameterListSyntax.Value,
+                ReturnClause(JassTypeSyntax.Boolean));
         }
     }
 }

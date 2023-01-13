@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass
                 arguments);
         }
 
-        public static JassInvocationExpressionSyntax InvocationExpression(string name, params IExpressionSyntax[] arguments)
+        public static JassInvocationExpressionSyntax InvocationExpression(string name, params JassExpressionSyntax[] arguments)
         {
             return new JassInvocationExpressionSyntax(
                 ParseIdentifierName(name),

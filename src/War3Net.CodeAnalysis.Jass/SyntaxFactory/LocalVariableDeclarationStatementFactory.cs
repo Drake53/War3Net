@@ -14,26 +14,39 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassVariableDeclaratorSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
                     type,
-                    ParseIdentifierName(name),
-                    null));
+                    ParseIdentifierName(name)));
         }
 
-        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, IExpressionSyntax value)
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, JassExpressionSyntax value)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassVariableDeclaratorSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
                     type,
                     ParseIdentifierName(name),
-                    new JassEqualsValueClauseSyntax(value)));
+                    EqualsValueClause(value)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    type,
+                    ParseIdentifierName(name),
+                    value));
         }
 
         public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(JassTypeSyntax type, string name)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassArrayDeclaratorSyntax(
-                    type, ParseIdentifierName(name)));
+                Token(JassSyntaxKind.LocalKeyword),
+                ArrayDeclarator(
+                    type,
+                    ParseIdentifierName(name)));
         }
     }
 }

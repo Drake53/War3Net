@@ -11,29 +11,43 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassGlobalDeclarationSyntax GlobalDeclaration(JassTypeSyntax type, string name)
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(JassTypeSyntax type, string name)
         {
-            return new JassGlobalDeclarationSyntax(
-                new JassVariableDeclaratorSyntax(
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
                     type,
-                    ParseIdentifierName(name),
-                    null));
+                    ParseIdentifierName(name)));
         }
 
-        public static JassGlobalDeclarationSyntax GlobalDeclaration(JassTypeSyntax type, string name, IExpressionSyntax value)
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(JassTypeSyntax type, string name, JassExpressionSyntax value)
         {
-            return new JassGlobalDeclarationSyntax(
-                new JassVariableDeclaratorSyntax(
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
                     type,
                     ParseIdentifierName(name),
-                    new JassEqualsValueClauseSyntax(value)));
+                    EqualsValueClause(value)));
         }
 
-        public static JassGlobalDeclarationSyntax GlobalArrayDeclaration(JassTypeSyntax type, string name)
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(JassTypeSyntax type, string name, JassEqualsValueClauseSyntax value)
         {
-            return new JassGlobalDeclarationSyntax(
-                new JassArrayDeclaratorSyntax(
-                    type, ParseIdentifierName(name)));
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    type,
+                    ParseIdentifierName(name),
+                    value));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalArrayDeclaration(JassTypeSyntax type, string name)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                ArrayDeclarator(
+                    type,
+                    ParseIdentifierName(name)));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalDeclaration(JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            return new JassGlobalVariableDeclarationSyntax(declarator);
         }
     }
 }

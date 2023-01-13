@@ -11,9 +11,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassParenthesizedExpressionSyntax ParenthesizedExpression(IExpressionSyntax expression)
+        public static JassParenthesizedExpressionSyntax ParenthesizedExpression(JassExpressionSyntax expression)
         {
-            return new JassParenthesizedExpressionSyntax(expression);
+            return new JassParenthesizedExpressionSyntax(
+                Token(JassSyntaxKind.OpenParenToken),
+                expression,
+                Token(JassSyntaxKind.CloseParenToken));
         }
     }
 }

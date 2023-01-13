@@ -11,35 +11,39 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
                 null,
-                new JassEqualsValueClauseSyntax(value));
+                EqualsValueClause(value));
         }
 
         public static JassSetStatementSyntax SetStatement(string name, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
                 null,
                 value);
         }
 
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax indexer, IExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
-                indexer,
-                new JassEqualsValueClauseSyntax(value));
+                ElementAccessClause(elementAccessExpression),
+                EqualsValueClause(value));
         }
 
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax indexer, JassEqualsValueClauseSyntax value)
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
-                indexer,
+                ElementAccessClause(elementAccessExpression),
                 value);
         }
     }

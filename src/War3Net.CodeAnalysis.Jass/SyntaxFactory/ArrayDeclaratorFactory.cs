@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="FunctionReferenceExpressionFactory.cs" company="Drake53">
+// <copyright file="ArrayDeclaratorFactory.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,11 +11,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassFunctionReferenceExpressionSyntax FunctionReferenceExpression(string name)
+        public static JassArrayDeclaratorSyntax ArrayDeclarator(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
-            return new JassFunctionReferenceExpressionSyntax(
-                Token(JassSyntaxKind.FunctionKeyword),
-                ParseIdentifierName(name));
+            return new JassArrayDeclaratorSyntax(
+                type,
+                Token(JassSyntaxKind.ArrayKeyword),
+                identifierName);
         }
     }
 }

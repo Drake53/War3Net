@@ -11,11 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(string name, IExpressionSyntax indexer)
+        public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(string name, JassExpressionSyntax elementAccessExpression)
         {
             return new JassArrayReferenceExpressionSyntax(
                 ParseIdentifierName(name),
-                indexer);
+                ElementAccessClause(elementAccessExpression));
         }
     }
 }

@@ -14,13 +14,15 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassCallStatementSyntax CallStatement(string name, JassArgumentListSyntax arguments)
         {
             return new JassCallStatementSyntax(
+                Token(JassSyntaxKind.CallKeyword),
                 ParseIdentifierName(name),
                 arguments);
         }
 
-        public static JassCallStatementSyntax CallStatement(string name, params IExpressionSyntax[] arguments)
+        public static JassCallStatementSyntax CallStatement(string name, params JassExpressionSyntax[] arguments)
         {
             return new JassCallStatementSyntax(
+                Token(JassSyntaxKind.CallKeyword),
                 ParseIdentifierName(name),
                 ArgumentList(arguments));
         }
