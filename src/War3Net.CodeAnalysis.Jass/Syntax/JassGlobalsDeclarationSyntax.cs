@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassGlobalsDeclarationSyntax(
             JassSyntaxToken globalsToken,
-            ImmutableArray<JassGlobalVariableDeclarationSyntax> globals,
+            ImmutableArray<JassGlobalDeclarationSyntax> globals,
             JassSyntaxToken endGlobalsToken)
         {
             GlobalsToken = globalsToken;
@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken GlobalsToken { get; }
 
-        public ImmutableArray<JassGlobalVariableDeclarationSyntax> Globals { get; }
+        public ImmutableArray<JassGlobalDeclarationSyntax> Globals { get; }
 
         public JassSyntaxToken EndGlobalsToken { get; }
 
