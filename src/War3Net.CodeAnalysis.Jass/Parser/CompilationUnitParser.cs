@@ -9,9 +9,9 @@ using System.Collections.Immutable;
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -19,12 +19,17 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassCompilationUnitSyntax> GetCompilationUnitParser(
-            Parser<char, ITopLevelDeclarationSyntax> declarationParser,
-            Parser<char, string> commentStringParser,
-            Parser<char, Unit> newlineParser)
+            Parser<char, JassTopLevelDeclarationSyntax> declarationParser,
+            Parser<char, JassSyntaxTriviaList> leadingTriviaParser)
         {
-            return declarationParser.Before(commentStringParser.Optional().Then(newlineParser.Or(Lookahead(End)))).Many()
-                .Select(declarations => new JassCompilationUnitSyntax(declarations.ToImmutableArray()));
+            return declarationParser.UntilWithLeading(
+                leadingTriviaParser,
+                leadingTriviaParser,
+                End,
+                (leadingTrivia, declaration) => declaration.WithLeadingTrivia(leadingTrivia),
+                (firstTrivia, declarations, lastTrivia, _) => new JassCompilationUnitSyntax(
+                    declarations.ToImmutableArray(),
+                    new JassSyntaxToken(lastTrivia, JassSyntaxKind.EndOfFileToken, string.Empty, JassSyntaxTriviaList.Empty)).WithLeadingTrivia(firstTrivia));
         }
     }
 }

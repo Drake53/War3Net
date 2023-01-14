@@ -7,15 +7,18 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetNullLiteralExpressionParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassExpressionSyntax> GetNullLiteralExpressionParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Keyword.Null.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassNullLiteralExpressionSyntax.Value)
+            return Keyword.Null.AsToken(triviaParser, JassSyntaxKind.NullKeyword)
+                .Map(token => (JassExpressionSyntax)new JassLiteralExpressionSyntax(token))
                 .Labelled("null literal");
         }
     }

@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -15,13 +17,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetInvocationExpressionParser(
-            Parser<char, Unit> whitespaceParser,
-            Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser)
+        internal static Parser<char, Func<JassIdentifierNameSyntax, JassExpressionSyntax>> GetInvocationExpressionParser(
+            Parser<char, JassArgumentListSyntax> argumentListParser)
         {
-            return Try(identifierNameParser.Before(Symbol.LeftParenthesis.Then(whitespaceParser)))
-                .Then(GetArgumentListParser(whitespaceParser, expressionParser).Before(Symbol.RightParenthesis.Then(whitespaceParser)), (id, arguments) => (IExpressionSyntax)new JassInvocationExpressionSyntax(id, arguments));
+            return Map<char, JassArgumentListSyntax, Func<JassIdentifierNameSyntax, JassExpressionSyntax>>(
+                (argumentList) => identifierName => new JassInvocationExpressionSyntax(
+                    identifierName,
+                    argumentList),
+                argumentListParser);
         }
     }
 }

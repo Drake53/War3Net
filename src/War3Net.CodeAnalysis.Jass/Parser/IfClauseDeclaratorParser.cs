@@ -1,5 +1,5 @@
-// ------------------------------------------------------------------------------
-// <copyright file="ExitStatementParser.cs" company="Drake53">
+﻿// ------------------------------------------------------------------------------
+// <copyright file="IfClauseDeclaratorParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,18 +16,19 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassStatementSyntax> GetExitStatementParser(
+        internal static Parser<char, JassIfClauseDeclaratorSyntax> GetIfClauseDeclaratorParser(
             Parser<char, JassExpressionSyntax> expressionParser,
             Parser<char, JassSyntaxTriviaList> triviaParser,
             Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
             return Map(
-                (exitWhenToken, expression, trailingTrivia) => (JassStatementSyntax)new JassExitStatementSyntax(
-                    exitWhenToken,
-                    expression.AppendTrivia(trailingTrivia)),
-                Keyword.ExitWhen.AsToken(triviaParser, JassSyntaxKind.ExitWhenKeyword),
+                (ifToken, condition, thenToken) => new JassIfClauseDeclaratorSyntax(
+                    ifToken,
+                    condition,
+                    thenToken),
+                Keyword.If.AsToken(triviaParser, JassSyntaxKind.IfKeyword),
                 expressionParser,
-                trailingTriviaParser);
+                Keyword.Then.AsToken(trailingTriviaParser, JassSyntaxKind.ThenKeyword));
         }
     }
 }

@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="CallStatementParser.cs" company="Drake53">
+// <copyright file="ReturnClauseParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,20 +16,17 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassStatementSyntax> GetCallStatementParser(
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, JassArgumentListSyntax> argumentListParser,
+        internal static Parser<char, JassReturnClauseSyntax> GetReturnClauseParser(
+            Parser<char, JassTypeSyntax> typeParser,
             Parser<char, JassSyntaxTriviaList> triviaParser,
             Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
             return Map(
-                (callToken, identifierName, argumentList, trailingTrivia) => (JassStatementSyntax)new JassCallStatementSyntax(
-                    callToken,
-                    identifierName,
-                    argumentList.AppendTrivia(trailingTrivia)),
-                Keyword.Call.AsToken(triviaParser, JassSyntaxKind.CallKeyword),
-                identifierNameParser,
-                argumentListParser,
+                (returnsToken, type, trailingTrivia) => new JassReturnClauseSyntax(
+                    returnsToken,
+                    type.AppendTrivia(trailingTrivia)),
+                Keyword.Returns.AsToken(triviaParser, JassSyntaxKind.ReturnsKeyword),
+                typeParser,
                 trailingTriviaParser);
         }
     }

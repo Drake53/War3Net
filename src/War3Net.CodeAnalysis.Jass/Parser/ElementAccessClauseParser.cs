@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="ParenthesizedExpressionParser.cs" company="Drake53">
+// <copyright file="ElementAccessClauseParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,18 +16,18 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassExpressionSyntax> GetParenthesizedExpressionParser(
+        internal static Parser<char, JassElementAccessClauseSyntax> GetElementAccessClauseParser(
             Parser<char, JassSyntaxTriviaList> triviaParser,
             Parser<char, JassExpressionSyntax> expressionParser)
         {
             return Map(
-                (openParenToken, expression, closeParenToken) => (JassExpressionSyntax)new JassParenthesizedExpressionSyntax(
-                    openParenToken,
+                (openBracketToken, expression, closeBracketToken) => new JassElementAccessClauseSyntax(
+                    openBracketToken,
                     expression,
-                    closeParenToken),
-                Symbol.OpenParen.AsToken(triviaParser, JassSyntaxKind.OpenParenToken, JassSymbol.OpenParen),
+                    closeBracketToken),
+                Symbol.OpenBracket.AsToken(triviaParser, JassSyntaxKind.OpenBracketToken, JassSymbol.OpenBracket),
                 expressionParser,
-                Symbol.CloseParen.AsToken(triviaParser, JassSyntaxKind.CloseParenToken, JassSymbol.CloseParen));
+                Symbol.CloseBracket.AsToken(triviaParser, JassSyntaxKind.CloseBracketToken, JassSymbol.CloseBracket));
         }
     }
 }

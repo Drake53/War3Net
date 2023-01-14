@@ -7,16 +7,22 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
+
+using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetBooleanLiteralExpressionParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassExpressionSyntax> GetBooleanLiteralExpressionParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Keyword.True.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.True)
-                .Or(Keyword.False.Then(whitespaceParser).ThenReturn<IExpressionSyntax>(JassBooleanLiteralExpressionSyntax.False));
+            return OneOf(
+                Keyword.True.AsToken(triviaParser, JassSyntaxKind.TrueKeyword),
+                Keyword.False.AsToken(triviaParser, JassSyntaxKind.FalseKeyword))
+                .Select(token => (JassExpressionSyntax)new JassLiteralExpressionSyntax(token));
         }
     }
 }

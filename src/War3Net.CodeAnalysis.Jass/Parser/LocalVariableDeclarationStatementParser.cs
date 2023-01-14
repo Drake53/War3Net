@@ -7,18 +7,27 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
+
+using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassLocalVariableDeclarationStatementSyntax> GetLocalVariableDeclarationStatementParser(
-            Parser<char, IVariableDeclaratorSyntax> variableDeclaratorParser,
-            Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassStatementSyntax> GetLocalVariableDeclarationStatementParser(
+            Parser<char, JassVariableOrArrayDeclaratorSyntax> variableOrArrayDeclaratorParser,
+            Parser<char, JassSyntaxTriviaList> triviaParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
-            return Keyword.Local.Then(whitespaceParser).Then(variableDeclaratorParser)
-                .Select(declarator => new JassLocalVariableDeclarationStatementSyntax(declarator));
+            return Map(
+                (localToken, declarator, trailingTrivia) => (JassStatementSyntax)new JassLocalVariableDeclarationStatementSyntax(
+                    localToken,
+                    declarator.AppendTrivia(trailingTrivia)),
+                Keyword.Local.AsToken(triviaParser, JassSyntaxKind.LocalKeyword),
+                variableOrArrayDeclaratorParser,
+                trailingTriviaParser);
         }
     }
 }

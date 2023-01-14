@@ -9,6 +9,8 @@ using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
+using static Pidgin.Parser;
+
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
@@ -17,7 +19,10 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
             Parser<char, JassTypeSyntax> typeParser)
         {
-            return typeParser.Then(identifierNameParser, (type, id) => new JassParameterSyntax(type, id));
+            return Map(
+                (type, identifierName) => new JassParameterSyntax(type, identifierName),
+                typeParser,
+                identifierNameParser.Labelled("parameter identifier name"));
         }
     }
 }

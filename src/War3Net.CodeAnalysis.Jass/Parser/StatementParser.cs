@@ -15,39 +15,39 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IStatementSyntax> GetStatementParser(
-            Parser<char, JassEmptySyntax> emptyParser,
-            Parser<char, JassCommentSyntax> commentParser,
-            Parser<char, JassLocalVariableDeclarationStatementSyntax> localVariableDeclarationStatementParser,
-            Parser<char, JassExitStatementSyntax> exitStatementParser,
-            Parser<char, JassReturnStatementSyntax> returnStatementParser,
-            Parser<char, JassSetStatementSyntax> setStatementParser,
-            Parser<char, JassCallStatementSyntax> callStatementParser,
-            Parser<char, IExpressionSyntax> expressionParser,
-            Parser<char, Unit> whitespaceParser,
-            Parser<char, Unit> endOfLineParser)
+        internal static Parser<char, JassStatementSyntax> GetStatementParser(
+            Parser<char, JassStatementSyntax> localVariableDeclarationStatementParser,
+            Parser<char, JassStatementSyntax> exitStatementParser,
+            Parser<char, JassStatementSyntax> returnStatementParser,
+            Parser<char, JassStatementSyntax> setStatementParser,
+            Parser<char, JassStatementSyntax> callStatementParser,
+            Parser<char, JassIfClauseDeclaratorSyntax> ifClauseDeclaratorParser,
+            Parser<char, JassElseIfClauseDeclaratorSyntax> elseIfClauseDeclaratorParser,
+            Parser<char, JassSyntaxTriviaList> triviaParser,
+            Parser<char, JassSyntaxTriviaList> leadingTriviaParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
-            var setParser = setStatementParser.Cast<IStatementSyntax>();
-            var callParser = callStatementParser.Cast<IStatementSyntax>();
-
-            return Rec<char, IStatementSyntax>(
+            return Rec<char, JassStatementSyntax>(
                 statementParser =>
                 {
-                    var statementListParser = GetStatementListParser(
-                        statementParser,
-                        endOfLineParser);
+                    var ifStatementParser = GetIfStatementParser(statementParser, ifClauseDeclaratorParser, elseIfClauseDeclaratorParser, leadingTriviaParser, trailingTriviaParser);
+                    var loopStatementParser = GetLoopStatementParser(statementParser, leadingTriviaParser, trailingTriviaParser);
 
                     return OneOf(
-                        emptyParser.Cast<IStatementSyntax>(),
-                        commentParser.Cast<IStatementSyntax>(),
-                        localVariableDeclarationStatementParser.Cast<IStatementSyntax>(),
-                        setParser,
-                        callParser,
-                        GetIfStatementParser(expressionParser, statementListParser, whitespaceParser, endOfLineParser),
-                        GetLoopStatementParser(statementListParser, whitespaceParser, endOfLineParser),
-                        exitStatementParser.Cast<IStatementSyntax>(),
-                        returnStatementParser.Cast<IStatementSyntax>(),
-                        GetDebugStatementParser(expressionParser, statementListParser, setParser, callParser, whitespaceParser, endOfLineParser));
+                        localVariableDeclarationStatementParser,
+                        setStatementParser,
+                        callStatementParser,
+                        ifStatementParser,
+                        loopStatementParser,
+                        exitStatementParser,
+                        returnStatementParser,
+                        GetDebugStatementParser(
+                            setStatementParser,
+                            callStatementParser,
+                            ifStatementParser,
+                            loopStatementParser,
+                            triviaParser,
+                            trailingTriviaParser));
                 });
         }
     }

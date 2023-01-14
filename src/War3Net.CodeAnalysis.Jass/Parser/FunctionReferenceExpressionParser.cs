@@ -7,18 +7,25 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
+
+using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetFunctionReferenceExpressionParser(
+        internal static Parser<char, JassExpressionSyntax> GetFunctionReferenceExpressionParser(
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, Unit> whitespaceParser)
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Keyword.Function.Then(whitespaceParser).Then(identifierNameParser)
-                .Select<IExpressionSyntax>(name => new JassFunctionReferenceExpressionSyntax(name))
+            return Map(
+                (functionToken, identifierName) => (JassExpressionSyntax)new JassFunctionReferenceExpressionSyntax(
+                    functionToken,
+                    identifierName),
+                Keyword.Function.AsToken(triviaParser, JassSyntaxKind.FunctionKeyword),
+                identifierNameParser)
                 .Labelled("function reference");
         }
     }

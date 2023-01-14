@@ -15,17 +15,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IGlobalDeclarationSyntax> GetGlobalDeclarationParser(
-            Parser<char, JassEmptySyntax> emptyParser,
-            Parser<char, JassCommentSyntax> commentParser,
-            Parser<char, JassGlobalDeclarationSyntax> constantDeclarationParser,
-            Parser<char, JassGlobalDeclarationSyntax> variableDeclarationParser)
+        internal static Parser<char, JassGlobalDeclarationSyntax> GetGlobalDeclarationParser(
+            Parser<char, JassGlobalDeclarationSyntax> globalConstantDeclarationParser,
+            Parser<char, JassGlobalDeclarationSyntax> globalVariableDeclarationParser)
         {
             return OneOf(
-                emptyParser.Cast<IGlobalDeclarationSyntax>(),
-                commentParser.Cast<IGlobalDeclarationSyntax>(),
-                constantDeclarationParser.Cast<IGlobalDeclarationSyntax>(),
-                variableDeclarationParser.Cast<IGlobalDeclarationSyntax>());
+                globalConstantDeclarationParser,
+                globalVariableDeclarationParser);
         }
     }
 }

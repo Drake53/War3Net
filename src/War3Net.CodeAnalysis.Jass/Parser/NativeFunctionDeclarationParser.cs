@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
@@ -15,12 +18,23 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassNativeFunctionDeclarationSyntax> GetNativeFunctionDeclarationParser(
-            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
-            Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, Func<Maybe<JassSyntaxToken>, JassTopLevelDeclarationSyntax>> GetNativeFunctionDeclarationParser(
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
+            Parser<char, JassParameterListOrEmptyParameterListSyntax> parameterListParser,
+            Parser<char, JassReturnClauseSyntax> returnClauseParser,
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Try(Keyword.Constant.Then(whitespaceParser).Optional().Then(Keyword.Native.Then(whitespaceParser))).Then(functionDeclaratorParser)
-                .Select(functionDeclaration => new JassNativeFunctionDeclarationSyntax(functionDeclaration));
+            return Map<char, JassSyntaxToken, JassIdentifierNameSyntax, JassParameterListOrEmptyParameterListSyntax, JassReturnClauseSyntax, Func<Maybe<JassSyntaxToken>, JassTopLevelDeclarationSyntax>>(
+                (nativeToken, identifierName, parameterList, returnClause) => constantToken => new JassNativeFunctionDeclarationSyntax(
+                    constantToken.GetValueOrDefault(),
+                    nativeToken,
+                    identifierName,
+                    parameterList,
+                    returnClause),
+                Keyword.Native.AsToken(triviaParser, JassSyntaxKind.NativeKeyword),
+                identifierNameParser,
+                parameterListParser,
+                returnClauseParser);
         }
     }
 }

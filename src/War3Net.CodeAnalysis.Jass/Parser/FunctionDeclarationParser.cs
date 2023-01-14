@@ -5,26 +5,33 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Immutable;
+
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
-
-using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassFunctionDeclarationSyntax> GetFunctionDeclarationParser(
-            Parser<char, JassFunctionDeclaratorSyntax> functionDeclaratorParser,
-            Parser<char, JassStatementListSyntax> statementListParser,
-            Parser<char, Unit> whitespaceParser,
-            Parser<char, Unit> endOfLineParser)
+        internal static Parser<char, Func<Maybe<JassSyntaxToken>, JassTopLevelDeclarationSyntax>> GetFunctionDeclarationParser(
+            Parser<char, Func<Maybe<JassSyntaxToken>, JassFunctionDeclaratorSyntax>> functionDeclaratorParser,
+            Parser<char, JassStatementSyntax> statementParser,
+            Parser<char, JassSyntaxTriviaList> leadingTriviaParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
-            return Map(
-                (declarator, body) => new JassFunctionDeclarationSyntax(declarator, body),
-                Keyword.Constant.Then(whitespaceParser).Optional().Then(Keyword.Function.Then(whitespaceParser)).Then(functionDeclaratorParser).Before(endOfLineParser),
-                statementListParser.Before(Keyword.EndFunction.Then(whitespaceParser)));
+            return statementParser.UntilWithLeading<char, JassSyntaxTriviaList, Func<Maybe<JassSyntaxToken>, JassFunctionDeclaratorSyntax>, JassStatementSyntax, JassSyntaxToken, Func<Maybe<JassSyntaxToken>, JassTopLevelDeclarationSyntax>>(
+                leadingTriviaParser,
+                functionDeclaratorParser,
+                Keyword.EndFunction.AsToken(trailingTriviaParser, JassSyntaxKind.EndFunctionKeyword),
+                (leadingTrivia, statement) => statement.WithLeadingTrivia(leadingTrivia),
+                (declaratorFunc, statements, leadingTrivia, endFunctionToken) => constantToken => new JassFunctionDeclarationSyntax(
+                    declaratorFunc(constantToken),
+                    statements.ToImmutableArray(),
+                    endFunctionToken.WithLeadingTrivia(leadingTrivia)));
         }
     }
 }

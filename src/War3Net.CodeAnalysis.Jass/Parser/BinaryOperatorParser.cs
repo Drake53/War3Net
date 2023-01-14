@@ -7,6 +7,7 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
@@ -15,81 +16,93 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser(Parser<char, Unit> whitespaceParser)
+        //internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser(Parser<char, Unit> whitespaceParser)
+        //{
+        //    return OneOf(
+        //        GetBinaryAddOperatorParser(whitespaceParser),
+        //        GetBinarySubtractOperatorParser(whitespaceParser),
+        //        GetBinaryMultiplicationOperatorParser(whitespaceParser),
+        //        GetBinaryDivisionOperatorParser(whitespaceParser),
+        //        GetBinaryGreaterOrEqualOperatorParser(whitespaceParser),
+        //        GetBinaryLessOrEqualOperatorParser(whitespaceParser),
+        //        GetBinaryEqualsOperatorParser(whitespaceParser),
+        //        GetBinaryNotEqualsOperatorParser(whitespaceParser),
+        //        GetBinaryGreaterThanOperatorParser(whitespaceParser),
+        //        GetBinaryLessThanOperatorParser(whitespaceParser),
+        //        GetBinaryAndOperatorParser(whitespaceParser),
+        //        GetBinaryOrOperatorParser(whitespaceParser));
+        //}
+
+        internal static Parser<char, JassSyntaxToken> GetBinaryAddOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return OneOf(
-                GetBinaryAddOperatorParser(whitespaceParser),
-                GetBinarySubtractOperatorParser(whitespaceParser),
-                GetBinaryMultiplicationOperatorParser(whitespaceParser),
-                GetBinaryDivisionOperatorParser(whitespaceParser),
-                GetBinaryGreaterOrEqualOperatorParser(whitespaceParser),
-                GetBinaryLessOrEqualOperatorParser(whitespaceParser),
-                GetBinaryEqualsOperatorParser(whitespaceParser),
-                GetBinaryNotEqualsOperatorParser(whitespaceParser),
-                GetBinaryGreaterThanOperatorParser(whitespaceParser),
-                GetBinaryLessThanOperatorParser(whitespaceParser),
-                GetBinaryAndOperatorParser(whitespaceParser),
-                GetBinaryOrOperatorParser(whitespaceParser));
+            return Symbol.Plus.AsToken(triviaParser, JassSyntaxKind.PlusToken, JassSymbol.Plus);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryAddOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinarySubtractOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.PlusSign.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Add);
+            return Symbol.Minus.AsToken(triviaParser, JassSyntaxKind.MinusToken, JassSymbol.Minus);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinarySubtractOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryMultiplicationOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.MinusSign.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Subtract);
+            return Symbol.Asterisk.AsToken(triviaParser, JassSyntaxKind.AsteriskToken, JassSymbol.Asterisk);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryMultiplicationOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryDivisionOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.Asterisk.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Multiplication);
+            return Try(Symbol.Slash.Before(Not(Lookahead(Symbol.Slash)))).AsToken(triviaParser, JassSyntaxKind.SlashToken, JassSymbol.Slash);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryDivisionOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryGreaterOrEqualOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Try(Symbol.Slash.Then(Not(Lookahead(Symbol.Slash)))).Then(whitespaceParser).ThenReturn(BinaryOperatorType.Division);
+            return Try(Symbol.GreaterThanEquals).AsToken(triviaParser, JassSyntaxKind.GreaterThanEqualsToken);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterOrEqualOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryLessOrEqualOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Try(Symbol.GreaterOrEquals).Then(whitespaceParser).ThenReturn(BinaryOperatorType.GreaterOrEqual);
+            return Try(Symbol.LessThanEquals).AsToken(triviaParser, JassSyntaxKind.LessThanEqualsToken);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryLessOrEqualOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryEqualsOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Try(Symbol.LessOrEquals).Then(whitespaceParser).ThenReturn(BinaryOperatorType.LessOrEqual);
+            return Symbol.EqualsEquals.AsToken(triviaParser, JassSyntaxKind.EqualsEqualsToken);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryEqualsOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryNotEqualsOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.EqualsEquals.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Equals);
+            return Symbol.ExclamationEquals.AsToken(triviaParser, JassSyntaxKind.ExclamationEqualsToken);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryNotEqualsOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryGreaterThanOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.NotEquals.Then(whitespaceParser).ThenReturn(BinaryOperatorType.NotEquals);
+            return Symbol.GreaterThan.AsToken(triviaParser, JassSyntaxKind.GreaterThanToken, JassSymbol.GreaterThan);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryGreaterThanOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryLessThanOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.GreaterThanSign.Then(whitespaceParser).ThenReturn(BinaryOperatorType.GreaterThan);
+            return Symbol.LessThan.AsToken(triviaParser, JassSyntaxKind.LessThanToken, JassSymbol.LessThan);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryLessThanOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryAndOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.LessThanSign.Then(whitespaceParser).ThenReturn(BinaryOperatorType.LessThan);
+            return Keyword.And.AsToken(triviaParser, JassSyntaxKind.AndKeyword);
         }
 
-        internal static Parser<char, BinaryOperatorType> GetBinaryAndOperatorParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassSyntaxToken> GetBinaryOrOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Keyword.And.Then(whitespaceParser).ThenReturn(BinaryOperatorType.And);
-        }
-
-        internal static Parser<char, BinaryOperatorType> GetBinaryOrOperatorParser(Parser<char, Unit> whitespaceParser)
-        {
-            return Keyword.Or.Then(whitespaceParser).ThenReturn(BinaryOperatorType.Or);
+            return Keyword.Or.AsToken(triviaParser, JassSyntaxKind.OrKeyword);
         }
     }
 }
