@@ -42,6 +42,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const string Minus = "-";
         public const string Dot = ".";
         public const string Slash = "/";
+        public const string Zero = "0";
         public const string LessThan = "<";
         public new const string Equals = "=";
         public const string GreaterThan = ">";

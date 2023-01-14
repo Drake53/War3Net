@@ -13,45 +13,50 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static IExpressionSyntax LiteralExpression(string? value)
+        public static JassExpressionSyntax LiteralExpression(string? value)
         {
-            return value is null ? JassNullLiteralExpressionSyntax.Value : new JassStringLiteralExpressionSyntax(value);
+            return LiteralExpression(value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, value));
         }
 
-        public static IExpressionSyntax LiteralExpression(int value)
+        public static JassExpressionSyntax LiteralExpression(int value)
         {
             if (value == 0)
             {
-                return new JassOctalLiteralExpressionSyntax(0);
+                return LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, JassSymbol.Zero));
             }
 
             if (value < 0)
             {
-                return UnaryMinusExpression(new JassDecimalLiteralExpressionSyntax(-value));
+                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, (-value).ToString(CultureInfo.InvariantCulture))));
             }
 
-            return new JassDecimalLiteralExpressionSyntax(value);
+            return LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture)));
         }
 
-        public static IExpressionSyntax LiteralExpression(float value, int precision = 1)
+        public static JassExpressionSyntax LiteralExpression(float value, int precision = 1)
         {
-            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture).Split('.', 2);
-            if (precision == 0 && valueAsString.Length == 1)
+            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture);
+            if (precision == 0)
             {
-                valueAsString = new string[] { valueAsString[0], string.Empty };
+                valueAsString += JassSymbol.Dot;
             }
 
-            if (valueAsString[0].StartsWith('-'))
+            if (valueAsString.StartsWith(JassSymbol.MinusChar))
             {
-                return UnaryMinusExpression(new JassRealLiteralExpressionSyntax(valueAsString[0].TrimStart('-'), valueAsString[1]));
+                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.RealLiteralToken, valueAsString.TrimStart(JassSymbol.MinusChar))));
             }
 
-            return new JassRealLiteralExpressionSyntax(valueAsString[0], valueAsString[1]);
+            return LiteralExpression(Token(JassSyntaxKind.RealLiteralToken, valueAsString));
         }
 
-        public static IExpressionSyntax LiteralExpression(bool value)
+        public static JassExpressionSyntax LiteralExpression(bool value)
         {
-            return value ? JassBooleanLiteralExpressionSyntax.True : JassBooleanLiteralExpressionSyntax.False;
+            return LiteralExpression(Token(value ? JassSyntaxKind.TrueKeyword : JassSyntaxKind.FalseKeyword));
+        }
+
+        private static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
+        {
+            return new JassLiteralExpressionSyntax(token);
         }
     }
 }

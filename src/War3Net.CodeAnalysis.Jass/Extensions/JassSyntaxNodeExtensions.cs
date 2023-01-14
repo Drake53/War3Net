@@ -9,9 +9,9 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
 {
-    internal static class JassSyntaxNodeExtensions
+    public static class JassSyntaxNodeExtensions
     {
-        internal static bool NullableEquivalentTo(this JassSyntaxNode? objA, JassSyntaxNode? objB)
+        public static bool NullableEquivalentTo(this JassSyntaxNode? objA, JassSyntaxNode? objB)
         {
             return ReferenceEquals(objA, objB) || objA?.IsEquivalentTo(objB) == true;
         }

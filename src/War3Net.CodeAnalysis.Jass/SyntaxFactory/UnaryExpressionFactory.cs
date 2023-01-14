@@ -11,19 +11,25 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassUnaryExpressionSyntax UnaryPlusExpression(IExpressionSyntax expression)
+        public static JassUnaryExpressionSyntax UnaryPlusExpression(JassExpressionSyntax expression)
         {
-            return new JassUnaryExpressionSyntax(UnaryOperatorType.Plus, expression);
+            return new JassUnaryExpressionSyntax(
+                Token(JassSyntaxKind.PlusToken),
+                expression);
         }
 
-        public static JassUnaryExpressionSyntax UnaryMinusExpression(IExpressionSyntax expression)
+        public static JassUnaryExpressionSyntax UnaryMinusExpression(JassExpressionSyntax expression)
         {
-            return new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, expression);
+            return new JassUnaryExpressionSyntax(
+                Token(JassSyntaxKind.MinusToken),
+                expression);
         }
 
-        public static JassUnaryExpressionSyntax UnaryNotExpression(IExpressionSyntax expression)
+        public static JassUnaryExpressionSyntax UnaryNotExpression(JassExpressionSyntax expression)
         {
-            return new JassUnaryExpressionSyntax(UnaryOperatorType.Not, expression);
+            return new JassUnaryExpressionSyntax(
+                Token(JassSyntaxKind.NotKeyword),
+                expression);
         }
     }
 }

@@ -11,69 +11,100 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassBinaryExpressionSyntax BinaryAdditionExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryAdditionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Add, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.PlusToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinarySubtractionExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinarySubtractionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Subtract, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.MinusToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryMultiplicationExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryMultiplicationExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Multiplication, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.AsteriskToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryDivisionExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryDivisionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Division, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.SlashToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryGreaterThanExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryGreaterThanExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.GreaterThan, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.GreaterThanToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryLessThanExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryLessThanExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.LessThan, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.LessThanToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryEqualsExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryEqualsExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Equals, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.EqualsToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryNotEqualsExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryNotEqualsExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.NotEquals, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.ExclamationEqualsToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryGreaterOrEqualExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryGreaterOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.GreaterOrEqual, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.GreaterThanEqualsToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryLessOrEqualExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryLessOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.LessOrEqual, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.LessThanEqualsToken),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryAndExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryAndExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.And, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.AndKeyword),
+                right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryOrExpression(IExpressionSyntax left, IExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryOrExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
-            return new JassBinaryExpressionSyntax(BinaryOperatorType.Or, left, right);
-        }
-
-        public static JassBinaryExpressionSyntax BinaryExpression(IExpressionSyntax left, IExpressionSyntax right, BinaryOperatorType @operator)
-        {
-            return new JassBinaryExpressionSyntax(@operator, left, right);
+            return new JassBinaryExpressionSyntax(
+                left,
+                Token(JassSyntaxKind.OrKeyword),
+                right);
         }
     }
 }
