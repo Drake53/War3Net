@@ -7,6 +7,7 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
@@ -16,13 +17,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, JassIdentifierNameSyntax> GetIdentifierNameParser(Parser<char, Unit> whitespaceParser)
+        internal static Parser<char, JassIdentifierNameSyntax> GetIdentifierNameParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
             return Try(Token(c => char.IsLetterOrDigit(c) || c == '_').AtLeastOnceString().Assert(value => !char.IsDigit(value[0])))
-                .Then(value => JassSyntaxFacts.IsValidIdentifier(value) && !JassKeyword.IsKeyword(value)
-                    ? Return(new JassIdentifierNameSyntax(value))
-                    : Fail<JassIdentifierNameSyntax>($"'{value}' is not a valid identifier name"))
-                .Before(whitespaceParser)
+                .Assert(JassSyntaxFacts.IsValidIdentifier, value => $"'{value}' is not a valid identifier name")
+                .AsToken(triviaParser, JassSyntaxKind.IdentifierToken)
+                .Map(token => new JassIdentifierNameSyntax(token))
                 .Labelled("identifier name");
         }
     }

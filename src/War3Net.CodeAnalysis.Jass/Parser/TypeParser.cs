@@ -16,18 +16,11 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassTypeSyntax> GetTypeParser(
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
-            Parser<char, Unit> whitespaceParser)
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser)
         {
-            return OneOf(
-                Keyword.Code.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Code),
-                Keyword.Handle.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Handle),
-                Keyword.Integer.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Integer),
-                Keyword.Real.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Real),
-                Keyword.Boolean.Then(whitespaceParser).ThenReturn(JassTypeSyntax.Boolean),
-                Keyword.String.Then(whitespaceParser).ThenReturn(JassTypeSyntax.String),
-                identifierNameParser.Map(id => new JassTypeSyntax(id)))
-                .Labelled("type");
+            return Map(
+                (identifierName) => new JassTypeSyntax(identifierName),
+                identifierNameParser);
         }
     }
 }

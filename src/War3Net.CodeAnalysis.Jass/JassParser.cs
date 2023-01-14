@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -19,191 +21,145 @@ namespace War3Net.CodeAnalysis.Jass
         private static readonly JassParser _parser = new JassParser();
 
         private readonly Parser<char, JassArgumentListSyntax> _argumentListParser;
-        private readonly Parser<char, BinaryOperatorType> _binaryOperatorParser;
-        private readonly Parser<char, JassCommentSyntax> _commentParser;
         private readonly Parser<char, JassCompilationUnitSyntax> _compilationUnitParser;
-        private readonly Parser<char, ITopLevelDeclarationSyntax> _declarationParser;
-        private readonly Parser<char, IDeclarationLineSyntax> _declarationLineParser;
-        private readonly Parser<char, IExpressionSyntax> _expressionParser;
-        private readonly Parser<char, JassFunctionDeclarationSyntax> _functionDeclarationParser;
-        private readonly Parser<char, IGlobalDeclarationSyntax> _globalDeclarationParser;
-        private readonly Parser<char, IGlobalLineSyntax> _globalLineParser;
+        private readonly Parser<char, JassExpressionSyntax> _expressionParser;
+        private readonly Parser<char, JassGlobalDeclarationSyntax> _globalDeclarationParser;
         private readonly Parser<char, JassIdentifierNameSyntax> _identifierNameParser;
-        private readonly Parser<char, JassParameterListSyntax> _parameterListParser;
-        private readonly Parser<char, IStatementSyntax> _statementParser;
-        private readonly Parser<char, IStatementLineSyntax> _statementLineParser;
+        private readonly Parser<char, JassParameterListOrEmptyParameterListSyntax> _parameterListParser;
+        private readonly Parser<char, JassStatementSyntax> _statementParser;
+        private readonly Parser<char, JassTopLevelDeclarationSyntax> _topLevelDeclarationParser;
         private readonly Parser<char, JassTypeSyntax> _typeParser;
-        private readonly Parser<char, UnaryOperatorType> _unaryOperatorParser;
 
         private JassParser()
         {
-            var whitespaceParser = GetWhitespaceParser();
-            var identifierNameParser = GetIdentifierNameParser(whitespaceParser);
-            var typeParser = GetTypeParser(identifierNameParser, whitespaceParser);
-            var expressionParser = GetExpressionParser(whitespaceParser, identifierNameParser);
-            var equalsValueClauseParser = GetEqualsValueClauseParser(whitespaceParser, expressionParser);
+            var whitespaceTriviaParser = GetWhitespaceTriviaParser();
+            var newlineTriviaParser = GetNewlineTriviaParser();
+            var optionalNewlineTriviaParser = GetOptionalNewlineTriviaParser();
+            var singleLineCommentTriviaParser = GetSingleLineCommentTriviaParser();
 
-            var argumentListParser = GetArgumentListParser(whitespaceParser, expressionParser);
-            var parameterListParser = GetParameterListParser(whitespaceParser, GetParameterParser(identifierNameParser, typeParser));
-            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, typeParser, whitespaceParser);
-            var variableDeclaratorParser = GetVariableDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser, whitespaceParser);
+            var simpleTriviaListParser = GetSimpleTriviaListParser(
+                whitespaceTriviaParser);
 
-            var commentStringParser = GetCommentStringParser();
-            var newLineParser = GetNewLineParser(whitespaceParser);
-            var endOfLineParser = GetEndOfLineParser(commentStringParser, newLineParser);
-            var emptyParser = GetEmptyParser();
-            var emptyLineParser = GetEmptyLineParser();
-            var commentParser = GetCommentParser(commentStringParser);
+            var leadingTriviaListParser = GetLeadingTriviaListParser(
+                whitespaceTriviaParser,
+                newlineTriviaParser,
+                singleLineCommentTriviaParser);
 
-            var setStatementParser = GetSetStatementParser(whitespaceParser, expressionParser, equalsValueClauseParser, identifierNameParser);
-            var callStatementParser = GetCallStatementParser(whitespaceParser, argumentListParser, identifierNameParser);
-            var exitStatementParser = GetExitStatementParser(expressionParser, whitespaceParser);
-            var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableDeclaratorParser, whitespaceParser);
-            var returnStatementParser = GetReturnStatementParser(expressionParser, whitespaceParser);
+            var trailingTriviaListParser = GetTrailingTriviaListParser(
+                whitespaceTriviaParser,
+                optionalNewlineTriviaParser,
+                singleLineCommentTriviaParser);
+
+            var identifierNameParser = GetIdentifierNameParser(simpleTriviaListParser);
+            var typeParser = GetTypeParser(identifierNameParser);
+
+            var expressionParser = GetExpressionParser(simpleTriviaListParser, identifierNameParser);
+            var equalsValueClauseParser = GetEqualsValueClauseParser(simpleTriviaListParser, expressionParser);
+
+            var parameterParser = GetParameterParser(identifierNameParser, typeParser);
+            var parameterListParser = GetParameterListParser(simpleTriviaListParser, parameterParser);
+            var argumentListParser = GetArgumentListParser(simpleTriviaListParser, expressionParser);
+            var returnClauseParser = GetReturnClauseParser(typeParser, simpleTriviaListParser, trailingTriviaListParser);
+            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, returnClauseParser, simpleTriviaListParser);
+            var variableOrArrayDeclaratorParser = GetVariableOrArrayDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser, simpleTriviaListParser);
+            var elementAccessClauseParser = GetElementAccessClauseParser(simpleTriviaListParser, expressionParser);
+
+            var setStatementParser = GetSetStatementParser(identifierNameParser, elementAccessClauseParser, equalsValueClauseParser, simpleTriviaListParser, trailingTriviaListParser);
+            var callStatementParser = GetCallStatementParser(identifierNameParser, argumentListParser, simpleTriviaListParser, trailingTriviaListParser);
+            var exitStatementParser = GetExitStatementParser(expressionParser, simpleTriviaListParser, trailingTriviaListParser);
+            var localVariableDeclarationStatementParser = GetLocalVariableDeclarationStatementParser(variableOrArrayDeclaratorParser, simpleTriviaListParser, trailingTriviaListParser);
+            var returnStatementParser = GetReturnStatementParser(expressionParser, simpleTriviaListParser, trailingTriviaListParser);
+
+            var ifClauseDeclaratorParser = GetIfClauseDeclaratorParser(expressionParser, simpleTriviaListParser, trailingTriviaListParser);
+            var elseIfClauseDeclaratorParser = GetElseIfClauseDeclaratorParser(expressionParser, simpleTriviaListParser, trailingTriviaListParser);
 
             var statementParser = GetStatementParser(
-                emptyParser,
-                commentParser,
                 localVariableDeclarationStatementParser,
                 exitStatementParser,
                 returnStatementParser,
                 setStatementParser,
                 callStatementParser,
-                expressionParser,
-                whitespaceParser,
-                endOfLineParser);
+                ifClauseDeclaratorParser,
+                elseIfClauseDeclaratorParser,
+                simpleTriviaListParser,
+                leadingTriviaListParser,
+                trailingTriviaListParser);
 
-            var statementLineParser = GetStatementLineParser(
-                emptyLineParser,
-                commentParser,
-                localVariableDeclarationStatementParser,
-                setStatementParser,
-                callStatementParser,
-                exitStatementParser,
-                returnStatementParser,
-                expressionParser,
-                whitespaceParser);
-
-            var constantDeclarationParser = GetConstantDeclarationParser(
+            var globalConstantDeclarationParser = GetGlobalConstantDeclarationParser(
                 equalsValueClauseParser,
                 identifierNameParser,
                 typeParser,
-                whitespaceParser);
+                simpleTriviaListParser);
 
-            var variableDeclarationParser = GetVariableDeclarationParser(
-                equalsValueClauseParser,
-                identifierNameParser,
-                typeParser,
-                whitespaceParser);
+            var globalVariableDeclarationParser = GetGlobalVariableDeclarationParser(
+                variableOrArrayDeclaratorParser);
 
             var globalDeclarationParser = GetGlobalDeclarationParser(
-                emptyParser,
-                commentParser,
-                constantDeclarationParser,
-                variableDeclarationParser);
-
-            var globalLineParser = GetGlobalLineParser(
-                emptyLineParser,
-                commentParser,
-                constantDeclarationParser,
-                variableDeclarationParser,
-                whitespaceParser);
-
-            var statementListParser = GetStatementListParser(
-                statementParser,
-                endOfLineParser);
+                globalConstantDeclarationParser,
+                globalVariableDeclarationParser);
 
             var functionDeclarationParser = GetFunctionDeclarationParser(
                 functionDeclaratorParser,
-                statementListParser,
-                whitespaceParser,
-                endOfLineParser);
+                statementParser,
+                leadingTriviaListParser,
+                trailingTriviaListParser);
 
             var typeDeclarationParser = GetTypeDeclarationParser(
                 identifierNameParser,
                 typeParser,
-                whitespaceParser);
+                simpleTriviaListParser);
 
             var nativeFunctionDeclarationParser = GetNativeFunctionDeclarationParser(
-                functionDeclaratorParser,
-                whitespaceParser);
+                identifierNameParser,
+                parameterListParser,
+                returnClauseParser,
+                simpleTriviaListParser);
 
-            var declarationParser = GetDeclarationParser(
-                emptyParser,
-                commentParser,
+            var topLevelDeclarationParser = GetTopLevelDeclarationParser(
                 typeDeclarationParser,
                 nativeFunctionDeclarationParser,
                 functionDeclarationParser,
-                globalDeclarationParser.Before(endOfLineParser),
-                whitespaceParser,
-                endOfLineParser);
-
-            var declarationLineParser = GetDeclarationLineParser(
-                emptyLineParser,
-                commentParser,
-                typeDeclarationParser,
-                nativeFunctionDeclarationParser,
-                functionDeclaratorParser,
-                whitespaceParser);
+                globalDeclarationParser,
+                simpleTriviaListParser,
+                leadingTriviaListParser,
+                trailingTriviaListParser);
 
             var compilationUnitParser = GetCompilationUnitParser(
-                declarationParser,
-                commentStringParser,
-                newLineParser);
+                topLevelDeclarationParser,
+                leadingTriviaListParser);
 
-            Parser<char, T> Create<T>(Parser<char, T> parser) => whitespaceParser.Then(parser).Before(End);
+            Parser<char, T> Create<T>(Parser<char, T> parser) => simpleTriviaListParser.Then(parser).Before(End);
 
             _argumentListParser = Create(argumentListParser);
-            _binaryOperatorParser = Create(GetBinaryOperatorParser(whitespaceParser));
-            _commentParser = Create(commentParser);
             _compilationUnitParser = Create(compilationUnitParser);
-            _declarationParser = Create(declarationParser);
-            _declarationLineParser = Create(declarationLineParser);
             _expressionParser = Create(expressionParser);
-            _functionDeclarationParser = Create(functionDeclarationParser);
             _globalDeclarationParser = Create(globalDeclarationParser);
-            _globalLineParser = Create(globalLineParser);
             _identifierNameParser = Create(identifierNameParser);
             _parameterListParser = Create(parameterListParser);
             _statementParser = Create(statementParser);
-            _statementLineParser = Create(statementLineParser.Before(commentStringParser.Optional()));
+            _topLevelDeclarationParser = Create(topLevelDeclarationParser);
             _typeParser = Create(typeParser);
-            _unaryOperatorParser = Create(GetUnaryOperatorParser(whitespaceParser));
         }
 
         internal static JassParser Instance => _parser;
 
         internal Parser<char, JassArgumentListSyntax> ArgumentListParser => _argumentListParser;
 
-        internal Parser<char, BinaryOperatorType> BinaryOperatorParser => _binaryOperatorParser;
-
-        internal Parser<char, JassCommentSyntax> CommentParser => _commentParser;
-
         internal Parser<char, JassCompilationUnitSyntax> CompilationUnitParser => _compilationUnitParser;
 
-        internal Parser<char, ITopLevelDeclarationSyntax> DeclarationParser => _declarationParser;
+        internal Parser<char, JassExpressionSyntax> ExpressionParser => _expressionParser;
 
-        internal Parser<char, IDeclarationLineSyntax> DeclarationLineParser => _declarationLineParser;
-
-        internal Parser<char, IExpressionSyntax> ExpressionParser => _expressionParser;
-
-        internal Parser<char, JassFunctionDeclarationSyntax> FunctionDeclarationParser => _functionDeclarationParser;
-
-        internal Parser<char, IGlobalDeclarationSyntax> GlobalDeclarationParser => _globalDeclarationParser;
-
-        internal Parser<char, IGlobalLineSyntax> GlobalLineParser => _globalLineParser;
+        internal Parser<char, JassGlobalDeclarationSyntax> GlobalDeclarationParser => _globalDeclarationParser;
 
         internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;
 
-        internal Parser<char, JassParameterListSyntax> ParameterListParser => _parameterListParser;
+        internal Parser<char, JassParameterListOrEmptyParameterListSyntax> ParameterListParser => _parameterListParser;
 
-        internal Parser<char, IStatementSyntax> StatementParser => _statementParser;
+        internal Parser<char, JassStatementSyntax> StatementParser => _statementParser;
 
-        internal Parser<char, IStatementLineSyntax> StatementLineParser => _statementLineParser;
+        internal Parser<char, JassTopLevelDeclarationSyntax> TopLevelDeclarationParser => _topLevelDeclarationParser;
 
         internal Parser<char, JassTypeSyntax> TypeParser => _typeParser;
-
-        internal Parser<char, UnaryOperatorType> UnaryOperatorParser => _unaryOperatorParser;
 
         private static class Keyword
         {
@@ -298,31 +254,32 @@ namespace War3Net.CodeAnalysis.Jass
 
         private static class Symbol
         {
-            internal static readonly Parser<char, char> LineFeed = Char(JassSymbol.LineFeed);
-            internal static readonly Parser<char, char> CarriageReturn = Char(JassSymbol.CarriageReturn);
-            internal static readonly Parser<char, char> QuotationMark = Char(JassSymbol.QuotationMark);
-            internal static readonly Parser<char, char> DollarSign = Char(JassSymbol.DollarSign);
-            internal static readonly Parser<char, char> Apostrophe = Char(JassSymbol.Apostrophe);
-            internal static readonly Parser<char, char> LeftParenthesis = Char(JassSymbol.LeftParenthesis);
-            internal static readonly Parser<char, char> RightParenthesis = Char(JassSymbol.RightParenthesis);
-            internal static readonly Parser<char, char> Asterisk = Char(JassSymbol.Asterisk);
-            internal static readonly Parser<char, char> PlusSign = Char(JassSymbol.PlusSign);
-            internal static readonly Parser<char, char> Comma = Char(JassSymbol.Comma);
-            internal static readonly Parser<char, char> MinusSign = Char(JassSymbol.MinusSign);
-            internal static readonly Parser<char, char> FullStop = Char(JassSymbol.FullStop);
-            internal static readonly Parser<char, char> Slash = Char(JassSymbol.Slash);
-            internal static readonly Parser<char, char> Zero = Char(JassSymbol.Zero);
-            internal static readonly Parser<char, char> LessThanSign = Char(JassSymbol.LessThanSign);
-            internal static readonly Parser<char, char> EqualsSign = Char(JassSymbol.EqualsSign);
-            internal static readonly Parser<char, char> GreaterThanSign = Char(JassSymbol.GreaterThanSign);
-            internal static readonly Parser<char, char> LeftSquareBracket = Char(JassSymbol.LeftSquareBracket);
-            internal static readonly Parser<char, char> RightSquareBracket = Char(JassSymbol.RightSquareBracket);
-            internal static readonly Parser<char, char> X = CIChar(JassSymbol.X);
+            internal static readonly Parser<char, char> LineFeed = Char(JassSymbol.LineFeedChar);
+            internal static readonly Parser<char, char> CarriageReturn = Char(JassSymbol.CarriageReturnChar);
+            internal static readonly Parser<char, char> DoubleQuote = Char(JassSymbol.DoubleQuoteChar);
+            internal static readonly Parser<char, char> Dollar = Char(JassSymbol.DollarChar);
+            internal static readonly Parser<char, char> SingleQuote = Char(JassSymbol.SingleQuoteChar);
+            internal static readonly Parser<char, char> OpenParen = Char(JassSymbol.OpenParenChar);
+            internal static readonly Parser<char, char> CloseParen = Char(JassSymbol.CloseParenChar);
+            internal static readonly Parser<char, char> Asterisk = Char(JassSymbol.AsteriskChar);
+            internal static readonly Parser<char, char> Plus = Char(JassSymbol.PlusChar);
+            internal static readonly Parser<char, char> Comma = Char(JassSymbol.CommaChar);
+            internal static readonly Parser<char, char> Minus = Char(JassSymbol.MinusChar);
+            internal static readonly Parser<char, char> Dot = Char(JassSymbol.DotChar);
+            internal static readonly Parser<char, char> Slash = Char(JassSymbol.SlashChar);
+            internal static readonly Parser<char, char> Zero = Char(JassSymbol.ZeroChar);
+            internal static readonly Parser<char, char> LessThan = Char(JassSymbol.LessThanChar);
+            internal static new readonly Parser<char, char> Equals = Char(JassSymbol.EqualsChar);
+            internal static readonly Parser<char, char> GreaterThan = Char(JassSymbol.GreaterThanChar);
+            internal static readonly Parser<char, char> OpenBracket = Char(JassSymbol.OpenBracketChar);
+            internal static readonly Parser<char, char> CloseBracket = Char(JassSymbol.CloseBracketChar);
+            internal static readonly Parser<char, char> X = CIChar(JassSymbol.XChar);
 
-            internal static readonly Parser<char, string> EqualsEquals = String($"{JassSymbol.EqualsSign}{JassSymbol.EqualsSign}");
-            internal static readonly Parser<char, string> LessOrEquals = String($"{JassSymbol.LessThanSign}{JassSymbol.EqualsSign}");
-            internal static readonly Parser<char, string> GreaterOrEquals = String($"{JassSymbol.GreaterThanSign}{JassSymbol.EqualsSign}");
-            internal static readonly Parser<char, string> NotEquals = String($"{JassSymbol.ExclamationMark}{JassSymbol.EqualsSign}");
+            internal static readonly Parser<char, string> EqualsEquals = String(JassSymbol.EqualsEquals);
+            internal static readonly Parser<char, string> LessThanEquals = String(JassSymbol.LessThanEquals);
+            internal static readonly Parser<char, string> GreaterThanEquals = String(JassSymbol.GreaterThanEquals);
+            internal static readonly Parser<char, string> ExclamationEquals = String(JassSymbol.ExclamationEquals);
+            internal static readonly Parser<char, string> SlashSlash = String(JassSymbol.SlashSlash);
         }
     }
 }

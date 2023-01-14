@@ -16,11 +16,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetFourCCLiteralExpressionParser()
+        internal static Parser<char, JassExpressionSyntax> GetFourCCLiteralExpressionParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Symbol.Apostrophe.Then(AnyCharExcept(JassSymbol.Apostrophe).ManyString()).Before(Symbol.Apostrophe)
+            return Symbol.SingleQuote.Then(AnyCharExcept(JassSymbol.SingleQuoteChar).ManyString()).Before(Symbol.SingleQuote)
                 .Assert(value => value.IsJassRawcode())
-                .Select<IExpressionSyntax>(value => new JassFourCCLiteralExpressionSyntax(value.FromJassRawcode()))
+                .MapWithInput((s, _) => s.ToString())
+                .AsToken(triviaParser, JassSyntaxKind.FourCCLiteralToken)
+                .Map(token => (JassExpressionSyntax)new JassLiteralExpressionSyntax(token))
                 .Labelled("fourCC literal");
         }
     }

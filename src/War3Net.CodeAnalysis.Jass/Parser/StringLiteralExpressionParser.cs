@@ -16,11 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetStringLiteralExpressionParser()
+        internal static Parser<char, JassExpressionSyntax> GetStringLiteralExpressionParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
             var escapeSequenceParser = OneOf(
-                Symbol.QuotationMark.ThenReturn($"\\{JassSymbol.QuotationMark}"),
-                Symbol.Apostrophe.ThenReturn($"\\{JassSymbol.Apostrophe}"),
+                Symbol.DoubleQuote.ThenReturn($"\\{JassSymbol.DoubleQuoteChar}"),
+                Symbol.SingleQuote.ThenReturn($"\\{JassSymbol.SingleQuoteChar}"),
                 Char('r').ThenReturn("\\r"),
                 Char('n').ThenReturn("\\n"),
                 Char('t').ThenReturn("\\t"),
@@ -30,8 +31,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Any.Then(c => Fail<string>($"\"\\{c}\" is not a valid escape sequence")))
                 .Labelled("escape sequence");
 
-            return Char('\\').Then(escapeSequenceParser).Or(AnyCharExcept(JassSymbol.QuotationMark).Map(char.ToString)).ManyString().Between(Symbol.QuotationMark)
-                .Select<IExpressionSyntax>(value => new JassStringLiteralExpressionSyntax(value))
+            var stringLiteralParser = Char('\\').Then(escapeSequenceParser).Or(AnyCharExcept(JassSymbol.DoubleQuoteChar).Map(char.ToString)).ManyString().Between(Symbol.DoubleQuote)
+                .Labelled("string literal");
+
+            return Map(
+                (value, trivia) => (JassExpressionSyntax)new JassLiteralExpressionSyntax(
+                    new JassSyntaxToken(JassSyntaxKind.StringLiteralToken, $"{JassSymbol.DoubleQuoteChar}{value}{JassSymbol.DoubleQuoteChar}", trivia)),
+                stringLiteralParser,
+                triviaParser)
                 .Labelled("string literal");
         }
     }

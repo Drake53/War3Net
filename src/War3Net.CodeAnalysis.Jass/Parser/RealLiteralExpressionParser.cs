@@ -7,6 +7,7 @@
 
 using Pidgin;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
@@ -16,21 +17,16 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, IExpressionSyntax> GetRealLiteralExpressionParser()
+        internal static Parser<char, JassExpressionSyntax> GetRealLiteralExpressionParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-#if true
-            return Try(Token(char.IsDigit).AtLeastOnceString().Before(Symbol.FullStop))
-                .Then(Token(char.IsDigit).ManyString(), (intPart, fracPart) => (IExpressionSyntax)new JassRealLiteralExpressionSyntax(intPart, fracPart))
-                .Or(Symbol.FullStop.Then(Token(char.IsDigit).AtLeastOnceString())
-                    .Select<IExpressionSyntax>(fracPart => new JassRealLiteralExpressionSyntax($"{JassSymbol.Zero}", fracPart)))
+            return OneOf(
+                Try(Token(char.IsDigit).AtLeastOnce().Before(Symbol.Dot)).Then(Token(char.IsDigit).Many()),
+                Symbol.Dot.Then(Token(char.IsDigit).AtLeastOnce()))
+                .MapWithInput((s, _) => s.ToString())
+                .AsToken(triviaParser, JassSyntaxKind.RealLiteralToken)
+                .Map(token => (JassExpressionSyntax)new JassLiteralExpressionSyntax(token))
                 .Labelled("real literal");
-#else
-            return Try(Token(char.IsDigit).AtLeastOnceString().Before(Symbol.FullStop))
-                .Then(Token(char.IsDigit).ManyString(), (intPart, fracPart) => (IExpressionSyntax)new JassRealLiteralExpressionSyntax(float.Parse($"{intPart}{JassSymbol.FullStop}{fracPart}", CultureInfo.InvariantCulture)))
-                .Or(Symbol.FullStop.Then(Token(char.IsDigit).AtLeastOnceString())
-                    .Select<IExpressionSyntax>(fracPart => new JassRealLiteralExpressionSyntax(float.Parse($"{JassSymbol.Zero}{JassSymbol.FullStop}{fracPart}", CultureInfo.InvariantCulture))))
-                .Labelled("real literal");
-#endif
         }
     }
 }
