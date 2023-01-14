@@ -11,7 +11,7 @@ using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassSyntaxTrivia : ISyntaxTrivia
+    public class JassSyntaxTrivia
     {
         internal JassSyntaxTrivia(
             JassSyntaxKind syntaxKind,

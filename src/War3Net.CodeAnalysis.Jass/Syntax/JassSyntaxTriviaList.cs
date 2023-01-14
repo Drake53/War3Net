@@ -12,16 +12,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassSyntaxTriviaList
     {
-        public static readonly JassSyntaxTriviaList Empty = new(ImmutableArray<ISyntaxTrivia>.Empty);
-        public static readonly JassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create<ISyntaxTrivia>(new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, " ")));
+        public static readonly JassSyntaxTriviaList Empty = new(ImmutableArray<JassSyntaxTrivia>.Empty);
+        public static readonly JassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create(new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, " ")));
 
         internal JassSyntaxTriviaList(
-            ImmutableArray<ISyntaxTrivia> trivia)
+            ImmutableArray<JassSyntaxTrivia> trivia)
         {
             Trivia = trivia;
         }
 
-        public ImmutableArray<ISyntaxTrivia> Trivia { get; }
+        public ImmutableArray<JassSyntaxTrivia> Trivia { get; }
 
         public void WriteTo(TextWriter writer)
         {
