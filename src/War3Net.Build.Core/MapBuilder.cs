@@ -127,7 +127,14 @@ namespace War3Net.Build
                 _map.GetTriggersFile(_encoding),
                 _map.GetTriggerStringsFile(_encoding),
                 _map.GetUnitsFile(_encoding),
-                _map.GetImportedFilesFile(_encoding));
+                _map.GetImportedFilesFile(_encoding),
+                _map.GetAbilitySkinObjectDataFile(_encoding),
+                _map.GetDestructableSkinObjectDataFile(_encoding),
+                _map.GetDoodadSkinObjectDataFile(_encoding),
+                _map.GetBuffSkinObjectDataFile(_encoding),
+                _map.GetUpgradeSkinObjectDataFile(_encoding),
+                _map.GetItemSkinObjectDataFile(_encoding),
+                _map.GetUnitSkinObjectDataFile(_encoding));
 
             AddFilesToArchiveBuilder(_files.ToArray());
 
