@@ -11,11 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassInvocationExpressionSyntax InvocationExpression(string name, JassArgumentListSyntax arguments)
+        public static JassInvocationExpressionSyntax InvocationExpression(string name, JassArgumentListSyntax argumentList)
         {
             return new JassInvocationExpressionSyntax(
                 ParseIdentifierName(name),
-                arguments);
+                argumentList);
         }
 
         public static JassInvocationExpressionSyntax InvocationExpression(string name, params JassExpressionSyntax[] arguments)

@@ -15,45 +15,45 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         internal JassCallStatementSyntax(
             JassSyntaxToken callToken,
             JassIdentifierNameSyntax identifierName,
-            JassArgumentListSyntax arguments)
+            JassArgumentListSyntax argumentList)
         {
             CallToken = callToken;
             IdentifierName = identifierName;
-            Arguments = arguments;
+            ArgumentList = argumentList;
         }
 
         public JassSyntaxToken CallToken { get; }
 
         public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public JassArgumentListSyntax Arguments { get; }
+        public JassArgumentListSyntax ArgumentList { get; }
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassCallStatementSyntax callStatement
                 && IdentifierName.IsEquivalentTo(callStatement.IdentifierName)
-                && Arguments.IsEquivalentTo(callStatement.Arguments);
+                && ArgumentList.IsEquivalentTo(callStatement.ArgumentList);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             CallToken.WriteTo(writer);
             IdentifierName.WriteTo(writer);
-            Arguments.WriteTo(writer);
+            ArgumentList.WriteTo(writer);
         }
 
-        public override string ToString() => $"{CallToken} {IdentifierName}{Arguments}";
+        public override string ToString() => $"{CallToken} {IdentifierName}{ArgumentList}";
 
         public override JassSyntaxToken GetFirstToken() => CallToken;
 
-        public override JassSyntaxToken GetLastToken() => Arguments.GetLastToken();
+        public override JassSyntaxToken GetLastToken() => ArgumentList.GetLastToken();
 
         protected internal override JassCallStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassCallStatementSyntax(
                 newToken,
                 IdentifierName,
-                Arguments);
+                ArgumentList);
         }
 
         protected internal override JassCallStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
@@ -61,7 +61,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return new JassCallStatementSyntax(
                 CallToken,
                 IdentifierName,
-                Arguments.ReplaceLastToken(newToken));
+                ArgumentList.ReplaceLastToken(newToken));
         }
     }
 }
