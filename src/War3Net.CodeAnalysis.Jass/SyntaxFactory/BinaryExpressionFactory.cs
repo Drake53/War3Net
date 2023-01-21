@@ -63,7 +63,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return new JassBinaryExpressionSyntax(
                 left,
-                Token(JassSyntaxKind.EqualsToken),
+                Token(JassSyntaxKind.EqualsEqualsToken),
                 right);
         }
 
