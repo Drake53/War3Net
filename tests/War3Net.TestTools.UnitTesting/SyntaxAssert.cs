@@ -22,55 +22,55 @@ namespace War3Net.TestTools.UnitTesting
     {
         public static void AreEqual(JassCompilationUnitSyntax? expected, JassCompilationUnitSyntax? actual)
         {
-            if (!expected.NullableEquals(actual))
+            if (!expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail("Compilation units are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
             }
         }
 
-        public static void AreEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
-        {
-            if (!expected.NullableEquals(actual))
-            {
-                Assert.Fail("Declaration lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-            }
-        }
+        //public static void AreEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
+        //{
+        //    if (!expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail("Declaration lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+        //    }
+        //}
 
-        public static void AreEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
-        {
-            if (!expected.NullableEquals(actual))
-            {
-                Assert.Fail("Global lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-            }
-        }
+        //public static void AreEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
+        //{
+        //    if (!expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail("Global lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+        //    }
+        //}
 
-        public static void AreEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
-        {
-            if (!expected.NullableEquals(actual))
-            {
-                Assert.Fail("Statement lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-            }
-        }
+        //public static void AreEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
+        //{
+        //    if (!expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail("Statement lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+        //    }
+        //}
 
-        public static void AreEqual(IExpressionSyntax? expected, IExpressionSyntax? actual)
+        public static void AreEqual(JassExpressionSyntax? expected, JassExpressionSyntax? actual)
         {
-            if (!expected.NullableEquals(actual))
+            if (!expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail("Expressions are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
             }
         }
 
-        public static void AreEqual(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
+        public static void AreEqual(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
-            if (!expected.NullableEquals(actual))
+            if (!expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail("Declarations are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
             }
         }
 
-        public static void AreEqual(IStatementSyntax? expected, IStatementSyntax? actual)
+        public static void AreEqual(JassStatementSyntax? expected, JassStatementSyntax? actual)
         {
-            if (!expected.NullableEquals(actual))
+            if (!expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail("Statements are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
             }
@@ -78,55 +78,55 @@ namespace War3Net.TestTools.UnitTesting
 
         public static void AreNotEqual(JassCompilationUnitSyntax? expected, JassCompilationUnitSyntax? actual)
         {
-            if (expected.NullableEquals(actual))
+            if (expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail($"Compilation units are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
             }
         }
 
-        public static void AreNotEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
-        {
-            if (expected.NullableEquals(actual))
-            {
-                Assert.Fail($"Declaration lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-            }
-        }
+        //public static void AreNotEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
+        //{
+        //    if (expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail($"Declaration lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+        //    }
+        //}
 
-        public static void AreNotEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
-        {
-            if (expected.NullableEquals(actual))
-            {
-                Assert.Fail($"Global lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-            }
-        }
+        //public static void AreNotEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
+        //{
+        //    if (expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail($"Global lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+        //    }
+        //}
 
-        public static void AreNotEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
-        {
-            if (expected.NullableEquals(actual))
-            {
-                Assert.Fail($"Statement lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-            }
-        }
+        //public static void AreNotEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
+        //{
+        //    if (expected.NullableEquals(actual))
+        //    {
+        //        Assert.Fail($"Statement lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+        //    }
+        //}
 
-        public static void AreNotEqual(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
+        public static void AreNotEqual(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
-            if (expected.NullableEquals(actual))
+            if (expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail($"Declarations are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
             }
         }
 
-        public static void AreNotEqual(IExpressionSyntax? expected, IExpressionSyntax? actual)
+        public static void AreNotEqual(JassExpressionSyntax? expected, JassExpressionSyntax? actual)
         {
-            if (expected.NullableEquals(actual))
+            if (expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail($"Expressions are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
             }
         }
 
-        public static void AreNotEqual(IStatementSyntax? expected, IStatementSyntax? actual)
+        public static void AreNotEqual(JassStatementSyntax? expected, JassStatementSyntax? actual)
         {
-            if (expected.NullableEquals(actual))
+            if (expected.NullableEquivalentTo(actual))
             {
                 Assert.Fail($"Statements are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
             }
@@ -187,7 +187,7 @@ namespace War3Net.TestTools.UnitTesting
             return GetAssertFailedMessage((object?)expected, actual);
         }
 
-        private static string GetAssertFailedMessage(ITopLevelDeclarationSyntax? expected, ITopLevelDeclarationSyntax? actual)
+        private static string GetAssertFailedMessage(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
             if (expected is JassFunctionDeclarationSyntax expectedFunctionDeclaration && actual is JassFunctionDeclarationSyntax actualFunctionDeclaration)
             {
@@ -198,21 +198,21 @@ namespace War3Net.TestTools.UnitTesting
                     messageParts.Add(GetAssertFailedMessage(expectedFunctionDeclaration.FunctionDeclarator, actualFunctionDeclaration.FunctionDeclarator));
                 }
 
-                var length = expectedFunctionDeclaration.Body.Statements.Length;
-                if (expectedFunctionDeclaration.Body.Statements.Length != actualFunctionDeclaration.Body.Statements.Length)
+                var length = expectedFunctionDeclaration.Statements.Length;
+                if (expectedFunctionDeclaration.Statements.Length != actualFunctionDeclaration.Statements.Length)
                 {
-                    messageParts.Add($"Expected: {expectedFunctionDeclaration.Body.Statements.Length} statements.");
-                    messageParts.Add($"  Actual: {actualFunctionDeclaration.Body.Statements.Length} statements.");
+                    messageParts.Add($"Expected: {expectedFunctionDeclaration.Statements.Length} statements.");
+                    messageParts.Add($"  Actual: {actualFunctionDeclaration.Statements.Length} statements.");
 
-                    if (expectedFunctionDeclaration.Body.Statements.Length > actualFunctionDeclaration.Body.Statements.Length)
+                    if (expectedFunctionDeclaration.Statements.Length > actualFunctionDeclaration.Statements.Length)
                     {
-                        length = actualFunctionDeclaration.Body.Statements.Length;
+                        length = actualFunctionDeclaration.Statements.Length;
                     }
                 }
 
                 for (var i = 0; i < length; i++)
                 {
-                    if (!expectedFunctionDeclaration.Body.Statements[i].Equals(actualFunctionDeclaration.Body.Statements[i]))
+                    if (!expectedFunctionDeclaration.Statements[i].Equals(actualFunctionDeclaration.Statements[i]))
                     {
                         if (messageParts.Count > 20)
                         {
@@ -221,7 +221,7 @@ namespace War3Net.TestTools.UnitTesting
                         }
 
                         messageParts.Add($"Statement #{i + 1}:");
-                        messageParts.Add(GetAssertFailedMessage(expectedFunctionDeclaration.Body.Statements[i], actualFunctionDeclaration.Body.Statements[i]));
+                        messageParts.Add(GetAssertFailedMessage(expectedFunctionDeclaration.Statements[i], actualFunctionDeclaration.Statements[i]));
                     }
                 }
 
@@ -237,7 +237,7 @@ namespace War3Net.TestTools.UnitTesting
             Assert.ThrowsException<ParseException>(() => message.String = GetExpressionDisplayString(JassSyntaxFactory.ParseExpression(expression)), "\r\n{0}", message);
         }
 
-        private static string GetExpressionDisplayString(IExpressionSyntax? expression)
+        private static string GetExpressionDisplayString(JassExpressionSyntax? expression)
         {
             if (expression is null)
             {

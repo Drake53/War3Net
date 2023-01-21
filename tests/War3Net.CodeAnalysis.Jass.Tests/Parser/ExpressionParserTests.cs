@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.TestTools.UnitTesting;
 
@@ -22,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestExpressions), DynamicDataSourceType.Method)]
-        public void TestExpressionParser(string expression, IExpressionSyntax? expected = null)
+        public void TestExpressionParser(string expression, JassExpressionSyntax? expected = null)
         {
             if (expected is null)
             {
@@ -39,9 +38,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
         {
             #region InvocationExpression
             yield return new object?[] { @"foo()", InvocationExpression(@"foo") };
-            yield return new object?[] { @"foo( bar )", InvocationExpression(@"foo", VariableReferenceExpression(@"bar")) };
-            yield return new object?[] { @"foo ( a , b )", InvocationExpression(@"foo", VariableReferenceExpression(@"a"), VariableReferenceExpression(@"b")) };
-            yield return new object?[] { @"foo(a,b)", InvocationExpression(@"foo", VariableReferenceExpression(@"a"), VariableReferenceExpression(@"b")) };
+            yield return new object?[] { @"foo( bar )", InvocationExpression(@"foo", ParseIdentifierName(@"bar")) };
+            yield return new object?[] { @"foo ( a , b )", InvocationExpression(@"foo", ParseIdentifierName(@"a"), ParseIdentifierName(@"b")) };
+            yield return new object?[] { @"foo(a,b)", InvocationExpression(@"foo", ParseIdentifierName(@"a"), ParseIdentifierName(@"b")) };
             yield return new object?[] { @"foo(,)" };
             yield return new object?[] { @"foo(a,)" };
             yield return new object?[] { @"foo(,b)" };
@@ -53,7 +52,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region ArrayReferenceExpression
-            yield return new object?[] { @"foo[bar]", ArrayReferenceExpression(@"foo", VariableReferenceExpression(@"bar")) };
+            yield return new object?[] { @"foo[bar]", ArrayReferenceExpression(@"foo", ParseIdentifierName(@"bar")) };
             yield return new object?[] { @"foo[bar" };
             #endregion
 
@@ -63,9 +62,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[] { @"function foo_" };
             #endregion
 
-            #region VariableReferenceExpression
-            yield return new object?[] { @"player_id", VariableReferenceExpression(@"player_id") };
-            yield return new object?[] { @"player_6", VariableReferenceExpression(@"player_6") };
+            #region IdentifierName
+            yield return new object?[] { @"player_id", ParseIdentifierName(@"player_id") };
+            yield return new object?[] { @"player_6", ParseIdentifierName(@"player_6") };
             yield return new object?[] { @"player_" };
             yield return new object?[] { @"_player" };
             yield return new object?[] { @"6player" };
@@ -76,29 +75,29 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region DecimalLiteralExpression
-            yield return new object?[] { @"1", new JassDecimalLiteralExpressionSyntax(1) };
-            yield return new object?[] { @"255", new JassDecimalLiteralExpressionSyntax(255) };
+            yield return new object?[] { @"1", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "1")) };
+            yield return new object?[] { @"255", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "255")) };
             yield return new object?[] { @"255abc" };
             yield return new object?[] { @"255_" };
             #endregion
 
             #region OctalLiteralExpression
-            yield return new object?[] { @"0", new JassOctalLiteralExpressionSyntax(0) };
-            yield return new object?[] { @"010", new JassOctalLiteralExpressionSyntax(8) };
+            yield return new object?[] { @"0", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0")) };
+            yield return new object?[] { @"010", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "010")) };
             yield return new object?[] { @"0abc" };
             yield return new object?[] { @"0_" };
             #endregion
 
             #region HexadecimalLiteralExpression
-            yield return new object?[] { @"$6", new JassHexadecimalLiteralExpressionSyntax(6) };
-            yield return new object?[] { @"$A", new JassHexadecimalLiteralExpressionSyntax(10) };
-            yield return new object?[] { @"$FF", new JassHexadecimalLiteralExpressionSyntax(255) };
-            yield return new object?[] { @"0x6", new JassHexadecimalLiteralExpressionSyntax(6) };
-            yield return new object?[] { @"0xA", new JassHexadecimalLiteralExpressionSyntax(10) };
-            yield return new object?[] { @"0xFF", new JassHexadecimalLiteralExpressionSyntax(255) };
-            yield return new object?[] { @"0X6", new JassHexadecimalLiteralExpressionSyntax(6) };
-            yield return new object?[] { @"0XA", new JassHexadecimalLiteralExpressionSyntax(10) };
-            yield return new object?[] { @"0XFF", new JassHexadecimalLiteralExpressionSyntax(255) };
+            yield return new object?[] { @"$6", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "$6")) };
+            yield return new object?[] { @"$A", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "$A")) };
+            yield return new object?[] { @"$FF", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "$FF")) };
+            yield return new object?[] { @"0x6", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0x6")) };
+            yield return new object?[] { @"0xA", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0xA")) };
+            yield return new object?[] { @"0xFF", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0xFF")) };
+            yield return new object?[] { @"0X6", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0X6")) };
+            yield return new object?[] { @"0XA", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0XA")) };
+            yield return new object?[] { @"0XFF", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.HexadecimalLiteralToken, "0XFF")) };
             yield return new object?[] { @"$ALOL" };
             yield return new object?[] { @"$A_" };
             yield return new object?[] { @"0xLOL" };
@@ -108,7 +107,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region FourCCLiteralExpression
-            yield return new object?[] { @"'hpea'", new JassFourCCLiteralExpressionSyntax(@"hpea".FromJassRawcode()) };
+            yield return new object?[] { @"'hpea'", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.FourCCLiteralToken, "'hpea'")) };
             yield return new object?[] { @"'hpeasant'" };
             yield return new object?[] { @"'pea'" };
             yield return new object?[] { @"''" };
@@ -117,7 +116,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
 
             #region RealLiteralExpression
             yield return new object?[] { @"0.", LiteralExpression(0f, precision: 0) };
-            yield return new object?[] { @".0", LiteralExpression(0f) };
+            yield return new object?[] { @".0", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.RealLiteralToken, ".0")) };
             yield return new object?[] { @"3.141", LiteralExpression(3.141f, precision: 3) };
             yield return new object?[] { @"." };
             yield return new object?[] { @"0.abc" };
@@ -126,27 +125,27 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region BooleanLiteralExpression
-            yield return new object?[] { @"true", JassBooleanLiteralExpressionSyntax.True };
-            yield return new object?[] { @"false", JassBooleanLiteralExpressionSyntax.False };
+            yield return new object?[] { @"true", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.TrueKeyword)) };
+            yield return new object?[] { @"false", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.FalseKeyword)) };
             #endregion
 
             #region StringLiteralExpression
-            yield return new object?[] { "\"  true  \"", new JassStringLiteralExpressionSyntax("  true  ") };
-            yield return new object?[] { "\"  \\\"true\\\"  \"", new JassStringLiteralExpressionSyntax("  \\\"true\\\"  ") };
-            yield return new object?[] { "\"  \r\t\\\\  \"", new JassStringLiteralExpressionSyntax("  \r\t\\\\  ") };
+            yield return new object?[] { "\"  true  \"", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.StringLiteralToken, "\"  true  \"")) };
+            yield return new object?[] { "\"  \\\"true\\\"  \"", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.StringLiteralToken, "\"  \\\"true\\\"  \"")) };
+            yield return new object?[] { "\"  \r\t\\\\  \"", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.StringLiteralToken, "\"  \r\t\\\\  \"")) };
             yield return new object?[] { "\"  true" };
-            yield return new object?[] { "\"  \n  \"", new JassStringLiteralExpressionSyntax("  \n  ") };
+            yield return new object?[] { "\"  \n  \"", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.StringLiteralToken, "\"  \n  \"")) };
             #endregion
 
             #region NullLiteralExpression
-            yield return new object?[] { @"null", JassNullLiteralExpressionSyntax.Value };
+            yield return new object?[] { @"null", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.NullKeyword)) };
             #endregion
 
             #region ParenthesizedExpression
-            yield return new object?[] { @"(0)", new JassParenthesizedExpressionSyntax(new JassOctalLiteralExpressionSyntax(0)) };
-            yield return new object?[] { @"(1)", new JassParenthesizedExpressionSyntax(new JassDecimalLiteralExpressionSyntax(1)) };
-            yield return new object?[] { @"(player_id)", new JassParenthesizedExpressionSyntax(VariableReferenceExpression(@"player_id")) };
-            yield return new object?[] { @"( player_id )", new JassParenthesizedExpressionSyntax(VariableReferenceExpression(@"player_id")) };
+            yield return new object?[] { @"(0)", ParenthesizedExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0"))) };
+            yield return new object?[] { @"(1)", ParenthesizedExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "1"))) };
+            yield return new object?[] { @"(player_id)", ParenthesizedExpression(ParseIdentifierName(@"player_id")) };
+            yield return new object?[] { @"( player_id )", ParenthesizedExpression(ParseIdentifierName(@"player_id")) };
             yield return new object?[] { @"(player_id" };
             yield return new object?[] { @"player_id)" };
             yield return new object?[] { @"()" };
@@ -158,59 +157,54 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"(5 > 0)",
-                ParenthesizedExpression(new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.GreaterThan,
-                    new JassDecimalLiteralExpressionSyntax(5),
-                    new JassOctalLiteralExpressionSyntax(0))),
+                ParenthesizedExpression(BinaryGreaterThanExpression(
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "5")),
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
             };
 
             yield return new object?[]
             {
                 @"(0 > foo())",
-                new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.GreaterThan,
-                    new JassOctalLiteralExpressionSyntax(0),
+                ParenthesizedExpression(BinaryGreaterThanExpression(
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0")),
                     InvocationExpression("foo"))),
             };
 
             yield return new object?[]
             {
                 @"(foo() > 0)",
-                new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.GreaterThan,
+                ParenthesizedExpression(BinaryGreaterThanExpression(
                     InvocationExpression("foo"),
-                    new JassOctalLiteralExpressionSyntax(0))),
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
             };
 
             yield return new object?[]
             {
                 "(GetUnitState(oldUnit, UNIT_STATE_MAX_LIFE) > 0)",
-                new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.GreaterThan,
+                ParenthesizedExpression(BinaryGreaterThanExpression(
                     InvocationExpression(
                         "GetUnitState",
-                        VariableReferenceExpression("oldUnit"),
-                        VariableReferenceExpression("UNIT_STATE_MAX_LIFE")),
-                    new JassOctalLiteralExpressionSyntax(0))),
+                        ParseIdentifierName("oldUnit"),
+                        ParseIdentifierName("UNIT_STATE_MAX_LIFE")),
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
             };
             #endregion
 
             #region UnaryExpression
-            yield return new object?[] { @"+6", new JassUnaryExpressionSyntax(UnaryOperatorType.Plus, new JassDecimalLiteralExpressionSyntax(6)) };
-            yield return new object?[] { @"-7", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(7)) };
-            yield return new object?[] { @"+ 6", new JassUnaryExpressionSyntax(UnaryOperatorType.Plus, new JassDecimalLiteralExpressionSyntax(6)) };
-            yield return new object?[] { @"- 7", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(7)) };
-            yield return new object?[] { @"not true", new JassUnaryExpressionSyntax(UnaryOperatorType.Not, JassBooleanLiteralExpressionSyntax.True) };
-            yield return new object?[] { @"not(true)", new JassUnaryExpressionSyntax(UnaryOperatorType.Not, new JassParenthesizedExpressionSyntax(JassBooleanLiteralExpressionSyntax.True)) };
-            yield return new object?[] { @"nottrue", VariableReferenceExpression(@"nottrue") };
+            yield return new object?[] { @"+6", UnaryPlusExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "6"))) };
+            yield return new object?[] { @"-7", UnaryMinusExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "7"))) };
+            yield return new object?[] { @"+ 6", UnaryPlusExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "6"))) };
+            yield return new object?[] { @"- 7", UnaryMinusExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "7"))) };
+            yield return new object?[] { @"not true", UnaryNotExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.TrueKeyword))) };
+            yield return new object?[] { @"not(true)", UnaryNotExpression(ParenthesizedExpression(new JassLiteralExpressionSyntax(Token(JassSyntaxKind.TrueKeyword)))) };
+            yield return new object?[] { @"nottrue", ParseIdentifierName(@"nottrue") };
             #endregion
 
-            yield return new object?[] { @"trueandfalseornull", VariableReferenceExpression(@"trueandfalseornull") };
+            yield return new object?[] { @"trueandfalseornull", ParseIdentifierName(@"trueandfalseornull") };
 
-            var expr1 = new JassBinaryExpressionSyntax(
-                BinaryOperatorType.Add,
-                new JassDecimalLiteralExpressionSyntax(50),
-                new JassDecimalLiteralExpressionSyntax(60));
+            var expr1 = BinaryAdditionExpression(
+                new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "50")),
+                new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "60")));
 
             yield return new object?[] { @"50+60", expr1 };
             yield return new object?[] { @"50 + 60", expr1 };
@@ -219,33 +213,29 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"2 + 6 * 10",
-                new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.Add,
-                    new JassDecimalLiteralExpressionSyntax(2),
-                    new JassBinaryExpressionSyntax(
-                        BinaryOperatorType.Multiplication,
-                        new JassDecimalLiteralExpressionSyntax(6),
-                        new JassDecimalLiteralExpressionSyntax(10))),
+                BinaryAdditionExpression(
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "2")),
+                    BinaryMultiplicationExpression(
+                        new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "6")),
+                        new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "10")))),
             };
 
             yield return new object?[]
             {
                 @"(2 + 6) * 10",
-                new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.Multiplication,
-                    new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
-                        BinaryOperatorType.Add,
-                        new JassDecimalLiteralExpressionSyntax(2),
-                        new JassDecimalLiteralExpressionSyntax(6))),
-                    new JassDecimalLiteralExpressionSyntax(10)),
+                BinaryMultiplicationExpression(
+                    ParenthesizedExpression(BinaryAdditionExpression(
+                        new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "2")),
+                        new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "6")))),
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "10"))),
             };
+
             yield return new object?[]
             {
                 @"(player_id) * 10",
-                new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.Multiplication,
-                    new JassParenthesizedExpressionSyntax(VariableReferenceExpression(@"player_id")),
-                    new JassDecimalLiteralExpressionSyntax(10)),
+                BinaryMultiplicationExpression(
+                    ParenthesizedExpression(ParseIdentifierName(@"player_id")),
+                    new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "10"))),
             };
 
             yield return new object?[]
@@ -259,17 +249,15 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"FORCE_ALL_PLAYERS[(player_id - 1)] == ConvertedPlayer(player_id)",
-                new JassBinaryExpressionSyntax(
-                    BinaryOperatorType.Equals,
+                BinaryEqualsExpression(
                     ArrayReferenceExpression(
                         @"FORCE_ALL_PLAYERS",
-                        new JassParenthesizedExpressionSyntax(new JassBinaryExpressionSyntax(
-                            BinaryOperatorType.Subtract,
-                            VariableReferenceExpression(@"player_id"),
-                            new JassDecimalLiteralExpressionSyntax(1)))),
+                        ParenthesizedExpression(BinarySubtractionExpression(
+                            ParseIdentifierName(@"player_id"),
+                            new JassLiteralExpressionSyntax(Token(JassSyntaxKind.DecimalLiteralToken, "1"))))),
                     InvocationExpression(
                         @"ConvertedPlayer",
-                        VariableReferenceExpression(@"player_id"))),
+                        ParseIdentifierName(@"player_id"))),
             };
         }
     }
