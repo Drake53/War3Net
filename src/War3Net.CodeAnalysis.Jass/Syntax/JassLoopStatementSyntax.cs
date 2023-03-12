@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -42,6 +45,58 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             LoopToken.WriteTo(writer);
             Statements.WriteTo(writer);
             EndLoopToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            return Statements;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return LoopToken;
+            yield return EndLoopToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return LoopToken;
+
+            foreach (var child in Statements)
+            {
+                yield return child;
+            }
+
+            yield return EndLoopToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            return Statements.GetDescendantNodes();
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return LoopToken;
+
+            foreach (var descendant in Statements.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndLoopToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return LoopToken;
+
+            foreach (var descendant in Statements.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndLoopToken;
         }
 
         public override string ToString() => $"{LoopToken} [...]";

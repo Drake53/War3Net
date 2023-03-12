@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -42,6 +45,58 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             GlobalsToken.WriteTo(writer);
             Globals.WriteTo(writer);
             EndGlobalsToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            return Globals;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return GlobalsToken;
+            yield return EndGlobalsToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return GlobalsToken;
+
+            foreach (var child in Globals)
+            {
+                yield return child;
+            }
+
+            yield return EndGlobalsToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            return Globals.GetDescendantNodes();
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return GlobalsToken;
+
+            foreach (var descendant in Globals.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndGlobalsToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return GlobalsToken;
+
+            foreach (var descendant in Globals.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndGlobalsToken;
         }
 
         public override string ToString() => $"{GlobalsToken} [...]";

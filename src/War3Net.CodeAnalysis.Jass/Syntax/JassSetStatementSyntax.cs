@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -48,6 +51,109 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             IdentifierName.WriteTo(writer);
             ElementAccessClause?.WriteTo(writer);
             Value.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return IdentifierName;
+
+            if (ElementAccessClause is not null)
+            {
+                yield return ElementAccessClause;
+            }
+
+            yield return Value;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return SetToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return SetToken;
+            yield return IdentifierName;
+
+            if (ElementAccessClause is not null)
+            {
+                yield return ElementAccessClause;
+            }
+
+            yield return Value;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            if (ElementAccessClause is not null)
+            {
+                yield return ElementAccessClause;
+                foreach (var descendant in ElementAccessClause.GetDescendantNodes())
+                {
+                    yield return descendant;
+                }
+            }
+
+            yield return Value;
+            foreach (var descendant in Value.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return SetToken;
+
+            foreach (var descendant in IdentifierName.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            if (ElementAccessClause is not null)
+            {
+                foreach (var descendant in ElementAccessClause.GetDescendantTokens())
+                {
+                    yield return descendant;
+                }
+            }
+
+            foreach (var descendant in Value.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return SetToken;
+
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            if (ElementAccessClause is not null)
+            {
+                yield return ElementAccessClause;
+                foreach (var descendant in ElementAccessClause.GetDescendantNodesAndTokens())
+                {
+                    yield return descendant;
+                }
+            }
+
+            yield return Value;
+            foreach (var descendant in Value.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{SetToken} {IdentifierName}{ElementAccessClause.Optional()} {Value}";

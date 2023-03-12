@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -45,6 +48,77 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             IdentifierName.WriteTo(writer);
             ExtendsToken.WriteTo(writer);
             BaseType.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return IdentifierName;
+            yield return BaseType;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return TypeToken;
+            yield return ExtendsToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return TypeToken;
+            yield return IdentifierName;
+            yield return ExtendsToken;
+            yield return BaseType;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return IdentifierName;
+            foreach (var descendant in BaseType.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            yield return BaseType;
+            foreach (var descendant in BaseType.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return TypeToken;
+
+            foreach (var descendant in BaseType.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ExtendsToken;
+
+            foreach (var descendant in BaseType.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return TypeToken;
+
+            yield return IdentifierName;
+            foreach (var descendant in BaseType.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ExtendsToken;
+
+            yield return BaseType;
+            foreach (var descendant in BaseType.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{TypeToken} {IdentifierName} {ExtendsToken} {BaseType}";

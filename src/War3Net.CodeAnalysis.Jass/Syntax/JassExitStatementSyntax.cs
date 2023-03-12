@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -34,6 +37,52 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             ExitWhenToken.WriteTo(writer);
             Condition.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Condition;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return ExitWhenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return ExitWhenToken;
+            yield return Condition;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Condition;
+            foreach (var descendant in Condition.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return ExitWhenToken;
+
+            foreach (var descendant in Condition.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return ExitWhenToken;
+
+            yield return Condition;
+            foreach (var descendant in Condition.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{ExitWhenToken} {Condition}";

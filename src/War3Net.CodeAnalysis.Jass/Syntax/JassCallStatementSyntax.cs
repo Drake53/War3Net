@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -40,6 +43,71 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             CallToken.WriteTo(writer);
             IdentifierName.WriteTo(writer);
             ArgumentList.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return IdentifierName;
+            yield return ArgumentList;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return CallToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return CallToken;
+            yield return IdentifierName;
+            yield return ArgumentList;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            yield return ArgumentList;
+            foreach (var descendant in ArgumentList.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return CallToken;
+
+            foreach (var descendant in IdentifierName.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in ArgumentList.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return CallToken;
+
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ArgumentList;
+            foreach (var descendant in ArgumentList.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{CallToken} {IdentifierName}{ArgumentList}";

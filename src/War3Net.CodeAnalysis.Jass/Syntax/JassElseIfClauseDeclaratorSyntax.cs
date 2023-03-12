@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -39,6 +42,58 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             ElseIfToken.WriteTo(writer);
             Condition.WriteTo(writer);
             ThenToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Condition;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return ElseIfToken;
+            yield return ThenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return ElseIfToken;
+            yield return Condition;
+            yield return ThenToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Condition;
+            foreach (var descendant in Condition.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return ElseIfToken;
+
+            foreach (var descendant in Condition.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ThenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return ElseIfToken;
+
+            yield return Condition;
+            foreach (var descendant in Condition.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ThenToken;
         }
 
         public override string ToString() => $"{ElseIfToken} {Condition} {ThenToken}";

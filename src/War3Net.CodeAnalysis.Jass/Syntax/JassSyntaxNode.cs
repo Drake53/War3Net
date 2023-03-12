@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -22,6 +25,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public abstract bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other);
 
         public abstract void WriteTo(TextWriter writer);
+
+        public abstract IEnumerable<JassSyntaxNode> GetChildNodes();
+
+        public abstract IEnumerable<JassSyntaxToken> GetChildTokens();
+
+        public abstract IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens();
+
+        public abstract IEnumerable<JassSyntaxNode> GetDescendantNodes();
+
+        public abstract IEnumerable<JassSyntaxToken> GetDescendantTokens();
+
+        public abstract IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens();
 
         public abstract JassSyntaxToken GetFirstToken();
 

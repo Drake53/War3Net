@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -39,6 +42,58 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             OpenParenToken.WriteTo(writer);
             Expression.WriteTo(writer);
             CloseParenToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Expression;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return OpenParenToken;
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return OpenParenToken;
+            yield return Expression;
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return OpenParenToken;
+
+            foreach (var descendant in Expression.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return OpenParenToken;
+
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return CloseParenToken;
         }
 
         public override string ToString() => $"{OpenParenToken}{Expression}{CloseParenToken}";

@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -46,6 +49,60 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             OpenParenToken.WriteTo(writer);
             ArgumentList.WriteTo(writer);
             CloseParenToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            return ArgumentList.Items;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return OpenParenToken;
+            foreach (var child in ArgumentList.Separators)
+            {
+                yield return child;
+            }
+
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return OpenParenToken;
+            foreach (var child in ArgumentList.GetChildNodesAndTokens())
+            {
+                yield return child;
+            }
+
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            return ArgumentList.GetDescendantNodes();
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return OpenParenToken;
+            foreach (var descendant in ArgumentList.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return CloseParenToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return OpenParenToken;
+            foreach (var descendant in ArgumentList.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return CloseParenToken;
         }
 
         public override string ToString() => $"{OpenParenToken}{ArgumentList}{CloseParenToken}";

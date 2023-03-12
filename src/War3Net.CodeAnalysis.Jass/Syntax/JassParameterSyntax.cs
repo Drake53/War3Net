@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -35,6 +38,66 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             Type.WriteTo(writer);
             IdentifierName.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Type;
+            yield return IdentifierName;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield break;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return Type;
+            yield return IdentifierName;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Type;
+            foreach (var descendant in Type.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in Type.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in IdentifierName.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return Type;
+            foreach (var descendant in Type.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{Type} {IdentifierName}";

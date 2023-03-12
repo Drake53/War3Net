@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -36,6 +39,56 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             TakesToken.WriteTo(writer);
             ParameterList.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            return ParameterList.Items;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return TakesToken;
+
+            foreach (var child in ParameterList.Separators)
+            {
+                yield return child;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return TakesToken;
+
+            foreach (var child in ParameterList.GetChildNodesAndTokens())
+            {
+                yield return child;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            return ParameterList.GetDescendantNodes();
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return TakesToken;
+
+            foreach (var descendant in ParameterList.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return TakesToken;
+
+            foreach (var descendant in ParameterList.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{TakesToken} {ParameterList}";

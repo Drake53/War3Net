@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -38,6 +41,70 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             ElseIfClauseDeclarator.WriteTo(writer);
             Statements.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return ElseIfClauseDeclarator;
+            foreach (var child in Statements)
+            {
+                yield return child;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield break;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return ElseIfClauseDeclarator;
+            foreach (var child in Statements)
+            {
+                yield return child;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return ElseIfClauseDeclarator;
+            foreach (var descendant in ElseIfClauseDeclarator.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in ElseIfClauseDeclarator.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return ElseIfClauseDeclarator;
+            foreach (var descendant in ElseIfClauseDeclarator.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{ElseIfClauseDeclarator} [...]";

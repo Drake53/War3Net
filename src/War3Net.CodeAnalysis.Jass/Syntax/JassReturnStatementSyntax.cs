@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -40,6 +43,68 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             ReturnToken.WriteTo(writer);
             Value?.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            if (Value is not null)
+            {
+                yield return Value;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return ReturnToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return ReturnToken;
+
+            if (Value is not null)
+            {
+                yield return Value;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            if (Value is not null)
+            {
+                yield return Value;
+                foreach (var descendant in Value.GetDescendantNodes())
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return ReturnToken;
+
+            if (Value is not null)
+            {
+                foreach (var descendant in Value.GetDescendantTokens())
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return ReturnToken;
+
+            if (Value is not null)
+            {
+                yield return Value;
+                foreach (var descendant in Value.GetDescendantNodesAndTokens())
+                {
+                    yield return descendant;
+                }
+            }
         }
 
         public override string ToString() => $"{ReturnToken}{Value.OptionalPrefixed()}";

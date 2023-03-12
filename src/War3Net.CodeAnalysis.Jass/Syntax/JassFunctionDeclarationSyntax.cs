@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -43,6 +46,78 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             FunctionDeclarator.WriteTo(writer);
             Statements.WriteTo(writer);
             EndFunctionToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return FunctionDeclarator;
+
+            foreach (var child in Statements)
+            {
+                yield return child;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return EndFunctionToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return FunctionDeclarator;
+
+            foreach (var child in Statements)
+            {
+                yield return child;
+            }
+
+            yield return EndFunctionToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return FunctionDeclarator;
+            foreach (var descendant in FunctionDeclarator.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in FunctionDeclarator.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndFunctionToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return FunctionDeclarator;
+            foreach (var descendant in FunctionDeclarator.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in Statements.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndFunctionToken;
         }
 
         public override string ToString() => $"{FunctionDeclarator} [...]";

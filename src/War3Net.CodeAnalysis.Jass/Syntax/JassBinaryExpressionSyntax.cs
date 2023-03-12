@@ -5,8 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
@@ -41,6 +44,71 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Left.WriteTo(writer);
             OperatorToken.WriteTo(writer);
             Right.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Left;
+            yield return Right;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return OperatorToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return Left;
+            yield return OperatorToken;
+            yield return Right;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Left;
+            foreach (var descendant in Left.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            yield return Right;
+            foreach (var descendant in Right.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in Left.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return OperatorToken;
+
+            foreach (var descendant in Right.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return Left;
+            foreach (var descendant in Left.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return OperatorToken;
+
+            yield return Right;
+            foreach (var descendant in Right.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
         }
 
         public override string ToString() => $"{Left} {OperatorToken} {Right}";

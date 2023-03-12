@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -37,6 +40,51 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             Declarations.WriteTo(writer);
             EndOfFileToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            return Declarations;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return EndOfFileToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            foreach (var child in Declarations)
+            {
+                yield return child;
+            }
+
+            yield return EndOfFileToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            return Declarations.GetDescendantNodes();
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in Declarations.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndOfFileToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            foreach (var descendant in Declarations.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return EndOfFileToken;
         }
 
         public override JassSyntaxToken GetFirstToken() => Declarations.IsEmpty ? EndOfFileToken : Declarations[0].GetFirstToken();

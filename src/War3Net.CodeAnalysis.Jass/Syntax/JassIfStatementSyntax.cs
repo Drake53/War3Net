@@ -5,9 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -49,6 +52,114 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             ElseIfClauses.WriteTo(writer);
             ElseClause?.WriteTo(writer);
             EndIfToken.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return IfClause;
+
+            foreach (var child in ElseIfClauses)
+            {
+                yield return child;
+            }
+
+            if (ElseClause is not null)
+            {
+                yield return ElseClause;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return EndIfToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        {
+            yield return IfClause;
+
+            foreach (var child in ElseIfClauses)
+            {
+                yield return child;
+            }
+
+            if (ElseClause is not null)
+            {
+                yield return ElseClause;
+            }
+
+            yield return EndIfToken;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return IfClause;
+            foreach (var descendant in IfClause.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in ElseIfClauses.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            if (ElseClause is not null)
+            {
+                yield return ElseClause;
+                foreach (var descendant in ElseClause.GetDescendantNodes())
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in IfClause.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in ElseIfClauses.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            if (ElseClause is not null)
+            {
+                foreach (var descendant in ElseClause.GetDescendantTokens())
+                {
+                    yield return descendant;
+                }
+            }
+
+            yield return EndIfToken;
+        }
+
+        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        {
+            yield return IfClause;
+            foreach (var descendant in IfClause.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in ElseIfClauses.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            if (ElseClause is not null)
+            {
+                yield return ElseClause;
+                foreach (var descendant in ElseClause.GetDescendantNodesAndTokens())
+                {
+                    yield return descendant;
+                }
+            }
+
+            yield return EndIfToken;
         }
 
         public override string ToString() => IfClause.ToString();

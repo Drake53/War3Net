@@ -5,9 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Text;
+
+using OneOf;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -41,6 +45,24 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             {
                 array[i].WriteTo(writer);
             }
+        }
+
+        public static IEnumerable<JassSyntaxNode> GetDescendantNodes<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array)
+            where TSyntaxNode : JassSyntaxNode
+        {
+            return array.SelectMany(item => item.GetDescendantNodes());
+        }
+
+        public static IEnumerable<JassSyntaxToken> GetDescendantTokens<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array)
+            where TSyntaxNode : JassSyntaxNode
+        {
+            return array.SelectMany(item => item.GetDescendantTokens());
+        }
+
+        public static IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array)
+            where TSyntaxNode : JassSyntaxNode
+        {
+            return array.SelectMany(item => item.GetDescendantNodesAndTokens());
         }
 
         internal static ImmutableArray<T> ReplaceFirstItem<T>(this ImmutableArray<T> array, T newItem)
