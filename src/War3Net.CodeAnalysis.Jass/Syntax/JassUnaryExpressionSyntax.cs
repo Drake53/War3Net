@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassUnaryExpressionSyntax : JassExpressionSyntax
     {
-        public JassUnaryExpressionSyntax(
+        internal JassUnaryExpressionSyntax(
             JassSyntaxToken operatorToken,
             JassExpressionSyntax expression)
         {

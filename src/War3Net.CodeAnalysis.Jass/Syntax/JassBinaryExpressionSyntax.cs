@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassBinaryExpressionSyntax : JassExpressionSyntax
     {
-        public JassBinaryExpressionSyntax(
+        internal JassBinaryExpressionSyntax(
             JassExpressionSyntax left,
             JassSyntaxToken operatorToken,
             JassExpressionSyntax right)

@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassParenthesizedExpressionSyntax : JassExpressionSyntax
     {
-        public JassParenthesizedExpressionSyntax(
+        internal JassParenthesizedExpressionSyntax(
             JassSyntaxToken openParenToken,
             JassExpressionSyntax expression,
             JassSyntaxToken closeParenToken)
