@@ -11,6 +11,15 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassTypeDeclarationSyntax TypeDeclaration(JassIdentifierNameSyntax identifierName, JassTypeSyntax baseType)
+        {
+            return new JassTypeDeclarationSyntax(
+                Token(JassSyntaxKind.TypeKeyword),
+                identifierName,
+                Token(JassSyntaxKind.ExtendsKeyword),
+                baseType);
+        }
+
         public static JassTypeDeclarationSyntax TypeDeclaration(string name, JassTypeSyntax baseType)
         {
             return new JassTypeDeclarationSyntax(

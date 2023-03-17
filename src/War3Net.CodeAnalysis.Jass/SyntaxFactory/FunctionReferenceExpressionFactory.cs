@@ -11,6 +11,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassFunctionReferenceExpressionSyntax FunctionReferenceExpression(JassIdentifierNameSyntax identifierName)
+        {
+            return new JassFunctionReferenceExpressionSyntax(
+                Token(JassSyntaxKind.FunctionKeyword),
+                identifierName);
+        }
+
         public static JassFunctionReferenceExpressionSyntax FunctionReferenceExpression(string name)
         {
             return new JassFunctionReferenceExpressionSyntax(

@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -13,11 +14,25 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassElseClauseSyntax ElseClause(params JassStatementSyntax[] body)
+        public static JassElseClauseSyntax ElseClause(params JassStatementSyntax[] statements)
         {
             return new JassElseClauseSyntax(
                 Token(JassSyntaxKind.ElseKeyword),
-                body.ToImmutableArray());
+                statements.ToImmutableArray());
+        }
+
+        public static JassElseClauseSyntax ElseClause(IEnumerable<JassStatementSyntax> statements)
+        {
+            return new JassElseClauseSyntax(
+                Token(JassSyntaxKind.ElseKeyword),
+                statements.ToImmutableArray());
+        }
+
+        public static JassElseClauseSyntax ElseClause(ImmutableArray<JassStatementSyntax> statements)
+        {
+            return new JassElseClauseSyntax(
+                Token(JassSyntaxKind.ElseKeyword),
+                statements);
         }
     }
 }

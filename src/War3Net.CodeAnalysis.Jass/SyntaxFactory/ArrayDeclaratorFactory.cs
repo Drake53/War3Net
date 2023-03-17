@@ -18,5 +18,13 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ArrayKeyword),
                 identifierName);
         }
+
+        public static JassArrayDeclaratorSyntax ArrayDeclarator(JassTypeSyntax type, string name)
+        {
+            return new JassArrayDeclaratorSyntax(
+                type,
+                Token(JassSyntaxKind.ArrayKeyword),
+                ParseIdentifierName(name));
+        }
     }
 }

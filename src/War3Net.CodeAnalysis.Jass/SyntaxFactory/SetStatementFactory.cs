@@ -11,11 +11,20 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
                 Token(JassSyntaxKind.SetKeyword),
-                ParseIdentifierName(name),
+                identifierName,
+                null,
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
                 null,
                 EqualsValueClause(value));
         }
@@ -29,12 +38,66 @@ namespace War3Net.CodeAnalysis.Jass
                 value);
         }
 
-        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax value)
         {
             return new JassSetStatementSyntax(
                 Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
+                null,
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax elementAccessClause, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                elementAccessClause,
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax elementAccessClause, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                elementAccessClause,
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax elementAccessExpression, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
                 ElementAccessClause(elementAccessExpression),
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                ElementAccessClause(elementAccessExpression),
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassElementAccessClauseSyntax elementAccessClause, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                elementAccessClause,
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassElementAccessClauseSyntax elementAccessClause, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                elementAccessClause,
                 EqualsValueClause(value));
         }
 
@@ -45,6 +108,15 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 ElementAccessClause(elementAccessExpression),
                 value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                ElementAccessClause(elementAccessExpression),
+                EqualsValueClause(value));
         }
     }
 }

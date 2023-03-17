@@ -14,6 +14,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassFunctionDeclarationSyntax FunctionDeclaration(JassFunctionDeclaratorSyntax functionDeclarator, params JassStatementSyntax[] statements)
+        {
+            return new JassFunctionDeclarationSyntax(
+                functionDeclarator,
+                statements.ToImmutableArray(),
+                Token(JassSyntaxKind.EndFunctionKeyword));
+        }
+
         public static JassFunctionDeclarationSyntax FunctionDeclaration(JassFunctionDeclaratorSyntax functionDeclarator, IEnumerable<JassStatementSyntax> statements)
         {
             return new JassFunctionDeclarationSyntax(
@@ -22,11 +30,11 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.EndFunctionKeyword));
         }
 
-        public static JassFunctionDeclarationSyntax FunctionDeclaration(JassFunctionDeclaratorSyntax functionDeclarator, params JassStatementSyntax[] statements)
+        public static JassFunctionDeclarationSyntax FunctionDeclaration(JassFunctionDeclaratorSyntax functionDeclarator, ImmutableArray<JassStatementSyntax> statements)
         {
             return new JassFunctionDeclarationSyntax(
                 functionDeclarator,
-                statements.ToImmutableArray(),
+                statements,
                 Token(JassSyntaxKind.EndFunctionKeyword));
         }
     }

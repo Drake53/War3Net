@@ -19,12 +19,44 @@ namespace War3Net.CodeAnalysis.Jass
                 null);
         }
 
-        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, string name)
+        {
+            return new JassVariableDeclaratorSyntax(
+                type,
+                ParseIdentifierName(name),
+                null);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax? value)
         {
             return new JassVariableDeclaratorSyntax(
                 type,
                 identifierName,
                 value);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                type,
+                identifierName,
+                EqualsValueClause(value));
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, string name, JassEqualsValueClauseSyntax? value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                type,
+                ParseIdentifierName(name),
+                value);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, string name, JassExpressionSyntax value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                type,
+                ParseIdentifierName(name),
+                EqualsValueClause(value));
         }
     }
 }

@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -18,6 +19,22 @@ namespace War3Net.CodeAnalysis.Jass
             return new JassGlobalsDeclarationSyntax(
                 Token(JassSyntaxKind.GlobalsKeyword),
                 globalDeclarations.ToImmutableArray(),
+                Token(JassSyntaxKind.EndGlobalsKeyword));
+        }
+
+        public static JassGlobalsDeclarationSyntax GlobalsDeclaration(IEnumerable<JassGlobalDeclarationSyntax> globalDeclarations)
+        {
+            return new JassGlobalsDeclarationSyntax(
+                Token(JassSyntaxKind.GlobalsKeyword),
+                globalDeclarations.ToImmutableArray(),
+                Token(JassSyntaxKind.EndGlobalsKeyword));
+        }
+
+        public static JassGlobalsDeclarationSyntax GlobalsDeclaration(ImmutableArray<JassGlobalDeclarationSyntax> globalDeclarations)
+        {
+            return new JassGlobalsDeclarationSyntax(
+                Token(JassSyntaxKind.GlobalsKeyword),
+                globalDeclarations,
                 Token(JassSyntaxKind.EndGlobalsKeyword));
         }
     }

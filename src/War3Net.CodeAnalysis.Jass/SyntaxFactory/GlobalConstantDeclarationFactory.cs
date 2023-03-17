@@ -11,6 +11,33 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                type,
+                identifierName,
+                value);
+        }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                type,
+                identifierName,
+                EqualsValueClause(value));
+        }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(JassTypeSyntax type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                type,
+                ParseIdentifierName(name),
+                value);
+        }
+
         public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(JassTypeSyntax type, string name, JassExpressionSyntax value)
         {
             return new JassGlobalConstantDeclarationSyntax(

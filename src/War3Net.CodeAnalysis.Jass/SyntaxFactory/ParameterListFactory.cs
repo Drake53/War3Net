@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -12,6 +14,13 @@ namespace War3Net.CodeAnalysis.Jass
     public static partial class JassSyntaxFactory
     {
         public static JassParameterListSyntax ParameterList(params JassParameterSyntax[] parameters)
+        {
+            return new JassParameterListSyntax(
+                Token(JassSyntaxKind.TakesKeyword),
+                SeparatedSyntaxList(JassSyntaxKind.CommaToken, parameters));
+        }
+
+        public static JassParameterListSyntax ParameterList(IEnumerable<JassParameterSyntax> parameters)
         {
             return new JassParameterListSyntax(
                 Token(JassSyntaxKind.TakesKeyword),

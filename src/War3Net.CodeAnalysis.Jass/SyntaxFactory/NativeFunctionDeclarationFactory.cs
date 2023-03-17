@@ -11,6 +11,16 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassNativeFunctionDeclarationSyntax NativeFunctionDeclaration(JassIdentifierNameSyntax identifierName, JassTypeSyntax returnType, params JassParameterSyntax[] parameters)
+        {
+            return new JassNativeFunctionDeclarationSyntax(
+                null,
+                Token(JassSyntaxKind.NativeKeyword),
+                identifierName,
+                ParameterList(parameters),
+                ReturnClause(returnType));
+        }
+
         public static JassNativeFunctionDeclarationSyntax NativeFunctionDeclaration(string name, JassTypeSyntax returnType, params JassParameterSyntax[] parameters)
         {
             return new JassNativeFunctionDeclarationSyntax(

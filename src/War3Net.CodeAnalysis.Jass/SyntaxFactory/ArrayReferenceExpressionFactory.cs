@@ -11,6 +11,27 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax elementAccessClause)
+        {
+            return new JassArrayReferenceExpressionSyntax(
+                identifierName,
+                elementAccessClause);
+        }
+
+        public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(JassIdentifierNameSyntax identifierName, JassExpressionSyntax elementAccessExpression)
+        {
+            return new JassArrayReferenceExpressionSyntax(
+                identifierName,
+                ElementAccessClause(elementAccessExpression));
+        }
+
+        public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(string name, JassElementAccessClauseSyntax elementAccessClause)
+        {
+            return new JassArrayReferenceExpressionSyntax(
+                ParseIdentifierName(name),
+                elementAccessClause);
+        }
+
         public static JassArrayReferenceExpressionSyntax ArrayReferenceExpression(string name, JassExpressionSyntax elementAccessExpression)
         {
             return new JassArrayReferenceExpressionSyntax(

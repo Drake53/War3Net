@@ -14,6 +14,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassLoopStatementSyntax LoopStatement(params JassStatementSyntax[] statements)
+        {
+            return new JassLoopStatementSyntax(
+                Token(JassSyntaxKind.LoopKeyword),
+                statements.ToImmutableArray(),
+                Token(JassSyntaxKind.EndLoopKeyword));
+        }
+
         public static JassLoopStatementSyntax LoopStatement(IEnumerable<JassStatementSyntax> statements)
         {
             return new JassLoopStatementSyntax(
@@ -22,11 +30,11 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.EndLoopKeyword));
         }
 
-        public static JassLoopStatementSyntax LoopStatement(params JassStatementSyntax[] statements)
+        public static JassLoopStatementSyntax LoopStatement(ImmutableArray<JassStatementSyntax> statements)
         {
             return new JassLoopStatementSyntax(
                 Token(JassSyntaxKind.LoopKeyword),
-                statements.ToImmutableArray(),
+                statements,
                 Token(JassSyntaxKind.EndLoopKeyword));
         }
     }
