@@ -10,10 +10,6 @@
 		<PackageTags>jass;warcraft3</PackageTags>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OneOf" Version="3.0.216" />
-  </ItemGroup>
-
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 		<ProjectReference Include="..\War3Net.CodeAnalysis\War3Net.CodeAnalysis.csproj" />
 		<ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
