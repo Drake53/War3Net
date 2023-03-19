@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassLocalVariableDeclarationStatementSyntax : JassStatementSyntax
@@ -49,7 +47,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return LocalToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return LocalToken;
             yield return Declarator;
@@ -74,7 +72,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return LocalToken;
 

@@ -11,8 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using OneOf;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
@@ -59,7 +57,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             return array.SelectMany(item => item.GetDescendantTokens());
         }
 
-        public static IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array)
+        public static IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens<TSyntaxNode>(this ImmutableArray<TSyntaxNode> array)
             where TSyntaxNode : JassSyntaxNode
         {
             return array.SelectMany(item => item.GetDescendantNodesAndTokens());

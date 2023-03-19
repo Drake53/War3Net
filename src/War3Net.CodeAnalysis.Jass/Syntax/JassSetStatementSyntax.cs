@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
@@ -70,7 +68,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return SetToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return SetToken;
             yield return IdentifierName;
@@ -130,7 +128,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return SetToken;
 

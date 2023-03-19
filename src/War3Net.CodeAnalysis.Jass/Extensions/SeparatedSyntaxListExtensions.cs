@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using OneOf;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass.Extensions
@@ -39,7 +37,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
         }
 
-        public static IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, JassSyntaxToken> list)
+        public static IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, JassSyntaxToken> list)
             where TSyntaxNode : JassSyntaxNode
         {
             if (list.Items.IsEmpty)
@@ -84,7 +82,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
         }
 
-        public static IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, JassSyntaxToken> list)
+        public static IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens<TSyntaxNode>(this SeparatedSyntaxList<TSyntaxNode, JassSyntaxToken> list)
             where TSyntaxNode : JassSyntaxNode
         {
             if (list.Items.IsEmpty)

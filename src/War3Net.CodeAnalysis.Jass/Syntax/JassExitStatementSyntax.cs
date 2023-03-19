@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassExitStatementSyntax : JassStatementSyntax
@@ -49,7 +47,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return ExitWhenToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return ExitWhenToken;
             yield return Condition;
@@ -74,7 +72,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return ExitWhenToken;
 

@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassBinaryExpressionSyntax : JassExpressionSyntax
@@ -57,7 +55,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return OperatorToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return Left;
             yield return OperatorToken;
@@ -94,7 +92,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return Left;
             foreach (var descendant in Left.GetDescendantNodesAndTokens())

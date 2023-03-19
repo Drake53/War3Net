@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassGlobalVariableDeclarationSyntax : JassGlobalDeclarationSyntax
@@ -44,7 +42,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield break;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return Declarator;
         }
@@ -63,7 +61,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return Declarator.GetDescendantTokens();
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return Declarator;
             foreach (var descendant in Declarator.GetDescendantNodesAndTokens())

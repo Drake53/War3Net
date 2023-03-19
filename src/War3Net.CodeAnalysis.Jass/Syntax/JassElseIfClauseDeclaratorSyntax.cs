@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassElseIfClauseDeclaratorSyntax : JassSyntaxNode
@@ -55,7 +53,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return ThenToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return ElseIfToken;
             yield return Condition;
@@ -83,7 +81,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return ThenToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return ElseIfToken;
 

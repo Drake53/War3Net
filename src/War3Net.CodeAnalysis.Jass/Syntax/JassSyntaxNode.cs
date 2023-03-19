@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public abstract class JassSyntaxNode
@@ -30,13 +28,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public abstract IEnumerable<JassSyntaxToken> GetChildTokens();
 
-        public abstract IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens();
+        public abstract IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens();
 
         public abstract IEnumerable<JassSyntaxNode> GetDescendantNodes();
 
         public abstract IEnumerable<JassSyntaxToken> GetDescendantTokens();
 
-        public abstract IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens();
+        public abstract IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens();
 
         public abstract JassSyntaxToken GetFirstToken();
 

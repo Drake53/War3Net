@@ -10,8 +10,6 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-using OneOf;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
@@ -52,7 +50,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return EndOfFileToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetChildNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             foreach (var child in Declarations)
             {
@@ -77,7 +75,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return EndOfFileToken;
         }
 
-        public override IEnumerable<OneOf<JassSyntaxNode, JassSyntaxToken>> GetDescendantNodesAndTokens()
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             foreach (var descendant in Declarations.GetDescendantNodesAndTokens())
             {
