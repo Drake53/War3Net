@@ -18,7 +18,10 @@ namespace War3Net.CodeAnalysis.Jass
             if (equalsValueClause is not null &&
                 TryRenameExpression(equalsValueClause.Expression, out var renamedExpression))
             {
-                renamedEqualsValueClause = new JassEqualsValueClauseSyntax(renamedExpression);
+                renamedEqualsValueClause = new JassEqualsValueClauseSyntax(
+                    equalsValueClause.EqualsToken,
+                    renamedExpression);
+
                 return true;
             }
 

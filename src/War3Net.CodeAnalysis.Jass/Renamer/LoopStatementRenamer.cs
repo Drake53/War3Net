@@ -13,11 +13,15 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameLoopStatement(JassLoopStatementSyntax loopStatement, [NotNullWhen(true)] out IStatementSyntax? renamedLoopStatement)
+        private bool TryRenameLoopStatement(JassLoopStatementSyntax loopStatement, [NotNullWhen(true)] out JassStatementSyntax? renamedLoopStatement)
         {
-            if (TryRenameStatementList(loopStatement.Body, out var renamedBody))
+            if (TryRenameStatementList(loopStatement.Statements, out var renamedStatements))
             {
-                renamedLoopStatement = new JassLoopStatementSyntax(renamedBody);
+                renamedLoopStatement = new JassLoopStatementSyntax(
+                    loopStatement.LoopToken,
+                    renamedStatements.Value,
+                    loopStatement.EndLoopToken);
+
                 return true;
             }
 

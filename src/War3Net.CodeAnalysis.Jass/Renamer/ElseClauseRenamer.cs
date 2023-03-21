@@ -16,9 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
         private bool TryRenameElseClause(JassElseClauseSyntax? elseClause, [NotNullWhen(true)] out JassElseClauseSyntax? renamedElseClause)
         {
             if (elseClause is not null &&
-                TryRenameStatementList(elseClause.Body, out var renamedBody))
+                TryRenameStatementList(elseClause.Statements, out var renamedStatements))
             {
-                renamedElseClause = new JassElseClauseSyntax(renamedBody);
+                renamedElseClause = new JassElseClauseSyntax(
+                    elseClause.ElseToken,
+                    renamedStatements.Value);
+
                 return true;
             }
 

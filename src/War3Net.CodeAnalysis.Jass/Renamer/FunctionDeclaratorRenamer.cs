@@ -18,9 +18,11 @@ namespace War3Net.CodeAnalysis.Jass
             if (TryRenameFunctionIdentifierName(functionDeclarator.IdentifierName, out var renamedIdentifierName))
             {
                 renamedFunctionDeclarator = new JassFunctionDeclaratorSyntax(
+                    functionDeclarator.ConstantToken,
+                    functionDeclarator.FunctionToken,
                     renamedIdentifierName,
                     functionDeclarator.ParameterList,
-                    functionDeclarator.ReturnType);
+                    functionDeclarator.ReturnClause);
 
                 return true;
             }

@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -15,18 +14,23 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameCallStatement(JassCallStatementSyntax callStatement, [NotNullWhen(true)] out IStatementSyntax? renamedCallStatement)
+        private bool TryRenameCallStatement(JassCallStatementSyntax callStatement, [NotNullWhen(true)] out JassStatementSyntax? renamedCallStatement)
         {
             if (RenameExecuteFuncArgument &&
-                string.Equals(callStatement.IdentifierName.Name, "ExecuteFunc", StringComparison.Ordinal))
+                string.Equals(callStatement.IdentifierName.Token.Text, "ExecuteFunc", StringComparison.Ordinal))
             {
-                if (callStatement.Arguments.Arguments.Length == 1 &&
-                    callStatement.Arguments.Arguments[0] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                    _functionDeclarationRenames.TryGetValue(stringLiteralExpression.Value, out var renamedValue))
+                if (callStatement.ArgumentList.ArgumentList.Items.Length == 1 &&
+                    callStatement.ArgumentList.ArgumentList.Items[0] is JassLiteralExpressionSyntax stringLiteralExpression &&
+                    stringLiteralExpression.Token.SyntaxKind == JassSyntaxKind.StringLiteralToken &&
+                    TryRenameFunctionIdentifierToken(stringLiteralExpression.Token, out var renamedToken))
                 {
                     renamedCallStatement = new JassCallStatementSyntax(
+                        callStatement.CallToken,
                         callStatement.IdentifierName,
-                        new JassArgumentListSyntax(new IExpressionSyntax[] { new JassStringLiteralExpressionSyntax(renamedValue.Name) }.ToImmutableArray()));
+                        new JassArgumentListSyntax(
+                            callStatement.ArgumentList.OpenParenToken,
+                            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken>.Create(new JassLiteralExpressionSyntax(renamedToken)),
+                            callStatement.ArgumentList.CloseParenToken));
 
                     return true;
                 }
@@ -36,11 +40,12 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             if (TryRenameFunctionIdentifierName(callStatement.IdentifierName, out var renamedIdentifierName) |
-                TryRenameArgumentList(callStatement.Arguments, out var renamedArguments))
+                TryRenameArgumentList(callStatement.ArgumentList, out var renamedArguments))
             {
                 renamedCallStatement = new JassCallStatementSyntax(
+                    callStatement.CallToken,
                     renamedIdentifierName ?? callStatement.IdentifierName,
-                    renamedArguments ?? callStatement.Arguments);
+                    renamedArguments ?? callStatement.ArgumentList);
 
                 return true;
             }

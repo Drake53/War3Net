@@ -13,20 +13,40 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
+        private bool TryRenameIdentifierName(JassIdentifierNameSyntax identifierName, [NotNullWhen(true)] out JassExpressionSyntax? renamedIdentifierName)
+        {
+            if (TryRenameVariableIdentifierToken(identifierName.Token, out var renamedToken))
+            {
+                renamedIdentifierName = new JassIdentifierNameSyntax(renamedToken);
+                return true;
+            }
+
+            renamedIdentifierName = null;
+            return false;
+        }
+
         private bool TryRenameFunctionIdentifierName(JassIdentifierNameSyntax identifierName, [NotNullWhen(true)] out JassIdentifierNameSyntax? renamedIdentifierName)
         {
-            return _functionDeclarationRenames.TryGetValue(identifierName.Name, out renamedIdentifierName);
+            if (TryRenameFunctionIdentifierToken(identifierName.Token, out var renamedToken))
+            {
+                renamedIdentifierName = new JassIdentifierNameSyntax(renamedToken);
+                return true;
+            }
+
+            renamedIdentifierName = null;
+            return false;
         }
 
         private bool TryRenameVariableIdentifierName(JassIdentifierNameSyntax identifierName, [NotNullWhen(true)] out JassIdentifierNameSyntax? renamedIdentifierName)
         {
-            if (_localVariableNames.Contains(identifierName.Name))
+            if (TryRenameVariableIdentifierToken(identifierName.Token, out var renamedToken))
             {
-                renamedIdentifierName = null;
-                return false;
+                renamedIdentifierName = new JassIdentifierNameSyntax(renamedToken);
+                return true;
             }
 
-            return _globalVariableRenames.TryGetValue(identifierName.Name, out renamedIdentifierName);
+            renamedIdentifierName = null;
+            return false;
         }
     }
 }

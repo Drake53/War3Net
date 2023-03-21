@@ -13,14 +13,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameExpression(IExpressionSyntax? expression, [NotNullWhen(true)] out IExpressionSyntax? renamedExpression)
+        private bool TryRenameExpression(JassExpressionSyntax? expression, [NotNullWhen(true)] out JassExpressionSyntax? renamedExpression)
         {
             return expression switch
             {
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => TryRenameFunctionReferenceExpression(functionReferenceExpression, out renamedExpression),
                 JassInvocationExpressionSyntax invocationExpression => TryRenameInvocationExpression(invocationExpression, out renamedExpression),
                 JassArrayReferenceExpressionSyntax arrayReferenceExpression => TryRenameArrayReferenceExpression(arrayReferenceExpression, out renamedExpression),
-                JassVariableReferenceExpressionSyntax variableReferenceExpression => TryRenameVariableReferenceExpression(variableReferenceExpression, out renamedExpression),
+                JassIdentifierNameSyntax identifierName => TryRenameIdentifierName(identifierName, out renamedExpression),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => TryRenameParenthesizedExpression(parenthesizedExpression, out renamedExpression),
                 JassUnaryExpressionSyntax unaryExpression => TryRenameUnaryExpression(unaryExpression, out renamedExpression),
                 JassBinaryExpressionSyntax binaryExpression => TryRenameBinaryExpression(binaryExpression, out renamedExpression),

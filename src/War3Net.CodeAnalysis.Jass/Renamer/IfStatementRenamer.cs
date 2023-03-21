@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -14,34 +13,17 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameIfStatement(JassIfStatementSyntax ifStatement, [NotNullWhen(true)] out IStatementSyntax? renamedIfStatement)
+        private bool TryRenameIfStatement(JassIfStatementSyntax ifStatement, [NotNullWhen(true)] out JassStatementSyntax? renamedIfStatement)
         {
-            var isRenamed = false;
-
-            var elseIfClausesBuilder = ImmutableArray.CreateBuilder<JassElseIfClauseSyntax>();
-            foreach (var elseIfClause in ifStatement.ElseIfClauses)
-            {
-                if (TryRenameElseIfClause(elseIfClause, out var renamedElseIfClause))
-                {
-                    elseIfClausesBuilder.Add(renamedElseIfClause);
-                    isRenamed = true;
-                }
-                else
-                {
-                    elseIfClausesBuilder.Add(elseIfClause);
-                }
-            }
-
-            if (TryRenameExpression(ifStatement.Condition, out var renamedCondition) |
-                TryRenameStatementList(ifStatement.Body, out var renamedBody) |
-                isRenamed |
+            if (TryRenameIfClause(ifStatement.IfClause, out var renamedIfClause) |
+                TryRenameElseIfClauseList(ifStatement.ElseIfClauses, out var renamedElseIfClauses) |
                 TryRenameElseClause(ifStatement.ElseClause, out var renamedElseClause))
             {
                 renamedIfStatement = new JassIfStatementSyntax(
-                    renamedCondition ?? ifStatement.Condition,
-                    renamedBody ?? ifStatement.Body,
-                    isRenamed ? elseIfClausesBuilder.ToImmutable() : ifStatement.ElseIfClauses,
-                    renamedElseClause ?? ifStatement.ElseClause);
+                    renamedIfClause ?? ifStatement.IfClause,
+                    renamedElseIfClauses ?? ifStatement.ElseIfClauses,
+                    renamedElseClause ?? ifStatement.ElseClause,
+                    ifStatement.EndIfToken);
 
                 return true;
             }

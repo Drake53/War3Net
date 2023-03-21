@@ -13,14 +13,14 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameArrayReferenceExpression(JassArrayReferenceExpressionSyntax arrayReferenceExpression, [NotNullWhen(true)] out IExpressionSyntax? renamedArrayReferenceExpression)
+        private bool TryRenameArrayReferenceExpression(JassArrayReferenceExpressionSyntax arrayReferenceExpression, [NotNullWhen(true)] out JassExpressionSyntax? renamedArrayReferenceExpression)
         {
             if (TryRenameVariableIdentifierName(arrayReferenceExpression.IdentifierName, out var renamedIdentifierName) |
-                TryRenameExpression(arrayReferenceExpression.Indexer, out var renamedIndexer))
+                TryRenameElementAccessClause(arrayReferenceExpression.ElementAccessClause, out var renamedElementAccessClause))
             {
                 renamedArrayReferenceExpression = new JassArrayReferenceExpressionSyntax(
                     renamedIdentifierName ?? arrayReferenceExpression.IdentifierName,
-                    renamedIndexer ?? arrayReferenceExpression.Indexer);
+                    renamedElementAccessClause ?? arrayReferenceExpression.ElementAccessClause);
 
                 return true;
             }
