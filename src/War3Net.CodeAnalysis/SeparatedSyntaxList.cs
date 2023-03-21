@@ -61,6 +61,11 @@ namespace War3Net.CodeAnalysis
             return new Builder(firstItem);
         }
 
+        public static Builder CreateBuilder(TItem firstItem, int initialCapacity)
+        {
+            return new Builder(firstItem, initialCapacity);
+        }
+
         public override string ToString()
         {
             if (Items.IsEmpty)
@@ -91,6 +96,13 @@ namespace War3Net.CodeAnalysis
                 _itemBuilder = ImmutableArray.CreateBuilder<TItem>();
                 _itemBuilder.Add(firstItem);
                 _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>();
+            }
+
+            internal Builder(TItem firstItem, int initialCapacity)
+            {
+                _itemBuilder = ImmutableArray.CreateBuilder<TItem>(initialCapacity);
+                _itemBuilder.Add(firstItem);
+                _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>(initialCapacity > 1 ? initialCapacity - 1 : 0);
             }
 
             public void Add(TSeparator separator, TItem item)

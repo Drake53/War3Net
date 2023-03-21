@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass
                 return SeparatedSyntaxList<TItem, JassSyntaxToken>.Empty;
             }
 
-            var builder = SeparatedSyntaxList<TItem, JassSyntaxToken>.CreateBuilder(items[0]);
+            var builder = SeparatedSyntaxList<TItem, JassSyntaxToken>.CreateBuilder(items[0], items.Length);
             for (var i = 1; i < items.Length; i++)
             {
                 builder.Add(Token(syntaxKind), items[i]);
