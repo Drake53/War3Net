@@ -52,8 +52,11 @@ namespace War3Net.CodeAnalysis.Jass
                     whitespaceTriviaParser,
                     singleLineCommentTriviaParser)
                     .Many()
-                    .Then(singleNewlineTriviaParser.Optional(), (trivia, newline)
-                        => new JassSyntaxTriviaList((newline.HasValue ? trivia.Append(newline.Value) : trivia).ToImmutableArray())),
+                    .Then(
+                        OneOf(
+                            singleNewlineTriviaParser.Select(newline => Maybe.Just(newline)),
+                            End.ThenReturn(Maybe.Nothing<JassSyntaxTrivia>())),
+                        (trivia, newline) => new JassSyntaxTriviaList((newline.HasValue ? trivia.Append(newline.Value) : trivia).ToImmutableArray())),
                 Return(JassSyntaxTriviaList.Empty));
         }
     }
