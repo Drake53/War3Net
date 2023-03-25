@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var whitespaceTriviaParser = GetWhitespaceTriviaParser();
             var newlineTriviaParser = GetNewlineTriviaParser();
-            var optionalNewlineTriviaParser = GetOptionalNewlineTriviaParser();
+            var singleNewlineTriviaParser = GetSingleNewlineTriviaParser();
             var singleLineCommentTriviaParser = GetSingleLineCommentTriviaParser();
 
             var simpleTriviaListParser = GetSimpleTriviaListParser(
@@ -47,7 +47,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             var trailingTriviaListParser = GetTrailingTriviaListParser(
                 whitespaceTriviaParser,
-                optionalNewlineTriviaParser,
+                singleNewlineTriviaParser,
                 singleLineCommentTriviaParser);
 
             var identifierNameParser = GetIdentifierNameParser(simpleTriviaListParser);
@@ -59,8 +59,8 @@ namespace War3Net.CodeAnalysis.Jass
             var parameterParser = GetParameterParser(identifierNameParser, typeParser);
             var parameterListParser = GetParameterListParser(simpleTriviaListParser, parameterParser);
             var argumentListParser = GetArgumentListParser(simpleTriviaListParser, expressionParser);
-            var returnClauseParser = GetReturnClauseParser(typeParser, simpleTriviaListParser, trailingTriviaListParser);
-            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, returnClauseParser, simpleTriviaListParser);
+            var returnClauseParser = GetReturnClauseParser(typeParser, simpleTriviaListParser);
+            var functionDeclaratorParser = GetFunctionDeclaratorParser(identifierNameParser, parameterListParser, returnClauseParser, simpleTriviaListParser, trailingTriviaListParser);
             var variableOrArrayDeclaratorParser = GetVariableOrArrayDeclaratorParser(equalsValueClauseParser, identifierNameParser, typeParser, simpleTriviaListParser);
             var elementAccessClauseParser = GetElementAccessClauseParser(simpleTriviaListParser, expressionParser);
 
@@ -89,10 +89,12 @@ namespace War3Net.CodeAnalysis.Jass
                 equalsValueClauseParser,
                 identifierNameParser,
                 typeParser,
-                simpleTriviaListParser);
+                simpleTriviaListParser,
+                trailingTriviaListParser);
 
             var globalVariableDeclarationParser = GetGlobalVariableDeclarationParser(
-                variableOrArrayDeclaratorParser);
+                variableOrArrayDeclaratorParser,
+                trailingTriviaListParser);
 
             var globalDeclarationParser = GetGlobalDeclarationParser(
                 globalConstantDeclarationParser,
@@ -107,13 +109,15 @@ namespace War3Net.CodeAnalysis.Jass
             var typeDeclarationParser = GetTypeDeclarationParser(
                 identifierNameParser,
                 typeParser,
-                simpleTriviaListParser);
+                simpleTriviaListParser,
+                trailingTriviaListParser);
 
             var nativeFunctionDeclarationParser = GetNativeFunctionDeclarationParser(
                 identifierNameParser,
                 parameterListParser,
                 returnClauseParser,
-                simpleTriviaListParser);
+                simpleTriviaListParser,
+                trailingTriviaListParser);
 
             var topLevelDeclarationParser = GetTopLevelDeclarationParser(
                 typeDeclarationParser,
@@ -275,6 +279,9 @@ namespace War3Net.CodeAnalysis.Jass
             internal static readonly Parser<char, char> CloseBracket = Char(JassSymbol.CloseBracketChar);
             internal static readonly Parser<char, char> X = CIChar(JassSymbol.XChar);
 
+            internal static readonly Parser<char, string> CarriageReturnLineFeed = String(JassSymbol.CarriageReturnLineFeed);
+            internal static readonly Parser<char, string> CarriageReturnString = String(JassSymbol.CarriageReturn);
+            internal static readonly Parser<char, string> LineFeedString = String(JassSymbol.LineFeed);
             internal static readonly Parser<char, string> EqualsEquals = String(JassSymbol.EqualsEquals);
             internal static readonly Parser<char, string> LessThanEquals = String(JassSymbol.LessThanEquals);
             internal static readonly Parser<char, string> GreaterThanEquals = String(JassSymbol.GreaterThanEquals);

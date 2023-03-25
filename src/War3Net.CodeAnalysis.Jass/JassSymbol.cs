@@ -33,6 +33,8 @@ namespace War3Net.CodeAnalysis.Jass
         public const char CloseBracketChar = ']';
         public const char XChar = 'x';
 
+        public const string LineFeed = "\n";
+        public const string CarriageReturn = "\r";
         public const string Dollar = "$";
         public const string OpenParen = "(";
         public const string CloseParen = ")";
@@ -49,6 +51,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const string OpenBracket = "[";
         public const string CloseBracket = "]";
 
+        public const string CarriageReturnLineFeed = "\r\n";
         public const string SlashSlash = "//";
         public const string ExclamationEquals = "!=";
         public const string LessThanEquals = "<=";

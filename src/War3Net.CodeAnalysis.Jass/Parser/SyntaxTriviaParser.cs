@@ -30,10 +30,12 @@ namespace War3Net.CodeAnalysis.Jass
                 .Select(newline => new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, newline));
         }
 
-        internal static Parser<char, JassSyntaxTrivia> GetOptionalNewlineTriviaParser()
+        internal static Parser<char, JassSyntaxTrivia> GetSingleNewlineTriviaParser()
         {
-            return OneOf(Symbol.CarriageReturn, Symbol.LineFeed)
-                .ManyString()
+            return OneOf(
+                Try(Symbol.CarriageReturnLineFeed),
+                Symbol.CarriageReturnString,
+                Symbol.LineFeedString)
                 .Select(newline => new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, newline));
         }
 

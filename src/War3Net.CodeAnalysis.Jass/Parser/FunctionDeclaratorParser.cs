@@ -22,19 +22,21 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassIdentifierNameSyntax> identifierNameParser,
             Parser<char, JassParameterListOrEmptyParameterListSyntax> parameterListParser,
             Parser<char, JassReturnClauseSyntax> returnClauseParser,
-            Parser<char, JassSyntaxTriviaList> triviaParser)
+            Parser<char, JassSyntaxTriviaList> triviaParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
-            return Map<char, JassSyntaxToken, JassIdentifierNameSyntax, JassParameterListOrEmptyParameterListSyntax, JassReturnClauseSyntax, Func<Maybe<JassSyntaxToken>, JassFunctionDeclaratorSyntax>>(
-                (functionToken, identifierName, parameterList, returnClause) => constantToken => new JassFunctionDeclaratorSyntax(
+            return Map<char, JassSyntaxToken, JassIdentifierNameSyntax, JassParameterListOrEmptyParameterListSyntax, JassReturnClauseSyntax, JassSyntaxTriviaList, Func<Maybe<JassSyntaxToken>, JassFunctionDeclaratorSyntax>>(
+                (functionToken, identifierName, parameterList, returnClause, trailingTrivia) => constantToken => new JassFunctionDeclaratorSyntax(
                     constantToken.GetValueOrDefault(),
                     functionToken,
                     identifierName,
                     parameterList,
-                    returnClause),
+                    returnClause.AppendTrivia(trailingTrivia)),
                 Keyword.Function.AsToken(triviaParser, JassSyntaxKind.FunctionKeyword),
                 identifierNameParser,
                 parameterListParser,
-                returnClauseParser);
+                returnClauseParser,
+                trailingTriviaParser);
         }
     }
 }

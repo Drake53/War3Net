@@ -18,16 +18,14 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, JassReturnClauseSyntax> GetReturnClauseParser(
             Parser<char, JassTypeSyntax> typeParser,
-            Parser<char, JassSyntaxTriviaList> triviaParser,
-            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
             return Map(
-                (returnsToken, type, trailingTrivia) => new JassReturnClauseSyntax(
+                (returnsToken, type) => new JassReturnClauseSyntax(
                     returnsToken,
-                    type.AppendTrivia(trailingTrivia)),
+                    type),
                 Keyword.Returns.AsToken(triviaParser, JassSyntaxKind.ReturnsKeyword),
-                typeParser,
-                trailingTriviaParser);
+                typeParser);
         }
     }
 }

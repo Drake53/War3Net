@@ -44,7 +44,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal static Parser<char, JassSyntaxTriviaList> GetTrailingTriviaListParser(
             Parser<char, JassSyntaxTrivia> whitespaceTriviaParser,
-            Parser<char, JassSyntaxTrivia> optionalNewlineTriviaParser,
+            Parser<char, JassSyntaxTrivia> singleNewlineTriviaParser,
             Parser<char, JassSyntaxTrivia> singleLineCommentTriviaParser)
         {
             return OneOf(
@@ -52,7 +52,8 @@ namespace War3Net.CodeAnalysis.Jass
                     whitespaceTriviaParser,
                     singleLineCommentTriviaParser)
                     .Many()
-                    .Then(optionalNewlineTriviaParser, (trivia, newline) => new JassSyntaxTriviaList(trivia.Append(newline).ToImmutableArray())),
+                    .Then(singleNewlineTriviaParser.Optional(), (trivia, newline)
+                        => new JassSyntaxTriviaList((newline.HasValue ? trivia.Append(newline.Value) : trivia).ToImmutableArray())),
                 Return(JassSyntaxTriviaList.Empty));
         }
     }
