@@ -11,7 +11,7 @@ using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassElementAccessClauseSyntax : JassExpressionSyntax
+    public class JassElementAccessClauseSyntax : JassSyntaxNode
     {
         internal JassElementAccessClauseSyntax(
             JassSyntaxToken openBracketToken,
