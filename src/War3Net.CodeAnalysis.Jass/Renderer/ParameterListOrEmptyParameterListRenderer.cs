@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="GlobalDeclarationRenderer.cs" company="Drake53">
+// <copyright file="ParameterListOrEmptyParameterListRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,12 +13,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassGlobalDeclarationSyntax globalDeclaration)
+        public void Render(JassParameterListOrEmptyParameterListSyntax parameterListOrEmptyParameterList)
         {
-            switch (globalDeclaration)
+            switch (parameterListOrEmptyParameterList)
             {
-                case JassGlobalConstantDeclarationSyntax globalConstantDeclaration: Render(globalConstantDeclaration); break;
-                case JassGlobalVariableDeclarationSyntax globalVariableDeclaration: Render(globalVariableDeclaration); break;
+                case JassParameterListSyntax parameterList: Render(parameterList); break;
+                case JassEmptyParameterListSyntax emptyParameterList: Render(emptyParameterList); break;
 
                 default: throw new NotSupportedException();
             }

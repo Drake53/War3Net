@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="HexadecimalLiteralExpressionRenderer.cs" company="Drake53">
+// <copyright file="EmptyParameterListRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression)
+        public void Render(JassEmptyParameterListSyntax emptyParameterList)
         {
-            Write(hexadecimalLiteralExpression.ToString());
+            Render(emptyParameterList.TakesToken);
+            WriteSpace();
+            Render(emptyParameterList.NothingToken);
         }
     }
 }

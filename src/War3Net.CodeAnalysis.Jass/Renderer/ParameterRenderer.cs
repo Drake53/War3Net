@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassParameterSyntax parameter)
         {
             Render(parameter.Type);
-            Write(' ');
+            WriteSpace();
             Render(parameter.IdentifierName);
         }
     }

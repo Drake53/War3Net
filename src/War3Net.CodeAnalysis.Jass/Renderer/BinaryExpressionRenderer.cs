@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -15,7 +14,9 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassBinaryExpressionSyntax binaryExpression)
         {
             Render(binaryExpression.Left);
-            Write($" {binaryExpression.Operator.GetSymbol()} ");
+            WriteSpace();
+            Render(binaryExpression.OperatorToken);
+            WriteSpace();
             Render(binaryExpression.Right);
         }
     }

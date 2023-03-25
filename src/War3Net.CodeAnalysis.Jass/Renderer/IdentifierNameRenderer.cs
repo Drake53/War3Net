@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassIdentifierNameSyntax identifierName)
         {
-            Write(identifierName.Name);
+            Render(identifierName.Token);
         }
     }
 }

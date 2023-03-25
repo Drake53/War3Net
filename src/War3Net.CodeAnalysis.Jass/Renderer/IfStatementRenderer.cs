@@ -13,12 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassIfStatementSyntax ifStatement)
         {
-            Write($"{JassKeyword.If} ");
-            Render(ifStatement.Condition);
-            WriteLine($" {JassKeyword.Then}");
-            Indent();
-            Render(ifStatement.Body);
-            Outdent();
+            Render(ifStatement.IfClause);
 
             foreach (var elseIfClause in ifStatement.ElseIfClauses)
             {
@@ -30,7 +25,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Render(ifStatement.ElseClause);
             }
 
-            Write(JassKeyword.EndIf);
+            Render(ifStatement.EndIfToken);
         }
     }
 }

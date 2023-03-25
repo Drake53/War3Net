@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Linq;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -15,18 +13,15 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassParameterListSyntax parameterList)
         {
-            if (parameterList.Parameters.Any())
+            Render(parameterList.TakesToken);
+            WriteSpace();
+
+            Render(parameterList.ParameterList.Items[0]);
+            for (var i = 1; i < parameterList.ParameterList.Items.Length; i++)
             {
-                Render(parameterList.Parameters.First());
-                foreach (var parameter in parameterList.Parameters.Skip(1))
-                {
-                    Write($"{JassSymbol.Comma} ");
-                    Render(parameter);
-                }
-            }
-            else
-            {
-                Render(JassTypeSyntax.Nothing);
+                Render(parameterList.ParameterList.Separators[i - 1]);
+                WriteSpace();
+                Render(parameterList.ParameterList.Items[i]);
             }
         }
     }

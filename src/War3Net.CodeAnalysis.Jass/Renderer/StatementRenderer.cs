@@ -13,12 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(IStatementSyntax statement)
+        public void Render(JassStatementSyntax statement)
         {
             switch (statement)
             {
-                case JassEmptySyntax empty: Render(empty); break;
-                case JassCommentSyntax comment: Render(comment); break;
                 case JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement: Render(localVariableDeclarationStatement); break;
                 case JassSetStatementSyntax setStatement: Render(setStatement); break;
                 case JassCallStatementSyntax callStatement: Render(callStatement); break;

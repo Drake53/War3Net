@@ -16,8 +16,9 @@ namespace War3Net.CodeAnalysis.Jass
             foreach (var declaration in compilationUnit.Declarations)
             {
                 Render(declaration);
-                WriteLine();
             }
+
+            Render(compilationUnit.EndOfFileToken.LeadingTrivia);
         }
     }
 }

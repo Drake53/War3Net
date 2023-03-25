@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="FunctionReferenceExpressionRenderer.cs" company="Drake53">
+// <copyright file="GlobalConstantDeclarationRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,11 +11,15 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassFunctionReferenceExpressionSyntax functionReferenceExpression)
+        public void Render(JassGlobalConstantDeclarationSyntax globalConstantDeclaration)
         {
-            Render(functionReferenceExpression.FunctionToken);
+            Render(globalConstantDeclaration.ConstantToken);
             WriteSpace();
-            Render(functionReferenceExpression.IdentifierName);
+            Render(globalConstantDeclaration.Type);
+            WriteSpace();
+            Render(globalConstantDeclaration.IdentifierName);
+            WriteSpace();
+            Render(globalConstantDeclaration.Value);
         }
     }
 }

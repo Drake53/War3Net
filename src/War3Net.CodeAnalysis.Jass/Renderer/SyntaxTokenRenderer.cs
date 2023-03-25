@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CharacterLiteralExpressionRenderer.cs" company="Drake53">
+// <copyright file="SyntaxTokenRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassCharacterLiteralExpressionSyntax characterLiteralExpression)
+        public void Render(JassSyntaxToken syntaxToken)
         {
-            Write(characterLiteralExpression.ToString());
+            Render(syntaxToken.LeadingTrivia);
+            Write(syntaxToken.Text);
+            Render(syntaxToken.TrailingTrivia);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassElseClauseSyntax elseClause)
         {
-            WriteLine(JassKeyword.Else);
+            Render(elseClause.ElseToken);
             Indent();
-            Render(elseClause.Body);
+            Render(elseClause.Statements);
             Outdent();
         }
     }

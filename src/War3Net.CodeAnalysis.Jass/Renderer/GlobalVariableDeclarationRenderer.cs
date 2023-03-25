@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="DebugCustomScriptActionRenderer.cs" company="Drake53">
+// <copyright file="GlobalVariableDeclarationRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,10 +11,9 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassDebugCustomScriptAction debugCustomScriptAction)
+        public void Render(JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
         {
-            Write($"{JassKeyword.Debug} ");
-            Render(debugCustomScriptAction.Action);
+            Render(globalVariableDeclaration.Declarator);
         }
     }
 }

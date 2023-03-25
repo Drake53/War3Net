@@ -13,11 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassLoopStatementSyntax loopStatement)
         {
-            WriteLine(JassKeyword.Loop);
+            Render(loopStatement.LoopToken);
             Indent();
-            Render(loopStatement.Body);
+            Render(loopStatement.Statements);
             Outdent();
-            Write(JassKeyword.EndLoop);
+            Render(loopStatement.EndLoopToken);
         }
     }
 }

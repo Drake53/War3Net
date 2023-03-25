@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="DeclarationRenderer.cs" company="Drake53">
+// <copyright file="TopLevelDeclarationRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,15 +13,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(ITopLevelDeclarationSyntax declaration)
+        public void Render(JassTopLevelDeclarationSyntax declaration)
         {
             switch (declaration)
             {
-                case JassEmptySyntax empty: Render(empty); break;
-                case JassCommentSyntax comment: Render(comment); break;
                 case JassTypeDeclarationSyntax typeDeclaration: Render(typeDeclaration); break;
-                case JassGlobalDeclarationListSyntax globalDeclarationList: Render(globalDeclarationList); break;
-                case JassGlobalDeclarationSyntax globalDeclaration: Render(globalDeclaration); break;
+                case JassGlobalsDeclarationSyntax globalDeclarationList: Render(globalDeclarationList); break;
                 case JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration: Render(nativeFunctionDeclaration); break;
                 case JassFunctionDeclarationSyntax functionDeclaration: Render(functionDeclaration); break;
 

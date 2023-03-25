@@ -14,9 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassArrayReferenceExpressionSyntax arrayReferenceExpression)
         {
             Render(arrayReferenceExpression.IdentifierName);
-            Write(JassSymbol.LeftSquareBracket);
-            Render(arrayReferenceExpression.Indexer);
-            Write(JassSymbol.RightSquareBracket);
+            Render(arrayReferenceExpression.ElementAccessClause);
         }
     }
 }

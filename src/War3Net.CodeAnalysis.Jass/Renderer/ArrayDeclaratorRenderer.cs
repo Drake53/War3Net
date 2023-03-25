@@ -14,7 +14,9 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassArrayDeclaratorSyntax arrayDeclarator)
         {
             Render(arrayDeclarator.Type);
-            Write($" {JassKeyword.Array} ");
+            WriteSpace();
+            Render(arrayDeclarator.ArrayToken);
+            WriteSpace();
             Render(arrayDeclarator.IdentifierName);
         }
     }

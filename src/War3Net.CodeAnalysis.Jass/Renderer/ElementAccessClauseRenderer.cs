@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="StringLiteralExpressionRenderer.cs" company="Drake53">
+// <copyright file="ElementAccessClauseRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassStringLiteralExpressionSyntax stringLiteralExpression)
+        public void Render(JassElementAccessClauseSyntax elementAccessClause)
         {
-            Write(stringLiteralExpression.ToString());
+            Render(elementAccessClause.OpenBracketToken);
+            Render(elementAccessClause.Expression);
+            Render(elementAccessClause.CloseBracketToken);
         }
     }
 }

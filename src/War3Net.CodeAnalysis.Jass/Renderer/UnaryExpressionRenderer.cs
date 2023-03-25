@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -14,13 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassUnaryExpressionSyntax unaryExpression)
         {
-            if (unaryExpression.Operator == UnaryOperatorType.Not)
+            Render(unaryExpression.OperatorToken);
+            if (unaryExpression.OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword)
             {
-                Write($"{unaryExpression.Operator.GetSymbol()} ");
-            }
-            else
-            {
-                Write(unaryExpression.Operator.GetSymbol());
+                WriteSpace();
             }
 
             Render(unaryExpression.Expression);

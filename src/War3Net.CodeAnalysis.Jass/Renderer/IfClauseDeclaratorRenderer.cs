@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="GlobalsCustomScriptActionRenderer.cs" company="Drake53">
+// <copyright file="IfClauseDeclaratorRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,10 +11,13 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(JassGlobalsCustomScriptAction globalsCustomScriptAction)
+        public void Render(JassIfClauseDeclaratorSyntax ifClauseDeclarator)
         {
-            Write(JassKeyword.Globals);
-            Indent();
+            Render(ifClauseDeclarator.IfToken);
+            WriteSpace();
+            Render(ifClauseDeclarator.Condition);
+            WriteSpace();
+            Render(ifClauseDeclarator.ThenToken);
         }
     }
 }

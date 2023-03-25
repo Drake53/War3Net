@@ -14,9 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassInvocationExpressionSyntax invocationExpression)
         {
             Render(invocationExpression.IdentifierName);
-            Write(JassSymbol.LeftParenthesis);
-            Render(invocationExpression.Arguments);
-            Write(JassSymbol.RightParenthesis);
+            Render(invocationExpression.ArgumentList);
         }
     }
 }

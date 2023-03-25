@@ -34,14 +34,12 @@ namespace War3Net.CodeAnalysis.Jass
 
         public void RenderNewLine() => WriteLine();
 
-        private void Write(char c)
+        private void WriteSpace()
         {
-            if (!_currentLineIndented)
+            if (_currentLineIndented)
             {
-                WriteIndentation();
+                _writer.Write(' ');
             }
-
-            _writer.Write(c);
         }
 
         private void Write(string s)
@@ -58,12 +56,6 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _writer.Write(_options.NewLineString);
             _currentLineIndented = false;
-        }
-
-        private void WriteLine(string s)
-        {
-            Write(s);
-            WriteLine();
         }
 
         private void WriteIndentation()

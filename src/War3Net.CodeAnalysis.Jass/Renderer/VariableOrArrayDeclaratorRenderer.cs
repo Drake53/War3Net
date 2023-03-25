@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="GlobalLineRenderer.cs" company="Drake53">
+// <copyright file="VariableOrArrayDeclaratorRenderer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,14 +13,12 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenderer
     {
-        public void Render(IGlobalLineSyntax globalLine)
+        public void Render(JassVariableOrArrayDeclaratorSyntax declarator)
         {
-            switch (globalLine)
+            switch (declarator)
             {
-                case JassEmptySyntax empty: Render(empty); break;
-                case JassCommentSyntax comment: Render(comment); break;
-                case JassGlobalDeclarationSyntax globalDeclaration: Render(globalDeclaration); break;
-                case JassEndGlobalsCustomScriptAction endGlobals: Render(endGlobals); break;
+                case JassArrayDeclaratorSyntax arrayDeclarator: Render(arrayDeclarator); break;
+                case JassVariableDeclaratorSyntax variableDeclarator: Render(variableDeclarator); break;
 
                 default: throw new NotSupportedException();
             }

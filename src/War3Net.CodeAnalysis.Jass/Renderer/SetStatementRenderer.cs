@@ -13,17 +13,16 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassSetStatementSyntax setStatement)
         {
-            Write($"{JassKeyword.Set} ");
+            Render(setStatement.SetToken);
+            WriteSpace();
             Render(setStatement.IdentifierName);
 
-            if (setStatement.Indexer is not null)
+            if (setStatement.ElementAccessClause is not null)
             {
-                Write(JassSymbol.LeftSquareBracket);
-                Render(setStatement.Indexer);
-                Write(JassSymbol.RightSquareBracket);
+                Render(setStatement.ElementAccessClause);
             }
 
-            Write(' ');
+            WriteSpace();
             Render(setStatement.Value);
         }
     }
