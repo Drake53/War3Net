@@ -7,6 +7,7 @@
 
 using System.Globalization;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -53,6 +54,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassExpressionSyntax LiteralExpression(bool value)
         {
             return LiteralExpression(Token(value ? JassSyntaxKind.TrueKeyword : JassSyntaxKind.FalseKeyword));
+        }
+
+        public static JassExpressionSyntax FourCCLiteralExpression(int value)
+        {
+            return LiteralExpression(Token(JassSyntaxKind.FourCCLiteralToken, value.ToJassRawcode()));
         }
 
         private static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
