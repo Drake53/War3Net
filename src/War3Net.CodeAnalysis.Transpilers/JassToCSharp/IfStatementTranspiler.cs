@@ -31,8 +31,8 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             return SyntaxFactory.IfStatement(
                 SyntaxFactory.List<AttributeListSyntax>(),
-                Transpile(ifStatement.Condition),
-                SyntaxFactory.Block(Transpile(ifStatement.Body)),
+                Transpile(ifStatement.IfClause.IfClauseDeclarator.Condition),
+                SyntaxFactory.Block(Transpile(ifStatement.IfClause.Statements)),
                 elseClause);
         }
     }

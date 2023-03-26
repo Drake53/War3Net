@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public StatementSyntax Transpile(JassSetStatementSyntax setStatement)
         {
-            if (setStatement.Indexer is null)
+            if (setStatement.ElementAccessClause is null)
             {
                 return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                     SyntaxKind.SimpleAssignmentExpression,
                     SyntaxFactory.ElementAccessExpression(
                         SyntaxFactory.IdentifierName(Transpile(setStatement.IdentifierName)),
-                        SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(setStatement.Indexer))))),
+                        SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(setStatement.ElementAccessClause.Expression))))),
                     Transpile(setStatement.Value.Expression)));
             }
         }

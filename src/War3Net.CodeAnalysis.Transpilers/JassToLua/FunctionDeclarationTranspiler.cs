@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             var functionExpression = new LuaFunctionExpressionSyntax();
             functionExpression.AddParameters(Transpile(functionDeclaration.FunctionDeclarator.ParameterList));
-            functionExpression.Body.Statements.AddRange(Transpile(functionDeclaration.Body));
+            functionExpression.Body.Statements.AddRange(Transpile(functionDeclaration.Statements));
             functionExpression.RenderAsFunctionDefinition = true;
 
             ClearLocalTypes();

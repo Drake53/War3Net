@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ArgumentListSyntax Transpile(JassArgumentListSyntax argumentList)
         {
-            return SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(argumentList.Arguments.Select(argument => SyntaxFactory.Argument(Transpile(argument)))));
+            return SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(argumentList.ArgumentList.Items.Select(argument => SyntaxFactory.Argument(Transpile(argument)))));
         }
     }
 }

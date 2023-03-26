@@ -15,7 +15,11 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaStatementSyntax Transpile(JassGlobalDeclarationSyntax globalDeclaration)
         {
-            return Transpile(globalDeclaration.Declarator, false);
+            return globalDeclaration switch
+            {
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(globalConstantDeclaration),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(globalVariableDeclaration),
+            };
         }
     }
 }

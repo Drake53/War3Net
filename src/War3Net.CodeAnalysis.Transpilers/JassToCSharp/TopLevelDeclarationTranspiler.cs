@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="DeclarationTranspiler.cs" company="Drake53">
+// <copyright file="TopLevelDeclarationTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,13 +16,12 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public IEnumerable<MemberDeclarationSyntax> Transpile(ITopLevelDeclarationSyntax declaration)
+        public IEnumerable<MemberDeclarationSyntax> Transpile(JassTopLevelDeclarationSyntax declaration)
         {
             return declaration switch
             {
                 JassTypeDeclarationSyntax typeDeclaration => new[] { Transpile(typeDeclaration) },
-                JassGlobalDeclarationListSyntax globalDeclarationList => Transpile(globalDeclarationList),
-                JassGlobalDeclarationSyntax globalDeclaration => new[] { Transpile(globalDeclaration) },
+                JassGlobalsDeclarationSyntax globalDeclarationList => Transpile(globalDeclarationList),
                 JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration => new[] { Transpile(nativeFunctionDeclaration) },
                 JassFunctionDeclarationSyntax functionDeclaration => new[] { Transpile(functionDeclaration) },
                 _ => Array.Empty<MemberDeclarationSyntax>(),

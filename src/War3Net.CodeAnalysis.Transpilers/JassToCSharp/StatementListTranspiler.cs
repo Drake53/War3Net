@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,9 +17,9 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public IEnumerable<StatementSyntax> Transpile(JassStatementListSyntax statementList)
+        public IEnumerable<StatementSyntax> Transpile(ImmutableArray<JassStatementSyntax> statements)
         {
-            return statementList.Statements.Select(Transpile);
+            return statements.Select(Transpile);
         }
     }
 }

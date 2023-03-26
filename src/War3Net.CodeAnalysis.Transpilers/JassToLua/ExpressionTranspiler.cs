@@ -13,23 +13,15 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public LuaExpressionSyntax Transpile(IExpressionSyntax expression, out JassTypeSyntax type)
+        public LuaExpressionSyntax Transpile(JassExpressionSyntax expression, out JassTypeSyntax type)
         {
             return expression switch
             {
-                JassCharacterLiteralExpressionSyntax characterLiteralExpression => Transpile(characterLiteralExpression, out type),
-                JassFourCCLiteralExpressionSyntax fourCCLiteralExpression => Transpile(fourCCLiteralExpression, out type),
-                JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression => Transpile(hexadecimalLiteralExpression, out type),
-                JassRealLiteralExpressionSyntax realLiteralExpression => Transpile(realLiteralExpression, out type),
-                JassOctalLiteralExpressionSyntax octalLiteralExpression => Transpile(octalLiteralExpression, out type),
-                JassDecimalLiteralExpressionSyntax decimalLiteralExpression => Transpile(decimalLiteralExpression, out type),
-                JassBooleanLiteralExpressionSyntax booleanLiteralExpression => Transpile(booleanLiteralExpression, out type),
-                JassStringLiteralExpressionSyntax stringLiteralExpression => Transpile(stringLiteralExpression, out type),
-                JassNullLiteralExpressionSyntax nullLiteralExpression => Transpile(nullLiteralExpression, out type),
+                JassLiteralExpressionSyntax literalExpression => Transpile(literalExpression, out type),
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => Transpile(functionReferenceExpression, out type),
                 JassInvocationExpressionSyntax invocationExpression => Transpile(invocationExpression, out type),
                 JassArrayReferenceExpressionSyntax arrayReferenceExpression => Transpile(arrayReferenceExpression, out type),
-                JassVariableReferenceExpressionSyntax variableReferenceExpression => Transpile(variableReferenceExpression, out type),
+                JassIdentifierNameSyntax identifierName => Transpile(identifierName, out type),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => Transpile(parenthesizedExpression, out type),
                 JassUnaryExpressionSyntax unaryExpression => Transpile(unaryExpression, out type),
                 JassBinaryExpressionSyntax binaryExpression => Transpile(binaryExpression, out type),

@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             var left = Transpile(binaryExpression.Left, out var leftType);
             var right = Transpile(binaryExpression.Right, out var rightType);
 
-            return new LuaBinaryExpressionSyntax(left, Transpile(binaryExpression.Operator, leftType, rightType, out type), right);
+            return new LuaBinaryExpressionSyntax(left, TranspileBinary(binaryExpression.OperatorToken.SyntaxKind, leftType, rightType, out type), right);
         }
     }
 }

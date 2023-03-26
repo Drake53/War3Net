@@ -18,8 +18,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.IfStatement(
                 SyntaxFactory.List<AttributeListSyntax>(),
-                Transpile(elseIfClause.Condition),
-                SyntaxFactory.Block(Transpile(elseIfClause.Body)),
+                Transpile(elseIfClause.ElseIfClauseDeclarator.Condition),
+                SyntaxFactory.Block(Transpile(elseIfClause.Statements)),
                 elseClause);
         }
     }

@@ -14,15 +14,6 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public VariableDeclarationSyntax Transpile(IVariableDeclaratorSyntax declarator)
-        {
-            return declarator switch
-            {
-                JassArrayDeclaratorSyntax arrayDeclarator => Transpile(arrayDeclarator),
-                JassVariableDeclaratorSyntax variableDeclarator => Transpile(variableDeclarator),
-            };
-        }
-
         public VariableDeclarationSyntax Transpile(JassVariableDeclaratorSyntax variableDeclarator)
         {
             var type = Transpile(variableDeclarator.Type);

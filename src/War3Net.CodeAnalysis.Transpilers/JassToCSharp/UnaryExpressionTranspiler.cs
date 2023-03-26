@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         public ExpressionSyntax Transpile(JassUnaryExpressionSyntax unaryExpression)
         {
             return SyntaxFactory.PrefixUnaryExpression(
-                Transpile(unaryExpression.Operator),
+                TranspileUnary(unaryExpression.OperatorToken.SyntaxKind),
                 Transpile(unaryExpression.Expression));
         }
     }

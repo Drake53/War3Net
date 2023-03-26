@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             return new LuaTableIndexAccessExpressionSyntax(
                 Transpile(arrayReferenceExpression.IdentifierName),
-                Transpile(arrayReferenceExpression.Indexer, out _));
+                Transpile(arrayReferenceExpression.ElementAccessClause.Expression, out _));
         }
     }
 }

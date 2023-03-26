@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 using CSharpLua.LuaAst;
@@ -16,12 +17,9 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public IEnumerable<LuaStatementSyntax> Transpile(JassStatementListSyntax statementList)
+        public IEnumerable<LuaStatementSyntax> Transpile(ImmutableArray<JassStatementSyntax> statements)
         {
-            return statementList.Statements
-                .Where(statement => !(statement is JassCommentSyntax && IgnoreComments))
-                .Where(statement => !(statement is JassEmptySyntax && IgnoreEmptyStatements))
-                .Select(Transpile);
+            return statements.Select(Transpile);
         }
     }
 }

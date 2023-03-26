@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using CSharpLua.LuaAst;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -21,9 +23,16 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         public string Transpile(JassIdentifierNameSyntax identifierName)
         {
-            return _reservedKeywords.Value.Contains(identifierName.Name)
-                ? $"{AntiReservedKeywordConflictPrefix}{identifierName.Name}"
-                : identifierName.Name;
+            return _reservedKeywords.Value.Contains(identifierName.Token.Text)
+                ? $"{AntiReservedKeywordConflictPrefix}{identifierName.Token.Text}"
+                : identifierName.Token.Text;
+        }
+
+        public LuaExpressionSyntax Transpile(JassIdentifierNameSyntax identifierName, out JassTypeSyntax type)
+        {
+            type = GetVariableType(identifierName);
+
+            return Transpile(identifierName);
         }
 
         private static IEnumerable<string> GetLuaKeywords()

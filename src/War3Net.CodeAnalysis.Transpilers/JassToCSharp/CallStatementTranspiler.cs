@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(
                 SyntaxFactory.IdentifierName(Transpile(callStatement.IdentifierName)),
-                Transpile(callStatement.Arguments)));
+                Transpile(callStatement.ArgumentList)));
         }
     }
 }

@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             var whileStatement = new LuaWhileStatementSyntax(LuaIdentifierLiteralExpressionSyntax.True);
 
-            whileStatement.Body.Statements.AddRange(Transpile(loopStatement.Body));
+            whileStatement.Body.Statements.AddRange(Transpile(loopStatement.Statements));
 
             return whileStatement;
         }

@@ -13,12 +13,10 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public LuaStatementSyntax Transpile(IStatementSyntax statement)
+        public LuaStatementSyntax Transpile(JassStatementSyntax statement)
         {
             return statement switch
             {
-                JassEmptySyntax empty => Transpile(empty),
-                JassCommentSyntax comment => Transpile(comment),
                 JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement => Transpile(localVariableDeclarationStatement),
                 JassSetStatementSyntax setStatement => Transpile(setStatement),
                 JassCallStatementSyntax callStatement => Transpile(callStatement),

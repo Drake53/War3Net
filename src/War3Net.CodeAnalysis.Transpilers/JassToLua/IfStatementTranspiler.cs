@@ -17,9 +17,9 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaStatementSyntax Transpile(JassIfStatementSyntax ifStatement)
         {
-            var luaIfStatement = new LuaIfStatementSyntax(Transpile(ifStatement.Condition, out _));
+            var luaIfStatement = new LuaIfStatementSyntax(Transpile(ifStatement.IfClause.IfClauseDeclarator.Condition, out _));
 
-            luaIfStatement.Body.Statements.AddRange(Transpile(ifStatement.Body));
+            luaIfStatement.Body.Statements.AddRange(Transpile(ifStatement.IfClause.Statements));
             luaIfStatement.ElseIfStatements.AddRange(ifStatement.ElseIfClauses.Select(Transpile));
             luaIfStatement.Else = ifStatement.ElseClause is null ? null : Transpile(ifStatement.ElseClause);
 

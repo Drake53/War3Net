@@ -7,24 +7,25 @@
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public string Transpile(BinaryOperatorType binaryOperator, JassTypeSyntax left, JassTypeSyntax right, out JassTypeSyntax type)
+        public string TranspileBinary(JassSyntaxKind binaryOperatorTokenSyntaxKind, JassTypeSyntax left, JassTypeSyntax right, out JassTypeSyntax type)
         {
-            switch (binaryOperator)
+            switch (binaryOperatorTokenSyntaxKind)
             {
-                case BinaryOperatorType.GreaterThan:
-                case BinaryOperatorType.LessThan:
-                case BinaryOperatorType.Equals:
-                case BinaryOperatorType.NotEquals:
-                case BinaryOperatorType.GreaterOrEqual:
-                case BinaryOperatorType.LessOrEqual:
-                case BinaryOperatorType.And:
-                case BinaryOperatorType.Or:
+                case JassSyntaxKind.GreaterThanToken:
+                case JassSyntaxKind.LessThanToken:
+                case JassSyntaxKind.EqualsToken:
+                case JassSyntaxKind.ExclamationEqualsToken:
+                case JassSyntaxKind.GreaterThanEqualsToken:
+                case JassSyntaxKind.LessThanEqualsToken:
+                case JassSyntaxKind.AndKeyword:
+                case JassSyntaxKind.OrKeyword:
                     type = JassTypeSyntax.Boolean;
                     break;
 
@@ -37,20 +38,20 @@ namespace War3Net.CodeAnalysis.Transpilers
                     break;
             }
 
-            return binaryOperator switch
+            return binaryOperatorTokenSyntaxKind switch
             {
-                BinaryOperatorType.Add => type.Equals(JassTypeSyntax.String) ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
-                BinaryOperatorType.Subtract => LuaSyntaxNode.Tokens.Sub,
-                BinaryOperatorType.Multiplication => LuaSyntaxNode.Tokens.Multiply,
-                BinaryOperatorType.Division => type.Equals(JassTypeSyntax.Integer) ? LuaSyntaxNode.Tokens.IntegerDiv : LuaSyntaxNode.Tokens.Div,
-                BinaryOperatorType.GreaterThan => ">",
-                BinaryOperatorType.LessThan => "<",
-                BinaryOperatorType.Equals => LuaSyntaxNode.Tokens.EqualsEquals,
-                BinaryOperatorType.NotEquals => LuaSyntaxNode.Tokens.NotEquals,
-                BinaryOperatorType.GreaterOrEqual => ">=",
-                BinaryOperatorType.LessOrEqual => "<=",
-                BinaryOperatorType.And => LuaSyntaxNode.Keyword.And,
-                BinaryOperatorType.Or => LuaSyntaxNode.Keyword.Or,
+                JassSyntaxKind.PlusToken => type.Equals(JassTypeSyntax.String) ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
+                JassSyntaxKind.MinusToken => LuaSyntaxNode.Tokens.Sub,
+                JassSyntaxKind.AsteriskToken => LuaSyntaxNode.Tokens.Multiply,
+                JassSyntaxKind.SlashToken => type.Equals(JassTypeSyntax.Integer) ? LuaSyntaxNode.Tokens.IntegerDiv : LuaSyntaxNode.Tokens.Div,
+                JassSyntaxKind.GreaterThanToken => ">",
+                JassSyntaxKind.LessThanToken => "<",
+                JassSyntaxKind.EqualsToken => LuaSyntaxNode.Tokens.EqualsEquals,
+                JassSyntaxKind.ExclamationEqualsToken => LuaSyntaxNode.Tokens.NotEquals,
+                JassSyntaxKind.GreaterThanEqualsToken => ">=",
+                JassSyntaxKind.LessThanEqualsToken => "<=",
+                JassSyntaxKind.AndKeyword => LuaSyntaxNode.Keyword.And,
+                JassSyntaxKind.OrKeyword => LuaSyntaxNode.Keyword.Or,
             };
         }
     }

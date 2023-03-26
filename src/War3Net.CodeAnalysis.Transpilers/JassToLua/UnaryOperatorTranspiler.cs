@@ -7,19 +7,19 @@
 
 using CSharpLua.LuaAst;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public string Transpile(UnaryOperatorType unaryOperator)
+        public string TranspileUnary(JassSyntaxKind unaryOperatorTokenSyntaxKind)
         {
-            return unaryOperator switch
+            return unaryOperatorTokenSyntaxKind switch
             {
-                UnaryOperatorType.Plus => LuaSyntaxNode.Tokens.Plus,
-                UnaryOperatorType.Minus => LuaSyntaxNode.Tokens.Sub,
-                UnaryOperatorType.Not => LuaSyntaxNode.Keyword.Not,
+                JassSyntaxKind.PlusToken => LuaSyntaxNode.Tokens.Plus,
+                JassSyntaxKind.MinusToken => LuaSyntaxNode.Tokens.Sub,
+                JassSyntaxKind.NotKeyword => LuaSyntaxNode.Keyword.Not,
             };
         }
     }

@@ -11,6 +11,7 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -24,16 +25,21 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         public SyntaxToken Transpile(JassIdentifierNameSyntax identifierName)
         {
-            var text = _reservedKeywords.Value.Contains(identifierName.Name)
-                ? $"{AntiReservedKeywordConflictPrefix}{identifierName.Name}"
-                : identifierName.Name;
+            var text = _reservedKeywords.Value.Contains(identifierName.Token.Text)
+                ? $"{AntiReservedKeywordConflictPrefix}{identifierName.Token.Text}"
+                : identifierName.Token.Text;
 
             return SyntaxFactory.Identifier(
                 SyntaxTriviaList.Empty,
                 SyntaxKind.IdentifierToken,
                 text,
-                identifierName.Name,
+                identifierName.Token.Text,
                 SyntaxTriviaList.Empty);
+        }
+
+        public ExpressionSyntax TranspileIdentifierName(JassIdentifierNameSyntax identifierName)
+        {
+            return SyntaxFactory.IdentifierName(Transpile(identifierName));
         }
 
         private static IEnumerable<string> GetReservedKeywords()

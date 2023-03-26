@@ -13,23 +13,15 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public ExpressionSyntax Transpile(IExpressionSyntax expression)
+        public ExpressionSyntax Transpile(JassExpressionSyntax expression)
         {
             return expression switch
             {
-                JassCharacterLiteralExpressionSyntax characterLiteralExpression => Transpile(characterLiteralExpression),
-                JassFourCCLiteralExpressionSyntax fourCCLiteralExpression => Transpile(fourCCLiteralExpression),
-                JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression => Transpile(hexadecimalLiteralExpression),
-                JassRealLiteralExpressionSyntax realLiteralExpression => Transpile(realLiteralExpression),
-                JassOctalLiteralExpressionSyntax octalLiteralExpression => Transpile(octalLiteralExpression),
-                JassDecimalLiteralExpressionSyntax decimalLiteralExpression => Transpile(decimalLiteralExpression),
-                JassBooleanLiteralExpressionSyntax booleanLiteralExpression => Transpile(booleanLiteralExpression),
-                JassStringLiteralExpressionSyntax stringLiteralExpression => Transpile(stringLiteralExpression),
-                JassNullLiteralExpressionSyntax nullLiteralExpression => Transpile(nullLiteralExpression),
+                JassLiteralExpressionSyntax literalExpression => Transpile(literalExpression),
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => Transpile(functionReferenceExpression),
                 JassInvocationExpressionSyntax invocationExpression => Transpile(invocationExpression),
                 JassArrayReferenceExpressionSyntax arrayReferenceExpression => Transpile(arrayReferenceExpression),
-                JassVariableReferenceExpressionSyntax variableReferenceExpression => Transpile(variableReferenceExpression),
+                JassIdentifierNameSyntax identifierName => TranspileIdentifierName(identifierName),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => Transpile(parenthesizedExpression),
                 JassUnaryExpressionSyntax unaryExpression => Transpile(unaryExpression),
                 JassBinaryExpressionSyntax binaryExpression => Transpile(binaryExpression),

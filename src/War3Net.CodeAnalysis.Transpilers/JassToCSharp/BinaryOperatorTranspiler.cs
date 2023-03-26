@@ -7,28 +7,28 @@
 
 using Microsoft.CodeAnalysis.CSharp;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public SyntaxKind Transpile(BinaryOperatorType binaryOperator)
+        public SyntaxKind TranspileBinary(JassSyntaxKind binaryOperatorTokenKind)
         {
-            return binaryOperator switch
+            return binaryOperatorTokenKind switch
             {
-                BinaryOperatorType.Add => SyntaxKind.AddExpression,
-                BinaryOperatorType.Subtract => SyntaxKind.SubtractExpression,
-                BinaryOperatorType.Multiplication => SyntaxKind.MultiplyExpression,
-                BinaryOperatorType.Division => SyntaxKind.DivideExpression,
-                BinaryOperatorType.GreaterThan => SyntaxKind.GreaterThanExpression,
-                BinaryOperatorType.LessThan => SyntaxKind.LessThanExpression,
-                BinaryOperatorType.Equals => SyntaxKind.EqualsExpression,
-                BinaryOperatorType.NotEquals => SyntaxKind.NotEqualsExpression,
-                BinaryOperatorType.GreaterOrEqual => SyntaxKind.GreaterThanOrEqualExpression,
-                BinaryOperatorType.LessOrEqual => SyntaxKind.LessThanOrEqualExpression,
-                BinaryOperatorType.And => SyntaxKind.LogicalAndExpression,
-                BinaryOperatorType.Or => SyntaxKind.LogicalOrExpression,
+                JassSyntaxKind.PlusToken => SyntaxKind.AddExpression,
+                JassSyntaxKind.MinusToken => SyntaxKind.SubtractExpression,
+                JassSyntaxKind.AsteriskToken => SyntaxKind.MultiplyExpression,
+                JassSyntaxKind.SlashToken => SyntaxKind.DivideExpression,
+                JassSyntaxKind.GreaterThanToken => SyntaxKind.GreaterThanExpression,
+                JassSyntaxKind.LessThanToken => SyntaxKind.LessThanExpression,
+                JassSyntaxKind.EqualsToken => SyntaxKind.EqualsExpression,
+                JassSyntaxKind.ExclamationEqualsToken => SyntaxKind.NotEqualsExpression,
+                JassSyntaxKind.GreaterThanEqualsToken => SyntaxKind.GreaterThanOrEqualExpression,
+                JassSyntaxKind.LessThanEqualsToken => SyntaxKind.LessThanOrEqualExpression,
+                JassSyntaxKind.AndKeyword => SyntaxKind.LogicalAndExpression,
+                JassSyntaxKind.OrKeyword => SyntaxKind.LogicalOrExpression,
             };
         }
     }

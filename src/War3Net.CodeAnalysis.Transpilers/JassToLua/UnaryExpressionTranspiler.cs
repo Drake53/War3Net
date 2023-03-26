@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return new LuaPrefixUnaryExpressionSyntax(
                 Transpile(unaryExpression.Expression, out type),
-                Transpile(unaryExpression.Operator));
+                TranspileUnary(unaryExpression.OperatorToken.SyntaxKind));
         }
     }
 }

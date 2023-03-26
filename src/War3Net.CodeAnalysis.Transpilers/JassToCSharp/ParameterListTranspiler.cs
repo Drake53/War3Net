@@ -11,15 +11,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public SeparatedSyntaxList<ParameterSyntax> Transpile(JassParameterListSyntax parameterList)
+        public SeparatedSyntaxList<ParameterSyntax> Transpile(JassParameterListOrEmptyParameterListSyntax parameterListOrEmptyParameterList)
         {
-            return SyntaxFactory.SeparatedList(parameterList.Parameters.Select(Transpile));
+            return SyntaxFactory.SeparatedList(parameterListOrEmptyParameterList.GetParameters().Select(Transpile));
         }
     }
 }

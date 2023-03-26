@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.ElementAccessExpression(
                 SyntaxFactory.IdentifierName(Transpile(arrayReferenceExpression.IdentifierName)),
-                SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(arrayReferenceExpression.Indexer)))));
+                SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(arrayReferenceExpression.ElementAccessClause.Expression)))));
         }
     }
 }

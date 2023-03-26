@@ -7,19 +7,19 @@
 
 using Microsoft.CodeAnalysis.CSharp;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public SyntaxKind Transpile(UnaryOperatorType unaryOperator)
+        public SyntaxKind TranspileUnary(JassSyntaxKind unaryOperatorTokenSyntaxKind)
         {
-            return unaryOperator switch
+            return unaryOperatorTokenSyntaxKind switch
             {
-                UnaryOperatorType.Plus => SyntaxKind.UnaryPlusExpression,
-                UnaryOperatorType.Minus => SyntaxKind.UnaryPlusExpression,
-                UnaryOperatorType.Not => SyntaxKind.LogicalNotExpression,
+                JassSyntaxKind.PlusToken => SyntaxKind.UnaryPlusExpression,
+                JassSyntaxKind.MinusToken => SyntaxKind.UnaryPlusExpression,
+                JassSyntaxKind.NotKeyword => SyntaxKind.LogicalNotExpression,
             };
         }
     }

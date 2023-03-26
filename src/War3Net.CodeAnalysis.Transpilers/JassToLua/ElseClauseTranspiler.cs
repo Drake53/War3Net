@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             var luaElseClause = new LuaElseClauseSyntax();
 
-            luaElseClause.Body.Statements.AddRange(Transpile(elseClause.Body));
+            luaElseClause.Body.Statements.AddRange(Transpile(elseClause.Statements));
 
             return luaElseClause;
         }

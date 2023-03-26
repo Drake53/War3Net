@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.WhileStatement(
                 SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression),
-                SyntaxFactory.Block(Transpile(loopStatement.Body)));
+                SyntaxFactory.Block(Transpile(loopStatement.Statements)));
         }
     }
 }

@@ -5,12 +5,9 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Transpilers.Extensions;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
@@ -18,20 +15,11 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public MemberDeclarationSyntax Transpile(JassGlobalDeclarationSyntax globalDeclaration)
         {
-            var declaration = SyntaxFactory.FieldDeclaration(
-                default,
-                new SyntaxTokenList(
-                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
-                Transpile(globalDeclaration.Declarator));
-
-            if (ApplyCSharpLuaTemplateAttribute)
+            return globalDeclaration switch
             {
-                var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
-                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(globalDeclaration.Declarator.IdentifierName));
-            }
-
-            return declaration;
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(globalConstantDeclaration),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(globalVariableDeclaration),
+            };
         }
     }
 }

@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ElseClauseSyntax Transpile(JassElseClauseSyntax elseClause)
         {
-            return SyntaxFactory.ElseClause(SyntaxFactory.Block(Transpile(elseClause.Body)));
+            return SyntaxFactory.ElseClause(SyntaxFactory.Block(Transpile(elseClause.Statements)));
         }
     }
 }

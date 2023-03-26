@@ -15,9 +15,9 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaElseIfStatementSyntax Transpile(JassElseIfClauseSyntax elseIfClause)
         {
-            var elseifStatement = new LuaElseIfStatementSyntax(Transpile(elseIfClause.Condition, out _));
+            var elseifStatement = new LuaElseIfStatementSyntax(Transpile(elseIfClause.ElseIfClauseDeclarator.Condition, out _));
 
-            elseifStatement.Body.Statements.AddRange(Transpile(elseIfClause.Body));
+            elseifStatement.Body.Statements.AddRange(Transpile(elseIfClause.Statements));
 
             return elseifStatement;
         }
