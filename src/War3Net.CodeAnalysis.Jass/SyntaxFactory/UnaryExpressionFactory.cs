@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -29,6 +31,22 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return new JassUnaryExpressionSyntax(
                 Token(JassSyntaxKind.NotKeyword),
+                expression);
+        }
+
+        public static JassUnaryExpressionSyntax UnaryNotExpression(JassSyntaxToken operatorToken, JassExpressionSyntax expression)
+        {
+            var expressionKind = operatorToken.SyntaxKind switch
+            {
+                JassSyntaxKind.PlusToken => JassSyntaxKind.UnaryPlusExpression,
+                JassSyntaxKind.MinusToken => JassSyntaxKind.UnaryMinusExpression,
+                JassSyntaxKind.NotKeyword => JassSyntaxKind.NotExpression,
+
+                _ => throw new ArgumentException("Invalid SyntaxKind.", nameof(operatorToken)),
+            };
+
+            return new JassUnaryExpressionSyntax(
+                operatorToken,
                 expression);
         }
     }

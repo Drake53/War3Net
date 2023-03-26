@@ -21,6 +21,11 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.ArgumentListParser.ParseOrThrow(argumentList);
         }
 
+        public static JassSyntaxToken ParseBinaryOperator(string binaryOperator)
+        {
+            return JassParser.Instance.BinaryOperatorParser.ParseOrThrow(binaryOperator);
+        }
+
         public static JassCompilationUnitSyntax ParseCompilationUnit(string compilationUnit)
         {
             return JassParser.Instance.CompilationUnitParser.ParseOrThrow(compilationUnit);
@@ -66,9 +71,19 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.TypeParser.ParseOrThrow(typeName);
         }
 
+        public static JassSyntaxToken ParseUnaryOperator(string unaryOperator)
+        {
+            return JassParser.Instance.UnaryOperatorParser.ParseOrThrow(unaryOperator);
+        }
+
         public static bool TryParseArgumentList(string argumentList, [NotNullWhen(true)] out JassArgumentListSyntax? result)
         {
             return TryParse(argumentList, JassParser.Instance.ArgumentListParser, out result);
+        }
+
+        public static bool TryParseBinaryOperator(string binaryOperator, [NotNullWhen(true)] out JassSyntaxToken? result)
+        {
+            return TryParse(binaryOperator, JassParser.Instance.BinaryOperatorParser, out result);
         }
 
         public static bool TryParseCompilationUnit(string compilationUnit, [NotNullWhen(true)] out JassCompilationUnitSyntax? result)
@@ -114,6 +129,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static bool TryParseTypeName(string typeName, [NotNullWhen(true)] out JassTypeSyntax? result)
         {
             return TryParse(typeName, JassParser.Instance.TypeParser, out result);
+        }
+
+        public static bool TryParseUnaryOperator(string unaryOperator, [NotNullWhen(true)] out JassSyntaxToken? result)
+        {
+            return TryParse(unaryOperator, JassParser.Instance.UnaryOperatorParser, out result);
         }
 
         private static bool TryParse<TSyntax>(string input, Parser<char, TSyntax> parser, [NotNullWhen(true)] out TSyntax? result)

@@ -16,22 +16,23 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        //internal static Parser<char, BinaryOperatorType> GetBinaryOperatorParser(Parser<char, Unit> whitespaceParser)
-        //{
-        //    return OneOf(
-        //        GetBinaryAddOperatorParser(whitespaceParser),
-        //        GetBinarySubtractOperatorParser(whitespaceParser),
-        //        GetBinaryMultiplicationOperatorParser(whitespaceParser),
-        //        GetBinaryDivisionOperatorParser(whitespaceParser),
-        //        GetBinaryGreaterOrEqualOperatorParser(whitespaceParser),
-        //        GetBinaryLessOrEqualOperatorParser(whitespaceParser),
-        //        GetBinaryEqualsOperatorParser(whitespaceParser),
-        //        GetBinaryNotEqualsOperatorParser(whitespaceParser),
-        //        GetBinaryGreaterThanOperatorParser(whitespaceParser),
-        //        GetBinaryLessThanOperatorParser(whitespaceParser),
-        //        GetBinaryAndOperatorParser(whitespaceParser),
-        //        GetBinaryOrOperatorParser(whitespaceParser));
-        //}
+        internal static Parser<char, JassSyntaxToken> GetBinaryOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
+        {
+            return OneOf(
+                GetBinaryAddOperatorParser(triviaParser),
+                GetBinarySubtractOperatorParser(triviaParser),
+                GetBinaryMultiplicationOperatorParser(triviaParser),
+                GetBinaryDivisionOperatorParser(triviaParser),
+                GetBinaryGreaterOrEqualOperatorParser(triviaParser),
+                GetBinaryLessOrEqualOperatorParser(triviaParser),
+                GetBinaryEqualsOperatorParser(triviaParser),
+                GetBinaryNotEqualsOperatorParser(triviaParser),
+                GetBinaryGreaterThanOperatorParser(triviaParser),
+                GetBinaryLessThanOperatorParser(triviaParser),
+                GetBinaryAndOperatorParser(triviaParser),
+                GetBinaryOrOperatorParser(triviaParser));
+        }
 
         internal static Parser<char, JassSyntaxToken> GetBinaryAddOperatorParser(
             Parser<char, JassSyntaxTriviaList> triviaParser)

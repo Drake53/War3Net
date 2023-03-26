@@ -10,17 +10,20 @@ using Pidgin;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
+using static Pidgin.Parser;
+
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        //internal static Parser<char, UnaryOperatorType> GetUnaryOperatorParser(Parser<char, Unit> whitespaceParser)
-        //{
-        //    return OneOf(
-        //        GetUnaryPlusOperatorParser(whitespaceParser),
-        //        GetUnaryMinusOperatorParser(whitespaceParser),
-        //        GetUnaryNotOperatorParser(whitespaceParser));
-        //}
+        internal static Parser<char, JassSyntaxToken> GetUnaryOperatorParser(
+            Parser<char, JassSyntaxTriviaList> triviaParser)
+        {
+            return OneOf(
+                GetUnaryPlusOperatorParser(triviaParser),
+                GetUnaryMinusOperatorParser(triviaParser),
+                GetUnaryNotOperatorParser(triviaParser));
+        }
 
         internal static Parser<char, JassSyntaxToken> GetUnaryPlusOperatorParser(
             Parser<char, JassSyntaxTriviaList> triviaParser)
