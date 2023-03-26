@@ -86,6 +86,24 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.EndIfKeyword));
         }
 
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, IEnumerable<JassStatementSyntax> statements, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                ImmutableArray<JassElseIfClauseSyntax>.Empty,
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
+
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, ImmutableArray<JassStatementSyntax> statements, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                ImmutableArray<JassElseIfClauseSyntax>.Empty,
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
+
         public static JassIfStatementSyntax IfStatement(JassIfClauseSyntax ifClause, IEnumerable<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
         {
             return new JassIfStatementSyntax(
