@@ -39,12 +39,12 @@ namespace War3Net.Build
 
             var context = new TriggerRendererContext(renderer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.FunctionDeclarator(functionName)));
+            renderer.Render(SyntaxFactory.FunctionDeclarator(functionName));
             renderer.RenderNewLine();
 
             RenderTriggerAction(function, context);
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
+            renderer.Render(SyntaxFactory.Token(JassSyntaxKind.EndFunctionKeyword));
             renderer.RenderNewLine();
 
             _writer.WriteLine(stringBuilder.ToString());
@@ -60,7 +60,7 @@ namespace War3Net.Build
 
             var context = new TriggerRendererContext(renderer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.FunctionDeclarator(functionName)));
+            renderer.Render(SyntaxFactory.FunctionDeclarator(functionName));
             renderer.RenderNewLine();
 
             for (var i = 0; i < functions.Count; i++)
@@ -76,7 +76,7 @@ namespace War3Net.Build
                 context.TrigFunctionIdentifierBuilder.Remove();
             }
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
+            renderer.Render(SyntaxFactory.Token(JassSyntaxKind.EndFunctionKeyword));
             renderer.RenderNewLine();
 
             _writer.WriteLine(stringBuilder.ToString());
@@ -125,24 +125,24 @@ namespace War3Net.Build
                     break;
 
                 case "CommentString":
-                    context.Renderer.Render(new JassCommentSyntax(" " + function.Parameters[0].Value));
+                    //context.Renderer.Render(new JassCommentSyntax(" " + function.Parameters[0].Value));
                     context.Renderer.RenderNewLine();
                     break;
 
                 case "CustomScriptCode":
                     if (_isLuaTrigger)
                     {
-                        context.Renderer.Render(new JassCommentSyntax("! beginusercode"));
+                        //context.Renderer.Render(new JassCommentSyntax("! beginusercode"));
                         context.Renderer.RenderNewLine();
 
                         context.Renderer.RenderLine(function.Parameters[0].Value);
 
-                        context.Renderer.Render(new JassCommentSyntax("! endusercode"));
+                        //context.Renderer.Render(new JassCommentSyntax("! endusercode"));
                         context.Renderer.RenderNewLine();
                     }
                     else
                     {
-                        context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
+                        //context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
                         context.Renderer.RenderNewLine();
                     }
 

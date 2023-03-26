@@ -8,7 +8,7 @@
 using System;
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Jass;
 
 using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
@@ -35,12 +35,12 @@ namespace War3Net.Build
             context.Renderer.Render(SyntaxFactory.SetStatement(indexEndName, GetParameter(function.Parameters[1], argumentTypes[1], 1, context)));
             context.Renderer.RenderNewLine();
 
-            context.Renderer.Render(JassLoopCustomScriptAction.Value);
+            context.Renderer.Render(SyntaxFactory.Token(JassSyntaxKind.LoopKeyword));
             context.Renderer.RenderNewLine();
 
             context.Renderer.Render(SyntaxFactory.ExitStatement(SyntaxFactory.BinaryGreaterThanExpression(
-                SyntaxFactory.VariableReferenceExpression(indexName),
-                SyntaxFactory.VariableReferenceExpression(indexEndName))));
+                SyntaxFactory.ParseIdentifierName(indexName),
+                SyntaxFactory.ParseIdentifierName(indexEndName))));
             context.Renderer.RenderNewLine();
 
             RenderTriggerAction(function.Parameters[2].Function, context);
@@ -48,11 +48,11 @@ namespace War3Net.Build
             context.Renderer.Render(SyntaxFactory.SetStatement(
                 indexName,
                 SyntaxFactory.BinaryAdditionExpression(
-                    SyntaxFactory.VariableReferenceExpression(indexName),
+                    SyntaxFactory.ParseIdentifierName(indexName),
                     SyntaxFactory.LiteralExpression(1))));
             context.Renderer.RenderNewLine();
 
-            context.Renderer.Render(JassEndLoopCustomScriptAction.Value);
+            context.Renderer.Render(SyntaxFactory.Token(JassSyntaxKind.EndLoopKeyword));
             context.Renderer.RenderNewLine();
         }
 

@@ -28,7 +28,7 @@ namespace War3Net.Build
                     WellKnownNatives.TriggerSleepAction,
                     SyntaxFactory.InvocationExpression(
                         WellKnownFunctions.RMaxBJ,
-                        SyntaxFactory.VariableReferenceExpression("bj_WAIT_FOR_COND_MIN_INTERVAL"),
+                        SyntaxFactory.ParseIdentifierName("bj_WAIT_FOR_COND_MIN_INTERVAL"),
                         GetParameter(function.Parameters[1], argumentTypes[1], 1, context)))));
             context.Renderer.RenderNewLine();
         }

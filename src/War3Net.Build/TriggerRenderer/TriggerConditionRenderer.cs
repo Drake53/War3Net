@@ -39,15 +39,15 @@ namespace War3Net.Build
 
             var context = new TriggerRendererContext(renderer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.ConditionFunctionDeclarator(functionName)));
+            renderer.Render(SyntaxFactory.ConditionFunctionDeclarator(functionName));
             renderer.RenderNewLine();
 
             var expression = GetTriggerConditionExpression(function, context);
 
-            renderer.Render(new JassReturnStatementSyntax(expression));
+            renderer.Render(SyntaxFactory.ReturnStatement(expression));
             renderer.RenderNewLine();
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
+            renderer.Render(SyntaxFactory.Token(JassSyntaxKind.EndFunctionKeyword));
             renderer.RenderNewLine();
 
             _writer.WriteLine(stringBuilder.ToString());
@@ -63,7 +63,7 @@ namespace War3Net.Build
 
             var context = new TriggerRendererContext(renderer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.ConditionFunctionDeclarator(functionName)));
+            renderer.Render(SyntaxFactory.ConditionFunctionDeclarator(functionName));
             renderer.RenderNewLine();
 
             for (var i = 0; i < functions.Count; i++)
@@ -82,22 +82,22 @@ namespace War3Net.Build
                 {
                     context.Renderer.Render(SyntaxFactory.IfStatement(
                         SyntaxFactory.ParenthesizedExpression(SyntaxFactory.UnaryNotExpression(expression)),
-                        new JassReturnStatementSyntax(JassBooleanLiteralExpressionSyntax.False)));
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(false))));
                     context.Renderer.RenderNewLine();
                 }
                 else
                 {
                     context.Renderer.Render(SyntaxFactory.IfStatement(
                         SyntaxFactory.ParenthesizedExpression(expression),
-                        new JassReturnStatementSyntax(JassBooleanLiteralExpressionSyntax.True)));
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(true))));
                     context.Renderer.RenderNewLine();
                 }
             }
 
-            context.Renderer.Render(new JassReturnStatementSyntax(SyntaxFactory.LiteralExpression(returnValue)));
+            context.Renderer.Render(SyntaxFactory.ReturnStatement(SyntaxFactory.LiteralExpression(returnValue)));
             context.Renderer.RenderNewLine();
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
+            renderer.Render(SyntaxFactory.Token(JassSyntaxKind.EndFunctionKeyword));
             renderer.RenderNewLine();
 
             _writer.WriteLine(stringBuilder.ToString());
@@ -105,7 +105,7 @@ namespace War3Net.Build
             identifierBuilder.Remove();
         }
 
-        private IExpressionSyntax GetTriggerConditionExpression(TriggerFunction function, TriggerRendererContext context)
+        private JassExpressionSyntax GetTriggerConditionExpression(TriggerFunction function, TriggerRendererContext context)
         {
             if (function.Type != TriggerFunctionType.Condition || !function.IsEnabled)
             {
@@ -141,9 +141,9 @@ namespace War3Net.Build
                 var parameters = GetParameters(function, context);
 
                 return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(
-                    parameters.Arguments[0],
-                    parameters.Arguments[2],
-                    SyntaxFactory.ParseBinaryOperator(((JassStringLiteralExpressionSyntax)parameters.Arguments[1]).Value)));
+                    parameters.ArgumentList.Items[0],
+                    SyntaxFactory.ParseBinaryOperator(((JassLiteralExpressionSyntax)parameters.ArgumentList.Items[1]).Token.Text),
+                    parameters.ArgumentList.Items[2]));
             }
         }
     }

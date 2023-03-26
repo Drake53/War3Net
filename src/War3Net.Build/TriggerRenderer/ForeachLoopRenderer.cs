@@ -23,11 +23,11 @@ namespace War3Net.Build
             RenderActionFunction(context.TrigFunctionIdentifierBuilder, actionFunctionName, function.Parameters[^1]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            var argumentListBuilder = ImmutableArray.CreateBuilder<IExpressionSyntax>();
+            var argumentListBuilder = ImmutableArray.CreateBuilder<JassExpressionSyntax>();
             BuildParametersSkipLast(function, context, argumentListBuilder);
             argumentListBuilder.Add(SyntaxFactory.FunctionReferenceExpression(actionFunctionName));
 
-            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), new JassArgumentListSyntax(argumentListBuilder.ToImmutable())));
+            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), SyntaxFactory.ArgumentList(argumentListBuilder.ToImmutable())));
             context.Renderer.RenderNewLine();
         }
 
@@ -39,7 +39,7 @@ namespace War3Net.Build
             var argumentListBuilder = BuildParameters(function, context);
             argumentListBuilder.Add(SyntaxFactory.FunctionReferenceExpression(actionFunctionName));
 
-            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), new JassArgumentListSyntax(argumentListBuilder.ToImmutable())));
+            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), SyntaxFactory.ArgumentList(argumentListBuilder.ToImmutable())));
             context.Renderer.RenderNewLine();
         }
     }
