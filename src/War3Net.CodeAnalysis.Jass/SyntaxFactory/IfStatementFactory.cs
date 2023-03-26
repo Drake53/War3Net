@@ -103,5 +103,41 @@ namespace War3Net.CodeAnalysis.Jass
                 elseClause,
                 Token(JassSyntaxKind.EndIfKeyword));
         }
+
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, IEnumerable<JassStatementSyntax> statements, IEnumerable<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                elseIfClauses.ToImmutableArray(),
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
+
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, IEnumerable<JassStatementSyntax> statements, ImmutableArray<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                elseIfClauses,
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
+
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, ImmutableArray<JassStatementSyntax> statements, IEnumerable<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                elseIfClauses.ToImmutableArray(),
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
+
+        public static JassIfStatementSyntax IfStatement(JassExpressionSyntax condition, ImmutableArray<JassStatementSyntax> statements, ImmutableArray<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
+        {
+            return new JassIfStatementSyntax(
+                IfClause(condition, statements),
+                elseIfClauses,
+                elseClause,
+                Token(JassSyntaxKind.EndIfKeyword));
+        }
     }
 }
