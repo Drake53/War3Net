@@ -11,13 +11,6 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassVariableDeclaratorSyntax declarator)
-        {
-            return new JassLocalVariableDeclarationStatementSyntax(
-                Token(JassSyntaxKind.LocalKeyword),
-                declarator);
-        }
-
         public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
@@ -134,13 +127,6 @@ namespace War3Net.CodeAnalysis.Jass
                     EqualsValueClause(value)));
         }
 
-        public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(JassArrayDeclaratorSyntax declarator)
-        {
-            return new JassLocalVariableDeclarationStatementSyntax(
-                Token(JassSyntaxKind.LocalKeyword),
-                declarator);
-        }
-
         public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
@@ -175,6 +161,13 @@ namespace War3Net.CodeAnalysis.Jass
                 ArrayDeclarator(
                     ParseTypeName(type),
                     ParseIdentifierName(name)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalDeclarationStatement(JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                declarator);
         }
     }
 }
