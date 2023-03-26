@@ -27,6 +27,22 @@ namespace War3Net.CodeAnalysis.Jass
                     ParseIdentifierName(name)));
         }
 
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, string name)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name)));
+        }
+
         public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
         {
             return new JassGlobalVariableDeclarationSyntax(
@@ -63,6 +79,42 @@ namespace War3Net.CodeAnalysis.Jass
                     EqualsValueClause(value)));
         }
 
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName,
+                    value));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName,
+                    EqualsValueClause(value)));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name),
+                    value));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration(string type, string name, JassExpressionSyntax value)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name),
+                    EqualsValueClause(value)));
+        }
+
         public static JassGlobalVariableDeclarationSyntax GlobalArrayDeclaration(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
             return new JassGlobalVariableDeclarationSyntax(
@@ -76,6 +128,22 @@ namespace War3Net.CodeAnalysis.Jass
             return new JassGlobalVariableDeclarationSyntax(
                 ArrayDeclarator(
                     type,
+                    ParseIdentifierName(name)));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalArrayDeclaration(string type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                ArrayDeclarator(
+                    ParseTypeName(type),
+                    identifierName));
+        }
+
+        public static JassGlobalVariableDeclarationSyntax GlobalArrayDeclaration(string type, string name)
+        {
+            return new JassGlobalVariableDeclarationSyntax(
+                ArrayDeclarator(
+                    ParseTypeName(type),
                     ParseIdentifierName(name)));
         }
 

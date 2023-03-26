@@ -46,5 +46,41 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 EqualsValueClause(value));
         }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(string type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                ParseTypeName(type),
+                identifierName,
+                value);
+        }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(string type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                ParseTypeName(type),
+                identifierName,
+                EqualsValueClause(value));
+        }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(string type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                ParseTypeName(type),
+                ParseIdentifierName(name),
+                value);
+        }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(string type, string name, JassExpressionSyntax value)
+        {
+            return new JassGlobalConstantDeclarationSyntax(
+                Token(JassSyntaxKind.ConstantKeyword),
+                ParseTypeName(type),
+                ParseIdentifierName(name),
+                EqualsValueClause(value));
+        }
     }
 }

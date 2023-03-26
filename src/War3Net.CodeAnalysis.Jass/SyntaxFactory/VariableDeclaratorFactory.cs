@@ -27,6 +27,22 @@ namespace War3Net.CodeAnalysis.Jass
                 null);
         }
 
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
+                identifierName,
+                null);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, string name)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
+                ParseIdentifierName(name),
+                null);
+        }
+
         public static JassVariableDeclaratorSyntax VariableDeclarator(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax? value)
         {
             return new JassVariableDeclaratorSyntax(
@@ -55,6 +71,38 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return new JassVariableDeclaratorSyntax(
                 type,
+                ParseIdentifierName(name),
+                EqualsValueClause(value));
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax? value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
+                identifierName,
+                value);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
+                identifierName,
+                EqualsValueClause(value));
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, string name, JassEqualsValueClauseSyntax? value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
+                ParseIdentifierName(name),
+                value);
+        }
+
+        public static JassVariableDeclaratorSyntax VariableDeclarator(string type, string name, JassExpressionSyntax value)
+        {
+            return new JassVariableDeclaratorSyntax(
+                ParseTypeName(type),
                 ParseIdentifierName(name),
                 EqualsValueClause(value));
         }

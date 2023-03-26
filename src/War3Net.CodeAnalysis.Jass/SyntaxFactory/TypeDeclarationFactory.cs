@@ -20,6 +20,15 @@ namespace War3Net.CodeAnalysis.Jass
                 baseType);
         }
 
+        public static JassTypeDeclarationSyntax TypeDeclaration(JassIdentifierNameSyntax identifierName, string baseType)
+        {
+            return new JassTypeDeclarationSyntax(
+                Token(JassSyntaxKind.TypeKeyword),
+                identifierName,
+                Token(JassSyntaxKind.ExtendsKeyword),
+                ParseTypeName(baseType));
+        }
+
         public static JassTypeDeclarationSyntax TypeDeclaration(string name, JassTypeSyntax baseType)
         {
             return new JassTypeDeclarationSyntax(
@@ -27,6 +36,15 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 Token(JassSyntaxKind.ExtendsKeyword),
                 baseType);
+        }
+
+        public static JassTypeDeclarationSyntax TypeDeclaration(string name, string baseType)
+        {
+            return new JassTypeDeclarationSyntax(
+                Token(JassSyntaxKind.TypeKeyword),
+                ParseIdentifierName(name),
+                Token(JassSyntaxKind.ExtendsKeyword),
+                ParseTypeName(baseType));
         }
     }
 }
