@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -13,15 +14,25 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassParameterListSyntax ParameterList(params JassParameterSyntax[] parameters)
+        public static JassParameterListOrEmptyParameterListSyntax ParameterList(params JassParameterSyntax[] parameters)
         {
+            if (parameters.Length == 0)
+            {
+                return JassEmptyParameterListSyntax.Value;
+            }
+
             return new JassParameterListSyntax(
                 Token(JassSyntaxKind.TakesKeyword),
                 SeparatedSyntaxList(JassSyntaxKind.CommaToken, parameters));
         }
 
-        public static JassParameterListSyntax ParameterList(IEnumerable<JassParameterSyntax> parameters)
+        public static JassParameterListOrEmptyParameterListSyntax ParameterList(IEnumerable<JassParameterSyntax> parameters)
         {
+            if (!parameters.Any())
+            {
+                return JassEmptyParameterListSyntax.Value;
+            }
+
             return new JassParameterListSyntax(
                 Token(JassSyntaxKind.TakesKeyword),
                 SeparatedSyntaxList(JassSyntaxKind.CommaToken, parameters));
