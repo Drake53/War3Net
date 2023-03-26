@@ -25,12 +25,13 @@ namespace War3Net.CodeAnalysis.Jass
                 return LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, JassSymbol.Zero));
             }
 
-            if (value < 0)
+            var valueAsString = value.ToString(CultureInfo.InvariantCulture);
+            if (valueAsString.StartsWith(JassSymbol.MinusChar))
             {
-                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, (-value).ToString(CultureInfo.InvariantCulture))));
+                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, valueAsString.TrimStart(JassSymbol.MinusChar))));
             }
 
-            return LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture)));
+            return LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, valueAsString));
         }
 
         public static JassExpressionSyntax LiteralExpression(float value, int precision = 1)
