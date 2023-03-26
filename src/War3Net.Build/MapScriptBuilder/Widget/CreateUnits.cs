@@ -21,7 +21,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual IEnumerable<IStatementSyntax> CreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, IExpressionSyntax playerNumber)
+        protected internal virtual IEnumerable<JassStatementSyntax> CreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, JassExpressionSyntax playerNumber)
         {
             if (map is null)
             {
@@ -38,7 +38,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(playerNumber));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Player), VariableName.Player, SyntaxFactory.InvocationExpression(NativeName.Player, playerNumber)));
             if (!ForceGenerateGlobalUnitVariable)
             {
@@ -52,7 +52,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             foreach (var (unit, id) in units.OrderBy(pair => pair.Unit.CreationNumber))
             {
@@ -121,13 +121,13 @@ namespace War3Net.Build
                             break;
                     }
 
-                    var ifBodyStatements = new List<IStatementSyntax>();
+                    var ifBodyStatements = new List<JassStatementSyntax>();
                     ifBodyStatements.Add(SyntaxFactory.SetStatement(
                         unitVariableName,
                         SyntaxFactory.InvocationExpression(
                             NativeName.CreateUnit,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Player),
-                            SyntaxFactory.VariableReferenceExpression(VariableName.UnitId),
+                            SyntaxFactory.ParseIdentifierName(VariableName.Player),
+                            SyntaxFactory.ParseIdentifierName(VariableName.UnitId),
                             SyntaxFactory.LiteralExpression(unit.Position.X, precision: 1),
                             SyntaxFactory.LiteralExpression(unit.Position.Y, precision: 1),
                             SyntaxFactory.LiteralExpression(unit.Rotation * (180f / MathF.PI), precision: 3))));
@@ -135,14 +135,14 @@ namespace War3Net.Build
                     ifBodyStatements.AddRange(GetCreateUnitStatements(map, unit, id));
 
                     statements.Add(SyntaxFactory.IfStatement(
-                        new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.UnitId), SyntaxFactory.LiteralExpression(-1))),
+                        SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.UnitId), SyntaxFactory.LiteralExpression(-1))),
                         ifBodyStatements.ToArray()));
                 }
                 else
                 {
-                    var args = new List<IExpressionSyntax>()
+                    var args = new List<JassExpressionSyntax>()
                     {
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Player),
+                        SyntaxFactory.ParseIdentifierName(VariableName.Player),
                         SyntaxFactory.FourCCLiteralExpression(unit.TypeId),
                         SyntaxFactory.LiteralExpression(unit.Position.X, precision: 1),
                         SyntaxFactory.LiteralExpression(unit.Position.Y, precision: 1),
@@ -165,7 +165,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetHeroLevel,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                            SyntaxFactory.ParseIdentifierName(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroLevel),
                             SyntaxFactory.LiteralExpression(false)));
                     }
@@ -174,7 +174,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetHeroStr,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                            SyntaxFactory.ParseIdentifierName(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroStrength),
                             SyntaxFactory.LiteralExpression(true)));
                     }
@@ -183,7 +183,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetHeroAgi,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                            SyntaxFactory.ParseIdentifierName(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroAgility),
                             SyntaxFactory.LiteralExpression(true)));
                     }
@@ -192,7 +192,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetHeroInt,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                            SyntaxFactory.ParseIdentifierName(unitVariableName),
                             SyntaxFactory.LiteralExpression(unit.HeroIntelligence),
                             SyntaxFactory.LiteralExpression(true)));
                     }
@@ -204,7 +204,7 @@ namespace War3Net.Build
             return statements;
         }
 
-        protected internal virtual IEnumerable<IStatementSyntax> GetCreateUnitStatements(Map map, UnitData unit, int id)
+        protected internal virtual IEnumerable<JassStatementSyntax> GetCreateUnitStatements(Map map, UnitData unit, int id)
         {
             if (map is null)
             {
@@ -218,7 +218,7 @@ namespace War3Net.Build
 
             var randomItemTables = map.Info?.RandomItemTables;
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var unitVariableName = unit.GetVariableName();
             if (!ForceGenerateGlobalUnitVariable && (!TriggerVariableReferences.TryGetValue(unitVariableName, out var value) || !value))
@@ -234,29 +234,29 @@ namespace War3Net.Build
                         VariableName.Life,
                         SyntaxFactory.InvocationExpression(
                             NativeName.GetUnitState,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.VariableReferenceExpression(UnitStateName.Life))));
+                            SyntaxFactory.ParseIdentifierName(unitVariableName),
+                            SyntaxFactory.ParseIdentifierName(UnitStateName.Life))));
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetUnitState,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(UnitStateName.Life),
                         SyntaxFactory.BinaryMultiplicationExpression(
                             SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Life))));
+                            SyntaxFactory.ParseIdentifierName(VariableName.Life))));
                 }
                 else
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetUnitState,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(UnitStateName.Life),
                         SyntaxFactory.BinaryMultiplicationExpression(
                             SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
                             SyntaxFactory.InvocationExpression(
                                 NativeName.GetUnitState,
-                                SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                                SyntaxFactory.VariableReferenceExpression(UnitStateName.Life)))));
+                                SyntaxFactory.ParseIdentifierName(unitVariableName),
+                                SyntaxFactory.ParseIdentifierName(UnitStateName.Life)))));
                 }
             }
 
@@ -264,8 +264,8 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetUnitState,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(UnitStateName.Mana),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(UnitStateName.Mana),
                     SyntaxFactory.LiteralExpression(unit.MP)));
             }
 
@@ -273,7 +273,7 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetResourceAmount,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
                     SyntaxFactory.LiteralExpression(unit.GoldAmount)));
             }
 
@@ -287,7 +287,7 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetUnitColor,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
                     SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(playerColorId))));
             }
 
@@ -296,7 +296,7 @@ namespace War3Net.Build
                 const float CampAcquisitionRange = 200f;
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetUnitAcquireRange,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
                     SyntaxFactory.LiteralExpression(unit.TargetAcquisition == -2f ? CampAcquisitionRange : unit.TargetAcquisition, precision: 1)));
             }
 
@@ -307,13 +307,13 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.WaygateSetDestination,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
                         SyntaxFactory.LiteralExpression(destinationRect.CenterX),
                         SyntaxFactory.LiteralExpression(destinationRect.CenterY)));
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.WaygateActivate,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
                         SyntaxFactory.LiteralExpression(true)));
                 }
             }
@@ -324,7 +324,7 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SelectHeroSkill,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
                         SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
                 }
 
@@ -332,7 +332,7 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.IssueImmediateOrderById,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
                         SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
                 }
 
@@ -340,7 +340,7 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.IssueImmediateOrder,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
                         SyntaxFactory.LiteralExpression(orderOffString)));
                 }
             }
@@ -349,7 +349,7 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.UnitAddItemToSlotById,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
                     SyntaxFactory.FourCCLiteralExpression(item.ItemId),
                     SyntaxFactory.LiteralExpression(item.Slot)));
             }
@@ -360,22 +360,22 @@ namespace War3Net.Build
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.TriggerRegisterUnitEvent,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(UnitEventName.Death)));
+                    SyntaxFactory.ParseIdentifierName(VariableName.Trigger),
+                    SyntaxFactory.ParseIdentifierName(unitVariableName),
+                    SyntaxFactory.ParseIdentifierName(UnitEventName.Death)));
 
                 if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v24)
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.TriggerRegisterUnitEvent,
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitEventName.ChangeOwner)));
+                        SyntaxFactory.ParseIdentifierName(VariableName.Trigger),
+                        SyntaxFactory.ParseIdentifierName(unitVariableName),
+                        SyntaxFactory.ParseIdentifierName(UnitEventName.ChangeOwner)));
                 }
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.TriggerAddAction,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
+                    SyntaxFactory.ParseIdentifierName(VariableName.Trigger),
                     SyntaxFactory.FunctionReferenceExpression(unit.GetDropItemsFunctionName(id))));
             }
 

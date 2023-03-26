@@ -48,16 +48,16 @@ namespace War3Net.Build
             {
                 if (sound.Flags.HasFlag(SoundFlags.Music))
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         JassTypeSyntax.String,
                         sound.Name);
                 }
                 else
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Sound),
                         sound.Name,
-                        JassNullLiteralExpressionSyntax.Value);
+                        SyntaxFactory.LiteralExpression(null));
                 }
             }
         }

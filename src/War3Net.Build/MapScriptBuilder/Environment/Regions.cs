@@ -46,10 +46,10 @@ namespace War3Net.Build
 
             foreach (var region in mapRegions.Regions)
             {
-                yield return SyntaxFactory.GlobalDeclaration(
+                yield return SyntaxFactory.GlobalVariableDeclaration(
                     SyntaxFactory.ParseTypeName(TypeName.Rect),
                     region.GetVariableName(),
-                    JassNullLiteralExpressionSyntax.Value);
+                    SyntaxFactory.LiteralExpression(null));
             }
         }
     }

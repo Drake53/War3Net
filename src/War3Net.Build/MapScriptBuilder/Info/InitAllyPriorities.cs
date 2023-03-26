@@ -31,15 +31,15 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitAllyPriorities)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var playerDataCount = mapInfo.Players.Count;
             for (var i = 0; i < playerDataCount; i++)
             {
                 var playerData = mapInfo.Players[i];
 
-                var allyStartLocPrioStatements = new List<IStatementSyntax>();
-                var enemyStartLocPrioStatements = new List<IStatementSyntax>();
+                var allyStartLocPrioStatements = new List<JassStatementSyntax>();
+                var enemyStartLocPrioStatements = new List<JassStatementSyntax>();
 
                 var allySlotIndex = 0;
                 var enemySlotIndex = 0;
@@ -54,7 +54,7 @@ namespace War3Net.Build
                             SyntaxFactory.LiteralExpression(i),
                             SyntaxFactory.LiteralExpression(allySlotIndex++),
                             SyntaxFactory.LiteralExpression(j),
-                            SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
+                            SyntaxFactory.ParseIdentifierName(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                     }
 
                     if (mapInfo.FormatVersion >= MapInfoFormatVersion.v31)
@@ -68,12 +68,12 @@ namespace War3Net.Build
                                 SyntaxFactory.LiteralExpression(i),
                                 SyntaxFactory.LiteralExpression(enemySlotIndex++),
                                 SyntaxFactory.LiteralExpression(j),
-                                SyntaxFactory.VariableReferenceExpression(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
+                                SyntaxFactory.ParseIdentifierName(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                         }
                     }
                 }
 
-                statements.Add(JassEmptySyntax.Value);
+                //statements.Add(JassEmptySyntax.Value);
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetStartLocPrioCount,
@@ -84,7 +84,7 @@ namespace War3Net.Build
 
                 if (enemyStartLocPrioStatements.Count > 0)
                 {
-                    statements.Add(JassEmptySyntax.Value);
+                    //statements.Add(JassEmptySyntax.Value);
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetEnemyStartLocPrioCount,

@@ -27,7 +27,7 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             if (CreateNeutralPassiveBuildingsCondition(map))
             {

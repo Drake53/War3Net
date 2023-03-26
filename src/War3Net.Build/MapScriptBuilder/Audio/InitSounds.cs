@@ -31,7 +31,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitSounds)}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             foreach (var sound in mapSounds.Sounds)
             {
@@ -64,7 +64,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundFacialAnimationLabel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.FacialAnimationLabel)));
                     }
 
@@ -72,7 +72,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundFacialAnimationGroupLabel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.FacialAnimationGroupLabel)));
                     }
 
@@ -80,7 +80,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundFacialAnimationSetFilepath,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.FacialAnimationSetFilepath)));
                     }
 
@@ -88,7 +88,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetDialogueSpeakerNameKey,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueSpeakerNameKey}")));
                     }
 
@@ -96,7 +96,7 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetDialogueTextKey,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueTextKey}")));
                     }
 
@@ -105,7 +105,7 @@ namespace War3Net.Build
                         var distanceCutoff = sound.DistanceCutoff == uint.MaxValue ? 3000f : sound.DistanceCutoff;
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundDistanceCutoff,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(distanceCutoff, precision: 1)));
                     }
 
@@ -114,38 +114,38 @@ namespace War3Net.Build
                         var channel = sound.Channel == SoundChannel.Undefined ? SoundChannel.General : sound.Channel;
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundChannel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression((int)channel)));
                     }
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetSoundVolume,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
+                        SyntaxFactory.ParseIdentifierName(sound.Name),
                         SyntaxFactory.LiteralExpression(sound.Volume == -1 ? 127 : sound.Volume)));
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetSoundPitch,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
+                        SyntaxFactory.ParseIdentifierName(sound.Name),
                         SyntaxFactory.LiteralExpression(sound.Pitch == uint.MaxValue ? 1f : sound.Pitch, precision: 1)));
 
                     if (is3DSound)
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundDistances,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.MinDistance == uint.MaxValue ? 0f : sound.MinDistance, precision: 1),
                             SyntaxFactory.LiteralExpression(sound.MaxDistance == uint.MaxValue ? 10000f : sound.MaxDistance, precision: 1)));
 
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundConeAngles,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.ConeAngleInside == uint.MaxValue ? 0f : sound.ConeAngleInside, precision: 1),
                             SyntaxFactory.LiteralExpression(sound.ConeAngleOutside == uint.MaxValue ? 0f : sound.ConeAngleOutside, precision: 1),
                             SyntaxFactory.LiteralExpression(sound.ConeOutsideVolume == -1 ? 127 : sound.ConeOutsideVolume)));
 
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetSoundConeOrientation,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
+                            SyntaxFactory.ParseIdentifierName(sound.Name),
                             SyntaxFactory.LiteralExpression(sound.ConeOrientation.X == uint.MaxValue ? 0f : sound.ConeOrientation.X, precision: 1),
                             SyntaxFactory.LiteralExpression(sound.ConeOrientation.Y == uint.MaxValue ? 0f : sound.ConeOrientation.Y, precision: 1),
                             SyntaxFactory.LiteralExpression(sound.ConeOrientation.Z == uint.MaxValue ? 0f : sound.ConeOrientation.Z, precision: 1)));

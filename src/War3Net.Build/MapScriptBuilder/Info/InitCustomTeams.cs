@@ -31,7 +31,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitCustomTeams)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var forceDataCount = mapInfo.Forces.Count;
             var useBlizzardAllianceFunctions = mapInfo.FormatVersion > MapInfoFormatVersion.v15;
@@ -50,7 +50,7 @@ namespace War3Net.Build
                     continue;
                 }
 
-                statements.Add(new JassCommentSyntax($" Force: {forceData.Name}"));
+                //statements.Add(new JassCommentSyntax($" Force: {forceData.Name}"));
 
                 var alliedVictory = forceData.Flags.HasFlag(ForceFlags.AlliedVictory);
                 foreach (var playerSlot in playerSlots)
@@ -65,7 +65,7 @@ namespace War3Net.Build
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetPlayerState,
                             SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot)),
-                            SyntaxFactory.VariableReferenceExpression(PlayerStateName.AlliedVictory),
+                            SyntaxFactory.ParseIdentifierName(PlayerStateName.AlliedVictory),
                             SyntaxFactory.LiteralExpression(1)));
                     }
                 }
@@ -90,8 +90,8 @@ namespace War3Net.Build
                     {
                         if (mapInfo.FormatVersion >= MapInfoFormatVersion.v31)
                         {
-                            statements.Add(JassEmptySyntax.Value);
-                            statements.Add(new JassCommentSyntax("   Allied"));
+                            //statements.Add(JassEmptySyntax.Value);
+                            //statements.Add(new JassCommentSyntax("   Allied"));
                         }
 
                         AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
@@ -116,8 +116,8 @@ namespace War3Net.Build
                 {
                     void AddSetAllianceStateStatement(string variableName, string comment)
                     {
-                        statements.Add(JassEmptySyntax.Value);
-                        statements.Add(new JassCommentSyntax(comment));
+                        //statements.Add(JassEmptySyntax.Value);
+                        //statements.Add(new JassCommentSyntax(comment));
 
                         foreach (var (playerSlot1, playerSlot2) in playerSlotPairs)
                         {
@@ -125,7 +125,7 @@ namespace War3Net.Build
                                 NativeName.SetPlayerAlliance,
                                 SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot1)),
                                 SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot2)),
-                                SyntaxFactory.VariableReferenceExpression(variableName),
+                                SyntaxFactory.ParseIdentifierName(variableName),
                                 SyntaxFactory.LiteralExpression(true)));
                         }
                     }
@@ -151,7 +151,7 @@ namespace War3Net.Build
                     }
                 }
 
-                statements.Add(JassEmptySyntax.Value);
+                //statements.Add(JassEmptySyntax.Value);
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTeams)), statements);

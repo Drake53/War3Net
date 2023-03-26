@@ -36,7 +36,7 @@ namespace War3Net.Build
                 CreateUnits(
                     map,
                     mapUnits.Units.IncludeId().Where(pair => CreateNeutralHostileConditionSingleUnit(map, pair.Obj)),
-                    SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralHostile)));
+                    SyntaxFactory.ParseIdentifierName(GlobalVariableName.PlayerNeutralHostile)));
         }
 
         protected internal virtual bool CreateNeutralHostileCondition(Map map)

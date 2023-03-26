@@ -35,7 +35,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitGlobals)}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             if (mapTriggers.Variables.Any(variable =>
                 (variable.IsArray ||
@@ -75,7 +75,7 @@ namespace War3Net.Build
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitGlobals)), statements);
         }
 
-        protected internal virtual IEnumerable<IStatementSyntax> InitGlobal(VariableDefinition variable, IExpressionSyntax expression)
+        protected internal virtual IEnumerable<JassStatementSyntax> InitGlobal(VariableDefinition variable, JassExpressionSyntax expression)
         {
             if (variable is null)
             {
@@ -90,19 +90,19 @@ namespace War3Net.Build
 
                 yield return SyntaxFactory.LoopStatement(
                     SyntaxFactory.ExitStatement(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryGreaterThanExpression(
-                        SyntaxFactory.VariableReferenceExpression("i"),
+                        SyntaxFactory.ParseIdentifierName("i"),
                         SyntaxFactory.LiteralExpression(variable.ArraySize)))),
                     SyntaxFactory.SetStatement(
                         variable.GetVariableName(),
-                        SyntaxFactory.VariableReferenceExpression("i"),
+                        SyntaxFactory.ParseIdentifierName("i"),
                         expression),
                     SyntaxFactory.SetStatement(
                         "i",
                         SyntaxFactory.BinaryAdditionExpression(
-                            SyntaxFactory.VariableReferenceExpression("i"),
+                            SyntaxFactory.ParseIdentifierName("i"),
                             SyntaxFactory.LiteralExpression(1))));
 
-                yield return JassEmptySyntax.Value;
+                //yield return JassEmptySyntax.Value;
             }
             else
             {

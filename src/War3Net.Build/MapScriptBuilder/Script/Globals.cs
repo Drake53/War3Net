@@ -9,15 +9,16 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassGlobalDeclarationListSyntax Globals(Map map)
+        protected internal virtual JassGlobalsDeclarationSyntax Globals(Map map)
         {
-            var globalDeclarationList = new List<IGlobalDeclarationSyntax>();
+            var globalDeclarationList = new List<JassGlobalDeclarationSyntax>();
             var generatedGlobals = new List<JassGlobalDeclarationSyntax>();
 
             generatedGlobals.AddRange(Regions(map));
@@ -32,22 +33,22 @@ namespace War3Net.Build
 
             if (userDefinedGlobals.Any())
             {
-                globalDeclarationList.Add(new JassCommentSyntax(" User-defined"));
+                //globalDeclarationList.Add(new JassCommentSyntax(" User-defined"));
                 globalDeclarationList.AddRange(userDefinedGlobals);
 
                 if (generatedGlobals.Any())
                 {
-                    globalDeclarationList.Add(JassEmptySyntax.Value);
+                    //globalDeclarationList.Add(JassEmptySyntax.Value);
                 }
             }
 
             if (generatedGlobals.Any())
             {
-                globalDeclarationList.Add(new JassCommentSyntax(" Generated"));
+                //globalDeclarationList.Add(new JassCommentSyntax(" Generated"));
                 globalDeclarationList.AddRange(generatedGlobals);
             }
 
-            return new JassGlobalDeclarationListSyntax(globalDeclarationList.ToImmutableArray());
+            return JassSyntaxFactory.GlobalsDeclaration(globalDeclarationList.ToImmutableArray());
         }
     }
 }

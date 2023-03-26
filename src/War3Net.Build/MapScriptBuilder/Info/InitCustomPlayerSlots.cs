@@ -31,7 +31,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitCustomPlayerSlots)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var playerDataCount = mapInfo.Players.Count;
 
@@ -39,8 +39,8 @@ namespace War3Net.Build
             {
                 var playerData = mapInfo.Players[i];
 
-                statements.Add(JassEmptySyntax.Value);
-                statements.Add(new JassCommentSyntax($" Player {playerData.Id}"));
+                //statements.Add(JassEmptySyntax.Value);
+                //statements.Add(new JassCommentSyntax($" Player {playerData.Id}"));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerStartLocation,
@@ -63,7 +63,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerRacePreference,
                     SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.VariableReferenceExpression(playerData.Race.GetVariableName())));
+                    SyntaxFactory.ParseIdentifierName(playerData.Race.GetVariableName())));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerRaceSelectable,
@@ -73,7 +73,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerController,
                     SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.VariableReferenceExpression(playerData.Controller.GetVariableName())));
+                    SyntaxFactory.ParseIdentifierName(playerData.Controller.GetVariableName())));
 
                 if (playerData.Controller == PlayerController.Rescuable)
                 {
@@ -86,14 +86,14 @@ namespace War3Net.Build
                                 NativeName.SetPlayerAlliance,
                                 SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
                                 SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(otherPlayerData.Id)),
-                                SyntaxFactory.VariableReferenceExpression(AllianceTypeName.Rescuable),
+                                SyntaxFactory.ParseIdentifierName(AllianceTypeName.Rescuable),
                                 SyntaxFactory.LiteralExpression(true)));
                         }
                     }
                 }
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomPlayerSlots)), statements);
         }

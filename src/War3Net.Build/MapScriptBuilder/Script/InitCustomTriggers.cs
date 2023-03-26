@@ -32,7 +32,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitCustomTriggers)}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             foreach (var trigger in mapTriggers.TriggerItems)
             {

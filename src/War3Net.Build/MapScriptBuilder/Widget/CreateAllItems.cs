@@ -34,7 +34,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(CreateAllItems)}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId));
 
             foreach (var item in mapUnits.Units.Where(item => CreateAllItemsConditionSingleItem(map, item)))
@@ -63,7 +63,7 @@ namespace War3Net.Build
                             var summedChance = 0;
                             foreach (var randomItem in randomUnitCustomTable.RandomUnits)
                             {
-                                IExpressionSyntax id = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
+                                JassExpressionSyntax id = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
                                     ? SyntaxFactory.InvocationExpression(
                                         NativeName.ChooseRandomItemEx,
                                         SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)itemClass)),
@@ -97,16 +97,16 @@ namespace War3Net.Build
                     }
 
                     statements.Add(SyntaxFactory.IfStatement(
-                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
+                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
                         SyntaxFactory.CallStatement(
                             NativeName.CreateItem,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.ItemId),
+                            SyntaxFactory.ParseIdentifierName(VariableName.ItemId),
                             SyntaxFactory.LiteralExpression(item.Position.X),
                             SyntaxFactory.LiteralExpression(item.Position.Y))));
                 }
                 else
                 {
-                    var args = new List<IExpressionSyntax>()
+                    var args = new List<JassExpressionSyntax>()
                     {
                         SyntaxFactory.FourCCLiteralExpression(item.TypeId),
                         SyntaxFactory.LiteralExpression(item.Position.X),
@@ -123,7 +123,7 @@ namespace War3Net.Build
                 }
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllItems)), statements);
         }

@@ -32,7 +32,7 @@ namespace War3Net.Build
 
             var triggerVariableName = triggerDefinition.GetVariableName();
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             statements.Add(SyntaxFactory.SetStatement(
                 triggerVariableName,

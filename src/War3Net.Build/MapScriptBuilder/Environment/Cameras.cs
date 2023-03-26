@@ -46,10 +46,10 @@ namespace War3Net.Build
 
             foreach (var camera in mapCameras.Cameras)
             {
-                yield return SyntaxFactory.GlobalDeclaration(
+                yield return SyntaxFactory.GlobalVariableDeclaration(
                     SyntaxFactory.ParseTypeName(TypeName.CameraSetup),
                     camera.GetVariableName(),
-                    JassNullLiteralExpressionSyntax.Value);
+                    SyntaxFactory.LiteralExpression(null));
             }
         }
     }

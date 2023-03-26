@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 using War3Net.Build.Info;
@@ -34,7 +35,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(config)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var playerDataCount = mapInfo.Players.Count;
             var forceDataCount = mapInfo.Forces.Count;
@@ -46,14 +47,14 @@ namespace War3Net.Build
 
             if (mapInfo.Players.Any(player => player.AllyHighPriorityFlags != 0 || player.AllyLowPriorityFlags != 0))
             {
-                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.TeamsTogether)));
+                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.ParseIdentifierName(PlacementName.TeamsTogether)));
             }
             else
             {
-                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
+                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.ParseIdentifierName(PlacementName.UseMapSettings)));
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             if (!string.IsNullOrEmpty(LobbyMusic))
             {
@@ -72,15 +73,15 @@ namespace War3Net.Build
                     SyntaxFactory.LiteralExpression(location.Y, precision: 1)));
             }
 
-            statements.Add(JassEmptySyntax.Value);
-            statements.Add(new JassCommentSyntax(" Player setup"));
+            //statements.Add(JassEmptySyntax.Value);
+            //statements.Add(new JassCommentSyntax(" Player setup"));
 
             if (InitCustomPlayerSlotsCondition(map))
             {
                 statements.Add(SyntaxFactory.CallStatement(nameof(InitCustomPlayerSlots)));
             }
 
-            var elseStatements = new List<IStatementSyntax>();
+            var elseStatements = new List<JassStatementSyntax>();
             if (!mapInfo.MapFlags.HasFlag(MapFlags.UseCustomForces))
             {
                 for (var i = 0; i < playerDataCount; i++)
@@ -88,7 +89,7 @@ namespace War3Net.Build
                     elseStatements.Add(SyntaxFactory.CallStatement(
                         FunctionName.SetPlayerSlotAvailable,
                         SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(mapInfo.Players[i].Id)),
-                        SyntaxFactory.VariableReferenceExpression(MapControlName.User)));
+                        SyntaxFactory.ParseIdentifierName(MapControlName.User)));
                 }
 
                 elseStatements.Add(SyntaxFactory.CallStatement(FunctionName.InitGenericPlayerSlots));
@@ -99,9 +100,9 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.IfStatement(
                     SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryEqualsExpression(
                         SyntaxFactory.InvocationExpression(NativeName.GetGameTypeSelected),
-                        SyntaxFactory.VariableReferenceExpression(GameType.UseMapSettings))),
-                    SyntaxFactory.StatementList(SyntaxFactory.CallStatement(nameof(InitCustomTeams))),
-                    new JassElseClauseSyntax(SyntaxFactory.StatementList(elseStatements))));
+                        SyntaxFactory.ParseIdentifierName(GameType.UseMapSettings))),
+                    ImmutableArray.Create(SyntaxFactory.CallStatement(nameof(InitCustomTeams))),
+                    SyntaxFactory.ElseClause(elseStatements)));
             }
             else
             {

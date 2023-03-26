@@ -32,7 +32,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitTechTree_Player) + playerId}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             foreach (var techData in mapInfo.TechData)
             {

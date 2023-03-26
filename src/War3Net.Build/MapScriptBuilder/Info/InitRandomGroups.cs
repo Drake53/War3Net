@@ -33,14 +33,14 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitRandomGroups)}' cannot be generated without {nameof(MapInfo.RandomUnitTables)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.CurrentSet));
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             foreach (var unitTable in randomUnitTables)
             {
-                statements.Add(new JassCommentSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
+                //statements.Add(new JassCommentSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
                 statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
 
                 for (var i = 0; i < unitTable.UnitSets.Count; i++)
@@ -52,16 +52,16 @@ namespace War3Net.Build
                 }
 
                 statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
-                statements.Add(JassEmptySyntax.Value);
+                //statements.Add(JassEmptySyntax.Value);
 
                 var groupVarName = unitTable.GetVariableName();
-                var ifElseifBlocks = new List<(IExpressionSyntax Condition, IStatementSyntax[] Body)>();
+                var ifElseifBlocks = new List<(JassExpressionSyntax Condition, JassStatementSyntax[] Body)>();
                 for (var setIndex = 0; setIndex < unitTable.UnitSets.Count; setIndex++)
                 {
                     var set = unitTable.UnitSets[setIndex];
 
-                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(setIndex));
-                    var bodyStatements = new List<IStatementSyntax>();
+                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(setIndex));
+                    var bodyStatements = new List<JassStatementSyntax>();
 
                     for (var position = 0; position < unitTable.Types.Count; position++)
                     {
@@ -76,10 +76,10 @@ namespace War3Net.Build
                             unitTypeExpression));
                     }
 
-                    ifElseifBlocks.Add((new JassParenthesizedExpressionSyntax(condition), bodyStatements.ToArray()));
+                    ifElseifBlocks.Add((SyntaxFactory.ParenthesizedExpression(condition), bodyStatements.ToArray()));
                 }
 
-                var elseClauseStatements = new List<IStatementSyntax>();
+                var elseClauseStatements = new List<JassStatementSyntax>();
                 for (var position = 0; position < unitTable.Types.Count; position++)
                 {
                     elseClauseStatements.Add(SyntaxFactory.SetStatement(
@@ -90,11 +90,11 @@ namespace War3Net.Build
 
                 statements.Add(SyntaxFactory.IfStatement(
                     ifElseifBlocks.First().Condition,
-                    SyntaxFactory.StatementList(ifElseifBlocks.First().Body),
-                    ifElseifBlocks.Skip(1).Select(elseIf => new JassElseIfClauseSyntax(elseIf.Condition, SyntaxFactory.StatementList(elseIf.Body))),
-                    new JassElseClauseSyntax(SyntaxFactory.StatementList(elseClauseStatements))));
+                    ifElseifBlocks.First().Body,
+                    ifElseifBlocks.Skip(1).Select(elseIf => SyntaxFactory.ElseIfClause(elseIf.Condition, elseIf.Body)),
+                    SyntaxFactory.ElseClause(elseClauseStatements)));
 
-                statements.Add(JassEmptySyntax.Value);
+                //statements.Add(JassEmptySyntax.Value);
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitRandomGroups)), statements);

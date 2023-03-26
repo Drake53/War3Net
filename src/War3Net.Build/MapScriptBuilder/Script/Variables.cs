@@ -45,7 +45,7 @@ namespace War3Net.Build
                 }
                 else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         JassTypeSyntax.String,
                         variable.GetVariableName());
                 }
@@ -55,12 +55,12 @@ namespace War3Net.Build
                     {
                         JassKeyword.Integer => SyntaxFactory.LiteralExpression(0),
                         JassKeyword.Real => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.Boolean => JassBooleanLiteralExpressionSyntax.False,
+                        JassKeyword.Boolean => SyntaxFactory.LiteralExpression(false),
 
-                        _ => JassNullLiteralExpressionSyntax.Value,
+                        _ => SyntaxFactory.LiteralExpression(null),
                     };
 
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(type),
                         variable.GetVariableName(),
                         value);

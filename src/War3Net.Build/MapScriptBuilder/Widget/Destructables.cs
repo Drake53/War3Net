@@ -49,10 +49,10 @@ namespace War3Net.Build
                 var destructableVariableName = destructable.GetVariableName();
                 if (ForceGenerateGlobalDestructableVariable || TriggerVariableReferences.ContainsKey(destructableVariableName))
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Destructable),
                         destructableVariableName,
-                        JassNullLiteralExpressionSyntax.Value);
+                        SyntaxFactory.LiteralExpression(null));
                 }
             }
         }

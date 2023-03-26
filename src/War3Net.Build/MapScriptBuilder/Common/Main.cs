@@ -41,7 +41,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(main)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             if (UseWeatherEffectVariable && EnableGlobalWeatherEffectCondition(map))
             {
@@ -67,28 +67,28 @@ namespace War3Net.Build
                     NativeName.SetCameraBounds,
                     SyntaxFactory.BinaryAdditionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Left + (128 * mapInfo.CameraBoundsComplements.Left), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Left))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Left))),
                     SyntaxFactory.BinaryAdditionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Bottom + (128 * mapInfo.CameraBoundsComplements.Bottom), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Bottom))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Bottom))),
                     SyntaxFactory.BinarySubtractionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Right - (128 * mapInfo.CameraBoundsComplements.Right), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Right))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Right))),
                     SyntaxFactory.BinarySubtractionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Top - (128 * mapInfo.CameraBoundsComplements.Top), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Top))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Top))),
                     SyntaxFactory.BinaryAdditionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Left + (128 * mapInfo.CameraBoundsComplements.Left), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Left))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Left))),
                     SyntaxFactory.BinarySubtractionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Top - (128 * mapInfo.CameraBoundsComplements.Top), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Top))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Top))),
                     SyntaxFactory.BinarySubtractionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Right - (128 * mapInfo.CameraBoundsComplements.Right), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Right))),
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Right))),
                     SyntaxFactory.BinaryAdditionExpression(
                         SyntaxFactory.LiteralExpression(mapEnvironment.Bottom + (128 * mapInfo.CameraBoundsComplements.Bottom), precision: 1),
-                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.VariableReferenceExpression(CameraMarginName.Bottom)))));
+                        SyntaxFactory.InvocationExpression(NativeName.GetCameraMargin, SyntaxFactory.ParseIdentifierName(CameraMarginName.Bottom)))));
             }
 
             if (SetDayNightModelsCondition(map))
@@ -140,7 +140,7 @@ namespace War3Net.Build
                 if (UseWeatherEffectVariable)
                 {
                     statements.Add(SyntaxFactory.SetStatement(VariableName.WeatherEffect, createWeather));
-                    statements.Add(SyntaxFactory.CallStatement(NativeName.EnableWeatherEffect, SyntaxFactory.VariableReferenceExpression(VariableName.WeatherEffect), SyntaxFactory.LiteralExpression(true)));
+                    statements.Add(SyntaxFactory.CallStatement(NativeName.EnableWeatherEffect, SyntaxFactory.ParseIdentifierName(VariableName.WeatherEffect), SyntaxFactory.LiteralExpression(true)));
                 }
                 else
                 {
@@ -257,7 +257,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.CallStatement(CSharpLua.LuaSyntaxGenerator.kManifestFuncName));
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            //statements.Add(JassEmptySyntax.Value);
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(main)), statements);
         }

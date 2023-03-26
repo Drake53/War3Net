@@ -33,12 +33,12 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(CreateRegions)}' cannot be generated without {nameof(MapRegions)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             if (UseWeatherEffectVariable)
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.WeatherEffect), VariableName.WeatherEffect));
-                statements.Add(JassEmptySyntax.Value);
+                //statements.Add(JassEmptySyntax.Value);
             }
 
             foreach (var region in mapRegions.Regions)
@@ -62,13 +62,13 @@ namespace War3Net.Build
                             VariableName.WeatherEffect,
                             SyntaxFactory.InvocationExpression(
                                 NativeName.AddWeatherEffect,
-                                SyntaxFactory.VariableReferenceExpression(regionName),
+                                SyntaxFactory.ParseIdentifierName(regionName),
                                 SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType))));
 
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.EnableWeatherEffect,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.WeatherEffect),
-                            JassBooleanLiteralExpressionSyntax.True));
+                            SyntaxFactory.ParseIdentifierName(VariableName.WeatherEffect),
+                            SyntaxFactory.LiteralExpression(true)));
                     }
                     else
                     {
@@ -76,9 +76,9 @@ namespace War3Net.Build
                             NativeName.EnableWeatherEffect,
                             SyntaxFactory.InvocationExpression(
                                 NativeName.AddWeatherEffect,
-                                SyntaxFactory.VariableReferenceExpression(regionName),
+                                SyntaxFactory.ParseIdentifierName(regionName),
                                 SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType)),
-                            JassBooleanLiteralExpressionSyntax.True));
+                            SyntaxFactory.LiteralExpression(true)));
                     }
                 }
 
@@ -86,14 +86,14 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetSoundPosition,
-                        SyntaxFactory.VariableReferenceExpression(region.AmbientSound),
+                        SyntaxFactory.ParseIdentifierName(region.AmbientSound),
                         SyntaxFactory.LiteralExpression(region.CenterX),
                         SyntaxFactory.LiteralExpression(region.CenterY),
                         SyntaxFactory.LiteralExpression(0f)));
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.RegisterStackedSound,
-                        SyntaxFactory.VariableReferenceExpression(region.AmbientSound),
+                        SyntaxFactory.ParseIdentifierName(region.AmbientSound),
                         SyntaxFactory.LiteralExpression(true),
                         SyntaxFactory.LiteralExpression(region.Width),
                         SyntaxFactory.LiteralExpression(region.Height)));

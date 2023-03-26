@@ -31,7 +31,7 @@ namespace War3Net.Build
                 throw new ArgumentException($"Function '{nameof(InitUpgrades_Player) + playerId}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            var statements = new List<JassStatementSyntax>();
 
             var maxLevel = new Dictionary<int, int>();
             var researched = new Dictionary<int, int>();

@@ -49,10 +49,10 @@ namespace War3Net.Build
                 var unitVariableName = unit.GetVariableName();
                 if (ForceGenerateGlobalUnitVariable || TriggerVariableReferences.ContainsKey(unitVariableName))
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Unit),
                         unitVariableName,
-                        JassNullLiteralExpressionSyntax.Value);
+                        SyntaxFactory.LiteralExpression(null));
                 }
             }
         }
