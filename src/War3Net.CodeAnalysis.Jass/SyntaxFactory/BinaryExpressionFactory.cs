@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -111,23 +109,8 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassBinaryExpressionSyntax BinaryExpression(JassExpressionSyntax left, JassSyntaxToken operatorToken, JassExpressionSyntax right)
         {
-            var expressionKind = operatorToken.SyntaxKind switch
-            {
-                JassSyntaxKind.PlusToken => JassSyntaxKind.AddExpression,
-                JassSyntaxKind.MinusToken => JassSyntaxKind.SubtractExpression,
-                JassSyntaxKind.AsteriskToken => JassSyntaxKind.MultiplyExpression,
-                JassSyntaxKind.SlashToken => JassSyntaxKind.DivideExpression,
-                JassSyntaxKind.GreaterThanToken => JassSyntaxKind.GreaterThanExpression,
-                JassSyntaxKind.LessThanToken => JassSyntaxKind.LessThanExpression,
-                JassSyntaxKind.EqualsEqualsToken => JassSyntaxKind.EqualsExpression,
-                JassSyntaxKind.ExclamationEqualsToken => JassSyntaxKind.NotEqualsExpression,
-                JassSyntaxKind.GreaterThanEqualsToken => JassSyntaxKind.GreaterThanOrEqualExpression,
-                JassSyntaxKind.LessThanEqualsToken => JassSyntaxKind.LessThanOrEqualExpression,
-                JassSyntaxKind.AndKeyword => JassSyntaxKind.AndExpression,
-                JassSyntaxKind.OrKeyword => JassSyntaxKind.OrExpression,
-
-                _ => throw new ArgumentException("Invalid SyntaxKind.", nameof(operatorToken)),
-            };
+            // Token validation
+            JassSyntaxFacts.GetBinaryExpressionKind(operatorToken.SyntaxKind);
 
             return new JassBinaryExpressionSyntax(
                 left,

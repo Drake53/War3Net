@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -76,6 +77,39 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             return IsIdentifierEndCharacter(name[^1]);
+        }
+
+        public static JassSyntaxKind GetBinaryExpressionKind(JassSyntaxKind binaryOperatorTokenSyntaxKind)
+        {
+            return binaryOperatorTokenSyntaxKind switch
+            {
+                JassSyntaxKind.PlusToken => JassSyntaxKind.AddExpression,
+                JassSyntaxKind.MinusToken => JassSyntaxKind.SubtractExpression,
+                JassSyntaxKind.AsteriskToken => JassSyntaxKind.MultiplyExpression,
+                JassSyntaxKind.SlashToken => JassSyntaxKind.DivideExpression,
+                JassSyntaxKind.GreaterThanToken => JassSyntaxKind.GreaterThanExpression,
+                JassSyntaxKind.LessThanToken => JassSyntaxKind.LessThanExpression,
+                JassSyntaxKind.EqualsEqualsToken => JassSyntaxKind.EqualsExpression,
+                JassSyntaxKind.ExclamationEqualsToken => JassSyntaxKind.NotEqualsExpression,
+                JassSyntaxKind.GreaterThanEqualsToken => JassSyntaxKind.GreaterThanOrEqualExpression,
+                JassSyntaxKind.LessThanEqualsToken => JassSyntaxKind.LessThanOrEqualExpression,
+                JassSyntaxKind.AndKeyword => JassSyntaxKind.AndExpression,
+                JassSyntaxKind.OrKeyword => JassSyntaxKind.OrExpression,
+
+                _ => throw new InvalidEnumArgumentException(nameof(binaryOperatorTokenSyntaxKind), (int)binaryOperatorTokenSyntaxKind, typeof(JassSyntaxKind)),
+            };
+        }
+
+        public static JassSyntaxKind GetUnaryExpressionKind(JassSyntaxKind unaryOperatorTokenSyntaxKind)
+        {
+            return unaryOperatorTokenSyntaxKind switch
+            {
+                JassSyntaxKind.PlusToken => JassSyntaxKind.UnaryPlusExpression,
+                JassSyntaxKind.MinusToken => JassSyntaxKind.UnaryMinusExpression,
+                JassSyntaxKind.NotKeyword => JassSyntaxKind.NotExpression,
+
+                _ => throw new InvalidEnumArgumentException(nameof(unaryOperatorTokenSyntaxKind), (int)unaryOperatorTokenSyntaxKind, typeof(JassSyntaxKind)),
+            };
         }
     }
 }
