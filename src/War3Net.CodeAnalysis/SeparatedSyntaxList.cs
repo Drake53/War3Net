@@ -63,6 +63,11 @@ namespace War3Net.CodeAnalysis
 
         public static Builder CreateBuilder(TItem firstItem, int initialCapacity)
         {
+            if (initialCapacity < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+            }
+
             return new Builder(firstItem, initialCapacity);
         }
 
@@ -102,7 +107,7 @@ namespace War3Net.CodeAnalysis
             {
                 _itemBuilder = ImmutableArray.CreateBuilder<TItem>(initialCapacity);
                 _itemBuilder.Add(firstItem);
-                _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>(initialCapacity > 1 ? initialCapacity - 1 : 0);
+                _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>(initialCapacity - 1);
             }
 
             public void Add(TSeparator separator, TItem item)
