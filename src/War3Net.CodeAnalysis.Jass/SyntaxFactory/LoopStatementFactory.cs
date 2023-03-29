@@ -37,5 +37,16 @@ namespace War3Net.CodeAnalysis.Jass
                 statements,
                 Token(JassSyntaxKind.EndLoopKeyword));
         }
+
+        public static JassLoopStatementSyntax LoopStatement(JassSyntaxToken loopToken, ImmutableArray<JassStatementSyntax> statements, JassSyntaxToken endLoopToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(loopToken, JassSyntaxKind.LoopKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endLoopToken, JassSyntaxKind.EndLoopKeyword);
+
+            return new JassLoopStatementSyntax(
+                loopToken,
+                statements,
+                endLoopToken);
+        }
     }
 }

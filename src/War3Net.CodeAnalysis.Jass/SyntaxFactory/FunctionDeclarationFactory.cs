@@ -37,5 +37,15 @@ namespace War3Net.CodeAnalysis.Jass
                 statements,
                 Token(JassSyntaxKind.EndFunctionKeyword));
         }
+
+        public static JassFunctionDeclarationSyntax FunctionDeclaration(JassFunctionDeclaratorSyntax functionDeclarator, ImmutableArray<JassStatementSyntax> statements, JassSyntaxToken endFunctionToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(endFunctionToken, JassSyntaxKind.EndFunctionKeyword);
+
+            return new JassFunctionDeclarationSyntax(
+                functionDeclarator,
+                statements,
+                endFunctionToken);
+        }
     }
 }

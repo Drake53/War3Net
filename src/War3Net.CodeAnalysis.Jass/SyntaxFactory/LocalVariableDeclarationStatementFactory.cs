@@ -11,6 +11,15 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassSyntaxToken localToken, JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            ThrowHelper.ThrowIfInvalidToken(localToken, JassSyntaxKind.LocalKeyword);
+
+            return new JassLocalVariableDeclarationStatementSyntax(
+                localToken,
+                declarator);
+        }
+
         public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {
             return new JassLocalVariableDeclarationStatementSyntax(

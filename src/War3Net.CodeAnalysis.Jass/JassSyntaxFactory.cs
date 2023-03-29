@@ -6,7 +6,9 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 using Pidgin;
 
@@ -162,6 +164,53 @@ namespace War3Net.CodeAnalysis.Jass
 
             result = null;
             return false;
+        }
+
+        private static class ThrowHelper
+        {
+            public static void ThrowIfInvalidToken(JassSyntaxToken token, JassSyntaxKind expectedSyntaxKind, [CallerArgumentExpression("token")] string? paramName = null)
+            {
+                if (token is null)
+                {
+                    throw new ArgumentNullException(paramName);
+                }
+
+                if (token.SyntaxKind != expectedSyntaxKind)
+                {
+                    throw new ArgumentException("Invalid SyntaxKind.", paramName);
+                }
+            }
+
+            public static void ThrowIfInvalidSeparatedSyntaxList<TNode>(SeparatedSyntaxList<TNode, JassSyntaxToken> separatedSyntaxList, JassSyntaxKind expectedSyntaxKind, [CallerArgumentExpression("separatedSyntaxList")] string? paramName = null)
+            {
+                if (separatedSyntaxList is null)
+                {
+                    throw new ArgumentNullException(paramName);
+                }
+
+                for (var i = 0; i < separatedSyntaxList.Items.Length; i++)
+                {
+                    var item = separatedSyntaxList.Items[i];
+                    if (item is null)
+                    {
+                        throw new ArgumentException("Items in list may not be null.", paramName);
+                    }
+                }
+
+                for (var i = 0; i < separatedSyntaxList.Separators.Length; i++)
+                {
+                    var separator = separatedSyntaxList.Separators[i];
+                    if (separator is null)
+                    {
+                        throw new ArgumentException("Separators in list may not be null.", paramName);
+                    }
+
+                    if (separator.SyntaxKind != expectedSyntaxKind)
+                    {
+                        throw new ArgumentException("Invalid SyntaxKind.", paramName);
+                    }
+                }
+            }
         }
     }
 }

@@ -17,5 +17,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ReturnsKeyword),
                 returnType);
         }
+
+        public static JassReturnClauseSyntax ReturnClause(JassSyntaxToken returnsToken, JassTypeSyntax returnType)
+        {
+            ThrowHelper.ThrowIfInvalidToken(returnsToken, JassSyntaxKind.ReturnsKeyword);
+
+            return new JassReturnClauseSyntax(
+                returnsToken,
+                returnType);
+        }
     }
 }

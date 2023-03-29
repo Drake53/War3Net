@@ -24,5 +24,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name));
         }
+
+        public static JassFunctionReferenceExpressionSyntax FunctionReferenceExpression(JassSyntaxToken functionToken, JassIdentifierNameSyntax identifierName)
+        {
+            ThrowHelper.ThrowIfInvalidToken(functionToken, JassSyntaxKind.FunctionKeyword);
+
+            return new JassFunctionReferenceExpressionSyntax(
+                functionToken,
+                identifierName);
+        }
     }
 }

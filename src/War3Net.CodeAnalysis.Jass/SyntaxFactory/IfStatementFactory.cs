@@ -157,5 +157,16 @@ namespace War3Net.CodeAnalysis.Jass
                 elseClause,
                 Token(JassSyntaxKind.EndIfKeyword));
         }
+
+        public static JassIfStatementSyntax IfStatement(JassIfClauseSyntax ifClause, ImmutableArray<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause, JassSyntaxToken endIfToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(endIfToken, JassSyntaxKind.EndIfKeyword);
+
+            return new JassIfStatementSyntax(
+                ifClause,
+                elseIfClauses,
+                elseClause,
+                endIfToken);
+        }
     }
 }

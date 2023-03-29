@@ -37,5 +37,16 @@ namespace War3Net.CodeAnalysis.Jass
                 globalDeclarations,
                 Token(JassSyntaxKind.EndGlobalsKeyword));
         }
+
+        public static JassGlobalsDeclarationSyntax GlobalsDeclaration(JassSyntaxToken globalsToken, ImmutableArray<JassGlobalDeclarationSyntax> globalDeclarations, JassSyntaxToken endGlobalsToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(globalsToken, JassSyntaxKind.GlobalsKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endGlobalsToken, JassSyntaxKind.EndGlobalsKeyword);
+
+            return new JassGlobalsDeclarationSyntax(
+                globalsToken,
+                globalDeclarations,
+                endGlobalsToken);
+        }
     }
 }

@@ -273,6 +273,18 @@ namespace War3Net.CodeAnalysis.Jass
                 ReturnClause(ParseTypeName(returnType)));
         }
 
+        public static JassFunctionDeclaratorSyntax FunctionDeclarator(JassSyntaxToken functionToken, JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause, JassParameterListOrEmptyParameterListSyntax parameterList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(functionToken, JassSyntaxKind.FunctionKeyword);
+
+            return new JassFunctionDeclaratorSyntax(
+                null,
+                functionToken,
+                identifierName,
+                parameterList,
+                returnClause);
+        }
+
         public static JassFunctionDeclaratorSyntax ConstantFunctionDeclarator(JassIdentifierNameSyntax identifierName)
         {
             return new JassFunctionDeclaratorSyntax(
@@ -531,6 +543,19 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 ParameterList(parameters),
                 ReturnClause(ParseTypeName(returnType)));
+        }
+
+        public static JassFunctionDeclaratorSyntax ConstantFunctionDeclarator(JassSyntaxToken constantToken, JassSyntaxToken functionToken, JassIdentifierNameSyntax identifierName, JassTypeSyntax returnType, JassParameterListOrEmptyParameterListSyntax parameterList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(constantToken, JassSyntaxKind.ConstantKeyword);
+            ThrowHelper.ThrowIfInvalidToken(functionToken, JassSyntaxKind.FunctionKeyword);
+
+            return new JassFunctionDeclaratorSyntax(
+                constantToken,
+                functionToken,
+                identifierName,
+                parameterList,
+                ReturnClause(returnType));
         }
 
         public static JassFunctionDeclaratorSyntax ConditionFunctionDeclarator(string name)

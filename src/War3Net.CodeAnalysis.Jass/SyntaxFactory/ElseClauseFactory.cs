@@ -34,5 +34,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ElseKeyword),
                 statements);
         }
+
+        public static JassElseClauseSyntax ElseClause(JassSyntaxToken elseToken, ImmutableArray<JassStatementSyntax> statements)
+        {
+            ThrowHelper.ThrowIfInvalidToken(elseToken, JassSyntaxKind.ElseKeyword);
+
+            return new JassElseClauseSyntax(
+                elseToken,
+                statements);
+        }
     }
 }

@@ -273,6 +273,18 @@ namespace War3Net.CodeAnalysis.Jass
                 ReturnClause(ParseTypeName(returnType)));
         }
 
+        public static JassNativeFunctionDeclarationSyntax NativeFunctionDeclaration(JassSyntaxToken nativeToken, JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause, JassParameterListOrEmptyParameterListSyntax parameterList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(nativeToken, JassSyntaxKind.NativeKeyword);
+
+            return new JassNativeFunctionDeclarationSyntax(
+                null,
+                nativeToken,
+                identifierName,
+                parameterList,
+                returnClause);
+        }
+
         public static JassNativeFunctionDeclarationSyntax ConstantNativeFunctionDeclaration(JassIdentifierNameSyntax identifierName)
         {
             return new JassNativeFunctionDeclarationSyntax(
@@ -531,6 +543,19 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 ParameterList(parameters),
                 ReturnClause(ParseTypeName(returnType)));
+        }
+
+        public static JassNativeFunctionDeclarationSyntax ConstantNativeFunctionDeclaration(JassSyntaxToken constantToken, JassSyntaxToken nativeToken, JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause, JassParameterListOrEmptyParameterListSyntax parameterList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(constantToken, JassSyntaxKind.ConstantKeyword);
+            ThrowHelper.ThrowIfInvalidToken(nativeToken, JassSyntaxKind.NativeKeyword);
+
+            return new JassNativeFunctionDeclarationSyntax(
+                constantToken,
+                nativeToken,
+                identifierName,
+                parameterList,
+                returnClause);
         }
     }
 }

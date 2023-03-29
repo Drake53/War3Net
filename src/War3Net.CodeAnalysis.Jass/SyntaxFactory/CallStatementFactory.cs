@@ -42,5 +42,15 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 ArgumentList(arguments));
         }
+
+        public static JassCallStatementSyntax CallStatement(JassSyntaxToken callToken, JassIdentifierNameSyntax identifierName, JassArgumentListSyntax argumentList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(callToken, JassSyntaxKind.CallKeyword);
+
+            return new JassCallStatementSyntax(
+                callToken,
+                identifierName,
+                argumentList);
+        }
     }
 }

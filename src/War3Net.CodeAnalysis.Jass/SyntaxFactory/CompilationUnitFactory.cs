@@ -34,5 +34,14 @@ namespace War3Net.CodeAnalysis.Jass
                 declarations,
                 Token(JassSyntaxKind.EndOfFileToken));
         }
+
+        public static JassCompilationUnitSyntax CompilationUnit(ImmutableArray<JassTopLevelDeclarationSyntax> declarations, JassSyntaxToken endOfFileToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(endOfFileToken, JassSyntaxKind.EndOfFileToken);
+
+            return new JassCompilationUnitSyntax(
+                declarations,
+                endOfFileToken);
+        }
     }
 }

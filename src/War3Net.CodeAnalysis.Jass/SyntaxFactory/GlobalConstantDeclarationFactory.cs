@@ -82,5 +82,16 @@ namespace War3Net.CodeAnalysis.Jass
                 ParseIdentifierName(name),
                 EqualsValueClause(value));
         }
+
+        public static JassGlobalConstantDeclarationSyntax GlobalConstantDeclaration(JassSyntaxToken constantToken, JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            ThrowHelper.ThrowIfInvalidToken(constantToken, JassSyntaxKind.ConstantKeyword);
+
+            return new JassGlobalConstantDeclarationSyntax(
+                constantToken,
+                type,
+                identifierName,
+                value);
+        }
     }
 }

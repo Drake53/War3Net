@@ -37,5 +37,25 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.TakesKeyword),
                 SeparatedSyntaxList(JassSyntaxKind.CommaToken, parameters));
         }
+
+        public static JassParameterListSyntax ParameterList(JassSyntaxToken takesToken, SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameterList)
+        {
+            ThrowHelper.ThrowIfInvalidToken(takesToken, JassSyntaxKind.TakesKeyword);
+            ThrowHelper.ThrowIfInvalidSeparatedSyntaxList(parameterList, JassSyntaxKind.CommaToken);
+
+            return new JassParameterListSyntax(
+                takesToken,
+                parameterList);
+        }
+
+        public static JassEmptyParameterListSyntax EmptyParameterList(JassSyntaxToken takesToken, JassSyntaxToken nothingToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(takesToken, JassSyntaxKind.TakesKeyword);
+            ThrowHelper.ThrowIfInvalidToken(nothingToken, JassSyntaxKind.NothingKeyword);
+
+            return new JassEmptyParameterListSyntax(
+                takesToken,
+                nothingToken);
+        }
     }
 }

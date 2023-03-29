@@ -118,5 +118,16 @@ namespace War3Net.CodeAnalysis.Jass
                 ElementAccessClause(elementAccessExpression),
                 EqualsValueClause(value));
         }
+
+        public static JassSetStatementSyntax SetStatement(JassSyntaxToken setToken, JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax? elementAccessClause, JassEqualsValueClauseSyntax value)
+        {
+            ThrowHelper.ThrowIfInvalidToken(setToken, JassSyntaxKind.SetKeyword);
+
+            return new JassSetStatementSyntax(
+                setToken,
+                identifierName,
+                elementAccessClause,
+                value);
+        }
     }
 }

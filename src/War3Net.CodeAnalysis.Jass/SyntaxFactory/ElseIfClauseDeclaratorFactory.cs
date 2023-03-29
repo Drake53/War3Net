@@ -18,5 +18,16 @@ namespace War3Net.CodeAnalysis.Jass
                 condition,
                 Token(JassSyntaxKind.ThenKeyword));
         }
+
+        public static JassElseIfClauseDeclaratorSyntax ElseIfClauseDeclarator(JassSyntaxToken elseIfToken, JassExpressionSyntax condition, JassSyntaxToken thenToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(elseIfToken, JassSyntaxKind.ElseIfKeyword);
+            ThrowHelper.ThrowIfInvalidToken(thenToken, JassSyntaxKind.ThenKeyword);
+
+            return new JassElseIfClauseDeclaratorSyntax(
+                elseIfToken,
+                condition,
+                thenToken);
+        }
     }
 }

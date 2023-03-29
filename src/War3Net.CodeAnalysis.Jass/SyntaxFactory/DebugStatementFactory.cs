@@ -17,5 +17,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.DebugKeyword),
                 statement);
         }
+
+        public static JassDebugStatementSyntax DebugStatement(JassSyntaxToken debugToken, JassStatementSyntax statement)
+        {
+            ThrowHelper.ThrowIfInvalidToken(debugToken, JassSyntaxKind.DebugKeyword);
+
+            return new JassDebugStatementSyntax(
+                debugToken,
+                statement);
+        }
     }
 }

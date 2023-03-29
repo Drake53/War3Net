@@ -42,5 +42,15 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ArrayKeyword),
                 ParseIdentifierName(name));
         }
+
+        public static JassArrayDeclaratorSyntax ArrayDeclarator(JassTypeSyntax type, JassSyntaxToken arrayToken, JassIdentifierNameSyntax identifierName)
+        {
+            ThrowHelper.ThrowIfInvalidToken(arrayToken, JassSyntaxKind.ArrayKeyword);
+
+            return new JassArrayDeclaratorSyntax(
+                type,
+                arrayToken,
+                identifierName);
+        }
     }
 }

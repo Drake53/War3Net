@@ -18,5 +18,16 @@ namespace War3Net.CodeAnalysis.Jass
                 expression,
                 Token(JassSyntaxKind.CloseBracketToken));
         }
+
+        public static JassElementAccessClauseSyntax ElementAccessClause(JassSyntaxToken openBracketToken, JassExpressionSyntax expression, JassSyntaxToken closeBracketToken)
+        {
+            ThrowHelper.ThrowIfInvalidToken(openBracketToken, JassSyntaxKind.OpenBracketToken);
+            ThrowHelper.ThrowIfInvalidToken(closeBracketToken, JassSyntaxKind.CloseBracketToken);
+
+            return new JassElementAccessClauseSyntax(
+                openBracketToken,
+                expression,
+                closeBracketToken);
+        }
     }
 }

@@ -46,5 +46,17 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ExtendsKeyword),
                 ParseTypeName(baseType));
         }
+
+        public static JassTypeDeclarationSyntax TypeDeclaration(JassSyntaxToken typeToken, JassIdentifierNameSyntax identifierName, JassSyntaxToken extendsToken, JassTypeSyntax baseType)
+        {
+            ThrowHelper.ThrowIfInvalidToken(typeToken, JassSyntaxKind.TypeKeyword);
+            ThrowHelper.ThrowIfInvalidToken(extendsToken, JassSyntaxKind.ExtendsKeyword);
+
+            return new JassTypeDeclarationSyntax(
+                typeToken,
+                identifierName,
+                extendsToken,
+                baseType);
+        }
     }
 }

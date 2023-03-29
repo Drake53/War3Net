@@ -17,5 +17,14 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.ExitWhenKeyword),
                 expression);
         }
+
+        public static JassExitStatementSyntax ExitStatement(JassSyntaxToken exitWhenToken, JassExpressionSyntax expression)
+        {
+            ThrowHelper.ThrowIfInvalidToken(exitWhenToken, JassSyntaxKind.ExitWhenKeyword);
+
+            return new JassExitStatementSyntax(
+                exitWhenToken,
+                expression);
+        }
     }
 }
