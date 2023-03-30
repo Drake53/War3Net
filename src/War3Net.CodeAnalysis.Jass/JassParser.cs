@@ -26,9 +26,11 @@ namespace War3Net.CodeAnalysis.Jass
         private readonly Parser<char, JassExpressionSyntax> _expressionParser;
         private readonly Parser<char, JassGlobalDeclarationSyntax> _globalDeclarationParser;
         private readonly Parser<char, JassIdentifierNameSyntax> _identifierNameParser;
+        private readonly Parser<char, JassSyntaxTriviaList> _leadingTriviaListParser;
         private readonly Parser<char, JassParameterListOrEmptyParameterListSyntax> _parameterListParser;
         private readonly Parser<char, JassStatementSyntax> _statementParser;
         private readonly Parser<char, JassTopLevelDeclarationSyntax> _topLevelDeclarationParser;
+        private readonly Parser<char, JassSyntaxTriviaList> _trailingTriviaListParser;
         private readonly Parser<char, JassTypeSyntax> _typeParser;
         private readonly Parser<char, JassSyntaxToken> _unaryOperatorParser;
 
@@ -142,9 +144,11 @@ namespace War3Net.CodeAnalysis.Jass
             _expressionParser = Create(expressionParser);
             _globalDeclarationParser = Create(globalDeclarationParser);
             _identifierNameParser = Create(identifierNameParser);
+            _leadingTriviaListParser = leadingTriviaListParser.Before(End);
             _parameterListParser = Create(parameterListParser);
             _statementParser = Create(statementParser);
             _topLevelDeclarationParser = Create(topLevelDeclarationParser);
+            _trailingTriviaListParser = trailingTriviaListParser.Before(End);
             _typeParser = Create(typeParser);
             _unaryOperatorParser = Create(GetUnaryOperatorParser(simpleTriviaListParser));
         }
@@ -163,11 +167,15 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;
 
+        internal Parser<char, JassSyntaxTriviaList> LeadingTriviaListParser => _leadingTriviaListParser;
+
         internal Parser<char, JassParameterListOrEmptyParameterListSyntax> ParameterListParser => _parameterListParser;
 
         internal Parser<char, JassStatementSyntax> StatementParser => _statementParser;
 
         internal Parser<char, JassTopLevelDeclarationSyntax> TopLevelDeclarationParser => _topLevelDeclarationParser;
+
+        internal Parser<char, JassSyntaxTriviaList> TrailingTriviaListParser => _trailingTriviaListParser;
 
         internal Parser<char, JassTypeSyntax> TypeParser => _typeParser;
 
