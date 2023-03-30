@@ -33,6 +33,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassTypeSyntax BaseType { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.TypeDeclaration;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassTypeDeclarationSyntax typeDeclaration

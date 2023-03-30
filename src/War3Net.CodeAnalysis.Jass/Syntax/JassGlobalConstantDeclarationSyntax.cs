@@ -33,6 +33,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassEqualsValueClauseSyntax Value { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.GlobalConstantDeclaration;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassGlobalConstantDeclarationSyntax globalConstantDeclaration

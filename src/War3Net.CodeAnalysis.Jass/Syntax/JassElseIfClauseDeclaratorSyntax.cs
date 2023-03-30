@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken ThenToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ElseIfClauseDeclarator;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator

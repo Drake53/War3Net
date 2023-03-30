@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken CloseBracketToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ElementAccessClause;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassElementAccessClauseSyntax elementAccessClause

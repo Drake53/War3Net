@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassStatementSyntax Statement { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetDebugStatementKind(Statement.SyntaxKind);
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassDebugStatementSyntax debugStatement

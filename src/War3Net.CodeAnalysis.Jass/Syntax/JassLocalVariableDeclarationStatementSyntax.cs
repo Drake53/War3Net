@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassVariableOrArrayDeclaratorSyntax Declarator { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetLocalDeclarationStatementKind(Declarator.SyntaxKind);
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement

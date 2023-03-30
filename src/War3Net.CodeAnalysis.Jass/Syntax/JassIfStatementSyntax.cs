@@ -36,6 +36,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken EndIfToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.IfStatement;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassIfStatementSyntax ifStatement

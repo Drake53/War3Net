@@ -31,6 +31,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassEqualsValueClauseSyntax? Value { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.VariableDeclarator;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassVariableDeclaratorSyntax variableDeclarator

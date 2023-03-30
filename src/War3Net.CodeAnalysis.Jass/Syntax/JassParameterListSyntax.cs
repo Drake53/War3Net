@@ -27,6 +27,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> ParameterList { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ParameterList;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassParameterListSyntax parameterList

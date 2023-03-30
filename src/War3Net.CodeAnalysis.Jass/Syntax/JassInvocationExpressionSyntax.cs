@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassArgumentListSyntax ArgumentList { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.InvocationExpression;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassInvocationExpressionSyntax invocationExpression

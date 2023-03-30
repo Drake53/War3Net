@@ -28,6 +28,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public ImmutableArray<JassStatementSyntax> Statements { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ElseClause;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassElseClauseSyntax elseClause

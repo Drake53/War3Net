@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassExpressionSyntax Right { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetBinaryExpressionKind(OperatorToken.SyntaxKind);
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassBinaryExpressionSyntax binaryExpression

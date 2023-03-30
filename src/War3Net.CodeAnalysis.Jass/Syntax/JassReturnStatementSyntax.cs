@@ -31,6 +31,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassExpressionSyntax? Value { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ReturnStatement;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassReturnStatementSyntax returnStatement

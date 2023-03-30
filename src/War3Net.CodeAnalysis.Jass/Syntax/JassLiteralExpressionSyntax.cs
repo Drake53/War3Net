@@ -21,6 +21,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken Token { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetLiteralExpressionKind(Token.SyntaxKind);
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassLiteralExpressionSyntax literalExpression

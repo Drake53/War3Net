@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassExpressionSyntax Expression { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetUnaryExpressionKind(OperatorToken.SyntaxKind);
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassUnaryExpressionSyntax unaryExpression

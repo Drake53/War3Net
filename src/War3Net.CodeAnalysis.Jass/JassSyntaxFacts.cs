@@ -100,6 +100,25 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
+        public static JassSyntaxKind GetLiteralExpressionKind(JassSyntaxKind literalExpressionTokenSyntaxKind)
+        {
+            return literalExpressionTokenSyntaxKind switch
+            {
+                JassSyntaxKind.TrueKeyword => JassSyntaxKind.TrueLiteralExpression,
+                JassSyntaxKind.FalseKeyword => JassSyntaxKind.FalseLiteralExpression,
+                JassSyntaxKind.NullKeyword => JassSyntaxKind.NullLiteralExpression,
+                JassSyntaxKind.CharacterLiteralToken => JassSyntaxKind.CharacterLiteralExpression,
+                JassSyntaxKind.DecimalLiteralToken => JassSyntaxKind.DecimalLiteralExpression,
+                JassSyntaxKind.FourCCLiteralToken => JassSyntaxKind.FourCCLiteralExpression,
+                JassSyntaxKind.HexadecimalLiteralToken => JassSyntaxKind.HexadecimalLiteralExpression,
+                JassSyntaxKind.OctalLiteralToken => JassSyntaxKind.OctalLiteralExpression,
+                JassSyntaxKind.RealLiteralToken => JassSyntaxKind.RealLiteralExpression,
+                JassSyntaxKind.StringLiteralToken => JassSyntaxKind.StringLiteralExpression,
+
+                _ => throw new InvalidEnumArgumentException(nameof(literalExpressionTokenSyntaxKind), (int)literalExpressionTokenSyntaxKind, typeof(JassSyntaxKind)),
+            };
+        }
+
         public static JassSyntaxKind GetUnaryExpressionKind(JassSyntaxKind unaryOperatorTokenSyntaxKind)
         {
             return unaryOperatorTokenSyntaxKind switch
@@ -109,6 +128,41 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.NotKeyword => JassSyntaxKind.NotExpression,
 
                 _ => throw new InvalidEnumArgumentException(nameof(unaryOperatorTokenSyntaxKind), (int)unaryOperatorTokenSyntaxKind, typeof(JassSyntaxKind)),
+            };
+        }
+
+        public static JassSyntaxKind GetDebugStatementKind(JassSyntaxKind statementSyntaxKind)
+        {
+            return statementSyntaxKind switch
+            {
+                JassSyntaxKind.SetStatement => JassSyntaxKind.DebugSetStatement,
+                JassSyntaxKind.CallStatement => JassSyntaxKind.DebugCallStatement,
+                JassSyntaxKind.IfStatement => JassSyntaxKind.DebugIfStatement,
+                JassSyntaxKind.LoopStatement => JassSyntaxKind.DebugLoopStatement,
+
+                _ => throw new InvalidEnumArgumentException(nameof(statementSyntaxKind), (int)statementSyntaxKind, typeof(JassSyntaxKind)),
+            };
+        }
+
+        public static JassSyntaxKind GetGlobalDeclarationKind(JassSyntaxKind declaratorSyntaxKind)
+        {
+            return declaratorSyntaxKind switch
+            {
+                JassSyntaxKind.VariableDeclarator => JassSyntaxKind.GlobalVariableDeclaration,
+                JassSyntaxKind.ArrayDeclarator => JassSyntaxKind.GlobalArrayDeclaration,
+
+                _ => throw new InvalidEnumArgumentException(nameof(declaratorSyntaxKind), (int)declaratorSyntaxKind, typeof(JassSyntaxKind)),
+            };
+        }
+
+        public static JassSyntaxKind GetLocalDeclarationStatementKind(JassSyntaxKind declaratorSyntaxKind)
+        {
+            return declaratorSyntaxKind switch
+            {
+                JassSyntaxKind.VariableDeclarator => JassSyntaxKind.LocalVariableDeclarationStatement,
+                JassSyntaxKind.ArrayDeclarator => JassSyntaxKind.LocalArrayDeclarationStatement,
+
+                _ => throw new InvalidEnumArgumentException(nameof(declaratorSyntaxKind), (int)declaratorSyntaxKind, typeof(JassSyntaxKind)),
             };
         }
     }

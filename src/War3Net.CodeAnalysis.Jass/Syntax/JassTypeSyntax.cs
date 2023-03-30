@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassIdentifierNameSyntax TypeName { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.TypeName;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassTypeSyntax type

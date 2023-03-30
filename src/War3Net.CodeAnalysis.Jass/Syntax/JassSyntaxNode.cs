@@ -17,6 +17,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
         }
 
+        public abstract JassSyntaxKind SyntaxKind { get; }
+
         /// <summary>
         /// Determines if two nodes are the same, disregarding trivia differences.
         /// </summary>

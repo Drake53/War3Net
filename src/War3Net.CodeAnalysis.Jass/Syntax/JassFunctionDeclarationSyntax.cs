@@ -32,6 +32,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken EndFunctionToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.FunctionDeclaration;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassFunctionDeclarationSyntax functionDeclaration

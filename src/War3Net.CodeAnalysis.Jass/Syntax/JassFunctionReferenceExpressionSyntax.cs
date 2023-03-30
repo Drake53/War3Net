@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassIdentifierNameSyntax IdentifierName { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.FunctionReferenceExpression;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassFunctionReferenceExpressionSyntax functionReferenceExpression

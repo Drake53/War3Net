@@ -25,6 +25,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassExpressionSyntax Condition { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ExitStatement;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassExitStatementSyntax exitStatement

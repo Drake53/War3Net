@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken CloseParenToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ParenthesizedExpression;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassParenthesizedExpressionSyntax parenthesizedExpression

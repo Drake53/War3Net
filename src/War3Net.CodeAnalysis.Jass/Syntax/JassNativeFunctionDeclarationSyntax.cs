@@ -39,6 +39,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassReturnClauseSyntax ReturnClause { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.NativeFunctionDeclaration;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration

@@ -29,6 +29,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken NothingToken { get; }
 
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.EmptyParameterList;
+
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassEmptyParameterListSyntax;
