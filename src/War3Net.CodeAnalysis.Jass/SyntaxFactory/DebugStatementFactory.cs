@@ -13,6 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassDebugStatementSyntax DebugStatement(JassStatementSyntax statement)
         {
+            // Statement validation
+            JassSyntaxFacts.GetDebugStatementKind(statement.SyntaxKind);
+
             return new JassDebugStatementSyntax(
                 Token(JassSyntaxKind.DebugKeyword),
                 statement);
@@ -21,6 +24,9 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassDebugStatementSyntax DebugStatement(JassSyntaxToken debugToken, JassStatementSyntax statement)
         {
             ThrowHelper.ThrowIfInvalidToken(debugToken, JassSyntaxKind.DebugKeyword);
+
+            // Statement validation
+            JassSyntaxFacts.GetDebugStatementKind(statement.SyntaxKind);
 
             return new JassDebugStatementSyntax(
                 debugToken,
