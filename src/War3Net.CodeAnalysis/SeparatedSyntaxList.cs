@@ -34,6 +34,8 @@ namespace War3Net.CodeAnalysis
 
         public ImmutableArray<TSeparator> Separators => _separators;
 
+        public bool IsEmpty => _items.IsEmpty;
+
         public static SeparatedSyntaxList<TItem, TSeparator> Create(TItem item)
         {
             return new SeparatedSyntaxList<TItem, TSeparator>(ImmutableArray.Create(item), ImmutableArray<TSeparator>.Empty);
