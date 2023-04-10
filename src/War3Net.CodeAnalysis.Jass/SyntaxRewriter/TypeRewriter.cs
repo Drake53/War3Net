@@ -16,14 +16,11 @@ namespace War3Net.CodeAnalysis.Jass
         /// <returns><see langword="true"/> if the <paramref name="type"/> was rewritten to <paramref name="result"/>, otherwise <see langword="false"/>.</returns>
         protected virtual bool RewriteType(JassTypeSyntax type, out JassTypeSyntax result)
         {
-            if (RewriteIdentifierName(type.TypeName, out var typeName))
+            return type switch
             {
-                result = new JassTypeSyntax(typeName);
-                return true;
-            }
-
-            result = type;
-            return false;
+                JassIdentifierNameSyntax identifierName => RewriteIdentifierNameAsType(identifierName, out result),
+                JassPredefinedTypeSyntax predefinedType => RewritePredefinedType(predefinedType, out result),
+            };
         }
     }
 }

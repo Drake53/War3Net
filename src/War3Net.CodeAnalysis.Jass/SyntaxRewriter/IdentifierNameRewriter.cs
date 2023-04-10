@@ -40,5 +40,20 @@ namespace War3Net.CodeAnalysis.Jass
             result = identifierName;
             return false;
         }
+
+        /// <param name="identifierName">The <see cref="JassIdentifierNameSyntax"/> to rewrite.</param>
+        /// <param name="result">The rewritten <see cref="JassTypeSyntax"/>, or the input <paramref name="identifierName"/> if it wasn't rewritten.</param>
+        /// <returns><see langword="true"/> if the <paramref name="identifierName"/> was rewritten to <paramref name="result"/>, otherwise <see langword="false"/>.</returns>
+        protected virtual bool RewriteIdentifierNameAsType(JassIdentifierNameSyntax identifierName, out JassTypeSyntax result)
+        {
+            if (RewriteToken(identifierName.Token, out var token))
+            {
+                result = new JassIdentifierNameSyntax(token);
+                return true;
+            }
+
+            result = identifierName;
+            return false;
+        }
     }
 }

@@ -16,11 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
     internal partial class JassParser
     {
         internal static Parser<char, JassTypeSyntax> GetTypeParser(
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser)
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
+            Parser<char, JassTypeSyntax> predefinedTypeParser)
         {
-            return Map(
-                (identifierName) => new JassTypeSyntax(identifierName),
-                identifierNameParser);
+            return OneOf(
+                predefinedTypeParser,
+                identifierNameParser.Cast<JassTypeSyntax>());
         }
     }
 }
