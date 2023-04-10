@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -14,8 +16,14 @@ namespace War3Net.CodeAnalysis.Jass
         /// <param name="expression">The <see cref="JassExpressionSyntax"/> to rewrite.</param>
         /// <param name="result">The rewritten <see cref="JassExpressionSyntax"/>, or the input <paramref name="expression"/> if it wasn't rewritten.</param>
         /// <returns><see langword="true"/> if the <paramref name="expression"/> was rewritten to <paramref name="result"/>, otherwise <see langword="false"/>.</returns>
-        protected virtual bool RewriteExpression(JassExpressionSyntax expression, out JassExpressionSyntax result)
+        protected virtual bool RewriteExpression(JassExpressionSyntax? expression, [NotNullIfNotNull("expression")] out JassExpressionSyntax? result)
         {
+            if (expression is null)
+            {
+                result = null;
+                return false;
+            }
+
             return expression switch
             {
                 JassArrayReferenceExpressionSyntax arrayReferenceExpression => RewriteArrayReferenceExpression(arrayReferenceExpression, out result),
