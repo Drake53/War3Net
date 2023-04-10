@@ -13,6 +13,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassSyntaxTrivia
     {
+        public static readonly JassSyntaxTrivia SingleSpace = new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, " ");
+        public static readonly JassSyntaxTrivia Newline = new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, JassSymbol.CarriageReturnLineFeed);
+
         internal JassSyntaxTrivia(
             JassSyntaxKind syntaxKind,
             string text)

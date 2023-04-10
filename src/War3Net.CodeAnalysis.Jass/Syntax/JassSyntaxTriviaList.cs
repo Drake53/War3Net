@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     public class JassSyntaxTriviaList
     {
         public static readonly JassSyntaxTriviaList Empty = new(ImmutableArray<JassSyntaxTrivia>.Empty);
-        public static readonly JassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create(new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, " ")));
+        public static readonly JassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create(JassSyntaxTrivia.SingleSpace));
+        public static readonly JassSyntaxTriviaList Newline = new(ImmutableArray.Create(JassSyntaxTrivia.Newline));
 
         internal JassSyntaxTriviaList(
             ImmutableArray<JassSyntaxTrivia> trivia)
