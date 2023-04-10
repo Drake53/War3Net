@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass
             switch (declaration)
             {
                 case JassTypeDeclarationSyntax typeDeclaration: Render(typeDeclaration); break;
-                case JassGlobalsDeclarationSyntax globalDeclarationList: Render(globalDeclarationList); break;
+                case JassGlobalsDeclarationSyntax globalsDeclaration: Render(globalsDeclaration); break;
                 case JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration: Render(nativeFunctionDeclaration); break;
                 case JassFunctionDeclarationSyntax functionDeclaration: Render(functionDeclaration); break;
 

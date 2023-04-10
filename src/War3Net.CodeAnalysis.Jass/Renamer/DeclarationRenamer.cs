@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return declaration switch
             {
-                JassGlobalsDeclarationSyntax globalDeclarationList => TryRenameGlobalsDeclaration(globalDeclarationList, out renamedDeclaration),
+                JassGlobalsDeclarationSyntax globalsDeclaration => TryRenameGlobalsDeclaration(globalsDeclaration, out renamedDeclaration),
                 JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration => TryRenameNativeFunctionDeclaration(nativeFunctionDeclaration, out renamedDeclaration),
                 JassFunctionDeclarationSyntax functionDeclaration => TryRenameFunctionDeclaration(functionDeclaration, out renamedDeclaration),
 

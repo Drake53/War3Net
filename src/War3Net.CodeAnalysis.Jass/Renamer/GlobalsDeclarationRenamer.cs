@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameGlobalsDeclaration(JassGlobalsDeclarationSyntax globalsDeclaration, [NotNullWhen(true)] out JassTopLevelDeclarationSyntax? renamedGlobalDeclarationList)
+        private bool TryRenameGlobalsDeclaration(JassGlobalsDeclarationSyntax globalsDeclaration, [NotNullWhen(true)] out JassTopLevelDeclarationSyntax? renamedGlobalsDeclaration)
         {
             for (var i = 0; i < globalsDeclaration.Globals.Length; i++)
             {
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass
                         }
                     }
 
-                    renamedGlobalDeclarationList = new JassGlobalsDeclarationSyntax(
+                    renamedGlobalsDeclaration = new JassGlobalsDeclarationSyntax(
                         globalsDeclaration.GlobalsToken,
                         builder.ToImmutable(),
                         globalsDeclaration.EndGlobalsToken);
@@ -49,7 +49,7 @@ namespace War3Net.CodeAnalysis.Jass
                 }
             }
 
-            renamedGlobalDeclarationList = null;
+            renamedGlobalsDeclaration = null;
             return false;
         }
     }
