@@ -11,7 +11,7 @@ using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassIdentifierNameSyntax : JassExpressionSyntax
+    public class JassIdentifierNameSyntax : JassTypeSyntax
     {
         internal JassIdentifierNameSyntax(
             JassSyntaxToken token)

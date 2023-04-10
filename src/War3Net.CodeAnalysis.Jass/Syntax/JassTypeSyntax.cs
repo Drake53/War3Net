@@ -5,98 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassTypeSyntax : JassSyntaxNode
+    public abstract class JassTypeSyntax : JassExpressionSyntax
     {
-        public static readonly JassTypeSyntax Boolean = new(new(new JassSyntaxToken(JassSyntaxKind.BooleanKeyword, JassKeyword.Boolean, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax Code = new(new(new JassSyntaxToken(JassSyntaxKind.CodeKeyword, JassKeyword.Code, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax Handle = new(new(new JassSyntaxToken(JassSyntaxKind.HandleKeyword, JassKeyword.Handle, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax Integer = new(new(new JassSyntaxToken(JassSyntaxKind.IntegerKeyword, JassKeyword.Integer, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax Nothing = new(new(new JassSyntaxToken(JassSyntaxKind.NothingKeyword, JassKeyword.Nothing, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax Real = new(new(new JassSyntaxToken(JassSyntaxKind.RealKeyword, JassKeyword.Real, JassSyntaxTriviaList.SingleSpace)));
-        public static readonly JassTypeSyntax String = new(new(new JassSyntaxToken(JassSyntaxKind.StringKeyword, JassKeyword.String, JassSyntaxTriviaList.SingleSpace)));
+        protected internal override abstract JassTypeSyntax ReplaceFirstToken(JassSyntaxToken newToken);
 
-        internal JassTypeSyntax(
-            JassIdentifierNameSyntax typeName)
-        {
-            TypeName = typeName;
-        }
-
-        public JassIdentifierNameSyntax TypeName { get; }
-
-        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.TypeName;
-
-        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
-        {
-            return other is JassTypeSyntax type
-                && TypeName.IsEquivalentTo(type.TypeName);
-        }
-
-        public override void WriteTo(TextWriter writer)
-        {
-            TypeName.WriteTo(writer);
-        }
-
-        public override IEnumerable<JassSyntaxNode> GetChildNodes()
-        {
-            yield return TypeName;
-        }
-
-        public override IEnumerable<JassSyntaxToken> GetChildTokens()
-        {
-            yield break;
-        }
-
-        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
-        {
-            yield return TypeName;
-        }
-
-        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
-        {
-            yield return TypeName;
-            foreach (var descendant in TypeName.GetDescendantNodes())
-            {
-                yield return descendant;
-            }
-        }
-
-        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
-        {
-            foreach (var descendant in TypeName.GetDescendantTokens())
-            {
-                yield return descendant;
-            }
-        }
-
-        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
-        {
-            yield return TypeName;
-            foreach (var descendant in TypeName.GetDescendantNodesAndTokens())
-            {
-                yield return descendant;
-            }
-        }
-
-        public override string ToString() => TypeName.ToString();
-
-        public override JassSyntaxToken GetFirstToken() => TypeName.GetFirstToken();
-
-        public override JassSyntaxToken GetLastToken() => TypeName.GetLastToken();
-
-        protected internal override JassTypeSyntax ReplaceFirstToken(JassSyntaxToken newToken)
-        {
-            return new JassTypeSyntax(TypeName.ReplaceFirstToken(newToken));
-        }
-
-        protected internal override JassTypeSyntax ReplaceLastToken(JassSyntaxToken newToken)
-        {
-            return new JassTypeSyntax(TypeName.ReplaceLastToken(newToken));
-        }
+        protected internal override abstract JassTypeSyntax ReplaceLastToken(JassSyntaxToken newToken);
     }
 }
