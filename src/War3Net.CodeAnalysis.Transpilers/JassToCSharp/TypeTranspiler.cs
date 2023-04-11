@@ -10,6 +10,8 @@ using System;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -18,42 +20,18 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public TypeSyntax Transpile(JassTypeSyntax type)
         {
-            if (type.Equals(JassTypeSyntax.Boolean))
+            return type.GetToken().SyntaxKind switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
-            }
+                JassSyntaxKind.BooleanKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
+                JassSyntaxKind.CodeKeyword => SyntaxFactory.ParseTypeName(typeof(Action).FullName!),
+                JassSyntaxKind.HandleKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword)),
+                JassSyntaxKind.IntegerKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)),
+                JassSyntaxKind.NothingKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                JassSyntaxKind.RealKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.FloatKeyword)),
+                JassSyntaxKind.StringKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword)),
 
-            if (type.Equals(JassTypeSyntax.Code))
-            {
-                return SyntaxFactory.ParseTypeName(typeof(Action).FullName!);
-            }
-
-            if (type.Equals(JassTypeSyntax.Handle))
-            {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword));
-            }
-
-            if (type.Equals(JassTypeSyntax.Integer))
-            {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
-            }
-
-            if (type.Equals(JassTypeSyntax.Nothing))
-            {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
-            }
-
-            if (type.Equals(JassTypeSyntax.Real))
-            {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.FloatKeyword));
-            }
-
-            if (type.Equals(JassTypeSyntax.String))
-            {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
-            }
-
-            return SyntaxFactory.ParseTypeName(Transpile(type.TypeName).Text);
+                JassSyntaxKind.IdentifierToken => SyntaxFactory.ParseTypeName(Transpile((JassIdentifierNameSyntax)type).Text),
+            };
         }
     }
 }

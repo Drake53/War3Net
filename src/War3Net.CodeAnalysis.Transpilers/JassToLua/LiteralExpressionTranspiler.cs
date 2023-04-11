@@ -23,43 +23,43 @@ namespace War3Net.CodeAnalysis.Transpilers
             switch (literalExpression.Token.SyntaxKind)
             {
                 case JassSyntaxKind.TrueKeyword:
-                    type = JassTypeSyntax.Boolean;
+                    type = JassPredefinedTypeSyntax.Boolean;
                     return LuaIdentifierLiteralExpressionSyntax.True;
 
                 case JassSyntaxKind.FalseKeyword:
-                    type = JassTypeSyntax.Boolean;
+                    type = JassPredefinedTypeSyntax.Boolean;
                     return LuaIdentifierLiteralExpressionSyntax.False;
 
                 case JassSyntaxKind.NullKeyword:
-                    type = JassTypeSyntax.Handle;
+                    type = JassPredefinedTypeSyntax.Handle;
                     return LuaIdentifierLiteralExpressionSyntax.Nil;
 
                 case JassSyntaxKind.CharacterLiteralToken:
-                    type = JassTypeSyntax.Integer;
+                    type = JassPredefinedTypeSyntax.Integer;
                     return new LuaCharacterLiteralExpression(literalExpression.Token.Text[0]);
 
                 case JassSyntaxKind.DecimalLiteralToken:
-                    type = JassTypeSyntax.Integer;
+                    type = JassPredefinedTypeSyntax.Integer;
                     return int.Parse(literalExpression.Token.Text, CultureInfo.InvariantCulture);
 
                 case JassSyntaxKind.FourCCLiteralToken:
-                    type = JassTypeSyntax.Integer;
+                    type = JassPredefinedTypeSyntax.Integer;
                     return literalExpression.Token.Text.FromJassRawcode();
 
                 case JassSyntaxKind.HexadecimalLiteralToken:
-                    type = JassTypeSyntax.Integer;
+                    type = JassPredefinedTypeSyntax.Integer;
                     return literalExpression.Token.Text.Replace(JassSymbol.Dollar, "0x", false, CultureInfo.InvariantCulture);
 
                 case JassSyntaxKind.OctalLiteralToken:
-                    type = JassTypeSyntax.Integer;
+                    type = JassPredefinedTypeSyntax.Integer;
                     return Convert.ToInt32(literalExpression.Token.Text, 8);
 
                 case JassSyntaxKind.RealLiteralToken:
-                    type = JassTypeSyntax.Real;
+                    type = JassPredefinedTypeSyntax.Real;
                     return literalExpression.Token.Text.TrimEnd(JassSymbol.DotChar);
 
                 case JassSyntaxKind.StringLiteralToken:
-                    type = JassTypeSyntax.String;
+                    type = JassPredefinedTypeSyntax.String;
                     return literalExpression.Token.Text
                         .Replace(JassSymbol.CarriageReturn, @"\r", false, CultureInfo.InvariantCulture)
                         .Replace(JassSymbol.LineFeed, @"\n", false, CultureInfo.InvariantCulture);

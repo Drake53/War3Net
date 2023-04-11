@@ -45,7 +45,7 @@ namespace War3Net.Build
                  string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))
             {
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(
-                    JassTypeSyntax.Integer,
+                    JassPredefinedTypeSyntax.Integer,
                     "i",
                     SyntaxFactory.LiteralExpression(0)));
             }

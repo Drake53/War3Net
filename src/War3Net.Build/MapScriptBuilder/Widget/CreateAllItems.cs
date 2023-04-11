@@ -35,7 +35,7 @@ namespace War3Net.Build
             }
 
             var statements = new List<JassStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassPredefinedTypeSyntax.Integer, VariableName.ItemId));
 
             foreach (var item in mapUnits.Units.Where(item => CreateAllItemsConditionSingleItem(map, item)))
             {

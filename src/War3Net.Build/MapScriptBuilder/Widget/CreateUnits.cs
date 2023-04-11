@@ -45,11 +45,11 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Unit), VariableName.Unit));
             }
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.UnitId));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassPredefinedTypeSyntax.Integer, VariableName.UnitId));
             statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
             if (UseLifeVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
+                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassPredefinedTypeSyntax.Real, VariableName.Life));
             }
 
             //statements.Add(JassEmptySyntax.Value);

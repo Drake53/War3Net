@@ -49,7 +49,7 @@ namespace War3Net.Build
                 if (sound.Flags.HasFlag(SoundFlags.Music))
                 {
                     yield return SyntaxFactory.GlobalVariableDeclaration(
-                        JassTypeSyntax.String,
+                        JassPredefinedTypeSyntax.String,
                         sound.Name);
                 }
                 else

@@ -48,7 +48,7 @@ namespace War3Net.Build
             foreach (var randomUnitTable in randomUnitTables)
             {
                 yield return SyntaxFactory.GlobalArrayDeclaration(
-                    JassTypeSyntax.Integer,
+                    JassPredefinedTypeSyntax.Integer,
                     randomUnitTable.GetVariableName(id));
 
                 id++;

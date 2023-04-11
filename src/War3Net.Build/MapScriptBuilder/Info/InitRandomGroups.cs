@@ -35,7 +35,7 @@ namespace War3Net.Build
 
             var statements = new List<JassStatementSyntax>();
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.CurrentSet));
+            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassPredefinedTypeSyntax.Integer, VariableName.CurrentSet));
             //statements.Add(JassEmptySyntax.Value);
 
             foreach (var unitTable in randomUnitTables)

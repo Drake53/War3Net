@@ -46,7 +46,7 @@ namespace War3Net.Build
                 else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                 {
                     yield return SyntaxFactory.GlobalVariableDeclaration(
-                        JassTypeSyntax.String,
+                        JassPredefinedTypeSyntax.String,
                         variable.GetVariableName());
                 }
                 else

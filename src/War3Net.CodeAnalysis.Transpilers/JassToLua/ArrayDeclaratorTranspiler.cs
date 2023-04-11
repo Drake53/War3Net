@@ -7,6 +7,8 @@
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -15,12 +17,13 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaVariableDeclaratorSyntax Transpile(JassArrayDeclaratorSyntax arrayDeclarator)
         {
-            LuaExpressionSyntax expression = arrayDeclarator.Type switch
+            LuaExpressionSyntax expression = arrayDeclarator.Type.GetToken().SyntaxKind switch
             {
-                JassTypeSyntax type when type.Equals(JassTypeSyntax.Integer) => new LuaInvocationExpressionSyntax("__jarray", "0"),
-                JassTypeSyntax type when type.Equals(JassTypeSyntax.Real) => new LuaInvocationExpressionSyntax("__jarray", "0.0"),
-                JassTypeSyntax type when type.Equals(JassTypeSyntax.String) => new LuaInvocationExpressionSyntax("__jarray", LuaStringLiteralExpressionSyntax.Empty),
-                JassTypeSyntax type when type.Equals(JassTypeSyntax.Boolean) => new LuaInvocationExpressionSyntax("__jarray", LuaIdentifierLiteralExpressionSyntax.False),
+                JassSyntaxKind.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", "0"),
+                JassSyntaxKind.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", "0.0"),
+                JassSyntaxKind.StringKeyword => new LuaInvocationExpressionSyntax("__jarray", LuaStringLiteralExpressionSyntax.Empty),
+                JassSyntaxKind.BooleanKeyword => new LuaInvocationExpressionSyntax("__jarray", LuaIdentifierLiteralExpressionSyntax.False),
+
                 _ => new LuaTableExpression(),
             };
 

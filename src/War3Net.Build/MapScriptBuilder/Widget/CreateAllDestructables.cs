@@ -43,7 +43,7 @@ namespace War3Net.Build
 
             if (UseLifeVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
+                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassPredefinedTypeSyntax.Real, VariableName.Life));
             }
 
             var createFunctions = new[]
