@@ -168,7 +168,7 @@ namespace War3Net.TestTools.UnitTesting
 
                 for (var i = 0; i < length; i++)
                 {
-                    if (!expected.Declarations[i].Equals(actual.Declarations[i]))
+                    if (!expected.Declarations[i].IsEquivalentTo(actual.Declarations[i]))
                     {
                         if (messageParts.Count > 20)
                         {
@@ -193,7 +193,7 @@ namespace War3Net.TestTools.UnitTesting
             {
                 var messageParts = new List<string>();
 
-                if (!expectedFunctionDeclaration.FunctionDeclarator.Equals(actualFunctionDeclaration.FunctionDeclarator))
+                if (!expectedFunctionDeclaration.FunctionDeclarator.IsEquivalentTo(actualFunctionDeclaration.FunctionDeclarator))
                 {
                     messageParts.Add(GetAssertFailedMessage(expectedFunctionDeclaration.FunctionDeclarator, actualFunctionDeclaration.FunctionDeclarator));
                 }
@@ -212,7 +212,7 @@ namespace War3Net.TestTools.UnitTesting
 
                 for (var i = 0; i < length; i++)
                 {
-                    if (!expectedFunctionDeclaration.Statements[i].Equals(actualFunctionDeclaration.Statements[i]))
+                    if (!expectedFunctionDeclaration.Statements[i].IsEquivalentTo(actualFunctionDeclaration.Statements[i]))
                     {
                         if (messageParts.Count > 20)
                         {

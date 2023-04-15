@@ -140,7 +140,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, T> Create<T>(Parser<char, T> parser) => simpleTriviaListParser.Then(parser).Before(End);
 
             _argumentListParser = Create(argumentListParser);
-            _binaryOperatorParser = Create(GetBinaryAddOperatorParser(simpleTriviaListParser));
+            _binaryOperatorParser = Create(GetBinaryOperatorParser(simpleTriviaListParser));
             _compilationUnitParser = Create(compilationUnitParser);
             _expressionParser = Create(expressionParser);
             _globalDeclarationParser = Create(globalDeclarationParser);

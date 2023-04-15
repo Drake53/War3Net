@@ -44,9 +44,9 @@ namespace War3Net.Build.Tests
         public void TestInvokeConditionInitCustomTeams(MapScriptBuilderTestData testData)
         {
             var expected = testData.DeclaredFunctions.TryGetValue("config", out var config) &&
-                config.Body.Statements.Any(statement =>
+                config.Statements.Any(statement =>
                     statement is JassCallStatementSyntax callStatement &&
-                    string.Equals(callStatement.IdentifierName.Name, "InitCustomTeams", StringComparison.Ordinal));
+                    string.Equals(callStatement.IdentifierName.Token.Text, "InitCustomTeams", StringComparison.Ordinal));
 
             var actual = testData.MapScriptBuilder.InitCustomTeamsInvokeCondition(testData.Map);
 

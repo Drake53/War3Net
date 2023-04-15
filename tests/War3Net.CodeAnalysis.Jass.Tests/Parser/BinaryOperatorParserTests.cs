@@ -9,8 +9,6 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.CodeAnalysis.Jass.Tests.Parser
 {
     [TestClass]
@@ -18,10 +16,10 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
     {
         [DataTestMethod]
         [DynamicData(nameof(GetValidOperators), DynamicDataSourceType.Method)]
-        public void TestValidOperators(string binaryOperator, BinaryOperatorType expected)
+        public void TestValidOperators(string binaryOperator, JassSyntaxKind expected)
         {
-            Assert.IsTrue(JassSyntaxFactory.TryParseBinaryOperator(binaryOperator, out var actual));
-            Assert.AreEqual(expected, actual);
+            var actual = JassSyntaxFactory.ParseBinaryOperator(binaryOperator);
+            Assert.AreEqual(expected, actual.SyntaxKind);
         }
 
         [DataTestMethod]
@@ -33,18 +31,18 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
 
         private static IEnumerable<object?[]> GetValidOperators()
         {
-            yield return new object?[] { "+", BinaryOperatorType.Add };
-            yield return new object?[] { "-", BinaryOperatorType.Subtract };
-            yield return new object?[] { "*", BinaryOperatorType.Multiplication };
-            yield return new object?[] { "/", BinaryOperatorType.Division };
-            yield return new object?[] { ">", BinaryOperatorType.GreaterThan };
-            yield return new object?[] { "<", BinaryOperatorType.LessThan };
-            yield return new object?[] { "==", BinaryOperatorType.Equals };
-            yield return new object?[] { "!=", BinaryOperatorType.NotEquals };
-            yield return new object?[] { ">=", BinaryOperatorType.GreaterOrEqual };
-            yield return new object?[] { "<=", BinaryOperatorType.LessOrEqual };
-            yield return new object?[] { "and", BinaryOperatorType.And };
-            yield return new object?[] { "or", BinaryOperatorType.Or };
+            yield return new object?[] { "+", JassSyntaxKind.PlusToken };
+            yield return new object?[] { "-", JassSyntaxKind.MinusToken };
+            yield return new object?[] { "*", JassSyntaxKind.AsteriskToken };
+            yield return new object?[] { "/", JassSyntaxKind.SlashToken };
+            yield return new object?[] { ">", JassSyntaxKind.GreaterThanToken };
+            yield return new object?[] { "<", JassSyntaxKind.LessThanToken };
+            yield return new object?[] { "==", JassSyntaxKind.EqualsEqualsToken };
+            yield return new object?[] { "!=", JassSyntaxKind.ExclamationEqualsToken };
+            yield return new object?[] { ">=", JassSyntaxKind.GreaterThanEqualsToken };
+            yield return new object?[] { "<=", JassSyntaxKind.LessThanEqualsToken };
+            yield return new object?[] { "and", JassSyntaxKind.AndKeyword };
+            yield return new object?[] { "or", JassSyntaxKind.OrKeyword };
         }
 
         private static IEnumerable<object?[]> GetInvalidOperators()
