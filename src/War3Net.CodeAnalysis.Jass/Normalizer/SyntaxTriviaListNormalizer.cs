@@ -73,9 +73,16 @@ namespace War3Net.CodeAnalysis.Jass
                         else if (_previousToken.SyntaxKind == JassSyntaxKind.OpenParenToken)
                         {
                             if (_previousNode.SyntaxKind == JassSyntaxKind.ArgumentList &&
-                                _previousNodeParent is not null)
+                                _previousNodeParent is not null &&
+                                _previousNodeParent.SyntaxKind == JassSyntaxKind.CallStatement &&
+                                _addSpacesToCallStatementArgumentList)
                             {
-                                requireSpace = _previousNodeParent.SyntaxKind == JassSyntaxKind.CallStatement && _addSpacesToCallStatementArgumentList;
+                                requireSpace = true;
+                                if (_currentToken.SyntaxKind == JassSyntaxKind.CloseParenToken)
+                                {
+                                    requireSpace = false;
+                                    triviaBuilder.Add(JassSyntaxFactory.WhitespaceTrivia("  "));
+                                }
                             }
                             else
                             {
