@@ -59,6 +59,7 @@ namespace War3Net.CodeAnalysis.Jass
                 _previousToken = result;
                 _previousNode = _nodes[^1];
                 _previousNodeParent = _nodes.Count > 1 ? _nodes[^2] : null;
+                _previousNodeGrandParent = _nodes.Count > 2 ? _nodes[^3] : null;
 
                 return true;
             }
@@ -68,6 +69,7 @@ namespace War3Net.CodeAnalysis.Jass
             _previousToken = token;
             _previousNode = _nodes[^1];
             _previousNodeParent = _nodes.Count > 1 ? _nodes[^2] : null;
+            _previousNodeGrandParent = _nodes.Count > 2 ? _nodes[^3] : null;
 
             return false;
         }

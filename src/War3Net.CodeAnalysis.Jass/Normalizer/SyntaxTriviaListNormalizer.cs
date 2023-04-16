@@ -50,11 +50,25 @@ namespace War3Net.CodeAnalysis.Jass
                         }
                         else if (_currentToken.SyntaxKind == JassSyntaxKind.CloseParenToken)
                         {
-                            if (currentNode.SyntaxKind == JassSyntaxKind.ArgumentList &&
+                            if (_addSpacesToOuterInvocation &&
+                                currentNode.SyntaxKind == JassSyntaxKind.ArgumentList &&
                                 _nodes.Count > 1)
                             {
                                 var currentNodeParent = _nodes[^2];
-                                requireSpace = currentNodeParent.SyntaxKind == JassSyntaxKind.CallStatement && _addSpacesToCallStatementArgumentList;
+
+                                if (currentNodeParent.SyntaxKind == JassSyntaxKind.CallStatement)
+                                {
+                                    requireSpace = true;
+                                }
+                                else if (currentNodeParent.SyntaxKind == JassSyntaxKind.InvocationExpression && _nodes.Count > 2)
+                                {
+                                    var currentNodeGrandParent = _nodes[^3];
+                                    requireSpace = currentNodeGrandParent.SyntaxKind == JassSyntaxKind.EqualsValueClause;
+                                }
+                                else
+                                {
+                                    requireSpace = false;
+                                }
                             }
                             else
                             {
@@ -72,16 +86,33 @@ namespace War3Net.CodeAnalysis.Jass
                         }
                         else if (_previousToken.SyntaxKind == JassSyntaxKind.OpenParenToken)
                         {
-                            if (_previousNode.SyntaxKind == JassSyntaxKind.ArgumentList &&
-                                _previousNodeParent is not null &&
-                                _previousNodeParent.SyntaxKind == JassSyntaxKind.CallStatement &&
-                                _addSpacesToCallStatementArgumentList)
+                            if (_addSpacesToOuterInvocation &&
+                                _previousNode.SyntaxKind == JassSyntaxKind.ArgumentList &&
+                                _previousNodeParent is not null)
                             {
-                                requireSpace = true;
-                                if (_currentToken.SyntaxKind == JassSyntaxKind.CloseParenToken)
+                                if (_previousNodeParent.SyntaxKind == JassSyntaxKind.CallStatement)
+                                {
+                                    requireSpace = true;
+                                    if (_currentToken.SyntaxKind == JassSyntaxKind.CloseParenToken)
+                                    {
+                                        requireSpace = false;
+                                        triviaBuilder.Add(JassSyntaxFactory.WhitespaceTrivia("  "));
+                                    }
+                                }
+                                else if (_previousNodeParent.SyntaxKind == JassSyntaxKind.InvocationExpression &&
+                                         _previousNodeGrandParent is not null &&
+                                         _previousNodeGrandParent.SyntaxKind == JassSyntaxKind.EqualsValueClause)
+                                {
+                                    requireSpace = true;
+                                    if (_currentToken.SyntaxKind == JassSyntaxKind.CloseParenToken)
+                                    {
+                                        requireSpace = false;
+                                        triviaBuilder.Add(JassSyntaxFactory.WhitespaceTrivia("  "));
+                                    }
+                                }
+                                else
                                 {
                                     requireSpace = false;
-                                    triviaBuilder.Add(JassSyntaxFactory.WhitespaceTrivia("  "));
                                 }
                             }
                             else

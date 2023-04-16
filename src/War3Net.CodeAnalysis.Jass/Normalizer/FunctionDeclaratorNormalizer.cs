@@ -19,6 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
             _nodes.RemoveAt(_nodes.Count - 1);
 
             _currentLevelOfIndentation++;
+            _requireNewlineTrivia = _encounteredAnyTextOnCurrentLine;
 
             return normalized;
         }
