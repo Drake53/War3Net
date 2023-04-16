@@ -18,17 +18,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassGlobalsDeclarationSyntax(
             JassSyntaxToken globalsToken,
-            ImmutableArray<JassGlobalDeclarationSyntax> globals,
+            ImmutableArray<JassGlobalDeclarationSyntax> globalDeclarations,
             JassSyntaxToken endGlobalsToken)
         {
             GlobalsToken = globalsToken;
-            Globals = globals;
+            GlobalDeclarations = globalDeclarations;
             EndGlobalsToken = endGlobalsToken;
         }
 
         public JassSyntaxToken GlobalsToken { get; }
 
-        public ImmutableArray<JassGlobalDeclarationSyntax> Globals { get; }
+        public ImmutableArray<JassGlobalDeclarationSyntax> GlobalDeclarations { get; }
 
         public JassSyntaxToken EndGlobalsToken { get; }
 
@@ -37,19 +37,19 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassGlobalsDeclarationSyntax globalsDeclaration
-                && Globals.IsEquivalentTo(globalsDeclaration.Globals);
+                && GlobalDeclarations.IsEquivalentTo(globalsDeclaration.GlobalDeclarations);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             GlobalsToken.WriteTo(writer);
-            Globals.WriteTo(writer);
+            GlobalDeclarations.WriteTo(writer);
             EndGlobalsToken.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            return Globals;
+            return GlobalDeclarations;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -62,7 +62,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return GlobalsToken;
 
-            foreach (var child in Globals)
+            foreach (var child in GlobalDeclarations)
             {
                 yield return child;
             }
@@ -72,14 +72,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            return Globals.GetDescendantNodes();
+            return GlobalDeclarations.GetDescendantNodes();
         }
 
         public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
         {
             yield return GlobalsToken;
 
-            foreach (var descendant in Globals.GetDescendantTokens())
+            foreach (var descendant in GlobalDeclarations.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -91,7 +91,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return GlobalsToken;
 
-            foreach (var descendant in Globals.GetDescendantNodesAndTokens())
+            foreach (var descendant in GlobalDeclarations.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
@@ -109,7 +109,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return new JassGlobalsDeclarationSyntax(
                 newToken,
-                Globals,
+                GlobalDeclarations,
                 EndGlobalsToken);
         }
 
@@ -117,7 +117,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return new JassGlobalsDeclarationSyntax(
                 GlobalsToken,
-                Globals,
+                GlobalDeclarations,
                 newToken);
         }
     }

@@ -26,9 +26,9 @@ namespace War3Net.CodeAnalysis.Jass
                 Keyword.Globals.AsToken(trailingTriviaParser, JassSyntaxKind.GlobalsKeyword),
                 Keyword.EndGlobals.AsToken(trailingTriviaParser, JassSyntaxKind.EndGlobalsKeyword),
                 (leadingTrivia, global) => global.WithLeadingTrivia(leadingTrivia),
-                (globalsToken, globals, leadingTrivia, endGlobalsToken) => (JassTopLevelDeclarationSyntax)new JassGlobalsDeclarationSyntax(
+                (globalsToken, globalDeclarations, leadingTrivia, endGlobalsToken) => (JassTopLevelDeclarationSyntax)new JassGlobalsDeclarationSyntax(
                     globalsToken,
-                    globals.ToImmutableArray(),
+                    globalDeclarations.ToImmutableArray(),
                     endGlobalsToken.WithLeadingTrivia(leadingTrivia)));
         }
     }

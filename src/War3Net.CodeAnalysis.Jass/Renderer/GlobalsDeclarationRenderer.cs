@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
             Render(globalsDeclaration.GlobalsToken);
             Indent();
 
-            foreach (var globalDeclaration in globalsDeclaration.Globals)
+            foreach (var globalDeclaration in globalsDeclaration.GlobalDeclarations)
             {
                 Render(globalDeclaration);
             }

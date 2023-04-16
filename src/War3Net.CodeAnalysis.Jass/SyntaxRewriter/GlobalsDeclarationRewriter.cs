@@ -17,12 +17,12 @@ namespace War3Net.CodeAnalysis.Jass
         protected virtual bool RewriteGlobalsDeclaration(JassGlobalsDeclarationSyntax globalsDeclaration, out JassTopLevelDeclarationSyntax result)
         {
             if (RewriteToken(globalsDeclaration.GlobalsToken, out var globalsToken) |
-                RewriteGlobalDeclarationList(globalsDeclaration.Globals, out var globals) |
+                RewriteGlobalDeclarationList(globalsDeclaration.GlobalDeclarations, out var globalDeclarations) |
                 RewriteToken(globalsDeclaration.EndGlobalsToken, out var endGlobalsToken))
             {
                 result = new JassGlobalsDeclarationSyntax(
                     globalsToken,
-                    globals,
+                    globalDeclarations,
                     endGlobalsToken);
 
                 return true;
