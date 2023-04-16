@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.NativeKeyword),
                 identifierName,
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassNativeFunctionDeclarationSyntax NativeFunctionDeclaration(string name)
@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.NativeKeyword),
                 ParseIdentifierName(name),
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassNativeFunctionDeclarationSyntax NativeFunctionDeclaration(JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause)
@@ -292,7 +292,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.NativeKeyword),
                 identifierName,
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassNativeFunctionDeclarationSyntax ConstantNativeFunctionDeclaration(string name)
@@ -302,7 +302,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.NativeKeyword),
                 ParseIdentifierName(name),
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassNativeFunctionDeclarationSyntax ConstantNativeFunctionDeclaration(JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause)

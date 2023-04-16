@@ -16,6 +16,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassSyntaxTriviaList SyntaxTriviaList(JassSyntaxTrivia trivia)
+        {
+            return new JassSyntaxTriviaList(ImmutableArray.Create(trivia));
+        }
+
         public static JassSyntaxTriviaList SyntaxTriviaList(params JassSyntaxTrivia[] trivia)
         {
             return new JassSyntaxTriviaList(trivia.ToImmutableArray());

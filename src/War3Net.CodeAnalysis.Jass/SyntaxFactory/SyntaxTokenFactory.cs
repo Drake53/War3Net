@@ -74,7 +74,6 @@ namespace War3Net.CodeAnalysis.Jass
                 { JassSyntaxKind.PlusToken, JassSymbol.Plus },
                 { JassSyntaxKind.CommaToken, JassSymbol.Comma },
                 { JassSyntaxKind.MinusToken, JassSymbol.Minus },
-                { JassSyntaxKind.DotToken, JassSymbol.Dot },
                 { JassSyntaxKind.SlashToken, JassSymbol.Slash },
                 { JassSyntaxKind.LessThanToken, JassSymbol.LessThan },
                 { JassSyntaxKind.EqualsToken, JassSymbol.Equals },

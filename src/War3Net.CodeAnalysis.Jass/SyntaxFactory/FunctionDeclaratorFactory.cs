@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 identifierName,
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassFunctionDeclaratorSyntax FunctionDeclarator(string name)
@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name),
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassFunctionDeclaratorSyntax FunctionDeclarator(JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause)
@@ -292,7 +292,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 identifierName,
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassFunctionDeclaratorSyntax ConstantFunctionDeclarator(string name)
@@ -302,7 +302,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name),
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Nothing));
+                ReturnClause(JassPredefinedTypeSyntax.Nothing));
         }
 
         public static JassFunctionDeclaratorSyntax ConstantFunctionDeclarator(JassIdentifierNameSyntax identifierName, JassReturnClauseSyntax returnClause)
@@ -565,7 +565,7 @@ namespace War3Net.CodeAnalysis.Jass
                 Token(JassSyntaxKind.FunctionKeyword),
                 ParseIdentifierName(name),
                 JassEmptyParameterListSyntax.Value,
-                ReturnClause(JassTypeSyntax.Boolean));
+                ReturnClause(JassPredefinedTypeSyntax.Boolean));
         }
     }
 }

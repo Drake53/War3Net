@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassExpressionSyntax LiteralExpression(string? value)
         {
-            return LiteralExpression(value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, value));
+            return LiteralExpression(value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, $"\"{value}\""));
         }
 
         public static JassExpressionSyntax LiteralExpression(int value)
@@ -58,7 +58,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassExpressionSyntax FourCCLiteralExpression(int value)
         {
-            return LiteralExpression(Token(JassSyntaxKind.FourCCLiteralToken, value.ToJassRawcode()));
+            return LiteralExpression(Token(JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'"));
         }
 
         private static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)

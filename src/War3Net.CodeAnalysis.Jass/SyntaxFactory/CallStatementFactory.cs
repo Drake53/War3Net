@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -27,6 +29,14 @@ namespace War3Net.CodeAnalysis.Jass
                 ArgumentList(arguments));
         }
 
+        public static JassCallStatementSyntax CallStatement(JassIdentifierNameSyntax identifierName, IEnumerable<JassExpressionSyntax> arguments)
+        {
+            return new JassCallStatementSyntax(
+                Token(JassSyntaxKind.CallKeyword),
+                identifierName,
+                ArgumentList(arguments));
+        }
+
         public static JassCallStatementSyntax CallStatement(string name, JassArgumentListSyntax argumentList)
         {
             return new JassCallStatementSyntax(
@@ -36,6 +46,14 @@ namespace War3Net.CodeAnalysis.Jass
         }
 
         public static JassCallStatementSyntax CallStatement(string name, params JassExpressionSyntax[] arguments)
+        {
+            return new JassCallStatementSyntax(
+                Token(JassSyntaxKind.CallKeyword),
+                ParseIdentifierName(name),
+                ArgumentList(arguments));
+        }
+
+        public static JassCallStatementSyntax CallStatement(string name, IEnumerable<JassExpressionSyntax> arguments)
         {
             return new JassCallStatementSyntax(
                 Token(JassSyntaxKind.CallKeyword),
