@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -46,6 +47,12 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             return builder.ToSeparatedSyntaxList();
+        }
+
+        public static SeparatedSyntaxList<TItem, JassSyntaxToken> SeparatedSyntaxList<TItem>(ImmutableArray<TItem> items, ImmutableArray<JassSyntaxToken> separators)
+            where TItem : JassSyntaxNode
+        {
+            return SeparatedSyntaxList<TItem, JassSyntaxToken>.Create(items, separators);
         }
     }
 }
