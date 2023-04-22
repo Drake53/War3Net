@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 JassLiteralExpressionSyntax literalExpression => Transpile(literalExpression),
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => Transpile(functionReferenceExpression),
                 JassInvocationExpressionSyntax invocationExpression => Transpile(invocationExpression),
-                JassArrayReferenceExpressionSyntax arrayReferenceExpression => Transpile(arrayReferenceExpression),
+                JassElementAccessExpressionSyntax elementAccessExpression => Transpile(elementAccessExpression),
                 JassIdentifierNameSyntax identifierName => TranspileIdentifierName(identifierName),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => Transpile(parenthesizedExpression),
                 JassUnaryExpressionSyntax unaryExpression => Transpile(unaryExpression),

@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="ArrayReferenceExpressionNormalizer.cs" company="Drake53">
+// <copyright file="ElementAccessExpressionNormalizer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,10 +12,10 @@ namespace War3Net.CodeAnalysis.Jass
     partial class JassSyntaxNormalizer
     {
         /// <inheritdoc/>
-        protected override bool RewriteArrayReferenceExpression(JassArrayReferenceExpressionSyntax arrayReferenceExpression, out JassExpressionSyntax result)
+        protected override bool RewriteElementAccessExpression(JassElementAccessExpressionSyntax elementAccessExpression, out JassExpressionSyntax result)
         {
-            _nodes.Add(arrayReferenceExpression);
-            var normalized = base.RewriteArrayReferenceExpression(arrayReferenceExpression, out result);
+            _nodes.Add(elementAccessExpression);
+            var normalized = base.RewriteElementAccessExpression(elementAccessExpression, out result);
             _nodes.RemoveAt(_nodes.Count - 1);
 
             return normalized;

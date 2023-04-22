@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="JassArrayReferenceExpressionSyntax.cs" company="Drake53">
+// <copyright file="JassElementAccessExpressionSyntax.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,9 +11,9 @@ using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArrayReferenceExpressionSyntax : JassExpressionSyntax
+    public class JassElementAccessExpressionSyntax : JassExpressionSyntax
     {
-        internal JassArrayReferenceExpressionSyntax(
+        internal JassElementAccessExpressionSyntax(
             JassIdentifierNameSyntax identifierName,
             JassElementAccessClauseSyntax elementAccessClause)
         {
@@ -25,13 +25,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassElementAccessClauseSyntax ElementAccessClause { get; }
 
-        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ArrayReferenceExpression;
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ElementAccessExpression;
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is JassArrayReferenceExpressionSyntax arrayReferenceExpression
-                && IdentifierName.IsEquivalentTo(arrayReferenceExpression.IdentifierName)
-                && ElementAccessClause.IsEquivalentTo(arrayReferenceExpression.ElementAccessClause);
+            return other is JassElementAccessExpressionSyntax elementAccessExpression
+                && IdentifierName.IsEquivalentTo(elementAccessExpression.IdentifierName)
+                && ElementAccessClause.IsEquivalentTo(elementAccessExpression.ElementAccessClause);
         }
 
         public override void WriteTo(TextWriter writer)
@@ -106,16 +106,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => ElementAccessClause.GetLastToken();
 
-        protected internal override JassArrayReferenceExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        protected internal override JassElementAccessExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
-            return new JassArrayReferenceExpressionSyntax(
+            return new JassElementAccessExpressionSyntax(
                 IdentifierName.ReplaceFirstToken(newToken),
                 ElementAccessClause);
         }
 
-        protected internal override JassArrayReferenceExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        protected internal override JassElementAccessExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
-            return new JassArrayReferenceExpressionSyntax(
+            return new JassElementAccessExpressionSyntax(
                 IdentifierName,
                 ElementAccessClause.ReplaceLastToken(newToken));
         }

@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
                 case JassLiteralExpressionSyntax literalExpression: Render(literalExpression); break;
                 case JassFunctionReferenceExpressionSyntax functionReferenceExpression: Render(functionReferenceExpression); break;
                 case JassInvocationExpressionSyntax invocationExpression: Render(invocationExpression); break;
-                case JassArrayReferenceExpressionSyntax arrayReferenceExpression: Render(arrayReferenceExpression); break;
+                case JassElementAccessExpressionSyntax elementAccessExpression: Render(elementAccessExpression); break;
                 case JassIdentifierNameSyntax identifierName: Render(identifierName); break;
                 case JassParenthesizedExpressionSyntax parenthesizedExpression: Render(parenthesizedExpression); break;
                 case JassUnaryExpressionSyntax unaryExpression: Render(unaryExpression); break;

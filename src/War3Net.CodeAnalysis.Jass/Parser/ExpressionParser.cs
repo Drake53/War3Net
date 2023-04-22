@@ -46,7 +46,7 @@ namespace War3Net.CodeAnalysis.Jass
                             identifierNameParser,
                             OneOf(
                                 GetInvocationExpressionParser(argumentListParser),
-                                GetArrayReferenceExpressionParser(elementAccessClauseParser),
+                                GetElementAccessExpressionParser(elementAccessClauseParser),
                                 Return<Func<JassIdentifierNameSyntax, JassExpressionSyntax>>(identifierName => identifierName))),
                         GetParenthesizedExpressionParser(triviaParser, expressionParser)),
                     new[]

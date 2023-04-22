@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="ArrayReferenceExpressionTranspiler.cs" company="Drake53">
+// <copyright file="ElementAccessExpressionTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,13 +13,13 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public LuaExpressionSyntax Transpile(JassArrayReferenceExpressionSyntax arrayReferenceExpression, out JassTypeSyntax type)
+        public LuaExpressionSyntax Transpile(JassElementAccessExpressionSyntax elementAccessExpression, out JassTypeSyntax type)
         {
-            type = GetVariableType(arrayReferenceExpression.IdentifierName);
+            type = GetVariableType(elementAccessExpression.IdentifierName);
 
             return new LuaTableIndexAccessExpressionSyntax(
-                Transpile(arrayReferenceExpression.IdentifierName),
-                Transpile(arrayReferenceExpression.ElementAccessClause.Expression, out _));
+                Transpile(elementAccessExpression.IdentifierName),
+                Transpile(elementAccessExpression.ElementAccessClause.Expression, out _));
         }
     }
 }

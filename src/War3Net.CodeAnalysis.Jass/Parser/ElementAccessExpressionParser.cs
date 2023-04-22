@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="ArrayReferenceExpressionParser.cs" company="Drake53">
+// <copyright file="ElementAccessExpressionParser.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,11 +17,11 @@ namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
-        internal static Parser<char, Func<JassIdentifierNameSyntax, JassExpressionSyntax>> GetArrayReferenceExpressionParser(
+        internal static Parser<char, Func<JassIdentifierNameSyntax, JassExpressionSyntax>> GetElementAccessExpressionParser(
             Parser<char, JassElementAccessClauseSyntax> elementAccessClauseParser)
         {
             return Map<char, JassElementAccessClauseSyntax, Func<JassIdentifierNameSyntax, JassExpressionSyntax>>(
-                (elementAccessClause) => identifierName => new JassArrayReferenceExpressionSyntax(
+                (elementAccessClause) => identifierName => new JassElementAccessExpressionSyntax(
                     identifierName,
                     elementAccessClause),
                 elementAccessClauseParser);

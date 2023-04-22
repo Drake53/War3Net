@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             return expression switch
             {
-                JassArrayReferenceExpressionSyntax arrayReferenceExpression => RewriteArrayReferenceExpression(arrayReferenceExpression, out result),
+                JassElementAccessExpressionSyntax elementAccessExpression => RewriteElementAccessExpression(elementAccessExpression, out result),
                 JassBinaryExpressionSyntax binaryExpression => RewriteBinaryExpression(binaryExpression, out result),
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => RewriteFunctionReferenceExpression(functionReferenceExpression, out result),
                 JassIdentifierNameSyntax identifierName => RewriteIdentifierNameAsExpression(identifierName, out result),

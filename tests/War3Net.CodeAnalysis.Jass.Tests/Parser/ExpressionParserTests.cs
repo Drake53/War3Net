@@ -51,8 +51,8 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[] { @"foo( ) )" };
             #endregion
 
-            #region ArrayReferenceExpression
-            yield return new object?[] { @"foo[bar]", ArrayReferenceExpression(@"foo", ParseIdentifierName(@"bar")) };
+            #region ElementAccessExpression
+            yield return new object?[] { @"foo[bar]", ElementAccessExpression(@"foo", ParseIdentifierName(@"bar")) };
             yield return new object?[] { @"foo[bar" };
             #endregion
 
@@ -250,7 +250,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             {
                 @"FORCE_ALL_PLAYERS[(player_id - 1)] == ConvertedPlayer(player_id)",
                 BinaryEqualsExpression(
-                    ArrayReferenceExpression(
+                    ElementAccessExpression(
                         @"FORCE_ALL_PLAYERS",
                         ParenthesizedExpression(BinarySubtractionExpression(
                             ParseIdentifierName(@"player_id"),

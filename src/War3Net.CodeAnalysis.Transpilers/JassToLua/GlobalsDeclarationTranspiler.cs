@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public IEnumerable<LuaStatementSyntax> Transpile(JassGlobalsDeclarationSyntax globalsDeclaration)
         {
-            return globalsDeclaration.Globals.Select(Transpile);
+            return globalsDeclaration.GlobalDeclarations.Select(Transpile);
         }
     }
 }
