@@ -49,6 +49,8 @@ namespace War3Net.CodeAnalysis
                 {
                     throw new ArgumentException("Separators must be empty if items is empty.", nameof(separators));
                 }
+
+                return Empty;
             }
             else if (items.Length - 1 != separators.Length)
             {
