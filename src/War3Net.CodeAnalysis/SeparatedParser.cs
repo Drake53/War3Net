@@ -72,6 +72,8 @@ namespace War3Net.CodeAnalysis
 
                 if (state.Location <= itemStartLoc)
                 {
+                    childExpecteds.Dispose();
+
                     throw new InvalidOperationException("Separated() used with a parser which consumed no input");
                 }
 
