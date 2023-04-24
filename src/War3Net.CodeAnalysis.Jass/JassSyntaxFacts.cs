@@ -14,9 +14,14 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static bool IsWhitespaceCharacter(char ch)
         {
-            return char.IsWhiteSpace(ch)
-                && ch != JassSymbol.CarriageReturnChar
-                && ch != JassSymbol.LineFeedChar;
+            return ch == ' '
+                || ch == '\t';
+        }
+
+        public static bool IsNewlineCharacter(char ch)
+        {
+            return ch == JassSymbol.CarriageReturnChar
+                || ch == JassSymbol.LineFeedChar;
         }
 
         /// <summary>
