@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Immutable;
 
 using Pidgin;
 
@@ -36,29 +35,6 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
         }
 
         internal static Parser<char, JassSyntaxToken> AsToken(
-            this Parser<char, string> tokenSymbolParser,
-            JassSyntaxKind syntaxKind,
-            string symbol)
-        {
-            return tokenSymbolParser.ThenReturn(new JassSyntaxToken(syntaxKind, symbol, JassSyntaxTriviaList.Empty));
-        }
-
-        internal static Parser<char, JassSyntaxToken> AsToken(
-            this Parser<char, char> tokenSymbolParser,
-            Parser<char, JassSyntaxTrivia> trailingTriviaParser,
-            JassSyntaxKind syntaxKind,
-            string symbol)
-        {
-            return Map(
-                (_, trailingTrivia) => new JassSyntaxToken(
-                    syntaxKind,
-                    symbol,
-                    new JassSyntaxTriviaList(ImmutableArray.Create(trailingTrivia))),
-                tokenSymbolParser,
-                trailingTriviaParser);
-        }
-
-        internal static Parser<char, JassSyntaxToken> AsToken(
             this Parser<char, char> tokenSymbolParser,
             Parser<char, JassSyntaxTriviaList> trailingTriviaParser,
             JassSyntaxKind syntaxKind,
@@ -70,27 +46,6 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                     symbol,
                     trailingTrivia),
                 tokenSymbolParser,
-                trailingTriviaParser);
-        }
-
-        internal static Parser<char, JassSyntaxToken> AsToken(
-            this Parser<char, string> tokenTextParser,
-            JassSyntaxKind syntaxKind)
-        {
-            return tokenTextParser.Map(text => new JassSyntaxToken(syntaxKind, text, JassSyntaxTriviaList.Empty));
-        }
-
-        internal static Parser<char, JassSyntaxToken> AsToken(
-            this Parser<char, string> tokenTextParser,
-            Parser<char, JassSyntaxTrivia> trailingTriviaParser,
-            JassSyntaxKind syntaxKind)
-        {
-            return Map(
-                (text, trailingTrivia) => new JassSyntaxToken(
-                    syntaxKind,
-                    text,
-                    new JassSyntaxTriviaList(ImmutableArray.Create(trailingTrivia))),
-                tokenTextParser,
                 trailingTriviaParser);
         }
 
