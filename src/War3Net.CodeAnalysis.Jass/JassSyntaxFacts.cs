@@ -13,8 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static bool IsWhitespaceCharacter(char ch)
         {
-            return ch == ' '
-                || ch == '\t';
+            return ch == JassSymbol.SpaceChar
+                || ch == JassSymbol.TabChar;
         }
 
         public static bool IsNewlineCharacter(char ch)
