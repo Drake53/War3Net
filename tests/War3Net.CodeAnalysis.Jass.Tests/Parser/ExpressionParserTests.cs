@@ -49,11 +49,15 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[] { @"foo() )" };
             yield return new object?[] { @"foo( ))" };
             yield return new object?[] { @"foo( ) )" };
+            yield return new object?[] { @"foo(()" };
+            yield return new object?[] { @"foo(bar[)" };
             #endregion
 
             #region ElementAccessExpression
             yield return new object?[] { @"foo[bar]", ElementAccessExpression(@"foo", ParseIdentifierName(@"bar")) };
             yield return new object?[] { @"foo[bar" };
+            yield return new object?[] { @"foo[" };
+            yield return new object?[] { @"foo[]" };
             #endregion
 
             #region FunctionReferenceExpression
