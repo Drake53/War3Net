@@ -10,12 +10,12 @@
     <PackageTags>jass;warcraft3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.Build.Core" Version="$(War3NetBuildCoreVersion)" />
     <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
   </ItemGroup>

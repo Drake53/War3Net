@@ -9,11 +9,11 @@
     <PackageReference Include="MessagePackAnalyzer" Version="2.2.60" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.IO.Compression" Version="1.0.2" />
   </ItemGroup>
 

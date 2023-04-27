@@ -4,11 +4,11 @@
     <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <!-- todo: packagereferences -->
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>

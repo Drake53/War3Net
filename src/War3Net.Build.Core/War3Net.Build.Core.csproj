@@ -11,13 +11,13 @@
     <PackageTags>warcraft3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
     <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
     <ProjectReference Include="..\War3Net.IO.Slk\War3Net.IO.Slk.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
     <PackageReference Include="War3Net.IO.Mpq" Version="$(War3NetIOMpqVersion)" />
     <PackageReference Include="War3Net.IO.Slk" Version="$(War3NetIOSlkVersion)" />
