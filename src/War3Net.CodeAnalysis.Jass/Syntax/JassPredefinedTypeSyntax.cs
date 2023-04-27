@@ -13,13 +13,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassPredefinedTypeSyntax : JassTypeSyntax
     {
-        public static readonly JassPredefinedTypeSyntax Boolean = new(new JassSyntaxToken(JassSyntaxKind.BooleanKeyword, JassKeyword.Boolean, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax Code = new(new JassSyntaxToken(JassSyntaxKind.CodeKeyword, JassKeyword.Code, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax Handle = new(new JassSyntaxToken(JassSyntaxKind.HandleKeyword, JassKeyword.Handle, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax Integer = new(new JassSyntaxToken(JassSyntaxKind.IntegerKeyword, JassKeyword.Integer, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax Nothing = new(new JassSyntaxToken(JassSyntaxKind.NothingKeyword, JassKeyword.Nothing, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax Real = new(new JassSyntaxToken(JassSyntaxKind.RealKeyword, JassKeyword.Real, JassSyntaxTriviaList.SingleSpace));
-        public static readonly JassPredefinedTypeSyntax String = new(new JassSyntaxToken(JassSyntaxKind.StringKeyword, JassKeyword.String, JassSyntaxTriviaList.SingleSpace));
+        public static readonly JassPredefinedTypeSyntax Boolean = new(JassSyntaxFactory.Token(JassSyntaxKind.BooleanKeyword));
+        public static readonly JassPredefinedTypeSyntax Code = new(JassSyntaxFactory.Token(JassSyntaxKind.CodeKeyword));
+        public static readonly JassPredefinedTypeSyntax Handle = new(JassSyntaxFactory.Token(JassSyntaxKind.HandleKeyword));
+        public static readonly JassPredefinedTypeSyntax Integer = new(JassSyntaxFactory.Token(JassSyntaxKind.IntegerKeyword));
+        public static readonly JassPredefinedTypeSyntax Nothing = new(JassSyntaxFactory.Token(JassSyntaxKind.NothingKeyword));
+        public static readonly JassPredefinedTypeSyntax Real = new(JassSyntaxFactory.Token(JassSyntaxKind.RealKeyword));
+        public static readonly JassPredefinedTypeSyntax String = new(JassSyntaxFactory.Token(JassSyntaxKind.StringKeyword));
 
         internal JassPredefinedTypeSyntax(
             JassSyntaxToken token)
