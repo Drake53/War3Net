@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.ComponentModel;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFacts
@@ -19,16 +17,16 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.MinusToken => JassSyntaxKind.SubtractExpression,
                 JassSyntaxKind.AsteriskToken => JassSyntaxKind.MultiplyExpression,
                 JassSyntaxKind.SlashToken => JassSyntaxKind.DivideExpression,
-                JassSyntaxKind.GreaterThanToken => JassSyntaxKind.GreaterThanExpression,
-                JassSyntaxKind.LessThanToken => JassSyntaxKind.LessThanExpression,
+                JassSyntaxKind.OrKeyword => JassSyntaxKind.LogicalOrExpression,
+                JassSyntaxKind.AndKeyword => JassSyntaxKind.LogicalAndExpression,
                 JassSyntaxKind.EqualsEqualsToken => JassSyntaxKind.EqualsExpression,
                 JassSyntaxKind.ExclamationEqualsToken => JassSyntaxKind.NotEqualsExpression,
-                JassSyntaxKind.GreaterThanEqualsToken => JassSyntaxKind.GreaterThanOrEqualExpression,
+                JassSyntaxKind.LessThanToken => JassSyntaxKind.LessThanExpression,
                 JassSyntaxKind.LessThanEqualsToken => JassSyntaxKind.LessThanOrEqualExpression,
-                JassSyntaxKind.AndKeyword => JassSyntaxKind.LogicalAndExpression,
-                JassSyntaxKind.OrKeyword => JassSyntaxKind.LogicalOrExpression,
+                JassSyntaxKind.GreaterThanToken => JassSyntaxKind.GreaterThanExpression,
+                JassSyntaxKind.GreaterThanEqualsToken => JassSyntaxKind.GreaterThanOrEqualExpression,
 
-                _ => throw new InvalidEnumArgumentException(nameof(binaryOperatorTokenSyntaxKind), (int)binaryOperatorTokenSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
 
@@ -36,18 +34,18 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return literalExpressionTokenSyntaxKind switch
             {
+                JassSyntaxKind.RealLiteralToken => JassSyntaxKind.RealLiteralExpression,
+                JassSyntaxKind.StringLiteralToken => JassSyntaxKind.StringLiteralExpression,
+                JassSyntaxKind.CharacterLiteralToken => JassSyntaxKind.CharacterLiteralExpression,
                 JassSyntaxKind.TrueKeyword => JassSyntaxKind.TrueLiteralExpression,
                 JassSyntaxKind.FalseKeyword => JassSyntaxKind.FalseLiteralExpression,
                 JassSyntaxKind.NullKeyword => JassSyntaxKind.NullLiteralExpression,
-                JassSyntaxKind.CharacterLiteralToken => JassSyntaxKind.CharacterLiteralExpression,
                 JassSyntaxKind.DecimalLiteralToken => JassSyntaxKind.DecimalLiteralExpression,
-                JassSyntaxKind.FourCCLiteralToken => JassSyntaxKind.FourCCLiteralExpression,
                 JassSyntaxKind.HexadecimalLiteralToken => JassSyntaxKind.HexadecimalLiteralExpression,
                 JassSyntaxKind.OctalLiteralToken => JassSyntaxKind.OctalLiteralExpression,
-                JassSyntaxKind.RealLiteralToken => JassSyntaxKind.RealLiteralExpression,
-                JassSyntaxKind.StringLiteralToken => JassSyntaxKind.StringLiteralExpression,
+                JassSyntaxKind.FourCCLiteralToken => JassSyntaxKind.FourCCLiteralExpression,
 
-                _ => throw new InvalidEnumArgumentException(nameof(literalExpressionTokenSyntaxKind), (int)literalExpressionTokenSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
 
@@ -59,7 +57,7 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.MinusToken => JassSyntaxKind.UnaryMinusExpression,
                 JassSyntaxKind.NotKeyword => JassSyntaxKind.LogicalNotExpression,
 
-                _ => throw new InvalidEnumArgumentException(nameof(unaryOperatorTokenSyntaxKind), (int)unaryOperatorTokenSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
 
@@ -69,10 +67,10 @@ namespace War3Net.CodeAnalysis.Jass
             {
                 JassSyntaxKind.SetStatement => JassSyntaxKind.DebugSetStatement,
                 JassSyntaxKind.CallStatement => JassSyntaxKind.DebugCallStatement,
-                JassSyntaxKind.IfStatement => JassSyntaxKind.DebugIfStatement,
                 JassSyntaxKind.LoopStatement => JassSyntaxKind.DebugLoopStatement,
+                JassSyntaxKind.IfStatement => JassSyntaxKind.DebugIfStatement,
 
-                _ => throw new InvalidEnumArgumentException(nameof(statementSyntaxKind), (int)statementSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
 
@@ -83,7 +81,7 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.VariableDeclarator => JassSyntaxKind.GlobalVariableDeclaration,
                 JassSyntaxKind.ArrayDeclarator => JassSyntaxKind.GlobalArrayDeclaration,
 
-                _ => throw new InvalidEnumArgumentException(nameof(declaratorSyntaxKind), (int)declaratorSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
 
@@ -94,7 +92,7 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.VariableDeclarator => JassSyntaxKind.LocalVariableDeclarationStatement,
                 JassSyntaxKind.ArrayDeclarator => JassSyntaxKind.LocalArrayDeclarationStatement,
 
-                _ => throw new InvalidEnumArgumentException(nameof(declaratorSyntaxKind), (int)declaratorSyntaxKind, typeof(JassSyntaxKind)),
+                _ => JassSyntaxKind.None,
             };
         }
     }
