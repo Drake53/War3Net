@@ -58,7 +58,7 @@ namespace War3Net.CodeAnalysis.Jass
             var identifierNameParser = GetIdentifierNameParser(identifierParser, simpleTriviaListParser);
             var typeParser = GetTypeParser(identifierParser, simpleTriviaListParser);
 
-            var expressionParser = GetExpressionParser(simpleTriviaListParser, identifierNameParser);
+            var expressionParser = GetExpressionParser(identifierParser, identifierNameParser, simpleTriviaListParser);
             var equalsValueClauseParser = GetEqualsValueClauseParser(simpleTriviaListParser, expressionParser);
 
             var parameterParser = GetParameterParser(identifierNameParser, typeParser);

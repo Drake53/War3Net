@@ -5,24 +5,23 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using Pidgin;
 using Pidgin.Expression;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
+using War3Net.CodeAnalysis.Jass.Parsers;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 using static Pidgin.Parser;
-using static Pidgin.Parser<char>;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     internal partial class JassParser
     {
         internal static Parser<char, JassExpressionSyntax> GetExpressionParser(
-            Parser<char, JassSyntaxTriviaList> triviaParser,
-            Parser<char, JassIdentifierNameSyntax> identifierNameParser)
+            Parser<char, string> identifierParser,
+            Parser<char, JassIdentifierNameSyntax> identifierNameParser,
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
             return Pidgin.Expression.ExpressionParser.Build<char, JassExpressionSyntax>(
                 expressionParser =>
@@ -37,17 +36,13 @@ namespace War3Net.CodeAnalysis.Jass
                         GetRealLiteralExpressionParser(triviaParser),
                         GetOctalLiteralExpressionParser(triviaParser),
                         GetDecimalLiteralExpressionParser(triviaParser),
-                        GetBooleanLiteralExpressionParser(triviaParser),
                         GetStringLiteralExpressionParser(triviaParser),
-                        GetNullLiteralExpressionParser(triviaParser),
-                        GetFunctionReferenceExpressionParser(identifierNameParser, triviaParser),
-                        Map(
-                            (identifierName, expressionFunc) => expressionFunc(identifierName),
+                        new IdentifierExpressionParser(
+                            identifierParser,
                             identifierNameParser,
-                            OneOf(
-                                GetInvocationExpressionParser(argumentListParser),
-                                GetElementAccessExpressionParser(elementAccessClauseParser),
-                                Return<Func<JassIdentifierNameSyntax, JassExpressionSyntax>>(identifierName => identifierName))),
+                            argumentListParser,
+                            elementAccessClauseParser,
+                            triviaParser),
                         GetParenthesizedExpressionParser(triviaParser, expressionParser)),
                     new[]
                     {
