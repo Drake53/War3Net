@@ -54,9 +54,9 @@ namespace War3Net.CodeAnalysis.Jass
                 singleNewlineTriviaParser,
                 singleLineCommentTriviaParser);
 
-            var identifierNameParser = GetIdentifierNameParser(simpleTriviaListParser);
-            var predefinedTypeParser = GetPredefinedTypeParser(simpleTriviaListParser);
-            var typeParser = GetTypeParser(identifierNameParser, predefinedTypeParser);
+            var identifierParser = GetIdentifierParser();
+            var identifierNameParser = GetIdentifierNameParser(identifierParser, simpleTriviaListParser);
+            var typeParser = GetTypeParser(identifierParser, simpleTriviaListParser);
 
             var expressionParser = GetExpressionParser(simpleTriviaListParser, identifierNameParser);
             var equalsValueClauseParser = GetEqualsValueClauseParser(simpleTriviaListParser, expressionParser);

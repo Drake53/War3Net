@@ -82,5 +82,10 @@ namespace War3Net.CodeAnalysis.Jass
 
             return IsIdentifierEndCharacter(name[^1]);
         }
+
+        internal static bool IsNotReservedKeyword(string? name)
+        {
+            return !IsReservedKeyword(GetKeywordKind(name));
+        }
     }
 }

@@ -5,10 +5,51 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFacts
     {
+        private static readonly Dictionary<JassSyntaxKind, string> _defaultTokenText = GetDefaultTokenText();
+        private static readonly Dictionary<string, JassSyntaxKind> _textToKind = _defaultTokenText.ToDictionary(pair => pair.Value, pair => pair.Key);
+
+        public static bool IsPunctuation(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.AsteriskToken && syntaxKind <= JassSyntaxKind.GreaterThanEqualsToken;
+        }
+
+        public static bool IsKeyword(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.BooleanKeyword && syntaxKind <= JassSyntaxKind.NotKeyword;
+        }
+
+        public static bool IsPredefinedTypeKeyword(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.BooleanKeyword && syntaxKind <= JassSyntaxKind.CodeKeyword;
+        }
+
+        public static bool IsReservedKeyword(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.NullKeyword && syntaxKind <= JassSyntaxKind.NotKeyword;
+        }
+
+        internal static bool IsLiteralToken(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.RealLiteralToken && syntaxKind <= JassSyntaxKind.FourCCLiteralToken;
+        }
+
+        public static bool IsAnyToken(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.AsteriskToken && syntaxKind <= JassSyntaxKind.FourCCLiteralToken;
+        }
+
+        public static bool IsTrivia(JassSyntaxKind syntaxKind)
+        {
+            return syntaxKind >= JassSyntaxKind.NewlineTrivia && syntaxKind <= JassSyntaxKind.SingleLineCommentTrivia;
+        }
+
         public static JassSyntaxKind GetBinaryExpressionKind(JassSyntaxKind binaryOperatorTokenSyntaxKind)
         {
             return binaryOperatorTokenSyntaxKind switch
@@ -93,6 +134,72 @@ namespace War3Net.CodeAnalysis.Jass
                 JassSyntaxKind.ArrayDeclarator => JassSyntaxKind.LocalArrayDeclarationStatement,
 
                 _ => JassSyntaxKind.None,
+            };
+        }
+
+        public static JassSyntaxKind GetKeywordKind(string text)
+        {
+            return _textToKind.GetValueOrDefault(text, JassSyntaxKind.None); 
+        }
+
+        private static Dictionary<JassSyntaxKind, string> GetDefaultTokenText()
+        {
+            return new Dictionary<JassSyntaxKind, string>
+            {
+                { JassSyntaxKind.AsteriskToken, JassSymbol.Asterisk },
+                { JassSyntaxKind.OpenParenToken, JassSymbol.OpenParen },
+                { JassSyntaxKind.CloseParenToken, JassSymbol.CloseParen },
+                { JassSyntaxKind.MinusToken, JassSymbol.Minus },
+                { JassSyntaxKind.PlusToken, JassSymbol.Plus },
+                { JassSyntaxKind.EqualsToken, JassSymbol.Equals },
+                { JassSyntaxKind.OpenBracketToken, JassSymbol.OpenBracket },
+                { JassSyntaxKind.CloseBracketToken, JassSymbol.CloseBracket },
+                { JassSyntaxKind.LessThanToken, JassSymbol.LessThan },
+                { JassSyntaxKind.CommaToken, JassSymbol.Comma },
+                { JassSyntaxKind.GreaterThanToken, JassSymbol.GreaterThan },
+                { JassSyntaxKind.SlashToken, JassSymbol.Slash },
+                { JassSyntaxKind.ExclamationEqualsToken, JassSymbol.ExclamationEquals },
+                { JassSyntaxKind.EqualsEqualsToken, JassSymbol.EqualsEquals },
+                { JassSyntaxKind.LessThanEqualsToken, JassSymbol.LessThanEquals },
+                { JassSyntaxKind.GreaterThanEqualsToken, JassSymbol.GreaterThanEquals },
+                { JassSyntaxKind.BooleanKeyword, JassKeyword.Boolean },
+                { JassSyntaxKind.IntegerKeyword, JassKeyword.Integer },
+                { JassSyntaxKind.RealKeyword, JassKeyword.Real },
+                { JassSyntaxKind.StringKeyword, JassKeyword.String },
+                { JassSyntaxKind.NothingKeyword, JassKeyword.Nothing },
+                { JassSyntaxKind.HandleKeyword, JassKeyword.Handle },
+                { JassSyntaxKind.NullKeyword, JassKeyword.Null },
+                { JassSyntaxKind.TrueKeyword, JassKeyword.True },
+                { JassSyntaxKind.FalseKeyword, JassKeyword.False },
+                { JassSyntaxKind.IfKeyword, JassKeyword.If },
+                { JassSyntaxKind.ElseIfKeyword, JassKeyword.ElseIf },
+                { JassSyntaxKind.ThenKeyword, JassKeyword.Then },
+                { JassSyntaxKind.ElseKeyword, JassKeyword.Else },
+                { JassSyntaxKind.EndIfKeyword, JassKeyword.EndIf },
+                { JassSyntaxKind.LoopKeyword, JassKeyword.Loop },
+                { JassSyntaxKind.ExitWhenKeyword, JassKeyword.ExitWhen },
+                { JassSyntaxKind.EndLoopKeyword, JassKeyword.EndLoop },
+                { JassSyntaxKind.ReturnKeyword, JassKeyword.Return },
+                { JassSyntaxKind.CallKeyword, JassKeyword.Call },
+                { JassSyntaxKind.SetKeyword, JassKeyword.Set },
+                { JassSyntaxKind.LocalKeyword, JassKeyword.Local },
+                { JassSyntaxKind.DebugKeyword, JassKeyword.Debug },
+                { JassSyntaxKind.ConstantKeyword, JassKeyword.Constant },
+                { JassSyntaxKind.FunctionKeyword, JassKeyword.Function },
+                { JassSyntaxKind.TakesKeyword, JassKeyword.Takes },
+                { JassSyntaxKind.ReturnsKeyword, JassKeyword.Returns },
+                { JassSyntaxKind.EndFunctionKeyword, JassKeyword.EndFunction },
+                { JassSyntaxKind.NativeKeyword, JassKeyword.Native },
+                { JassSyntaxKind.ExtendsKeyword, JassKeyword.Extends },
+                { JassSyntaxKind.CodeKeyword, JassKeyword.Code },
+                { JassSyntaxKind.AliasKeyword, JassKeyword.Alias },
+                { JassSyntaxKind.ArrayKeyword, JassKeyword.Array },
+                { JassSyntaxKind.GlobalsKeyword, JassKeyword.Globals },
+                { JassSyntaxKind.EndGlobalsKeyword, JassKeyword.EndGlobals },
+                { JassSyntaxKind.TypeKeyword, JassKeyword.Type },
+                { JassSyntaxKind.OrKeyword, JassKeyword.Or },
+                { JassSyntaxKind.AndKeyword, JassKeyword.And },
+                { JassSyntaxKind.NotKeyword, JassKeyword.Not },
             };
         }
     }
