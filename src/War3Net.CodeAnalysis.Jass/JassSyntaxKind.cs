@@ -101,6 +101,10 @@ namespace War3Net.CodeAnalysis.Jass
         /// <seealso cref="JassKeyword.Handle"/>
         HandleKeyword = 8319,
 
+        /// <summary>Represents <c>code</c> keyword.</summary>
+        /// <seealso cref="JassKeyword.Code"/>
+        CodeKeyword = 8320,
+
         /// <summary>Represents <c>null</c> keyword.</summary>
         /// <seealso cref="JassKeyword.Null"/>
         NullKeyword = 8322,
@@ -192,10 +196,6 @@ namespace War3Net.CodeAnalysis.Jass
         /// <summary>Represents <c>extends</c> keyword.</summary>
         /// <seealso cref="JassKeyword.Extends"/>
         ExtendsKeyword = 8371,
-
-        /// <summary>Represents <c>code</c> keyword.</summary>
-        /// <seealso cref="JassKeyword.Code"/>
-        CodeKeyword = 8378,
 
         /// <summary>Represents <c>alias</c> keyword.</summary>
         /// <seealso cref="JassKeyword.Alias"/>
