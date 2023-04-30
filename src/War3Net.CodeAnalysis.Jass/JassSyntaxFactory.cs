@@ -166,7 +166,7 @@ namespace War3Net.CodeAnalysis.Jass
             return false;
         }
 
-        private static class ThrowHelper
+        internal static class ThrowHelper
         {
             public static void ThrowIfInvalidToken(JassSyntaxToken token, JassSyntaxKind expectedSyntaxKind, [CallerArgumentExpression("token")] string? paramName = null)
             {
