@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
     <Version>$(War3NetDrawingBlpVersion)</Version>
-    <UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
+    <UseWPF Condition="'$(TargetFramework)' == 'net6.0-windows'">true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JpegLibrary" Version="0.3.30" Condition="'$(TargetFramework)' != 'net5.0-windows'" />
+    <PackageReference Include="JpegLibrary" Version="0.3.30" Condition="'$(TargetFramework)' != 'net6.0-windows'" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">
