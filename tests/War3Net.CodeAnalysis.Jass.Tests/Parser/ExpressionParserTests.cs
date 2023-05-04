@@ -119,9 +119,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region RealLiteralExpression
-            yield return new object?[] { @"0.", LiteralExpression(0f, precision: 0) };
+            yield return new object?[] { @"0.", LiteralExpression(Literal(0f, precision: 0)) };
             yield return new object?[] { @".0", new JassLiteralExpressionSyntax(Token(JassSyntaxKind.RealLiteralToken, ".0")) };
-            yield return new object?[] { @"3.141", LiteralExpression(3.141f, precision: 3) };
+            yield return new object?[] { @"3.141", LiteralExpression(Literal(3.141f, precision: 3)) };
             yield return new object?[] { @"." };
             yield return new object?[] { @"0.abc" };
             yield return new object?[] { @"0.0abc" };

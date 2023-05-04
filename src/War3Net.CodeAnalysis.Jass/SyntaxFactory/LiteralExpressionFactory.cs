@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
@@ -14,28 +15,17 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassExpressionSyntax LiteralExpression(string? value)
+        public static JassSyntaxToken Literal(string? value)
         {
-            return LiteralExpression(value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, $"\"{value}\""));
+            return value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, $"\"{value}\"");
         }
 
-        public static JassExpressionSyntax LiteralExpression(int value)
+        public static JassSyntaxToken Literal(int value)
         {
-            if (value == 0)
-            {
-                return LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, JassSymbol.Zero));
-            }
-
-            var valueAsString = value.ToString(CultureInfo.InvariantCulture);
-            if (valueAsString.StartsWith(JassSymbol.MinusChar))
-            {
-                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, valueAsString.TrimStart(JassSymbol.MinusChar))));
-            }
-
-            return LiteralExpression(Token(JassSyntaxKind.DecimalLiteralToken, valueAsString));
+            return Token(JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture));
         }
 
-        public static JassExpressionSyntax LiteralExpression(float value, int precision = 1)
+        public static JassSyntaxToken Literal(float value, int precision = 1)
         {
             var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture);
             if (precision == 0)
@@ -43,26 +33,26 @@ namespace War3Net.CodeAnalysis.Jass
                 valueAsString += JassSymbol.Dot;
             }
 
-            if (valueAsString.StartsWith(JassSymbol.MinusChar))
+            return Token(JassSyntaxKind.RealLiteralToken, valueAsString);
+        }
+
+        public static JassSyntaxToken Literal(bool value)
+        {
+            return Token(value ? JassSyntaxKind.TrueKeyword : JassSyntaxKind.FalseKeyword);
+        }
+
+        public static JassSyntaxToken FourCCLiteral(int value)
+        {
+            return Token(JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'");
+        }
+
+        public static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
+        {
+            if (!JassSyntaxFacts.IsLiteralExpressionToken(token.SyntaxKind))
             {
-                return UnaryMinusExpression(LiteralExpression(Token(JassSyntaxKind.RealLiteralToken, valueAsString.TrimStart(JassSymbol.MinusChar))));
+                throw new ArgumentException("Token kind must be a literal.", nameof(token));
             }
 
-            return LiteralExpression(Token(JassSyntaxKind.RealLiteralToken, valueAsString));
-        }
-
-        public static JassExpressionSyntax LiteralExpression(bool value)
-        {
-            return LiteralExpression(Token(value ? JassSyntaxKind.TrueKeyword : JassSyntaxKind.FalseKeyword));
-        }
-
-        public static JassExpressionSyntax FourCCLiteralExpression(int value)
-        {
-            return LiteralExpression(Token(JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'"));
-        }
-
-        private static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
-        {
             return new JassLiteralExpressionSyntax(token);
         }
     }
