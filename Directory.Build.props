@@ -9,10 +9,10 @@
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
   </ItemGroup>
   <ItemGroup Condition="'$(PACK)'!='true'">
-    <Content Include="$(MSBuildThisFileDirectory)LICENSE">
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Visible="false" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="README.md" />
