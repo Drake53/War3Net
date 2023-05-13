@@ -51,9 +51,9 @@ namespace War3Net.Build
                     {
                         allyStartLocPrioStatements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetStartLocPrio,
-                            SyntaxFactory.LiteralExpression(i),
-                            SyntaxFactory.LiteralExpression(allySlotIndex++),
-                            SyntaxFactory.LiteralExpression(j),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i)),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(allySlotIndex++)),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(j)),
                             SyntaxFactory.ParseIdentifierName(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                     }
 
@@ -65,9 +65,9 @@ namespace War3Net.Build
                         {
                             enemyStartLocPrioStatements.Add(SyntaxFactory.CallStatement(
                                 NativeName.SetEnemyStartLocPrio,
-                                SyntaxFactory.LiteralExpression(i),
-                                SyntaxFactory.LiteralExpression(enemySlotIndex++),
-                                SyntaxFactory.LiteralExpression(j),
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i)),
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(enemySlotIndex++)),
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(j)),
                                 SyntaxFactory.ParseIdentifierName(hasHighFlag ? StartLocPrioName.High : StartLocPrioName.Low)));
                         }
                     }
@@ -77,8 +77,8 @@ namespace War3Net.Build
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetStartLocPrioCount,
-                    SyntaxFactory.LiteralExpression(i),
-                    SyntaxFactory.LiteralExpression(allySlotIndex)));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i)),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(allySlotIndex))));
 
                 statements.AddRange(allyStartLocPrioStatements);
 
@@ -88,8 +88,8 @@ namespace War3Net.Build
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetEnemyStartLocPrioCount,
-                        SyntaxFactory.LiteralExpression(i),
-                        SyntaxFactory.LiteralExpression(enemySlotIndex)));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(enemySlotIndex))));
 
                     statements.AddRange(enemyStartLocPrioStatements);
                 }

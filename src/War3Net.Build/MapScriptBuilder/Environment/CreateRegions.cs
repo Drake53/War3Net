@@ -49,10 +49,10 @@ namespace War3Net.Build
                     regionName,
                     SyntaxFactory.InvocationExpression(
                         NativeName.Rect,
-                        SyntaxFactory.LiteralExpression(region.Left, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Bottom, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Right, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Top, precision: 1))));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Left, precision: 1)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Bottom, precision: 1)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Right, precision: 1)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Top, precision: 1)))));
 
                 if (region.WeatherType != WeatherType.None)
                 {
@@ -63,12 +63,12 @@ namespace War3Net.Build
                             SyntaxFactory.InvocationExpression(
                                 NativeName.AddWeatherEffect,
                                 SyntaxFactory.ParseIdentifierName(regionName),
-                                SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType))));
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral((int)region.WeatherType)))));
 
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.EnableWeatherEffect,
                             SyntaxFactory.ParseIdentifierName(VariableName.WeatherEffect),
-                            SyntaxFactory.LiteralExpression(true)));
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(true))));
                     }
                     else
                     {
@@ -77,8 +77,8 @@ namespace War3Net.Build
                             SyntaxFactory.InvocationExpression(
                                 NativeName.AddWeatherEffect,
                                 SyntaxFactory.ParseIdentifierName(regionName),
-                                SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType)),
-                            SyntaxFactory.LiteralExpression(true)));
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral((int)region.WeatherType))),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(true))));
                     }
                 }
 
@@ -87,16 +87,16 @@ namespace War3Net.Build
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.SetSoundPosition,
                         SyntaxFactory.ParseIdentifierName(region.AmbientSound),
-                        SyntaxFactory.LiteralExpression(region.CenterX),
-                        SyntaxFactory.LiteralExpression(region.CenterY),
-                        SyntaxFactory.LiteralExpression(0f)));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.CenterX)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.CenterY)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0f))));
 
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.RegisterStackedSound,
                         SyntaxFactory.ParseIdentifierName(region.AmbientSound),
-                        SyntaxFactory.LiteralExpression(true),
-                        SyntaxFactory.LiteralExpression(region.Width),
-                        SyntaxFactory.LiteralExpression(region.Height)));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(true)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Width)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(region.Height))));
                 }
             }
 

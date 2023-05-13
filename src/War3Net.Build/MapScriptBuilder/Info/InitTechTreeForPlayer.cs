@@ -42,17 +42,17 @@ namespace War3Net.Build
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetPlayerAbilityAvailable,
-                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                            SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                            SyntaxFactory.LiteralExpression(false)));
+                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerId))),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(techData.Id)),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(false))));
                     }
                     else
                     {
                         statements.Add(SyntaxFactory.CallStatement(
                             NativeName.SetPlayerTechMaxAllowed,
-                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                            SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                            SyntaxFactory.LiteralExpression(0)));
+                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerId))),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(techData.Id)),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0))));
                     }
                 }
             }

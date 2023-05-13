@@ -47,7 +47,7 @@ namespace War3Net.Build
                 statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(
                     JassPredefinedTypeSyntax.Integer,
                     "i",
-                    SyntaxFactory.LiteralExpression(0)));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0))));
             }
 
             foreach (var variable in mapTriggers.Variables)
@@ -68,7 +68,7 @@ namespace War3Net.Build
                 }
                 else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                 {
-                    statements.AddRange(InitGlobal(variable, SyntaxFactory.LiteralExpression(string.Empty)));
+                    statements.AddRange(InitGlobal(variable, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(string.Empty))));
                 }
             }
 
@@ -86,12 +86,12 @@ namespace War3Net.Build
             {
                 yield return SyntaxFactory.SetStatement(
                     "i",
-                    SyntaxFactory.LiteralExpression(0));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0)));
 
                 yield return SyntaxFactory.LoopStatement(
                     SyntaxFactory.ExitStatement(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryGreaterThanExpression(
                         SyntaxFactory.ParseIdentifierName("i"),
-                        SyntaxFactory.LiteralExpression(variable.ArraySize)))),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(variable.ArraySize))))),
                     SyntaxFactory.SetStatement(
                         variable.GetVariableName(),
                         SyntaxFactory.ParseIdentifierName("i"),
@@ -100,7 +100,7 @@ namespace War3Net.Build
                         "i",
                         SyntaxFactory.BinaryAdditionExpression(
                             SyntaxFactory.ParseIdentifierName("i"),
-                            SyntaxFactory.LiteralExpression(1))));
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(1)))));
 
                 //yield return JassEmptySyntax.Value;
             }

@@ -49,8 +49,8 @@ namespace War3Net.Build
                                 VariableName.ItemId,
                                 SyntaxFactory.InvocationExpression(
                                     NativeName.ChooseRandomItemEx,
-                                    SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)randomUnitAny.Class)),
-                                    SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
+                                    SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal((int)randomUnitAny.Class))),
+                                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(randomUnitAny.Level)))));
 
                             break;
 
@@ -66,14 +66,14 @@ namespace War3Net.Build
                                 JassExpressionSyntax id = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
                                     ? SyntaxFactory.InvocationExpression(
                                         NativeName.ChooseRandomItemEx,
-                                        SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)itemClass)),
-                                        SyntaxFactory.LiteralExpression(level))
-                                    : SyntaxFactory.FourCCLiteralExpression(randomItem.UnitId);
+                                        SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal((int)itemClass))),
+                                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(level)))
+                                    : SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(randomItem.UnitId));
 
                                 statements.Add(SyntaxFactory.CallStatement(
                                     FunctionName.RandomDistAddItem,
                                     id,
-                                    SyntaxFactory.LiteralExpression(randomItem.Chance)));
+                                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(randomItem.Chance))));
 
                                 summedChance += randomItem.Chance;
                             }
@@ -82,8 +82,8 @@ namespace War3Net.Build
                             {
                                 statements.Add(SyntaxFactory.CallStatement(
                                     FunctionName.RandomDistAddItem,
-                                    SyntaxFactory.LiteralExpression(-1),
-                                    SyntaxFactory.LiteralExpression(100 - summedChance)));
+                                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(-1)),
+                                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(100 - summedChance))));
                             }
 
                             statements.Add(SyntaxFactory.SetStatement(
@@ -97,26 +97,26 @@ namespace War3Net.Build
                     }
 
                     statements.Add(SyntaxFactory.IfStatement(
-                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
+                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.ItemId), SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(-1))),
                         SyntaxFactory.CallStatement(
                             NativeName.CreateItem,
                             SyntaxFactory.ParseIdentifierName(VariableName.ItemId),
-                            SyntaxFactory.LiteralExpression(item.Position.X),
-                            SyntaxFactory.LiteralExpression(item.Position.Y))));
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(item.Position.X)),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(item.Position.Y)))));
                 }
                 else
                 {
                     var args = new List<JassExpressionSyntax>()
                     {
-                        SyntaxFactory.FourCCLiteralExpression(item.TypeId),
-                        SyntaxFactory.LiteralExpression(item.Position.X),
-                        SyntaxFactory.LiteralExpression(item.Position.Y),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(item.TypeId)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(item.Position.X)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(item.Position.Y)),
                     };
 
                     var hasSkin = item.SkinId != 0 && item.SkinId != item.TypeId;
                     if (hasSkin)
                     {
-                        args.Add(SyntaxFactory.FourCCLiteralExpression(item.SkinId));
+                        args.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(item.SkinId)));
                     }
 
                     statements.Add(SyntaxFactory.CallStatement(hasSkin ? NativeName.BlzCreateItemWithSkin : NativeName.CreateItem, args.ToArray()));

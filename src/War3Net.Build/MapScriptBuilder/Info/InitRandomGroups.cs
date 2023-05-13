@@ -47,8 +47,8 @@ namespace War3Net.Build
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         FunctionName.RandomDistAddItem,
-                        SyntaxFactory.LiteralExpression(i),
-                        SyntaxFactory.LiteralExpression(unitTable.UnitSets[i].Chance)));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(unitTable.UnitSets[i].Chance))));
                 }
 
                 statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
@@ -60,19 +60,19 @@ namespace War3Net.Build
                 {
                     var set = unitTable.UnitSets[setIndex];
 
-                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(setIndex));
+                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.ParseIdentifierName(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(setIndex)));
                     var bodyStatements = new List<JassStatementSyntax>();
 
                     for (var position = 0; position < unitTable.Types.Count; position++)
                     {
                         var id = set?.UnitIds[position] ?? 0;
                         var unitTypeExpression = RandomUnitProvider.IsRandomUnit(id, out var level)
-                            ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(level))
-                            : id == 0 ? SyntaxFactory.LiteralExpression(-1) : SyntaxFactory.FourCCLiteralExpression(id);
+                            ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(level)))
+                            : id == 0 ? SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(-1)) : SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(id));
 
                         bodyStatements.Add(SyntaxFactory.SetStatement(
                             groupVarName,
-                            SyntaxFactory.LiteralExpression(position),
+                            SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(position)),
                             unitTypeExpression));
                     }
 
@@ -84,8 +84,8 @@ namespace War3Net.Build
                 {
                     elseClauseStatements.Add(SyntaxFactory.SetStatement(
                         groupVarName,
-                        SyntaxFactory.LiteralExpression(position),
-                        SyntaxFactory.LiteralExpression(-1)));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(position)),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(-1))));
                 }
 
                 statements.Add(SyntaxFactory.IfStatement(

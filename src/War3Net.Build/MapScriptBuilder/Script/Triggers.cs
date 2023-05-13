@@ -36,10 +36,10 @@ namespace War3Net.Build
                 if (trigger is TriggerDefinition triggerDefinition &&
                     !triggerDefinition.IsComment)
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
+                    yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Trigger),
                         triggerDefinition.GetVariableName(),
-                        JassNullLiteralExpressionSyntax.Value);
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)));
                 }
             }
         }

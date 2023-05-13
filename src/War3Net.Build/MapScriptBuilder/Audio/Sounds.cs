@@ -57,7 +57,7 @@ namespace War3Net.Build
                     yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Sound),
                         sound.Name,
-                        SyntaxFactory.LiteralExpression(null));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)));
                 }
             }
         }

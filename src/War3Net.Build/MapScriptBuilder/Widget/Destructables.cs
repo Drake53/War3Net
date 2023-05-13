@@ -52,7 +52,7 @@ namespace War3Net.Build
                     yield return SyntaxFactory.GlobalVariableDeclaration(
                         SyntaxFactory.ParseTypeName(TypeName.Destructable),
                         destructableVariableName,
-                        SyntaxFactory.LiteralExpression(null));
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)));
                 }
             }
         }

@@ -69,25 +69,25 @@ namespace War3Net.Build
                 var isDead = destructable.Life == 0;
                 var hasZ = destructable.State.HasFlag(DoodadState.WithZ);
                 var skinId = destructable.SkinId == 0 ? destructable.TypeId : destructable.SkinId;
-                var hasSkin = ForceGenerateUnitWithSkin || skinId != destructable.TypeId;
+                var hasSkin = ForceGenerateDestructableWithSkin || skinId != destructable.TypeId;
                 var createFunctionIndex = isDead ? 1 : 0;
 
                 var arguments = new List<JassExpressionSyntax>();
-                arguments.Add(SyntaxFactory.FourCCLiteralExpression(destructable.TypeId));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.X));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.Y));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(destructable.TypeId)));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Position.X)));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Position.Y)));
                 if (hasZ)
                 {
-                    arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.Z));
+                    arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Position.Z)));
                     createFunctionIndex += 2;
                 }
 
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Rotation * (180f / MathF.PI), precision: 3));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Scale.X, precision: 3));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Variation));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Rotation * (180f / MathF.PI), precision: 3)));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Scale.X, precision: 3)));
+                arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Variation)));
                 if (hasSkin)
                 {
-                    arguments.Add(SyntaxFactory.FourCCLiteralExpression(destructable.SkinId));
+                    arguments.Add(SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(destructable.SkinId)));
                     createFunctionIndex += 4;
                 }
 
@@ -109,7 +109,7 @@ namespace War3Net.Build
                             NativeName.SetDestructableLife,
                             SyntaxFactory.ParseIdentifierName(destructableVariableName),
                             SyntaxFactory.BinaryMultiplicationExpression(
-                                SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Life * 0.01f, precision: 2)),
                                 SyntaxFactory.ParseIdentifierName(VariableName.Life))));
                     }
                     else
@@ -118,7 +118,7 @@ namespace War3Net.Build
                             NativeName.SetDestructableLife,
                             SyntaxFactory.ParseIdentifierName(destructableVariableName),
                             SyntaxFactory.BinaryMultiplicationExpression(
-                                SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(destructable.Life * 0.01f, precision: 2)),
                                 SyntaxFactory.InvocationExpression(NativeName.GetDestructableLife, SyntaxFactory.ParseIdentifierName(destructableVariableName)))));
                     }
                 }

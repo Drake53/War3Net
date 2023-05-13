@@ -75,18 +75,18 @@ namespace War3Net.Build
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerTechMaxAllowed,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                    SyntaxFactory.FourCCLiteralExpression(tech.Key),
-                    SyntaxFactory.LiteralExpression(tech.Value)));
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerId))),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(tech.Key)),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(tech.Value))));
             }
 
             foreach (var tech in researched)
             {
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerTechResearched,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                    SyntaxFactory.FourCCLiteralExpression(tech.Key),
-                    SyntaxFactory.LiteralExpression(tech.Value + 1)));
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerId))),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.FourCCLiteral(tech.Key)),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(tech.Value + 1))));
             }
 
             return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitUpgrades_Player) + playerId), statements);

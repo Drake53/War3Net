@@ -38,7 +38,7 @@ namespace War3Net.Build
                 CreateUnits(
                     map,
                     mapUnits.Units.IncludeId().Where(pair => CreateBuildingsForPlayerConditionSingleUnit(map, playerId, pair.Obj)),
-                    SyntaxFactory.LiteralExpression(playerId)));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerId))));
         }
 
         protected internal virtual bool CreateBuildingsForPlayerCondition(Map map, int playerId)

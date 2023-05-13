@@ -53,11 +53,11 @@ namespace War3Net.Build
                 {
                     var value = variable.Type switch
                     {
-                        JassKeyword.Integer => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.Real => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.Boolean => SyntaxFactory.LiteralExpression(false),
+                        JassKeyword.Integer => SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0)),
+                        JassKeyword.Real => SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(0)),
+                        JassKeyword.Boolean => SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(false)),
 
-                        _ => SyntaxFactory.LiteralExpression(null),
+                        _ => SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)),
                     };
 
                     yield return SyntaxFactory.GlobalVariableDeclaration(

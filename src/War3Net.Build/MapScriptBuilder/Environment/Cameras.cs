@@ -49,7 +49,7 @@ namespace War3Net.Build
                 yield return SyntaxFactory.GlobalVariableDeclaration(
                     SyntaxFactory.ParseTypeName(TypeName.CameraSetup),
                     camera.GetVariableName(),
-                    SyntaxFactory.LiteralExpression(null));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)));
             }
         }
     }

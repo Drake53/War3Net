@@ -49,7 +49,7 @@ namespace War3Net.Build
                 yield return SyntaxFactory.GlobalVariableDeclaration(
                     SyntaxFactory.ParseTypeName(TypeName.Rect),
                     region.GetVariableName(),
-                    SyntaxFactory.LiteralExpression(null));
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(null)));
             }
         }
     }

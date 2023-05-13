@@ -44,35 +44,35 @@ namespace War3Net.Build
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerStartLocation,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.LiteralExpression(i)));
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i))));
 
                 if (playerData.Flags.HasFlag(PlayerFlags.FixedStartPosition))
                 {
                     statements.Add(SyntaxFactory.CallStatement(
                         NativeName.ForcePlayerStartLocation,
-                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                        SyntaxFactory.LiteralExpression(i)));
+                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
+                        SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(i))));
                 }
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerColor,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(playerData.Id))));
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
+                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id)))));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerRacePreference,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
                     SyntaxFactory.ParseIdentifierName(playerData.Race.GetVariableName())));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerRaceSelectable,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.LiteralExpression(playerData.Flags.HasFlag(PlayerFlags.RaceSelectable) || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces))));
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
+                    SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Flags.HasFlag(PlayerFlags.RaceSelectable) || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces)))));
 
                 statements.Add(SyntaxFactory.CallStatement(
                     NativeName.SetPlayerController,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
+                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
                     SyntaxFactory.ParseIdentifierName(playerData.Controller.GetVariableName())));
 
                 if (playerData.Controller == PlayerController.Rescuable)
@@ -84,10 +84,10 @@ namespace War3Net.Build
                         {
                             statements.Add(SyntaxFactory.CallStatement(
                                 NativeName.SetPlayerAlliance,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(otherPlayerData.Id)),
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(playerData.Id))),
+                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(otherPlayerData.Id))),
                                 SyntaxFactory.ParseIdentifierName(AllianceTypeName.Rescuable),
-                                SyntaxFactory.LiteralExpression(true)));
+                                SyntaxFactory.LiteralExpression(SyntaxFactory.Literal(true))));
                         }
                     }
                 }
