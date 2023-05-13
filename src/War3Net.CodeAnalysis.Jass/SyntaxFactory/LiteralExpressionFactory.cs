@@ -17,15 +17,32 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassSyntaxToken Literal(string? value)
         {
-            return value is null ? Token(JassSyntaxKind.NullKeyword) : Token(JassSyntaxKind.StringLiteralToken, $"\"{value}\"");
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, string? value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return value is null
+                ? Token(leadingTrivia, JassSyntaxKind.NullKeyword, trailingTrivia)
+                : Token(leadingTrivia, JassSyntaxKind.StringLiteralToken, $"\"{value}\"", trailingTrivia);
         }
 
         public static JassSyntaxToken Literal(int value)
         {
-            return Token(JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture));
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, int value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return Token(leadingTrivia, JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture), trailingTrivia);
         }
 
         public static JassSyntaxToken Literal(float value, int precision = 1)
+        {
+            return Literal(JassSyntaxTriviaList.Empty, value, precision, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, float value, int precision, JassSyntaxTriviaList trailingTrivia)
         {
             var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture);
             if (precision == 0)
@@ -33,17 +50,29 @@ namespace War3Net.CodeAnalysis.Jass
                 valueAsString += JassSymbol.Dot;
             }
 
-            return Token(JassSyntaxKind.RealLiteralToken, valueAsString);
+            return Token(leadingTrivia, JassSyntaxKind.RealLiteralToken, valueAsString, trailingTrivia);
         }
 
         public static JassSyntaxToken Literal(bool value)
         {
-            return Token(value ? JassSyntaxKind.TrueKeyword : JassSyntaxKind.FalseKeyword);
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, bool value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return value
+                ? Token(leadingTrivia, JassSyntaxKind.TrueKeyword, JassKeyword.True, trailingTrivia)
+                : Token(leadingTrivia, JassSyntaxKind.FalseKeyword, JassKeyword.False, trailingTrivia);
         }
 
         public static JassSyntaxToken FourCCLiteral(int value)
         {
-            return Token(JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'");
+            return FourCCLiteral(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken FourCCLiteral(JassSyntaxTriviaList leadingTrivia, int value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return Token(leadingTrivia, JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'", trailingTrivia);
         }
 
         public static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
