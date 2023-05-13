@@ -7,6 +7,7 @@
 
 using System.Text.Json;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 
