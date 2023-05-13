@@ -41,7 +41,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             {
                 if (declaration is JassGlobalsDeclarationSyntax globalsDeclaration)
                 {
-                    foreach (var global in globalsDeclaration.Globals)
+                    foreach (var global in globalsDeclaration.GlobalDeclarations)
                     {
                         if (global is JassGlobalDeclarationSyntax globalDeclaration)
                         {
