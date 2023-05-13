@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
     public static partial class JassSyntaxFacts
     {
         private static readonly Dictionary<JassSyntaxKind, string> _defaultTokenText = GetDefaultTokenText();
-        private static readonly Dictionary<string, JassSyntaxKind> _textToKind = _defaultTokenText.ToDictionary(pair => pair.Value, pair => pair.Key);
+        private static readonly Dictionary<string, JassSyntaxKind> _textToKind = _defaultTokenText.ToDictionary(pair => pair.Value, pair => pair.Key, StringComparer.Ordinal);
 
         public static bool IsPunctuation(JassSyntaxKind syntaxKind)
         {
@@ -50,6 +51,11 @@ namespace War3Net.CodeAnalysis.Jass
             return syntaxKind >= JassSyntaxKind.NewlineTrivia && syntaxKind <= JassSyntaxKind.SingleLineCommentTrivia;
         }
 
+        public static bool IsBinaryExpressionToken(JassSyntaxKind binaryOperatorTokenSyntaxKind)
+        {
+            return GetBinaryExpressionKind(binaryOperatorTokenSyntaxKind) != JassSyntaxKind.None;
+        }
+
         public static JassSyntaxKind GetBinaryExpressionKind(JassSyntaxKind binaryOperatorTokenSyntaxKind)
         {
             return binaryOperatorTokenSyntaxKind switch
@@ -71,6 +77,11 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
+        public static bool IsLiteralExpressionToken(JassSyntaxKind literalExpressionTokenSyntaxKind)
+        {
+            return GetLiteralExpressionKind(literalExpressionTokenSyntaxKind) != JassSyntaxKind.None;
+        }
+
         public static JassSyntaxKind GetLiteralExpressionKind(JassSyntaxKind literalExpressionTokenSyntaxKind)
         {
             return literalExpressionTokenSyntaxKind switch
@@ -90,6 +101,11 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
+        public static bool IsUnaryExpressionToken(JassSyntaxKind unaryOperatorTokenSyntaxKind)
+        {
+            return GetUnaryExpressionKind(unaryOperatorTokenSyntaxKind) != JassSyntaxKind.None;
+        }
+
         public static JassSyntaxKind GetUnaryExpressionKind(JassSyntaxKind unaryOperatorTokenSyntaxKind)
         {
             return unaryOperatorTokenSyntaxKind switch
@@ -100,6 +116,11 @@ namespace War3Net.CodeAnalysis.Jass
 
                 _ => JassSyntaxKind.None,
             };
+        }
+
+        public static bool IsDebugStatementNode(JassSyntaxKind statementSyntaxKind)
+        {
+            return GetDebugStatementKind(statementSyntaxKind) != JassSyntaxKind.None;
         }
 
         public static JassSyntaxKind GetDebugStatementKind(JassSyntaxKind statementSyntaxKind)
@@ -137,9 +158,122 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
-        public static JassSyntaxKind GetKeywordKind(string text)
+        public static IEnumerable<JassSyntaxKind> GetPunctuationKinds()
         {
-            return _textToKind.GetValueOrDefault(text, JassSyntaxKind.None); 
+            yield return JassSyntaxKind.AsteriskToken;
+            yield return JassSyntaxKind.OpenParenToken;
+            yield return JassSyntaxKind.CloseParenToken;
+            yield return JassSyntaxKind.MinusToken;
+            yield return JassSyntaxKind.PlusToken;
+            yield return JassSyntaxKind.EqualsToken;
+            yield return JassSyntaxKind.OpenBracketToken;
+            yield return JassSyntaxKind.CloseBracketToken;
+            yield return JassSyntaxKind.LessThanToken;
+            yield return JassSyntaxKind.CommaToken;
+            yield return JassSyntaxKind.GreaterThanToken;
+            yield return JassSyntaxKind.SlashToken;
+            yield return JassSyntaxKind.ExclamationEqualsToken;
+            yield return JassSyntaxKind.EqualsEqualsToken;
+            yield return JassSyntaxKind.LessThanEqualsToken;
+            yield return JassSyntaxKind.GreaterThanEqualsToken;
+        }
+
+        public static IEnumerable<JassSyntaxKind> GetKeywordKinds()
+        {
+            yield return JassSyntaxKind.BooleanKeyword;
+            yield return JassSyntaxKind.IntegerKeyword;
+            yield return JassSyntaxKind.RealKeyword;
+            yield return JassSyntaxKind.StringKeyword;
+            yield return JassSyntaxKind.NothingKeyword;
+            yield return JassSyntaxKind.HandleKeyword;
+            yield return JassSyntaxKind.NullKeyword;
+            yield return JassSyntaxKind.TrueKeyword;
+            yield return JassSyntaxKind.FalseKeyword;
+            yield return JassSyntaxKind.IfKeyword;
+            yield return JassSyntaxKind.ElseIfKeyword;
+            yield return JassSyntaxKind.ThenKeyword;
+            yield return JassSyntaxKind.ElseKeyword;
+            yield return JassSyntaxKind.EndIfKeyword;
+            yield return JassSyntaxKind.LoopKeyword;
+            yield return JassSyntaxKind.ExitWhenKeyword;
+            yield return JassSyntaxKind.EndLoopKeyword;
+            yield return JassSyntaxKind.ReturnKeyword;
+            yield return JassSyntaxKind.CallKeyword;
+            yield return JassSyntaxKind.SetKeyword;
+            yield return JassSyntaxKind.LocalKeyword;
+            yield return JassSyntaxKind.DebugKeyword;
+            yield return JassSyntaxKind.ConstantKeyword;
+            yield return JassSyntaxKind.FunctionKeyword;
+            yield return JassSyntaxKind.TakesKeyword;
+            yield return JassSyntaxKind.ReturnsKeyword;
+            yield return JassSyntaxKind.EndFunctionKeyword;
+            yield return JassSyntaxKind.NativeKeyword;
+            yield return JassSyntaxKind.ExtendsKeyword;
+            yield return JassSyntaxKind.CodeKeyword;
+            yield return JassSyntaxKind.AliasKeyword;
+            yield return JassSyntaxKind.ArrayKeyword;
+            yield return JassSyntaxKind.GlobalsKeyword;
+            yield return JassSyntaxKind.EndGlobalsKeyword;
+            yield return JassSyntaxKind.TypeKeyword;
+            yield return JassSyntaxKind.OrKeyword;
+            yield return JassSyntaxKind.AndKeyword;
+            yield return JassSyntaxKind.NotKeyword;
+        }
+
+        public static IEnumerable<JassSyntaxKind> GetPredefinedTypeKeywordKinds()
+        {
+            yield return JassSyntaxKind.BooleanKeyword;
+            yield return JassSyntaxKind.IntegerKeyword;
+            yield return JassSyntaxKind.RealKeyword;
+            yield return JassSyntaxKind.StringKeyword;
+            yield return JassSyntaxKind.NothingKeyword;
+            yield return JassSyntaxKind.HandleKeyword;
+            yield return JassSyntaxKind.NullKeyword;
+        }
+
+        public static IEnumerable<JassSyntaxKind> GetReservedKeywordKinds()
+        {
+            yield return JassSyntaxKind.TrueKeyword;
+            yield return JassSyntaxKind.FalseKeyword;
+            yield return JassSyntaxKind.IfKeyword;
+            yield return JassSyntaxKind.ElseIfKeyword;
+            yield return JassSyntaxKind.ThenKeyword;
+            yield return JassSyntaxKind.ElseKeyword;
+            yield return JassSyntaxKind.EndIfKeyword;
+            yield return JassSyntaxKind.LoopKeyword;
+            yield return JassSyntaxKind.ExitWhenKeyword;
+            yield return JassSyntaxKind.EndLoopKeyword;
+            yield return JassSyntaxKind.ReturnKeyword;
+            yield return JassSyntaxKind.CallKeyword;
+            yield return JassSyntaxKind.SetKeyword;
+            yield return JassSyntaxKind.LocalKeyword;
+            yield return JassSyntaxKind.DebugKeyword;
+            yield return JassSyntaxKind.ConstantKeyword;
+            yield return JassSyntaxKind.FunctionKeyword;
+            yield return JassSyntaxKind.TakesKeyword;
+            yield return JassSyntaxKind.ReturnsKeyword;
+            yield return JassSyntaxKind.EndFunctionKeyword;
+            yield return JassSyntaxKind.NativeKeyword;
+            yield return JassSyntaxKind.ExtendsKeyword;
+            yield return JassSyntaxKind.CodeKeyword;
+            yield return JassSyntaxKind.AliasKeyword;
+            yield return JassSyntaxKind.ArrayKeyword;
+            yield return JassSyntaxKind.GlobalsKeyword;
+            yield return JassSyntaxKind.EndGlobalsKeyword;
+            yield return JassSyntaxKind.TypeKeyword;
+            yield return JassSyntaxKind.OrKeyword;
+            yield return JassSyntaxKind.AndKeyword;
+            yield return JassSyntaxKind.NotKeyword;
+        }
+
+        public static string GetText(JassSyntaxKind syntaxKind)
+        {
+            return _defaultTokenText.GetValueOrDefault(syntaxKind, string.Empty);
+        }
+
+        public static JassSyntaxKind GetSyntaxKind(string text)
+        {
+            return _textToKind.GetValueOrDefault(text, JassSyntaxKind.None);
         }
 
         private static Dictionary<JassSyntaxKind, string> GetDefaultTokenText()
