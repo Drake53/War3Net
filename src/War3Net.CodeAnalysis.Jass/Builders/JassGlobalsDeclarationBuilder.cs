@@ -32,12 +32,12 @@ namespace War3Net.CodeAnalysis.Jass.Builders
             return new JassGlobalsDeclarationSyntax(
                 _globalsToken,
                 _globalDeclarationsBuilder.ToImmutable(),
-                endGlobalsToken.PrependTrivia(BuildTriviaList()));
+                endGlobalsToken.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void AddGlobalDeclaration(JassGlobalDeclarationSyntax globalDeclaration)
         {
-            _globalDeclarationsBuilder.Add(globalDeclaration.PrependTrivia(BuildTriviaList()));
+            _globalDeclarationsBuilder.Add(globalDeclaration.PrependLeadingTrivia(BuildTriviaList()));
         }
     }
 }

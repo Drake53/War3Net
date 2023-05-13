@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Jass
                     constantToken,
                     type,
                     identifierName,
-                    value.AppendTrivia(trailingTrivia)),
+                    value.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Constant.AsToken(triviaParser, JassSyntaxKind.ConstantKeyword),
                 typeParser,
                 identifierNameParser,

@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
         {
             return Map(
-                (declarator, trailingTrivia) => (JassGlobalDeclarationSyntax)new JassGlobalVariableDeclarationSyntax(declarator.AppendTrivia(trailingTrivia)),
+                (declarator, trailingTrivia) => (JassGlobalDeclarationSyntax)new JassGlobalVariableDeclarationSyntax(declarator.AppendTrailingTrivia(trailingTrivia)),
                 variableOrArrayDeclaratorParser,
                 trailingTriviaParser);
         }

@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
             return new JassFunctionDeclarationSyntax(
                 _functionDeclarator,
                 BuildStatementList(),
-                endFunctionToken.PrependTrivia(BuildTriviaList()));
+                endFunctionToken.PrependLeadingTrivia(BuildTriviaList()));
         }
     }
 }

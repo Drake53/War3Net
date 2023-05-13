@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass
                 (callToken, identifierName, argumentList, trailingTrivia) => (JassStatementSyntax)new JassCallStatementSyntax(
                     callToken,
                     identifierName,
-                    argumentList.AppendTrivia(trailingTrivia)),
+                    argumentList.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Call.AsToken(triviaParser, JassSyntaxKind.CallKeyword),
                 identifierNameParser,
                 argumentListParser,

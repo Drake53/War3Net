@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass
                     functionToken,
                     identifierName,
                     parameterList,
-                    returnClause.AppendTrivia(trailingTrivia)),
+                    returnClause.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Function.AsToken(triviaParser, JassSyntaxKind.FunctionKeyword),
                 identifierNameParser,
                 parameterListParser,

@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             return Map(
                 (returnToken, expression, trailingTrivia) => (JassStatementSyntax)new JassReturnStatementSyntax(
                     returnToken,
-                    expression.GetValueOrDefault()).AppendTrivia(trailingTrivia),
+                    expression.GetValueOrDefault()).AppendTrailingTrivia(trailingTrivia),
                 Keyword.Return.AsToken(triviaParser, JassSyntaxKind.ReturnKeyword),
                 expressionParser.Optional(),
                 trailingTriviaParser);

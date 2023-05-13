@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass
                     nativeToken,
                     identifierName,
                     parameterList,
-                    returnClause.AppendTrivia(trailingTrivia)),
+                    returnClause.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Native.AsToken(triviaParser, JassSyntaxKind.NativeKeyword),
                 identifierNameParser,
                 parameterListParser,

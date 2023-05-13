@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             return Map(
                 (exitWhenToken, expression, trailingTrivia) => (JassStatementSyntax)new JassExitStatementSyntax(
                     exitWhenToken,
-                    expression.AppendTrivia(trailingTrivia)),
+                    expression.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.ExitWhen.AsToken(triviaParser, JassSyntaxKind.ExitWhenKeyword),
                 expressionParser,
                 trailingTriviaParser);

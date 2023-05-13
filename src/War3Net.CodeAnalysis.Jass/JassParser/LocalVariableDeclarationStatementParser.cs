@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass
             return Map(
                 (localToken, declarator, trailingTrivia) => (JassStatementSyntax)new JassLocalVariableDeclarationStatementSyntax(
                     localToken,
-                    declarator.AppendTrivia(trailingTrivia)),
+                    declarator.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Local.AsToken(triviaParser, JassSyntaxKind.LocalKeyword),
                 variableOrArrayDeclaratorParser,
                 trailingTriviaParser);

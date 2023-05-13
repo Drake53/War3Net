@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            _elseIfClauseDeclarator = elseIfClauseDeclarator.PrependTrivia(BuildTriviaList());
+            _elseIfClauseDeclarator = elseIfClauseDeclarator.PrependLeadingTrivia(BuildTriviaList());
         }
 
         public void BeginElseClause(JassSyntaxToken elseToken)
@@ -65,7 +65,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
             }
 
             _elseIfClauseDeclarator = null;
-            _elseToken = elseToken.PrependTrivia(BuildTriviaList());
+            _elseToken = elseToken.PrependLeadingTrivia(BuildTriviaList());
         }
 
         [MemberNotNull(nameof(_ifClause))]

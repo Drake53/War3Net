@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
             return new JassLoopStatementSyntax(
                 _loopToken,
                 BuildStatementList(),
-                endLoopToken.PrependTrivia(BuildTriviaList()));
+                endLoopToken.PrependLeadingTrivia(BuildTriviaList()));
         }
     }
 }

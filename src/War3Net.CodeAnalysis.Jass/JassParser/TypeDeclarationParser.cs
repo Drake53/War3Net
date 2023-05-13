@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Jass
                     typeToken,
                     identifierName,
                     extendsToken,
-                    type.AppendTrivia(trailingTrivia)),
+                    type.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Type.AsToken(triviaParser, JassSyntaxKind.TypeKeyword),
                 identifierNameParser,
                 Keyword.Extends.AsToken(triviaParser, JassSyntaxKind.ExtendsKeyword),

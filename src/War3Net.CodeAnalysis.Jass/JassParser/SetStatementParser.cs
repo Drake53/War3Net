@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Jass
                     setToken,
                     identifierName,
                     elementAccessClause.GetValueOrDefault(),
-                    value.AppendTrivia(trailingTrivia)),
+                    value.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Set.AsToken(triviaParser, JassSyntaxKind.SetKeyword),
                 identifierNameParser,
                 elementAccessClauseParser.Optional(),

@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Jass
             return Map(
                 (debugToken, statement, trailingTrivia) => (JassStatementSyntax)new JassDebugStatementSyntax(
                     debugToken,
-                    statement.AppendTrivia(trailingTrivia)),
+                    statement.AppendTrailingTrivia(trailingTrivia)),
                 Keyword.Debug.AsToken(triviaParser, JassSyntaxKind.DebugKeyword),
                 OneOf(
                     setStatementParser,

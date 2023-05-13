@@ -37,7 +37,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
 
             return new JassCompilationUnitSyntax(
                 _declarationsBuilder.ToImmutable(),
-                endOfFileToken.PrependTrivia(BuildTriviaList()));
+                endOfFileToken.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void AddDeclaration(JassTopLevelDeclarationSyntax declaration)
@@ -48,7 +48,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            _declarationsBuilder.Add(declaration.PrependTrivia(BuildTriviaList()));
+            _declarationsBuilder.Add(declaration.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public JassGlobalsDeclarationBuilder BeginGlobalsDeclaration(JassSyntaxToken globalsToken)
@@ -58,7 +58,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            return _globalsDeclarationBuilder = new JassGlobalsDeclarationBuilder(globalsToken.PrependTrivia(BuildTriviaList()));
+            return _globalsDeclarationBuilder = new JassGlobalsDeclarationBuilder(globalsToken.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void EndGlobalsDeclaration(JassSyntaxToken endGlobalsToken)
@@ -79,7 +79,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            return _functionDeclarationBuilder = new JassFunctionDeclarationBuilder(functionDeclarator.PrependTrivia(BuildTriviaList()));
+            return _functionDeclarationBuilder = new JassFunctionDeclarationBuilder(functionDeclarator.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void EndFunctionDeclaration(JassSyntaxToken endFunctionToken)

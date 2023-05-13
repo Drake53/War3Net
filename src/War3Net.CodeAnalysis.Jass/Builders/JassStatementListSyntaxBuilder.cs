@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            _statementsBuilder.Add(statement.PrependTrivia(BuildTriviaList()));
+            _statementsBuilder.Add(statement.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public JassIfStatementBuilder BeginIfStatement(JassIfClauseDeclaratorSyntax ifClauseDeclarator)
@@ -43,7 +43,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            return _ifStatementBuilder = new JassIfStatementBuilder(ifClauseDeclarator.PrependTrivia(BuildTriviaList()));
+            return _ifStatementBuilder = new JassIfStatementBuilder(ifClauseDeclarator.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void EndIfStatement(JassSyntaxToken endifToken)
@@ -64,7 +64,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            return _loopStatementBuilder = new JassLoopStatementBuilder(loopToken.PrependTrivia(BuildTriviaList()));
+            return _loopStatementBuilder = new JassLoopStatementBuilder(loopToken.PrependLeadingTrivia(BuildTriviaList()));
         }
 
         public void EndLoopStatement(JassSyntaxToken endLoopToken)
