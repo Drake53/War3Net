@@ -5,11 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass
 {
+    [Obsolete("Use NormalizeWhitespace() and JassSyntaxNode.WriteTo()")]
     public partial class JassRenderer
     {
         private readonly TextWriter _writer;
