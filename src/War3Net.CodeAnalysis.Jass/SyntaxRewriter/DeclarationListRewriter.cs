@@ -28,14 +28,15 @@ namespace War3Net.CodeAnalysis.Jass
             {
                 if (RewriteTopLevelDeclaration(declarationList[i], out var declaration))
                 {
-                    var declarationListBuilder = ImmutableArray.CreateBuilder<JassTopLevelDeclarationSyntax>(declarationList.Length);
-                    declarationListBuilder.AddRange(declarationList, i);
-                    declarationListBuilder.Add(declaration);
+                    var declarationListBuilder = declarationList.ToBuilder();
+                    declarationListBuilder[i] = declaration;
 
                     while (++i < declarationList.Length)
                     {
-                        RewriteTopLevelDeclaration(declarationList[i], out declaration);
-                        declarationListBuilder.Add(declaration);
+                        if (RewriteTopLevelDeclaration(declarationList[i], out declaration))
+                        {
+                            declarationListBuilder[i] = declaration;
+                        }
                     }
 
                     result = declarationListBuilder.ToImmutable();
