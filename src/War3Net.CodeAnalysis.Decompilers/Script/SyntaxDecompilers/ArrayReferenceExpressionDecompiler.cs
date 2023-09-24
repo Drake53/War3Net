@@ -18,13 +18,13 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileArrayReferenceExpression(
-            JassArrayReferenceExpressionSyntax arrayReferenceExpression,
+        private bool TryDecompileElementAccessExpression(
+            JassElementAccessExpressionSyntax elementAccessExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(arrayReferenceExpression.ToString(), out var triggerParams))
+                triggerParamsForAllTypes.TryGetValue(elementAccessExpression.ToString(), out var triggerParams))
             {
                 var triggerParam = triggerParams.SingleOrDefault(param => string.Equals(param.VariableType, expectedType, StringComparison.Ordinal));
                 if (triggerParam is not null)
@@ -39,10 +39,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
+            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
             {
                 return TryDecompileVariableDeclarationReference(
-                    arrayReferenceExpression.IdentifierName.Name,
+                    elementAccessExpression.IdentifierName.Token.Text,
                     arrayIndexer,
                     expectedType,
                     out functionParameter);
@@ -52,12 +52,12 @@ namespace War3Net.CodeAnalysis.Decompilers
             return false;
         }
 
-        private bool TryDecompileArrayReferenceExpression(
-            JassArrayReferenceExpressionSyntax arrayReferenceExpression,
+        private bool TryDecompileElementAccessExpression(
+            JassElementAccessExpressionSyntax elementAccessExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(arrayReferenceExpression.ToString(), out var triggerParams) &&
+                triggerParamsForAllTypes.TryGetValue(elementAccessExpression.ToString(), out var triggerParams) &&
                 triggerParams.Length == 1)
             {
                 var triggerParam = triggerParams[0];
@@ -76,10 +76,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (TryDecompileTriggerFunctionParameter(arrayReferenceExpression.Indexer, JassKeyword.Integer, out var arrayIndexer))
+            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
             {
                 return TryDecompileVariableDeclarationReference(
-                    arrayReferenceExpression.IdentifierName.Name,
+                    elementAccessExpression.IdentifierName.Token.Text,
                     arrayIndexer,
                     out decompileOptions);
             }

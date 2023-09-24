@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
@@ -19,7 +18,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileHexadecimalLiteralExpression(
-            JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression,
+            JassLiteralExpressionSyntax hexadecimalLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -29,7 +28,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = hexadecimalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture),
+                    Value = hexadecimalLiteralExpression.Token.Text,
                 };
 
                 return true;
@@ -40,10 +39,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileHexadecimalLiteralExpression(
-            JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression,
+            JassLiteralExpressionSyntax hexadecimalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = hexadecimalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture);
+            var value = hexadecimalLiteralExpression.Token.Text;
 
             decompileOptions = new();
 

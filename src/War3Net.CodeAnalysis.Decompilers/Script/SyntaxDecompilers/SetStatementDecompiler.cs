@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -16,12 +17,12 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private bool TryDecompileSetStatement(
             JassSetStatementSyntax setStatement,
-            JassStatementListSyntax statementList,
+            ImmutableArray<JassStatementSyntax> statements,
             ref int i,
             ref List<TriggerFunction> functions)
         {
-            var lookaheadStatement1 = i + 1 < statementList.Statements.Length ? statementList.Statements[i + 1] : null;
-            var lookaheadStatement2 = i + 2 < statementList.Statements.Length ? statementList.Statements[i + 2] : null;
+            var lookaheadStatement1 = i + 1 < statements.Length ? statements[i + 1] : null;
+            var lookaheadStatement2 = i + 2 < statements.Length ? statements[i + 2] : null;
 
             if (TryDecompileForLoopActionFunction(setStatement, lookaheadStatement1, lookaheadStatement2, ref functions))
             {
@@ -51,7 +52,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
             else
             {
-                return false;
+                functions.Add(DecompileCustomScriptAction(setStatement.ToString()));
+                return true;
             }
         }
     }

@@ -46,34 +46,25 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             var compilationUnit = JassSyntaxFactory.ParseCompilationUnit(map.Script);
 
-            var comments = new List<JassCommentSyntax>();
             var functionDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, FunctionDeclarationContext>(StringComparer.Ordinal);
             var variableDeclarationsBuilder = ImmutableDictionary.CreateBuilder<string, VariableDeclarationContext>(StringComparer.Ordinal);
 
             foreach (var declaration in compilationUnit.Declarations)
             {
-                if (declaration is JassCommentSyntax comment)
+                if (declaration is JassFunctionDeclarationSyntax functionDeclaration)
                 {
-                    comments.Add(comment);
+                    functionDeclarationsBuilder.Add(functionDeclaration.FunctionDeclarator.IdentifierName.Token.Text, new FunctionDeclarationContext(functionDeclaration));
                 }
-                else
+                else if (declaration is JassGlobalsDeclarationSyntax globalsDeclaration)
                 {
-                    if (declaration is JassFunctionDeclarationSyntax functionDeclaration)
+                    foreach (var globalDeclaration in globalsDeclaration.GlobalDeclarations)
                     {
-                        functionDeclarationsBuilder.Add(functionDeclaration.FunctionDeclarator.IdentifierName.Name, new FunctionDeclarationContext(functionDeclaration, comments));
-                    }
-                    else if (declaration is JassGlobalDeclarationListSyntax globalDeclarationList)
-                    {
-                        foreach (var declaration2 in globalDeclarationList.Globals)
+                        if (globalDeclaration is JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
                         {
-                            if (declaration2 is JassGlobalDeclarationSyntax globalDeclaration)
-                            {
-                                variableDeclarationsBuilder.Add(globalDeclaration.Declarator.IdentifierName.Name, new VariableDeclarationContext(globalDeclaration));
-                            }
+                            var variableDeclarationContext = new VariableDeclarationContext(globalVariableDeclaration);
+                            variableDeclarationsBuilder.Add(variableDeclarationContext.Name, variableDeclarationContext);
                         }
                     }
-
-                    comments.Clear();
                 }
             }
 

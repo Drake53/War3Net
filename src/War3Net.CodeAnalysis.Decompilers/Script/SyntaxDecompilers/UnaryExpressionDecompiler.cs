@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -23,16 +22,16 @@ namespace War3Net.CodeAnalysis.Decompilers
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            switch (unaryExpression.Operator)
+            switch (unaryExpression.OperatorToken.SyntaxKind)
             {
-                case UnaryOperatorType.Plus:
-                case UnaryOperatorType.Minus:
+                case JassSyntaxKind.PlusToken:
+                case JassSyntaxKind.MinusToken:
                     if (string.Equals(expectedType, JassKeyword.Integer, StringComparison.Ordinal) ||
                         string.Equals(expectedType, JassKeyword.Real, StringComparison.Ordinal))
                     {
                         if (TryDecompileTriggerFunctionParameter(unaryExpression.Expression, expectedType, out functionParameter))
                         {
-                            functionParameter.Value = unaryExpression.Operator.GetSymbol() + functionParameter.Value;
+                            functionParameter.Value = JassSyntaxFacts.GetText(unaryExpression.OperatorToken.SyntaxKind) + functionParameter.Value;
                             return true;
                         }
                     }
@@ -48,10 +47,10 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassUnaryExpressionSyntax unaryExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            switch (unaryExpression.Operator)
+            switch (unaryExpression.OperatorToken.SyntaxKind)
             {
-                case UnaryOperatorType.Plus:
-                case UnaryOperatorType.Minus:
+                case JassSyntaxKind.PlusToken:
+                case JassSyntaxKind.MinusToken:
                     var result = new List<DecompileOption>();
 
                     if (TryDecompileUnaryExpression(unaryExpression, JassKeyword.Integer, out var functionParameterInt))

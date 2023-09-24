@@ -22,14 +22,14 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (parameters.Length > 0 &&
                 string.Equals(parameters[^1], JassKeyword.Code, StringComparison.Ordinal) &&
-                Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Name, out var actions))
+                Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Token.Text, out var actions))
             {
-                var action = actions.First(action => action.ArgumentTypes.Length == callStatement.Arguments.Arguments.Length - 1);
+                var action = actions.First(action => action.ArgumentTypes.Length == callStatement.ArgumentList.ArgumentList.Items.Length - 1);
 
-                if (callStatement.Arguments.Arguments[^1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
-                    Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var actionsFunctionDeclaration) &&
+                if (callStatement.ArgumentList.ArgumentList.Items[^1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                    Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Token.Text, out var actionsFunctionDeclaration) &&
                     actionsFunctionDeclaration.IsActionsFunction &&
-                    TryDecompileActionStatementList(actionsFunctionDeclaration.FunctionDeclaration.Body, out var loopActionFunctions))
+                    TryDecompileActionStatementList(actionsFunctionDeclaration.FunctionDeclaration.Statements, out var loopActionFunctions))
                 {
                     var function = new TriggerFunction
                     {
@@ -38,9 +38,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                         Name = action.FunctionName,
                     };
 
-                    for (var i = 0; i < callStatement.Arguments.Arguments.Length - 1; i++)
+                    for (var i = 0; i < callStatement.ArgumentList.ArgumentList.Items.Length - 1; i++)
                     {
-                        if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[i], action.ArgumentTypes[i], out var functionParameter))
+                        if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.ArgumentList.Items[i], action.ArgumentTypes[i], out var functionParameter))
                         {
                             function.Parameters.Add(functionParameter);
                         }

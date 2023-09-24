@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
@@ -16,18 +17,21 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileActionStatement(
-            JassStatementListSyntax statementList,
+            ImmutableArray<JassStatementSyntax> statements,
             ref int i,
             ref List<TriggerFunction> functions)
         {
-            return statementList.Statements[i] switch
+            return statements[i] switch
             {
-                JassCommentSyntax comment => TryDecompileComment(comment, ref functions),
-                JassSetStatementSyntax setStatement => TryDecompileSetStatement(setStatement, statementList, ref i, ref functions),
+                JassSetStatementSyntax setStatement => TryDecompileSetStatement(setStatement, statements, ref i, ref functions),
                 JassCallStatementSyntax callStatement => TryDecompileCallStatement(callStatement, ref functions),
                 JassIfStatementSyntax ifStatement => TryDecompileIfStatement(ifStatement, ref functions),
                 JassLoopStatementSyntax loopStatement => TryDecompileLoopStatement(loopStatement, ref functions),
                 JassReturnStatementSyntax returnStatement => TryDecompileReturnStatement(returnStatement, ref functions),
+
+                JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement => TryDecompileLocalVariableDeclarationStatement(localVariableDeclarationStatement, ref functions),
+                JassExitStatementSyntax exitStatement => TryDecompileExitStatement(exitStatement, ref functions),
+                JassDebugStatementSyntax debugStatement => TryDecompileDebugStatement(debugStatement, ref functions),
 
                 _ => false,
             };
@@ -35,7 +39,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         /// <param name="returnValue"><see langword="true"/> for AND conditions, <see langword="false"/> for OR conditions.</param>
         private bool TryDecompileConditionStatement(
-            IStatementSyntax statement,
+            JassStatementSyntax statement,
             bool returnValue,
             [NotNullWhen(true)] out TriggerFunction? function)
         {

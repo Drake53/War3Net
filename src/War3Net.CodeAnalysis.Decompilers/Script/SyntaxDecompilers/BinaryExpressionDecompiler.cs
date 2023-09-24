@@ -99,7 +99,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     else
                     {
                         if (TryDecompileBinaryOperatorType(
-                            binaryExpression.Operator,
+                            binaryExpression.OperatorToken.SyntaxKind,
                             leftOptions[left].Type,
                             leftOptions[left].Parameter,
                             rightOptions[right].Parameter,

@@ -12,7 +12,6 @@ using System.Linq;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -20,25 +19,30 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileTriggerFunctionParameter(
-            IExpressionSyntax expression,
+            JassExpressionSyntax expression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             return expression switch
             {
-                JassCharacterLiteralExpressionSyntax characterLiteralExpression => TryDecompileCharacterLiteralExpression(characterLiteralExpression, expectedType, out functionParameter),
-                JassFourCCLiteralExpressionSyntax fourCCLiteralExpression => TryDecompileFourCCLiteralExpression(fourCCLiteralExpression, expectedType, out functionParameter),
-                JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression => TryDecompileHexadecimalLiteralExpression(hexadecimalLiteralExpression, expectedType, out functionParameter),
-                JassRealLiteralExpressionSyntax realLiteralExpression => TryDecompileRealLiteralExpression(realLiteralExpression, expectedType, out functionParameter),
-                JassOctalLiteralExpressionSyntax octalLiteralExpression => TryDecompileOctalLiteralExpression(octalLiteralExpression, expectedType, out functionParameter),
-                JassDecimalLiteralExpressionSyntax decimalLiteralExpression => TryDecompileDecimalLiteralExpression(decimalLiteralExpression, expectedType, out functionParameter),
-                JassBooleanLiteralExpressionSyntax booleanLiteralExpression => TryDecompileBooleanLiteralExpression(booleanLiteralExpression, expectedType, out functionParameter),
-                JassStringLiteralExpressionSyntax stringLiteralExpression => TryDecompileStringLiteralExpression(stringLiteralExpression, expectedType, out functionParameter),
-                JassNullLiteralExpressionSyntax nullLiteralExpression => TryDecompileNullLiteralExpression(nullLiteralExpression, expectedType, out functionParameter),
+                JassLiteralExpressionSyntax literalExpression => literalExpression.Token.SyntaxKind switch
+                {
+                    JassSyntaxKind.CharacterLiteralToken => TryDecompileCharacterLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.FourCCLiteralToken => TryDecompileFourCCLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.HexadecimalLiteralToken => TryDecompileHexadecimalLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.RealLiteralToken => TryDecompileRealLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.OctalLiteralToken => TryDecompileOctalLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.DecimalLiteralToken => TryDecompileDecimalLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.TrueKeyword or JassSyntaxKind.FalseKeyword => TryDecompileBooleanLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.StringLiteralToken => TryDecompileStringLiteralExpression(literalExpression, expectedType, out functionParameter),
+                    JassSyntaxKind.NullKeyword => TryDecompileNullLiteralExpression(literalExpression, expectedType, out functionParameter),
+
+                    _ => throw new NotSupportedException(),
+                },
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => TryDecompileFunctionReferenceExpression(functionReferenceExpression, expectedType, out functionParameter),
                 JassInvocationExpressionSyntax invocationExpression => TryDecompileInvocationExpression(invocationExpression, expectedType, out functionParameter),
-                JassArrayReferenceExpressionSyntax arrayReferenceExpression => TryDecompileArrayReferenceExpression(arrayReferenceExpression, expectedType, out functionParameter),
-                JassVariableReferenceExpressionSyntax variableReferenceExpression => TryDecompileVariableReferenceExpression(variableReferenceExpression, expectedType, out functionParameter),
+                JassElementAccessExpressionSyntax elementAccessExpression => TryDecompileElementAccessExpression(elementAccessExpression, expectedType, out functionParameter),
+                JassIdentifierNameSyntax identifierName => TryDecompileVariableReferenceExpression(identifierName, expectedType, out functionParameter),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => TryDecompileParenthesizedExpression(parenthesizedExpression, expectedType, out functionParameter),
                 JassUnaryExpressionSyntax unaryExpression => TryDecompileUnaryExpression(unaryExpression, expectedType, out functionParameter),
                 JassBinaryExpressionSyntax binaryExpression => TryDecompileBinaryExpression(binaryExpression, expectedType, out functionParameter),
@@ -48,24 +52,29 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileTriggerFunctionParameter(
-            IExpressionSyntax expression,
+            JassExpressionSyntax expression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             return expression switch
             {
-                JassCharacterLiteralExpressionSyntax characterLiteralExpression => TryDecompileCharacterLiteralExpression(characterLiteralExpression, out decompileOptions),
-                JassFourCCLiteralExpressionSyntax fourCCLiteralExpression => TryDecompileFourCCLiteralExpression(fourCCLiteralExpression, out decompileOptions),
-                JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression => TryDecompileHexadecimalLiteralExpression(hexadecimalLiteralExpression, out decompileOptions),
-                JassRealLiteralExpressionSyntax realLiteralExpression => TryDecompileRealLiteralExpression(realLiteralExpression, out decompileOptions),
-                JassOctalLiteralExpressionSyntax octalLiteralExpression => TryDecompileOctalLiteralExpression(octalLiteralExpression, out decompileOptions),
-                JassDecimalLiteralExpressionSyntax decimalLiteralExpression => TryDecompileDecimalLiteralExpression(decimalLiteralExpression, out decompileOptions),
-                JassBooleanLiteralExpressionSyntax booleanLiteralExpression => TryDecompileBooleanLiteralExpression(booleanLiteralExpression, out decompileOptions),
-                JassStringLiteralExpressionSyntax stringLiteralExpression => TryDecompileStringLiteralExpression(stringLiteralExpression, out decompileOptions),
-                JassNullLiteralExpressionSyntax nullLiteralExpression => TryDecompileNullLiteralExpression(nullLiteralExpression, out decompileOptions),
+                JassLiteralExpressionSyntax literalExpression => literalExpression.Token.SyntaxKind switch
+                {
+                    JassSyntaxKind.CharacterLiteralToken => TryDecompileCharacterLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.FourCCLiteralToken => TryDecompileFourCCLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.HexadecimalLiteralToken => TryDecompileHexadecimalLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.RealLiteralToken => TryDecompileRealLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.OctalLiteralToken => TryDecompileOctalLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.DecimalLiteralToken => TryDecompileDecimalLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.TrueKeyword or JassSyntaxKind.FalseKeyword => TryDecompileBooleanLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.StringLiteralToken => TryDecompileStringLiteralExpression(literalExpression, out decompileOptions),
+                    JassSyntaxKind.NullKeyword => TryDecompileNullLiteralExpression(literalExpression, out decompileOptions),
+
+                    _ => throw new NotSupportedException(),
+                },
                 JassFunctionReferenceExpressionSyntax functionReferenceExpression => TryDecompileFunctionReferenceExpression(functionReferenceExpression, out decompileOptions),
                 JassInvocationExpressionSyntax invocationExpression => TryDecompileInvocationExpression(invocationExpression, out decompileOptions),
-                JassArrayReferenceExpressionSyntax arrayReferenceExpression => TryDecompileArrayReferenceExpression(arrayReferenceExpression, out decompileOptions),
-                JassVariableReferenceExpressionSyntax variableReferenceExpression => TryDecompileVariableReferenceExpression(variableReferenceExpression, out decompileOptions),
+                JassElementAccessExpressionSyntax elementAccessExpression => TryDecompileElementAccessExpression(elementAccessExpression, out decompileOptions),
+                JassIdentifierNameSyntax identifierName => TryDecompileVariableReferenceExpression(identifierName, out decompileOptions),
                 JassParenthesizedExpressionSyntax parenthesizedExpression => TryDecompileParenthesizedExpression(parenthesizedExpression, out decompileOptions),
                 JassUnaryExpressionSyntax unaryExpression => TryDecompileUnaryExpression(unaryExpression, out decompileOptions),
                 JassBinaryExpressionSyntax binaryExpression => TryDecompileBinaryExpression(binaryExpression, out decompileOptions),
@@ -74,10 +83,10 @@ namespace War3Net.CodeAnalysis.Decompilers
             };
         }
 
-        private bool TryDecompileTriggerFunctionParameter(BinaryOperatorType binaryOperatorType, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
+        private bool TryDecompileTriggerFunctionParameter(JassSyntaxKind binaryOperatorSyntaxKind, string type, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(type, out var triggerParamsForType) &&
-                triggerParamsForType.TryGetValue($"\"{binaryOperatorType.GetSymbol()}\"", out var triggerParams))
+                triggerParamsForType.TryGetValue($"\"{JassSyntaxFacts.GetText(binaryOperatorSyntaxKind)}\"", out var triggerParams))
             {
                 functionParameter = new TriggerFunctionParameter
                 {
@@ -132,17 +141,17 @@ namespace War3Net.CodeAnalysis.Decompilers
 
         private bool TryDecompileTriggerFunctionParameterVariable(JassSetStatementSyntax setStatement, [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter, [NotNullWhen(true)] out string? type)
         {
-            if (setStatement.IdentifierName.Name.StartsWith("udg_", StringComparison.Ordinal) &&
-                Context.VariableDeclarations.TryGetValue(setStatement.IdentifierName.Name, out var variableDeclaration))
+            if (setStatement.IdentifierName.Token.Text.StartsWith("udg_", StringComparison.Ordinal) &&
+                Context.VariableDeclarations.TryGetValue(setStatement.IdentifierName.Token.Text, out var variableDeclaration))
             {
-                functionParameter = DecompileVariableTriggerFunctionParameter(setStatement.IdentifierName.Name);
+                functionParameter = DecompileVariableTriggerFunctionParameter(setStatement.IdentifierName.Token.Text);
                 type = variableDeclaration.Type;
 
-                if (setStatement.Indexer is null)
+                if (setStatement.ElementAccessClause is null)
                 {
                     return true;
                 }
-                else if (TryDecompileTriggerFunctionParameter(setStatement.Indexer, JassKeyword.Integer, out var arrayIndexer))
+                else if (TryDecompileTriggerFunctionParameter(setStatement.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
                 {
                     functionParameter.ArrayIndexer = arrayIndexer;
 

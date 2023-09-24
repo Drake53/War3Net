@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
@@ -24,16 +25,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (!TryDecompileActionStatementList(loopStatement.Body, out var loopActions))
+            if (!TryDecompileActionStatementList(loopStatement.Statements, out var loopActions))
             {
                 return false;
             }
 
-            functions.Add(DecompileCustomScriptAction(JassLoopCustomScriptAction.Value));
+            functions.Add(DecompileCustomScriptAction(JassKeyword.Loop));
             functions.AddRange(loopActions);
-            functions.Add(DecompileCustomScriptAction(JassEndLoopCustomScriptAction.Value));
+            functions.Add(DecompileCustomScriptAction(JassKeyword.EndLoop));
 
-            return false;
+            return true;
         }
     }
 }

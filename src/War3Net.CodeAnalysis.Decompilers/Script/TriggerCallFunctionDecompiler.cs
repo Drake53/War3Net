@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         [Obsolete]
         private bool TryDecompileTriggerCallFunction(JassInvocationExpressionSyntax invocationExpression, [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
-            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
+            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Token.Text, out var triggerCall) &&
                 TryDecompileTriggerCallFunction(invocationExpression, triggerCall, out callFunction))
             {
                 return true;
@@ -34,18 +34,18 @@ namespace War3Net.CodeAnalysis.Decompilers
             TriggerData.TriggerCall triggerCall,
             [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
-            if (triggerCall.ArgumentTypes.Length == invocationExpression.Arguments.Arguments.Length)
+            if (triggerCall.ArgumentTypes.Length == invocationExpression.ArgumentList.ArgumentList.Items.Length)
             {
                 var function = new TriggerFunction
                 {
                     Type = TriggerFunctionType.Call,
                     IsEnabled = true,
-                    Name = invocationExpression.IdentifierName.Name,
+                    Name = invocationExpression.IdentifierName.Token.Text,
                 };
 
-                for (var i = 0; i < invocationExpression.Arguments.Arguments.Length; i++)
+                for (var i = 0; i < invocationExpression.ArgumentList.ArgumentList.Items.Length; i++)
                 {
-                    if (TryDecompileTriggerFunctionParameter(invocationExpression.Arguments.Arguments[i], triggerCall.ArgumentTypes[i], out var functionParameter))
+                    if (TryDecompileTriggerFunctionParameter(invocationExpression.ArgumentList.ArgumentList.Items[i], triggerCall.ArgumentTypes[i], out var functionParameter))
                     {
                         function.Parameters.Add(functionParameter);
                     }
@@ -79,7 +79,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (argumentTypes.Length == 2)
             {
                 if (string.Equals(type, JassKeyword.String, StringComparison.Ordinal) &&
-                    binaryExpression.Operator == BinaryOperatorType.Add &&
+                    binaryExpression.OperatorToken.SyntaxKind == JassSyntaxKind.PlusToken &&
                     TryDecompileTriggerFunctionParameter(binaryExpression.Left, argumentTypes[0], out var leftFunctionParameter) &&
                     TryDecompileTriggerFunctionParameter(binaryExpression.Right, argumentTypes[1], out var rightFunctionParameter))
                 {
@@ -100,7 +100,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             else if (argumentTypes.Length == 3)
             {
                 if (TryDecompileTriggerFunctionParameter(binaryExpression.Left, argumentTypes[0], out var leftFunctionParameter) &&
-                    TryDecompileTriggerFunctionParameter(binaryExpression.Operator, argumentTypes[1], out var operatorFunctionParameter) &&
+                    TryDecompileTriggerFunctionParameter(binaryExpression.OperatorToken.SyntaxKind, argumentTypes[1], out var operatorFunctionParameter) &&
                     TryDecompileTriggerFunctionParameter(binaryExpression.Right, argumentTypes[2], out var rightFunctionParameter))
                 {
                     var function = new TriggerFunction

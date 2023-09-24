@@ -32,7 +32,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            return false;
+            functions.Add(DecompileCustomScriptAction(returnStatement.ToString()));
+            return true;
         }
 
         private bool TryDecompileReturnStatement(

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
@@ -26,9 +27,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            functions.Add(DecompileCustomScriptAction(new JassIfCustomScriptAction(ifStatement.Condition)));
+            functions.Add(DecompileCustomScriptAction(ifStatement.IfClause.IfClauseDeclarator.ToString()));
 
-            if (TryDecompileActionStatementList(ifStatement.Body, out var thenActions))
+            if (TryDecompileActionStatementList(ifStatement.IfClause.Statements, out var thenActions))
             {
                 functions.AddRange(thenActions);
             }
@@ -39,9 +40,9 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             foreach (var elseIfClause in ifStatement.ElseIfClauses)
             {
-                functions.Add(DecompileCustomScriptAction(new JassElseIfCustomScriptAction(elseIfClause.Condition)));
+                functions.Add(DecompileCustomScriptAction(elseIfClause.ElseIfClauseDeclarator.ToString()));
 
-                if (TryDecompileActionStatementList(elseIfClause.Body, out var elseIfActions))
+                if (TryDecompileActionStatementList(elseIfClause.Statements, out var elseIfActions))
                 {
                     functions.AddRange(elseIfActions);
                 }
@@ -53,9 +54,9 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (ifStatement.ElseClause is not null)
             {
-                functions.Add(DecompileCustomScriptAction(JassElseCustomScriptAction.Value));
+                functions.Add(DecompileCustomScriptAction(JassKeyword.Else));
 
-                if (TryDecompileActionStatementList(ifStatement.ElseClause.Body, out var elseActions))
+                if (TryDecompileActionStatementList(ifStatement.ElseClause.Statements, out var elseActions))
                 {
                     functions.AddRange(elseActions);
                 }
@@ -65,7 +66,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            functions.Add(DecompileCustomScriptAction(JassEndIfCustomScriptAction.Value));
+            functions.Add(DecompileCustomScriptAction(JassKeyword.EndIf));
 
             return true;
         }
@@ -78,17 +79,18 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             if (ifStatement.ElseIfClauses.IsEmpty &&
                 ifStatement.ElseClause is null &&
-                ifStatement.Body.Statements.Length == 1 &&
-                ifStatement.Body.Statements[0] is JassReturnStatementSyntax returnStatement &&
-                returnStatement.Value is JassBooleanLiteralExpressionSyntax booleanLiteralExpression &&
-                booleanLiteralExpression.Value != returnValue)
+                ifStatement.IfClause.Statements.Length == 1 &&
+                ifStatement.IfClause.Statements[0] is JassReturnStatementSyntax returnStatement &&
+                returnStatement.Value is not null &&
+                returnStatement.Value.TryGetBooleanExpressionValue(out var returnStatementValue) &&
+                returnStatementValue != returnValue)
             {
-                var conditionExpression = ifStatement.Condition.Deparenthesize();
+                var conditionExpression = ifStatement.IfClause.IfClauseDeclarator.Condition.Deparenthesize();
 
                 if (returnValue)
                 {
                     if (conditionExpression is JassUnaryExpressionSyntax unaryExpression &&
-                        unaryExpression.Operator == UnaryOperatorType.Not)
+                        unaryExpression.OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword)
                     {
                         conditionExpression = unaryExpression.Expression.Deparenthesize();
                     }

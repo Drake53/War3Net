@@ -43,25 +43,20 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             var cameras = new Dictionary<string, Camera>(StringComparer.Ordinal);
 
-            foreach (var statement in functionDeclaration.Body.Statements)
+            foreach (var statement in functionDeclaration.Statements)
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
+                if (statement is JassSetStatementSyntax setStatement)
                 {
-                    continue;
-                }
-                else if (statement is JassSetStatementSyntax setStatement)
-                {
-                    if (setStatement.Indexer is null &&
-                        setStatement.IdentifierName.Name.StartsWith("gg_cam_", StringComparison.Ordinal) &&
+                    if (setStatement.ElementAccessClause is null &&
+                        setStatement.IdentifierName.Token.Text.StartsWith("gg_cam_", StringComparison.Ordinal) &&
                         setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
-                        string.Equals(invocationExpression.IdentifierName.Name, "CreateCameraSetup", StringComparison.Ordinal))
+                        string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateCameraSetup", StringComparison.Ordinal))
                     {
-                        if (invocationExpression.Arguments.Arguments.IsEmpty)
+                        if (invocationExpression.ArgumentList.ArgumentList.Items.IsEmpty)
                         {
-                            cameras.Add(setStatement.IdentifierName.Name, new Camera
+                            cameras.Add(setStatement.IdentifierName.Token.Text, new Camera
                             {
-                                Name = setStatement.IdentifierName.Name["gg_cam_".Length..].Replace('_', ' '),
+                                Name = setStatement.IdentifierName.Token.Text["gg_cam_".Length..].Replace('_', ' '),
                                 NearClippingPlane = useNewFormat ? default : 100f,
                             });
                         }
@@ -78,17 +73,17 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (statement is JassCallStatementSyntax callStatement)
                 {
-                    if (string.Equals(callStatement.IdentifierName.Name, "CameraSetupSetField", StringComparison.Ordinal))
+                    if (string.Equals(callStatement.IdentifierName.Token.Text, "CameraSetupSetField", StringComparison.Ordinal))
                     {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax cameraVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassVariableReferenceExpressionSyntax cameraFieldVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var value) &&
-                            callStatement.Arguments.Arguments[3].TryGetRealExpressionValue(out var duration) &&
+                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
+                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
+                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIdentifierNameValue(out var cameraFieldVariableName) &&
+                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var value) &&
+                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var duration) &&
                             duration == 0f &&
-                            cameras.TryGetValue(cameraVariableReferenceExpression.IdentifierName.Name, out var camera))
+                            cameras.TryGetValue(cameraVariableName, out var camera))
                         {
-                            switch (cameraFieldVariableReferenceExpression.IdentifierName.Name)
+                            switch (cameraFieldVariableName)
                             {
                                 case "CAMERA_FIELD_ZOFFSET":
                                     camera.ZOffset = value;
@@ -131,15 +126,15 @@ namespace War3Net.CodeAnalysis.Decompilers
                             return false;
                         }
                     }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "CameraSetupSetDestPosition", StringComparison.Ordinal))
+                    else if (string.Equals(callStatement.IdentifierName.Token.Text, "CameraSetupSetDestPosition", StringComparison.Ordinal))
                     {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax cameraVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.Arguments.Arguments[3].TryGetRealExpressionValue(out var duration) &&
+                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
+                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
+                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
+                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var duration) &&
                             duration == 0f &&
-                            cameras.TryGetValue(cameraVariableReferenceExpression.IdentifierName.Name, out var camera))
+                            cameras.TryGetValue(cameraVariableName, out var camera))
                         {
                             camera.TargetPosition = new(x, y);
                         }

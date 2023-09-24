@@ -16,25 +16,25 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileConditionExpression(IExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunction? conditionFunction)
+        private bool TryDecompileConditionExpression(JassExpressionSyntax expression, [NotNullWhen(true)] out TriggerFunction? conditionFunction)
         {
             expression = expression.Deparenthesize();
 
             if (expression is JassInvocationExpressionSyntax invocationExpression)
             {
-                if (string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanAnd", StringComparison.Ordinal) ||
-                    string.Equals(invocationExpression.IdentifierName.Name, "GetBooleanOr", StringComparison.Ordinal))
+                if (string.Equals(invocationExpression.IdentifierName.Token.Text, "GetBooleanAnd", StringComparison.Ordinal) ||
+                    string.Equals(invocationExpression.IdentifierName.Token.Text, "GetBooleanOr", StringComparison.Ordinal))
                 {
-                    if (invocationExpression.Arguments.Arguments.Length == 2)
+                    if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 2)
                     {
                         var function = new TriggerFunction
                         {
                             Type = TriggerFunctionType.Condition,
                             IsEnabled = true,
-                            Name = invocationExpression.IdentifierName.Name,
+                            Name = invocationExpression.IdentifierName.Token.Text,
                         };
 
-                        foreach (var argument in invocationExpression.Arguments.Arguments)
+                        foreach (var argument in invocationExpression.ArgumentList.ArgumentList.Items)
                         {
                             if (TryDecompileConditionExpression(argument, out var conditionSubFunction))
                             {
@@ -63,20 +63,20 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else
                 {
-                    if (invocationExpression.Arguments.Arguments.IsEmpty &&
-                        Context.FunctionDeclarations.TryGetValue(invocationExpression.IdentifierName.Name, out var conditionsFunctionDeclaration) &&
+                    if (invocationExpression.ArgumentList.ArgumentList.Items.IsEmpty &&
+                        Context.FunctionDeclarations.TryGetValue(invocationExpression.IdentifierName.Token.Text, out var conditionsFunctionDeclaration) &&
                         conditionsFunctionDeclaration.IsConditionsFunction)
                     {
                         var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
 
-                        if (TryDecompileAndOrMultipleStatementList(conditionsFunction.Body, out conditionFunction))
+                        if (TryDecompileAndOrMultipleStatementList(conditionsFunction.Statements, out conditionFunction))
                         {
                             return true;
                         }
 
-                        if (conditionsFunction.Body.Statements.Length == 1)
+                        if (conditionsFunction.Statements.Length == 1)
                         {
-                            if (conditionsFunction.Body.Statements[0] is JassReturnStatementSyntax singleReturnStatement)
+                            if (conditionsFunction.Statements[0] is JassReturnStatementSyntax singleReturnStatement)
                             {
                                 return TryDecompileReturnStatement(singleReturnStatement, out conditionFunction);
                             }
@@ -116,7 +116,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                             if (Context.TriggerData.TriggerConditions.TryGetValue(decompileOption.Type, out var triggerCondition) &&
                                 triggerCondition.ArgumentTypes.Length == 3)
                             {
-                                if (!TryDecompileTriggerFunctionParameter(binaryExpression.Operator, triggerCondition.ArgumentTypes[1], out var operatorFunctionParameter))
+                                if (!TryDecompileTriggerFunctionParameter(binaryExpression.OperatorToken.SyntaxKind, triggerCondition.ArgumentTypes[1], out var operatorFunctionParameter))
                                 {
                                     continue;
                                 }

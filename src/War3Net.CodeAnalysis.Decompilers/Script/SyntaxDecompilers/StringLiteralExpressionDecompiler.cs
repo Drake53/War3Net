@@ -19,11 +19,11 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileStringLiteralExpression(
-            JassStringLiteralExpressionSyntax stringLiteralExpression,
+            JassLiteralExpressionSyntax stringLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (TryDecompileTriggerFunctionParameterPreset($"`{stringLiteralExpression.Value}`", expectedType, out _, out functionParameter))
+            if (TryDecompileTriggerFunctionParameterPreset($"`{stringLiteralExpression.Token.Text[1..^1]}`", expectedType, out _, out functionParameter))
             {
                 return true;
             }
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = Regex.Unescape(stringLiteralExpression.Value),
+                    Value = Regex.Unescape(stringLiteralExpression.Token.Text[1..^1]),
                 };
 
                 return true;
@@ -46,10 +46,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileStringLiteralExpression(
-            JassStringLiteralExpressionSyntax stringLiteralExpression,
+            JassLiteralExpressionSyntax stringLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = Regex.Unescape(stringLiteralExpression.Value);
+            var value = Regex.Unescape(stringLiteralExpression.Token.Text[1..^1]);
 
             decompileOptions = new();
             decompileOptions.Add(new DecompileOption
@@ -66,7 +66,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 foreach (var customType in customTypes)
                 {
-                    if (TryDecompileTriggerFunctionParameterPreset($"`{stringLiteralExpression.Value}`", customType.Key, out _, out var functionParameter))
+                    if (TryDecompileTriggerFunctionParameterPreset($"`{stringLiteralExpression.Token.Text[1..^1]}`", customType.Key, out _, out var functionParameter))
                     {
                         decompileOptions.Add(new DecompileOption
                         {

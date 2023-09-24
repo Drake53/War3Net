@@ -19,26 +19,26 @@ namespace War3Net.CodeAnalysis.Decompilers
     {
         private bool TryDecompileWaitForConditionActionFunction(JassLoopStatementSyntax loopStatement, [NotNullWhen(true)] out TriggerFunction? actionFunction)
         {
-            if (loopStatement.Body.Statements.Length == 2 &&
-                loopStatement.Body.Statements[0] is JassExitStatementSyntax exitStatement &&
+            if (loopStatement.Statements.Length == 2 &&
+                loopStatement.Statements[0] is JassExitStatementSyntax exitStatement &&
                 exitStatement.Condition.Deparenthesize() is JassInvocationExpressionSyntax exitInvocationExpression &&
-                exitInvocationExpression.Arguments.Arguments.IsEmpty &&
-                loopStatement.Body.Statements[1] is JassCallStatementSyntax callStatement &&
-                string.Equals(callStatement.IdentifierName.Name, "TriggerSleepAction", StringComparison.Ordinal) &&
-                callStatement.Arguments.Arguments.Length == 1 &&
-                callStatement.Arguments.Arguments[0] is JassInvocationExpressionSyntax callInvocationExpression &&
-                string.Equals(callInvocationExpression.IdentifierName.Name, "RMaxBJ", StringComparison.Ordinal) &&
-                callInvocationExpression.Arguments.Arguments.Length == 2 &&
-                callInvocationExpression.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                string.Equals(variableReferenceExpression.IdentifierName.Name, "bj_WAIT_FOR_COND_MIN_INTERVAL", StringComparison.Ordinal) &&
-                Context.FunctionDeclarations.TryGetValue(exitInvocationExpression.IdentifierName.Name, out var exitFunctionDeclaration) &&
+                exitInvocationExpression.ArgumentList.ArgumentList.Items.IsEmpty &&
+                loopStatement.Statements[1] is JassCallStatementSyntax callStatement &&
+                string.Equals(callStatement.IdentifierName.Token.Text, "TriggerSleepAction", StringComparison.Ordinal) &&
+                callStatement.ArgumentList.ArgumentList.Items.Length == 1 &&
+                callStatement.ArgumentList.ArgumentList.Items[0] is JassInvocationExpressionSyntax callInvocationExpression &&
+                string.Equals(callInvocationExpression.IdentifierName.Token.Text, "RMaxBJ", StringComparison.Ordinal) &&
+                callInvocationExpression.ArgumentList.ArgumentList.Items.Length == 2 &&
+                callInvocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                string.Equals(variableName, "bj_WAIT_FOR_COND_MIN_INTERVAL", StringComparison.Ordinal) &&
+                Context.FunctionDeclarations.TryGetValue(exitInvocationExpression.IdentifierName.Token.Text, out var exitFunctionDeclaration) &&
                 exitFunctionDeclaration.IsConditionsFunction)
             {
                 var exitFunction = exitFunctionDeclaration.FunctionDeclaration;
 
-                if (exitFunction.Body.Statements.Length == 1 &&
-                    TryDecompileConditionStatement(exitFunction.Body.Statements[0], true, out var conditionFunction) &&
-                    TryDecompileTriggerFunctionParameter(callInvocationExpression.Arguments.Arguments[1], JassKeyword.Real, out var intervalParameter))
+                if (exitFunction.Statements.Length == 1 &&
+                    TryDecompileConditionStatement(exitFunction.Statements[0], true, out var conditionFunction) &&
+                    TryDecompileTriggerFunctionParameter(callInvocationExpression.ArgumentList.ArgumentList.Items[1], JassKeyword.Real, out var intervalParameter))
                 {
                     actionFunction = new TriggerFunction
                     {

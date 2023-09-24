@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileBooleanLiteralExpression(
-            JassBooleanLiteralExpressionSyntax booleanLiteralExpression,
+            JassLiteralExpressionSyntax booleanLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -27,12 +27,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = booleanLiteralExpression.ToString(),
+                    Value = booleanLiteralExpression.Token.Text,
                 };
 
                 return true;
             }
-            else if (TryDecompileTriggerFunctionParameterPreset(booleanLiteralExpression.ToString(), expectedType, out _, out functionParameter))
+            else if (TryDecompileTriggerFunctionParameterPreset(booleanLiteralExpression.Token.Text, expectedType, out _, out functionParameter))
             {
                 return true;
             }
@@ -42,7 +42,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileBooleanLiteralExpression(
-            JassBooleanLiteralExpressionSyntax booleanLiteralExpression,
+            JassLiteralExpressionSyntax booleanLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (TryDecompileBooleanLiteralExpression(booleanLiteralExpression, JassKeyword.Boolean, out var functionParameter))

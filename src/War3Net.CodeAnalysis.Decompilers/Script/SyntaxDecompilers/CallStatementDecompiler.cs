@@ -19,12 +19,13 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassCallStatementSyntax callStatement,
             ref List<TriggerFunction> functions)
         {
-            if (!Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Name, out var actions))
+            if (!Context.TriggerData.TriggerActions.TryGetValue(callStatement.IdentifierName.Token.Text, out var actions))
             {
-                return false;
+                functions.Add(DecompileCustomScriptAction(callStatement.ToString()));
+                return true;
             }
 
-            var action = actions.First(action => action.ArgumentTypes.Length == callStatement.Arguments.Arguments.Length);
+            var action = actions.First(action => action.ArgumentTypes.Length == callStatement.ArgumentList.ArgumentList.Items.Length);
 
             if (TryDecompileForEachLoopActionFunction(callStatement, action.ArgumentTypes, out var loopActionFunction))
             {
@@ -39,15 +40,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Name = action.FunctionName,
             };
 
-            for (var j = 0; j < callStatement.Arguments.Arguments.Length; j++)
+            for (var j = 0; j < callStatement.ArgumentList.ArgumentList.Items.Length; j++)
             {
-                if (TryDecompileTriggerFunctionParameter(callStatement.Arguments.Arguments[j], action.ArgumentTypes[j], out var functionParameter))
+                if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.ArgumentList.Items[j], action.ArgumentTypes[j], out var functionParameter))
                 {
                     function.Parameters.Add(functionParameter);
                 }
                 else
                 {
-                    return false;
+                    functions.Add(DecompileCustomScriptAction(callStatement.ToString()));
+                    return true;
                 }
             }
 

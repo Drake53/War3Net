@@ -27,25 +27,25 @@ namespace War3Net.CodeAnalysis.Decompilers
                     Name = "IfThenElseMultiple",
                 };
 
-                if (!TryDecompileActionStatementList(ifStatement.Body, out var thenActions) ||
-                    !TryDecompileActionStatementList(ifStatement.ElseClause.Body, out var elseActions))
+                if (!TryDecompileActionStatementList(ifStatement.IfClause.Statements, out var thenActions) ||
+                    !TryDecompileActionStatementList(ifStatement.ElseClause.Statements, out var elseActions))
                 {
                     actionFunction = null;
                     return false;
                 }
 
-                var conditionExpression = ifStatement.Condition.Deparenthesize();
+                var conditionExpression = ifStatement.IfClause.IfClauseDeclarator.Condition.Deparenthesize();
 
                 if (conditionExpression is JassInvocationExpressionSyntax conditionInvocationExpression &&
-                    Context.FunctionDeclarations.TryGetValue(conditionInvocationExpression.IdentifierName.Name, out var conditionsFunctionDeclaration) &&
+                    Context.FunctionDeclarations.TryGetValue(conditionInvocationExpression.IdentifierName.Token.Text, out var conditionsFunctionDeclaration) &&
                     conditionsFunctionDeclaration.IsConditionsFunction)
                 {
                     var conditionsFunction = conditionsFunctionDeclaration.FunctionDeclaration;
 
-                    if (conditionsFunction.Body.Statements.Length == 1 &&
+                    if (conditionsFunction.Statements.Length == 1 &&
                         thenActions.Count == 1 &&
                         elseActions.Count == 1 &&
-                        TryDecompileConditionStatement(conditionsFunction.Body.Statements[0], true, out var conditionFunction))
+                        TryDecompileConditionStatement(conditionsFunction.Statements[0], true, out var conditionFunction))
                     {
                         function.Name = "IfThenElse";
 
@@ -75,7 +75,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        if (TryDecompileConditionStatementList(conditionsFunction.Body, out var conditionFunctions))
+                        if (TryDecompileConditionStatementList(conditionsFunction.Statements, out var conditionFunctions))
                         {
                             foreach (var condition in conditionFunctions)
                             {

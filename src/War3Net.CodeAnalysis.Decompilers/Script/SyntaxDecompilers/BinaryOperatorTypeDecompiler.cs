@@ -10,14 +10,13 @@ using System.Diagnostics.CodeAnalysis;
 
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileBinaryOperatorType(
-            BinaryOperatorType binaryOperatorType,
+            JassSyntaxKind binaryOperatorSyntaxKind,
             string expectedType,
             TriggerFunctionParameter leftOperandParameter,
             TriggerFunctionParameter rightOperandParameter,
@@ -29,14 +28,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                 JassKeyword.Real => "OperatorReal",
                 JassKeyword.String => "OperatorString",
 
-                _ => throw new NotSupportedException(),
+                _ => throw new ArgumentException($"Return type '{expectedType}' is not supported for binary expressions.", nameof(expectedType)),
             };
 
             if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(functionName, out var triggerCall))
             {
                 if (triggerCall.ArgumentTypes.Length == 2)
                 {
-                    if (binaryOperatorType == BinaryOperatorType.Add)
+                    if (binaryOperatorSyntaxKind == JassSyntaxKind.PlusToken)
                     {
                         function = new TriggerFunction
                         {
@@ -53,7 +52,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (triggerCall.ArgumentTypes.Length == 3)
                 {
-                    if (TryDecompileTriggerFunctionParameter(binaryOperatorType, triggerCall.ArgumentTypes[1], out var operatorFunctionParameter))
+                    if (TryDecompileTriggerFunctionParameter(binaryOperatorSyntaxKind, triggerCall.ArgumentTypes[1], out var operatorFunctionParameter))
                     {
                         function = new TriggerFunction
                         {

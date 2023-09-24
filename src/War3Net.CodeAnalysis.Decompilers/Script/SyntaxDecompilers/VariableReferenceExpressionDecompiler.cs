@@ -18,12 +18,12 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileVariableReferenceExpression(
-            JassVariableReferenceExpressionSyntax variableReferenceExpression,
+            JassIdentifierNameSyntax identifierName,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams))
+                triggerParamsForAllTypes.TryGetValue(identifierName.Token.Text, out var triggerParams))
             {
                 var triggerParam = triggerParams.SingleOrDefault(param => string.Equals(param.VariableType, expectedType, StringComparison.Ordinal));
                 if (triggerParam is not null)
@@ -39,18 +39,18 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             return TryDecompileVariableDeclarationReference(
-                variableReferenceExpression.IdentifierName.Name,
+                identifierName.Token.Text,
                 null,
                 expectedType,
                 out functionParameter);
         }
 
         private bool TryDecompileVariableReferenceExpression(
-            JassVariableReferenceExpressionSyntax variableReferenceExpression,
+            JassIdentifierNameSyntax identifierName,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams) &&
+                triggerParamsForAllTypes.TryGetValue(identifierName.Token.Text, out var triggerParams) &&
                 triggerParams.Length == 1)
             {
                 var triggerParam = triggerParams[0];
@@ -70,7 +70,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             return TryDecompileVariableDeclarationReference(
-                variableReferenceExpression.IdentifierName.Name,
+                identifierName.Token.Text,
                 null,
                 out decompileOptions);
         }
