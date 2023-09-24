@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -62,6 +63,20 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassSyntaxToken Token(JassSyntaxTriviaList leadingTrivia, JassSyntaxKind syntaxKind, string text, JassSyntaxTriviaList trailingTrivia)
         {
+            var defaultText = JassSyntaxFacts.GetText(syntaxKind);
+            if (defaultText.Length == 0 && syntaxKind != JassSyntaxKind.EndOfFileToken)
+            {
+                var syntaxKindForText = JassSyntaxFacts.GetSyntaxKind(text);
+                if (syntaxKindForText != JassSyntaxKind.None)
+                {
+                    throw new ArgumentException($"Text '{text}' is not valid for a token of type '{syntaxKind}', because this text is reserved for tokens of type '{syntaxKindForText}'.", nameof(text));
+                }
+            }
+            else if (!string.Equals(text, defaultText, StringComparison.Ordinal))
+            {
+                throw new ArgumentException($"Text '{text}' is not valid for a token of type '{syntaxKind}', because the text for this type must be '{defaultText}'.", nameof(text));
+            }
+
             return new JassSyntaxToken(leadingTrivia, syntaxKind, text, trailingTrivia);
         }
     }
