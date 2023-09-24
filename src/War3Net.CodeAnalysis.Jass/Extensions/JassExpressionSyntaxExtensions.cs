@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -22,6 +23,51 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
 
             return expression;
+        }
+
+        public static bool TryGetBooleanExpressionValue(this JassExpressionSyntax expression, out bool value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression)
+            {
+                switch (literalExpression.Token.SyntaxKind)
+                {
+                    case JassSyntaxKind.TrueKeyword:
+                        value = true;
+                        return true;
+
+                    case JassSyntaxKind.FalseKeyword:
+                        value = false;
+                        return true;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetCharacterExpressionValue(this JassExpressionSyntax expression, out char value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression &&
+                literalExpression.Token.SyntaxKind == JassSyntaxKind.CharacterLiteralToken)
+            {
+                value = literalExpression.Token.Text[1];
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetIdentifierNameValue(this JassExpressionSyntax expression, [NotNullWhen(true)] out string? value)
+        {
+            if (expression is JassIdentifierNameSyntax identifierName)
+            {
+                value = identifierName.Token.Text;
+                return true;
+            }
+
+            value = null;
+            return false;
         }
 
         public static bool TryGetIntegerExpressionValue(this JassExpressionSyntax expression, out int value)
@@ -120,6 +166,39 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
 
             value = default;
+            return false;
+        }
+
+        public static bool TryGetStringExpressionValue(this JassExpressionSyntax expression, out string? value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression)
+            {
+                switch (literalExpression.Token.SyntaxKind)
+                {
+                    case JassSyntaxKind.StringLiteralToken:
+                        value = literalExpression.Token.Text[1..^1];
+                        return true;
+
+                    case JassSyntaxKind.NullKeyword:
+                        value = null;
+                        return true;
+                }
+            }
+
+            value = null;
+            return false;
+        }
+
+        public static bool TryGetNotNullStringExpressionValue(this JassExpressionSyntax expression, [NotNullWhen(true)] out string? value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression &&
+                literalExpression.Token.SyntaxKind == JassSyntaxKind.StringLiteralToken)
+            {
+                value = literalExpression.Token.Text[1..^1];
+                return true;
+            }
+
+            value = null;
             return false;
         }
     }
