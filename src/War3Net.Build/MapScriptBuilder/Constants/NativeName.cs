@@ -49,6 +49,7 @@ namespace War3Net.Build
             internal const string GetGameTypeSelected = "GetGameTypeSelected";
             internal const string GetTriggeringTrigger = "GetTriggeringTrigger";
             internal const string GetTriggerUnit = "GetTriggerUnit";
+            internal const string GetTriggerWidget = "GetTriggerWidget";
             internal const string GetUnitState = "GetUnitState";
             internal const string IssueImmediateOrder = "IssueImmediateOrder";
             internal const string IssueImmediateOrderById = "IssueImmediateOrderById";
@@ -92,9 +93,11 @@ namespace War3Net.Build
             internal const string SetSoundConeOrientation = "SetSoundConeOrientation";
             internal const string SetSoundDistanceCutoff = "SetSoundDistanceCutoff";
             internal const string SetSoundDistances = "SetSoundDistances";
+            internal const string SetSoundDuration = "SetSoundDuration";
             internal const string SetSoundFacialAnimationGroupLabel = "SetSoundFacialAnimationGroupLabel";
             internal const string SetSoundFacialAnimationLabel = "SetSoundFacialAnimationLabel";
             internal const string SetSoundFacialAnimationSetFilepath = "SetSoundFacialAnimationSetFilepath";
+            internal const string SetSoundParamsFromLabel = "SetSoundParamsFromLabel";
             internal const string SetSoundPitch = "SetSoundPitch";
             internal const string SetSoundPosition = "SetSoundPosition";
             internal const string SetSoundVolume = "SetSoundVolume";
