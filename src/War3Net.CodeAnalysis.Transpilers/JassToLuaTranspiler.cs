@@ -29,10 +29,13 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         public bool IgnoreComments { get; set; }
 
+        [Obsolete]
         public bool IgnoreEmptyDeclarations { get; set; }
 
+        [Obsolete]
         public bool IgnoreEmptyStatements { get; set; }
 
+        [Obsolete]
         public bool KeepFunctionsSeparated { get; set; }
 
         public void RegisterJassFile(JassCompilationUnitSyntax compilationUnit)
