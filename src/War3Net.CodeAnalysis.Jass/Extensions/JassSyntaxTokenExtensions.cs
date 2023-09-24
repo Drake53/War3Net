@@ -131,23 +131,26 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 
         private static JassSyntaxTriviaList AppendTriviaToList(ImmutableArray<JassSyntaxTrivia> triviaList, JassSyntaxTrivia trivia)
         {
-            var builder = triviaList.ToBuilder();
+            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(triviaList.Length + 1);
+            builder.AddRange(triviaList);
             builder.Add(trivia);
-            return new JassSyntaxTriviaList(builder.ToImmutable());
+            return new JassSyntaxTriviaList(builder.MoveToImmutable());
         }
 
         private static JassSyntaxTriviaList PrependTriviaToList(JassSyntaxTrivia trivia, ImmutableArray<JassSyntaxTrivia> triviaList)
         {
-            var builder = triviaList.ToBuilder();
-            builder.Insert(0, trivia);
-            return new JassSyntaxTriviaList(builder.ToImmutable());
+            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(triviaList.Length + 1);
+            builder.Add(trivia);
+            builder.AddRange(triviaList);
+            return new JassSyntaxTriviaList(builder.MoveToImmutable());
         }
 
         private static JassSyntaxTriviaList ConcatTriviaLists(ImmutableArray<JassSyntaxTrivia> firstList, ImmutableArray<JassSyntaxTrivia> secondList)
         {
-            var builder = firstList.ToBuilder();
+            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(firstList.Length + secondList.Length);
+            builder.AddRange(firstList);
             builder.AddRange(secondList);
-            return new JassSyntaxTriviaList(builder.ToImmutable());
+            return new JassSyntaxTriviaList(builder.MoveToImmutable());
         }
 
         private static JassSyntaxTriviaList ConcatTriviaLists(IEnumerable<JassSyntaxTrivia> firstList, IEnumerable<JassSyntaxTrivia> secondList)
