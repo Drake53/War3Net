@@ -578,7 +578,7 @@ namespace War3Net.IO.Mpq
                             {
                                 // To prevent encryption seed becoming incorrect, save file uncompressed and unencrypted.
                                 var pos = sourceStream.Position;
-                                using (var mpqStream = new MpqStream(entry, sourceStream, BlockSizeModifier << mpqHeader.BlockSize))
+                                using (var mpqStream = MpqStreamFactory.FromStream(sourceStream, entry, BlockSizeModifier << mpqHeader.BlockSize, leaveOpen: true))
                                 {
                                     mpqStream.CopyTo(memoryStream);
                                 }
@@ -712,7 +712,7 @@ namespace War3Net.IO.Mpq
         /// <exception cref="ArgumentNullException">Thrown when the given <paramref name="entry"/> is <see langword="null"/>.</exception>
         public MpqStream OpenFile(MpqEntry entry)
         {
-            return new MpqStream(this, entry ?? throw new ArgumentNullException(nameof(entry)));
+            return MpqStreamFactory.FromArchive(this, entry ?? throw new ArgumentNullException(nameof(entry)));
         }
 
         public bool TryOpenFile(string fileName, [NotNullWhen(true)] out MpqStream stream)
@@ -735,7 +735,7 @@ namespace War3Net.IO.Mpq
             var entry = GetMpqEntries(fileName, locale, orderByBlockIndex).FirstOrDefault();
             if (entry is not null)
             {
-                stream = new MpqStream(this, entry);
+                stream = MpqStreamFactory.FromArchive(this, entry);
                 return true;
             }
 
