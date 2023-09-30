@@ -456,75 +456,6 @@ namespace War3Net.IO.Mpq
             }
         }
 
-        private static byte[] DecompressMulti(byte[] input, uint outputLength)
-        {
-            using var memoryStream = new MemoryStream(input);
-            return GetDecompressionFunction((MpqCompressionType)memoryStream.ReadByte(), outputLength).Invoke(memoryStream);
-        }
-
-        private static Func<Stream, byte[]> GetDecompressionFunction(MpqCompressionType compressionType, uint outputLength)
-        {
-            return compressionType switch
-            {
-                MpqCompressionType.Huffman => HuffmanCoding.Decompress,
-                MpqCompressionType.ZLib => (stream) => ZLibCompression.Decompress(stream, outputLength),
-                MpqCompressionType.PKLib => (stream) => PKDecompress(stream, outputLength),
-                MpqCompressionType.BZip2 => (stream) => BZip2Compression.Decompress(stream, outputLength),
-                MpqCompressionType.Lzma => throw new NotImplementedException("LZMA compression is not yet supported"),
-                MpqCompressionType.Sparse => throw new NotImplementedException("Sparse compression is not yet supported"),
-                MpqCompressionType.ImaAdpcmMono => (stream) => AdpcmCompression.Decompress(stream, 1),
-                MpqCompressionType.ImaAdpcmStereo => (stream) => AdpcmCompression.Decompress(stream, 2),
-
-                MpqCompressionType.Sparse | MpqCompressionType.ZLib => throw new NotImplementedException("Sparse compression + Deflate compression is not yet supported"),
-                MpqCompressionType.Sparse | MpqCompressionType.BZip2 => throw new NotImplementedException("Sparse compression + BZip2 compression is not yet supported"),
-
-                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 1),
-                MpqCompressionType.ImaAdpcmMono | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 1),
-
-                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.Huffman => (stream) => AdpcmCompression.Decompress(HuffmanCoding.Decompress(stream), 2),
-                MpqCompressionType.ImaAdpcmStereo | MpqCompressionType.PKLib => (stream) => AdpcmCompression.Decompress(PKDecompress(stream, outputLength), 2),
-
-                _ => throw new NotSupportedException($"Compression of type 0x{compressionType.ToString("X")} is not yet supported"),
-            };
-        }
-
-        private static byte[] PKDecompress(Stream data, uint expectedLength)
-        {
-            var b1 = data.ReadByte();
-            var b2 = data.ReadByte();
-            var b3 = data.ReadByte();
-            if (b1 == 0 && b2 == 0 && b3 == 0)
-            {
-                using (var reader = new BinaryReader(data))
-                {
-                    var expectedStreamLength = reader.ReadUInt32();
-                    if (expectedStreamLength != data.Length)
-                    {
-                        throw new InvalidDataException("Unexpected stream length value");
-                    }
-
-                    if (expectedLength + 8 == expectedStreamLength)
-                    {
-                        // Assume data is not compressed.
-                        return reader.ReadBytes((int)expectedLength);
-                    }
-
-                    var comptype = (MpqCompressionType)reader.ReadByte();
-                    if (comptype != MpqCompressionType.ZLib)
-                    {
-                        throw new NotImplementedException();
-                    }
-
-                    return ZLibCompression.Decompress(data, expectedLength);
-                }
-            }
-            else
-            {
-                data.Seek(-3, SeekOrigin.Current);
-                return PKLibCompression.Decompress(data, expectedLength);
-            }
-        }
-
         private int ReadInternal(byte[] buffer, int offset, int count)
         {
             // OW: avoid reading past the contents of the file
@@ -589,7 +520,7 @@ namespace War3Net.IO.Mpq
             }
 
             return _flags.HasFlag(MpqFileFlags.CompressedMulti) && _compressedSize > 0
-                ? DecompressMulti(fileData, _fileSize)
+                ? MpqStreamUtils.DecompressMulti(fileData, _fileSize)
                 : fileData;
         }
 
@@ -632,7 +563,7 @@ namespace War3Net.IO.Mpq
             {
                 buffer = _flags.HasFlag(MpqFileFlags.CompressedPK)
                     ? PKLibCompression.Decompress(buffer, (uint)expectedLength)
-                    : DecompressMulti(buffer, (uint)expectedLength);
+                    : MpqStreamUtils.DecompressMulti(buffer, (uint)expectedLength);
             }
 
             return buffer;
