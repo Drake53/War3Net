@@ -208,18 +208,15 @@ namespace War3Net.IO.Mpq
                 var hasBlockPositions = !singleUnit && ((targetFlags & MpqFileFlags.Compressed) != 0);
                 if (hasBlockPositions)
                 {
-                    for (var blockIndex = 0; blockIndex < blockPosCount; blockIndex++)
+                    using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
                     {
-                        using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
+                        for (var i = 0; i < blockPosCount; i++)
                         {
-                            for (var i = 0; i < blockPosCount; i++)
-                            {
-                                blockPositions[i] = (int)reader.ReadUInt32();
-                            }
+                            blockPositions[i] = (int)reader.ReadUInt32();
                         }
-
-                        compressedStream.Seek(0, SeekOrigin.Begin);
                     }
+
+                    compressedStream.Seek(0, SeekOrigin.Begin);
                 }
                 else
                 {
