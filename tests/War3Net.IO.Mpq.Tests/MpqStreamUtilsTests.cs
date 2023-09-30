@@ -75,6 +75,60 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestCompressMpqStreamSingleUnit(int fileSize)
+        {
+            var input = RandomNumberGenerator.GetBytes(fileSize);
+            using var inputStream = new MemoryStream(input);
+
+            using var compressedStream = MpqStreamUtils.Compress(inputStream, MpqCompressionType.ZLib, null);
+
+            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Compressed);
+            using var mpqStream = new MpqStream(mpqEntry, compressedStream, BlockSize);
+
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestEncryptMpqStreamSingleUnit(int fileSize)
+        {
+            var input = RandomNumberGenerator.GetBytes(fileSize);
+            using var inputStream = new MemoryStream(input);
+
+            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, null, null);
+
+            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Encrypted);
+            using var mpqStream = new MpqStream(mpqEntry, encryptedStream, BlockSize);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestCompressAndEncryptMpqStreamSingleUnit(int fileSize)
+        {
+            var input = RandomNumberGenerator.GetBytes(fileSize);
+            using var inputStream = new MemoryStream(input);
+
+            using var compressedStream = MpqStreamUtils.Compress(inputStream, MpqCompressionType.ZLib, null);
+
+            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            var uncompressedSize = (uint)input.Length;
+            using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, null, uncompressedSize);
+
+            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Compressed | MpqFileFlags.Encrypted);
+            using var mpqStream = new MpqStream(mpqEntry, encryptedStream, BlockSize);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
         private static IEnumerable<object?[]> GetTestData()
         {
             yield return new object?[] { 0 };
