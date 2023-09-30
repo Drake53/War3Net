@@ -268,6 +268,11 @@ namespace War3Net.IO.Mpq
 
         private Stream GetCompressedStream(Stream baseStream, MpqFileFlags targetFlags, MpqCompressionType compressionType, int targetBlockSize)
         {
+            if ((targetFlags & MpqFileFlags.Compressed) == 0)
+            {
+                return baseStream;
+            }
+
             var resultStream = new MemoryStream();
             var singleUnit = targetFlags.HasFlag(MpqFileFlags.SingleUnit);
 
@@ -278,7 +283,7 @@ namespace War3Net.IO.Mpq
                 {
                     MpqCompressionType.ZLib => ZLibCompression.Compress(baseStream, (int)bytes, true),
 
-                    _ => throw new NotSupportedException(),
+                    _ => throw new NotSupportedException($"Compression type '{compressionType}' is not supported. Currently only ZLib is supported."),
                 };
 
                 // Add one because CompressionType byte not written yet.
@@ -295,20 +300,11 @@ namespace War3Net.IO.Mpq
                 }
 
                 compressedStream.Dispose();
-
-                if (singleUnit)
-                {
-                    baseStream.Dispose();
-                }
             }
 
             var length = (uint)baseStream.Length;
 
-            if ((targetFlags & MpqFileFlags.Compressed) == 0)
-            {
-                baseStream.CopyTo(resultStream);
-            }
-            else if (singleUnit)
+            if (singleUnit)
             {
                 TryCompress(length);
             }
