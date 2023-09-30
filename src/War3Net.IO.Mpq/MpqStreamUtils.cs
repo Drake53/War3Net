@@ -11,26 +11,22 @@ using System.Text;
 
 using War3Net.Common.Extensions;
 using War3Net.Common.Providers;
-using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq
 {
     internal static class MpqStreamUtils
     {
-        internal static Stream Compress(Stream baseStream, MpqCompressionType compressionType, int? targetBlockSize)
+        internal static Stream Compress(Stream baseStream, IMpqCompressor? compressor, int? targetBlockSize)
         {
+            compressor ??= MpqZLibCompressor.Default;
+
             var resultStream = new MemoryStream();
             var singleUnit = !targetBlockSize.HasValue;
 
             void TryCompress(uint bytes)
             {
                 var offset = baseStream.Position;
-                var compressedStream = compressionType switch
-                {
-                    MpqCompressionType.ZLib => ZLibCompression.Compress(baseStream, (int)bytes, true),
-
-                    _ => throw new NotSupportedException($"Compression type '{compressionType}' is not supported. Currently only ZLib is supported."),
-                };
+                using var compressedStream = compressor.Compress(baseStream, (int)bytes);
 
                 // Add one because CompressionType byte not written yet.
                 var length = compressedStream.Length + 1;
@@ -40,12 +36,10 @@ namespace War3Net.IO.Mpq
                 }
                 else
                 {
-                    resultStream.WriteByte((byte)compressionType);
+                    resultStream.WriteByte((byte)compressor.CompressionType);
                     compressedStream.Position = 0;
                     compressedStream.CopyTo(resultStream);
                 }
-
-                compressedStream.Dispose();
             }
 
             var length = (uint)baseStream.Length;
