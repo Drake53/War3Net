@@ -46,26 +46,10 @@ namespace War3Net.IO.Mpq
         private long _position;
         private int _currentBlockIndex;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqStream"/> class.
-        /// </summary>
-        /// <param name="archive">The archive from which to load a file.</param>
-        /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
-        internal MpqStream(MpqArchive archive, MpqEntry entry)
-            : this(entry, GetStreamFromMpqArchive(archive, entry), archive.BlockSize)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MpqStream"/> class.
-        /// </summary>
-        /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
-        /// <param name="baseStream">The <see cref="MpqArchive"/>'s stream.</param>
-        /// <param name="blockSize">The <see cref="MpqArchive.BlockSize"/>.</param>
-        internal MpqStream(MpqEntry entry, Stream baseStream, int blockSize)
+        internal MpqStream(MpqEntry entry, Stream baseStream, int blockSize, bool leaveOpen = true)
         {
             _canRead = true;
-            _isStreamOwner = false;
+            _isStreamOwner = !leaveOpen;
 
             _filePosition = entry.FilePosition;
             _streamOffset = baseStream is MemoryMappedViewStream ? 0 : _filePosition;
@@ -166,22 +150,6 @@ namespace War3Net.IO.Mpq
                     _canRead = false;
                 }
             }
-        }
-
-        internal MpqStream(Stream baseStream, string? fileName, bool leaveOpen = false)
-            : this(new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit), baseStream, 0)
-        {
-            _isStreamOwner = !leaveOpen;
-        }
-
-        private static Stream GetStreamFromMpqArchive(MpqArchive archive, MpqEntry entry)
-        {
-            if (archive.MemoryMappedFile is null)
-            {
-                return archive.BaseStream;
-            }
-
-            return archive.MemoryMappedFile.CreateViewStream(entry.FilePosition, entry.CompressedSize, MemoryMappedFileAccess.Read);
         }
 
         /// <summary>
