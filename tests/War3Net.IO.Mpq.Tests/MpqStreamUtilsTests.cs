@@ -22,6 +22,7 @@ namespace War3Net.IO.Mpq.Tests
         private const int BlockSize = 0x200 << MpqArchiveCreateOptions.DefaultBlockSize;
         private const string FileName = "Hello world.png";
         private const byte FixedInputByte = 100;
+        private const uint FileEncryptionOffset = 10000;
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
@@ -32,7 +33,7 @@ namespace War3Net.IO.Mpq.Tests
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
 
-            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, BlockSize, false, false);
+            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, BlockSize, false, null);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
@@ -47,7 +48,7 @@ namespace War3Net.IO.Mpq.Tests
             var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, BlockSize, null);
 
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, BlockSize, true, false);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, BlockSize, true, null);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
             Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
@@ -67,7 +68,44 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, BlockSize, uncompressedSize);
 
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, BlockSize, true, false);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, BlockSize, true, null);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestEncryptMpqStreamWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
+        {
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
+            using var inputStream = new MemoryStream(input);
+
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
+            using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, FileEncryptionOffset, BlockSize, null);
+
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, BlockSize, true, FileEncryptionOffset);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestCompressAndEncryptMpqStreamWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
+        {
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
+            using var inputStream = new MemoryStream(input);
+
+            using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
+
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
+            var uncompressedSize = (uint)input.Length;
+            using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, FileEncryptionOffset, BlockSize, uncompressedSize);
+
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, BlockSize, true, FileEncryptionOffset);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
             Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
@@ -84,7 +122,7 @@ namespace War3Net.IO.Mpq.Tests
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
 
             var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.CompressedMulti);
-            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, null, false, false);
+            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, null, false, null);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
@@ -99,7 +137,7 @@ namespace War3Net.IO.Mpq.Tests
             var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, null, null);
 
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, null, true, false);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, null, true, null);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
             Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
@@ -119,7 +157,44 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, null, uncompressedSize);
 
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, null, true, false);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, null, true, null);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestEncryptMpqStreamSingleUnitWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
+        {
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
+            using var inputStream = new MemoryStream(input);
+
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
+            using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, FileEncryptionOffset, null, null);
+
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, null, true, FileEncryptionOffset);
+
+            Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
+            StreamAssert.AreEqual(inputStream, mpqStream, true, false);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        public void TestCompressAndEncryptMpqStreamSingleUnitWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
+        {
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
+            using var inputStream = new MemoryStream(input);
+
+            using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
+
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
+            var uncompressedSize = (uint)input.Length;
+            using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, FileEncryptionOffset, null, uncompressedSize);
+
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, null, true, FileEncryptionOffset);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
             Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);

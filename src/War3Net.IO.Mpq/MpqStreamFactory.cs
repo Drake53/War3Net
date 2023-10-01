@@ -24,7 +24,7 @@ namespace War3Net.IO.Mpq
         /// <param name="uncompressedSize">The MPQ file's uncompressed size. If the file is not compressed, set this parameter to <see langword="null"/>.</param>
         /// <param name="blockSize">The size of blocks when the MPQ file is compressed. This value must be the same for all files in an <see cref="MpqArchive"/>. Valid values are 512, 1024, 2048, 4096, et cetera. Setting this parameter to <see langword="null"/> corresponds to an MPQ file with the <see cref="MpqFileFlags.SingleUnit"/> flag.</param>
         /// <param name="isEncrypted">Indicates if the <paramref name="baseStream"/> has been encrypted.</param>
-        /// <param name="isEncryptionKeyBlockOffsetAdjusted">Corresponds to the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag. Only used if <paramref name="isEncrypted"/> is <see langword="true"/>.</param>
+        /// <param name="fileOffset">The position of the file in the <see cref="MpqArchive"/> relative to the <see cref="MpqHeader"/>. This value is required for decryption if the file is encrypted with the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag.</param>
         /// <param name="leaveOpen">If <see langword="false"/>, the <paramref name="baseStream"/> will be closed if the returned <see cref="MpqStream"/> is closed.</param>
         /// <returns>An <see cref="MpqStream"/> that wraps the <paramref name="baseStream"/>.</returns>
         public static MpqStream FromStream(
@@ -33,7 +33,7 @@ namespace War3Net.IO.Mpq
             uint? uncompressedSize,
             int? blockSize,
             bool isEncrypted,
-            bool isEncryptionKeyBlockOffsetAdjusted,
+            uint? fileOffset,
             bool leaveOpen = false)
         {
             if (baseStream is null)
@@ -57,15 +57,15 @@ namespace War3Net.IO.Mpq
             {
                 flags |= MpqFileFlags.Encrypted;
 
-                if (isEncryptionKeyBlockOffsetAdjusted)
+                if (fileOffset.HasValue)
                 {
                     flags |= MpqFileFlags.BlockOffsetAdjustedKey;
                 }
             }
 
-            var entry = new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, uncompressedSize ?? (uint)baseStream.Length, flags);
+            var entry = new MpqEntry(fileName, 0, fileOffset ?? 0, (uint)baseStream.Length, uncompressedSize ?? (uint)baseStream.Length, flags);
 
-            return FromStream(baseStream, entry, blockSize ?? 0, leaveOpen);
+            return FromStream(baseStream, 0, entry, blockSize ?? 0, leaveOpen);
         }
 
         /// <summary>
@@ -76,28 +76,28 @@ namespace War3Net.IO.Mpq
         internal static MpqStream FromArchive(MpqArchive archive, MpqEntry entry)
         {
             return archive.MemoryMappedFile is not null
-                ? FromStream(archive.MemoryMappedFile.CreateViewStream(entry.FilePosition, entry.CompressedSize, MemoryMappedFileAccess.Read), entry, archive.BlockSize, leaveOpen: false)
-                : FromStream(archive.BaseStream, entry, archive.BlockSize, leaveOpen: true);
+                ? FromStream(archive.MemoryMappedFile.CreateViewStream(entry.FilePosition, entry.CompressedSize, MemoryMappedFileAccess.Read), 0, entry, archive.BlockSize, leaveOpen: false)
+                : FromStream(archive.BaseStream, entry.FilePosition, entry, archive.BlockSize, leaveOpen: true);
         }
 
         internal static MpqStream FromStream(Stream baseStream, string? fileName, bool leaveOpen = false)
         {
             var entry = new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit);
 
-            return FromStream(baseStream, entry, 0, leaveOpen);
+            return FromStream(baseStream, 0, entry, 0, leaveOpen);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class.
         /// </summary>
         /// <param name="baseStream">The <see cref="MpqArchive"/>'s stream.</param>
+        /// <param name="streamOffset">The offset in the <paramref name="baseStream"/> at which to start reading. This is usally 0, except if the <paramref name="baseStream"/> is the <see cref="MpqArchive"/>'s base stream.</param>
         /// <param name="entry">The file's entry in the <see cref="BlockTable"/>.</param>
         /// <param name="blockSize">The <see cref="MpqArchive.BlockSize"/>.</param>
         /// <param name="leaveOpen">If <see langword="false"/>, the <paramref name="baseStream"/> will be closed when the returned <see cref="MpqStream"/> is closed.</param>
-        internal static MpqStream FromStream(Stream baseStream, MpqEntry entry, int blockSize, bool leaveOpen = false)
+        internal static MpqStream FromStream(Stream baseStream, uint streamOffset, MpqEntry entry, int blockSize, bool leaveOpen = false)
         {
             var filePosition = entry.FilePosition;
-            var streamOffset = baseStream is MemoryMappedViewStream ? 0 : filePosition;
             var fileSize = entry.FileSize;
             var compressedSize = entry.CompressedSize;
             var flags = entry.Flags;
@@ -171,6 +171,7 @@ namespace War3Net.IO.Mpq
                 baseStream,
                 blockSize,
                 filePosition,
+                streamOffset,
                 fileSize,
                 compressedSize,
                 flags,
