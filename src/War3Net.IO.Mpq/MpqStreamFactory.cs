@@ -17,6 +17,58 @@ namespace War3Net.IO.Mpq
     public static class MpqStreamFactory
     {
         /// <summary>
+        /// Creates an <see cref="MpqStream"/> for the <paramref name="baseStream"/>.
+        /// </summary>
+        /// <param name="baseStream">The stream containing MPQ file data.</param>
+        /// <param name="fileName">Used for decryption if <paramref name="isEncrypted"/> is <see langword="true"/>.</param>
+        /// <param name="uncompressedSize">The MPQ file's uncompressed size. If the file is not compressed, set this parameter to <see langword="null"/>.</param>
+        /// <param name="blockSize">The size of blocks when the MPQ file is compressed. This value must be the same for all files in an <see cref="MpqArchive"/>. Valid values are 512, 1024, 2048, 4096, et cetera. Setting this parameter to <see langword="null"/> corresponds to an MPQ file with the <see cref="MpqFileFlags.SingleUnit"/> flag.</param>
+        /// <param name="isEncrypted">Indicates if the <paramref name="baseStream"/> has been encrypted.</param>
+        /// <param name="isEncryptionKeyBlockOffsetAdjusted">Corresponds to the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag. Only used if <paramref name="isEncrypted"/> is <see langword="true"/>.</param>
+        /// <param name="leaveOpen">If <see langword="false"/>, the <paramref name="baseStream"/> will be closed if the returned <see cref="MpqStream"/> is closed.</param>
+        /// <returns>An <see cref="MpqStream"/> that wraps the <paramref name="baseStream"/>.</returns>
+        public static MpqStream FromStream(
+            Stream baseStream,
+            string? fileName,
+            uint? uncompressedSize,
+            int? blockSize,
+            bool isEncrypted,
+            bool isEncryptionKeyBlockOffsetAdjusted,
+            bool leaveOpen = false)
+        {
+            if (baseStream is null)
+            {
+                throw new ArgumentNullException(nameof(baseStream));
+            }
+
+            var flags = MpqFileFlags.Exists;
+
+            if (uncompressedSize.HasValue)
+            {
+                flags |= MpqFileFlags.CompressedMulti;
+            }
+
+            if (!blockSize.HasValue)
+            {
+                flags |= MpqFileFlags.SingleUnit;
+            }
+
+            if (isEncrypted)
+            {
+                flags |= MpqFileFlags.Encrypted;
+
+                if (isEncryptionKeyBlockOffsetAdjusted)
+                {
+                    flags |= MpqFileFlags.BlockOffsetAdjustedKey;
+                }
+            }
+
+            var entry = new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, uncompressedSize ?? (uint)baseStream.Length, flags);
+
+            return FromStream(baseStream, entry, blockSize ?? 0, leaveOpen);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class.
         /// </summary>
         /// <param name="archive">The archive from which to load a file.</param>

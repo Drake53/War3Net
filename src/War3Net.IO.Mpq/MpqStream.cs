@@ -267,6 +267,8 @@ namespace War3Net.IO.Mpq
             set => Seek(value, SeekOrigin.Begin);
         }
 
+        internal uint BaseEncryptionSeed => _baseEncryptionSeed;
+
         /// <inheritdoc/>
         public override void Flush()
         {
