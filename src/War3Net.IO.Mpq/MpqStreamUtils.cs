@@ -22,26 +22,6 @@ namespace War3Net.IO.Mpq
             compressor ??= MpqZLibCompressor.Default;
 
             var resultStream = new MemoryStream();
-            var singleUnit = !targetBlockSize.HasValue;
-
-            void TryCompress(uint bytes)
-            {
-                var offset = baseStream.Position;
-                using var compressedStream = compressor.Compress(baseStream, (int)bytes);
-
-                // Add one because CompressionType byte not written yet.
-                var length = compressedStream.Length + 1;
-                if (!singleUnit && length >= bytes)
-                {
-                    baseStream.CopyTo(resultStream, offset, (int)bytes, StreamExtensions.DefaultBufferSize);
-                }
-                else
-                {
-                    resultStream.WriteByte((byte)compressor.CompressionType);
-                    compressedStream.Position = 0;
-                    compressedStream.CopyTo(resultStream);
-                }
-            }
 
             var length = (uint)baseStream.Length;
 
@@ -57,7 +37,7 @@ namespace War3Net.IO.Mpq
                 {
                     var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(baseStream.Length - baseStream.Position) : (uint)targetBlockSize;
 
-                    TryCompress(bytesToCompress);
+                    Compress(baseStream, resultStream, (int)bytesToCompress, compressor, true);
                     blockOffsets[blockIndex] = (uint)resultStream.Position;
                 }
 
@@ -72,11 +52,30 @@ namespace War3Net.IO.Mpq
             }
             else
             {
-                TryCompress(length);
+                Compress(baseStream, resultStream, (int)length, compressor, false);
             }
 
             resultStream.Position = 0;
             return resultStream;
+        }
+
+        private static void Compress(Stream baseStream, Stream targetStream, int bytesToCompress, IMpqCompressor compressor, bool isBlock)
+        {
+            var offset = baseStream.Position;
+            using var compressedStream = compressor.Compress(baseStream, bytesToCompress);
+
+            // Add one because CompressionType byte not written yet.
+            if (isBlock && compressedStream.Length + 1 >= bytesToCompress)
+            {
+                // Compression did not result in smaller size, so leave the block uncompressed.
+                baseStream.CopyTo(targetStream, offset, bytesToCompress, StreamExtensions.DefaultBufferSize);
+            }
+            else
+            {
+                targetStream.WriteByte((byte)compressor.CompressionType);
+                compressedStream.Position = 0;
+                compressedStream.CopyTo(targetStream);
+            }
         }
 
         internal static Stream Encrypt(Stream baseStream, uint encryptionSeed, uint? fileEncryptionOffset, int? targetBlockSize, uint? uncompressedSize)
@@ -158,7 +157,7 @@ namespace War3Net.IO.Mpq
             return GetDecompressionFunction((MpqCompressionType)memoryStream.ReadByte(), outputLength).Invoke(memoryStream);
         }
 
-        internal static Func<Stream, byte[]> GetDecompressionFunction(MpqCompressionType compressionType, uint outputLength)
+        private static Func<Stream, byte[]> GetDecompressionFunction(MpqCompressionType compressionType, uint outputLength)
         {
             return compressionType switch
             {
@@ -184,7 +183,7 @@ namespace War3Net.IO.Mpq
             };
         }
 
-        internal static byte[] PKDecompress(Stream data, uint expectedLength)
+        private static byte[] PKDecompress(Stream data, uint expectedLength)
         {
             var b1 = data.ReadByte();
             var b2 = data.ReadByte();
