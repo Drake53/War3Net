@@ -126,7 +126,7 @@ namespace War3Net.IO.Mpq
 
             if (fileEncryptionOffset.HasValue)
             {
-                encryptionSeed = MpqEntry.AdjustEncryptionSeed(encryptionSeed, fileEncryptionOffset.Value, fileSize);
+                encryptionSeed = MpqEncryptionUtils.AdjustEncryptionSeed(encryptionSeed, fileEncryptionOffset.Value, fileSize);
             }
 
             var currentOffset = 0;
