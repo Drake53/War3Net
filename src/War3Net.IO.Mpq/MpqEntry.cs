@@ -226,7 +226,7 @@ namespace War3Net.IO.Mpq
         /// <param name="blockPos1">The encrypted value for the second block's offset in the <see cref="MpqStream"/>.</param>
         /// <param name="blockPosSize">The size (in bytes) for all the block position offsets in the stream.</param>
         /// <param name="max">The highest possible value that <paramref name="blockPos1"/> can have when decrypted.</param>
-        /// <returns>True if the operation was successful, false otherwise.</returns>
+        /// <returns><see langword="true"/> if the operation was successful, <see langword="false"/> otherwise.</returns>
         internal bool TryUpdateEncryptionSeed(uint blockPos0, uint blockPos1, uint blockPosSize, uint max)
         {
             if (!StormBuffer.DetectFileSeed(blockPos0, blockPos1, blockPosSize, out var result))

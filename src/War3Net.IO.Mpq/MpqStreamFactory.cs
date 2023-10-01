@@ -93,7 +93,7 @@ namespace War3Net.IO.Mpq
                         }
                     }
 
-                    if (isEncrypted && blockPositions.Length > 1 && !TryCalculateEncryptionSeed(entry, blockPositions, blockSize))
+                    if (isEncrypted && blockPositions.Length > 1 && !TryDecryptBlockPositions(entry, blockPositions, blockSize))
                     {
                         canRead = false;
                     }
@@ -129,13 +129,14 @@ namespace War3Net.IO.Mpq
             return FromStream(baseStream, entry, 0, leaveOpen);
         }
 
-        private static bool TryCalculateEncryptionSeed(MpqEntry entry, uint[] blockPositions, int blockSize)
+        private static bool TryDecryptBlockPositions(MpqEntry entry, uint[] blockPositions, int blockSize)
         {
-            var expectedOffsetFirstBlock = (uint)blockPositions.Length * 4;
-            var maxOffsetSecondBlock = (uint)blockSize + expectedOffsetFirstBlock;
+            // This should only happen when the file name is not known.
             if (entry.EncryptionSeed == 0)
             {
-                // This should only happen when the file name is not known.
+                var expectedOffsetFirstBlock = (uint)blockPositions.Length * 4;
+                var maxOffsetSecondBlock = (uint)blockSize + expectedOffsetFirstBlock;
+
                 if (!entry.TryUpdateEncryptionSeed(blockPositions[0], blockPositions[1], expectedOffsetFirstBlock, maxOffsetSecondBlock))
                 {
                     return false;
