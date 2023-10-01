@@ -17,6 +17,13 @@ namespace War3Net.IO.Mpq
 {
     public static class MpqStreamUtils
     {
+        /// <summary>
+        /// Compresses the <paramref name="baseStream"/> to a new stream.
+        /// </summary>
+        /// <param name="baseStream">The stream which will be compressed.</param>
+        /// <param name="compressor">Determines how the <paramref name="baseStream"/> will be compressed.</param>
+        /// <param name="targetBlockSize">Sets the size of the blocks in which the <paramref name="baseStream"/> is subdivided. Valid values are 512, 1024, 2048, 4096, et cetera. Set this parameter to <see langword="null"/> to not subdivide the <paramref name="baseStream"/> (which corresponds to the <see cref="MpqFileFlags.SingleUnit"/> flag).</param>
+        /// <returns>A <see cref="MemoryStream"/> where the data from <paramref name="baseStream"/> has been compressed.</returns>
         public static Stream Compress(Stream baseStream, IMpqCompressor? compressor, int? targetBlockSize)
         {
             compressor ??= MpqZLibCompressor.Default;
@@ -59,6 +66,15 @@ namespace War3Net.IO.Mpq
             return resultStream;
         }
 
+        /// <summary>
+        /// Encrypts the <paramref name="baseStream"/> to a new stream.
+        /// </summary>
+        /// <param name="baseStream">The stream which will be encrypted. If you want to create a stream which is both compressed and encrypted, then compression must be applied first.</param>
+        /// <param name="encryptionSeed">The encryption seed to use. It's recommended to generate this value by using <see cref="MpqEncryptionUtils.CalculateEncryptionSeed(string?)"/>.</param>
+        /// <param name="fileEncryptionOffset">If this value is not <see langword="null"/>, the <paramref name="encryptionSeed"/> will be adjusted based on <paramref name="fileEncryptionOffset"/> and <paramref name="uncompressedSize"/>. If the latter is <see langword="null"/>, the <paramref name="baseStream"/>'s size is used instead. The value of <paramref name="fileEncryptionOffset"/> must be set to the file's position relative the the <see cref="MpqHeader"/> inside an <see cref="MpqArchive"/>. Setting this value corresponds to an MPQ file with the <see cref="MpqFileFlags.BlockOffsetAdjustedKey"/> flag.</param>
+        /// <param name="targetBlockSize">Sets the size of the blocks in which the <paramref name="baseStream"/> is subdivided. If the <paramref name="baseStream"/> has been compressed, the same value must be used as during compresion. Valid values are 512, 1024, 2048, 4096, et cetera. Set this parameter to <see langword="null"/> to not subdivide the <paramref name="baseStream"/> (which corresponds to the <see cref="MpqFileFlags.SingleUnit"/> flag).</param>
+        /// <param name="uncompressedSize">The <paramref name="baseStream"/>'s uncompressed size. If the data in <paramref name="baseStream"/> is not compressed, set this parameter to <see langword="null"/>.</param>
+        /// <returns>A <see cref="MemoryStream"/> where the data from <paramref name="baseStream"/> has been encrypted.</returns>
         public static Stream Encrypt(Stream baseStream, uint encryptionSeed, uint? fileEncryptionOffset, int? targetBlockSize, uint? uncompressedSize)
         {
             if (uncompressedSize.HasValue && uncompressedSize.Value < 0)

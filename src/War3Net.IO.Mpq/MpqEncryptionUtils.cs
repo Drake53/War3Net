@@ -11,6 +11,11 @@ namespace War3Net.IO.Mpq
 {
     public static class MpqEncryptionUtils
     {
+        /// <summary>
+        /// Calculates the encryption seed for a given <paramref name="fileName"/>.
+        /// </summary>
+        /// <param name="fileName">The MPQ file name for which to calculate the encryption seed.</param>
+        /// <returns>The encryption seed that corresponds to the given <paramref name="fileName"/>, or 0 if the encryption seed could not be calculated.</returns>
         public static uint CalculateEncryptionSeed(string? fileName)
         {
             return CalculateEncryptionSeed(fileName, out var encryptionSeed) ? encryptionSeed : 0;
