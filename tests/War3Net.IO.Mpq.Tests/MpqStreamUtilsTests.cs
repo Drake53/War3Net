@@ -32,8 +32,7 @@ namespace War3Net.IO.Mpq.Tests
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
 
-            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.CompressedMulti);
-            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, BlockSize, false, false);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
@@ -48,11 +47,10 @@ namespace War3Net.IO.Mpq.Tests
             var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, BlockSize, null);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.Encrypted);
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, BlockSize, true, false);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
-            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
@@ -69,11 +67,10 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, BlockSize, uncompressedSize);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted);
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, BlockSize, true, false);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
-            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
@@ -87,7 +84,7 @@ namespace War3Net.IO.Mpq.Tests
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
 
             var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.CompressedMulti);
-            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(compressedStream, null, (uint)input.Length, null, false, false);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
@@ -102,11 +99,10 @@ namespace War3Net.IO.Mpq.Tests
             var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, null, null);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Encrypted);
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, null, true, false);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
-            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
@@ -123,11 +119,10 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, null, uncompressedSize);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted);
-            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
+            using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, uncompressedSize, null, true, false);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
-            Assert.AreEqual(encryptionSeed, mpqEntry.BaseEncryptionSeed);
+            Assert.AreEqual(encryptionSeed, mpqStream.BaseEncryptionSeed);
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
