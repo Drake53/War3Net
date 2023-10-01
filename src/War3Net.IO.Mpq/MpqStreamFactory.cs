@@ -28,6 +28,13 @@ namespace War3Net.IO.Mpq
                 : FromStream(archive.BaseStream, entry, archive.BlockSize, leaveOpen: true);
         }
 
+        internal static MpqStream FromStream(Stream baseStream, string? fileName, bool leaveOpen = false)
+        {
+            var entry = new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit);
+
+            return FromStream(baseStream, entry, 0, leaveOpen);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqStream"/> class.
         /// </summary>
@@ -120,13 +127,6 @@ namespace War3Net.IO.Mpq
                 blockPositions,
                 canRead,
                 leaveOpen);
-        }
-
-        internal static MpqStream FromStream(Stream baseStream, string? fileName, bool leaveOpen = false)
-        {
-            var entry = new MpqEntry(fileName, 0, 0, (uint)baseStream.Length, (uint)baseStream.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit);
-
-            return FromStream(baseStream, entry, 0, leaveOpen);
         }
 
         private static bool TryDecryptBlockPositions(MpqEntry entry, uint[] blockPositions, int blockSize)
