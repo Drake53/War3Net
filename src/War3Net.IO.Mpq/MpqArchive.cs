@@ -578,7 +578,7 @@ namespace War3Net.IO.Mpq
                             {
                                 // To prevent encryption seed becoming incorrect, save file uncompressed and unencrypted.
                                 var pos = sourceStream.Position;
-                                using (var mpqStream = MpqStreamFactory.FromStream(sourceStream, entry, BlockSizeModifier << mpqHeader.BlockSize, leaveOpen: true))
+                                using (var mpqStream = MpqStreamFactory.FromStream(sourceStream, entry.FilePosition, entry, BlockSizeModifier << mpqHeader.BlockSize, leaveOpen: true))
                                 {
                                     mpqStream.CopyTo(memoryStream);
                                 }

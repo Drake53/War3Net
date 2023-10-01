@@ -49,6 +49,7 @@ namespace War3Net.IO.Mpq
             Stream baseStream,
             int blockSize,
             uint filePosition,
+            uint streamOffset,
             uint fileSize,
             uint compressedSize,
             MpqFileFlags flags,
@@ -62,7 +63,7 @@ namespace War3Net.IO.Mpq
             _isStreamOwner = !leaveOpen;
 
             _filePosition = filePosition;
-            _streamOffset = baseStream is MemoryMappedViewStream ? 0 : _filePosition;
+            _streamOffset = streamOffset;
             _fileSize = fileSize;
             _compressedSize = compressedSize;
             _flags = flags;
