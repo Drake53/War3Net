@@ -15,9 +15,9 @@ using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq
 {
-    internal static class MpqStreamUtils
+    public static class MpqStreamUtils
     {
-        internal static Stream Compress(Stream baseStream, IMpqCompressor? compressor, int? targetBlockSize)
+        public static Stream Compress(Stream baseStream, IMpqCompressor? compressor, int? targetBlockSize)
         {
             compressor ??= MpqZLibCompressor.Default;
 
@@ -59,26 +59,7 @@ namespace War3Net.IO.Mpq
             return resultStream;
         }
 
-        private static void Compress(Stream baseStream, Stream targetStream, int bytesToCompress, IMpqCompressor compressor, bool isBlock)
-        {
-            var offset = baseStream.Position;
-            using var compressedStream = compressor.Compress(baseStream, bytesToCompress);
-
-            // Add one because CompressionType byte not written yet.
-            if (isBlock && compressedStream.Length + 1 >= bytesToCompress)
-            {
-                // Compression did not result in smaller size, so leave the block uncompressed.
-                baseStream.CopyTo(targetStream, offset, bytesToCompress, StreamExtensions.DefaultBufferSize);
-            }
-            else
-            {
-                targetStream.WriteByte((byte)compressor.CompressionType);
-                compressedStream.Position = 0;
-                compressedStream.CopyTo(targetStream);
-            }
-        }
-
-        internal static Stream Encrypt(Stream baseStream, uint encryptionSeed, uint? fileEncryptionOffset, int? targetBlockSize, uint? uncompressedSize)
+        public static Stream Encrypt(Stream baseStream, uint encryptionSeed, uint? fileEncryptionOffset, int? targetBlockSize, uint? uncompressedSize)
         {
             if (uncompressedSize.HasValue && uncompressedSize.Value < 0)
             {
@@ -155,6 +136,25 @@ namespace War3Net.IO.Mpq
         {
             using var memoryStream = new MemoryStream(input);
             return GetDecompressionFunction((MpqCompressionType)memoryStream.ReadByte(), outputLength).Invoke(memoryStream);
+        }
+
+        private static void Compress(Stream baseStream, Stream targetStream, int bytesToCompress, IMpqCompressor compressor, bool isBlock)
+        {
+            var offset = baseStream.Position;
+            using var compressedStream = compressor.Compress(baseStream, bytesToCompress);
+
+            // Add one because CompressionType byte not written yet.
+            if (isBlock && compressedStream.Length + 1 >= bytesToCompress)
+            {
+                // Compression did not result in smaller size, so leave the block uncompressed.
+                baseStream.CopyTo(targetStream, offset, bytesToCompress, StreamExtensions.DefaultBufferSize);
+            }
+            else
+            {
+                targetStream.WriteByte((byte)compressor.CompressionType);
+                compressedStream.Position = 0;
+                compressedStream.CopyTo(targetStream);
+            }
         }
 
         private static Func<Stream, byte[]> GetDecompressionFunction(MpqCompressionType compressionType, uint outputLength)
