@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,17 +21,18 @@ namespace War3Net.IO.Mpq.Tests
     {
         private const int BlockSize = 0x200 << MpqArchiveCreateOptions.DefaultBlockSize;
         private const string FileName = "Hello world.png";
+        private const byte FixedInputByte = 100;
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestCompressMpqStream(int fileSize)
+        public void TestCompressMpqStream(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
 
-            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.Compressed);
+            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.CompressedMulti);
             using var mpqStream = MpqStreamFactory.FromStream(compressedStream, mpqEntry, BlockSize);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
@@ -38,9 +40,9 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestEncryptMpqStream(int fileSize)
+        public void TestEncryptMpqStream(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
@@ -56,9 +58,9 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestCompressAndEncryptMpqStream(int fileSize)
+        public void TestCompressAndEncryptMpqStream(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
@@ -67,7 +69,7 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, BlockSize, uncompressedSize);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.Compressed | MpqFileFlags.Encrypted);
+            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted);
             using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
@@ -77,14 +79,14 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestCompressMpqStreamSingleUnit(int fileSize)
+        public void TestCompressMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
 
-            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Compressed);
+            var mpqEntry = new MpqEntry(null, 0, 0, (uint)compressedStream.Length, (uint)input.Length, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.CompressedMulti);
             using var mpqStream = MpqStreamFactory.FromStream(compressedStream, mpqEntry, BlockSize);
 
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
@@ -92,9 +94,9 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestEncryptMpqStreamSingleUnit(int fileSize)
+        public void TestEncryptMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
@@ -110,9 +112,9 @@ namespace War3Net.IO.Mpq.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestCompressAndEncryptMpqStreamSingleUnit(int fileSize)
+        public void TestCompressAndEncryptMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
-            var input = RandomNumberGenerator.GetBytes(fileSize);
+            var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
@@ -121,7 +123,7 @@ namespace War3Net.IO.Mpq.Tests
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, null, uncompressedSize);
 
-            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.Compressed | MpqFileFlags.Encrypted);
+            var mpqEntry = new MpqEntry(FileName, 0, 0, (uint)encryptedStream.Length, uncompressedSize, MpqFileFlags.Exists | MpqFileFlags.SingleUnit | MpqFileFlags.CompressedMulti | MpqFileFlags.Encrypted);
             using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, mpqEntry, BlockSize);
 
             Assert.IsTrue(mpqStream.CanRead, "Unable to decrypt stream.");
@@ -131,16 +133,37 @@ namespace War3Net.IO.Mpq.Tests
 
         private static IEnumerable<object?[]> GetTestData()
         {
-            yield return new object?[] { 0 };
-            yield return new object?[] { 100 };
-            yield return new object?[] { 1000 };
-            yield return new object?[] { 4095 };
-            yield return new object?[] { 4096 };
-            yield return new object?[] { 4097 };
-            yield return new object?[] { 4098 };
-            yield return new object?[] { 4099 };
-            yield return new object?[] { 4100 };
-            yield return new object?[] { 10000 };
+            yield return new object?[] { 0, true };
+            yield return new object?[] { 1, true };
+            yield return new object?[] { 2, true };
+            yield return new object?[] { 3, true };
+            yield return new object?[] { 4, true };
+            yield return new object?[] { 5, true };
+            yield return new object?[] { 100, true };
+            yield return new object?[] { 1000, true };
+            yield return new object?[] { 4095, true };
+            yield return new object?[] { 4096, true };
+            yield return new object?[] { 4097, true };
+            yield return new object?[] { 4098, true };
+            yield return new object?[] { 4099, true };
+            yield return new object?[] { 4100, true };
+            yield return new object?[] { 10000, true };
+
+            yield return new object?[] { 0, false };
+            yield return new object?[] { 1, false };
+            yield return new object?[] { 2, false };
+            yield return new object?[] { 3, false };
+            yield return new object?[] { 4, false };
+            yield return new object?[] { 5, false };
+            yield return new object?[] { 100, false };
+            yield return new object?[] { 1000, false };
+            yield return new object?[] { 4095, false };
+            yield return new object?[] { 4096, false };
+            yield return new object?[] { 4097, false };
+            yield return new object?[] { 4098, false };
+            yield return new object?[] { 4099, false };
+            yield return new object?[] { 4100, false };
+            yield return new object?[] { 10000, false };
         }
     }
 }
