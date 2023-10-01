@@ -509,7 +509,7 @@ namespace War3Net.IO.Mpq
                 _stream.CopyTo(fileData, 0, fileData.Length);
             }
 
-            if (_isEncrypted && _fileSize > 3)
+            if (_isEncrypted && fileData.Length > 3)
             {
                 if (_encryptionSeed == 0)
                 {
