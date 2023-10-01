@@ -44,7 +44,7 @@ namespace War3Net.IO.Mpq.Tests
             var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
-            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, BlockSize, null);
 
             using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, BlockSize, true, false);
@@ -63,7 +63,7 @@ namespace War3Net.IO.Mpq.Tests
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, BlockSize);
 
-            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, BlockSize, uncompressedSize);
 
@@ -96,7 +96,7 @@ namespace War3Net.IO.Mpq.Tests
             var input = randomizedInput ? RandomNumberGenerator.GetBytes(fileSize) : Enumerable.Repeat(FixedInputByte, fileSize).ToArray();
             using var inputStream = new MemoryStream(input);
 
-            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             using var encryptedStream = MpqStreamUtils.Encrypt(inputStream, encryptionSeed, null, null, null);
 
             using var mpqStream = MpqStreamFactory.FromStream(encryptedStream, FileName, null, null, true, false);
@@ -115,7 +115,7 @@ namespace War3Net.IO.Mpq.Tests
 
             using var compressedStream = MpqStreamUtils.Compress(inputStream, null, null);
 
-            var encryptionSeed = MpqEntry.CalculateEncryptionSeed(FileName);
+            var encryptionSeed = MpqEncryptionUtils.CalculateEncryptionSeed(FileName);
             var uncompressedSize = (uint)input.Length;
             using var encryptedStream = MpqStreamUtils.Encrypt(compressedStream, encryptionSeed, null, null, uncompressedSize);
 

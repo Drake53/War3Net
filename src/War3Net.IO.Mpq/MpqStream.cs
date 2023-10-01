@@ -133,7 +133,7 @@ namespace War3Net.IO.Mpq
                 var encryptionSeed = _baseEncryptionSeed;
                 if (targetFlags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
                 {
-                    encryptionSeed = MpqEntry.AdjustEncryptionSeed(encryptionSeed, targetFilePosition, (uint)fileSize);
+                    encryptionSeed = MpqEncryptionUtils.AdjustEncryptionSeed(encryptionSeed, targetFilePosition, (uint)fileSize);
                 }
 
                 var currentOffset = 0;
