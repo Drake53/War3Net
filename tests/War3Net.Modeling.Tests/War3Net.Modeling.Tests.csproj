@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Drawing.Blp" Version="$(War3NetDrawingBlpVersion)" />
-    <PackageReference Include="War3Net.Modeling" Version="$(War3NetModelingVersion)" />
+    <PackageReference Include="War3Net.Drawing.Blp" />
+    <PackageReference Include="War3Net.Modeling" />
   </ItemGroup>
 
 </Project>

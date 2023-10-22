@@ -5,15 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLua" Version="1.4.32" />
+    <PackageReference Include="NLua" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.CodeAnalysis.Transpilers\War3Net.CodeAnalysis.Transpilers.csproj" />
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
     <!-- todo: packagereferences -->
     <ProjectReference Include="..\War3Net.CodeAnalysis.Transpilers\War3Net.CodeAnalysis.Transpilers.csproj" />
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />

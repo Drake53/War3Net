@@ -12,7 +12,7 @@
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
-    <PackageReference Include="War3Net.CSharpLua.CoreSystem" Version="$(War3NetCSharpLuaCoreSystemVersion)" />
+    <PackageReference Include="War3Net.CSharpLua.CoreSystem" />
   </ItemGroup>
 
 </Project>

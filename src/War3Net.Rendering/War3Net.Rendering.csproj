@@ -6,22 +6,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pfim" Version="0.11.1" />
-    <PackageReference Include="Veldrid" Version="4.8.0" />
-    <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
-    <PackageReference Include="Veldrid.SPIRV" Version="1.0.13" />
-    <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
-    <PackageReference Include="Veldrid.Utilities" Version="4.8.0" />
+    <PackageReference Include="Pfim" />
+    <PackageReference Include="Veldrid" />
+    <PackageReference Include="Veldrid.ImGui" />
+    <PackageReference Include="Veldrid.SPIRV" />
+    <PackageReference Include="Veldrid.StartupUtilities" />
+    <PackageReference Include="Veldrid.Utilities" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
     <ProjectReference Include="..\War3Net.Modeling\War3Net.Modeling.csproj" />
     <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
-    <PackageReference Include="War3Net.Drawing.Blp" Version="2.0.1" />
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+    <PackageReference Include="War3Net.Drawing.Blp" />
     <!-- todo: packagereferences -->
     <ProjectReference Include="..\War3Net.Modeling\War3Net.Modeling.csproj" />
     <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />

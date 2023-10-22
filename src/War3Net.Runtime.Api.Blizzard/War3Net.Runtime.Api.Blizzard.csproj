@@ -4,11 +4,11 @@
     <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
     <!-- todo: packagereferences -->
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>

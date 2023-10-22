@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build.Core" Version="$(War3NetBuildCoreVersion)" />
+    <PackageReference Include="War3Net.Build.Core" />
   </ItemGroup>
 
   <ItemGroup>

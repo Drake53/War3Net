@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
-    <Version>$(War3NetDrawingBlpVersion)</Version>
     <UseWPF Condition="'$(TargetFramework)' == 'net6.0-windows'">true</UseWPF>
   </PropertyGroup>
 
@@ -12,15 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JpegLibrary" Version="0.3.30" Condition="'$(TargetFramework)' != 'net6.0-windows'" />
+    <PackageReference Include="JpegLibrary" Condition="'$(TargetFramework)' != 'net6.0-windows'" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
-    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+    <PackageReference Include="War3Net.Common" />
   </ItemGroup>
 
 </Project>

@@ -5,16 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.2.60" />
-    <PackageReference Include="MessagePackAnalyzer" Version="2.2.60" />
+    <PackageReference Include="MessagePack" />
+    <PackageReference Include="MessagePackAnalyzer" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
-    <PackageReference Include="War3Net.IO.Compression" Version="1.0.2" />
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+    <PackageReference Include="War3Net.IO.Compression" />
   </ItemGroup>
 
 </Project>

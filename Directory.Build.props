@@ -1,14 +1,14 @@
 <Project>
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+    <PackageReference Include="StyleCop.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
   </ItemGroup>
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <Content Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -19,7 +19,7 @@
     <None Remove="$(MSBuildThisFileDirectory)LICENSE" />
     <None Remove="$(MSBuildThisFileDirectory)stylecop.json" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(PACK)'!='true'">
+  <PropertyGroup Condition="'$(IsPublishBuild)'!='true'">
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AnalysisLevel>5</AnalysisLevel>
   </PropertyGroup>
@@ -28,31 +28,5 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <PropertyGroup>
-    <War3NetBuildVersion>5.7.0</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.7.0</War3NetBuildCoreVersion>
-    <War3NetCodeAnalysisVersion>5.6.1</War3NetCodeAnalysisVersion>
-    <War3NetCodeAnalysisDecompilersVersion>5.7.0</War3NetCodeAnalysisDecompilersVersion>
-    <War3NetCodeAnalysisJassVersion>5.6.1</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.6.1</War3NetCodeAnalysisTranspilersVersion>
-    <War3NetCodeAnalysisVJassVersion>0.1.0</War3NetCodeAnalysisVJassVersion>
-    <War3NetCommonVersion>5.6.1</War3NetCommonVersion>
-    <War3NetDrawingBlpVersion>5.6.1</War3NetDrawingBlpVersion>
-    <War3NetIOCascVersion>0.1.0</War3NetIOCascVersion>
-    <War3NetIOCompressionVersion>5.6.1</War3NetIOCompressionVersion>
-    <War3NetIOMpqVersion>5.6.1</War3NetIOMpqVersion>
-    <War3NetIOSlkVersion>5.6.1</War3NetIOSlkVersion>
-    <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
-    <!--
-    <War3NetRenderingVersion></War3NetRenderingVersion>
-    <War3NetReplayVersion></War3NetReplayVersion>
-    <War3NetRuntimeVersion></War3NetRuntimeVersion>
-    <War3NetRuntimeApiBlizzardVersion></War3NetRuntimeApiBlizzardVersion>
-    <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
-    <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
-    -->
-    <War3NetCSharpLuaVersion>1.7.20</War3NetCSharpLuaVersion>
-    <War3NetCSharpLuaCoreSystemVersion>1.7.18</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>

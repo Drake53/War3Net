@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="War3Net.Drawing.Blp" Version="$(War3NetDrawingBlpVersion)" />
+    <PackageReference Include="War3Net.Drawing.Blp" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>$(War3NetIOMpqVersion)</Version>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -10,12 +9,12 @@
     <PackageTags>mpq;warcraft3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
-    <PackageReference Include="War3Net.IO.Compression" Version="$(War3NetIOCompressionVersion)" />
+  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+    <PackageReference Include="War3Net.IO.Compression" />
   </ItemGroup>
 
 </Project>
