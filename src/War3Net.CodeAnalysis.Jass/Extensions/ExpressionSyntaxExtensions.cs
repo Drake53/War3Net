@@ -43,6 +43,10 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 case JassUnaryExpressionSyntax unaryExpression:
                     return int.TryParse(unaryExpression.ToString(), out value);
 
+                case JassHexadecimalLiteralExpressionSyntax hexLiteralExpression:
+                    value = hexLiteralExpression.Value;
+                    return true;
+
                 default:
                     value = default;
                     return false;
