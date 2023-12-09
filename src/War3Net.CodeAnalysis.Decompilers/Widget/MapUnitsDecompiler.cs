@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private int CreationNumber = 0;
+        private int _creationNumber = 0;
 
         public bool TryDecompileMapUnits(
             MapWidgetsFormatVersion formatVersion,
@@ -187,7 +187,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
+                                        CreationNumber = _creationNumber++,
                                     };
 
                                     unit.SkinId = unit.TypeId;
@@ -222,7 +222,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
+                                        CreationNumber = _creationNumber++,
                                     };
 
                                     result.Add(unit);
@@ -549,7 +549,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
+                                        CreationNumber = _creationNumber++,
                                     };
 
                                     unit.SkinId = unit.TypeId;
@@ -576,7 +576,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
+                                        CreationNumber = _creationNumber++,
                                     };
 
                                     result.Add(unit);
@@ -609,7 +609,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 Flags = 2,
                                 GoldAmount = 12500,
                                 HeroLevel = 1,
-                                CreationNumber = CreationNumber++
+                                CreationNumber = _creationNumber++,
                             };
 
                             item.SkinId = item.TypeId;
@@ -636,7 +636,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 Flags = 2,
                                 GoldAmount = 12500,
                                 HeroLevel = 1,
-                                CreationNumber = CreationNumber++
+                                CreationNumber = _creationNumber++,
                             };
 
                             result.Add(item);
@@ -713,7 +713,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 GoldAmount = 12500,
                                 HeroLevel = 0,
                                 TargetAcquisition = 0,
-                                CreationNumber = CreationNumber++
+                                CreationNumber = _creationNumber++,
                             };
 
                             unit.SkinId = unit.TypeId;
