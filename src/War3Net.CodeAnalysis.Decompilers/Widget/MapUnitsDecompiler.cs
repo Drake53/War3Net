@@ -524,77 +524,80 @@ namespace War3Net.CodeAnalysis.Decompilers
         {
             var result = new List<UnitData>();
 
-            foreach (var statement in createItemsFunction.Body.Statements)
+            foreach (var statement in createItemsFunction.Statements)
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
+                if (statement is JassSetStatementSyntax setStatement)
                 {
-                    continue;
-                }
-                else if (statement is JassSetStatementSyntax setStatement)
-                {
-                    if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
+                    if (setStatement.ElementAccessClause is null)
                     {
-                        if (string.Equals(invocationExpression.IdentifierName.Name, "CreateItem", StringComparison.Ordinal))
+                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
                         {
-                            if (invocationExpression.Arguments.Arguments.Length == 3 &&
-                                invocationExpression.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var y))
+                            if (string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateItem", StringComparison.Ordinal))
                             {
-                                var unit = new UnitData
+                                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 3 &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y))
                                 {
-                                    OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                    TypeId = unitId.InvertEndianness(),
-                                    Position = new Vector3(x, y, 0f),
-                                    Rotation = 0,
-                                    Scale = Vector3.One,
-                                    Flags = 2,
-                                    GoldAmount = 12500,
-                                    HeroLevel = 1,
-                                    CreationNumber = CreationNumber++
-                                };
+                                    var unit = new UnitData
+                                    {
+                                        OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
+                                        TypeId = unitId.InvertEndianness(),
+                                        Position = new Vector3(x, y, 0f),
+                                        Rotation = 0,
+                                        Scale = Vector3.One,
+                                        Flags = 2,
+                                        GoldAmount = 12500,
+                                        HeroLevel = 1,
+                                        CreationNumber = CreationNumber++
+                                    };
 
-                                unit.SkinId = unit.TypeId;
+                                    unit.SkinId = unit.TypeId;
 
-                                result.Add(unit);
+                                    result.Add(unit);
+                                }
+                            }
+                            else if (string.Equals(invocationExpression.IdentifierName.Token.Text, "BlzCreateItemWithSkin", StringComparison.Ordinal))
+                            {
+                                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 4 &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
+                                    invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetIntegerExpressionValue(out var skinId))
+                                {
+                                    var unit = new UnitData
+                                    {
+                                        OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
+                                        TypeId = unitId.InvertEndianness(),
+                                        Position = new Vector3(x, y, 0f),
+                                        Rotation = 0,
+                                        Scale = Vector3.One,
+                                        SkinId = skinId.InvertEndianness(),
+                                        Flags = 2,
+                                        GoldAmount = 12500,
+                                        HeroLevel = 1,
+                                        CreationNumber = CreationNumber++
+                                    };
+
+                                    result.Add(unit);
+                                }
                             }
                         }
-                        else if (string.Equals(invocationExpression.IdentifierName.Name, "BlzCreateItemWithSkin", StringComparison.Ordinal))
-                        {
-                            if (invocationExpression.Arguments.Arguments.Length == 4 &&
-                                invocationExpression.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                                invocationExpression.Arguments.Arguments[3].TryGetIntegerExpressionValue(out var skinId))
-                            {
-                                var unit = new UnitData
-                                {
-                                    OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                    TypeId = unitId.InvertEndianness(),
-                                    Position = new Vector3(x, y, 0f),
-                                    Rotation = 0,
-                                    Scale = Vector3.One,
-                                    SkinId = skinId.InvertEndianness(),
-                                    Flags = 2,
-                                    GoldAmount = 12500,
-                                    HeroLevel = 1,
-                                    CreationNumber = CreationNumber++
-                                };
-
-                                result.Add(unit);
-                            }
-                        }
+                    }
+                    else
+                    {
+                        items = null;
+                        return false;
                     }
                 }
                 else if (statement is JassCallStatementSyntax callStatement)
                 {
-                    if (string.Equals(callStatement.IdentifierName.Name, "CreateItem", StringComparison.Ordinal))
+                    if (string.Equals(callStatement.IdentifierName.Token.Text, "CreateItem", StringComparison.Ordinal))
                     {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y))
+                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
+                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
+                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y))
                         {
                             var item = new UnitData
                             {
@@ -614,13 +617,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                             result.Add(item);
                         }
                     }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "BlzCreateItemWithSkin", StringComparison.Ordinal))
+                    else if (string.Equals(callStatement.IdentifierName.Token.Text, "BlzCreateItemWithSkin", StringComparison.Ordinal))
                     {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.Arguments.Arguments[3].TryGetIntegerExpressionValue(out var skinId))
+                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
+                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
+                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
+                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetIntegerExpressionValue(out var skinId))
                         {
                             var item = new UnitData
                             {
