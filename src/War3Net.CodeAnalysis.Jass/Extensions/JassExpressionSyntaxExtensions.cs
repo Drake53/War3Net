@@ -80,6 +80,10 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                         value = int.Parse(literalExpression.Token.Text, CultureInfo.InvariantCulture);
                         return true;
 
+                    case JassSyntaxKind.HexadecimalLiteralToken:
+                        value = Convert.ToInt32(literalExpression.Token.Text.StartsWith(JassSymbol.DollarChar) ? literalExpression.Token.Text[1..] : literalExpression.Token.Text[2..], 16);
+                        return true;
+
                     case JassSyntaxKind.OctalLiteralToken:
                         value = Convert.ToInt32(literalExpression.Token.Text, 8);
                         return true;
