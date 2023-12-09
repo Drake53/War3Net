@@ -19,6 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
+        private int CreationNumber = 0;
         public bool TryDecompileMapUnits(
             MapWidgetsFormatVersion formatVersion,
             MapWidgetsSubVersion subVersion,
@@ -178,6 +179,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
+                                        CreationNumber = CreationNumber++
                                     };
 
                                     unit.SkinId = unit.TypeId;
@@ -212,6 +214,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         Flags = 2,
                                         GoldAmount = 12500,
                                         HeroLevel = 1,
+                                        CreationNumber = CreationNumber++
                                     };
 
                                     result.Add(unit);
@@ -578,6 +581,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 GoldAmount = 12500,
                                 HeroLevel = 0,
                                 TargetAcquisition = 0,
+                                CreationNumber = CreationNumber++
                             };
 
                             unit.SkinId = unit.TypeId;
