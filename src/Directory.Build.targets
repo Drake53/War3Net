@@ -1,15 +1,15 @@
-<Project InitialTargets="SetProjectVersionsFromCentralPackageManagement">
-  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
+<Project>
+  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="BeforeBuild">
     <ItemGroup>
       <ThisProjectPackageVersion Include="@(PackageVersion)" Condition="'%(PackageVersion.Identity)' == $(PackageId)" />
     </ItemGroup>
     <PropertyGroup>
       <PackageVersion>%(ThisProjectPackageVersion.Version)</PackageVersion>
     </PropertyGroup>
-    <GetAssemblyVersion Condition="'$(AssemblyVersion)' == '' And '$(PackageVersion)' != ''" NuGetVersion="$(PackageVersion)">
+    <GetAssemblyVersion Condition="'$(AssemblyVersion)' == '' And '$(PackageVersion)' != '' And '$(GenerateAssemblyInfo)' != 'false'" NuGetVersion="$(PackageVersion)">
       <Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
     </GetAssemblyVersion>
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(GenerateAssemblyInfo)' != 'false'">
       <FileVersion Condition="'$(FileVersion)' == ''">$(AssemblyVersion)</FileVersion>
       <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
