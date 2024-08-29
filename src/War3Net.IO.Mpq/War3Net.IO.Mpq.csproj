@@ -1,20 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <Description>Library for opening and creating files in MPQ format.</Description>
-    <PackageTags>mpq;warcraft3</PackageTags>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
-    <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<Description>Library for opening and creating files in MPQ format.</Description>
+		<PackageTags>mpq;warcraft3</PackageTags>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
-    <PackageReference Include="War3Net.IO.Compression" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Bcl.HashCode" />
+		<PackageReference Include="Portable.BouncyCastle" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(IsPublishBuild)'!='true'">
+		<ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+		<PackageReference Include="War3Net.IO.Compression" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.DisallowNullAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.DisallowNullAttribute.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Index.cs" Link="PolySharp\System.Index.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Range.cs" Link="PolySharp\System.Range.cs" />
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Runtime.CompilerServices.IsExternalInit.cs" Link="PolySharp\System.Runtime.CompilerServices.IsExternalInit.cs" />
+	</ItemGroup>
 
 </Project>

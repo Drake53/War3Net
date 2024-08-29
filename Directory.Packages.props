@@ -8,6 +8,7 @@
 		<PackageVersion Include="JpegLibrary" Version="0.3.30" />
 		<PackageVersion Include="MessagePack" Version="2.2.60" />
 		<PackageVersion Include="MessagePackAnalyzer" Version="2.2.60" />
+		<PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
 		<PackageVersion Include="MSTest.TestAdapter" Version="2.2.10" />
 		<PackageVersion Include="MSTest.TestFramework" Version="2.2.10" />
@@ -16,6 +17,7 @@
 		<PackageVersion Include="OptimizedPriorityQueue" Version="5.0.0" />
 		<PackageVersion Include="Pfim" Version="0.11.1" />
 		<PackageVersion Include="Pidgin" Version="3.1.0" />
+		<PackageVersion Include="Portable.BouncyCastle" Version="1.9.0" />
 		<PackageVersion Include="Serilog.Sinks.Console" Version="3.1.1" />
 		<PackageVersion Include="Serilog.Sinks.File" Version="4.1.0" />
 		<PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.435" />

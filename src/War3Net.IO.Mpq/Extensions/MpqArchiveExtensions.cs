@@ -13,6 +13,10 @@ using System.Security.Cryptography;
 
 using Ionic.Crc;
 
+#if NETSTANDARD2_0
+using War3Net.Common.Extensions;
+#endif
+
 namespace War3Net.IO.Mpq.Extensions
 {
     public static class MpqArchiveExtensions
@@ -99,23 +103,15 @@ namespace War3Net.IO.Mpq.Extensions
 
         public static bool VerifySignature(this MpqArchive archive, ReadOnlySpan<char> publicKey)
         {
-            if (!archive.TryOpenFile(Signature.FileName, out var signatureStream))
-            {
-                throw new ArgumentException($"The archive must contain a {Signature.FileName} file.", nameof(archive));
-            }
-
-            using var reader = new BinaryReader(signatureStream);
-
-            var signature = reader.ReadSignature();
-
-            var archiveBytes = new byte[archive.Header.ArchiveSize];
-            archive.BaseStream.Position = archive.HeaderOffset;
-            archive.BaseStream.Read(archiveBytes);
-
-            Array.Fill(archiveBytes, (byte)0x00, (int)(signatureStream.FilePosition - archive.HeaderOffset) + 8, 64);
+            archive.GetArchiveAndSignatureBytes(out var archiveBytes, out var signatureBytes);
 
             using var rsa = RSA.Create();
-            return rsa.VerifyMpqSignature(archiveBytes, signature.SignatureBytes, publicKey);
+
+#if NETSTANDARD2_0
+            return rsa.VerifyMpqSignature(archiveBytes, signatureBytes, publicKey.ToString());
+#else
+            return rsa.VerifyMpqSignature(archiveBytes, signatureBytes, publicKey);
+#endif
         }
 
         public static bool VerifySignature(this MpqArchive archive, IEnumerable<string> publicKeys)
@@ -125,6 +121,14 @@ namespace War3Net.IO.Mpq.Extensions
                 throw new ArgumentException("Must provide at least one public key.", nameof(publicKeys));
             }
 
+            archive.GetArchiveAndSignatureBytes(out var archiveBytes, out var signatureBytes);
+
+            using var rsa = RSA.Create();
+            return publicKeys.Any(publicKey => rsa.VerifyMpqSignature(archiveBytes, signatureBytes, publicKey));
+        }
+
+        private static void GetArchiveAndSignatureBytes(this MpqArchive archive, out byte[] archiveBytes, out byte[] signatureBytes)
+        {
             if (!archive.TryOpenFile(Signature.FileName, out var signatureStream))
             {
                 throw new ArgumentException($"The archive must contain a {Signature.FileName} file.", nameof(archive));
@@ -134,14 +138,24 @@ namespace War3Net.IO.Mpq.Extensions
 
             var signature = reader.ReadSignature();
 
-            var archiveBytes = new byte[archive.Header.ArchiveSize];
+            archiveBytes = new byte[archive.Header.ArchiveSize];
             archive.BaseStream.Position = archive.HeaderOffset;
+
+#if NETSTANDARD2_0
+            archive.BaseStream.CopyTo(archiveBytes, 0, archiveBytes.Length);
+
+            var offset = (int)(signatureStream.FilePosition - archive.HeaderOffset) + 8;
+            for (var i = 0; i < 64; i++)
+            {
+                archiveBytes[offset + i] = 0;
+            }
+#else
             archive.BaseStream.Read(archiveBytes);
 
             Array.Fill(archiveBytes, (byte)0x00, (int)(signatureStream.FilePosition - archive.HeaderOffset) + 8, 64);
+#endif
 
-            using var rsa = RSA.Create();
-            return publicKeys.Any(publicKey => rsa.VerifyMpqSignature(archiveBytes, signature.SignatureBytes, publicKey));
+            signatureBytes = signature.SignatureBytes;
         }
 
         private static IEnumerable<string> GetKnownBlizzardPublicKeys()

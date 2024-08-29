@@ -18,6 +18,10 @@ using System.Text;
 using War3Net.Common.Providers;
 using War3Net.IO.Mpq.Extensions;
 
+#if NETSTANDARD2_0
+using War3Net.Common.Extensions;
+#endif
+
 namespace War3Net.IO.Mpq
 {
     /// <summary>
@@ -86,7 +90,7 @@ namespace War3Net.IO.Mpq
             {
                 if (TryOpenFile(ListFile.FileName, out var listFileStream))
                 {
-                    using var listFileReader = new StreamReader(listFileStream, leaveOpen: false);
+                    using var listFileReader = new StreamReader(listFileStream);
                     AddFileNames(listFileReader.ReadListFile().FileNames);
                 }
             }
@@ -393,6 +397,18 @@ namespace War3Net.IO.Mpq
                 {
                     var archiveBytes = new byte[_mpqHeader.ArchiveSize];
                     _baseStream.Position = _headerOffset;
+
+#if NETSTANDARD2_0
+                    _baseStream.CopyTo(archiveBytes, 0, archiveBytes.Length);
+
+                    using var rsa = RSA.Create();
+
+                    rsa.ImportFromPem(createOptions.SignaturePrivateKey, isPrivate: true);
+                    var signatureBytes = rsa.SignData(archiveBytes, HashAlgorithmName.MD5, RSASignaturePadding.Pkcs1).Reverse().ToArray();
+
+                    _baseStream.Position = signaturePosition;
+                    _baseStream.Write(signatureBytes, 0, signatureBytes.Length);
+#else
                     _baseStream.Read(archiveBytes);
 
                     using var rsa = RSA.Create();
@@ -402,6 +418,7 @@ namespace War3Net.IO.Mpq
 
                     _baseStream.Position = signaturePosition;
                     _baseStream.Write(signatureBytes.Reverse().ToArray());
+#endif
                 }
             }
         }

@@ -32,9 +32,10 @@ namespace War3Net.IO.Mpq
 
         public static MpqLocale GetPathLocale(string path, out string trimmedPath)
         {
-            if (path.Contains('\\'))
+            var index = path.IndexOf('\\');
+            if (index != -1)
             {
-                var localizationDirectory = path.Split('\\')[0];
+                var localizationDirectory = path[..index];
                 if (_localeLookupDictionary.Value.TryGetValue(localizationDirectory, out var locale))
                 {
                     trimmedPath = path.Substring(localizationDirectory.Length + 1);
