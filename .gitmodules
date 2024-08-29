@@ -7,3 +7,6 @@
 [submodule "submodules/JpegLibrary"]
 	path = submodules/JpegLibrary
 	url = https://github.com/Drake53/JpegLibrary
+[submodule "submodules/PolySharp"]
+	path = submodules/PolySharp
+	url = https://github.com/Sergio0694/PolySharp
