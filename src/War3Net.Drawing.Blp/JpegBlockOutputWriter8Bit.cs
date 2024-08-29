@@ -64,7 +64,11 @@ namespace War3Net.Drawing.Blp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte ClampToByte(short input)
         {
+#if NETSTANDARD2_0
+            return (byte)Math.Max((short)0, Math.Min((short)255, input));
+#else
             return (byte)Math.Clamp(input, (short)0, (short)255);
+#endif
         }
     }
 }
