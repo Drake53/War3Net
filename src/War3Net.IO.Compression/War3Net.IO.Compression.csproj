@@ -1,24 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <Description>Decompression and compression algorithms for compression methods commonly used in MPQ archives.</Description>
-    <PackageTags>compression;huffman;adpcm;pklib;zlib;bzip2;warcraft3</PackageTags>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>Decompression and compression algorithms for compression methods commonly used in MPQ archives.</Description>
+		<PackageTags>compression;huffman;adpcm;pklib;zlib;bzip2;warcraft3</PackageTags>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DotNetZip" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DotNetZip" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(IsPublishBuild)'!='true'">
-    <ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(IsPublishBuild)'!='true'">
+		<ProjectReference Include="..\War3Net.Common\War3Net.Common.csproj" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(IsPublishBuild)'=='true'">
-    <PackageReference Include="War3Net.Common" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(IsPublishBuild)'=='true'">
+		<PackageReference Include="War3Net.Common" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<Compile Include="..\..\submodules\PolySharp\src\PolySharp.SourceGenerators\EmbeddedResources\System.Diagnostics.CodeAnalysis.DisallowNullAttribute.cs" Link="PolySharp\System.Diagnostics.CodeAnalysis.DisallowNullAttribute.cs" />
+	</ItemGroup>
 
 </Project>
