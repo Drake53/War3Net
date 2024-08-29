@@ -12,8 +12,8 @@ namespace War3Net.Common.Providers
 {
     public static class UTF8EncodingProvider
     {
-        private static readonly Lazy<Encoding> _utf8 = new(new UTF8Encoding(false, false));
-        private static readonly Lazy<Encoding> _strictUtf8 = new(new UTF8Encoding(false, true));
+        private static readonly Lazy<Encoding> _utf8 = new(() => new UTF8Encoding(false, false));
+        private static readonly Lazy<Encoding> _strictUtf8 = new(() => new UTF8Encoding(false, true));
 
         /// <summary>
         /// Gets an <see cref="UTF8Encoding"/> that does not use a byte order mark.

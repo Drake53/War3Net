@@ -15,7 +15,7 @@ namespace War3Net.Common.Extensions
         public static bool IsDefined<TEnum>(this TEnum @enum, bool allowNoFlags = true)
             where TEnum : struct, Enum
         {
-            if (Enum.IsDefined(@enum))
+            if (Enum.IsDefined(typeof(TEnum), @enum))
             {
                 return true;
             }

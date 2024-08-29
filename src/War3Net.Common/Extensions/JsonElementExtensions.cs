@@ -17,7 +17,11 @@ namespace War3Net.Common.Extensions
         {
             return jsonElement.ValueKind == JsonValueKind.Number
                 ? EnumConvert<TEnum>.FromByte(jsonElement.GetByte())
+#if NETSTANDARD2_0
+                : (TEnum)Enum.Parse(typeof(TEnum), jsonElement.GetString());
+#else
                 : Enum.Parse<TEnum>(jsonElement.GetString());
+#endif
         }
 
         public static TEnum GetInt32<TEnum>(this JsonElement jsonElement)
@@ -25,7 +29,11 @@ namespace War3Net.Common.Extensions
         {
             return jsonElement.ValueKind == JsonValueKind.Number
                 ? EnumConvert<TEnum>.FromInt32(jsonElement.GetInt32())
+#if NETSTANDARD2_0
+                : (TEnum)Enum.Parse(typeof(TEnum), jsonElement.GetString());
+#else
                 : Enum.Parse<TEnum>(jsonElement.GetString());
+#endif
         }
 
         public static TEnum GetByte<TEnum>(this JsonElement jsonElement, ReadOnlySpan<char> propertyName)
