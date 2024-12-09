@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArgumentListSyntax : IEquatable<JassArgumentListSyntax>
+    public class JassArgumentListSyntax : IEquatable<JassArgumentListSyntax>, IJassSyntaxToken
     {
         public JassArgumentListSyntax(ImmutableArray<IExpressionSyntax> arguments)
         {

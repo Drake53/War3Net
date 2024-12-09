@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassSetStatementSyntax : IStatementSyntax, IStatementLineSyntax
+    public class JassSetStatementSyntax : IStatementSyntax, IStatementLineSyntax, IJassSyntaxToken
     {
         public JassSetStatementSyntax(JassIdentifierNameSyntax identifierName, IExpressionSyntax? indexer, JassEqualsValueClauseSyntax value)
         {

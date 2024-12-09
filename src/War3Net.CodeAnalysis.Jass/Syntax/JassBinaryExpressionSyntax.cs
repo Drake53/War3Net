@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassBinaryExpressionSyntax : IExpressionSyntax
+    public class JassBinaryExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public JassBinaryExpressionSyntax(BinaryOperatorType @operator, IExpressionSyntax left, IExpressionSyntax right)
         {

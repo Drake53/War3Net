@@ -9,7 +9,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassUnaryExpressionSyntax : IExpressionSyntax
+    public class JassUnaryExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public JassUnaryExpressionSyntax(UnaryOperatorType @operator, IExpressionSyntax expression)
         {

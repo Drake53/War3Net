@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassLoopStatementSyntax : IStatementSyntax
+    public class JassLoopStatementSyntax : IStatementSyntax, IJassSyntaxToken
     {
         public JassLoopStatementSyntax(JassStatementListSyntax body)
         {

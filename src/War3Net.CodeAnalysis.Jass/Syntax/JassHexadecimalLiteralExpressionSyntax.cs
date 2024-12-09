@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassHexadecimalLiteralExpressionSyntax : IExpressionSyntax
+    public class JassHexadecimalLiteralExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public JassHexadecimalLiteralExpressionSyntax(int value)
         {

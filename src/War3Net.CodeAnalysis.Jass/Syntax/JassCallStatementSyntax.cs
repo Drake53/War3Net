@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassCallStatementSyntax : IStatementSyntax, IStatementLineSyntax, IInvocationSyntax
+    public class JassCallStatementSyntax : IStatementSyntax, IStatementLineSyntax, IInvocationSyntax, IJassSyntaxToken
     {
         public JassCallStatementSyntax(JassIdentifierNameSyntax identifierName, JassArgumentListSyntax arguments)
         {
