@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Info;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
@@ -22,9 +23,10 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapRegions(Map map)
+        public void TestDecompileMapRegions(Map testMap)
         {
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapRegions(map.Regions.FormatVersion, out var decompiledMapRegions), "Failed to decompile map regions.");
+            var map = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(testMap.Script), new DecompileOptions() { mapRegionsFormatVersion = testMap.Regions.FormatVersion }, testMap.Info).DecompileObjectManagerData();
+            var decompiledMapRegions = map.Regions;
 
             Assert.AreEqual(map.Regions.Regions.Count, decompiledMapRegions.Regions.Count);
             for (var i = 0; i < decompiledMapRegions.Regions.Count; i++)

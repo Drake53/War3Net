@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using War3Net.Build;
 using War3Net.Build.Audio;
 using War3Net.Build.Info;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
@@ -23,9 +24,10 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapSounds(Map map)
+        public void TestDecompileMapSounds(Map testMap)
         {
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapSounds(map.Sounds.FormatVersion, out var decompiledMapSounds), "Failed to decompile map sounds.");
+            var map = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(testMap.Script), new DecompileOptions() { mapSoundsFormatVersion = testMap.Sounds.FormatVersion }, testMap.Info).DecompileObjectManagerData();
+            var decompiledMapSounds = map.Sounds;
 
             Assert.AreEqual(map.Sounds.Sounds.Count, decompiledMapSounds.Sounds.Count);
             for (var i = 0; i < decompiledMapSounds.Sounds.Count; i++)

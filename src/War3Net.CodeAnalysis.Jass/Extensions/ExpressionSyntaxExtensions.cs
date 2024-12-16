@@ -1,16 +1,16 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="ExpressionSyntaxExtensions.cs" company="Drake53">
+// <copyright file="MapSoundsDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Globalization;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
-namespace War3Net.CodeAnalysis.Jass.Extensions
+namespace War3Net.CodeAnalysis.Decompilers
 {
     public static class ExpressionSyntaxExtensions
     {
@@ -24,79 +24,159 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             return expression;
         }
 
-        public static bool TryGetIntegerExpressionValue(this IExpressionSyntax expression, out int value)
+        public static T GetValueOrDefault<T>(this IExpressionSyntax expression, T defaultValue = default)
+        {
+            if (expression.TryGetValue<T>(out var value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
+        public static bool TryGetValue<T>(this IExpressionSyntax expression, out T value)
+        {
+            value = default;
+
+            if (!expression.TryGetStringExpressionValue(out var stringValue))
+            {
+                return false;
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                value = (T)(object)stringValue;
+                return true;
+            }
+
+            if (decimal.TryParse(stringValue, out var decimalValue))
+            {
+                value = SafeConvertDecimalTo<T>(decimalValue);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static T SafeConvertDecimalTo<T>(decimal value)
+        {
+            if (Nullable.GetUnderlyingType(typeof(T)) != null)
+            {
+                var nonNullableType = Nullable.GetUnderlyingType(typeof(T));
+                var method = typeof(ExpressionSyntaxExtensions).GetMethod(nameof(SafeConvertDecimalTo),
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                var genericMethod = method.MakeGenericMethod(nonNullableType);
+                var result = genericMethod.Invoke(null, new object[] { value });
+                return (T)result;
+            }
+
+            if (typeof(T) == typeof(int))
+            {
+                return (T)(object)(int)Math.Clamp(value, int.MinValue, int.MaxValue);
+            }
+            else if (typeof(T) == typeof(uint))
+            {
+                return (T)(object)(uint)Math.Clamp(value, uint.MinValue, uint.MaxValue);
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                return (T)(object)(byte)Math.Clamp(value, byte.MinValue, byte.MaxValue);
+            }
+            else if (typeof(T) == typeof(sbyte))
+            {
+                return (T)(object)(sbyte)Math.Clamp(value, sbyte.MinValue, sbyte.MaxValue);
+            }
+            else if (typeof(T) == typeof(short))
+            {
+                return (T)(object)(short)Math.Clamp(value, short.MinValue, short.MaxValue);
+            }
+            else if (typeof(T) == typeof(ushort))
+            {
+                return (T)(object)(ushort)Math.Clamp(value, ushort.MinValue, ushort.MaxValue);
+            }
+            else if (typeof(T) == typeof(long))
+            {
+                return (T)(object)(long)Math.Clamp(value, long.MinValue, long.MaxValue);
+            }
+            else if (typeof(T) == typeof(ulong))
+            {
+                return (T)(object)(ulong)Math.Clamp(value, ulong.MinValue, ulong.MaxValue);
+            }
+            else if (typeof(T) == typeof(bool))
+            {
+                return (T)(object)(value != 0);
+            }
+            else if (typeof(T) == typeof(decimal))
+            {
+                return (T)(object)value;
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                return (T)(object)(float)value;
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                return (T)(object)(double)value;
+            }
+
+            return default;
+        }
+
+        private static bool TryGetStringExpressionValue(this IExpressionSyntax expression, out string value)
         {
             switch (expression)
             {
+                case JassBooleanLiteralExpressionSyntax booleanLiteralExpression:
+                    value = booleanLiteralExpression.Value ? "1" : "0";
+                    return true;
+
                 case JassDecimalLiteralExpressionSyntax decimalLiteralExpression:
-                    value = decimalLiteralExpression.Value;
+                    value = decimalLiteralExpression.Value.ToString();
+                    return true;
+
+                case JassRealLiteralExpressionSyntax realLiteralExpression:
+                    value = realLiteralExpression.IntPart + "." + realLiteralExpression.FracPart;
                     return true;
 
                 case JassOctalLiteralExpressionSyntax octalLiteralExpression:
-                    value = octalLiteralExpression.Value;
+                    value = octalLiteralExpression.Value.ToString();
                     return true;
 
                 case JassFourCCLiteralExpressionSyntax fourCCLiteralExpression:
-                    value = fourCCLiteralExpression.Value;
+                    value = fourCCLiteralExpression.Value.ToString();
                     return true;
 
                 case JassUnaryExpressionSyntax unaryExpression:
-                    return int.TryParse(unaryExpression.ToString(), out value);
+                    if (unaryExpression.Operator != UnaryOperatorType.Not && TryGetStringExpressionValue(unaryExpression.Expression, out var unaryExpressionValue))
+                    {
+                        value = (unaryExpression.Operator == UnaryOperatorType.Minus ? "-" : "") + unaryExpressionValue;
+                        return true;
+                    }
+                    break;
 
                 case JassHexadecimalLiteralExpressionSyntax hexLiteralExpression:
-                    value = hexLiteralExpression.Value;
+                    value = hexLiteralExpression.Value.ToString();
                     return true;
 
-                default:
-                    value = default;
-                    return false;
-            }
-        }
-
-        public static bool TryGetPlayerIdExpressionValue(this IExpressionSyntax expression, int maxPlayerSlots, out int value)
-        {
-            if (expression is JassVariableReferenceExpressionSyntax variableReferenceExpression)
-            {
-                if (string.Equals(variableReferenceExpression.IdentifierName.Name, "PLAYER_NEUTRAL_AGGRESSIVE", StringComparison.Ordinal))
-                {
-                    value = maxPlayerSlots;
+                case JassStringLiteralExpressionSyntax stringLiteralExpression:
+                    value = stringLiteralExpression.Value;
                     return true;
-                }
-                else if (string.Equals(variableReferenceExpression.IdentifierName.Name, "PLAYER_NEUTRAL_PASSIVE", StringComparison.Ordinal))
-                {
-                    value = maxPlayerSlots + 3;
+
+                case JassParenthesizedExpressionSyntax parenthesizedExpression:
+                    if (TryGetStringExpressionValue(parenthesizedExpression.Expression, out var parenthesizedExpressionValue))
+                    {
+                        value = parenthesizedExpressionValue;
+                        return true;
+                    }
+                    break;
+
+                case JassCharacterLiteralExpressionSyntax charLiteralExpression:
+                    value = charLiteralExpression.Value.ToString();
                     return true;
-                }
-                else
-                {
-                    value = default;
-                    return false;
-                }
-            }
-            else
-            {
-                return expression.TryGetIntegerExpressionValue(out value);
-            }
-        }
 
-        public static bool TryGetRealExpressionValue(this IExpressionSyntax expression, out float value)
-        {
-            if (expression.TryGetIntegerExpressionValue(out var intValue))
-            {
-                value = intValue;
-                return true;
-            }
-
-            if (expression is JassRealLiteralExpressionSyntax realLiteralExpression &&
-                float.TryParse(realLiteralExpression.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
-            {
-                return true;
-            }
-
-            if (expression is JassUnaryExpressionSyntax unaryExpression &&
-                float.TryParse(unaryExpression.ToString(), NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
-            {
-                return true;
+                case JassNullLiteralExpressionSyntax:
+                    value = JassKeyword.Null;
+                    return true;
             }
 
             value = default;

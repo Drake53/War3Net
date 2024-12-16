@@ -20,4 +20,8 @@
     <PackageReference Include="War3Net.CodeAnalysis.Transpilers" Version="$(War3NetCodeAnalysisTranspilersVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\War3Net.CodeAnalysis.Decompilers\War3Net.CodeAnalysis.Decompilers.csproj" />
+  </ItemGroup>
+
 </Project>

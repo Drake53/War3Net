@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using War3Net.Build;
 using War3Net.Build.Info;
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
@@ -25,7 +26,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestDecompileMapTriggers(Map map)
         {
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapTriggers(map.Triggers.FormatVersion, map.Triggers.SubVersion, out var decompiledMapTriggers), "Failed to decompile map triggers.");
+            var decompiler = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(map.Script), new DecompileOptions(), map.Info);
+            Assert.IsTrue(decompiler.TryDecompileMapTriggers(map.Triggers.FormatVersion, map.Triggers.SubVersion, out var decompiledMapTriggers), "Failed to decompile map triggers.");
 
             Assert.AreEqual(map.Triggers.Variables.Count, decompiledMapTriggers.Variables.Count);
             for (var i = 0; i < decompiledMapTriggers.Variables.Count; i++)
