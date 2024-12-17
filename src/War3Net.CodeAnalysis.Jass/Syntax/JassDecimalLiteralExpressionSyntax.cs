@@ -5,18 +5,25 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassDecimalLiteralExpressionSyntax : IExpressionSyntax
     {
-        public JassDecimalLiteralExpressionSyntax(int value)
+        public JassDecimalLiteralExpressionSyntax(long value)
         {
+            if (value < Int32.MinValue || value-1 > Int32.MaxValue)
+            {
+                //workaround to allow -2147483648 to be wrapped as new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(2147483648))
+                throw new ArgumentException();
+            }
+
             Value = value;
         }
 
-        public int Value { get; init; }
+        public long Value { get; init; }
 
         public bool Equals(IExpressionSyntax? other)
         {
