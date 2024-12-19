@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public interface IVariableDeclaratorSyntax : IEquatable<IVariableDeclaratorSyntax>
+    public interface IVariableDeclaratorSyntax : IEquatable<IVariableDeclaratorSyntax>, IJassSyntaxToken
     {
         JassTypeSyntax Type { get; init; }
 

@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, IStatementLineSyntax
+    public class JassLocalVariableDeclarationStatementSyntax : IStatementSyntax, IStatementLineSyntax, IJassSyntaxToken
     {
         public JassLocalVariableDeclarationStatementSyntax(IVariableDeclaratorSyntax declarator)
         {

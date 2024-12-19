@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEqualsValueClauseSyntax : IEquatable<JassEqualsValueClauseSyntax>
+    public class JassEqualsValueClauseSyntax : IEquatable<JassEqualsValueClauseSyntax>, IJassSyntaxToken
     {
         public JassEqualsValueClauseSyntax(IExpressionSyntax expression)
         {

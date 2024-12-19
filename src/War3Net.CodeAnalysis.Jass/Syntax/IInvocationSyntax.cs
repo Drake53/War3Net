@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public interface IInvocationSyntax
+    public interface IInvocationSyntax : IJassSyntaxToken
     {
         public JassIdentifierNameSyntax IdentifierName { get; init; }
 

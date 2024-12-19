@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Info;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
@@ -22,9 +23,10 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     {
         [DataTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapCameras(Map map)
+        public void TestDecompileMapCameras(Map testMap)
         {
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapCameras(map.Cameras.FormatVersion, map.Cameras.UseNewFormat, out var decompiledMapCameras), "Failed to decompile map cameras.");
+            var map = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(testMap.Script), new DecompileOptions() { mapCamerasFormatVersion = testMap.Cameras.FormatVersion, mapCamerasUseNewFormat = testMap.Cameras.UseNewFormat }, testMap.Info).DecompileObjectManagerData();
+            var decompiledMapCameras = map.Cameras;
 
             Assert.AreEqual(map.Cameras.Cameras.Count, decompiledMapCameras.Cameras.Count);
             for (var i = 0; i < decompiledMapCameras.Cameras.Count; i++)

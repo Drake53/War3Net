@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassDecimalLiteralExpressionSyntax : IExpressionSyntax
+    public class JassDecimalLiteralExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public JassDecimalLiteralExpressionSyntax(int value)
         {

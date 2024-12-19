@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassElseIfClauseSyntax : IEquatable<JassElseIfClauseSyntax>
+    public class JassElseIfClauseSyntax : IEquatable<JassElseIfClauseSyntax>, IJassSyntaxToken
     {
         public JassElseIfClauseSyntax(IExpressionSyntax condition, JassStatementListSyntax body)
         {

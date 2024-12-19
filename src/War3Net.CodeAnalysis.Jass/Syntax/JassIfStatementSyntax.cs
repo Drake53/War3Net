@@ -13,7 +13,7 @@ using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassIfStatementSyntax : IStatementSyntax
+    public class JassIfStatementSyntax : IStatementSyntax, IJassSyntaxToken
     {
         public JassIfStatementSyntax(IExpressionSyntax condition, JassStatementListSyntax body, ImmutableArray<JassElseIfClauseSyntax> elseIfClauses, JassElseClauseSyntax? elseClause)
         {

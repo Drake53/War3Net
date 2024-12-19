@@ -1,390 +1,381 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapSoundsDecompiler.cs" company="Drake53">
+// 
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
-// </copyright>
+// 
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using War3Net.Build.Audio;
-using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        public bool TryDecompileMapSounds(MapSoundsFormatVersion formatVersion, [NotNullWhen(true)] out MapSounds? mapSounds)
+        [RegisterStatementParser]
+        internal void ParseSoundCreation(StatementParserInput input)
         {
-            foreach (var candidateFunction in GetCandidateFunctions("InitSounds"))
+            var variableAssignment = GetVariableAssignment(input.StatementChildren);
+            if (variableAssignment == null || !variableAssignment.StartsWith("gg_snd_"))
             {
-                if (TryDecompileMapSounds(candidateFunction.FunctionDeclaration, formatVersion, out mapSounds))
-                {
-                    candidateFunction.Handled = true;
-
-                    return true;
-                }
+                return;
             }
 
-            mapSounds = null;
-            return false;
+            var sound = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "CreateSound")
+            .SafeMapFirst(x =>
+            {
+                var filePath = Regex.Unescape(((JassStringLiteralExpressionSyntax)x.Arguments.Arguments[0]).Value);
+                Context.ImportedFileNames.Add(filePath);
+
+                return new Sound
+                {
+                    FilePath = filePath,
+                    Flags = ParseSoundFlags(x.Arguments.Arguments, filePath),
+                    FadeInRate = x.Arguments.Arguments[4].GetValueOrDefault<int>(),
+                    FadeOutRate = x.Arguments.Arguments[5].GetValueOrDefault<int>(),
+                    EaxSetting = ((JassStringLiteralExpressionSyntax)x.Arguments.Arguments[6]).Value,
+                    DialogueTextKey = -1,
+                    DialogueSpeakerNameKey = -1
+                };
+            });
+
+            if (sound != null)
+            {
+                sound.Name = variableAssignment;
+                Context.Add(sound, variableAssignment);
+                Context.HandledStatements.Add(input.Statement);
+            }
         }
 
-        public bool TryDecompileMapSounds(JassFunctionDeclarationSyntax functionDeclaration, MapSoundsFormatVersion formatVersion, [NotNullWhen(true)] out MapSounds? mapSounds)
+        [RegisterStatementParser]
+        internal void ParseSetSoundParamsFromLabel(StatementParserInput input)
         {
-            if (functionDeclaration is null)
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundParamsFromLabel")
+            .SafeMapFirst(x =>
             {
-                throw new ArgumentNullException(nameof(functionDeclaration));
-            }
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    SoundName = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax)?.Value,
+                };
+            });
 
-            var sounds = new Dictionary<string, Sound>(StringComparer.Ordinal);
-
-            foreach (var statement in functionDeclaration.Body.Statements)
+            if (match != null)
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
                 {
-                    continue;
-                }
-                else if (statement is JassSetStatementSyntax setStatement)
-                {
-                    if (setStatement.Indexer is null &&
-                        setStatement.IdentifierName.Name.StartsWith("gg_snd_", StringComparison.Ordinal))
-                    {
-                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
-                            string.Equals(invocationExpression.IdentifierName.Name, "CreateSound", StringComparison.Ordinal))
-                        {
-                            if (invocationExpression.Arguments.Arguments.Length == 7 &&
-                                invocationExpression.Arguments.Arguments[0] is JassStringLiteralExpressionSyntax fileNameLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[1] is JassBooleanLiteralExpressionSyntax loopingLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax is3DLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[3] is JassBooleanLiteralExpressionSyntax stopWhenOutOfRangeLiteralExpression &&
-                                invocationExpression.Arguments.Arguments[4].TryGetIntegerExpressionValue(out var fadeInRate) &&
-                                invocationExpression.Arguments.Arguments[5].TryGetIntegerExpressionValue(out var fadeOutRate) &&
-                                invocationExpression.Arguments.Arguments[6] is JassStringLiteralExpressionSyntax eaxSettingLiteralExpression)
-                            {
-                                var flags = (SoundFlags)0;
-                                if (loopingLiteralExpression.Value)
-                                {
-                                    flags |= SoundFlags.Looping;
-                                }
-
-                                if (is3DLiteralExpression.Value)
-                                {
-                                    flags |= SoundFlags.Is3DSound;
-                                }
-
-                                if (stopWhenOutOfRangeLiteralExpression.Value)
-                                {
-                                    flags |= SoundFlags.StopWhenOutOfRange;
-                                }
-
-                                var filePath = Regex.Unescape(fileNameLiteralExpression.Value);
-                                Context.ImportedFileNames.Add(filePath);
-
-                                if (!is3DLiteralExpression.Value && !IsInternalSound(filePath))
-                                {
-                                    flags |= SoundFlags.UNK16;
-                                }
-
-                                sounds.Add(setStatement.IdentifierName.Name, new Sound
-                                {
-                                    Name = setStatement.IdentifierName.Name,
-                                    FilePath = filePath,
-                                    EaxSetting = eaxSettingLiteralExpression.Value,
-                                    Flags = flags,
-                                    FadeInRate = fadeInRate,
-                                    FadeOutRate = fadeOutRate,
-
-                                    DialogueTextKey = -1,
-                                    DialogueSpeakerNameKey = -1,
-                                    FacialAnimationLabel = string.Empty,
-                                    FacialAnimationGroupLabel = string.Empty,
-                                    FacialAnimationSetFilepath = string.Empty,
-                                });
-                            }
-                            else
-                            {
-                                mapSounds = null;
-                                return false;
-                            }
-                        }
-                        else if (setStatement.Value.Expression is JassStringLiteralExpressionSyntax stringLiteralExpression)
-                        {
-                            var flags = SoundFlags.Music;
-
-                            var filePath = Regex.Unescape(stringLiteralExpression.Value);
-                            Context.ImportedFileNames.Add(filePath);
-
-                            if (!IsInternalSound(filePath))
-                            {
-                                flags |= SoundFlags.UNK16;
-                            }
-
-                            sounds.Add(setStatement.IdentifierName.Name, new Sound
-                            {
-                                Name = setStatement.IdentifierName.Name,
-                                FilePath = filePath,
-                                EaxSetting = string.Empty,
-                                Flags = flags,
-                                FadeInRate = 10,
-                                FadeOutRate = 10,
-                            });
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else if (statement is JassCallStatementSyntax callStatement)
-                {
-                    if (string.Equals(callStatement.IdentifierName.Name, "SetSoundParamsFromLabel", StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationLabel", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.FacialAnimationLabel = stringLiteralExpression.Value;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationGroupLabel", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.FacialAnimationGroupLabel = stringLiteralExpression.Value;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundFacialAnimationSetFilepath", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.FacialAnimationSetFilepath = stringLiteralExpression.Value;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetDialogueSpeakerNameKey", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
-                            stringLiteralExpression.Value.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
-                            int.TryParse(stringLiteralExpression.Value["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueSpeakerNameKey))
-                        {
-                            sound.DialogueSpeakerNameKey = dialogueSpeakerNameKey;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetDialogueTextKey", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassStringLiteralExpressionSyntax stringLiteralExpression &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
-                            stringLiteralExpression.Value.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
-                            int.TryParse(stringLiteralExpression.Value["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueTextKey))
-                        {
-                            sound.DialogueTextKey = dialogueTextKey;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundDuration", StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundDistanceCutoff", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var cutoff) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.DistanceCutoff = cutoff;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundChannel", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var channel) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.Channel = (SoundChannel)channel;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundVolume", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var volume) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.Volume = volume;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundPitch", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var pitch) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound))
-                        {
-                            sound.Pitch = pitch;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundDistances", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var minDist) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var maxDist) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
-                            sound.Flags.HasFlag(SoundFlags.Is3DSound))
-                        {
-                            sound.MinDistance = minDist;
-                            sound.MaxDistance = maxDist;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundConeAngles", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var inside) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var outside) &&
-                            callStatement.Arguments.Arguments[3].TryGetIntegerExpressionValue(out var outsideVolume) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
-                            sound.Flags.HasFlag(SoundFlags.Is3DSound))
-                        {
-                            sound.ConeAngleInside = inside;
-                            sound.ConeAngleOutside = outside;
-                            sound.ConeOutsideVolume = outsideVolume;
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetSoundConeOrientation", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax variableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.Arguments.Arguments[3].TryGetRealExpressionValue(out var z) &&
-                            sounds.TryGetValue(variableReferenceExpression.IdentifierName.Name, out var sound) &&
-                            sound.Flags.HasFlag(SoundFlags.Is3DSound))
-                        {
-                            sound.ConeOrientation = new(x, y, z);
-                        }
-                        else
-                        {
-                            mapSounds = null;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        mapSounds = null;
-                        return false;
-                    }
-                }
-                else
-                {
-                    mapSounds = null;
-                    return false;
+                    sound.SoundName = match.SoundName;
+                    Context.HandledStatements.Add(input.Statement);
                 }
             }
-
-            if (sounds.Any())
-            {
-                mapSounds = new MapSounds(formatVersion);
-                mapSounds.Sounds.AddRange(sounds.Values);
-                return true;
-            }
-
-            mapSounds = null;
-            return false;
         }
 
-        [Obsolete]
-        private static bool IsInternalSound(string filePath)
+        [RegisterStatementParser]
+        internal void ParseSetSoundFacialAnimationLabel(StatementParserInput input)
         {
-            return filePath.StartsWith(@"Sound\", StringComparison.OrdinalIgnoreCase)
-                || filePath.StartsWith(@"Sound/", StringComparison.OrdinalIgnoreCase)
-                || filePath.StartsWith(@"UI\", StringComparison.OrdinalIgnoreCase)
-                || filePath.StartsWith(@"UI/", StringComparison.OrdinalIgnoreCase)
-                || filePath.StartsWith(@"Units\", StringComparison.OrdinalIgnoreCase)
-                || filePath.StartsWith(@"Units/", StringComparison.OrdinalIgnoreCase);
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundFacialAnimationLabel")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    FacialAnimationLabel = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax)?.Value,
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.FacialAnimationLabel = match.FacialAnimationLabel;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundFacialAnimationGroupLabel(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundFacialAnimationGroupLabel")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    FacialAnimationGroupLabel = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax)?.Value,
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.FacialAnimationGroupLabel = match.FacialAnimationGroupLabel;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundFacialAnimationSetFilepath(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundFacialAnimationSetFilepath")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    FacialAnimationSetFilepath = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax)?.Value,
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.FacialAnimationSetFilepath = match.FacialAnimationSetFilepath;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetDialogueSpeakerNameKey(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetDialogueSpeakerNameKey")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    DialogueSpeakerNameKey_TriggerString = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax).Value,
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    if (match.DialogueSpeakerNameKey_TriggerString.StartsWith("TRIGSTR_", StringComparison.Ordinal) && int.TryParse(match.DialogueSpeakerNameKey_TriggerString["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueSpeakerNameKey))
+                    {
+                        sound.DialogueSpeakerNameKey = dialogueSpeakerNameKey;
+                        Context.HandledStatements.Add(input.Statement);
+                    }
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetDialogueTextKey(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetDialogueTextKey")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    DialogueTextKey_TriggerString = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax).Value,
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    if (match.DialogueTextKey_TriggerString.StartsWith("TRIGSTR_", StringComparison.Ordinal) && int.TryParse(match.DialogueTextKey_TriggerString["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueTextKey))
+                    {
+                        sound.DialogueTextKey = dialogueTextKey;
+                        Context.HandledStatements.Add(input.Statement);
+                    }
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundDistanceCutoff(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundDistanceCutoff")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    DistanceCutoff = x.Arguments.Arguments[1].GetValueOrDefault<float>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.DistanceCutoff = match.DistanceCutoff;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundChannel(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundChannel")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Channel = (SoundChannel)x.Arguments.Arguments[1].GetValueOrDefault<int>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.Channel = match.Channel;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundVolume(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundVolume")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Volume = x.Arguments.Arguments[1].GetValueOrDefault<int>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.Volume = match.Volume;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundPitch(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundPitch")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Pitch = x.Arguments.Arguments[1].GetValueOrDefault<float>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.Pitch = match.Pitch;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundDistances(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundDistances")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    MinDistance = x.Arguments.Arguments[1].GetValueOrDefault<float>(),
+                    MaxDistance = x.Arguments.Arguments[2].GetValueOrDefault<float>()
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null)
+                {
+                    sound.MinDistance = match.MinDistance;
+                    sound.MaxDistance = match.MaxDistance;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundConeAngles(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundConeAngles")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    ConeAngleInside = x.Arguments.Arguments[1].GetValueOrDefault<float>(),
+                    ConeAngleOutside = x.Arguments.Arguments[2].GetValueOrDefault<float>(),
+                    ConeOutsideVolume = x.Arguments.Arguments[3].GetValueOrDefault<int>()
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null && sound.Flags.HasFlag(SoundFlags.Is3DSound))
+                {
+                    sound.ConeAngleInside = match.ConeAngleInside;
+                    sound.ConeAngleOutside = match.ConeAngleOutside;
+                    sound.ConeOutsideVolume = match.ConeOutsideVolume;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetSoundConeOrientation(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetSoundConeOrientation")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    x = x.Arguments.Arguments[1].GetValueOrDefault<float>(),
+                    y = x.Arguments.Arguments[2].GetValueOrDefault<float>(),
+                    z = x.Arguments.Arguments[3].GetValueOrDefault<float>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var sound = Context.Get<Sound>(match.VariableName) ?? Context.GetLastCreated<Sound>();
+                if (sound != null && sound.Flags.HasFlag(SoundFlags.Is3DSound))
+                {
+                    sound.ConeOrientation = new(match.x, match.y, match.z);
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
         }
     }
 }
