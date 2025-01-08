@@ -474,16 +474,6 @@ namespace War3Net.IO.Mpq
             throw new NotSupportedException("Write is not supported");
         }
 
-        /// <inheritdoc/>
-        public override void Close()
-        {
-            base.Close();
-            if (_isStreamOwner)
-            {
-                _stream.Close();
-            }
-        }
-
         /// <summary>
         /// Copy the base stream, so that the contents do not get decompressed nor decrypted.
         /// </summary>
@@ -759,6 +749,19 @@ namespace War3Net.IO.Mpq
 
             mpqCompressionType = (MpqCompressionType)buffer[0];
             return true;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_isStreamOwner)
+                {
+                    _stream.Close();
+                }
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
