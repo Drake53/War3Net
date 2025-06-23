@@ -116,6 +116,9 @@ namespace War3Net.Build
 
                 SupportedModes = SupportedModes.SD | SupportedModes.HD,
                 GameDataVersion = GameDataVersion.RoC,
+
+                ForceDefaultCameraZoom = 1250,
+                ForceMaxCameraZoom = 1250,
             };
 
             mapInfo.Players.Add(new PlayerData

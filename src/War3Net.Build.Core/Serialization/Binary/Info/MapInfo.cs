@@ -142,6 +142,12 @@ namespace War3Net.Build.Info
                     SupportedModes = reader.ReadInt32<SupportedModes>();
                     GameDataVersion = reader.ReadInt32<GameDataVersion>();
                 }
+
+                if (FormatVersion >= MapInfoFormatVersion.v32)
+                {
+                    ForceDefaultCameraZoom = reader.ReadInt32();
+                    ForceMaxCameraZoom = reader.ReadInt32();
+                }
             }
 
             nint playerDataCount = reader.ReadInt32();
@@ -349,6 +355,12 @@ namespace War3Net.Build.Info
                 {
                     writer.Write((int)SupportedModes);
                     writer.Write((int)GameDataVersion);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v32)
+                {
+                    writer.Write(ForceDefaultCameraZoom);
+                    writer.Write(ForceMaxCameraZoom);
                 }
             }
 

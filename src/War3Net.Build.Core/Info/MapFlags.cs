@@ -36,6 +36,10 @@ namespace War3Net.Build.Info
         AccurateProbabilityForCalculations = 1 << 17,
         CustomAbilitySkin = 1 << 18,
 
+        DisableDenyIcon = 1 << 19,
+        ForceDefaultCameraZoom = 1 << 20,
+        ForceMaxCameraZoom = 1 << 21,
+
         Flag30 = 1 << 29,
         Flag31 = 1 << 30,
     }
