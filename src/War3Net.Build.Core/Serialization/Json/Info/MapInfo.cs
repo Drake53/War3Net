@@ -155,6 +155,11 @@ namespace War3Net.Build.Info
                     ForceDefaultCameraZoom = jsonElement.GetInt32(nameof(ForceDefaultCameraZoom));
                     ForceMaxCameraZoom = jsonElement.GetInt32(nameof(ForceMaxCameraZoom));
                 }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    ForceMinCameraZoom = jsonElement.GetInt32(nameof(ForceMinCameraZoom));
+                }
             }
 
             foreach (var element in jsonElement.EnumerateArray(nameof(Players)))
@@ -329,6 +334,11 @@ namespace War3Net.Build.Info
                 {
                     writer.WriteObject(nameof(ForceDefaultCameraZoom), ForceDefaultCameraZoom, options);
                     writer.WriteObject(nameof(ForceMaxCameraZoom), ForceMaxCameraZoom, options);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    writer.WriteObject(nameof(ForceMinCameraZoom), ForceMinCameraZoom, options);
                 }
             }
 

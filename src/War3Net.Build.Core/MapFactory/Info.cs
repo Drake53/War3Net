@@ -119,6 +119,7 @@ namespace War3Net.Build
 
                 ForceDefaultCameraZoom = 1250,
                 ForceMaxCameraZoom = 1250,
+                ForceMinCameraZoom = 1250,
             };
 
             mapInfo.Players.Add(new PlayerData

@@ -148,6 +148,11 @@ namespace War3Net.Build.Info
                     ForceDefaultCameraZoom = reader.ReadInt32();
                     ForceMaxCameraZoom = reader.ReadInt32();
                 }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    ForceMinCameraZoom = reader.ReadInt32();
+                }
             }
 
             nint playerDataCount = reader.ReadInt32();
@@ -361,6 +366,11 @@ namespace War3Net.Build.Info
                 {
                     writer.Write(ForceDefaultCameraZoom);
                     writer.Write(ForceMaxCameraZoom);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    writer.Write(ForceMinCameraZoom);
                 }
             }
 
