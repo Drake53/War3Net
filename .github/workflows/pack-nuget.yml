@@ -177,32 +177,32 @@ jobs:
             
             # Restore with local feed for dependencies from previous iterations
             echo "    Restoring dependencies..."
-            # Use absolute path for local source and force fresh restore
-            dotnet restore "$project" --source "$(pwd)/artifacts" --source https://api.nuget.org/v3/index.json --verbosity minimal --force --no-cache
+            # Use local-feed source name instead of path
+            dotnet restore "$project" --source local-feed --source https://api.nuget.org/v3/index.json --verbosity minimal --force --no-cache
             
             # Build the project
             echo "    Building project..."
             dotnet build "$project" --configuration Release --no-restore --verbosity minimal
             
-            # Pack directly to artifacts (which is also our local feed)
+            # Pack directly to artifacts with project name folder structure for proper NuGet feed
             echo "    Creating NuGet package..."
             if [ -n "${{ github.event.inputs.version_suffix }}" ]; then
-              dotnet pack "$project" --configuration Release --no-build --output ./artifacts --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true --verbosity minimal
+              dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true --verbosity minimal
             else
-              dotnet pack "$project" --configuration Release --no-build --output ./artifacts -p:PACK=true --verbosity minimal
+              dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
             fi
             
             BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
             echo "    ✓ Successfully built $PROJECT_NAME"
             
             # Show what package was created
-            echo "    Package created: $(ls -la ./artifacts/${PROJECT_NAME}.*.nupkg 2>/dev/null | tail -1)"
+            echo "    Package created: $(ls -la ./artifacts/${PROJECT_NAME}/*.nupkg 2>/dev/null | tail -1)"
           done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
           
           # Show all packages in artifacts after this iteration
           echo ""
           echo "Packages available in local feed after iteration $ITERATION:"
-          ls -la ./artifacts/*.nupkg 2>/dev/null || echo "No packages found"
+          ls -la ./artifacts/*/*.nupkg 2>/dev/null || echo "No packages found"
           
           # Clear NuGet cache for local packages to ensure newly built packages are available
           echo ""
@@ -223,6 +223,6 @@ jobs:
         echo "Projects built: $BUILT_PROJECTS"
         echo ""
         echo "All packages created:"
-        ls -la ./artifacts/*.nupkg 2>/dev/null || echo "No packages found!"
+        ls -la ./artifacts/*/*.nupkg 2>/dev/null || echo "No packages found!"
         echo ""
-        echo "Package count: $(ls ./artifacts/*.nupkg 2>/dev/null | wc -l)"
+        echo "Package count: $(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)"
