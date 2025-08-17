@@ -63,10 +63,10 @@ jobs:
         can_build_project() {
           local project=$1
           # Get the dependencies - dotnet list outputs them with paths like ..\ProjectName\ProjectName.csproj
-          # We need to extract just the project name
+          # We need to extract just the project name from the filename
           local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | while read -r line; do
-            # Extract just the filename without path and extension
-            basename "$line" .csproj
+            # Remove everything up to the last backslash, then remove .csproj extension
+            echo "$line" | sed 's/.*\\//' | sed 's/\.csproj$//'
           done | tr '\n' ' ')
           
           if [ -n "$deps" ]; then
