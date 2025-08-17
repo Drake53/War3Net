@@ -1,0 +1,174 @@
+name: Pack NuGet Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: 'Version suffix for packages (e.g., beta, rc1)'
+        required: false
+        type: string
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup local NuGet feed
+      run: |
+        # Use artifacts folder as local NuGet feed
+        mkdir -p ./artifacts
+        dotnet nuget add source $(pwd)/artifacts --name local-feed
+
+    - name: Build and pack in dependency order
+      run: |
+        # Get all packable projects (those in src/ directory)
+        # Using semicolon as delimiter from the start
+        PROJECTS=$(find src -name "*.csproj" -type f | sort | tr '\n' ';')
+        
+        echo "=== Found projects ==="
+        echo "$PROJECTS" | tr ';' '\n'
+        echo "===================="
+        
+        # Create a temporary file to track which projects have been built
+        # Using semicolon delimiters for exact matching
+        BUILT_PROJECTS=";"
+        
+        # Function to check if all dependencies of a project are built
+        can_build_project() {
+          local project=$1
+          local deps=$(dotnet list "$project" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//')
+          
+          if [ -n "$deps" ]; then
+            echo "  Checking dependencies for $(basename $(dirname "$project")): $deps"
+            echo "  Current built projects: $BUILT_PROJECTS"
+          fi
+          
+          for dep in $deps; do
+            if ! echo "$BUILT_PROJECTS" | grep -q ";$dep;"; then
+              echo "    Missing dependency: $dep"
+              return 1
+            fi
+          done
+          
+          if [ -n "$deps" ]; then
+            echo "    All dependencies satisfied!"
+          else
+            echo "  No dependencies for $(basename $(dirname "$project"))"
+          fi
+          return 0
+        }
+        
+        # Build projects in dependency order
+        REMAINING_PROJECTS="$PROJECTS"
+        ITERATION=0
+        MAX_ITERATIONS=20
+        
+        while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
+          ITERATION=$((ITERATION + 1))
+          echo ""
+          echo "==== Build iteration $ITERATION ===="
+          echo "Remaining projects to build:"
+          echo "$REMAINING_PROJECTS" | tr ';' '\n' | while read -r p; do
+            [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
+          done
+          
+          PROJECTS_TO_BUILD=""
+          STILL_REMAINING=""
+          
+          # Process each project using semicolon as delimiter
+          IFS=';'
+          for project in $REMAINING_PROJECTS; do
+            if [ -n "$project" ]; then
+              if can_build_project "$project"; then
+                PROJECTS_TO_BUILD="${PROJECTS_TO_BUILD}${project};"
+              else
+                STILL_REMAINING="${STILL_REMAINING}${project};"
+              fi
+            fi
+          done
+          unset IFS
+          
+          if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
+            echo ""
+            echo "ERROR: Circular dependency detected or unable to resolve dependencies"
+            echo "Projects that cannot be built:"
+            echo "$STILL_REMAINING" | tr ';' '\n' | while read -r p; do
+              if [ -n "$p" ]; then
+                echo "  - $(basename $(dirname "$p"))"
+                echo "    Dependencies: $(dotnet list "$p" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//' | tr '\n' ' ')"
+              fi
+            done
+            echo "Already built: $BUILT_PROJECTS"
+            exit 1
+          fi
+          
+          echo ""
+          echo "Projects ready to build in this iteration:"
+          echo "$PROJECTS_TO_BUILD" | tr ';' '\n' | while read -r p; do
+            [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
+          done
+          
+          # Build and pack projects that are ready
+          IFS=';'
+          for project in $PROJECTS_TO_BUILD; do
+            if [ -z "$project" ]; then continue; fi
+            PROJECT_NAME=$(basename $(dirname "$project"))
+            echo ""
+            echo ">>> Building and packing $PROJECT_NAME"
+            echo "    Path: $project"
+            
+            # Restore with local feed for dependencies from previous iterations
+            echo "    Restoring dependencies..."
+            dotnet restore "$project" --source ./artifacts --source https://api.nuget.org/v3/index.json
+            
+            # Build the project
+            echo "    Building project..."
+            dotnet build "$project" --configuration Release --no-restore
+            
+            # Pack directly to artifacts (which is also our local feed)
+            echo "    Creating NuGet package..."
+            if [ -n "${{ github.event.inputs.version_suffix }}" ]; then
+              dotnet pack "$project" --configuration Release --no-build --output ./artifacts --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true
+            else
+              dotnet pack "$project" --configuration Release --no-build --output ./artifacts -p:PACK=true
+            fi
+            
+            BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
+            echo "    ✓ Successfully built $PROJECT_NAME"
+          done
+          unset IFS
+          
+          REMAINING_PROJECTS="$STILL_REMAINING"
+        done
+        
+        if [ $ITERATION -eq $MAX_ITERATIONS ]; then
+          echo "Error: Maximum iterations reached. Possible circular dependency."
+          exit 1
+        fi
+        
+        echo ""
+        echo "==== Build Summary ===="
+        echo "Total iterations needed: $ITERATION"
+        echo "Projects built: $BUILT_PROJECTS"
+        echo ""
+        echo "All packages created:"
+        ls -la ./artifacts/*.nupkg 2>/dev/null || echo "No packages found!"
+        echo ""
+        echo "Package count: $(ls ./artifacts/*.nupkg 2>/dev/null | wc -l)"
