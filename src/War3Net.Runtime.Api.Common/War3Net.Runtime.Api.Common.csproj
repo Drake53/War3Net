@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
   </PropertyGroup>
 
