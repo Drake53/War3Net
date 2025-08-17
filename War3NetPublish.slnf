@@ -1,0 +1,20 @@
+{
+  "solution": {
+    "path": "War3Net.sln",
+    "projects": [
+      "src\\War3Net.Build.Core\\War3Net.Build.Core.csproj",
+      "src\\War3Net.Build\\War3Net.Build.csproj",
+      "src\\War3Net.CodeAnalysis.Decompilers\\War3Net.CodeAnalysis.Decompilers.csproj",
+      "src\\War3Net.CodeAnalysis.Jass\\War3Net.CodeAnalysis.Jass.csproj",
+      "src\\War3Net.CodeAnalysis.Transpilers\\War3Net.CodeAnalysis.Transpilers.csproj",
+      "src\\War3Net.CodeAnalysis\\War3Net.CodeAnalysis.csproj",
+      "src\\War3Net.Common\\War3Net.Common.csproj",
+      "src\\War3Net.Drawing.Blp\\War3Net.Drawing.Blp.csproj",
+      "src\\War3Net.IO.Compression\\War3Net.IO.Compression.csproj",
+      "src\\War3Net.IO.Mpq\\War3Net.IO.Mpq.csproj",
+      "src\\War3Net.IO.Slk\\War3Net.IO.Slk.csproj",
+      "submodules\\CSharp.lua\\CSharp.lua.CoreSystem\\CSharp.lua.CoreSystem.csproj",
+      "submodules\\CSharp.lua\\CSharp.lua\\CSharp.lua.csproj"
+    ]
+  }
+}
