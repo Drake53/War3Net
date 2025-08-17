@@ -174,7 +174,8 @@ jobs:
             
             # Restore with local feed for dependencies from previous iterations
             echo "    Restoring dependencies..."
-            dotnet restore "$project" --source ./artifacts --source https://api.nuget.org/v3/index.json --verbosity minimal
+            # Use --force to ensure fresh restore and --no-cache to avoid stale packages
+            dotnet restore "$project" --source ./artifacts --source https://api.nuget.org/v3/index.json --verbosity minimal --force --no-cache
             
             # Build the project
             echo "    Building project..."
@@ -191,6 +192,11 @@ jobs:
             BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
             echo "    ✓ Successfully built $PROJECT_NAME"
           done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
+          
+          # Clear NuGet cache for local packages to ensure newly built packages are available
+          echo ""
+          echo "Refreshing local NuGet cache..."
+          dotnet nuget locals temp -c
           
           REMAINING_PROJECTS="$STILL_REMAINING"
         done
