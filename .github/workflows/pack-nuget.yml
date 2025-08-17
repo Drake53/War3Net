@@ -87,12 +87,22 @@ jobs:
           echo ""
           echo "==== Build iteration $ITERATION ===="
           echo "Remaining projects to build:"
-          echo "$REMAINING_PROJECTS" | tr ';' '\n' | while read -r p; do
-            [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
-          done
+          if [ -n "$REMAINING_PROJECTS" ]; then
+            echo "$REMAINING_PROJECTS" | tr ';' '\n' | while read -r p; do
+              if [ -n "$p" ]; then
+                echo "  - $(basename $(dirname "$p") 2>/dev/null || echo "$p")"
+              fi
+            done
+          else
+            echo "  (none)"
+          fi
+          
+          echo "Debug: After displaying remaining projects"
           
           PROJECTS_TO_BUILD=""
           STILL_REMAINING=""
+          
+          echo "Debug: Initialized PROJECTS_TO_BUILD and STILL_REMAINING"
           
           # Process each project using semicolon as delimiter
           echo "Determining which projects to build in this iteration..."
