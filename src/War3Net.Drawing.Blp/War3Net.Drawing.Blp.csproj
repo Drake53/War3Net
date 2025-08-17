@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
     <Version>$(War3NetDrawingBlpVersion)</Version>
     <UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
   </PropertyGroup>

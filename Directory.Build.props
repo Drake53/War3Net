@@ -30,6 +30,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
+    <TfmGroupDotNet>net5.0</TfmGroupDotNet>
+    <TfmGroupDotNetWindows>net5.0;net5.0-windows</TfmGroupDotNetWindows>
     <War3NetBuildVersion>5.7.1</War3NetBuildVersion>
     <War3NetBuildCoreVersion>5.7.1</War3NetBuildCoreVersion>
     <War3NetCodeAnalysisVersion>5.6.1</War3NetCodeAnalysisVersion>

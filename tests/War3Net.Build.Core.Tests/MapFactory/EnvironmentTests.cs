@@ -20,7 +20,7 @@ namespace War3Net.Build.Core.Tests.MapFactory
         [TestMethod]
         public void TestCreateMapEnvironment()
         {
-            var expectedMap = Map.Open(TestDataProvider.GetPath(@"Maps\NewLuaMap.w3m"), MapFiles.Environment);
+            var expectedMap = Map.Open(TestDataProvider.GetPath("Maps/NewLuaMap.w3m"), MapFiles.Environment);
 
             foreach (var terrainTile in expectedMap.Environment.TerrainTiles)
             {

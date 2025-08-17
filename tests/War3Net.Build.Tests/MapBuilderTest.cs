@@ -24,12 +24,12 @@ namespace War3Net.Build.Tests
         public void TestGenerateJassScriptWithUnitData()
         {
             const string OutputMapName = "TestOutput.w3x";
-            const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
+            const string InputPath = "./TestData/MapFiles/TestGenerateUnitData";
 
             var scriptCompilerOptions = new ScriptCompilerOptions();
             scriptCompilerOptions.ForceCompile = true;
             scriptCompilerOptions.SourceDirectory = null;
-            scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
+            scriptCompilerOptions.OutputDirectory = "./TestOutput/TestGenerateUnitData";
 
             var mapBuilder = new LegacyMapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions, InputPath))
@@ -45,7 +45,7 @@ namespace War3Net.Build.Tests
         public void TestGenerateLuaScriptWithUnitDataLegacy()
         {
             const string OutputMapName = "TestOutput.w3x";
-            const string InputPath = @".\TestData\MapFiles\TestGenerateUnitData";
+            const string InputPath = "./TestData/MapFiles/TestGenerateUnitData";
 
             using var mapInfoStream = File.OpenRead(Path.Combine(InputPath, MapInfo.FileName));
             using var mapInfoReader = new BinaryReader(mapInfoStream);
@@ -56,7 +56,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.MapInfo = mapInfo;
             scriptCompilerOptions.ForceCompile = true;
             scriptCompilerOptions.SourceDirectory = null;
-            scriptCompilerOptions.OutputDirectory = @".\TestOutput\TestGenerateUnitData";
+            scriptCompilerOptions.OutputDirectory = "./TestOutput/TestGenerateUnitData";
 
             var mapBuilder = new LegacyMapBuilder(OutputMapName);
             if (mapBuilder.Build(scriptCompilerOptions, InputPath))
@@ -83,8 +83,8 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.MapInfo = MapFactory.Info();
             scriptCompilerOptions.MapEnvironment = MapFactory.Environment(scriptCompilerOptions.MapInfo);
 
-            scriptCompilerOptions.SourceDirectory = @".\TestData\Script\Template";
-            scriptCompilerOptions.OutputDirectory = @".\TestOutput\Template";
+            scriptCompilerOptions.SourceDirectory = "./TestData/Script/Template";
+            scriptCompilerOptions.OutputDirectory = "./TestOutput/Template";
 
 #if DEBUG
             scriptCompilerOptions.Debug = true;

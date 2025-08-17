@@ -20,7 +20,7 @@ namespace War3Net.TestTools.UnitTesting
 {
     public static class TestDataProvider
     {
-        internal const string TestDataFolder = @"..\..\..\..\War3Net.TestTools.UnitTesting\TestData";
+        internal const string TestDataFolder = "../../../../War3Net.TestTools.UnitTesting/TestData";
         internal const string LocalDataFolder = "Local";
         internal const string WebCacheDataFolder = "WebCache";
 

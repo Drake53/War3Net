@@ -183,7 +183,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestDeleteFile()
         {
-            var inputArchivePath = TestDataProvider.GetPath(@"Maps\NewLuaMap.w3m");
+            var inputArchivePath = TestDataProvider.GetPath("Maps/NewLuaMap.w3m");
             const string fileName = "war3map.lua";
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
@@ -203,7 +203,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestRecreatePKCompressed()
         {
-            var inputArchivePath = TestDataProvider.GetPath(@"Maps\PKCompressed.w3x");
+            var inputArchivePath = TestDataProvider.GetPath("Maps/PKCompressed.w3x");
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
             using var recreatedArchive = MpqArchive.Create((Stream?)null, inputArchive.GetMpqFiles().ToArray(), new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
