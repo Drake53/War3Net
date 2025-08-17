@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
+    <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 

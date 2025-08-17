@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
+    <TargetFrameworks>net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
