@@ -39,6 +39,7 @@ jobs:
         dotnet nuget add source $(pwd)/artifacts --name local-feed
 
     - name: Build and pack in dependency order
+      shell: bash
       run: |
         # Get all packable projects from the solution filter
         # Extract project paths from the solution filter and convert Windows paths to Unix paths
@@ -61,11 +62,8 @@ jobs:
         # Function to check if all dependencies of a project are built
         can_build_project() {
           local project=$1
-          # Since project references are conditional on Configuration=Debug, we need to check in Debug mode
-          # First, let's see what dotnet list reference actually returns
-          local deps_output=$(dotnet list "$project" reference 2>&1)
-          echo "    Raw deps output for $project: $deps_output" >&2
-          local deps=$(echo "$deps_output" | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//')
+          # Get the dependencies - dotnet list outputs them starting with ..\ 
+          local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | sed 's/.*\\\\//' | sed 's/\.csproj$//')
           
           if [ -n "$deps" ]; then
             echo "  Checking dependencies for $(basename $(dirname "$project")): $deps"
@@ -151,8 +149,12 @@ jobs:
             [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
           done
           
+          echo "Debug: About to start building projects"
+          echo "Debug: PROJECTS_TO_BUILD value: '$PROJECTS_TO_BUILD'"
+          
           # Build and pack projects that are ready
           while IFS= read -r project; do
+            echo "Debug: Processing project: $project"
             if [ -z "$project" ]; then continue; fi
             PROJECT_NAME=$(basename $(dirname "$project"))
             echo ""
