@@ -40,13 +40,13 @@ jobs:
 
     - name: Build and pack in dependency order
       run: |
-        # Get all packable projects (those in src/ directory)
-        # Using semicolon as delimiter from the start
-        PROJECTS=$(find src -name "*.csproj" -type f | sort | tr '\n' ';')
+        # Get all packable projects from the solution filter
+        # Extract project paths from the solution filter and convert Windows paths to Unix paths
+        PROJECTS=$(jq -r '.solution.projects[]' War3NetPublish.slnf | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
         
-        echo "=== Found projects ==="
+        echo "=== Found projects to publish ==="
         echo "$PROJECTS" | tr ';' '\n'
-        echo "===================="
+        echo "=================================="
         
         # Create a temporary file to track which projects have been built
         # Using semicolon delimiters for exact matching
