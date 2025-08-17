@@ -178,8 +178,8 @@ jobs:
             
             # Restore with local feed for dependencies from previous iterations
             echo "    Restoring dependencies..."
-            # NuGet.config handles source mapping, just ensure Release configuration
-            dotnet restore "$project" --configuration Release --verbosity minimal --force --no-cache
+            # NuGet.config handles source mapping, pass configuration as property
+            dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
             
             # Build the project
             echo "    Building project..."
