@@ -17,5 +17,8 @@ namespace War3Net.Build.Info
     {
         /// <summary>The initial version.</summary>
         v1 = 1,
+
+        /// <summary>Introduced in patch 2.0.3.</summary>
+        v2 = 2,
     }
 }
