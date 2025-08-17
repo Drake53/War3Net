@@ -98,9 +98,13 @@ jobs:
           IFS=';'
           for project in $REMAINING_PROJECTS; do
             if [ -n "$project" ]; then
+              echo ""
+              echo "Checking: $(basename $(dirname "$project"))"
               if can_build_project "$project"; then
+                echo "  -> Ready to build"
                 PROJECTS_TO_BUILD="${PROJECTS_TO_BUILD}${project};"
               else
+                echo "  -> Not ready (missing dependencies)"
                 STILL_REMAINING="${STILL_REMAINING}${project};"
               fi
             fi
