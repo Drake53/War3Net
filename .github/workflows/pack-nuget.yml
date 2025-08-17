@@ -53,12 +53,6 @@ jobs:
         echo "$PROJECTS" | tr ';' '\n'
         echo "=================================="
         
-        # Restore all projects first to ensure dependency information is available
-        echo ""
-        echo "=== Restoring all projects to get dependency information ==="
-        dotnet restore War3NetPublish.slnf -p:Configuration=Debug
-        echo "=================================="
-        
         # Create a temporary file to track which projects have been built
         # Using semicolon delimiters for exact matching
         BUILT_PROJECTS=";"
@@ -73,23 +67,11 @@ jobs:
             echo "$line" | sed 's/.*\\//' | sed 's/\.csproj$//'
           done | tr '\n' ' ')
           
-          if [ -n "$deps" ]; then
-            echo "  Checking dependencies for $(basename $(dirname "$project")): $deps"
-            echo "  Current built projects: $BUILT_PROJECTS"
-          fi
-          
           for dep in $deps; do
             if ! echo "$BUILT_PROJECTS" | grep -q ";$dep;"; then
-              echo "    Missing dependency: $dep"
               return 1
             fi
           done
-          
-          if [ -n "$deps" ]; then
-            echo "    All dependencies satisfied!"
-          else
-            echo "  No dependencies for $(basename $(dirname "$project"))"
-          fi
           return 0
         }
         
@@ -100,42 +82,20 @@ jobs:
         
         while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
           ITERATION=$((ITERATION + 1))
-          echo ""
-          echo "==== Build iteration $ITERATION ===="
-          echo "Remaining projects to build:"
-          if [ -n "$REMAINING_PROJECTS" ]; then
-            echo "$REMAINING_PROJECTS" | tr ';' '\n' | while read -r p; do
-              if [ -n "$p" ]; then
-                echo "  - $(basename $(dirname "$p") 2>/dev/null || echo "$p")"
-              fi
-            done
-          else
-            echo "  (none)"
-          fi
-          
-          echo "Debug: After displaying remaining projects"
           
           PROJECTS_TO_BUILD=""
           STILL_REMAINING=""
           
-          echo "Debug: Initialized PROJECTS_TO_BUILD and STILL_REMAINING"
-          
           # Process each project using semicolon as delimiter
-          echo "Determining which projects to build in this iteration..."
           while IFS= read -r project; do
             if [ -n "$project" ]; then
-              echo ""
-              echo "Checking: $(basename $(dirname "$project"))"
               if can_build_project "$project"; then
-                echo "  -> Ready to build"
                 PROJECTS_TO_BUILD="${PROJECTS_TO_BUILD}${project};"
               else
-                echo "  -> Not ready (missing dependencies)"
                 STILL_REMAINING="${STILL_REMAINING}${project};"
               fi
             fi
           done < <(echo "$REMAINING_PROJECTS" | tr ';' '\n')
-          echo "Determined which projects to build in this iteration"
           
           if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
             echo ""
@@ -152,7 +112,7 @@ jobs:
           fi
           
           echo ""
-          echo "Projects ready to build in this iteration:"
+          echo "Projects to build in iteration $ITERATION:"
           if [ -n "$PROJECTS_TO_BUILD" ]; then
             OLD_IFS="$IFS"
             IFS=';'
@@ -164,29 +124,19 @@ jobs:
             echo "  (none)"
           fi
           
-          echo "Debug: About to start building projects"
-          echo "Debug: PROJECTS_TO_BUILD value: '$PROJECTS_TO_BUILD'"
-          
           # Build and pack projects that are ready
           while IFS= read -r project; do
-            echo "Debug: Processing project: $project"
             if [ -z "$project" ]; then continue; fi
             PROJECT_NAME=$(basename $(dirname "$project"))
-            echo ""
-            echo ">>> Building and packing $PROJECT_NAME"
-            echo "    Path: $project"
+            echo "Building $PROJECT_NAME..."
             
             # Restore with local feed for dependencies from previous iterations
-            echo "    Restoring dependencies..."
-            # NuGet.config handles source mapping, pass configuration as property
             dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
             
             # Build the project
-            echo "    Building project..."
             dotnet build "$project" --configuration Release --no-restore --verbosity minimal
             
             # Pack directly to artifacts with project name folder structure for proper NuGet feed
-            echo "    Creating NuGet package..."
             if [ -n "${{ github.event.inputs.version_suffix }}" ]; then
               dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true --verbosity minimal
             else
@@ -194,20 +144,9 @@ jobs:
             fi
             
             BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
-            echo "    ✓ Successfully built $PROJECT_NAME"
-            
-            # Show what package was created
-            echo "    Package created: $(ls -la ./artifacts/${PROJECT_NAME}/*.nupkg 2>/dev/null | tail -1)"
           done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
           
-          # Show all packages in artifacts after this iteration
-          echo ""
-          echo "Packages available in local feed after iteration $ITERATION:"
-          ls -la ./artifacts/*/*.nupkg 2>/dev/null || echo "No packages found"
-          
           # Clear NuGet cache for local packages to ensure newly built packages are available
-          echo ""
-          echo "Refreshing local NuGet cache..."
           dotnet nuget locals temp -c
           
           REMAINING_PROJECTS="$STILL_REMAINING"
@@ -219,11 +158,4 @@ jobs:
         fi
         
         echo ""
-        echo "==== Build Summary ===="
-        echo "Total iterations needed: $ITERATION"
-        echo "Projects built: $BUILT_PROJECTS"
-        echo ""
-        echo "All packages created:"
-        ls -la ./artifacts/*/*.nupkg 2>/dev/null || echo "No packages found!"
-        echo ""
-        echo "Package count: $(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)"
+        echo "Successfully created $(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l) packages"
