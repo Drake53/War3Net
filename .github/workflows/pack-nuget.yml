@@ -96,6 +96,7 @@ jobs:
           
           # Process each project using semicolon as delimiter
           IFS=';'
+          echo "Determining which projects to build in this iteration..."
           for project in $REMAINING_PROJECTS; do
             if [ -n "$project" ]; then
               echo ""
@@ -110,6 +111,7 @@ jobs:
             fi
           done
           unset IFS
+          echo "Determined which projects to build in this iteration"
           
           if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
             echo ""
