@@ -95,9 +95,8 @@ jobs:
           STILL_REMAINING=""
           
           # Process each project using semicolon as delimiter
-          IFS=';'
           echo "Determining which projects to build in this iteration..."
-          for project in $REMAINING_PROJECTS; do
+          while IFS= read -r project; do
             if [ -n "$project" ]; then
               echo ""
               echo "Checking: $(basename $(dirname "$project"))"
@@ -109,8 +108,7 @@ jobs:
                 STILL_REMAINING="${STILL_REMAINING}${project};"
               fi
             fi
-          done
-          unset IFS
+          done < <(echo "$REMAINING_PROJECTS" | tr ';' '\n')
           echo "Determined which projects to build in this iteration"
           
           if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
@@ -134,8 +132,7 @@ jobs:
           done
           
           # Build and pack projects that are ready
-          IFS=';'
-          for project in $PROJECTS_TO_BUILD; do
+          while IFS= read -r project; do
             if [ -z "$project" ]; then continue; fi
             PROJECT_NAME=$(basename $(dirname "$project"))
             echo ""
@@ -160,8 +157,7 @@ jobs:
             
             BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
             echo "    ✓ Successfully built $PROJECT_NAME"
-          done
-          unset IFS
+          done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
           
           REMAINING_PROJECTS="$STILL_REMAINING"
         done
