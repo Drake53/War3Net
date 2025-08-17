@@ -141,6 +141,9 @@ namespace War3Net.Build.Info
         /// <summary>Introduced in patch 1.35.</summary>
         v6115 = 6115,
 
+        /// <summary>Introduced in patch 2.0.3.</summary>
+        v6116 = 6116,
+
         // ===== \\
         // Other \\
         // ===== \\

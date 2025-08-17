@@ -52,5 +52,12 @@ namespace War3Net.Build.Info
 
         /// <summary>Introduced in patch 1.32.</summary>
         v31 = 31,
+
+        /// <summary>Introduced in patch 2.0.3 PTR.</summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v32 = 32,
+
+        /// <summary>Introduced in patch 2.0.3.</summary>
+        v33 = 33,
     }
 }

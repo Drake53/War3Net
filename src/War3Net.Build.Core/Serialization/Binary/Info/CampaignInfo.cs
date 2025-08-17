@@ -41,6 +41,11 @@ namespace War3Net.Build.Info
             FogColor = reader.ReadColorBgra();
             Race = reader.ReadInt32<CampaignRace>();
 
+            if (FormatVersion >= CampaignInfoFormatVersion.v2)
+            {
+                BackgroundVersion = reader.ReadInt32<CampaignBackgroundVersion>();
+            }
+
             nint mapCount = reader.ReadInt32();
             for (nint i = 0; i < mapCount; i++)
             {
@@ -75,6 +80,11 @@ namespace War3Net.Build.Info
             writer.Write(FogDensity);
             writer.Write(FogColor.ToBgra());
             writer.Write((int)Race);
+
+            if (FormatVersion >= CampaignInfoFormatVersion.v2)
+            {
+                writer.Write((int)BackgroundVersion);
+            }
 
             writer.Write(MapButtons.Count);
             foreach (var mapButton in MapButtons)

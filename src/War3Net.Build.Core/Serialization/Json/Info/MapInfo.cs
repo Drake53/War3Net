@@ -149,6 +149,17 @@ namespace War3Net.Build.Info
                     SupportedModes = jsonElement.GetInt32<SupportedModes>(nameof(SupportedModes));
                     GameDataVersion = jsonElement.GetInt32<GameDataVersion>(nameof(GameDataVersion));
                 }
+
+                if (FormatVersion >= MapInfoFormatVersion.v32)
+                {
+                    ForceDefaultCameraZoom = jsonElement.GetInt32(nameof(ForceDefaultCameraZoom));
+                    ForceMaxCameraZoom = jsonElement.GetInt32(nameof(ForceMaxCameraZoom));
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    ForceMinCameraZoom = jsonElement.GetInt32(nameof(ForceMinCameraZoom));
+                }
             }
 
             foreach (var element in jsonElement.EnumerateArray(nameof(Players)))
@@ -317,6 +328,17 @@ namespace War3Net.Build.Info
                 {
                     writer.WriteObject(nameof(SupportedModes), SupportedModes, options);
                     writer.WriteObject(nameof(GameDataVersion), GameDataVersion, options);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v32)
+                {
+                    writer.WriteObject(nameof(ForceDefaultCameraZoom), ForceDefaultCameraZoom, options);
+                    writer.WriteObject(nameof(ForceMaxCameraZoom), ForceMaxCameraZoom, options);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v33)
+                {
+                    writer.WriteObject(nameof(ForceMinCameraZoom), ForceMinCameraZoom, options);
                 }
             }
 

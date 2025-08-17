@@ -49,6 +49,11 @@ namespace War3Net.Build.Info
             FogColor = jsonElement.GetColor(nameof(FogColor));
             Race = jsonElement.GetInt32<CampaignRace>(nameof(Race));
 
+            if (FormatVersion >= CampaignInfoFormatVersion.v2)
+            {
+                BackgroundVersion = jsonElement.GetInt32<CampaignBackgroundVersion>(nameof(BackgroundVersion));
+            }
+
             foreach (var element in jsonElement.EnumerateArray(nameof(MapButtons)))
             {
                 MapButtons.Add(element.GetCampaignMapButton(FormatVersion));
@@ -88,6 +93,11 @@ namespace War3Net.Build.Info
             writer.WriteNumber(nameof(FogDensity), FogDensity);
             writer.Write(nameof(FogColor), FogColor);
             writer.WriteObject(nameof(Race), Race, options);
+
+            if (FormatVersion >= CampaignInfoFormatVersion.v2)
+            {
+                writer.WriteObject(nameof(BackgroundVersion), BackgroundVersion, options);
+            }
 
             writer.WriteStartArray(nameof(MapButtons));
             foreach (var mapButton in MapButtons)
