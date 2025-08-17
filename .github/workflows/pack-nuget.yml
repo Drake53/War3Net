@@ -48,6 +48,12 @@ jobs:
         echo "$PROJECTS" | tr ';' '\n'
         echo "=================================="
         
+        # Restore all projects first to ensure dependency information is available
+        echo ""
+        echo "=== Restoring all projects to get dependency information ==="
+        dotnet restore War3NetPublish.slnf --configuration Debug
+        echo "=================================="
+        
         # Create a temporary file to track which projects have been built
         # Using semicolon delimiters for exact matching
         BUILT_PROJECTS=";"
@@ -55,7 +61,11 @@ jobs:
         # Function to check if all dependencies of a project are built
         can_build_project() {
           local project=$1
-          local deps=$(dotnet list "$project" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//')
+          # Since project references are conditional on Configuration=Debug, we need to check in Debug mode
+          # First, let's see what dotnet list reference actually returns
+          local deps_output=$(dotnet list "$project" reference 2>&1)
+          echo "    Raw deps output for $project: $deps_output" >&2
+          local deps=$(echo "$deps_output" | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//')
           
           if [ -n "$deps" ]; then
             echo "  Checking dependencies for $(basename $(dirname "$project")): $deps"
