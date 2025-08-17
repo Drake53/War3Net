@@ -51,7 +51,7 @@ jobs:
         # Restore all projects first to ensure dependency information is available
         echo ""
         echo "=== Restoring all projects to get dependency information ==="
-        dotnet restore War3NetPublish.slnf --configuration Debug
+        dotnet restore War3NetPublish.slnf -p:Configuration=Debug
         echo "=================================="
         
         # Create a temporary file to track which projects have been built
