@@ -1,6 +1,8 @@
 name: Pack NuGet Packages
 
 on:
+  pull_request:
+    branches: ['master']
   workflow_dispatch:
     inputs:
       version_suffix:
