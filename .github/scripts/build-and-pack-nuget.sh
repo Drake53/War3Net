@@ -2,9 +2,7 @@
 set -e
 
 # Script to build and pack NuGet packages in dependency order
-# Usage: ./build-and-pack-nuget.sh [version-suffix]
-
-VERSION_SUFFIX="${1:-}"
+# Usage: ./build-and-pack-nuget.sh
 
 # Get all packable projects from the solution filter
 # Extract project paths from the solution filter and convert Windows paths to Unix paths
@@ -98,11 +96,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     dotnet build "$project" --configuration Release --no-restore --verbosity minimal
     
     # Pack directly to artifacts with project name folder structure for proper NuGet feed
-    if [ -n "$VERSION_SUFFIX" ]; then
-      dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --version-suffix "$VERSION_SUFFIX" -p:PACK=true --verbosity minimal
-    else
-      dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
-    fi
+    dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
     
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
   done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')

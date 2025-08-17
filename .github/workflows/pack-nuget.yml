@@ -4,11 +4,6 @@ on:
   pull_request:
     branches: ['master']
   workflow_dispatch:
-    inputs:
-      version_suffix:
-        description: 'Version suffix for packages (e.g., beta, rc1)'
-        required: false
-        type: string
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -45,4 +40,4 @@ jobs:
     - name: Build and pack in dependency order
       run: |
         chmod +x .github/scripts/build-and-pack-nuget.sh
-        .github/scripts/build-and-pack-nuget.sh "${{ github.event.inputs.version_suffix }}"
+        .github/scripts/build-and-pack-nuget.sh
