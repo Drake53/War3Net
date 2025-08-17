@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 

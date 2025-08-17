@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
