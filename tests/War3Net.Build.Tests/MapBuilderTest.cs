@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Tests
 {
@@ -24,7 +25,7 @@ namespace War3Net.Build.Tests
         public void TestGenerateJassScriptWithUnitData()
         {
             const string OutputMapName = "TestOutput.w3x";
-            const string InputPath = "./TestData/MapFiles/TestGenerateUnitData";
+            var inputPath = TestDataProvider.GetPath("MapFiles/TestGenerateUnitData");
 
             var scriptCompilerOptions = new ScriptCompilerOptions();
             scriptCompilerOptions.ForceCompile = true;
@@ -32,7 +33,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.OutputDirectory = "./TestOutput/TestGenerateUnitData";
 
             var mapBuilder = new LegacyMapBuilder(OutputMapName);
-            if (mapBuilder.Build(scriptCompilerOptions, InputPath))
+            if (mapBuilder.Build(scriptCompilerOptions, inputPath))
             {
             }
             else
@@ -45,9 +46,9 @@ namespace War3Net.Build.Tests
         public void TestGenerateLuaScriptWithUnitDataLegacy()
         {
             const string OutputMapName = "TestOutput.w3x";
-            const string InputPath = "./TestData/MapFiles/TestGenerateUnitData";
+            var inputPath = TestDataProvider.GetPath("MapFiles/TestGenerateUnitData");
 
-            using var mapInfoStream = File.OpenRead(Path.Combine(InputPath, MapInfo.FileName));
+            using var mapInfoStream = File.OpenRead(Path.Combine(inputPath, MapInfo.FileName));
             using var mapInfoReader = new BinaryReader(mapInfoStream);
             var mapInfo = mapInfoReader.ReadMapInfo();
             mapInfo.ScriptLanguage = ScriptLanguage.Lua;
@@ -59,7 +60,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.OutputDirectory = "./TestOutput/TestGenerateUnitData";
 
             var mapBuilder = new LegacyMapBuilder(OutputMapName);
-            if (mapBuilder.Build(scriptCompilerOptions, InputPath))
+            if (mapBuilder.Build(scriptCompilerOptions, inputPath))
             {
                 var mapPath = Path.Combine(scriptCompilerOptions.OutputDirectory, OutputMapName);
                 var absoluteMapPath = new FileInfo(mapPath).FullName;
@@ -83,7 +84,7 @@ namespace War3Net.Build.Tests
             scriptCompilerOptions.MapInfo = MapFactory.Info();
             scriptCompilerOptions.MapEnvironment = MapFactory.Environment(scriptCompilerOptions.MapInfo);
 
-            scriptCompilerOptions.SourceDirectory = "./TestData/Script/Template";
+            scriptCompilerOptions.SourceDirectory = TestDataProvider.GetPath("Script/Template");
             scriptCompilerOptions.OutputDirectory = "./TestOutput/Template";
 
 #if DEBUG
