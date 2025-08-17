@@ -27,16 +27,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup local NuGet feed
-      run: |
-        # Create artifacts folder for local NuGet feed
-        mkdir -p ./artifacts
-        echo "Local NuGet feed directory created at: $(pwd)/artifacts"
-        
-        # List configured sources
-        echo "Configured NuGet sources:"
-        dotnet nuget list source
-
     - name: Build and pack in dependency order
       run: |
         chmod +x .github/scripts/build-and-pack-nuget.sh
