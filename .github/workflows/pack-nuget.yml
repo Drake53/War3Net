@@ -62,8 +62,12 @@ jobs:
         # Function to check if all dependencies of a project are built
         can_build_project() {
           local project=$1
-          # Get the dependencies - dotnet list outputs them starting with ..\ 
-          local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | sed 's/.*\\\\//' | sed 's/\.csproj$//')
+          # Get the dependencies - dotnet list outputs them with paths like ..\ProjectName\ProjectName.csproj
+          # We need to extract just the project name
+          local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | while read -r line; do
+            # Extract just the filename without path and extension
+            basename "$line" .csproj
+          done | tr '\n' ' ')
           
           if [ -n "$deps" ]; then
             echo "  Checking dependencies for $(basename $(dirname "$project")): $deps"
@@ -170,18 +174,18 @@ jobs:
             
             # Restore with local feed for dependencies from previous iterations
             echo "    Restoring dependencies..."
-            dotnet restore "$project" --source ./artifacts --source https://api.nuget.org/v3/index.json
+            dotnet restore "$project" --source ./artifacts --source https://api.nuget.org/v3/index.json --verbosity minimal
             
             # Build the project
             echo "    Building project..."
-            dotnet build "$project" --configuration Release --no-restore
+            dotnet build "$project" --configuration Release --no-restore --verbosity minimal
             
             # Pack directly to artifacts (which is also our local feed)
             echo "    Creating NuGet package..."
             if [ -n "${{ github.event.inputs.version_suffix }}" ]; then
-              dotnet pack "$project" --configuration Release --no-build --output ./artifacts --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true
+              dotnet pack "$project" --configuration Release --no-build --output ./artifacts --version-suffix "${{ github.event.inputs.version_suffix }}" -p:PACK=true --verbosity minimal
             else
-              dotnet pack "$project" --configuration Release --no-build --output ./artifacts -p:PACK=true
+              dotnet pack "$project" --configuration Release --no-build --output ./artifacts -p:PACK=true --verbosity minimal
             fi
             
             BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
