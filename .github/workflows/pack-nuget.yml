@@ -145,9 +145,16 @@ jobs:
           
           echo ""
           echo "Projects ready to build in this iteration:"
-          echo "$PROJECTS_TO_BUILD" | tr ';' '\n' | while read -r p; do
-            [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
-          done
+          if [ -n "$PROJECTS_TO_BUILD" ]; then
+            OLD_IFS="$IFS"
+            IFS=';'
+            for p in $PROJECTS_TO_BUILD; do
+              [ -n "$p" ] && echo "  - $(basename $(dirname "$p"))"
+            done
+            IFS="$OLD_IFS"
+          else
+            echo "  (none)"
+          fi
           
           echo "Debug: About to start building projects"
           echo "Debug: PROJECTS_TO_BUILD value: '$PROJECTS_TO_BUILD'"
