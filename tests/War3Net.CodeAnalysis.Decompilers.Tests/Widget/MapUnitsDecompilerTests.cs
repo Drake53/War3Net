@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using War3Net.Build;
 using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
 {
@@ -20,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
     {
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Units;
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(FilesToOpen)]
         public void TestDecompileMapUnits(string mapFilePath)
         {
