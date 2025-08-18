@@ -53,21 +53,61 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The string.</returns>
         public static string ReadCString(this BinaryReader reader)
         {
-            // More efficient approach: read bytes until null terminator
-            var bytes = new List<byte>(256); // Pre-allocate reasonable capacity
-            byte b;
-            while ((b = reader.ReadByte()) != 0)
+            // Optimized approach: read in chunks and scan for null terminator
+            const int ChunkSize = 128; // Read in reasonable chunks
+            var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(ChunkSize);
+            var result = new List<byte>(256); // Pre-allocate reasonable capacity
+            
+            try
             {
-                bytes.Add(b);
-                
-                // Prevent excessive memory allocation from malformed data
-                if (bytes.Count > _maxStringLength)
+                while (true)
                 {
-                    throw new InvalidOperationException($"String exceeds maximum allowed length of {_maxStringLength} bytes");
+                    // Try to peek ahead if stream supports it
+                    var stream = reader.BaseStream;
+                    var startPos = stream.Position;
+                    
+                    // Read a chunk of data
+                    var bytesRead = stream.Read(buffer, 0, ChunkSize);
+                    if (bytesRead == 0)
+                    {
+                        // End of stream without null terminator
+                        throw new InvalidOperationException("Unexpected end of stream while reading null-terminated string");
+                    }
+                    
+                    // Find null terminator in the chunk
+                    int nullIndex = Array.IndexOf(buffer, (byte)0, 0, bytesRead);
+                    
+                    if (nullIndex >= 0)
+                    {
+                        // Found null terminator
+                        if (nullIndex > 0)
+                        {
+                            result.AddRange(new ArraySegment<byte>(buffer, 0, nullIndex));
+                        }
+                        
+                        // Position stream after the null byte
+                        stream.Position = startPos + nullIndex + 1;
+                        break;
+                    }
+                    else
+                    {
+                        // No null terminator in this chunk, add all bytes
+                        result.AddRange(new ArraySegment<byte>(buffer, 0, bytesRead));
+                        
+                        // Check for excessive length
+                        if (result.Count > _maxStringLength)
+                        {
+                            throw new InvalidOperationException($"String exceeds maximum allowed length of {_maxStringLength} bytes");
+                        }
+                    }
                 }
+                
+                return result.Count > 0 ? Encoding.UTF8.GetString(result.ToArray()) : string.Empty;
             }
-
-            return bytes.Count > 0 ? Encoding.UTF8.GetString(bytes.ToArray()) : string.Empty;
+            finally
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         /// <summary>

@@ -207,17 +207,48 @@ namespace War3Net.IO.Casc.Storage
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
             }
 
-            // Normalize path separators and check for path traversal attempts
+            // First normalize the path to handle encoded sequences
+            fileName = Uri.UnescapeDataString(fileName);
+            
+            // Normalize all path separators to forward slash
             fileName = fileName.Replace('\\', '/');
             
-            // Check for path traversal patterns
-            if (fileName.Contains("../") || fileName.Contains("..\\") || 
-                fileName.StartsWith("/") || fileName.StartsWith("\\") ||
-                Path.IsPathRooted(fileName) || 
-                fileName.Contains(':') || // Drive letters on Windows
-                fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            // Remove any null bytes that could terminate the string early
+            if (fileName.Contains('\0'))
             {
-                throw new ArgumentException($"Invalid file name or path traversal attempt: {fileName}", nameof(fileName));
+                throw new ArgumentException("File name contains null bytes.", nameof(fileName));
+            }
+            
+            // Split path into segments and validate each
+            var segments = fileName.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var segment in segments)
+            {
+                // Check for directory traversal in any form
+                if (segment == "." || segment == ".." || 
+                    segment.StartsWith("..") || segment.EndsWith("..") ||
+                    segment.Contains("~") || // Home directory reference
+                    segment.StartsWith("$") || // Environment variable
+                    segment.Contains("%")) // Environment variable in Windows
+                {
+                    throw new ArgumentException($"Invalid path segment '{segment}' in file name: {fileName}", nameof(fileName));
+                }
+                
+                // Check for invalid characters in segment
+                if (segment.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    throw new ArgumentException($"Invalid characters in path segment '{segment}'", nameof(fileName));
+                }
+            }
+            
+            // Rebuild clean path from validated segments
+            fileName = string.Join('/', segments);
+            
+            // Final checks for absolute paths or drive letters
+            if (Path.IsPathRooted(fileName) || 
+                fileName.Contains(':') || // Drive letters on Windows
+                fileName.StartsWith('/') || fileName.StartsWith('\\'))
+            {
+                throw new ArgumentException($"Absolute paths are not allowed: {fileName}", nameof(fileName));
             }
 
             if (_context.RootHandler == null)
@@ -576,16 +607,26 @@ namespace War3Net.IO.Casc.Storage
         private byte[] ReadDataFile(EKeyEntry indexEntry)
         {
             // Validate size to prevent excessive memory allocation
-            const uint MaxReasonableFileSize = 512 * 1024 * 1024; // 512 MB
-            if (indexEntry.EncodedSize > MaxReasonableFileSize)
-            {
-                throw new CascException($"File size {indexEntry.EncodedSize} exceeds maximum allowed size of {MaxReasonableFileSize} bytes");
-            }
-
-            // Additional validation for suspicious sizes
+            // CascLib uses 100MB as default maximum, with configurable override
+            const uint DefaultMaxFileSize = 100 * 1024 * 1024; // 100 MB
+            const uint AbsoluteMaxFileSize = 2147483648; // 2 GB (max array size in .NET)
+            
             if (indexEntry.EncodedSize == 0)
             {
                 throw new CascException("Invalid file size: 0 bytes");
+            }
+            
+            if (indexEntry.EncodedSize >= AbsoluteMaxFileSize)
+            {
+                throw new CascException($"File size {indexEntry.EncodedSize} exceeds absolute maximum of {AbsoluteMaxFileSize} bytes");
+            }
+            
+            // Check for potential decompression bombs (files that expand significantly)
+            // Encoded size should be reasonable compared to expected decompressed size
+            if (indexEntry.EncodedSize > DefaultMaxFileSize)
+            {
+                // Log warning but allow - some legitimate game files can be large
+                System.Diagnostics.Trace.TraceWarning($"Large file size: {indexEntry.EncodedSize} bytes. Proceeding with caution.");
             }
 
             var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath!);
@@ -597,40 +638,90 @@ namespace War3Net.IO.Casc.Storage
 
             using var stream = File.OpenRead(dataFilePath);
             
-            // Validate that the file is large enough to contain the requested data
-            if (stream.Length < (long)(indexEntry.DataFileOffset + indexEntry.EncodedSize))
+            // Check for integer overflow when calculating end position
+            // Use checked arithmetic to catch overflows
+            checked
             {
-                throw new CascException($"Data file {dataFilePath} is too small to contain the requested data at offset {indexEntry.DataFileOffset} with size {indexEntry.EncodedSize}");
-            }
-
-            // Check for integer overflow
-            if (indexEntry.DataFileOffset > (ulong)long.MaxValue)
-            {
-                throw new CascException($"Data file offset {indexEntry.DataFileOffset} exceeds maximum supported value");
+                try
+                {
+                    // Ensure offset is valid
+                    if (indexEntry.DataFileOffset > (ulong)stream.Length)
+                    {
+                        throw new CascException($"Data file offset {indexEntry.DataFileOffset} exceeds file size {stream.Length}");
+                    }
+                    
+                    // Calculate end position with overflow check
+                    ulong endPosition = indexEntry.DataFileOffset + indexEntry.EncodedSize;
+                    
+                    // Validate that the file contains the requested data
+                    if (endPosition > (ulong)stream.Length)
+                    {
+                        throw new CascException($"Data file {dataFilePath} is too small to contain the requested data at offset {indexEntry.DataFileOffset} with size {indexEntry.EncodedSize}");
+                    }
+                    
+                    // Ensure we can seek to the position (long.MaxValue limit)
+                    if (indexEntry.DataFileOffset > (ulong)long.MaxValue)
+                    {
+                        throw new CascException($"Data file offset {indexEntry.DataFileOffset} exceeds maximum seekable value");
+                    }
+                }
+                catch (OverflowException)
+                {
+                    throw new CascException($"Integer overflow detected when calculating file positions for offset {indexEntry.DataFileOffset} and size {indexEntry.EncodedSize}");
+                }
             }
 
             stream.Seek((long)indexEntry.DataFileOffset, SeekOrigin.Begin);
 
             // Use ArrayPool for large allocations to reduce GC pressure
+            byte[]? rentedArray = null;
             byte[] data;
-            if (indexEntry.EncodedSize > 81920) // 80KB threshold for ArrayPool
+            
+            try
             {
-                // For large files, consider using streaming approach instead
-                data = new byte[indexEntry.EncodedSize];
+                if (indexEntry.EncodedSize > 81920) // 80KB threshold for ArrayPool
+                {
+                    rentedArray = System.Buffers.ArrayPool<byte>.Shared.Rent((int)indexEntry.EncodedSize);
+                    data = rentedArray;
+                }
+                else
+                {
+                    data = new byte[indexEntry.EncodedSize];
+                }
+
+                var totalBytesRead = 0;
+                var remaining = (int)indexEntry.EncodedSize;
+                
+                // Read in chunks to handle large files better
+                while (remaining > 0)
+                {
+                    var bytesRead = stream.Read(data, totalBytesRead, remaining);
+                    if (bytesRead == 0)
+                    {
+                        throw new CascException($"Unexpected end of stream reading {dataFilePath}: expected {indexEntry.EncodedSize} bytes, read {totalBytesRead} bytes");
+                    }
+                    totalBytesRead += bytesRead;
+                    remaining -= bytesRead;
+                }
+
+                // If we used a rented array, copy to exact-sized array before returning
+                if (rentedArray != null)
+                {
+                    var result = new byte[indexEntry.EncodedSize];
+                    Buffer.BlockCopy(rentedArray, 0, result, 0, (int)indexEntry.EncodedSize);
+                    return result;
+                }
+
+                return data;
             }
-            else
+            finally
             {
-                data = new byte[indexEntry.EncodedSize];
+                // Always return the rented array
+                if (rentedArray != null)
+                {
+                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
+                }
             }
-
-            var bytesRead = stream.Read(data, 0, data.Length);
-
-            if (bytesRead != data.Length)
-            {
-                throw new CascException($"Failed to read complete data from {dataFilePath}: expected {data.Length} bytes, read {bytesRead} bytes");
-            }
-
-            return data;
         }
     }
 }

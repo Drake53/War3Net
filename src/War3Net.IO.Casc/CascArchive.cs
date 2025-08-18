@@ -25,7 +25,8 @@ namespace War3Net.IO.Casc
     {
         private readonly CascStorage _storage;
         private readonly ConcurrentDictionary<string, CascEntry> _entries;
-        private readonly ConcurrentBag<Stream> _openStreams;
+        private readonly HashSet<WeakReference> _openStreams;
+        private readonly object _streamLock = new object();
         private bool _disposed;
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace War3Net.IO.Casc
 
             _storage = CascStorage.OpenStorage(storagePath, localeFlags);
             _entries = new ConcurrentDictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
-            _openStreams = new ConcurrentBag<Stream>();
+            _openStreams = new HashSet<WeakReference>();
 
             Initialize();
         }
@@ -327,16 +328,31 @@ namespace War3Net.IO.Casc
             }
 
             // Dispose all open streams first
-            while (_openStreams.TryTake(out var stream))
+            lock (_streamLock)
             {
-                try
+                // Clean up dead references and dispose live streams
+                var liveStreams = new List<Stream>();
+                foreach (var weakRef in _openStreams)
                 {
-                    stream?.Dispose();
+                    if (weakRef.IsAlive && weakRef.Target is Stream stream)
+                    {
+                        liveStreams.Add(stream);
+                    }
                 }
-                catch
+
+                foreach (var stream in liveStreams)
                 {
-                    // Ignore disposal errors for individual streams
+                    try
+                    {
+                        stream.Dispose();
+                    }
+                    catch
+                    {
+                        // Ignore disposal errors for individual streams
+                    }
                 }
+
+                _openStreams.Clear();
             }
 
             // Then dispose the storage
@@ -407,15 +423,31 @@ namespace War3Net.IO.Casc
                 throw new CascException($"Cannot open file: entry has no valid identifier (CKey, EKey, FileDataId, or FileName)");
             }
 
-            // Track the stream for proper disposal
-            _openStreams.Add(stream);
+            // Track the stream for proper disposal using weak reference
+            // This prevents memory leaks if streams are not explicitly disposed
+            var weakRef = new WeakReference(stream);
+            lock (_streamLock)
+            {
+                // Clean up dead references while we're here
+                CleanupDeadReferences();
+                _openStreams.Add(weakRef);
+            }
 
             // Wrap the stream to remove it from tracking when disposed
-            // Note: ConcurrentBag doesn't have Remove, so we'll handle cleanup during Dispose
-            return new TrackedStream(stream, () =>
+            return new TrackedStream(stream, weakRef, () =>
             {
-                // Stream disposal notification - no action needed with ConcurrentBag
+                lock (_streamLock)
+                {
+                    _openStreams.Remove(weakRef);
+                }
             });
+        }
+
+        private void CleanupDeadReferences()
+        {
+            // Remove weak references that no longer point to live objects
+            // This prevents the collection from growing indefinitely
+            _openStreams.RemoveWhere(wr => !wr.IsAlive);
         }
 
         private void ThrowIfDisposed()
@@ -432,6 +464,7 @@ namespace War3Net.IO.Casc
         private sealed class TrackedStream : Stream
         {
             private readonly Stream _innerStream;
+            private readonly WeakReference _weakReference;
             private readonly Action _onDispose;
             private bool _disposed;
 
@@ -439,10 +472,12 @@ namespace War3Net.IO.Casc
             /// Initializes a new instance of the <see cref="TrackedStream"/> class.
             /// </summary>
             /// <param name="innerStream">The inner stream to wrap.</param>
+            /// <param name="weakReference">The weak reference tracking this stream.</param>
             /// <param name="onDispose">Action to invoke when the stream is disposed.</param>
-            public TrackedStream(Stream innerStream, Action onDispose)
+            public TrackedStream(Stream innerStream, WeakReference weakReference, Action onDispose)
             {
                 _innerStream = innerStream ?? throw new ArgumentNullException(nameof(innerStream));
+                _weakReference = weakReference ?? throw new ArgumentNullException(nameof(weakReference));
                 _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
             }
 

@@ -73,9 +73,22 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>The decrypted data.</returns>
         public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
         {
-            // Extend IV to 8 bytes if needed
+            // CASC uses 4-byte IVs that need to be extended to 8 bytes for Salsa20
+            // CascLib validates that IV is exactly 4 bytes
+            if (iv == null)
+            {
+                throw new ArgumentNullException(nameof(iv));
+            }
+            
+            if (iv.Length != 4)
+            {
+                throw new ArgumentException($"CASC encryption IV must be exactly 4 bytes, got {iv.Length} bytes", nameof(iv));
+            }
+            
+            // Extend 4-byte IV to 8 bytes by padding with zeros (matching CascLib)
             var fullIv = new byte[8];
-            Array.Copy(iv, fullIv, Math.Min(iv.Length, 8));
+            Array.Copy(iv, 0, fullIv, 0, 4);
+            // Bytes 4-7 remain zero-initialized
 
             var salsa20 = new Salsa20(key, fullIv);
             return salsa20.Process(data);
@@ -106,9 +119,22 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="iv">The initialization vector.</param>
         public static void DecryptInPlace(byte[] data, byte[] key, byte[] iv)
         {
-            // Extend IV to 8 bytes if needed
+            // CASC uses 4-byte IVs that need to be extended to 8 bytes for Salsa20
+            // CascLib validates that IV is exactly 4 bytes
+            if (iv == null)
+            {
+                throw new ArgumentNullException(nameof(iv));
+            }
+            
+            if (iv.Length != 4)
+            {
+                throw new ArgumentException($"CASC encryption IV must be exactly 4 bytes, got {iv.Length} bytes", nameof(iv));
+            }
+            
+            // Extend 4-byte IV to 8 bytes by padding with zeros (matching CascLib)
             var fullIv = new byte[8];
-            Array.Copy(iv, fullIv, Math.Min(iv.Length, 8));
+            Array.Copy(iv, 0, fullIv, 0, 4);
+            // Bytes 4-7 remain zero-initialized
 
             var salsa20 = new Salsa20(key, fullIv);
             salsa20.ProcessInPlace(data);

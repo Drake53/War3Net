@@ -114,13 +114,19 @@ namespace War3Net.IO.Casc.Root
         /// Loads root entries from a stream.
         /// </summary>
         /// <param name="stream">The stream to load from.</param>
-        public void LoadFromStream(Stream stream)
+        /// <returns>A list of errors encountered during loading, or empty if successful.</returns>
+        public List<string> LoadFromStream(Stream stream)
         {
+            var errors = new List<string>();
             using var reader = new StreamReader(stream);
             string? line;
+            int lineNumber = 0;
+            int successCount = 0;
 
             while ((line = reader.ReadLine()) != null)
             {
+                lineNumber++;
+                
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
                 {
                     continue;
@@ -129,11 +135,18 @@ namespace War3Net.IO.Casc.Root
                 var parts = line.Split('|');
                 if (parts.Length < 2)
                 {
+                    errors.Add($"Line {lineNumber}: Invalid format - expected at least 2 pipe-separated values");
                     continue;
                 }
 
                 var fileName = parts[0].Trim();
                 var keyString = parts[1].Trim();
+
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    errors.Add($"Line {lineNumber}: Empty file name");
+                    continue;
+                }
 
                 try
                 {
@@ -161,18 +174,41 @@ namespace War3Net.IO.Casc.Root
                     }
 
                     AddEntry(fileName, entry);
+                    successCount++;
                 }
                 catch (FormatException ex)
                 {
-                    // Log and skip entries with invalid format
-                    System.Diagnostics.Trace.TraceWarning($"Skipping invalid root entry '{fileName}': {ex.Message}");
+                    errors.Add($"Line {lineNumber}: Invalid key format for '{fileName}': {ex.Message}");
                 }
                 catch (ArgumentException ex)
                 {
-                    // Log and skip entries with invalid arguments
-                    System.Diagnostics.Trace.TraceWarning($"Skipping invalid root entry '{fileName}': {ex.Message}");
+                    errors.Add($"Line {lineNumber}: Invalid entry for '{fileName}': {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Line {lineNumber}: Unexpected error for '{fileName}': {ex.Message}");
                 }
             }
+
+            // Log summary
+            if (errors.Count > 0)
+            {
+                System.Diagnostics.Trace.TraceWarning($"Loaded {successCount} root entries with {errors.Count} errors");
+                foreach (var error in errors.Take(10)) // Log first 10 errors
+                {
+                    System.Diagnostics.Trace.TraceWarning($"Root loading error: {error}");
+                }
+                if (errors.Count > 10)
+                {
+                    System.Diagnostics.Trace.TraceWarning($"... and {errors.Count - 10} more errors");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Trace.TraceInformation($"Successfully loaded {successCount} root entries");
+            }
+
+            return errors;
         }
 
         /// <summary>

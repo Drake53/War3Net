@@ -155,23 +155,25 @@ namespace War3Net.IO.Casc.Index
         /// <returns>The bucket index.</returns>
         private static byte CalculateBucketIndex(EKey ekey)
         {
-            // Use first 9 bytes for hash calculation (matching CascLib approach)
+            // Match CascLib's approach: use Jenkins hash of first 9 bytes
             var span = ekey.Value.Span;
             if (span.Length == 0)
             {
                 return 0;
             }
 
-            // Simple hash based on first bytes of EKey
-            uint hash = 0;
-            int bytesToHash = Math.Min(9, span.Length);
-            for (int i = 0; i < bytesToHash; i++)
-            {
-                hash = (hash * 33) ^ span[i];
-            }
+            // CascLib uses first 9 bytes of the EKey for bucket calculation
+            int bytesToHash = Math.Min(CascConstants.EKeySize, span.Length);
+            byte[] hashData = new byte[bytesToHash];
+            span.Slice(0, bytesToHash).CopyTo(hashData);
 
-            // Return lower byte as bucket index
-            return (byte)(hash & 0xFF);
+            // Use Jenkins hashlittle2 to match CascLib's implementation
+            // This produces two 32-bit hash values
+            Utilities.JenkinsHash.HashLittle2(hashData, out uint pc, out uint pb);
+            
+            // CascLib uses the first hash value (pc) to determine bucket
+            // The bucket index is derived from the lower bits of the hash
+            return (byte)(pc & 0xFF);
         }
 
         /// <summary>
