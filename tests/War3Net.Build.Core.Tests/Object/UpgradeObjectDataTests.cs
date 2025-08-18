@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Object
     public class UpgradeObjectDataTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetUpgradeObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.UpgradeObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<UpgradeObjectData>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetUpgradeObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.UpgradeObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<UpgradeObjectData>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetUpgradeObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.UpgradeObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<UpgradeObjectData>.RunJsonRWTest(filePath, true);

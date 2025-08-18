@@ -51,21 +51,21 @@ namespace War3Net.Build.Core.Tests.Environment
 #endif
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, true);

@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Audio
     public class MapSoundsTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapSounds)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapSounds>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapSounds)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapSounds>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapSoundsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapSounds)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapSounds>.RunJsonRWTest(filePath, true);

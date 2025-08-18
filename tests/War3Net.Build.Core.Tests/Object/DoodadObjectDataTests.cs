@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Object
     public class DoodadObjectDataTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDoodadObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.DoodadObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<DoodadObjectData>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDoodadObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.DoodadObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<DoodadObjectData>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDoodadObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.DoodadObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<DoodadObjectData>.RunJsonRWTest(filePath, true);

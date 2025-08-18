@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Script
     public class MapCustomTextTriggersTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapCustomTextTriggers>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapCustomTextTriggers>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapCustomTextTriggersFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapCustomTextTriggers>.RunJsonRWTest(filePath, true);

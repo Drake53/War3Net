@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Widget
     public class MapUnitsTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapUnits)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapUnits)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.MapUnits)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, true);

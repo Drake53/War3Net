@@ -15,21 +15,21 @@ namespace War3Net.Build.Core.Tests.Object
     public class ItemObjectDataTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetItemObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.ItemObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<ItemObjectData>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetItemObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.ItemObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<ItemObjectData>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetItemObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.ItemObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<ItemObjectData>.RunJsonRWTest(filePath, true);

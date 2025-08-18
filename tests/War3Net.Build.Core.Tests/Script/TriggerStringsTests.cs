@@ -16,7 +16,7 @@ namespace War3Net.Build.Core.Tests.Script
     public class TriggerStringsTests
     {
         [TestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetTriggerStringsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [DynamicTestData(TestDataFileType.TriggerStrings)]
         public void TestParseTriggerStrings(string triggerStringsFilePath)
         {
             ParseTestHelper.RunStreamRWTest(
