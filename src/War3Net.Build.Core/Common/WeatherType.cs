@@ -5,7 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-namespace War3Net.Build
+namespace War3Net.Build.Common
 {
     // war3.w3mod/terrainart/weather.slk
     public enum WeatherType
