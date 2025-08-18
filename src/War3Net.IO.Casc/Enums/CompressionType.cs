@@ -15,7 +15,7 @@ namespace War3Net.IO.Casc.Enums
         /// <summary>
         /// No compression.
         /// </summary>
-        None = 0x00,
+        None = 0x4E, // 'N'
 
         /// <summary>
         /// ZLIB compression.
@@ -31,5 +31,20 @@ namespace War3Net.IO.Casc.Enums
         /// Frame data (recursive).
         /// </summary>
         Frame = 0x46, // 'F'
+
+        /// <summary>
+        /// LZMA compression.
+        /// </summary>
+        LZMA = 0x53, // 'S'
+
+        /// <summary>
+        /// LZ4 compression.
+        /// </summary>
+        LZ4 = 0x34, // '4'
+
+        /// <summary>
+        /// Zstandard compression.
+        /// </summary>
+        ZStandard = 0x44, // 'D'
     }
 }

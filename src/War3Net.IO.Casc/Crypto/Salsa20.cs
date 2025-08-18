@@ -161,15 +161,15 @@ namespace War3Net.IO.Casc.Crypto
                 }
             }
 
-            // Counter (set to 0)
-            _state[6] = 0;
-            _state[7] = 0;
-
             // IV
-            _state[8] = ToUInt32(iv, 0);
-            _state[9] = ToUInt32(iv, 4);
+            _state[6] = ToUInt32(iv, 0);
+            _state[7] = ToUInt32(iv, 4);
 
-            // Position
+            // Counter (set to 0)
+            _state[8] = 0;
+            _state[9] = 0;
+
+            // Unused positions
             _state[14] = 0;
             _state[13] = 0;
         }
@@ -209,7 +209,7 @@ namespace War3Net.IO.Casc.Crypto
                 _keyStream[index++] = (byte)(workingState[i] >> 24);
             }
 
-            // Increment counter
+            // Increment counter (positions 8 and 9 per Salsa20 spec)
             _state[8]++;
             if (_state[8] == 0)
             {

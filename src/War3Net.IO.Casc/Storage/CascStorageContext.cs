@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Index;
+using War3Net.IO.Casc.Root;
 using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Storage
@@ -65,7 +66,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets or sets the root handler.
         /// </summary>
-        public object? RootHandler { get; set; } // TODO: IRootHandler
+        public IRootHandler? RootHandler { get; set; }
 
         /// <summary>
         /// Gets or sets the storage features.

@@ -6,6 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -87,7 +89,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The Jenkins hash.</returns>
         public static uint ComputeJenkinsHash(byte[] data)
         {
-            return JenkinsHashLookup3(data, 0);
+            return JenkinsHash.HashLittle(data);
         }
 
         /// <summary>
@@ -190,6 +192,53 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             return bytes;
+        }
+
+        /// <summary>
+        /// Verifies an MD5 hash.
+        /// </summary>
+        /// <param name="data">The data to verify.</param>
+        /// <param name="expectedHash">The expected hash.</param>
+        /// <returns>true if the hash matches; otherwise, false.</returns>
+        public static bool VerifyMD5(byte[] data, byte[] expectedHash)
+        {
+            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            {
+                return false;
+            }
+
+            var actualHash = ComputeMD5(data);
+            return actualHash.SequenceEqual(expectedHash);
+        }
+
+        /// <summary>
+        /// Verifies an MD5 hash from a stream.
+        /// </summary>
+        /// <param name="stream">The stream to verify.</param>
+        /// <param name="expectedHash">The expected hash.</param>
+        /// <returns>true if the hash matches; otherwise, false.</returns>
+        public static bool VerifyMD5(Stream stream, byte[] expectedHash)
+        {
+            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            {
+                return false;
+            }
+
+            using var md5 = MD5.Create();
+            var actualHash = md5.ComputeHash(stream);
+            return actualHash.SequenceEqual(expectedHash);
+        }
+
+        /// <summary>
+        /// Verifies a Jenkins hash.
+        /// </summary>
+        /// <param name="data">The data to verify.</param>
+        /// <param name="expectedHash">The expected hash.</param>
+        /// <returns>true if the hash matches; otherwise, false.</returns>
+        public static bool VerifyJenkinsHash(byte[] data, uint expectedHash)
+        {
+            var actualHash = ComputeJenkinsHash(data);
+            return actualHash == expectedHash;
         }
 
         private static uint Rot(uint x, int k)

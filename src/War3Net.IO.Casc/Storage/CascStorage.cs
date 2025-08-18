@@ -14,6 +14,8 @@ using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Index;
+using War3Net.IO.Casc.IO;
+using War3Net.IO.Casc.Root;
 using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Storage
@@ -133,6 +135,17 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByEKey(EKey ekey)
         {
+            return OpenFileByEKey(ekey, false);
+        }
+
+        /// <summary>
+        /// Opens a file by encoded key with streaming option.
+        /// </summary>
+        /// <param name="ekey">The encoded key.</param>
+        /// <param name="useStreaming">If true, returns a streaming reader; if false, loads entire file to memory.</param>
+        /// <returns>A stream containing the file data.</returns>
+        public Stream OpenFileByEKey(EKey ekey, bool useStreaming)
+        {
             if (_context.IndexManager == null)
             {
                 throw new CascException("Index files not loaded");
@@ -144,16 +157,24 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascFileNotFoundException(ekey);
             }
 
-            // Read data from data file
-            var data = ReadDataFile(indexEntry!);
-
-            // Check if data is BLTE-encoded
-            if (BLTEDecoder.IsBLTE(data))
+            if (useStreaming)
             {
-                data = BLTEDecoder.Decode(data);
+                // Return a streaming reader
+                return new CascStream(_context, indexEntry!);
             }
+            else
+            {
+                // Read data from data file
+                var data = ReadDataFile(indexEntry!);
 
-            return new MemoryStream(data);
+                // Check if data is BLTE-encoded
+                if (BLTEDecoder.IsBLTE(data))
+                {
+                    data = BLTEDecoder.Decode(data);
+                }
+
+                return new MemoryStream(data);
+            }
         }
 
         /// <summary>
@@ -163,8 +184,29 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByName(string fileName)
         {
-            // TODO: Use root handler to resolve name to CKey/EKey
-            throw new NotImplementedException("Opening files by name requires root handler implementation");
+            if (_context.RootHandler == null)
+            {
+                throw new CascException("Root handler not loaded. Cannot resolve file names.");
+            }
+
+            if (!_context.RootHandler.TryGetEntry(fileName, out var rootEntry) || rootEntry == null)
+            {
+                throw new CascFileNotFoundException($"File not found in root: {fileName}");
+            }
+
+            // Try to open by CKey first
+            if (!rootEntry.CKey.IsEmpty)
+            {
+                return OpenFileByCKey(rootEntry.CKey);
+            }
+
+            // Fall back to EKey if available
+            if (!rootEntry.EKey.IsEmpty)
+            {
+                return OpenFileByEKey(rootEntry.EKey);
+            }
+
+            throw new CascException($"Root entry for '{fileName}' has no valid keys");
         }
 
         /// <summary>
@@ -174,8 +216,29 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByFileId(uint fileDataId)
         {
-            // TODO: Use root handler to resolve FileDataId to CKey/EKey
-            throw new NotImplementedException("Opening files by FileDataId requires root handler implementation");
+            if (_context.RootHandler == null)
+            {
+                throw new CascException("Root handler not loaded. Cannot resolve file data IDs.");
+            }
+
+            if (!_context.RootHandler.TryGetEntry(fileDataId, out var rootEntry) || rootEntry == null)
+            {
+                throw new CascFileNotFoundException($"File data ID not found in root: {fileDataId}");
+            }
+
+            // Try to open by CKey first
+            if (!rootEntry.CKey.IsEmpty)
+            {
+                return OpenFileByCKey(rootEntry.CKey);
+            }
+
+            // Fall back to EKey if available
+            if (!rootEntry.EKey.IsEmpty)
+            {
+                return OpenFileByEKey(rootEntry.EKey);
+            }
+
+            throw new CascException($"Root entry for file data ID {fileDataId} has no valid keys");
         }
 
         /// <summary>
@@ -191,6 +254,114 @@ namespace War3Net.IO.Casc.Storage
             }
 
             _context.EncryptionKeys[keyName] = key;
+        }
+
+        /// <summary>
+        /// Adds an encryption key from a hex string.
+        /// </summary>
+        /// <param name="keyName">The key name.</param>
+        /// <param name="keyString">The encryption key as a hex string.</param>
+        public void AddStringEncryptionKey(ulong keyName, string keyString)
+        {
+            if (string.IsNullOrEmpty(keyString))
+            {
+                throw new ArgumentException("Key string cannot be null or empty.", nameof(keyString));
+            }
+
+            // Remove any spaces or dashes from the hex string
+            keyString = keyString.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+            if (keyString.Length != CascConstants.KeyLength * 2)
+            {
+                throw new ArgumentException($"Key string must be {CascConstants.KeyLength * 2} hex characters.", nameof(keyString));
+            }
+
+            var key = new byte[CascConstants.KeyLength];
+            for (int i = 0; i < key.Length; i++)
+            {
+                key[i] = Convert.ToByte(keyString.Substring(i * 2, 2), 16);
+            }
+
+            AddEncryptionKey(keyName, key);
+        }
+
+        /// <summary>
+        /// Imports encryption keys from a string list.
+        /// </summary>
+        /// <param name="keyList">The key list in format "KeyName=KeyValue" separated by newlines.</param>
+        /// <returns>The number of keys imported.</returns>
+        public int ImportKeysFromString(string keyList)
+        {
+            if (string.IsNullOrEmpty(keyList))
+            {
+                return 0;
+            }
+
+            int keysImported = 0;
+            var lines = keyList.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+                if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#") || trimmedLine.StartsWith("//"))
+                {
+                    continue; // Skip comments and empty lines
+                }
+
+                var parts = trimmedLine.Split('=');
+                if (parts.Length != 2)
+                {
+                    continue; // Skip invalid lines
+                }
+
+                var keyNameStr = parts[0].Trim();
+                var keyValueStr = parts[1].Trim();
+
+                // Parse key name (can be hex or decimal)
+                ulong keyName;
+                if (keyNameStr.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!ulong.TryParse(keyNameStr.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out keyName))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (!ulong.TryParse(keyNameStr, out keyName))
+                    {
+                        continue;
+                    }
+                }
+
+                try
+                {
+                    AddStringEncryptionKey(keyName, keyValueStr);
+                    keysImported++;
+                }
+                catch
+                {
+                    // Skip invalid keys
+                }
+            }
+
+            return keysImported;
+        }
+
+        /// <summary>
+        /// Imports encryption keys from a file.
+        /// </summary>
+        /// <param name="fileName">The path to the key file.</param>
+        /// <returns>The number of keys imported.</returns>
+        public int ImportKeysFromFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                throw new FileNotFoundException($"Key file not found: {fileName}");
+            }
+
+            var keyList = File.ReadAllText(fileName);
+            return ImportKeysFromString(keyList);
         }
 
         /// <summary>
@@ -246,6 +417,9 @@ namespace War3Net.IO.Casc.Storage
 
             // Load encoding file
             LoadEncodingFile();
+
+            // Initialize root handler (basic implementation for now)
+            _context.RootHandler = new BasicRootHandler();
 
             // Set features based on what we found
             UpdateFeatures();

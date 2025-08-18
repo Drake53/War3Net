@@ -117,9 +117,8 @@ namespace War3Net.IO.Casc.Index
                 return true;
             }
 
-            // Calculate bucket index from first byte of EKey
-            var bucketIndex = ekey.Value.Length > 0 ? ekey.Value[0] : (byte)0;
-            bucketIndex >>= 4; // Use upper 4 bits
+            // Calculate bucket index from first byte of EKey (upper 4 bits)
+            var bucketIndex = ekey.Value.Length > 0 ? (byte)(ekey.Value[0] >> 4) : (byte)0;
 
             // Check if we have that bucket's index file
             if (_indexFiles.TryGetValue(bucketIndex, out var indexFile))

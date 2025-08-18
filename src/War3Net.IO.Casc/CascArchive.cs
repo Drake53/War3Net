@@ -253,6 +253,46 @@ namespace War3Net.IO.Casc
             _storage.AddEncryptionKey(keyName, key);
         }
 
+        /// <summary>
+        /// Adds an encryption key from a hex string.
+        /// </summary>
+        /// <param name="keyName">The key name.</param>
+        /// <param name="keyString">The encryption key as a hex string.</param>
+        public void AddStringEncryptionKey(ulong keyName, string keyString)
+        {
+            _storage.AddStringEncryptionKey(keyName, keyString);
+        }
+
+        /// <summary>
+        /// Imports encryption keys from a string list.
+        /// </summary>
+        /// <param name="keyList">The key list in format "KeyName=KeyValue" separated by newlines.</param>
+        /// <returns>The number of keys imported.</returns>
+        public int ImportKeysFromString(string keyList)
+        {
+            return _storage.ImportKeysFromString(keyList);
+        }
+
+        /// <summary>
+        /// Imports encryption keys from a file.
+        /// </summary>
+        /// <param name="fileName">The path to the key file.</param>
+        /// <returns>The number of keys imported.</returns>
+        public int ImportKeysFromFile(string fileName)
+        {
+            return _storage.ImportKeysFromFile(fileName);
+        }
+
+        /// <summary>
+        /// Finds an encryption key by name.
+        /// </summary>
+        /// <param name="keyName">The key name.</param>
+        /// <returns>The encryption key, or null if not found.</returns>
+        public byte[]? FindEncryptionKey(ulong keyName)
+        {
+            return _storage.GetEncryptionKey(keyName);
+        }
+
         /// <inheritdoc/>
         public IEnumerator<CascEntry> GetEnumerator()
         {

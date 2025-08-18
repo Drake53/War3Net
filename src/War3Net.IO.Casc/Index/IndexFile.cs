@@ -37,6 +37,9 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Gets the bucket index for this file.
         /// </summary>
+        /// <remarks>
+        /// The bucket index should match the upper 4 bits of the first byte in the index filename.
+        /// </remarks>
         public byte BucketIndex => Header?.BucketIndex ?? 0;
 
         /// <summary>

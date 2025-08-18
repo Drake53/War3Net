@@ -108,8 +108,17 @@ namespace War3Net.IO.Casc.Compression
                 case CompressionType.Frame:
                     return DecodeNestedFrame(reader, frame);
 
+                case CompressionType.LZMA:
+                    return DecodeLZMA(reader, frame);
+
+                case CompressionType.LZ4:
+                    return DecodeLZ4(reader, frame);
+
+                case CompressionType.ZStandard:
+                    return DecodeZStandard(reader, frame);
+
                 default:
-                    throw new CascException($"Unsupported compression type: 0x{frame.CompressionType:X2}");
+                    throw new CascException($"Unsupported compression type: 0x{frame.CompressionType:X2} ('{(char)frame.CompressionType}')");
             }
         }
 
@@ -180,6 +189,27 @@ namespace War3Net.IO.Casc.Compression
             // Nested BLTE frame - recurse
             var nestedData = reader.ReadBytes((int)(frame.Data!.Length - 1));
             return Decode(nestedData);
+        }
+
+        private static byte[] DecodeLZMA(BinaryReader reader, BLTEFrame frame)
+        {
+            // LZMA is not commonly used in modern CASC
+            // For now, throw an exception as proper LZMA support requires additional libraries
+            throw new NotImplementedException("LZMA decompression is not yet implemented. Consider using a third-party LZMA library.");
+        }
+
+        private static byte[] DecodeLZ4(BinaryReader reader, BLTEFrame frame)
+        {
+            // LZ4 is used in some newer CASC implementations
+            // For now, throw an exception as proper LZ4 support requires additional libraries
+            throw new NotImplementedException("LZ4 decompression is not yet implemented. Consider using a third-party LZ4 library.");
+        }
+
+        private static byte[] DecodeZStandard(BinaryReader reader, BLTEFrame frame)
+        {
+            // Zstandard is used in the newest CASC implementations
+            // For now, throw an exception as proper Zstandard support requires additional libraries
+            throw new NotImplementedException("Zstandard decompression is not yet implemented. Consider using a third-party Zstandard library.");
         }
 
         /// <summary>
