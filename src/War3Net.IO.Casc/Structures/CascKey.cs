@@ -54,10 +54,13 @@ namespace War3Net.IO.Casc.Structures
             key.CopyTo(_key);
         }
 
+        // Static empty instance to avoid allocations
+        private static readonly byte[] EmptyKeyBytes = new byte[CascConstants.CKeySize];
+        
         /// <summary>
         /// Gets an empty content key.
         /// </summary>
-        public static CascKey Empty { get; } = new CascKey(new byte[CascConstants.CKeySize]);
+        public static CascKey Empty { get; } = new CascKey(EmptyKeyBytes);
 
         /// <summary>
         /// Gets the key bytes.
@@ -81,17 +84,44 @@ namespace War3Net.IO.Casc.Structures
                 throw new ArgumentException("Hex string cannot be null or empty.", nameof(hex));
             }
 
-            hex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
-
-            if (hex.Length != CascConstants.MD5StringSize)
-            {
-                throw new ArgumentException($"Invalid hex string length. Expected {CascConstants.MD5StringSize} characters.", nameof(hex));
-            }
-
+            // More efficient single-pass processing
             var bytes = new byte[CascConstants.CKeySize];
-            for (int i = 0; i < bytes.Length; i++)
+            int byteIndex = 0;
+            int charIndex = 0;
+            
+            while (byteIndex < bytes.Length && charIndex < hex.Length)
             {
-                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+                char c = hex[charIndex];
+                
+                // Skip separators
+                if (c == '-' || c == ' ')
+                {
+                    charIndex++;
+                    continue;
+                }
+                
+                // Need at least 2 chars for a byte
+                if (charIndex + 1 >= hex.Length)
+                {
+                    throw new ArgumentException($"Invalid hex string format.", nameof(hex));
+                }
+                
+                char c2 = hex[charIndex + 1];
+                
+                // Skip separator in second char position
+                if (c2 == '-' || c2 == ' ')
+                {
+                    throw new ArgumentException($"Invalid hex string format.", nameof(hex));
+                }
+                
+                bytes[byteIndex] = Convert.ToByte(new string(new[] { c, c2 }), 16);
+                byteIndex++;
+                charIndex += 2;
+            }
+            
+            if (byteIndex != CascConstants.CKeySize)
+            {
+                throw new ArgumentException($"Invalid hex string length. Expected {CascConstants.MD5StringSize} hex characters.", nameof(hex));
             }
 
             return new CascKey(bytes);

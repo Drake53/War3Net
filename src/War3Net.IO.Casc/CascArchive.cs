@@ -378,6 +378,11 @@ namespace War3Net.IO.Casc
         {
             ThrowIfDisposed();
 
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+
             Stream stream;
             
             // Use the storage to open the file
@@ -393,9 +398,13 @@ namespace War3Net.IO.Casc
             {
                 stream = _storage.OpenFileByFileId(entry.FileDataId);
             }
-            else
+            else if (!string.IsNullOrEmpty(entry.FileName))
             {
                 stream = _storage.OpenFile(entry.FileName, openFlags);
+            }
+            else
+            {
+                throw new CascException($"Cannot open file: entry has no valid identifier (CKey, EKey, FileDataId, or FileName)");
             }
 
             // Track the stream for proper disposal
@@ -426,28 +435,52 @@ namespace War3Net.IO.Casc
             private readonly Action _onDispose;
             private bool _disposed;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TrackedStream"/> class.
+            /// </summary>
+            /// <param name="innerStream">The inner stream to wrap.</param>
+            /// <param name="onDispose">Action to invoke when the stream is disposed.</param>
             public TrackedStream(Stream innerStream, Action onDispose)
             {
                 _innerStream = innerStream ?? throw new ArgumentNullException(nameof(innerStream));
                 _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
             }
 
+            /// <inheritdoc/>
             public override bool CanRead => _innerStream.CanRead;
+            
+            /// <inheritdoc/>
             public override bool CanSeek => _innerStream.CanSeek;
+            
+            /// <inheritdoc/>
             public override bool CanWrite => _innerStream.CanWrite;
+            
+            /// <inheritdoc/>
             public override long Length => _innerStream.Length;
+            
+            /// <inheritdoc/>
             public override long Position
             {
                 get => _innerStream.Position;
                 set => _innerStream.Position = value;
             }
 
+            /// <inheritdoc/>
             public override void Flush() => _innerStream.Flush();
+            
+            /// <inheritdoc/>
             public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
+            
+            /// <inheritdoc/>
             public override long Seek(long offset, SeekOrigin origin) => _innerStream.Seek(offset, origin);
+            
+            /// <inheritdoc/>
             public override void SetLength(long value) => _innerStream.SetLength(value);
+            
+            /// <inheritdoc/>
             public override void Write(byte[] buffer, int offset, int count) => _innerStream.Write(buffer, offset, count);
 
+            /// <inheritdoc/>
             protected override void Dispose(bool disposing)
             {
                 if (!_disposed)

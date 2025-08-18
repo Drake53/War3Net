@@ -21,7 +21,32 @@ namespace War3Net.IO.Casc.Compression
     /// </summary>
     public static class BLTEDecoder
     {
-        private const int MaxRecursionDepth = 10;
+        /// <summary>
+        /// Default maximum recursion depth for nested BLTE frames.
+        /// </summary>
+        public const int DefaultMaxRecursionDepth = 20;
+
+        private static int _maxRecursionDepth = DefaultMaxRecursionDepth;
+
+        /// <summary>
+        /// Gets or sets the maximum recursion depth for nested BLTE frames.
+        /// </summary>
+        public static int MaxRecursionDepth
+        {
+            get => _maxRecursionDepth;
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum recursion depth must be at least 1.");
+                }
+                if (value > 100)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum recursion depth cannot exceed 100.");
+                }
+                _maxRecursionDepth = value;
+            }
+        }
         /// <summary>
         /// Decodes BLTE-encoded data.
         /// </summary>

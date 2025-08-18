@@ -81,6 +81,9 @@ namespace War3Net.IO.Casc.CDN
         /// <returns>The file data.</returns>
         public async Task<byte[]> DownloadFileAsync(string path, CancellationToken cancellationToken)
         {
+            // Sanitize the path to prevent directory traversal attacks
+            path = SanitizePath(path);
+            
             Exception? lastException = null;
             var triedHosts = new HashSet<int>();
             var retryCount = 0;
@@ -280,6 +283,61 @@ namespace War3Net.IO.Casc.CDN
         private static string GetDefaultCDNPath()
         {
             return "tpr/war3";
+        }
+
+        /// <summary>
+        /// Sanitizes a path to prevent directory traversal attacks.
+        /// </summary>
+        /// <param name="path">The path to sanitize.</param>
+        /// <returns>The sanitized path.</returns>
+        private static string SanitizePath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty", nameof(path));
+            }
+
+            // Remove any leading/trailing whitespace
+            path = path.Trim();
+
+            // Check for null bytes (potential security issue)
+            if (path.Contains('\0'))
+            {
+                throw new ArgumentException("Path contains null bytes", nameof(path));
+            }
+
+            // Normalize path separators to forward slashes
+            path = path.Replace('\\', '/');
+
+            // Remove any double slashes
+            while (path.Contains("//"))
+            {
+                path = path.Replace("//", "/");
+            }
+
+            // Check for directory traversal attempts
+            if (path.Contains("../") || path.Contains("..\\") || path == ".." || path.StartsWith(".."))
+            {
+                throw new ArgumentException("Path contains directory traversal sequences", nameof(path));
+            }
+
+            // Remove leading slashes (paths should be relative)
+            path = path.TrimStart('/');
+
+            // Check for absolute paths
+            if (Path.IsPathRooted(path))
+            {
+                throw new ArgumentException("Absolute paths are not allowed", nameof(path));
+            }
+
+            // Additional check for encoded traversal sequences
+            var decodedPath = Uri.UnescapeDataString(path);
+            if (decodedPath.Contains("../") || decodedPath.Contains("..\\"))
+            {
+                throw new ArgumentException("Path contains encoded directory traversal sequences", nameof(path));
+            }
+
+            return path;
         }
     }
 }

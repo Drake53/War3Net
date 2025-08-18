@@ -33,6 +33,8 @@ namespace War3Net.IO.Casc.Structures
             }
 
             var actualLength = length ?? key.Length;
+            // EKeys can be variable length, but typically 9 bytes (truncated) or 16 bytes (full)
+            // Maximum size is same as CKey (16 bytes)
             if (actualLength > CascConstants.CKeySize)
             {
                 throw new ArgumentException($"Encoded key cannot be larger than {CascConstants.CKeySize} bytes.", nameof(key));
@@ -69,10 +71,13 @@ namespace War3Net.IO.Casc.Structures
             key.CopyTo(_key);
         }
 
+        // Static empty instance
+        private static readonly EKey EmptyInstance = new EKey { _key = null, _length = 0 };
+        
         /// <summary>
         /// Gets an empty encoded key.
         /// </summary>
-        public static EKey Empty { get; } = default;
+        public static EKey Empty { get; } = EmptyInstance;
 
         /// <summary>
         /// Gets the key bytes.
@@ -118,17 +123,59 @@ namespace War3Net.IO.Casc.Structures
                 throw new ArgumentException("Hex string cannot be null or empty.", nameof(hex));
             }
 
-            hex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
-
-            if (hex.Length % 2 != 0)
+            // Count actual hex chars in single pass
+            int hexCharCount = 0;
+            for (int i = 0; i < hex.Length; i++)
+            {
+                char c = hex[i];
+                if (c != '-' && c != ' ')
+                {
+                    hexCharCount++;
+                }
+            }
+            
+            if (hexCharCount % 2 != 0)
             {
                 throw new ArgumentException("Invalid hex string length.", nameof(hex));
             }
 
-            var bytes = new byte[hex.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
+            var bytes = new byte[hexCharCount / 2];
+            int byteIndex = 0;
+            int charIndex = 0;
+            
+            while (byteIndex < bytes.Length && charIndex < hex.Length)
             {
-                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+                char c = hex[charIndex];
+                
+                // Skip separators
+                if (c == '-' || c == ' ')
+                {
+                    charIndex++;
+                    continue;
+                }
+                
+                // Need at least 2 chars for a byte
+                if (charIndex + 1 >= hex.Length)
+                {
+                    throw new ArgumentException("Invalid hex string format.", nameof(hex));
+                }
+                
+                char c2 = hex[charIndex + 1];
+                
+                // Skip separator in second char position if needed
+                while (c2 == '-' || c2 == ' ')
+                {
+                    charIndex++;
+                    if (charIndex + 1 >= hex.Length)
+                    {
+                        throw new ArgumentException("Invalid hex string format.", nameof(hex));
+                    }
+                    c2 = hex[charIndex + 1];
+                }
+                
+                bytes[byteIndex] = Convert.ToByte(new string(new[] { c, c2 }), 16);
+                byteIndex++;
+                charIndex += 2;
             }
 
             return new EKey(bytes);

@@ -20,6 +20,33 @@ namespace War3Net.IO.Casc.Utilities
     public static class BinaryReaderExtensions
     {
         /// <summary>
+        /// Default maximum length for C-style strings.
+        /// </summary>
+        public const int DefaultMaxStringLength = 0x100000; // 1MB - reasonable for game files
+        
+        private static int _maxStringLength = DefaultMaxStringLength;
+        
+        /// <summary>
+        /// Gets or sets the maximum allowed length for C-style strings.
+        /// </summary>
+        public static int MaxStringLength
+        {
+            get => _maxStringLength;
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum string length must be at least 1.");
+                }
+                if (value > 0x10000000) // 256MB absolute maximum
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum string length cannot exceed 268435456 bytes (256MB).");
+                }
+                _maxStringLength = value;
+            }
+        }
+
+        /// <summary>
         /// Reads a null-terminated string.
         /// </summary>
         /// <param name="reader">The binary reader.</param>
@@ -34,9 +61,9 @@ namespace War3Net.IO.Casc.Utilities
                 bytes.Add(b);
                 
                 // Prevent excessive memory allocation from malformed data
-                if (bytes.Count > 65536) // 64KB max string length
+                if (bytes.Count > _maxStringLength)
                 {
-                    throw new InvalidOperationException("String exceeds maximum allowed length of 65536 bytes");
+                    throw new InvalidOperationException($"String exceeds maximum allowed length of {_maxStringLength} bytes");
                 }
             }
 
