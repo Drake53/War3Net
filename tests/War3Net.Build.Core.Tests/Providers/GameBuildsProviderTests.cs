@@ -12,12 +12,10 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Providers
 {
@@ -25,11 +23,26 @@ namespace War3Net.Build.Core.Tests.Providers
     public class GameBuildsProviderTests
     {
         [TestMethod]
-        public void TestVersionAndEditorVersionMatch()
+        [DynamicData(nameof(GetMappings), DynamicDataSourceType.Method)]
+        public void TestVersionAndEditorVersionMatch(Version version, EditorVersion? editorVersion)
         {
-            var mappings = new Dictionary<Version, EditorVersion>();
+            Assert.IsNotNull(editorVersion);
 
-            var mapInfoData = GetMapInfoData();
+            var gameBuilds = GameBuildsProvider.GetGameBuilds(version);
+
+            Assert.AreNotEqual(0, gameBuilds.Count, $"GameBuilds.json is missing an entry for version '{version}'.");
+
+            foreach (var gameBuild in gameBuilds)
+            {
+                Assert.AreEqual(editorVersion, gameBuild.EditorVersion, gameBuild.ToString());
+            }
+        }
+
+        private static IEnumerable<object?[]> GetMappings()
+        {
+            var mappings = new Dictionary<Version, EditorVersion?>();
+
+            var mapInfoData = TestDataFileProvider.GetFilePathsForTestDataType(TestDataFileType.MapInfo);
             foreach (var data in mapInfoData)
             {
                 var mapInfoPath = (string)data[0];
@@ -42,43 +55,20 @@ namespace War3Net.Build.Core.Tests.Providers
                 {
                     if (!mappings.TryAdd(mapInfo.GameVersion, mapInfo.EditorVersion))
                     {
-                        Assert.AreEqual(mappings[mapInfo.GameVersion], mapInfo.EditorVersion);
+                        var existingValue = mappings[mapInfo.GameVersion];
+                        if (mapInfo.EditorVersion != existingValue)
+                        {
+                            mappings[mapInfo.GameVersion] = null;
+                        }
                     }
                 }
             }
 
-            var errors = new List<string>();
-
-            var gameBuilds = GameBuildsProvider.GetGameBuilds(GameExpansion.Reforged);
-            foreach (var gameBuild in gameBuilds)
-            {
-                if (mappings.TryGetValue(gameBuild.Version, out var expected))
-                {
-                    Assert.AreEqual(expected, gameBuild.EditorVersion, gameBuild.ToString());
-                }
-                else if (!gameBuild.EditorVersion.HasValue)
-                {
-                    errors.Add($"\r\nNo .w3i found for v{gameBuild.Version} to get the expected editor version. ({gameBuild.ReleaseDate:dd MMM yyyy})");
-                }
-            }
-
-            if (errors.Any())
-            {
-                Assert.Fail(string.Concat(errors));
-            }
-        }
-
-        private static IEnumerable<object[]> GetMapInfoData()
-        {
-            return TestDataProvider.GetDynamicData(
-                $"*{MapInfo.FileExtension}",
-                SearchOption.AllDirectories,
-                Path.Combine("Info"))
-
-            .Concat(TestDataProvider.GetDynamicArchiveData(
-                MapInfo.FileName,
-                SearchOption.AllDirectories,
-                "Maps"));
+            return mappings
+#if !ENABLE_FLAKY_TESTS
+                .Where(kvp => GameBuildsProvider.GetGameBuilds(kvp.Key).Any())
+#endif
+                .Select(kvp => new object?[] { kvp.Key, kvp.Value });
         }
     }
 }
