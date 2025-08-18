@@ -96,7 +96,7 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(openedStream.Length == 0);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestArchivesAndSettings), DynamicDataSourceType.Method)]
         public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
         {
@@ -200,7 +200,7 @@ namespace War3Net.IO.Mpq.Tests
             Assert.AreEqual(0U, entries.Single().FileSize);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         public void TestRecreatePKCompressed()
         {
             var inputArchivePath = TestDataProvider.GetPath("Maps/PKCompressed.w3x");

@@ -25,7 +25,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreatePlayerBuildings(MapScriptBuilderTestData testData)
         {

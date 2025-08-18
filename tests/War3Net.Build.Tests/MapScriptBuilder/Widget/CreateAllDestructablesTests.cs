@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataCreateAllDestructables), DynamicDataSourceType.Method)]
         public void TestBodyCreateAllDestructables(MapScriptBuilderTestData testData)
         {

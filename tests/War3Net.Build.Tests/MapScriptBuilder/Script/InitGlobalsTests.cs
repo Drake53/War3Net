@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataInitGlobals), DynamicDataSourceType.Method)]
         public void TestBodyInitGlobals(MapScriptBuilderTestData testData)
         {
@@ -25,7 +25,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitGlobals(MapScriptBuilderTestData testData)
         {

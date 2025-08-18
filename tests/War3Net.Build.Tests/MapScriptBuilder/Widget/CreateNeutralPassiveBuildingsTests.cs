@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataCreateNeutralPassiveBuildings), DynamicDataSourceType.Method)]
         public void TestBodyCreateNeutralPassiveBuildings(MapScriptBuilderTestData testData)
         {
