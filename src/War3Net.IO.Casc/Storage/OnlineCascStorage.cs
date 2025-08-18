@@ -70,14 +70,45 @@ namespace War3Net.IO.Casc.Storage
             IProgressReporter? progressReporter = null)
         {
             // Validate and sanitize product and region to prevent path traversal
-            if (string.IsNullOrWhiteSpace(product) || product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || product.Contains(".."))
+            if (string.IsNullOrWhiteSpace(product) || 
+                product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
+                product.Contains("..") || 
+                product.Contains("/") || 
+                product.Contains("\\") ||
+                product.Length > 50) // Reasonable length limit
             {
-                throw new ArgumentException("Invalid product name", nameof(product));
+                throw new ArgumentException($"Invalid product name: '{product}'. Must be a valid directory name without path separators.", nameof(product));
             }
 
-            if (string.IsNullOrWhiteSpace(region) || region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || region.Contains(".."))
+            if (string.IsNullOrWhiteSpace(region) || 
+                region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
+                region.Contains("..") || 
+                region.Contains("/") || 
+                region.Contains("\\") ||
+                region.Length > 10) // Reasonable length limit for region codes
             {
-                throw new ArgumentException("Invalid region name", nameof(region));
+                throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
+            }
+
+            // Additional validation for known product/region combinations
+            var validProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
+            { 
+                "w3", "war3", "wow", "d3", "diablo3", "sc2", "hs", "hearthstone", "hots", "heroes"
+            };
+            
+            var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
+            { 
+                "us", "eu", "kr", "cn", "tw", "sea"
+            };
+
+            if (!validProducts.Contains(product.ToLowerInvariant()))
+            {
+                System.Diagnostics.Trace.TraceWarning($"Unknown product '{product}' - proceeding anyway");
+            }
+
+            if (!validRegions.Contains(region.ToLowerInvariant()))
+            {
+                System.Diagnostics.Trace.TraceWarning($"Unknown region '{region}' - proceeding anyway");
             }
 
             // If no cache path provided, use default temp path
@@ -88,17 +119,37 @@ namespace War3Net.IO.Casc.Storage
             else
             {
                 // Validate provided path - ensure it's an absolute path and doesn't contain traversal patterns
-                localCachePath = Path.GetFullPath(localCachePath);
+                try
+                {
+                    localCachePath = Path.GetFullPath(localCachePath);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Invalid cache path: {ex.Message}", nameof(localCachePath), ex);
+                }
                 
                 // Ensure the resolved path doesn't escape expected boundaries
                 var tempPath = Path.GetFullPath(Path.GetTempPath());
                 var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 
-                // Allow paths only within temp directory or user profile
-                if (!localCachePath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) &&
-                    !localCachePath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase))
+                // Allow paths only within safe directories
+                bool isInSafeDirectory = 
+                    localCachePath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
+                    localCachePath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase) ||
+                    localCachePath.StartsWith(appData, StringComparison.OrdinalIgnoreCase) ||
+                    localCachePath.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase);
+
+                if (!isInSafeDirectory)
                 {
-                    throw new ArgumentException($"Cache path must be within temp directory or user profile", nameof(localCachePath));
+                    throw new ArgumentException($"Cache path must be within temp directory, user profile, or application data directories", nameof(localCachePath));
+                }
+
+                // Additional check: ensure the path doesn't try to escape using symbolic links
+                if (localCachePath.Contains("~") || localCachePath.Contains("$"))
+                {
+                    throw new ArgumentException($"Cache path cannot contain special shell characters", nameof(localCachePath));
                 }
             }
 
@@ -282,10 +333,21 @@ namespace War3Net.IO.Casc.Storage
                         var indexData = await _cdnClient!.DownloadDataAsync(archiveKey + ".index");
                         await File.WriteAllBytesAsync(indexPath, indexData);
                     }
+                    catch (HttpRequestException ex)
+                    {
+                        // Log HTTP errors but continue - not all indexes may be available
+                        System.Diagnostics.Trace.TraceWarning($"Failed to download index {indexFileName}: HTTP error - {ex.Message}");
+                    }
+                    catch (IOException ex)
+                    {
+                        // Log IO errors with more detail
+                        System.Diagnostics.Trace.TraceError($"Failed to save index {indexFileName} to {indexPath}: {ex.Message}");
+                        throw new CascException($"Unable to save index file: {ex.Message}", ex);
+                    }
                     catch (Exception ex)
                     {
-                        // Log but continue - not all indexes may be available
-                        System.Diagnostics.Debug.WriteLine($"Failed to download index {indexFileName}: {ex.Message}");
+                        // Log unexpected errors
+                        System.Diagnostics.Trace.TraceError($"Unexpected error downloading index {indexFileName}: {ex.GetType().Name} - {ex.Message}");
                     }
                 }
             }

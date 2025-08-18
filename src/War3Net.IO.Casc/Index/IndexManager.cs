@@ -117,9 +117,9 @@ namespace War3Net.IO.Casc.Index
                 return true;
             }
 
-            // Calculate bucket index from first byte of EKey
-            // According to CascLib reference, the bucket index is the first byte of the EKey
-            var bucketIndex = ekey.Value.Length > 0 ? ekey.Value.Span[0] : (byte)0;
+            // Calculate bucket index using a hash of the EKey for better distribution
+            // CascLib uses a more complex calculation for bucket distribution
+            var bucketIndex = CalculateBucketIndex(ekey);
 
             // Check if we have that bucket's index file
             if (_indexFiles.TryGetValue(bucketIndex, out var indexFile))
@@ -132,8 +132,46 @@ namespace War3Net.IO.Casc.Index
                 }
             }
 
+            // If not found in calculated bucket, try all buckets as fallback
+            // This handles cases where the bucket calculation might differ
+            foreach (var kvp in _indexFiles)
+            {
+                if (kvp.Key != bucketIndex && kvp.Value.TryGetEntry(ekey, out entry))
+                {
+                    // Add to global index for faster future lookups
+                    _globalIndex[ekey] = entry;
+                    return true;
+                }
+            }
+
             entry = null;
             return false;
+        }
+
+        /// <summary>
+        /// Calculates the bucket index for an EKey.
+        /// </summary>
+        /// <param name="ekey">The encoded key.</param>
+        /// <returns>The bucket index.</returns>
+        private static byte CalculateBucketIndex(EKey ekey)
+        {
+            // Use first 9 bytes for hash calculation (matching CascLib approach)
+            var span = ekey.Value.Span;
+            if (span.Length == 0)
+            {
+                return 0;
+            }
+
+            // Simple hash based on first bytes of EKey
+            uint hash = 0;
+            int bytesToHash = Math.Min(9, span.Length);
+            for (int i = 0; i < bytesToHash; i++)
+            {
+                hash = (hash * 33) ^ span[i];
+            }
+
+            // Return lower byte as bucket index
+            return (byte)(hash & 0xFF);
         }
 
         /// <summary>

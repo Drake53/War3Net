@@ -181,19 +181,35 @@ namespace War3Net.IO.Casc.Compression
                 throw new CascException("Nested encrypted frames are not supported");
             }
 
-            // The decrypted data contains the actual compression type followed by the data
+            // The decrypted data should be processed based on the compression type
             using var decryptedStream = new MemoryStream(decryptedData);
             using var decryptedReader = new BinaryReader(decryptedStream);
 
-            // Create a new frame with decrypted data
-            var decryptedFrame = new BLTEFrame
+            // Process based on the actual compression type without recursion
+            switch ((CompressionType)encryptedType)
             {
-                CompressionType = (CompressionType)encryptedType,
-                Data = decryptedData,
-            };
+                case CompressionType.None:
+                    return DecodeUncompressed(decryptedReader, new BLTEFrame { Data = decryptedData });
 
-            // Decode based on the actual compression type
-            return DecodeFrame(decryptedFrame);
+                case CompressionType.ZLib:
+                    return DecodeZLib(decryptedReader, new BLTEFrame { Data = decryptedData });
+
+                case CompressionType.Frame:
+                    // Nested BLTE frame
+                    return Decode(decryptedData);
+
+                case CompressionType.LZMA:
+                    return DecodeLZMA(decryptedReader, new BLTEFrame { Data = decryptedData });
+
+                case CompressionType.LZ4:
+                    return DecodeLZ4(decryptedReader, new BLTEFrame { Data = decryptedData });
+
+                case CompressionType.ZStandard:
+                    return DecodeZStandard(decryptedReader, new BLTEFrame { Data = decryptedData });
+
+                default:
+                    throw new CascException($"Unsupported compression type in encrypted frame: 0x{encryptedType:X2}");
+            }
         }
 
         private static byte[] DecodeNestedFrame(BinaryReader reader, BLTEFrame frame)
@@ -206,22 +222,31 @@ namespace War3Net.IO.Casc.Compression
         private static byte[] DecodeLZMA(BinaryReader reader, BLTEFrame frame)
         {
             // LZMA is not commonly used in modern CASC
-            // For now, throw an exception as proper LZMA support requires additional libraries
-            throw new NotImplementedException("LZMA decompression is not yet implemented. Consider using a third-party LZMA library.");
+            // For full support, consider adding LZMA.NET or similar library
+            var dataSize = frame.Data!.Length - 1;
+            throw new NotSupportedException($"LZMA decompression is not yet implemented in War3Net.IO.Casc. " +
+                $"Frame contains {dataSize} bytes of LZMA compressed data. " +
+                $"To add support, consider using LZMA SDK or 7-Zip LZMA SDK NuGet package.");
         }
 
         private static byte[] DecodeLZ4(BinaryReader reader, BLTEFrame frame)
         {
             // LZ4 is used in some newer CASC implementations
-            // For now, throw an exception as proper LZ4 support requires additional libraries
-            throw new NotImplementedException("LZ4 decompression is not yet implemented. Consider using a third-party LZ4 library.");
+            // For full support, consider adding K4os.Compression.LZ4 library
+            var dataSize = frame.Data!.Length - 1;
+            throw new NotSupportedException($"LZ4 decompression is not yet implemented in War3Net.IO.Casc. " +
+                $"Frame contains {dataSize} bytes of LZ4 compressed data. " +
+                $"To add support, consider using K4os.Compression.LZ4 NuGet package.");
         }
 
         private static byte[] DecodeZStandard(BinaryReader reader, BLTEFrame frame)
         {
-            // Zstandard is used in the newest CASC implementations
-            // For now, throw an exception as proper Zstandard support requires additional libraries
-            throw new NotImplementedException("Zstandard decompression is not yet implemented. Consider using a third-party Zstandard library.");
+            // Zstandard is used in the newest CASC implementations (Battle.net games post-2018)
+            // For full support, consider adding ZstdNet library
+            var dataSize = frame.Data!.Length - 1;
+            throw new NotSupportedException($"Zstandard decompression is not yet implemented in War3Net.IO.Casc. " +
+                $"Frame contains {dataSize} bytes of Zstandard compressed data. " +
+                $"To add support, consider using ZstdNet or ZstdSharp NuGet package.");
         }
 
         /// <summary>

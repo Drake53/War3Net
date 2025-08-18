@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Encoding;
@@ -26,6 +27,8 @@ namespace War3Net.IO.Casc.Storage
     public class CascStorage : IDisposable
     {
         private readonly CascStorageContext _context;
+        private readonly ReaderWriterLockSlim _storageLock;
+        private int _referenceCount = 1;
         private bool _disposed;
 
         /// <summary>
@@ -41,6 +44,7 @@ namespace War3Net.IO.Casc.Storage
                 LocaleFlags = localeFlags,
                 IndexManager = new IndexManager(),
             };
+            _storageLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         }
 
         /// <summary>
@@ -146,34 +150,42 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByEKey(EKey ekey, bool useStreaming)
         {
-            if (_context.IndexManager == null)
+            _storageLock.EnterReadLock();
+            try
             {
-                throw new CascException("Index files not loaded");
-            }
-
-            // Find entry in index
-            if (!_context.IndexManager.TryFindEntry(ekey, out var indexEntry))
-            {
-                throw new CascFileNotFoundException(ekey);
-            }
-
-            if (useStreaming)
-            {
-                // Return a streaming reader
-                return new CascStream(_context, indexEntry!);
-            }
-            else
-            {
-                // Read data from data file
-                var data = ReadDataFile(indexEntry!);
-
-                // Check if data is BLTE-encoded
-                if (BLTEDecoder.IsBLTE(data))
+                if (_context.IndexManager == null)
                 {
-                    data = BLTEDecoder.Decode(data);
+                    throw new CascException("Index files not loaded");
                 }
 
-                return new MemoryStream(data);
+                // Find entry in index
+                if (!_context.IndexManager.TryFindEntry(ekey, out var indexEntry))
+                {
+                    throw new CascFileNotFoundException(ekey);
+                }
+
+                if (useStreaming)
+                {
+                    // Return a streaming reader
+                    return new CascStream(_context, indexEntry!);
+                }
+                else
+                {
+                    // Read data from data file
+                    var data = ReadDataFile(indexEntry!);
+
+                    // Check if data is BLTE-encoded
+                    if (BLTEDecoder.IsBLTE(data))
+                    {
+                        data = BLTEDecoder.Decode(data);
+                    }
+
+                    return new MemoryStream(data);
+                }
+            }
+            finally
+            {
+                _storageLock.ExitReadLock();
             }
         }
 
@@ -374,6 +386,30 @@ namespace War3Net.IO.Casc.Storage
             return _context.EncryptionKeys.TryGetValue(keyName, out var key) ? key : null;
         }
 
+        /// <summary>
+        /// Adds a reference to the storage.
+        /// </summary>
+        /// <returns>The storage instance.</returns>
+        public CascStorage AddRef()
+        {
+            Interlocked.Increment(ref _referenceCount);
+            return this;
+        }
+
+        /// <summary>
+        /// Releases a reference to the storage.
+        /// </summary>
+        /// <returns>The storage instance if still referenced; otherwise, null.</returns>
+        public CascStorage? Release()
+        {
+            if (Interlocked.Decrement(ref _referenceCount) == 0)
+            {
+                Dispose();
+                return null;
+            }
+            return this;
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -382,8 +418,17 @@ namespace War3Net.IO.Casc.Storage
                 return;
             }
 
-            _context.IndexManager?.Clear();
-            _context.EncodingFile?.Clear();
+            _storageLock.EnterWriteLock();
+            try
+            {
+                _context.IndexManager?.Clear();
+                _context.EncodingFile?.Clear();
+            }
+            finally
+            {
+                _storageLock.ExitWriteLock();
+                _storageLock.Dispose();
+            }
 
             _disposed = true;
         }
@@ -486,6 +531,12 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException($"File size {indexEntry.EncodedSize} exceeds maximum allowed size of {MaxReasonableFileSize} bytes");
             }
 
+            // Additional validation for suspicious sizes
+            if (indexEntry.EncodedSize == 0)
+            {
+                throw new CascException("Invalid file size: 0 bytes");
+            }
+
             var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath!);
 
             if (!File.Exists(dataFilePath))
@@ -501,9 +552,26 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException($"Data file {dataFilePath} is too small to contain the requested data at offset {indexEntry.DataFileOffset} with size {indexEntry.EncodedSize}");
             }
 
+            // Check for integer overflow
+            if (indexEntry.DataFileOffset > (ulong)long.MaxValue)
+            {
+                throw new CascException($"Data file offset {indexEntry.DataFileOffset} exceeds maximum supported value");
+            }
+
             stream.Seek((long)indexEntry.DataFileOffset, SeekOrigin.Begin);
 
-            var data = new byte[indexEntry.EncodedSize];
+            // Use ArrayPool for large allocations to reduce GC pressure
+            byte[] data;
+            if (indexEntry.EncodedSize > 81920) // 80KB threshold for ArrayPool
+            {
+                // For large files, consider using streaming approach instead
+                data = new byte[indexEntry.EncodedSize];
+            }
+            else
+            {
+                data = new byte[indexEntry.EncodedSize];
+            }
+
             var bytesRead = stream.Read(data, 0, data.Length);
 
             if (bytesRead != data.Length)

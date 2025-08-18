@@ -81,9 +81,27 @@ namespace War3Net.IO.Casc.Encoding
                 ckeyPages.Add(EncodingPage.Parse(reader));
             }
 
+            // Validate page sizes to prevent excessive memory allocation
+            const int MaxPageSize = 100 * 1024 * 1024; // 100 MB max page size
+            if (encoding.Header.CKeyPageSizeBytes > MaxPageSize)
+            {
+                throw new CascParserException($"CKey page size {encoding.Header.CKeyPageSizeBytes} exceeds maximum allowed size of {MaxPageSize} bytes");
+            }
+
+            if (encoding.Header.EKeyPageSizeBytes > MaxPageSize)
+            {
+                throw new CascParserException($"EKey page size {encoding.Header.EKeyPageSizeBytes} exceeds maximum allowed size of {MaxPageSize} bytes");
+            }
+
             // Read CKey entries
             for (uint pageIndex = 0; pageIndex < encoding.Header.CKeyPageCount; pageIndex++)
             {
+                // Validate we have enough data remaining
+                if (stream.Position + encoding.Header.CKeyPageSizeBytes > stream.Length)
+                {
+                    throw new CascParserException($"Unexpected end of stream while reading CKey page {pageIndex}");
+                }
+
                 var pageData = reader.ReadBytes(encoding.Header.CKeyPageSizeBytes);
                 using var pageStream = new MemoryStream(pageData);
                 using var pageReader = new BinaryReader(pageStream);
