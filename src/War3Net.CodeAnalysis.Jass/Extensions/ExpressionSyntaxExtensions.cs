@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             switch (expression)
             {
                 case JassDecimalLiteralExpressionSyntax decimalLiteralExpression:
-                    value = decimalLiteralExpression.Value;
+                    value = (int)decimalLiteralExpression.Value;
                     return true;
 
                 case JassOctalLiteralExpressionSyntax octalLiteralExpression:
