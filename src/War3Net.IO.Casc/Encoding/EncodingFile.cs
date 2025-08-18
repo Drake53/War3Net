@@ -82,7 +82,7 @@ namespace War3Net.IO.Casc.Encoding
             }
 
             // Validate page sizes to prevent excessive memory allocation
-            const int MaxPageSize = 100 * 1024 * 1024; // 100 MB max page size
+            const int MaxPageSize = 10 * 1024 * 1024; // 10 MB max page size - reasonable for CASC files
             if (encoding.Header.CKeyPageSizeBytes > MaxPageSize)
             {
                 throw new CascParserException($"CKey page size {encoding.Header.CKeyPageSizeBytes} exceeds maximum allowed size of {MaxPageSize} bytes");
@@ -91,6 +91,15 @@ namespace War3Net.IO.Casc.Encoding
             if (encoding.Header.EKeyPageSizeBytes > MaxPageSize)
             {
                 throw new CascParserException($"EKey page size {encoding.Header.EKeyPageSizeBytes} exceeds maximum allowed size of {MaxPageSize} bytes");
+            }
+
+            // Additional validation: ensure we don't allocate more memory than available
+            var totalPagesSize = (long)encoding.Header.CKeyPageCount * encoding.Header.CKeyPageSizeBytes +
+                               (long)encoding.Header.EKeyPageCount * encoding.Header.EKeyPageSizeBytes;
+            const long MaxTotalSize = 500L * 1024 * 1024; // 500 MB total max
+            if (totalPagesSize > MaxTotalSize)
+            {
+                throw new CascParserException($"Total page allocation {totalPagesSize} bytes exceeds maximum allowed {MaxTotalSize} bytes");
             }
 
             // Read CKey entries
@@ -297,9 +306,16 @@ namespace War3Net.IO.Casc.Encoding
 
         private void ParseESpecBlock(byte[] especData)
         {
-            var text = Encoding.UTF8.GetString(especData);
-            var strings = text.Split(new[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
-            ESpecStrings.AddRange(strings);
+            try
+            {
+                var text = Encoding.UTF8.GetString(especData);
+                var strings = text.Split(new[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
+                ESpecStrings.AddRange(strings);
+            }
+            catch (DecoderFallbackException ex)
+            {
+                throw new CascParserException($"Invalid UTF-8 encoding in ESpec block: {ex.Message}", ex);
+            }
         }
     }
 }

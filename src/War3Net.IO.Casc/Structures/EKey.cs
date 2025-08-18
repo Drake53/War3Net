@@ -38,6 +38,16 @@ namespace War3Net.IO.Casc.Structures
                 throw new ArgumentException($"Encoded key cannot be larger than {CascConstants.CKeySize} bytes.", nameof(key));
             }
 
+            if (actualLength < 0)
+            {
+                throw new ArgumentException("Key length cannot be negative.", nameof(length));
+            }
+
+            if (key.Length < actualLength)
+            {
+                throw new ArgumentException($"Source array length {key.Length} is smaller than requested length {actualLength}.", nameof(key));
+            }
+
             _length = actualLength;
             _key = new byte[_length];
             Array.Copy(key, _key, _length);

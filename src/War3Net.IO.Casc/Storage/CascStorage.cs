@@ -201,6 +201,25 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByName(string fileName)
         {
+            // Validate file name to prevent path traversal
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+            }
+
+            // Normalize path separators and check for path traversal attempts
+            fileName = fileName.Replace('\\', '/');
+            
+            // Check for path traversal patterns
+            if (fileName.Contains("../") || fileName.Contains("..\\") || 
+                fileName.StartsWith("/") || fileName.StartsWith("\\") ||
+                Path.IsPathRooted(fileName) || 
+                fileName.Contains(':') || // Drive letters on Windows
+                fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                throw new ArgumentException($"Invalid file name or path traversal attempt: {fileName}", nameof(fileName));
+            }
+
             if (_context.RootHandler == null)
             {
                 throw new CascException("Root handler not loaded. Cannot resolve file names.");

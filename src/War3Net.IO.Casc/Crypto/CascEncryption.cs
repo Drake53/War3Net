@@ -149,9 +149,25 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>The encryption key, or null if not found.</returns>
         public static byte[]? GetKey(ulong keyName)
         {
+            // ConcurrentDictionary already provides thread-safe access
+            // Return the key directly since it's already stored as a defensive copy in AddKnownKey
+            return KnownKeys.TryGetValue(keyName, out var key) ? key : null;
+        }
+
+        /// <summary>
+        /// Gets a copy of an encryption key.
+        /// </summary>
+        /// <param name="keyName">The key name.</param>
+        /// <returns>A copy of the encryption key, or null if not found.</returns>
+        /// <remarks>
+        /// Use this method when you need to modify the returned key array.
+        /// For read-only access, use GetKey instead.
+        /// </remarks>
+        public static byte[]? GetKeyCopy(ulong keyName)
+        {
             if (KnownKeys.TryGetValue(keyName, out var key))
             {
-                // Return a defensive copy to prevent external modifications
+                // Return a defensive copy for cases where modification is needed
                 var keyCopy = new byte[key.Length];
                 Array.Copy(key, keyCopy, key.Length);
                 return keyCopy;

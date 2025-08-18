@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -25,14 +26,21 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The string.</returns>
         public static string ReadCString(this BinaryReader reader)
         {
-            var sb = new StringBuilder();
-            char ch;
-            while ((ch = reader.ReadChar()) != '\0')
+            // More efficient approach: read bytes until null terminator
+            var bytes = new List<byte>(256); // Pre-allocate reasonable capacity
+            byte b;
+            while ((b = reader.ReadByte()) != 0)
             {
-                sb.Append(ch);
+                bytes.Add(b);
+                
+                // Prevent excessive memory allocation from malformed data
+                if (bytes.Count > 65536) // 64KB max string length
+                {
+                    throw new InvalidOperationException("String exceeds maximum allowed length of 65536 bytes");
+                }
             }
 
-            return sb.ToString();
+            return bytes.Count > 0 ? Encoding.UTF8.GetString(bytes.ToArray()) : string.Empty;
         }
 
         /// <summary>

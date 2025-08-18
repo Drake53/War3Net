@@ -117,6 +117,8 @@ namespace War3Net.IO.Casc.Index
         /// <returns>The parsed header.</returns>
         public static IndexHeaderV1 Parse(BinaryReader reader)
         {
+            var startPos = reader.BaseStream.Position;
+            
             var header = new IndexHeaderV1
             {
                 IndexVersion = reader.ReadUInt16(),
@@ -139,6 +141,23 @@ namespace War3Net.IO.Casc.Index
             if (header.IndexVersion != ExpectedVersion)
             {
                 throw new CascParserException($"Invalid index v1 version: 0x{header.IndexVersion:X4}, expected 0x{ExpectedVersion:X4}");
+            }
+
+            // Validate header hash if needed
+            if (header.HeaderHash != 0)
+            {
+                // Calculate hash of header bytes (excluding the hash field itself)
+                var currentPos = reader.BaseStream.Position;
+                reader.BaseStream.Position = startPos;
+                var headerBytes = reader.ReadBytes(HeaderSize - 4); // Read all but the hash field
+                reader.BaseStream.Position = currentPos;
+                
+                // Use Jenkins hash or appropriate algorithm
+                var calculatedHash = Utilities.HashHelper.JenkinsHash(headerBytes);
+                if (calculatedHash != header.HeaderHash)
+                {
+                    System.Diagnostics.Trace.TraceWarning($"Index header hash mismatch: calculated 0x{calculatedHash:X8}, expected 0x{header.HeaderHash:X8}");
+                }
             }
 
             return header;

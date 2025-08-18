@@ -162,9 +162,15 @@ namespace War3Net.IO.Casc.Root
 
                     AddEntry(fileName, entry);
                 }
-                catch
+                catch (FormatException ex)
                 {
-                    // Skip invalid entries
+                    // Log and skip entries with invalid format
+                    System.Diagnostics.Trace.TraceWarning($"Skipping invalid root entry '{fileName}': {ex.Message}");
+                }
+                catch (ArgumentException ex)
+                {
+                    // Log and skip entries with invalid arguments
+                    System.Diagnostics.Trace.TraceWarning($"Skipping invalid root entry '{fileName}': {ex.Message}");
                 }
             }
         }

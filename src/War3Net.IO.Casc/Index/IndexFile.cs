@@ -107,7 +107,16 @@ namespace War3Net.IO.Casc.Index
                             stream.Position = nextPageStart;
                         }
                         
+                        // Ensure we read exactly the expected number of bytes
+                        var entryStartPos = stream.Position;
                         var entry = EKeyEntry.Parse(reader, index.Header);
+                        var bytesRead = stream.Position - entryStartPos;
+                        
+                        if (bytesRead != entrySize)
+                        {
+                            throw new CascParserException($"Expected to read {entrySize} bytes for entry, but read {bytesRead} bytes");
+                        }
+                        
                         if (!entry.EKey.IsEmpty)
                         {
                             index.AddEntry(entry);
@@ -143,7 +152,15 @@ namespace War3Net.IO.Casc.Index
                             break;
                         }
                         
+                        // Ensure we read exactly the expected number of bytes
+                        var entryStartPos = stream.Position;
                         var entry = EKeyEntry.Parse(reader, index.Header);
+                        var bytesRead = stream.Position - entryStartPos;
+                        
+                        if (bytesRead != entrySize)
+                        {
+                            throw new CascParserException($"Expected to read {entrySize} bytes for entry, but read {bytesRead} bytes");
+                        }
                         
                         // Check if entry is valid (not all zeros)
                         if (!entry.EKey.IsEmpty)

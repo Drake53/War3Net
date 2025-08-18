@@ -193,6 +193,13 @@ namespace War3Net.IO.Casc.Compression
             // Read encrypted data type
             var encryptedType = reader.ReadByte();
 
+            // Prevent infinite recursion - encrypted frames should not contain another encrypted frame
+            // Check BEFORE attempting decryption to avoid potential exploits
+            if ((CompressionType)encryptedType == CompressionType.Encrypted)
+            {
+                throw new CascException("Nested encrypted frames are not supported");
+            }
+
             // Read encrypted data
             var encryptedSize = (int)(frame.Data!.Length - 1 - 1 - keyNameLength - 4 - 1);
             var encryptedData = reader.ReadBytes(encryptedSize);
@@ -204,12 +211,6 @@ namespace War3Net.IO.Casc.Compression
             if (decryptedData == null || decryptedData.Length == 0)
             {
                 throw new CascEncryptionException(keyName, "Decryption failed or produced empty data");
-            }
-
-            // Prevent infinite recursion - encrypted frames should not contain another encrypted frame
-            if ((CompressionType)encryptedType == CompressionType.Encrypted)
-            {
-                throw new CascException("Nested encrypted frames are not supported");
             }
 
             // The decrypted data should be processed based on the compression type
@@ -308,6 +309,12 @@ namespace War3Net.IO.Casc.Compression
                 return false;
             }
 
+            // For non-seekable streams, we cannot check without consuming data
+            if (!stream.CanSeek)
+            {
+                throw new NotSupportedException("Cannot check BLTE signature on non-seekable streams without consuming data");
+            }
+
             // Save the current position
             var originalPosition = stream.Position;
             
@@ -331,11 +338,8 @@ namespace War3Net.IO.Casc.Compression
             }
             finally
             {
-                // Always restore the original position
-                if (stream.CanSeek)
-                {
-                    stream.Position = originalPosition;
-                }
+                // Restore the original position for seekable streams
+                stream.Position = originalPosition;
             }
         }
     }
