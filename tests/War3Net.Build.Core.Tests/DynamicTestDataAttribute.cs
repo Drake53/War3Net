@@ -24,7 +24,9 @@ namespace War3Net.Build.Core.Tests
             _testDataFileType = testDataFileType;
         }
 
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo)
+        public TestDataFileType TestDataFileType => _testDataFileType;
+
+        public virtual IEnumerable<object[]> GetData(MethodInfo methodInfo)
         {
             return TestDataFileProvider.GetFilePathsForTestDataType(_testDataFileType);
         }
@@ -33,20 +35,25 @@ namespace War3Net.Build.Core.Tests
         {
             if (data.Length == 1 && data[0] is string filePath)
             {
-                var fileName = Path.GetFileName(filePath);
-
-                foreach (var knownFileName in TestDataFileParams.Get(_testDataFileType).KnownFileNames)
-                {
-                    if (string.Equals(fileName, knownFileName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return Path.GetFileName(Path.GetDirectoryName(filePath));
-                    }
-                }
-
-                return fileName;
+                return GetFileDisplayName(filePath);
             }
 
             return methodInfo.Name;
+        }
+
+        protected string GetFileDisplayName(string filePath)
+        {
+            var fileName = Path.GetFileName(filePath);
+
+            foreach (var knownFileName in TestDataFileParams.Get(_testDataFileType).KnownFileNames)
+            {
+                if (string.Equals(fileName, knownFileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Path.GetFileName(Path.GetDirectoryName(filePath));
+                }
+            }
+
+            return fileName;
         }
     }
 }

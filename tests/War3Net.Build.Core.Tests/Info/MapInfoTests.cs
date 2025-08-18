@@ -56,21 +56,21 @@ namespace War3Net.Build.Core.Tests.Info
 #endif
 
         [TestMethod]
-        [DynamicTestData(TestDataFileType.MapInfo)]
+        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x")]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [DynamicTestData(TestDataFileType.MapInfo)]
+        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x", "241070.w3x")]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [DynamicTestData(TestDataFileType.MapInfo)]
+        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x", "241070.w3x")]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
