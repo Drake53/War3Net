@@ -18,7 +18,7 @@ namespace War3Net.Common.Tests.Extensions
     [TestClass]
     public sealed class BinaryWriterExtensionsTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestWriteStrings), DynamicDataSourceType.Method)]
         public void TestWriteString(string? s, Type? expectedExceptionType = null)
         {

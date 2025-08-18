@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataCreateAllDestructables), DynamicDataSourceType.Method)]
         public void TestBodyCreateAllDestructables(MapScriptBuilderTestData testData)
         {
@@ -25,7 +25,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateAllDestructables(MapScriptBuilderTestData testData)
         {

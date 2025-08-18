@@ -50,28 +50,28 @@ namespace War3Net.Build.Core.Tests.Environment
         }
 #endif
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapEnvironmentFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapEnvironment)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapEnvironment>.RunJsonRWTest(filePath, true);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetDefaultEnvironmentFiles), DynamicDataSourceType.Method)]
         public void TestDefaultTileset(string environmentFilePath)
         {

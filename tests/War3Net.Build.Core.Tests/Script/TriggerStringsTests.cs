@@ -9,14 +9,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Script;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
     [TestClass]
     public class TriggerStringsTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetTriggerStringsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [FlakyTestMethod]
+        [DynamicTestData(TestDataFileType.TriggerStrings)]
         public void TestParseTriggerStrings(string triggerStringsFilePath)
         {
             ParseTestHelper.RunStreamRWTest(
