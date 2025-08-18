@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Triggers;
 
         [TestMethod]
-        [FlakyDynamicTestData(FilesToOpen, "ExampleMap203.w3x", "142119.w3m", "306784.w3x")]
+        [FlakyDynamicTestData(FilesToOpen, "ExampleMap203.w3x", "142119.w3m", "306784.w3x", "310421.w3x", "310540.w3x")]
         public void TestDecompileMapTriggers(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
