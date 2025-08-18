@@ -1,0 +1,290 @@
+// ------------------------------------------------------------------------------
+// <copyright file="OnlineCascStorage.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using War3Net.IO.Casc.CDN;
+using War3Net.IO.Casc.Enums;
+using War3Net.IO.Casc.Progress;
+
+namespace War3Net.IO.Casc.Storage
+{
+    /// <summary>
+    /// Online CASC storage implementation.
+    /// </summary>
+    public class OnlineCascStorage : CascStorage
+    {
+        private CDNClient? _cdnClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnlineCascStorage"/> class.
+        /// </summary>
+        /// <param name="product">The product code (e.g., "w3", "wow", "d3").</param>
+        /// <param name="region">The region (e.g., "us", "eu", "kr", "cn").</param>
+        /// <param name="localCachePath">The local cache path.</param>
+        /// <param name="localeFlags">The locale flags.</param>
+        private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags)
+            : base(localCachePath, localeFlags)
+        {
+            Product = product;
+            Region = region;
+        }
+
+        /// <summary>
+        /// Gets the product code.
+        /// </summary>
+        public string Product { get; }
+
+        /// <summary>
+        /// Gets the region.
+        /// </summary>
+        public string Region { get; }
+
+        /// <summary>
+        /// Gets the CDN client.
+        /// </summary>
+        public CDNClient? CDNClient => _cdnClient;
+
+        /// <summary>
+        /// Opens an online CASC storage.
+        /// </summary>
+        /// <param name="product">The product code.</param>
+        /// <param name="region">The region.</param>
+        /// <param name="localCachePath">The local cache path.</param>
+        /// <param name="localeFlags">The locale flags.</param>
+        /// <param name="progressReporter">Optional progress reporter.</param>
+        /// <returns>The opened storage.</returns>
+        public static async Task<OnlineCascStorage> OpenStorageAsync(
+            string product,
+            string region = "us",
+            string? localCachePath = null,
+            CascLocaleFlags localeFlags = CascLocaleFlags.All,
+            IProgressReporter? progressReporter = null)
+        {
+            localCachePath ??= Path.Combine(Path.GetTempPath(), "CascCache", product, region);
+            Directory.CreateDirectory(localCachePath);
+
+            var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags);
+            await storage.InitializeOnlineAsync(progressReporter);
+            return storage;
+        }
+
+        /// <summary>
+        /// Opens Warcraft III online storage.
+        /// </summary>
+        /// <param name="region">The region.</param>
+        /// <param name="localCachePath">The local cache path.</param>
+        /// <param name="progressReporter">Optional progress reporter.</param>
+        /// <returns>The opened storage.</returns>
+        public static async Task<OnlineCascStorage> OpenWar3Async(
+            string region = "us",
+            string? localCachePath = null,
+            IProgressReporter? progressReporter = null)
+        {
+            return await OpenStorageAsync("w3", region, localCachePath, CascLocaleFlags.All, progressReporter);
+        }
+
+        /// <inheritdoc/>
+        public override void Dispose()
+        {
+            _cdnClient?.Dispose();
+            base.Dispose();
+        }
+
+        private async Task InitializeOnlineAsync(IProgressReporter? progressReporter)
+        {
+            progressReporter?.Report(new ProgressEventArgs
+            {
+                Message = CascProgressMessage.DownloadingFile,
+                Current = 0,
+                Total = 4,
+                FileName = "versions",
+            });
+
+            // Download versions file
+            var versionsUrl = GetVersionsUrl(Product, Region);
+            byte[] versionsData;
+            using (var httpClient = new HttpClient())
+            {
+                versionsData = await httpClient.GetByteArrayAsync(versionsUrl);
+            }
+
+            // Parse versions
+            VersionConfig versions;
+            using (var stream = new MemoryStream(versionsData))
+            {
+                versions = VersionConfig.Parse(stream);
+            }
+
+            var versionEntry = versions.GetEntry(Region) ?? versions.GetFirstEntry();
+            if (versionEntry == null)
+            {
+                throw new CascException($"No version entry found for region {Region}");
+            }
+
+            progressReporter?.Report(new ProgressEventArgs
+            {
+                Message = CascProgressMessage.DownloadingFile,
+                Current = 1,
+                Total = 4,
+                FileName = "cdns",
+            });
+
+            // Download CDNs file
+            var cdnsUrl = GetCDNsUrl(Product, Region);
+            byte[] cdnsData;
+            using (var httpClient = new HttpClient())
+            {
+                cdnsData = await httpClient.GetByteArrayAsync(cdnsUrl);
+            }
+
+            // Parse CDNs
+            CDNServersConfig cdns;
+            using (var stream = new MemoryStream(cdnsData))
+            {
+                cdns = CDNServersConfig.Parse(stream);
+            }
+
+            var cdnEntry = cdns.GetEntry(Region) ?? cdns.GetFirstEntry();
+            if (cdnEntry == null)
+            {
+                throw new CascException($"No CDN entry found for region {Region}");
+            }
+
+            // Initialize CDN client
+            _cdnClient = new CDNClient(cdnEntry.Hosts, cdnEntry.Path);
+
+            progressReporter?.Report(new ProgressEventArgs
+            {
+                Message = CascProgressMessage.DownloadingFile,
+                Current = 2,
+                Total = 4,
+                FileName = "build config",
+            });
+
+            // Download and cache build config
+            var buildConfigPath = Path.Combine(StoragePath, "config", versionEntry.BuildConfig);
+            if (!File.Exists(buildConfigPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(buildConfigPath)!);
+                var buildConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.BuildConfig);
+                await File.WriteAllBytesAsync(buildConfigPath, buildConfigData);
+            }
+
+            progressReporter?.Report(new ProgressEventArgs
+            {
+                Message = CascProgressMessage.DownloadingFile,
+                Current = 3,
+                Total = 4,
+                FileName = "cdn config",
+            });
+
+            // Download and cache CDN config
+            var cdnConfigPath = Path.Combine(StoragePath, "config", versionEntry.CDNConfig);
+            if (!File.Exists(cdnConfigPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(cdnConfigPath)!);
+                var cdnConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.CDNConfig);
+                await File.WriteAllBytesAsync(cdnConfigPath, cdnConfigData);
+            }
+
+            // Parse CDN config to get archive information
+            CDNConfig cdnConfig;
+            using (var stream = File.OpenRead(cdnConfigPath))
+            {
+                cdnConfig = CDNConfig.Parse(stream);
+            }
+
+            progressReporter?.Report(new ProgressEventArgs
+            {
+                Message = CascProgressMessage.LoadingIndexes,
+                Current = 4,
+                Total = 4,
+            });
+
+            // Download index files if needed
+            await DownloadIndexFilesAsync(cdnConfig, progressReporter);
+
+            // Continue with base initialization
+            // The base class will handle loading the downloaded files
+        }
+
+        private async Task DownloadIndexFilesAsync(CDNConfig cdnConfig, IProgressReporter? progressReporter)
+        {
+            var dataPath = Path.Combine(StoragePath, "data");
+            Directory.CreateDirectory(dataPath);
+
+            // Download archive indexes
+            var archives = cdnConfig.Archives;
+            for (int i = 0; i < Math.Min(archives.Count, 16); i++) // Limit to first 16 archives
+            {
+                var archiveKey = archives[i];
+                if (string.IsNullOrEmpty(archiveKey))
+                {
+                    continue;
+                }
+
+                var indexFileName = $"{archiveKey.Substring(0, 16)}.idx";
+                var indexPath = Path.Combine(dataPath, indexFileName);
+
+                if (!File.Exists(indexPath))
+                {
+                    progressReporter?.Report(new ProgressEventArgs
+                    {
+                        Message = CascProgressMessage.DownloadingArchiveIndexes,
+                        Current = i,
+                        Total = archives.Count,
+                        FileName = indexFileName,
+                    });
+
+                    try
+                    {
+                        var indexData = await _cdnClient!.DownloadDataAsync(archiveKey + ".index");
+                        await File.WriteAllBytesAsync(indexPath, indexData);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log but continue - not all indexes may be available
+                        System.Diagnostics.Debug.WriteLine($"Failed to download index {indexFileName}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        private static string GetVersionsUrl(string product, string region)
+        {
+            return product.ToLowerInvariant() switch
+            {
+                "w3" or "war3" => $"http://{region}.patch.battle.net:1119/w3/versions",
+                "wow" => $"http://{region}.patch.battle.net:1119/wow/versions",
+                "d3" or "diablo3" => $"http://{region}.patch.battle.net:1119/d3/versions",
+                "hs" or "hearthstone" => $"http://{region}.patch.battle.net:1119/hs/versions",
+                "sc2" => $"http://{region}.patch.battle.net:1119/sc2/versions",
+                "hots" or "heroes" => $"http://{region}.patch.battle.net:1119/hero/versions",
+                _ => throw new ArgumentException($"Unknown product: {product}"),
+            };
+        }
+
+        private static string GetCDNsUrl(string product, string region)
+        {
+            return product.ToLowerInvariant() switch
+            {
+                "w3" or "war3" => $"http://{region}.patch.battle.net:1119/w3/cdns",
+                "wow" => $"http://{region}.patch.battle.net:1119/wow/cdns",
+                "d3" or "diablo3" => $"http://{region}.patch.battle.net:1119/d3/cdns",
+                "hs" or "hearthstone" => $"http://{region}.patch.battle.net:1119/hs/cdns",
+                "sc2" => $"http://{region}.patch.battle.net:1119/sc2/cdns",
+                "hots" or "heroes" => $"http://{region}.patch.battle.net:1119/hero/cdns",
+                _ => throw new ArgumentException($"Unknown product: {product}"),
+            };
+        }
+    }
+}
