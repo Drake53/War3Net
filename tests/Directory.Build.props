@@ -5,6 +5,7 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <DefineConstants Condition="'$(ENABLE_FLAKY_TESTS)' == 'true'">$(DefineConstants);ENABLE_FLAKY_TESTS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
