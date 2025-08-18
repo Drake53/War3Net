@@ -21,10 +21,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
     [TestClass]
     public class MapTriggersDecompilerTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Triggers;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapTriggers(Map map)
+        public void TestDecompileMapTriggers(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapTriggers(map.Triggers.FormatVersion, map.Triggers.SubVersion, out var decompiledMapTriggers), "Failed to decompile map triggers.");
 
             Assert.AreEqual(map.Triggers.Variables.Count, decompiledMapTriggers.Variables.Count);
@@ -68,9 +72,9 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Triggers) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Triggers is not null &&
                     map.Triggers.FormatVersion != MapTriggersFormatVersion.v3 &&
@@ -79,7 +83,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }

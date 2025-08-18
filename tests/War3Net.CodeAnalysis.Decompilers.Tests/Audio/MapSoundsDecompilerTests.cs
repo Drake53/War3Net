@@ -21,10 +21,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
     [TestClass]
     public class MapSoundsDecompilerTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Sounds;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapSounds(Map map)
+        public void TestDecompileMapSounds(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapSounds(map.Sounds.FormatVersion, out var decompiledMapSounds), "Failed to decompile map sounds.");
 
             Assert.AreEqual(map.Sounds.Sounds.Count, decompiledMapSounds.Sounds.Count);
@@ -53,16 +57,16 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Sounds) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Sounds is not null &&
                     map.Sounds.Sounds.Count > 0 &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }

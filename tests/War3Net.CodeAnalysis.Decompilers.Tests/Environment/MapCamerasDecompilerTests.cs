@@ -20,10 +20,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     [TestClass]
     public class MapCamerasDecompilerTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Cameras;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapCameras(Map map)
+        public void TestDecompileMapCameras(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapCameras(map.Cameras.FormatVersion, map.Cameras.UseNewFormat, out var decompiledMapCameras), "Failed to decompile map cameras.");
 
             Assert.AreEqual(map.Cameras.Cameras.Count, decompiledMapCameras.Cameras.Count);
@@ -58,16 +62,16 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Cameras) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Cameras is not null &&
                     map.Cameras.Cameras.Count > 0 &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }

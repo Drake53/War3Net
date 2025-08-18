@@ -22,10 +22,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
     [TestClass]
     public class MapUnitsDecompilerTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Units;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapUnits(Map map)
+        public void TestDecompileMapUnits(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapUnits(map.Units.FormatVersion, map.Units.SubVersion, map.Units.UseNewFormat, out var decompiledMapUnits), "Failed to decompile map units.");
 
             var expectedMapUnits = map.Units.Units
@@ -93,16 +97,16 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Units) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Units is not null &&
                     map.Units.Units.Count > 0 &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }

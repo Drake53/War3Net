@@ -20,10 +20,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     [TestClass]
     public class MapRegionsDecompilerTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Regions;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapRegions(Map map)
+        public void TestDecompileMapRegions(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapRegions(map.Regions.FormatVersion, out var decompiledMapRegions), "Failed to decompile map regions.");
 
             Assert.AreEqual(map.Regions.Regions.Count, decompiledMapRegions.Regions.Count);
@@ -44,16 +48,16 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Regions) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Regions is not null &&
                     map.Regions.Regions.Count > 0 &&
                     map.Info.ScriptLanguage == ScriptLanguage.Jass &&
                     !string.IsNullOrEmpty(map.Script))
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }
