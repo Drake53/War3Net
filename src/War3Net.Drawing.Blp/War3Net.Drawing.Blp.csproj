@@ -4,7 +4,6 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
     <Version>$(War3NetDrawingBlpVersion)</Version>
-    <UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,8 +11,12 @@
     <PackageTags>blp;warcraft3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="JpegLibrary" Version="0.3.30" Condition="'$(TargetFramework)' != 'net5.0-windows'" />
+  <PropertyGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))">
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))">
+    <PackageReference Include="JpegLibrary" Version="0.3.30" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
