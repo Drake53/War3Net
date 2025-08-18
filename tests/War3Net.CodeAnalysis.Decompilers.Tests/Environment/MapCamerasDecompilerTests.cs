@@ -5,15 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
-using War3Net.Build.Info;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 {
@@ -23,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Cameras;
 
         [TestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        [DynamicTestData(FilesToOpen)]
         public void TestDecompileMapCameras(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
@@ -57,22 +53,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 
                 Assert.AreEqual(expectedCamera.TargetPosition.X, actualCamera.TargetPosition.X, delta);
                 Assert.AreEqual(expectedCamera.TargetPosition.Y, actualCamera.TargetPosition.Y, delta);
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
-                    map.Info is not null &&
-                    map.Cameras is not null &&
-                    map.Cameras.Cameras.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return data;
-                }
             }
         }
     }

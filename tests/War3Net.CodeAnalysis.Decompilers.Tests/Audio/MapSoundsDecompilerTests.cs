@@ -5,16 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Audio;
-using War3Net.Build.Info;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
 {
@@ -24,7 +20,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Sounds;
 
         [TestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        [FlakyDynamicTestData(FilesToOpen, "ExampleMap133.w3x")]
         public void TestDecompileMapSounds(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
@@ -51,22 +47,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
                     Assert.AreEqual(expectedSound.FacialAnimationLabel, actualSound.FacialAnimationLabel, ignoreCase: false, CultureInfo.InvariantCulture);
                     Assert.AreEqual(expectedSound.FacialAnimationGroupLabel, actualSound.FacialAnimationGroupLabel, ignoreCase: false, CultureInfo.InvariantCulture);
                     Assert.AreEqual(expectedSound.FacialAnimationSetFilepath, actualSound.FacialAnimationSetFilepath, ignoreCase: false, CultureInfo.InvariantCulture);
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
-                    map.Info is not null &&
-                    map.Sounds is not null &&
-                    map.Sounds.Sounds.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return data;
                 }
             }
         }

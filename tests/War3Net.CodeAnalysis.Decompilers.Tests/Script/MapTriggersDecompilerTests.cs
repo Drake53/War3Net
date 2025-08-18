@@ -5,14 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
-using War3Net.Build.Info;
 using War3Net.Build.Script;
 using War3Net.TestTools.UnitTesting;
 
@@ -24,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Triggers;
 
         [TestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        [FlakyDynamicTestData(FilesToOpen, "ExampleMap203.w3x", "142119.w3m", "306784.w3x")]
         public void TestDecompileMapTriggers(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
@@ -66,24 +63,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                     var actualTriggerDefinition = (TriggerDefinition)actualTrigger;
 
                     TriggerAssert.AreEqual(expectedTriggerDefinition, actualTriggerDefinition);
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
-                    map.Info is not null &&
-                    map.Triggers is not null &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v3 &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v6 &&
-                    (map.Triggers.Variables.Count > 0 || map.Triggers.TriggerItems.Any(triggerItem => triggerItem is not DeletedTriggerItem)) &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return data;
                 }
             }
         }

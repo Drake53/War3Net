@@ -5,15 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
-using War3Net.Build.Info;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 {
@@ -23,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Regions;
 
         [TestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        [DynamicTestData(FilesToOpen)]
         public void TestDecompileMapRegions(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
@@ -43,22 +39,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
                 Assert.AreEqual(expectedRegion.Top, actualRegion.Top);
                 Assert.AreEqual(expectedRegion.WeatherType, actualRegion.WeatherType);
                 Assert.AreEqual(expectedRegion.AmbientSound, actualRegion.AmbientSound);
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
-                    map.Info is not null &&
-                    map.Regions is not null &&
-                    map.Regions.Regions.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return data;
-                }
             }
         }
     }

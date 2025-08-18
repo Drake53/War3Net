@@ -5,17 +5,13 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Extensions;
-using War3Net.Build.Info;
 using War3Net.Common.Extensions;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
 {
@@ -25,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Units;
 
         [TestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
+        [DynamicTestData(FilesToOpen)]
         public void TestDecompileMapUnits(string mapFilePath)
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
@@ -91,22 +87,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
                     {
                         Assert.AreEqual(expectedUnit.SkinId, actualUnit.SkinId, $"\r\nExpected: '{expectedUnit.SkinId.ToRawcode()}'. Actual: '{actualUnit.SkinId.ToRawcode()}'.");
                     }
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
-                    map.Info is not null &&
-                    map.Units is not null &&
-                    map.Units.Units.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return data;
                 }
             }
         }
