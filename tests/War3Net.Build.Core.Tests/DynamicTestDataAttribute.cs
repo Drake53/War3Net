@@ -44,16 +44,9 @@ namespace War3Net.Build.Core.Tests
         protected string GetFileDisplayName(string filePath)
         {
             var fileName = Path.GetFileName(filePath);
+            var directoryName = Path.GetFileName(Path.GetDirectoryName(filePath));
 
-            foreach (var knownFileName in TestDataFileParams.Get(_testDataFileType).KnownFileNames)
-            {
-                if (string.Equals(fileName, knownFileName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return Path.GetFileName(Path.GetDirectoryName(filePath));
-                }
-            }
-
-            return fileName;
+            return Path.Combine(directoryName, fileName);
         }
     }
 }

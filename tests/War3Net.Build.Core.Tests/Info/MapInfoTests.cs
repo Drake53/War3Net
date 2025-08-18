@@ -56,21 +56,29 @@ namespace War3Net.Build.Core.Tests.Info
 #endif
 
         [TestMethod]
-        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x")]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i")]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
         }
 
         [TestMethod]
-        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x", "241070.w3x")]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i",
+            "241070.w3x/war3map.w3i")]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
         }
 
         [TestMethod]
-        [FlakyDynamicTestData(TestDataFileType.MapInfo, "Jurassic Park Survival EE v6.4.w3x", "241070.w3x")]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i",
+            "241070.w3x/war3map.w3i")]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
