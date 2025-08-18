@@ -6,10 +6,13 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 using War3Net.IO.Casc.CDN;
 using War3Net.IO.Casc.Enums;
@@ -70,24 +73,40 @@ namespace War3Net.IO.Casc.Storage
             IProgressReporter? progressReporter = null)
         {
             // Validate and sanitize product and region to prevent path traversal
-            if (string.IsNullOrWhiteSpace(product) || 
-                product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
-                product.Contains("..") || 
-                product.Contains("/") || 
-                product.Contains("\\") ||
-                product.Length > 50) // Reasonable length limit
+            ValidateProductAndRegion(product, region);
+            
+            // Decode any URL-encoded sequences first
+            product = HttpUtility.UrlDecode(product);
+            region = HttpUtility.UrlDecode(region);
+            
+            // Re-validate after decoding
+            ValidateProductAndRegion(product, region);
+            
+            // Additional checks for various path traversal patterns
+            var pathTraversalPatterns = new[] 
             {
-                throw new ArgumentException($"Invalid product name: '{product}'. Must be a valid directory name without path separators.", nameof(product));
+                "..", "../", "..\\", 
+                "%2e%2e", "%2e%2e%2f", "%2e%2e%5c",
+                "..%2f", "..%5c",
+                ".%2e", "%2e.",
+                ":", // Alternate data streams on Windows
+                "$", "~", // Shell expansion characters
+            };
+            
+            foreach (var pattern in pathTraversalPatterns)
+            {
+                if (product.Contains(pattern, StringComparison.OrdinalIgnoreCase) ||
+                    region.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException($"Invalid characters or patterns detected in product or region.");
+                }
             }
-
-            if (string.IsNullOrWhiteSpace(region) || 
-                region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
-                region.Contains("..") || 
-                region.Contains("/") || 
-                region.Contains("\\") ||
-                region.Length > 10) // Reasonable length limit for region codes
+            
+            // Validate using regex for extra safety
+            var safeNamePattern = @"^[a-zA-Z0-9_-]+$";
+            if (!Regex.IsMatch(product, safeNamePattern) || !Regex.IsMatch(region, safeNamePattern))
             {
-                throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
+                throw new ArgumentException($"Product and region must contain only alphanumeric characters, hyphens, and underscores.");
             }
 
             // Additional validation for known product/region combinations
@@ -118,39 +137,7 @@ namespace War3Net.IO.Casc.Storage
             }
             else
             {
-                // Validate provided path - ensure it's an absolute path and doesn't contain traversal patterns
-                try
-                {
-                    localCachePath = Path.GetFullPath(localCachePath);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException($"Invalid cache path: {ex.Message}", nameof(localCachePath), ex);
-                }
-                
-                // Ensure the resolved path doesn't escape expected boundaries
-                var tempPath = Path.GetFullPath(Path.GetTempPath());
-                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                
-                // Allow paths only within safe directories
-                bool isInSafeDirectory = 
-                    localCachePath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
-                    localCachePath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase) ||
-                    localCachePath.StartsWith(appData, StringComparison.OrdinalIgnoreCase) ||
-                    localCachePath.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase);
-
-                if (!isInSafeDirectory)
-                {
-                    throw new ArgumentException($"Cache path must be within temp directory, user profile, or application data directories", nameof(localCachePath));
-                }
-
-                // Additional check: ensure the path doesn't try to escape using symbolic links
-                if (localCachePath.Contains("~") || localCachePath.Contains("$"))
-                {
-                    throw new ArgumentException($"Cache path cannot contain special shell characters", nameof(localCachePath));
-                }
+                localCachePath = ValidateAndNormalizePath(localCachePath);
             }
 
             Directory.CreateDirectory(localCachePath);
@@ -379,6 +366,98 @@ namespace War3Net.IO.Casc.Storage
                 "hots" or "heroes" => $"http://{region}.patch.battle.net:1119/hero/cdns",
                 _ => throw new ArgumentException($"Unknown product: {product}"),
             };
+        }
+        
+        private static void ValidateProductAndRegion(string product, string region)
+        {
+            if (string.IsNullOrWhiteSpace(product) || 
+                product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
+                product.Contains("..") || 
+                product.Contains("/") || 
+                product.Contains("\\") ||
+                product.Length > 50) // Reasonable length limit
+            {
+                throw new ArgumentException($"Invalid product name: '{product}'. Must be a valid directory name without path separators.", nameof(product));
+            }
+
+            if (string.IsNullOrWhiteSpace(region) || 
+                region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
+                region.Contains("..") || 
+                region.Contains("/") || 
+                region.Contains("\\") ||
+                region.Length > 10) // Reasonable length limit for region codes
+            {
+                throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
+            }
+        }
+        
+        private static string ValidateAndNormalizePath(string path)
+        {
+            // Decode any URL-encoded sequences
+            var decodedPath = HttpUtility.UrlDecode(path);
+            
+            // Check for path traversal patterns before normalization
+            var pathTraversalPatterns = new[] 
+            {
+                "..", "../", "..\\",
+                "%2e%2e", "%2e%2e%2f", "%2e%2e%5c",
+                "..%2f", "..%5c",
+                ".%2e", "%2e.",
+            };
+            
+            foreach (var pattern in pathTraversalPatterns)
+            {
+                if (decodedPath.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException($"Path contains invalid traversal pattern: {pattern}");
+                }
+            }
+            
+            // Normalize the path
+            string normalizedPath;
+            try
+            {
+                normalizedPath = Path.GetFullPath(decodedPath);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Invalid cache path: {ex.Message}", nameof(path), ex);
+            }
+            
+            // Check for alternate data streams (Windows)
+            if (normalizedPath.Contains(':') && !Path.IsPathRooted(normalizedPath))
+            {
+                throw new ArgumentException($"Path cannot contain alternate data stream syntax");
+            }
+            
+            // Ensure the resolved path doesn't escape expected boundaries
+            var tempPath = Path.GetFullPath(Path.GetTempPath());
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            
+            // Allow paths only within safe directories
+            bool isInSafeDirectory = 
+                normalizedPath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
+                normalizedPath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase) ||
+                normalizedPath.StartsWith(appData, StringComparison.OrdinalIgnoreCase) ||
+                normalizedPath.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase) ||
+                normalizedPath.StartsWith(programData, StringComparison.OrdinalIgnoreCase);
+
+            if (!isInSafeDirectory)
+            {
+                throw new ArgumentException($"Cache path must be within temp directory, user profile, or application data directories");
+            }
+
+            // Additional check: ensure the path doesn't contain shell expansion characters after normalization
+            var shellChars = new[] { '~', '$', '`', '!', '&', '|', ';' };
+            if (normalizedPath.IndexOfAny(shellChars) >= 0)
+            {
+                throw new ArgumentException($"Cache path cannot contain special shell characters");
+            }
+            
+            return normalizedPath;
         }
     }
 }

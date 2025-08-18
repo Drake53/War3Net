@@ -21,6 +21,7 @@ namespace War3Net.IO.Casc.Compression
     /// </summary>
     public static class BLTEDecoder
     {
+        private const int MaxRecursionDepth = 10;
         /// <summary>
         /// Decodes BLTE-encoded data.
         /// </summary>
@@ -28,9 +29,19 @@ namespace War3Net.IO.Casc.Compression
         /// <returns>The decoded data.</returns>
         public static byte[] Decode(byte[] data)
         {
+            return DecodeWithDepth(data, 0);
+        }
+
+        private static byte[] DecodeWithDepth(byte[] data, int recursionDepth)
+        {
+            if (recursionDepth > MaxRecursionDepth)
+            {
+                throw new CascException($"Maximum BLTE recursion depth ({MaxRecursionDepth}) exceeded. Possible corrupted data or infinite loop.");
+            }
+
             using var inputStream = new MemoryStream(data);
             using var outputStream = new MemoryStream();
-            Decode(inputStream, outputStream);
+            DecodeWithDepth(inputStream, outputStream, recursionDepth);
             return outputStream.ToArray();
         }
 
@@ -41,6 +52,16 @@ namespace War3Net.IO.Casc.Compression
         /// <param name="outputStream">The output stream for decoded data.</param>
         public static void Decode(Stream inputStream, Stream outputStream)
         {
+            DecodeWithDepth(inputStream, outputStream, 0);
+        }
+
+        private static void DecodeWithDepth(Stream inputStream, Stream outputStream, int recursionDepth)
+        {
+            if (recursionDepth > MaxRecursionDepth)
+            {
+                throw new CascException($"Maximum BLTE recursion depth ({MaxRecursionDepth}) exceeded. Possible corrupted data or infinite loop.");
+            }
+
             using var reader = new BinaryReader(inputStream, System.Text.Encoding.UTF8, true);
 
             // Parse BLTE header
@@ -55,7 +76,7 @@ namespace War3Net.IO.Casc.Compression
                     frame.Data = reader.ReadBytes((int)frame.EncodedSize);
 
                     // Decode frame
-                    var decodedData = DecodeFrame(frame);
+                    var decodedData = DecodeFrameWithDepth(frame, recursionDepth);
                     outputStream.Write(decodedData, 0, decodedData.Length);
                 }
             }
@@ -71,7 +92,7 @@ namespace War3Net.IO.Casc.Compression
                 frame.Data = frameData;
 
                 // Decode frame
-                var decodedData = DecodeFrame(frame);
+                var decodedData = DecodeFrameWithDepth(frame, recursionDepth);
                 outputStream.Write(decodedData, 0, decodedData.Length);
             }
         }
@@ -83,6 +104,16 @@ namespace War3Net.IO.Casc.Compression
         /// <returns>The decoded data.</returns>
         public static byte[] DecodeFrame(BLTEFrame frame)
         {
+            return DecodeFrameWithDepth(frame, 0);
+        }
+
+        private static byte[] DecodeFrameWithDepth(BLTEFrame frame, int recursionDepth)
+        {
+            if (recursionDepth > MaxRecursionDepth)
+            {
+                throw new CascException($"Maximum BLTE recursion depth ({MaxRecursionDepth}) exceeded. Possible corrupted data or infinite loop.");
+            }
+
             if (frame.Data == null || frame.Data.Length == 0)
             {
                 return Array.Empty<byte>();
@@ -103,10 +134,10 @@ namespace War3Net.IO.Casc.Compression
                     return DecodeZLib(reader, frame);
 
                 case CompressionType.Encrypted:
-                    return DecodeEncrypted(reader, frame);
+                    return DecodeEncrypted(reader, frame, recursionDepth);
 
                 case CompressionType.Frame:
-                    return DecodeNestedFrame(reader, frame);
+                    return DecodeNestedFrame(reader, frame, recursionDepth);
 
                 case CompressionType.LZMA:
                     return DecodeLZMA(reader, frame);
@@ -144,7 +175,7 @@ namespace War3Net.IO.Casc.Compression
             return outputStream.ToArray();
         }
 
-        private static byte[] DecodeEncrypted(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeEncrypted(BinaryReader reader, BLTEFrame frame, int recursionDepth)
         {
             // Read encryption key name
             var keyNameLength = reader.ReadByte();
@@ -195,8 +226,8 @@ namespace War3Net.IO.Casc.Compression
                     return DecodeZLib(decryptedReader, new BLTEFrame { Data = decryptedData });
 
                 case CompressionType.Frame:
-                    // Nested BLTE frame
-                    return Decode(decryptedData);
+                    // Nested BLTE frame with depth check
+                    return DecodeWithDepth(decryptedData, recursionDepth + 1);
 
                 case CompressionType.LZMA:
                     return DecodeLZMA(decryptedReader, new BLTEFrame { Data = decryptedData });
@@ -212,11 +243,11 @@ namespace War3Net.IO.Casc.Compression
             }
         }
 
-        private static byte[] DecodeNestedFrame(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeNestedFrame(BinaryReader reader, BLTEFrame frame, int recursionDepth)
         {
-            // Nested BLTE frame - recurse
+            // Nested BLTE frame - recurse with depth check
             var nestedData = reader.ReadBytes((int)(frame.Data!.Length - 1));
-            return Decode(nestedData);
+            return DecodeWithDepth(nestedData, recursionDepth + 1);
         }
 
         private static byte[] DecodeLZMA(BinaryReader reader, BLTEFrame frame)

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace War3Net.IO.Casc
     public sealed class CascArchive : IDisposable, IEnumerable<CascEntry>
     {
         private readonly CascStorage _storage;
-        private readonly Dictionary<string, CascEntry> _entries;
-        private readonly List<Stream> _openStreams;
+        private readonly ConcurrentDictionary<string, CascEntry> _entries;
+        private readonly ConcurrentBag<Stream> _openStreams;
         private bool _disposed;
 
         /// <summary>
@@ -54,8 +55,8 @@ namespace War3Net.IO.Casc
             }
 
             _storage = CascStorage.OpenStorage(storagePath, localeFlags);
-            _entries = new Dictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
-            _openStreams = new List<Stream>();
+            _entries = new ConcurrentDictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
+            _openStreams = new ConcurrentBag<Stream>();
 
             Initialize();
         }
@@ -172,7 +173,17 @@ namespace War3Net.IO.Casc
                 stream = OpenFile(fileName, openFlags);
                 return true;
             }
-            catch
+            catch (FileNotFoundException)
+            {
+                stream = null;
+                return false;
+            }
+            catch (CascFileNotFoundException)
+            {
+                stream = null;
+                return false;
+            }
+            catch (ArgumentException)
             {
                 stream = null;
                 return false;
@@ -316,7 +327,7 @@ namespace War3Net.IO.Casc
             }
 
             // Dispose all open streams first
-            foreach (var stream in _openStreams)
+            while (_openStreams.TryTake(out var stream))
             {
                 try
                 {
@@ -327,7 +338,6 @@ namespace War3Net.IO.Casc
                     // Ignore disposal errors for individual streams
                 }
             }
-            _openStreams.Clear();
 
             // Then dispose the storage
             _storage?.Dispose();
@@ -338,9 +348,30 @@ namespace War3Net.IO.Casc
 
         private void Initialize()
         {
-            // Storage is already initialized by CascStorage.OpenStorage
-            // Here we would build the file list if we had a root handler
-            // For now, the archive works with direct key access
+            if (_storage == null)
+            {
+                throw new InvalidOperationException("Storage is not initialized");
+            }
+
+            // Build file list from root handler if available
+            var rootHandler = _storage.RootHandler;
+            if (rootHandler != null)
+            {
+                foreach (var rootEntry in rootHandler.GetEntries())
+                {
+                    var entry = new CascEntry(rootEntry.FileName)
+                    {
+                        CKey = rootEntry.CKey,
+                        EKey = rootEntry.EKey,
+                        FileSize = rootEntry.FileSize,
+                        LocaleFlags = rootEntry.LocaleFlags,
+                        ContentFlags = rootEntry.ContentFlags,
+                        FileDataId = rootEntry.FileDataId,
+                    };
+                    
+                    _entries.TryAdd(entry.FileName, entry);
+                }
+            }
         }
 
         private Stream OpenFileInternal(CascEntry entry, CascOpenFlags openFlags)
@@ -368,18 +399,13 @@ namespace War3Net.IO.Casc
             }
 
             // Track the stream for proper disposal
-            lock (_openStreams)
-            {
-                _openStreams.Add(stream);
-            }
+            _openStreams.Add(stream);
 
             // Wrap the stream to remove it from tracking when disposed
+            // Note: ConcurrentBag doesn't have Remove, so we'll handle cleanup during Dispose
             return new TrackedStream(stream, () =>
             {
-                lock (_openStreams)
-                {
-                    _openStreams.Remove(stream);
-                }
+                // Stream disposal notification - no action needed with ConcurrentBag
             });
         }
 

@@ -62,7 +62,7 @@ namespace War3Net.IO.Casc.Structures
         /// <summary>
         /// Gets an empty encoded key.
         /// </summary>
-        public static EKey Empty { get; } = new EKey(new byte[CascConstants.EKeySize]);
+        public static EKey Empty { get; } = default;
 
         /// <summary>
         /// Gets the key bytes.

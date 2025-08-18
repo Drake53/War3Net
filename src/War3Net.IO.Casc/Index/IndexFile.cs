@@ -87,51 +87,76 @@ namespace War3Net.IO.Casc.Index
             // Read entries
             using var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
 
-            if (index.Header.IsVersion1 && index.Header.EKeyCount > 0)
+            if (index.Header.IsVersion1)
             {
-                // Version 1: Read specified number of entries
-                for (int i = 0; i < index.Header.EKeyCount; i++)
+                // Version 1: Process entries with checksums
+                var entrySize = index.Header.EntryLength;
+                var pageSize = CascConstants.FileIndexPageSize;
+                var entriesPerPage = pageSize / entrySize;
+                
+                if (index.Header.EKeyCount > 0)
                 {
-                    var entry = EKeyEntry.Parse(reader, index.Header);
-                    index.AddEntry(entry);
+                    // Read specified number of entries
+                    for (int i = 0; i < index.Header.EKeyCount; i++)
+                    {
+                        // Check if we need to skip page checksum data
+                        if ((stream.Position % pageSize) + entrySize > pageSize)
+                        {
+                            // Skip to next page
+                            var nextPageStart = ((stream.Position / pageSize) + 1) * pageSize;
+                            stream.Position = nextPageStart;
+                        }
+                        
+                        var entry = EKeyEntry.Parse(reader, index.Header);
+                        if (!entry.EKey.IsEmpty)
+                        {
+                            index.AddEntry(entry);
+                        }
+                    }
                 }
             }
             else
             {
-                // Version 2: Read until end of stream
+                // Version 2: Read pages of entries
+                var entrySize = index.Header.EntryLength;
+                var pageSize = CascConstants.FileIndexPageSize;
+                var entriesPerPage = pageSize / entrySize;
+                
                 while (stream.Position < stream.Length)
                 {
-                    // Check if we're at a page boundary
-                    if ((stream.Position % CascConstants.FileIndexPageSize) == 0)
+                    var pageStart = stream.Position;
+                    var pageIndex = pageStart / pageSize;
+                    
+                    // Read entries for this page
+                    for (int i = 0; i < entriesPerPage; i++)
                     {
-                        // Check for empty page (all zeros)
-                        var pageStart = stream.Position;
-                        var testBytes = new byte[16];
-                        var bytesRead = stream.Read(testBytes, 0, testBytes.Length);
-                        stream.Position = pageStart;
-
-                        if (bytesRead == 0 || testBytes.All(b => b == 0))
+                        // Check if we have enough data for a full entry
+                        if (stream.Position + entrySize > stream.Length)
                         {
-                            // Skip empty page
-                            stream.Position = pageStart + CascConstants.FileIndexPageSize;
-                            continue;
+                            // End of file reached
+                            goto EndOfFile;
+                        }
+                        
+                        // Check if entry position exceeds page boundary (shouldn't happen in v2)
+                        if (stream.Position >= pageStart + pageSize)
+                        {
+                            break;
+                        }
+                        
+                        var entry = EKeyEntry.Parse(reader, index.Header);
+                        
+                        // Check if entry is valid (not all zeros)
+                        if (!entry.EKey.IsEmpty)
+                        {
+                            index.AddEntry(entry);
                         }
                     }
-
-                    // Make sure we have enough data for a full entry
-                    if (stream.Position + index.Header.EntryLength > stream.Length)
-                    {
-                        break;
-                    }
-
-                    var entry = EKeyEntry.Parse(reader, index.Header);
-
-                    // Check if entry is valid (not all zeros)
-                    if (!entry.EKey.IsEmpty)
-                    {
-                        index.AddEntry(entry);
-                    }
+                    
+                    // Move to the next page
+                    stream.Position = (pageIndex + 1) * pageSize;
                 }
+                
+                EndOfFile:;
             }
 
             return index;

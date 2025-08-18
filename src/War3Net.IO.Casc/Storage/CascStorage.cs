@@ -66,6 +66,11 @@ namespace War3Net.IO.Casc.Storage
         /// Gets the locale flags.
         /// </summary>
         public CascLocaleFlags LocaleFlags => _context.LocaleFlags;
+        
+        /// <summary>
+        /// Gets the root handler.
+        /// </summary>
+        internal IRootHandler? RootHandler => _context.RootHandler;
 
         /// <summary>
         /// Opens a local CASC storage.
@@ -413,24 +418,51 @@ namespace War3Net.IO.Casc.Storage
         /// <inheritdoc/>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        /// <summary>
+        /// Releases unmanaged and optionally managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
             if (_disposed)
             {
                 return;
             }
 
-            _storageLock.EnterWriteLock();
-            try
+            if (disposing)
             {
-                _context.IndexManager?.Clear();
-                _context.EncodingFile?.Clear();
-            }
-            finally
-            {
-                _storageLock.ExitWriteLock();
-                _storageLock.Dispose();
+                _storageLock.EnterWriteLock();
+                try
+                {
+                    // Dispose managed resources
+                    _context.IndexManager?.Clear();
+                    _context.EncodingFile?.Clear();
+                    _context.RootHandler = null;
+                    _context.BuildInfo = null;
+                    _context.ActiveBuild = null;
+                    _context.Product = null;
+                    _context.EncryptionKeys?.Clear();
+                }
+                finally
+                {
+                    _storageLock.ExitWriteLock();
+                    _storageLock.Dispose();
+                }
             }
 
             _disposed = true;
+        }
+        
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
+        ~CascStorage()
+        {
+            Dispose(false);
         }
 
         private void Initialize()
