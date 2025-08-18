@@ -27,7 +27,7 @@ namespace War3Net.Build
         internal CompileResult(bool success, IEnumerable<Diagnostic> diagnostics)
         {
             _success = success;
-            _diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray.Create<Diagnostic>();
+            _diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;
         }
 
         public bool Success => _success;

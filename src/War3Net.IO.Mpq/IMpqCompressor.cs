@@ -1,16 +1,18 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="JassMapScript.cs" company="Drake53">
+// <copyright file="IMpqCompressor.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
-namespace War3Net.Build.Script
+using System.IO;
+
+namespace War3Net.IO.Mpq
 {
-    public static class JassMapScript
+    public interface IMpqCompressor
     {
-        public const string FileExtension = ".j";
-        public const string FileName = "war3map.j";
-        public const string FullName = @"scripts\war3map.j";
+        MpqCompressionType CompressionType { get; }
+
+        Stream Compress(Stream stream, int bytesToCompress);
     }
 }

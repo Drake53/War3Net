@@ -108,7 +108,7 @@ namespace War3Net.IO.Slk
             var xi = int.Parse(x, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1;
             var yi = y == null ? _lastY.Value : (int.Parse(y, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1);
 
-            if (value.StartsWith('"') && value.EndsWith('"'))
+            if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
             {
                 _table[xi, yi] = value[1..^1];
             }

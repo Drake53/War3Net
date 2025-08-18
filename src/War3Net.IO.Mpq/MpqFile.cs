@@ -89,7 +89,7 @@ namespace War3Net.IO.Mpq
         internal bool IsFilePositionFixed => !_mpqStream.CanRead && _mpqStream.Flags.IsOffsetEncrypted();
 
         /// <summary>
-        /// Position in the <see cref="HashTable"/>.
+        /// Gets the position in the <see cref="HashTable"/>.
         /// </summary>
         internal abstract uint HashIndex { get; }
 
@@ -117,19 +117,19 @@ namespace War3Net.IO.Mpq
 
         public static MpqFile New(Stream? stream, string fileName, MpqLocale locale, bool leaveOpen = false)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), fileName, leaveOpen);
+            var mpqStream = stream as MpqStream ?? MpqStreamFactory.FromStream(stream ?? new MemoryStream(), fileName, leaveOpen);
             return new MpqKnownFile(fileName, mpqStream, mpqStream.Flags, locale, leaveOpen);
         }
 
         public static MpqFile New(Stream? stream, MpqHash mpqHash, uint hashIndex, uint hashCollisions, uint? encryptionSeed = null)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), null);
+            var mpqStream = stream as MpqStream ?? MpqStreamFactory.FromStream(stream ?? new MemoryStream(), null);
             return new MpqUnknownFile(mpqStream, mpqStream.Flags, mpqHash, hashIndex, hashCollisions, encryptionSeed);
         }
 
         public static MpqFile New(Stream? stream)
         {
-            var mpqStream = stream as MpqStream ?? new MpqStream(stream ?? new MemoryStream(), null);
+            var mpqStream = stream as MpqStream ?? MpqStreamFactory.FromStream(stream ?? new MemoryStream(), null);
             return new MpqOrphanedFile(mpqStream, mpqStream.Flags);
         }
 

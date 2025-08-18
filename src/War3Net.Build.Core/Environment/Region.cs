@@ -7,6 +7,8 @@
 
 using System.Drawing;
 
+using War3Net.Build.Common;
+
 namespace War3Net.Build.Environment
 {
     public sealed partial class Region
