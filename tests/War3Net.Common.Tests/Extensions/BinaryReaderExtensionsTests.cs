@@ -18,7 +18,7 @@ namespace War3Net.Common.Tests.Extensions
     [TestClass]
     public sealed class BinaryReaderExtensionsTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestReadStrings), DynamicDataSourceType.Method)]
         public void TestReadString(string? s)
         {
@@ -38,7 +38,7 @@ namespace War3Net.Common.Tests.Extensions
             Assert.AreEqual(expectedString, reader.ReadChars());
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestReadInt24s), DynamicDataSourceType.Method)]
         public void TestReadInt24(byte[] bytes, int expected)
         {

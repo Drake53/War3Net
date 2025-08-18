@@ -14,21 +14,21 @@ namespace War3Net.Build.Core.Tests.Info
     [TestClass]
     public class CampaignInfoTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<CampaignInfo>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<CampaignInfo>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetCampaignInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerializationStringEnums(string filePath)
         {

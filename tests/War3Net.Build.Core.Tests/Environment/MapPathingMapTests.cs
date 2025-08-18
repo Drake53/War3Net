@@ -14,21 +14,21 @@ namespace War3Net.Build.Core.Tests.Environment
     [TestClass]
     public class MapPathingMapTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPathingMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapPathingMap>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPathingMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapPathingMap>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPathingMapFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerializationStringEnums(string filePath)
         {

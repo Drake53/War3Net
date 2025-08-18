@@ -14,21 +14,21 @@ namespace War3Net.Build.Core.Tests.Environment
     [TestClass]
     public class MapPreviewIconsTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPreviewIconsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapPreviewIcons>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPreviewIconsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapPreviewIcons>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapPreviewIconsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
@@ -36,7 +36,7 @@ namespace War3Net.Build.Core.Tests.Environment
         }
 
 #if false
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapPreviewIconsMapFolders), DynamicDataSourceType.Method)]
         public void TestGenerateMapPreviewIcons(string mapFolder)
         {

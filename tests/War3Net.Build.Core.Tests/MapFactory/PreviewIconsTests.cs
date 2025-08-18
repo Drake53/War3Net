@@ -20,7 +20,7 @@ namespace War3Net.Build.Core.Tests.MapFactory
     [TestClass]
     public class PreviewIconsTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCreateMapPreviewIcons(Map map)
         {

@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
     [TestClass]
     public class MapSoundsDecompilerTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestDecompileMapSounds(Map map)
         {

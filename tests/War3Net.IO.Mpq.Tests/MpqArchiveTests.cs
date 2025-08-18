@@ -65,7 +65,7 @@ namespace War3Net.IO.Mpq.Tests
             archive.Dispose();
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestFilesAndFlags), DynamicDataSourceType.Method)]
         public void TestStoreThenRetrieveFileWithFlags(string fileName, MpqFileFlags flags)
         {
@@ -80,7 +80,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(fileStream, openedStream, true);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestFlags), DynamicDataSourceType.Method)]
         public void TestStoreThenRetrieveEmptyFileWithFlags(MpqFileFlags flags)
         {
@@ -96,7 +96,7 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(openedStream.Length == 0);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestArchivesAndSettings), DynamicDataSourceType.Method)]
         public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
         {
@@ -224,7 +224,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, MpqHeader.Size);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestArchivesAttributes), DynamicDataSourceType.Method)]
         public void TestAttributes(string archivePath)
         {

@@ -55,84 +55,84 @@ namespace War3Net.Build.Core.Tests.Info
         }
 #endif
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV8), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV8(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV10), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV10(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV11), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV11(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV15), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV15(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV23), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV23(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV24), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV24(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV26), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV26(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV27), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV27(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataGameDataSet), DynamicDataSourceType.Method)]
         public void TestGameDataSet(string mapInfoFilePath, GameDataSet expectedDataSet)
         {
@@ -143,7 +143,7 @@ namespace War3Net.Build.Core.Tests.Info
             Assert.AreEqual(expectedDataSet, mapInfo.GameDataSet);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetReforgedMapInfoData), DynamicDataSourceType.Method)]
         public void TestParseReforgedMapInfo(string mapInfoFilePath, bool expectCustomAbilitySkin, bool expectAccurateProbabilityForCalculations, SupportedModes expectSupportedModes, bool expectGameDataVersionTft)
         {

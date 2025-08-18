@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
     [TestClass]
     public class BinaryOperatorParserTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetValidOperators), DynamicDataSourceType.Method)]
         public void TestValidOperators(string binaryOperator, BinaryOperatorType expected)
         {
@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             Assert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetInvalidOperators), DynamicDataSourceType.Method)]
         public void TestInvalidOperators(string binaryOperator)
         {

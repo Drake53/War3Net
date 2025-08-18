@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
     [TestClass]
     public class MapTriggersDecompilerTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestDecompileMapTriggers(Map map)
         {

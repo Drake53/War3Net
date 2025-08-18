@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
     [TestClass]
     public class MapCamerasDecompilerTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestDecompileMapCameras(Map map)
         {

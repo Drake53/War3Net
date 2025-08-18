@@ -18,7 +18,7 @@ namespace War3Net.Build.Core.Tests.Providers
     [TestClass]
     public class RandomItemProviderTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetRandomItems), DynamicDataSourceType.Method)]
         public void TestGetRandomItemTypeCode(string expectedRawcode, ItemClass itemClass, int level)
         {
