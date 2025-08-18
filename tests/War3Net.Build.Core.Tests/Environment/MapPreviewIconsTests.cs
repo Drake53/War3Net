@@ -62,8 +62,8 @@ namespace War3Net.Build.Core.Tests.Environment
 
         private static IEnumerable<object[]> GetMapPreviewIconsMapFolders()
         {
-            yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons1") };
-            yield return new[] { TestDataProvider.GetPath(@"MapFiles\TestIcons2") };
+            yield return new[] { TestDataProvider.GetPath("MapFiles/TestIcons1") };
+            yield return new[] { TestDataProvider.GetPath("MapFiles/TestIcons2") };
         }
 #endif
     }

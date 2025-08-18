@@ -24,7 +24,7 @@ namespace War3Net.Build.Core.Tests.Environment
         public void TestDefaultMapEnvironment()
         {
             // Get World Editor default environment file.
-            using var defaultEnvironmentStream = File.OpenRead(TestDataProvider.GetPath(@"MapFiles\DefaultMapFiles\war3map.w3e"));
+            using var defaultEnvironmentStream = File.OpenRead(TestDataProvider.GetPath("MapFiles/DefaultMapFiles/war3map.w3e"));
             using var defaultEnvironmentReader = new BinaryReader(defaultEnvironmentStream);
             var defaultMapEnvironment = defaultEnvironmentReader.ReadMapEnvironment();
             defaultEnvironmentStream.Position = 0;

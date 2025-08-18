@@ -126,6 +126,21 @@ namespace War3Net.Build.Info
         // Reforged (1.32)
         public GameDataVersion GameDataVersion { get; set; }
 
+        /// <summary>
+        /// Reforged (2.0.3)
+        /// </summary>
+        public int ForceDefaultCameraZoom { get; set; }
+
+        /// <summary>
+        /// Reforged (2.0.3)
+        /// </summary>
+        public int ForceMaxCameraZoom { get; set; }
+
+        /// <summary>
+        /// Reforged (2.0.3)
+        /// </summary>
+        public int ForceMinCameraZoom { get; set; }
+
         public List<PlayerData> Players { get; init; } = new();
 
         public List<ForceData> Forces { get; init; } = new();

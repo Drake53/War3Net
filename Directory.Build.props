@@ -29,4 +29,10 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup>
+    <TfmGroupDotNet>net6.0</TfmGroupDotNet>
+    <TfmGroupDotNetWindows>net6.0;net6.0-windows</TfmGroupDotNetWindows>
+    <TfmGroupDotNetStandard>netstandard2.0;net6.0</TfmGroupDotNetStandard>
+    <TfmGroupDotNetStandardWindows>netstandard2.0;net6.0;net6.0-windows</TfmGroupDotNetStandardWindows>
+  </PropertyGroup>
 </Project>

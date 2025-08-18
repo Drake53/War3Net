@@ -24,7 +24,7 @@ namespace War3Net.Build.Core.Tests.Info
         public void TestDefaultMapInfo()
         {
             // Get World Editor default info file.
-            using var defaultInfoStream = File.OpenRead(TestDataProvider.GetPath(@"MapFiles\DefaultMapFiles\war3map.w3i"));
+            using var defaultInfoStream = File.OpenRead(TestDataProvider.GetPath("MapFiles/DefaultMapFiles/war3map.w3i"));
             using var defaultInfoReader = new BinaryReader(defaultInfoStream);
             var defaultMapInfo = defaultInfoReader.ReadMapInfo();
             defaultInfoStream.Position = 0;
@@ -199,20 +199,20 @@ namespace War3Net.Build.Core.Tests.Info
 
         private static IEnumerable<object[]> GetMapInfoDataGameDataSet()
         {
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetDontCare.w3i"), GameDataSet.Unset };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetDefault.w3i"), GameDataSet.Default };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetCustom.w3i"), GameDataSet.Custom };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetMelee.w3i"), GameDataSet.Melee };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetDontCare.w3i"), GameDataSet.Unset };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetDefault.w3i"), GameDataSet.Default };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetCustom.w3i"), GameDataSet.Custom };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetMelee.w3i"), GameDataSet.Melee };
         }
 
         private static IEnumerable<object[]> GetReforgedMapInfoData()
         {
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HD-FrozenThrone.w3i"), false, false, SupportedModes.HD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HDSD-FrozenThrone.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HDSD-ReignOfChaos.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, false };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-SD-FrozenThrone.w3i"), false, false, SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbTrue-HDSD-FrozenThrone.w3i"), false, true, SupportedModes.HD | SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinTrue-AccProbFalse-HDSD-FrozenThrone.w3i"), true, false, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HD-FrozenThrone.w3i"), false, false, SupportedModes.HD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HDSD-FrozenThrone.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HDSD-ReignOfChaos.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, false };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-SD-FrozenThrone.w3i"), false, false, SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbTrue-HDSD-FrozenThrone.w3i"), false, true, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinTrue-AccProbFalse-HDSD-FrozenThrone.w3i"), true, false, SupportedModes.HD | SupportedModes.SD, true };
         }
     }
 }
