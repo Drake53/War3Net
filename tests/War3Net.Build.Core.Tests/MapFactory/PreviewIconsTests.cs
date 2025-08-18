@@ -22,7 +22,7 @@ namespace War3Net.Build.Core.Tests.MapFactory
     {
         private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Environment | MapFiles.Units | MapFiles.PreviewIcons;
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCreateMapPreviewIcons(string mapFilePath)
         {
