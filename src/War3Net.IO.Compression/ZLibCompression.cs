@@ -23,12 +23,12 @@ namespace War3Net.IO.Compression
         /// Compresses data using DEFLATE.
         /// </summary>
         /// <param name="inputStream">The stream containing data to be compressed.</param>
-        /// <param name="bytes">The amount of bytes from the <paramref name="inputStream"/> to compress.</param>
+        /// <param name="bytesToCompress">The amount of bytes from the <paramref name="inputStream"/> to compress.</param>
         /// <param name="leaveOpen"><see langword="true"/> to leave the <paramref name="inputStream"/> open; otherwise, <see langword="false"/>.</param>
         /// <returns>A <see cref="Stream"/> containing the compressed data.</returns>
-        public static Stream Compress(Stream inputStream, int bytes, bool leaveOpen)
+        public static Stream Compress(Stream inputStream, int bytesToCompress, bool leaveOpen)
         {
-            return Compress(inputStream, bytes, CompressionLevel.BestCompression, leaveOpen);
+            return Compress(inputStream, bytesToCompress, CompressionLevel.BestCompression, leaveOpen);
         }
 
         /// <summary>
