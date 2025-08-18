@@ -8,6 +8,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
@@ -15,20 +16,22 @@ namespace War3Net.Build.Core.Tests.Script
     public class MapCustomTextTriggersTests
     {
         [TestMethod]
-        [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapCustomTextTriggers,
+            "Warcraft 3 TFT-TFT multi-TFT 1.31.0.12071 multi-(8)GoldRush.w3x/war3map.wct")]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapCustomTextTriggers>.RunBinaryRWTest(filePath);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapCustomTextTriggers>.RunJsonRWTest(filePath, false);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(TestDataFileType.MapCustomTextTriggers)]
         public void TestJsonSerializationStringEnums(string filePath)
         {

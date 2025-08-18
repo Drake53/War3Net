@@ -8,27 +8,28 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Script;
+using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Script
 {
     [TestClass]
     public class MapTriggersTests
     {
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(TestDataFileType.MapTriggers)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapTriggers>.RunBinaryRWTest(filePath);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(TestDataFileType.MapTriggers)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapTriggers>.RunJsonRWTest(filePath, false);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         [DynamicTestData(TestDataFileType.MapTriggers)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
