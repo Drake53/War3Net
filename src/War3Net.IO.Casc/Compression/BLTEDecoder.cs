@@ -169,6 +169,18 @@ namespace War3Net.IO.Casc.Compression
             // Decrypt the data
             var decryptedData = CascEncryption.Decrypt(encryptedData, keyName, iv);
 
+            // Validate decrypted data
+            if (decryptedData == null || decryptedData.Length == 0)
+            {
+                throw new CascEncryptionException(keyName, "Decryption failed or produced empty data");
+            }
+
+            // Prevent infinite recursion - encrypted frames should not contain another encrypted frame
+            if ((CompressionType)encryptedType == CompressionType.Encrypted)
+            {
+                throw new CascException("Nested encrypted frames are not supported");
+            }
+
             // The decrypted data contains the actual compression type followed by the data
             using var decryptedStream = new MemoryStream(decryptedData);
             using var decryptedReader = new BinaryReader(decryptedStream);
@@ -240,12 +252,35 @@ namespace War3Net.IO.Casc.Compression
                 return false;
             }
 
-            var position = stream.Position;
-            var signature = new byte[4];
-            stream.Read(signature, 0, 4);
-            stream.Position = position;
+            // Save the current position
+            var originalPosition = stream.Position;
+            
+            try
+            {
+                // Check if we can read 4 bytes from current position
+                if (stream.Length - stream.Position < 4)
+                {
+                    return false;
+                }
 
-            return signature[0] == 'B' && signature[1] == 'L' && signature[2] == 'T' && signature[3] == 'E';
+                var signature = new byte[4];
+                var bytesRead = stream.Read(signature, 0, 4);
+                
+                if (bytesRead != 4)
+                {
+                    return false;
+                }
+
+                return signature[0] == 'B' && signature[1] == 'L' && signature[2] == 'T' && signature[3] == 'E';
+            }
+            finally
+            {
+                // Always restore the original position
+                if (stream.CanSeek)
+                {
+                    stream.Position = originalPosition;
+                }
+            }
         }
     }
 }

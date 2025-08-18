@@ -83,6 +83,9 @@ namespace War3Net.IO.Casc.CDN
         {
             Exception? lastException = null;
             var triedHosts = new HashSet<int>();
+            var retryCount = 0;
+            const int maxRetries = 3;
+            const int baseDelayMs = 500;
 
             while (triedHosts.Count < _cdnHosts.Count)
             {
@@ -96,26 +99,56 @@ namespace War3Net.IO.Casc.CDN
                 triedHosts.Add(hostIndex);
                 var url = BuildUrl(_cdnHosts[hostIndex], path);
 
-                try
+                // Try each host up to maxRetries times with exponential backoff
+                for (retryCount = 0; retryCount < maxRetries; retryCount++)
                 {
-                    var response = await _httpClient.GetAsync(url, cancellationToken);
-                    if (response.IsSuccessStatusCode)
+                    try
                     {
-                        return await response.Content.ReadAsByteArrayAsync();
-                    }
+                        // Apply exponential backoff delay (except for first attempt)
+                        if (retryCount > 0)
+                        {
+                            var delay = baseDelayMs * (int)Math.Pow(2, retryCount - 1);
+                            await Task.Delay(delay, cancellationToken);
+                        }
 
-                    // Try next host on non-success
-                    lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
-                }
-                catch (Exception ex)
-                {
-                    lastException = ex;
+                        var response = await _httpClient.GetAsync(url, cancellationToken);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return await response.Content.ReadAsByteArrayAsync();
+                        }
+
+                        // Server error (5xx) - retry with this host
+                        if ((int)response.StatusCode >= 500)
+                        {
+                            lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
+                            continue; // Retry with same host
+                        }
+
+                        // Client error (4xx) - move to next host immediately
+                        lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
+                        break; // Move to next host
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        lastException = ex;
+                        // Network error - retry with exponential backoff
+                    }
+                    catch (TaskCanceledException ex)
+                    {
+                        lastException = ex;
+                        // Timeout - retry with exponential backoff
+                    }
+                    catch (Exception ex)
+                    {
+                        lastException = ex;
+                        break; // Unexpected error - move to next host
+                    }
                 }
 
                 _currentHostIndex++;
             }
 
-            throw new CascException($"Failed to download {path} from all CDN hosts", lastException);
+            throw new CascException($"Failed to download {path} from all CDN hosts after {maxRetries} retries per host", lastException);
         }
 
         /// <summary>

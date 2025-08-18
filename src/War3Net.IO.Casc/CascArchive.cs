@@ -24,6 +24,7 @@ namespace War3Net.IO.Casc
     {
         private readonly CascStorage _storage;
         private readonly Dictionary<string, CascEntry> _entries;
+        private readonly List<Stream> _openStreams;
         private bool _disposed;
 
         /// <summary>
@@ -54,6 +55,7 @@ namespace War3Net.IO.Casc
 
             _storage = CascStorage.OpenStorage(storagePath, localeFlags);
             _entries = new Dictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
+            _openStreams = new List<Stream>();
 
             Initialize();
         }
@@ -313,6 +315,21 @@ namespace War3Net.IO.Casc
                 return;
             }
 
+            // Dispose all open streams first
+            foreach (var stream in _openStreams)
+            {
+                try
+                {
+                    stream?.Dispose();
+                }
+                catch
+                {
+                    // Ignore disposal errors for individual streams
+                }
+            }
+            _openStreams.Clear();
+
+            // Then dispose the storage
             _storage?.Dispose();
             _entries.Clear();
 
@@ -328,22 +345,95 @@ namespace War3Net.IO.Casc
 
         private Stream OpenFileInternal(CascEntry entry, CascOpenFlags openFlags)
         {
+            ThrowIfDisposed();
+
+            Stream stream;
+            
             // Use the storage to open the file
             if (!entry.CKey.IsEmpty)
             {
-                return _storage.OpenFileByCKey(entry.CKey);
+                stream = _storage.OpenFileByCKey(entry.CKey);
             }
             else if (!entry.EKey.IsEmpty)
             {
-                return _storage.OpenFileByEKey(entry.EKey);
+                stream = _storage.OpenFileByEKey(entry.EKey);
             }
             else if (entry.FileDataId != CascConstants.InvalidId)
             {
-                return _storage.OpenFileByFileId(entry.FileDataId);
+                stream = _storage.OpenFileByFileId(entry.FileDataId);
             }
             else
             {
-                return _storage.OpenFile(entry.FileName, openFlags);
+                stream = _storage.OpenFile(entry.FileName, openFlags);
+            }
+
+            // Track the stream for proper disposal
+            lock (_openStreams)
+            {
+                _openStreams.Add(stream);
+            }
+
+            // Wrap the stream to remove it from tracking when disposed
+            return new TrackedStream(stream, () =>
+            {
+                lock (_openStreams)
+                {
+                    _openStreams.Remove(stream);
+                }
+            });
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(CascArchive));
+            }
+        }
+
+        /// <summary>
+        /// Wrapper stream that notifies when disposed.
+        /// </summary>
+        private sealed class TrackedStream : Stream
+        {
+            private readonly Stream _innerStream;
+            private readonly Action _onDispose;
+            private bool _disposed;
+
+            public TrackedStream(Stream innerStream, Action onDispose)
+            {
+                _innerStream = innerStream ?? throw new ArgumentNullException(nameof(innerStream));
+                _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
+            }
+
+            public override bool CanRead => _innerStream.CanRead;
+            public override bool CanSeek => _innerStream.CanSeek;
+            public override bool CanWrite => _innerStream.CanWrite;
+            public override long Length => _innerStream.Length;
+            public override long Position
+            {
+                get => _innerStream.Position;
+                set => _innerStream.Position = value;
+            }
+
+            public override void Flush() => _innerStream.Flush();
+            public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
+            public override long Seek(long offset, SeekOrigin origin) => _innerStream.Seek(offset, origin);
+            public override void SetLength(long value) => _innerStream.SetLength(value);
+            public override void Write(byte[] buffer, int offset, int count) => _innerStream.Write(buffer, offset, count);
+
+            protected override void Dispose(bool disposing)
+            {
+                if (!_disposed)
+                {
+                    if (disposing)
+                    {
+                        _innerStream.Dispose();
+                        _onDispose();
+                    }
+                    _disposed = true;
+                }
+                base.Dispose(disposing);
             }
         }
     }

@@ -90,24 +90,54 @@ namespace War3Net.IO.Casc.Encoding
 
                 while (pageStream.Position < pageStream.Length)
                 {
-                    // Check if we've reached padding
-                    if (pageStream.Length - pageStream.Position < 7 + encoding.Header.CKeyLength)
+                    // Check if we have enough bytes for a minimal entry
+                    // Minimal size: 2 bytes keyCount + 1 byte size + CKeyLength + at least 1 EKey
+                    var minEntrySize = 2 + 1 + encoding.Header.CKeyLength + encoding.Header.EKeyLength;
+                    if (pageStream.Length - pageStream.Position < minEntrySize)
                     {
-                        break;
+                        break; // Not enough data for a valid entry
                     }
 
-                    // Peek at the first bytes to check for padding
+                    // More robust padding detection
+                    // Check if the next entry would be all zeros (padding)
                     var peekPos = pageStream.Position;
-                    var firstBytes = pageReader.ReadBytes(2);
+                    var peekBytes = new byte[Math.Min(16, (int)(pageStream.Length - pageStream.Position))];
+                    var bytesRead = pageReader.Read(peekBytes, 0, peekBytes.Length);
                     pageStream.Position = peekPos;
 
-                    if (firstBytes[0] == 0 && firstBytes[1] == 0)
+                    // If first 16 bytes (or remaining bytes) are all zeros, it's padding
+                    var isAllZeros = true;
+                    for (int i = 0; i < bytesRead; i++)
+                    {
+                        if (peekBytes[i] != 0)
+                        {
+                            isAllZeros = false;
+                            break;
+                        }
+                    }
+
+                    if (isAllZeros)
                     {
                         break; // Hit padding
                     }
 
-                    var entry = EncodingEntry.Parse(pageReader, encoding.Header);
-                    encoding.AddEntry(entry);
+                    try
+                    {
+                        var entry = EncodingEntry.Parse(pageReader, encoding.Header);
+                        
+                        // Validate the entry before adding
+                        if (entry.CKey.IsEmpty && entry.EKeys.Count == 0)
+                        {
+                            break; // Invalid entry, likely padding
+                        }
+                        
+                        encoding.AddEntry(entry);
+                    }
+                    catch
+                    {
+                        // If parsing fails, we've likely hit padding or corrupted data
+                        break;
+                    }
                 }
             }
 

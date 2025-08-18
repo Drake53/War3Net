@@ -479,6 +479,13 @@ namespace War3Net.IO.Casc.Storage
 
         private byte[] ReadDataFile(EKeyEntry indexEntry)
         {
+            // Validate size to prevent excessive memory allocation
+            const uint MaxReasonableFileSize = 512 * 1024 * 1024; // 512 MB
+            if (indexEntry.EncodedSize > MaxReasonableFileSize)
+            {
+                throw new CascException($"File size {indexEntry.EncodedSize} exceeds maximum allowed size of {MaxReasonableFileSize} bytes");
+            }
+
             var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath!);
 
             if (!File.Exists(dataFilePath))
@@ -487,6 +494,13 @@ namespace War3Net.IO.Casc.Storage
             }
 
             using var stream = File.OpenRead(dataFilePath);
+            
+            // Validate that the file is large enough to contain the requested data
+            if (stream.Length < (long)(indexEntry.DataFileOffset + indexEntry.EncodedSize))
+            {
+                throw new CascException($"Data file {dataFilePath} is too small to contain the requested data at offset {indexEntry.DataFileOffset} with size {indexEntry.EncodedSize}");
+            }
+
             stream.Seek((long)indexEntry.DataFileOffset, SeekOrigin.Begin);
 
             var data = new byte[indexEntry.EncodedSize];
@@ -494,7 +508,7 @@ namespace War3Net.IO.Casc.Storage
 
             if (bytesRead != data.Length)
             {
-                throw new CascException($"Failed to read complete data from {dataFilePath}");
+                throw new CascException($"Failed to read complete data from {dataFilePath}: expected {data.Length} bytes, read {bytesRead} bytes");
             }
 
             return data;

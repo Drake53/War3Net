@@ -69,7 +69,39 @@ namespace War3Net.IO.Casc.Storage
             CascLocaleFlags localeFlags = CascLocaleFlags.All,
             IProgressReporter? progressReporter = null)
         {
-            localCachePath ??= Path.Combine(Path.GetTempPath(), "CascCache", product, region);
+            // Validate and sanitize product and region to prevent path traversal
+            if (string.IsNullOrWhiteSpace(product) || product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || product.Contains(".."))
+            {
+                throw new ArgumentException("Invalid product name", nameof(product));
+            }
+
+            if (string.IsNullOrWhiteSpace(region) || region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || region.Contains(".."))
+            {
+                throw new ArgumentException("Invalid region name", nameof(region));
+            }
+
+            // If no cache path provided, use default temp path
+            if (string.IsNullOrWhiteSpace(localCachePath))
+            {
+                localCachePath = Path.Combine(Path.GetTempPath(), "CascCache", product, region);
+            }
+            else
+            {
+                // Validate provided path - ensure it's an absolute path and doesn't contain traversal patterns
+                localCachePath = Path.GetFullPath(localCachePath);
+                
+                // Ensure the resolved path doesn't escape expected boundaries
+                var tempPath = Path.GetFullPath(Path.GetTempPath());
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                
+                // Allow paths only within temp directory or user profile
+                if (!localCachePath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) &&
+                    !localCachePath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException($"Cache path must be within temp directory or user profile", nameof(localCachePath));
+                }
+            }
+
             Directory.CreateDirectory(localCachePath);
 
             var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags);

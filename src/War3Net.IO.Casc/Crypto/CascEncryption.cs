@@ -6,8 +6,10 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace War3Net.IO.Casc.Crypto
@@ -17,7 +19,8 @@ namespace War3Net.IO.Casc.Crypto
     /// </summary>
     public static class CascEncryption
     {
-        private static readonly Dictionary<ulong, byte[]> KnownKeys = new Dictionary<ulong, byte[]>();
+        private static readonly ConcurrentDictionary<ulong, byte[]> KnownKeys = new ConcurrentDictionary<ulong, byte[]>();
+        private static readonly object KeyLoadLock = new object();
 
         static CascEncryption()
         {
@@ -108,7 +111,10 @@ namespace War3Net.IO.Casc.Crypto
                 throw new ArgumentException($"Key must be {CascConstants.KeyLength} bytes", nameof(key));
             }
 
-            KnownKeys[keyName] = key;
+            // Create a defensive copy of the key to prevent external modifications
+            var keyCopy = new byte[key.Length];
+            Array.Copy(key, keyCopy, key.Length);
+            KnownKeys.TryAdd(keyName, keyCopy);
         }
 
         /// <summary>
@@ -118,7 +124,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>true if the key was removed; otherwise, false.</returns>
         public static bool RemoveKnownKey(ulong keyName)
         {
-            return KnownKeys.Remove(keyName);
+            return KnownKeys.TryRemove(keyName, out _);
         }
 
         /// <summary>
@@ -128,7 +134,14 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>The encryption key, or null if not found.</returns>
         public static byte[]? GetKey(ulong keyName)
         {
-            return KnownKeys.TryGetValue(keyName, out var key) ? key : null;
+            if (KnownKeys.TryGetValue(keyName, out var key))
+            {
+                // Return a defensive copy to prevent external modifications
+                var keyCopy = new byte[key.Length];
+                Array.Copy(key, keyCopy, key.Length);
+                return keyCopy;
+            }
+            return null;
         }
 
         /// <summary>
@@ -147,7 +160,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>The collection of known key names.</returns>
         public static IEnumerable<ulong> GetKnownKeyNames()
         {
-            return KnownKeys.Keys;
+            return KnownKeys.Keys.ToArray();
         }
 
         /// <summary>
@@ -170,44 +183,48 @@ namespace War3Net.IO.Casc.Crypto
                 return 0;
             }
 
-            var lines = File.ReadAllLines(filePath);
-            var count = 0;
-
-            foreach (var line in lines)
+            // Use lock to ensure thread-safe bulk loading
+            lock (KeyLoadLock)
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#") || line.StartsWith("//"))
-                {
-                    continue;
-                }
+                var lines = File.ReadAllLines(filePath);
+                var count = 0;
 
-                var parts = line.Split(new[] { ' ', '\t', '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 2)
+                foreach (var line in lines)
                 {
-                    try
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#") || line.StartsWith("//"))
                     {
-                        var keyName = Convert.ToUInt64(parts[0], 16);
-                        var keyHex = parts[1].Replace("-", string.Empty).Replace(" ", string.Empty);
-                        
-                        if (keyHex.Length == 32) // 16 bytes * 2 hex chars
-                        {
-                            var key = new byte[16];
-                            for (int i = 0; i < 16; i++)
-                            {
-                                key[i] = Convert.ToByte(keyHex.Substring(i * 2, 2), 16);
-                            }
+                        continue;
+                    }
 
-                            AddKnownKey(keyName, key);
-                            count++;
+                    var parts = line.Split(new[] { ' ', '\t', '=' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2)
+                    {
+                        try
+                        {
+                            var keyName = Convert.ToUInt64(parts[0], 16);
+                            var keyHex = parts[1].Replace("-", string.Empty).Replace(" ", string.Empty);
+                            
+                            if (keyHex.Length == 32) // 16 bytes * 2 hex chars
+                            {
+                                var key = new byte[16];
+                                for (int i = 0; i < 16; i++)
+                                {
+                                    key[i] = Convert.ToByte(keyHex.Substring(i * 2, 2), 16);
+                                }
+
+                                AddKnownKey(keyName, key);
+                                count++;
+                            }
+                        }
+                        catch
+                        {
+                            // Skip invalid lines
                         }
                     }
-                    catch
-                    {
-                        // Skip invalid lines
-                    }
                 }
-            }
 
-            return count;
+                return count;
+            }
         }
 
         /// <summary>
