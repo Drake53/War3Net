@@ -20,10 +20,14 @@ namespace War3Net.Build.Core.Tests.MapFactory
     [TestClass]
     public class PreviewIconsTests
     {
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Environment | MapFiles.Units | MapFiles.PreviewIcons;
+
         [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestCreateMapPreviewIcons(Map map)
+        public void TestCreateMapPreviewIcons(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             var expected = map.PreviewIcons;
             var actual = Build.MapFactory.PreviewIcons(map.Info, map.Environment, map.Units);
 
@@ -76,16 +80,16 @@ namespace War3Net.Build.Core.Tests.MapFactory
 
         private static IEnumerable<object[]> GetTestData()
         {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
+            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
             {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Environment | MapFiles.Units | MapFiles.PreviewIcons) &&
+                if (Map.TryOpen((string)data[0], out var map, FilesToOpen) &&
                     map.Info is not null &&
                     map.Environment is not null &&
                     map.Units is not null &&
                     map.PreviewIcons is not null &&
                     map.Info.CameraBoundsComplements is not null)
                 {
-                    yield return new[] { map };
+                    yield return data;
                 }
             }
         }
