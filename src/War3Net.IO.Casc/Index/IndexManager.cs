@@ -171,9 +171,10 @@ namespace War3Net.IO.Casc.Index
             // This produces two 32-bit hash values
             Utilities.JenkinsHash.HashLittle2(hashData, out uint pc, out uint pb);
             
-            // CascLib uses the first hash value (pc) to determine bucket
-            // The bucket index is derived from the lower bits of the hash
-            return (byte)(pc & 0xFF);
+            // CascLib uses XOR of the two hash values for better distribution
+            // then takes the lower byte for bucket index (0-255 range, typically masked to actual bucket count)
+            uint combinedHash = pc ^ pb;
+            return (byte)(combinedHash & 0x0F); // Use lower 4 bits for 16 buckets (standard CASC)
         }
 
         /// <summary>

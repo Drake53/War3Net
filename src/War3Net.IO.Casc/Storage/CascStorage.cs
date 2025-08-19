@@ -17,6 +17,7 @@ using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Index;
 using War3Net.IO.Casc.Root;
 using War3Net.IO.Casc.Structures;
+using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Storage
 {
@@ -121,6 +122,17 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByCKey(CascKey cKey)
         {
+            return OpenFileByCKey(cKey, true);
+        }
+
+        /// <summary>
+        /// Opens a file by content key with optional checksum validation.
+        /// </summary>
+        /// <param name="cKey">The content key.</param>
+        /// <param name="validateChecksum">Whether to validate the checksum.</param>
+        /// <returns>A stream containing the file data.</returns>
+        public Stream OpenFileByCKey(CascKey cKey, bool validateChecksum)
+        {
             // Get EKey from encoding
             if (_context.EncodingFile == null)
             {
@@ -133,7 +145,38 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascFileNotFoundException(cKey);
             }
 
-            return OpenFileByEKey(eKey.Value);
+            var stream = OpenFileByEKey(eKey.Value);
+            
+            // Validate checksum if requested
+            if (validateChecksum && stream.CanSeek)
+            {
+                var originalPosition = stream.Position;
+                var computedHash = ChecksumValidator.ComputeMD5(StreamToArray(stream));
+                stream.Position = originalPosition;
+                
+                if (!ChecksumValidator.CompareHashes(computedHash, cKey.ToArray()))
+                {
+                    stream.Dispose();
+                    throw new CascException($"Checksum validation failed for CKey: {cKey}");
+                }
+            }
+
+            return stream;
+        }
+
+        /// <summary>
+        /// Converts stream to byte array.
+        /// </summary>
+        private static byte[] StreamToArray(Stream stream)
+        {
+            if (stream is MemoryStream ms)
+            {
+                return ms.ToArray();
+            }
+
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -200,55 +243,8 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByName(string fileName)
         {
-            // Validate file name to prevent path traversal
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
-            }
-
-            // First normalize the path to handle encoded sequences
-            fileName = Uri.UnescapeDataString(fileName);
-            
-            // Normalize all path separators to forward slash
-            fileName = fileName.Replace('\\', '/');
-            
-            // Remove any null bytes that could terminate the string early
-            if (fileName.Contains('\0'))
-            {
-                throw new ArgumentException("File name contains null bytes.", nameof(fileName));
-            }
-            
-            // Split path into segments and validate each
-            var segments = fileName.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var segment in segments)
-            {
-                // Check for directory traversal in any form
-                if (segment == "." || segment == ".." || 
-                    segment.StartsWith("..") || segment.EndsWith("..") ||
-                    segment.Contains("~") || // Home directory reference
-                    segment.StartsWith("$") || // Environment variable
-                    segment.Contains("%")) // Environment variable in Windows
-                {
-                    throw new ArgumentException($"Invalid path segment '{segment}' in file name: {fileName}", nameof(fileName));
-                }
-                
-                // Check for invalid characters in segment
-                if (segment.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-                {
-                    throw new ArgumentException($"Invalid characters in path segment '{segment}'", nameof(fileName));
-                }
-            }
-            
-            // Rebuild clean path from validated segments
-            fileName = string.Join('/', segments);
-            
-            // Final checks for absolute paths or drive letters
-            if (Path.IsPathRooted(fileName) || 
-                fileName.Contains(':') || // Drive letters on Windows
-                fileName.StartsWith('/') || fileName.StartsWith('\\'))
-            {
-                throw new ArgumentException($"Absolute paths are not allowed: {fileName}", nameof(fileName));
-            }
+            // Use centralized path sanitization
+            fileName = PathSanitizer.SanitizeFilePath(fileName);
 
             if (_context.RootHandler == null)
             {

@@ -92,16 +92,55 @@ namespace War3Net.IO.Casc.Compression
             // Parse BLTE header
             var header = BlteHeader.Parse(reader);
 
+            // Validate frame sizes to prevent excessive memory allocation
+            const uint MaxFrameSize = 100 * 1024 * 1024; // 100 MB per frame
+            const uint MaxTotalSize = 500 * 1024 * 1024; // 500 MB total
+            
             if (header.IsMultiChunk)
             {
+                uint totalSize = 0;
+                
+                // Validate all frame sizes before processing
+                foreach (var frame in header.Frames)
+                {
+                    if (frame.EncodedSize > MaxFrameSize)
+                    {
+                        throw new CascException($"BLTE frame encoded size ({frame.EncodedSize} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
+                    }
+                    
+                    if (frame.ContentSize > MaxFrameSize)
+                    {
+                        throw new CascException($"BLTE frame decoded size ({frame.ContentSize} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
+                    }
+                    
+                    totalSize += frame.EncodedSize;
+                    if (totalSize > MaxTotalSize)
+                    {
+                        throw new CascException($"Total BLTE frames size ({totalSize} bytes) exceeds maximum allowed size ({MaxTotalSize} bytes)");
+                    }
+                }
+                
                 // Process multiple frames
                 foreach (var frame in header.Frames)
                 {
+                    // Validate we have enough data to read
+                    if (inputStream.Position + frame.EncodedSize > inputStream.Length)
+                    {
+                        throw new CascException($"Insufficient data in stream. Expected {frame.EncodedSize} bytes but only {inputStream.Length - inputStream.Position} bytes available.");
+                    }
+                    
                     // Read frame data
                     frame.Data = reader.ReadBytes((int)frame.EncodedSize);
 
                     // Decode frame
                     var decodedData = DecodeFrameWithDepth(frame, recursionDepth);
+                    
+                    // Validate decoded size if specified
+                    if (frame.ContentSize > 0 && decodedData.Length != frame.ContentSize)
+                    {
+                        throw new CascException($"Decoded frame size mismatch. Expected {frame.ContentSize} bytes but got {decodedData.Length} bytes.");
+                    }
+                    
                     outputStream.Write(decodedData, 0, decodedData.Length);
                 }
             }
@@ -109,6 +148,12 @@ namespace War3Net.IO.Casc.Compression
             {
                 // Single frame - read remaining data
                 var remainingBytes = inputStream.Length - inputStream.Position;
+                
+                if (remainingBytes > MaxFrameSize)
+                {
+                    throw new CascException($"Single BLTE frame size ({remainingBytes} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
+                }
+                
                 var frameData = reader.ReadBytes((int)remainingBytes);
 
                 // Create frame info
@@ -278,32 +323,81 @@ namespace War3Net.IO.Casc.Compression
 
         private static byte[] DecodeLZMA(BinaryReader reader, BlteFrame frame)
         {
-            // LZMA is not commonly used in modern CASC
-            // For full support, consider adding LZMA.NET or similar library
+            // LZMA (Lempel-Ziv-Markov chain algorithm) compression
+            // Used in: Some older WoW patches and classic Blizzard games
+            // Implementation notes:
+            // - Requires LZMA SDK (7-Zip SDK) or LZMA.NET NuGet package
+            // - Header format: 5 bytes properties + 8 bytes uncompressed size
+            // - Reference: CascLib's CascDecompress.cpp::Decompress_LZMA()
             var dataSize = frame.Data!.Length - 1;
-            throw new NotSupportedException($"LZMA decompression is not yet implemented in War3Net.IO.Casc. " +
-                $"Frame contains {dataSize} bytes of LZMA compressed data. " +
-                $"To add support, consider using LZMA SDK or 7-Zip LZMA SDK NuGet package.");
+            
+            // TODO: To implement LZMA support:
+            // 1. Add NuGet package: LZMA-SDK or SevenZipSharp
+            // 2. Read LZMA properties (5 bytes)
+            // 3. Read uncompressed size (8 bytes, little-endian)
+            // 4. Initialize LZMA decoder with properties
+            // 5. Decompress remaining data
+            
+            throw new NotSupportedException(
+                $"LZMA decompression is not yet implemented in War3Net.IO.Casc.\n" +
+                $"Frame contains {dataSize} bytes of LZMA compressed data.\n" +
+                $"This compression is used in some older Blizzard games.\n" +
+                $"To add support:\n" +
+                $"  1. Install NuGet package: LZMA-SDK\n" +
+                $"  2. Implement using Decoder.Code() method\n" +
+                $"Reference implementation: CascLib/src/CascDecompress.cpp");
         }
 
         private static byte[] DecodeLZ4(BinaryReader reader, BlteFrame frame)
         {
-            // LZ4 is used in some newer CASC implementations
-            // For full support, consider adding K4os.Compression.LZ4 library
+            // LZ4 (Extremely Fast Compression algorithm)
+            // Used in: Modern WoW, Overwatch, Heroes of the Storm
+            // Implementation notes:
+            // - Very fast decompression speed
+            // - Frame format may include uncompressed size in header
+            // - Reference: CascLib's CascDecompress.cpp::Decompress_LZ4()
             var dataSize = frame.Data!.Length - 1;
-            throw new NotSupportedException($"LZ4 decompression is not yet implemented in War3Net.IO.Casc. " +
-                $"Frame contains {dataSize} bytes of LZ4 compressed data. " +
-                $"To add support, consider using K4os.Compression.LZ4 NuGet package.");
+            
+            // TODO: To implement LZ4 support:
+            // 1. Add NuGet package: K4os.Compression.LZ4
+            // 2. Check for uncompressed size header (4 bytes, optional)
+            // 3. Use LZ4Codec.Decode() for decompression
+            // 4. Handle both block and frame formats
+            
+            throw new NotSupportedException(
+                $"LZ4 decompression is not yet implemented in War3Net.IO.Casc.\n" +
+                $"Frame contains {dataSize} bytes of LZ4 compressed data.\n" +
+                $"This compression is used in modern Blizzard games (2016+).\n" +
+                $"To add support:\n" +
+                $"  1. Install NuGet package: K4os.Compression.LZ4\n" +
+                $"  2. Use LZ4Codec.Decode() method\n" +
+                $"Reference implementation: CascLib/src/CascDecompress.cpp");
         }
 
         private static byte[] DecodeZStandard(BinaryReader reader, BlteFrame frame)
         {
-            // Zstandard is used in the newest CASC implementations (Battle.net games post-2018)
-            // For full support, consider adding ZstdNet library
+            // Zstandard (Fast real-time compression algorithm by Facebook)
+            // Used in: Latest WoW expansions, Diablo IV, newer Battle.net games
+            // Implementation notes:
+            // - Better compression ratio than LZ4 with similar speed
+            // - Self-contained frames with magic number 0xFD2FB528
+            // - Reference: CascLib's CascDecompress.cpp::Decompress_ZSTD()
             var dataSize = frame.Data!.Length - 1;
-            throw new NotSupportedException($"Zstandard decompression is not yet implemented in War3Net.IO.Casc. " +
-                $"Frame contains {dataSize} bytes of Zstandard compressed data. " +
-                $"To add support, consider using ZstdNet or ZstdSharp NuGet package.");
+            
+            // TODO: To implement Zstandard support:
+            // 1. Add NuGet package: ZstdSharp.Port or ZstdNet
+            // 2. Create decompressor context
+            // 3. Use Decompress() method with input data
+            // 4. Handle streaming decompression for large files
+            
+            throw new NotSupportedException(
+                $"Zstandard decompression is not yet implemented in War3Net.IO.Casc.\n" +
+                $"Frame contains {dataSize} bytes of Zstandard compressed data.\n" +
+                $"This compression is used in the newest Blizzard games (2018+).\n" +
+                $"To add support:\n" +
+                $"  1. Install NuGet package: ZstdSharp.Port\n" +
+                $"  2. Use Decompressor.Unwrap() method\n" +
+                $"Reference implementation: CascLib/src/CascDecompress.cpp");
         }
 
         /// <summary>

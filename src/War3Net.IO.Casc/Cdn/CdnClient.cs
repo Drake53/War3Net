@@ -13,6 +13,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using War3Net.IO.Casc.Utilities;
+
 namespace War3Net.IO.Casc.Cdn
 {
     /// <summary>
@@ -81,14 +83,15 @@ namespace War3Net.IO.Casc.Cdn
         /// <returns>The file data.</returns>
         public async Task<byte[]> DownloadFileAsync(string path, CancellationToken cancellationToken)
         {
-            // Sanitize the path to prevent directory traversal attacks
-            path = SanitizePath(path);
+            // Use centralized path sanitization to prevent directory traversal attacks
+            path = PathSanitizer.SanitizeCdnPath(path);
             
             Exception? lastException = null;
             var triedHosts = new HashSet<int>();
-            var retryCount = 0;
+            var random = new Random();
             const int maxRetries = 3;
             const int baseDelayMs = 500;
+            const int maxDelayMs = 30000; // 30 seconds max delay
 
             while (triedHosts.Count < _cdnHosts.Count)
             {
@@ -101,45 +104,92 @@ namespace War3Net.IO.Casc.Cdn
 
                 triedHosts.Add(hostIndex);
                 var url = BuildUrl(_cdnHosts[hostIndex], path);
+                var isHttps = url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
 
-                // Try each host up to maxRetries times with exponential backoff
-                for (retryCount = 0; retryCount < maxRetries; retryCount++)
+                // Try each host up to maxRetries times with exponential backoff and jitter
+                for (int retryCount = 0; retryCount < maxRetries; retryCount++)
                 {
                     try
                     {
-                        // Apply exponential backoff delay (except for first attempt)
+                        // Apply exponential backoff with jitter (except for first attempt)
                         if (retryCount > 0)
                         {
-                            var delay = baseDelayMs * (int)Math.Pow(2, retryCount - 1);
+                            // Calculate exponential backoff with jitter to prevent thundering herd
+                            var exponentialDelay = baseDelayMs * (int)Math.Pow(2, retryCount - 1);
+                            var jitter = random.Next(0, exponentialDelay / 4); // Add up to 25% jitter
+                            var delay = Math.Min(exponentialDelay + jitter, maxDelayMs);
+                            
                             await Task.Delay(delay, cancellationToken);
                         }
 
-                        var response = await _httpClient.GetAsync(url, cancellationToken);
+                        // Set appropriate timeout based on retry count
+                        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                        var timeout = TimeSpan.FromSeconds(30 + (retryCount * 15)); // Increase timeout with retries
+                        cts.CancelAfter(timeout);
+
+                        var response = await _httpClient.GetAsync(url, cts.Token);
                         if (response.IsSuccessStatusCode)
                         {
-                            return await response.Content.ReadAsByteArrayAsync();
+                            var data = await response.Content.ReadAsByteArrayAsync();
+                            
+                            // Validate data is not empty
+                            if (data == null || data.Length == 0)
+                            {
+                                lastException = new CascException($"Downloaded file is empty: {path}");
+                                continue; // Retry
+                            }
+                            
+                            return data;
                         }
 
-                        // Server error (5xx) - retry with this host
-                        if ((int)response.StatusCode >= 500)
+                        // Handle specific status codes
+                        switch ((int)response.StatusCode)
                         {
-                            lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
-                            continue; // Retry with same host
+                            case 404: // Not found - no point retrying this host
+                                lastException = new CascFileNotFoundException($"File not found on CDN: {path}");
+                                retryCount = maxRetries; // Skip remaining retries for this host
+                                break;
+                                
+                            case 403: // Forbidden - likely auth issue, try next host
+                                lastException = new HttpRequestException($"Access forbidden: {response.ReasonPhrase}");
+                                retryCount = maxRetries; // Skip remaining retries for this host
+                                break;
+                                
+                            case >= 500: // Server error - retry with this host
+                                lastException = new HttpRequestException($"Server error {response.StatusCode}: {response.ReasonPhrase}");
+                                break;
+                                
+                            case 429: // Too many requests - back off more aggressively
+                                lastException = new HttpRequestException("Rate limited by CDN");
+                                await Task.Delay(Math.Min(baseDelayMs * (int)Math.Pow(3, retryCount), maxDelayMs), cancellationToken);
+                                break;
+                                
+                            default: // Other errors - retry
+                                lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
+                                break;
                         }
-
-                        // Client error (4xx) - move to next host immediately
-                        lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
-                        break; // Move to next host
                     }
                     catch (HttpRequestException ex)
                     {
                         lastException = ex;
                         // Network error - retry with exponential backoff
+                        
+                        // If HTTPS failed and we have more retries, consider the error type
+                        if (isHttps && retryCount == maxRetries - 1)
+                        {
+                            // Last retry on HTTPS failed, will try HTTP fallback on next host
+                            System.Diagnostics.Trace.TraceWarning($"HTTPS request failed for {url}: {ex.Message}");
+                        }
+                    }
+                    catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        // Timeout (not user cancellation) - retry with exponential backoff
+                        lastException = new TimeoutException($"Request to {url} timed out", ex);
                     }
                     catch (TaskCanceledException ex)
                     {
-                        lastException = ex;
-                        // Timeout - retry with exponential backoff
+                        // User cancellation - propagate immediately
+                        throw new OperationCanceledException("Download cancelled by user", ex, cancellationToken);
                     }
                     catch (Exception ex)
                     {
@@ -248,33 +298,52 @@ namespace War3Net.IO.Casc.Cdn
 
         private static List<string> GetDefaultCdnHosts(string region)
         {
+            // Prefer HTTPS for security, with HTTP fallback
+            // Updated URLs based on current Blizzard CDN infrastructure
             return region.ToLowerInvariant() switch
             {
                 "us" => new List<string>
                 {
-                    "http://level3.blizzard.com",
+                    "https://level3.blizzard.com",
+                    "https://blzddist1-a.akamaihd.net",
+                    "https://cdn.blizzard.com",
+                    "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",
-                    "http://cdn.blizzard.com",
                 },
                 "eu" => new List<string>
                 {
-                    "http://level3.blizzard.com",
+                    "https://level3.blizzard.com",
+                    "https://blzddist1-a.akamaihd.net", 
+                    "https://cdn.blizzard.com",
+                    "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",
-                    "http://cdn.blizzard.com",
                 },
                 "kr" => new List<string>
                 {
-                    "http://blzddist1-a.akamaihd.net",
+                    "https://blzddist1-a.akamaihd.net",
+                    "https://blzddistkr1-a.akamaihd.net",
+                    "http://blzddist1-a.akamaihd.net",  // HTTP fallback
                     "http://blzddistkr1-a.akamaihd.net",
                 },
                 "cn" => new List<string>
                 {
-                    "http://client04.pdl.wow.battlenet.com.cn",
+                    "https://client04.pdl.wow.battlenet.com.cn",
+                    "https://client02.pdl.wow.battlenet.com.cn",
+                    "http://client04.pdl.wow.battlenet.com.cn",  // HTTP fallback
                     "http://client02.pdl.wow.battlenet.com.cn",
+                },
+                "tw" => new List<string>
+                {
+                    "https://level3.blizzard.com",
+                    "https://blzddist1-a.akamaihd.net",
+                    "http://level3.blizzard.com",  // HTTP fallback
                 },
                 _ => new List<string>
                 {
-                    "http://level3.blizzard.com",
+                    "https://level3.blizzard.com",
+                    "https://blzddist1-a.akamaihd.net",
+                    "https://cdn.blizzard.com",
+                    "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",
                 },
             };
@@ -283,61 +352,6 @@ namespace War3Net.IO.Casc.Cdn
         private static string GetDefaultCdnPath()
         {
             return "tpr/war3";
-        }
-
-        /// <summary>
-        /// Sanitizes a path to prevent directory traversal attacks.
-        /// </summary>
-        /// <param name="path">The path to sanitize.</param>
-        /// <returns>The sanitized path.</returns>
-        private static string SanitizePath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException("Path cannot be null or empty", nameof(path));
-            }
-
-            // Remove any leading/trailing whitespace
-            path = path.Trim();
-
-            // Check for null bytes (potential security issue)
-            if (path.Contains('\0'))
-            {
-                throw new ArgumentException("Path contains null bytes", nameof(path));
-            }
-
-            // Normalize path separators to forward slashes
-            path = path.Replace('\\', '/');
-
-            // Remove any double slashes
-            while (path.Contains("//"))
-            {
-                path = path.Replace("//", "/");
-            }
-
-            // Check for directory traversal attempts
-            if (path.Contains("../") || path.Contains("..\\") || path == ".." || path.StartsWith(".."))
-            {
-                throw new ArgumentException("Path contains directory traversal sequences", nameof(path));
-            }
-
-            // Remove leading slashes (paths should be relative)
-            path = path.TrimStart('/');
-
-            // Check for absolute paths
-            if (Path.IsPathRooted(path))
-            {
-                throw new ArgumentException("Absolute paths are not allowed", nameof(path));
-            }
-
-            // Additional check for encoded traversal sequences
-            var decodedPath = Uri.UnescapeDataString(path);
-            if (decodedPath.Contains("../") || decodedPath.Contains("..\\"))
-            {
-                throw new ArgumentException("Path contains encoded directory traversal sequences", nameof(path));
-            }
-
-            return path;
         }
     }
 }
