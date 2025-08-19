@@ -101,13 +101,50 @@ namespace War3Net.IO.Casc.Tests
         {
             try
             {
-                using var client = new CdnClient("eu");
+                // First get the versions config to obtain valid build/CDN config hashes
+                using var httpClient = new System.Net.Http.HttpClient();
+                var versionsUrl = "http://eu.patch.battle.net:1119/w3/versions";
+                var versionStream = await httpClient.GetStreamAsync(versionsUrl);
+                var versions = VersionConfig.Parse(versionStream);
 
-                // Try to download versions file directly
-                var data = await client.DownloadFileAsync("w3/versions");
+                var euEntry = versions.GetEntry("eu");
+                Assert.IsNotNull(euEntry, "EU version entry should exist");
 
-                Assert.IsNotNull(data);
-                Assert.IsTrue(data.Length > 0);
+                // Get the CDN configuration
+                var cdnsUrl = "http://eu.patch.battle.net:1119/w3/cdns";
+                var cdnStream = await httpClient.GetStreamAsync(cdnsUrl);
+                var cdns = CdnServersConfig.Parse(cdnStream);
+
+                var cdnEntry = cdns.GetEntry("eu");
+                Assert.IsNotNull(cdnEntry, "EU CDN entry should exist");
+
+                // Create CDN client with actual CDN servers and path
+                using var client = new CdnClient(cdnEntry.Hosts, cdnEntry.Path);
+
+                // Test downloading the build config using the hash from versions
+                var buildConfigHash = euEntry.BuildConfig;
+                Assert.IsFalse(string.IsNullOrEmpty(buildConfigHash), "Build config hash should not be empty");
+
+                // Download the build config file
+                // The CdnClient.DownloadConfigAsync constructs the path as: config/{xx}/{yy}/{hash}
+                // where xx and yy are the first two pairs of hex digits from the hash
+                var buildConfigData = await client.DownloadConfigAsync(buildConfigHash);
+
+                // Verify we actually downloaded something
+                Assert.IsNotNull(buildConfigData);
+                Assert.IsTrue(buildConfigData.Length > 0, "Downloaded build config should have content");
+
+                // Verify it's a valid config file (should contain configuration data)
+                var configText = System.Text.Encoding.UTF8.GetString(buildConfigData);
+                Assert.IsTrue(configText.Length > 0, "Config text should not be empty");
+
+                // Also test downloading the CDN config
+                var cdnConfigHash = euEntry.CdnConfig;
+                Assert.IsFalse(string.IsNullOrEmpty(cdnConfigHash), "CDN config hash should not be empty");
+
+                var cdnConfigData = await client.DownloadConfigAsync(cdnConfigHash);
+                Assert.IsNotNull(cdnConfigData);
+                Assert.IsTrue(cdnConfigData.Length > 0, "Downloaded CDN config should have content");
             }
             catch (Exception ex) when (ex is System.Net.Http.HttpRequestException || ex is CascException)
             {
