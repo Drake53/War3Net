@@ -13,7 +13,7 @@ using War3Net.IO.Casc.Index;
 using War3Net.IO.Casc.Storage;
 using War3Net.IO.Casc.Structures;
 
-namespace War3Net.IO.Casc.IO
+namespace War3Net.IO.Casc
 {
     /// <summary>
     /// Stream implementation for reading CASC files.
@@ -213,9 +213,9 @@ namespace War3Net.IO.Casc.IO
             }
 
             // Check if data is BLTE-encoded
-            if (BLTEDecoder.IsBLTE(encodedData))
+            if (BlteDecoder.IsBlte(encodedData))
             {
-                _decodedData = BLTEDecoder.Decode(encodedData);
+                _decodedData = BlteDecoder.Decode(encodedData);
             }
             else
             {

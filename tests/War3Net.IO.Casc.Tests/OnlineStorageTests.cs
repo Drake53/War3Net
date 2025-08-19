@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.IO.Casc.CDN;
+using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Progress;
 using War3Net.IO.Casc.Storage;
 
@@ -49,7 +49,7 @@ namespace War3Net.IO.Casc.Tests
                 var usEntry = config.GetEntry("us");
                 Assert.IsNotNull(usEntry);
                 Assert.IsFalse(string.IsNullOrEmpty(usEntry.BuildConfig));
-                Assert.IsFalse(string.IsNullOrEmpty(usEntry.CDNConfig));
+                Assert.IsFalse(string.IsNullOrEmpty(usEntry.CdnConfig));
             }
             catch (System.Net.Http.HttpRequestException)
             {
@@ -63,7 +63,7 @@ namespace War3Net.IO.Casc.Tests
         /// </summary>
         [TestMethod]
         [TestCategory("Online")]
-        public async Task TestCDNServersConfigDownload()
+        public async Task TestCdnServersConfigDownload()
         {
             try
             {
@@ -75,7 +75,7 @@ namespace War3Net.IO.Casc.Tests
                 Assert.IsTrue(data.Length > 0);
 
                 using var stream = new MemoryStream(data);
-                var config = CDNServersConfig.Parse(stream);
+                var config = CdnServersConfig.Parse(stream);
 
                 Assert.IsNotNull(config);
                 Assert.IsTrue(config.Entries.Count > 0);
@@ -96,11 +96,11 @@ namespace War3Net.IO.Casc.Tests
         /// </summary>
         [TestMethod]
         [TestCategory("Online")]
-        public async Task TestCDNClient()
+        public async Task TestCdnClient()
         {
             try
             {
-                using var client = new CDNClient("us");
+                using var client = new CdnClient("us");
                 
                 // Try to download versions file directly
                 var data = await client.DownloadFileAsync("w3/versions");

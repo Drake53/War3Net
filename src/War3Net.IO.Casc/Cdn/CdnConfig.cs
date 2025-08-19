@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="CDNConfig.cs" company="Drake53">
+// <copyright file="CdnConfig.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,19 +10,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace War3Net.IO.Casc.CDN
+namespace War3Net.IO.Casc.Cdn
 {
     /// <summary>
     /// Represents a CDN configuration file.
     /// </summary>
-    public class CDNConfig
+    public class CdnConfig
     {
         private readonly Dictionary<string, List<string>> _data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CDNConfig"/> class.
+        /// Initializes a new instance of the <see cref="CdnConfig"/> class.
         /// </summary>
-        public CDNConfig()
+        public CdnConfig()
         {
             _data = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         }
@@ -67,9 +67,9 @@ namespace War3Net.IO.Casc.CDN
         /// </summary>
         /// <param name="stream">The stream to parse.</param>
         /// <returns>The parsed CDN config.</returns>
-        public static CDNConfig Parse(Stream stream)
+        public static CdnConfig Parse(Stream stream)
         {
-            var config = new CDNConfig();
+            var config = new CdnConfig();
             using var reader = new StreamReader(stream);
 
             string? line;

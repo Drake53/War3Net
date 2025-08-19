@@ -265,10 +265,10 @@ using War3Net.IO.Casc.Compression;
 
 // Check if data is BLTE-encoded
 byte[] rawData = File.ReadAllBytes("some_file.dat");
-if (BLTEDecoder.IsBLTE(rawData))
+if (BlteDecoder.IsBlte(rawData))
 {
     // Decompress BLTE data
-    byte[] decompressed = BLTEDecoder.Decode(rawData);
+    byte[] decompressed = BlteDecoder.Decode(rawData);
     
     // Process decompressed data...
 }
@@ -277,7 +277,7 @@ if (BLTEDecoder.IsBLTE(rawData))
 using (var input = File.OpenRead("compressed.blte"))
 using (var output = new MemoryStream())
 {
-    BLTEDecoder.Decode(input, output);
+    BlteDecoder.Decode(input, output);
     var decompressedData = output.ToArray();
 }
 ```

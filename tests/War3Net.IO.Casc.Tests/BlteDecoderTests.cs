@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="BLTEDecoderTests.cs" company="Drake53">
+// <copyright file="BlteDecoderTests.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,7 +18,7 @@ using War3Net.IO.Compression;
 namespace War3Net.IO.Casc.Tests
 {
     [TestClass]
-    public class BLTEDecoderTests
+    public class BlteDecoderTests
     {
         [TestMethod]
         public void TestBLTESignatureDetection()

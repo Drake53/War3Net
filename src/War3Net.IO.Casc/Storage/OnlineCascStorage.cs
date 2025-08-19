@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
-using War3Net.IO.Casc.CDN;
+using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Progress;
 
@@ -25,7 +25,7 @@ namespace War3Net.IO.Casc.Storage
     /// </summary>
     public class OnlineCascStorage : CascStorage
     {
-        private CDNClient? _cdnClient;
+        private CdnClient? _cdnClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OnlineCascStorage"/> class.
@@ -54,7 +54,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets the CDN client.
         /// </summary>
-        public CDNClient? CDNClient => _cdnClient;
+        public CdnClient? CdnClient => _cdnClient;
 
         /// <summary>
         /// Opens an online CASC storage.
@@ -209,18 +209,18 @@ namespace War3Net.IO.Casc.Storage
             });
 
             // Download CDNs file
-            var cdnsUrl = GetCDNsUrl(Product, Region);
+            var cdnUrl = GetCdnUrl(Product, Region);
             byte[] cdnsData;
             using (var httpClient = new HttpClient())
             {
-                cdnsData = await httpClient.GetByteArrayAsync(cdnsUrl);
+                cdnsData = await httpClient.GetByteArrayAsync(cdnUrl);
             }
 
             // Parse CDNs
-            CDNServersConfig cdns;
+            CdnServersConfig cdns;
             using (var stream = new MemoryStream(cdnsData))
             {
-                cdns = CDNServersConfig.Parse(stream);
+                cdns = CdnServersConfig.Parse(stream);
             }
 
             var cdnEntry = cdns.GetEntry(Region) ?? cdns.GetFirstEntry();
@@ -230,7 +230,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             // Initialize CDN client
-            _cdnClient = new CDNClient(cdnEntry.Hosts, cdnEntry.Path);
+            _cdnClient = new CdnClient(cdnEntry.Hosts, cdnEntry.Path);
 
             progressReporter?.Report(new ProgressEventArgs
             {
@@ -258,19 +258,19 @@ namespace War3Net.IO.Casc.Storage
             });
 
             // Download and cache CDN config
-            var cdnConfigPath = Path.Combine(StoragePath, "config", versionEntry.CDNConfig);
+            var cdnConfigPath = Path.Combine(StoragePath, "config", versionEntry.CdnConfig);
             if (!File.Exists(cdnConfigPath))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(cdnConfigPath)!);
-                var cdnConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.CDNConfig);
+                var cdnConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.CdnConfig);
                 await File.WriteAllBytesAsync(cdnConfigPath, cdnConfigData);
             }
 
             // Parse CDN config to get archive information
-            CDNConfig cdnConfig;
+            CdnConfig cdnConfig;
             using (var stream = File.OpenRead(cdnConfigPath))
             {
-                cdnConfig = CDNConfig.Parse(stream);
+                cdnConfig = CdnConfig.Parse(stream);
             }
 
             progressReporter?.Report(new ProgressEventArgs
@@ -287,7 +287,7 @@ namespace War3Net.IO.Casc.Storage
             // The base class will handle loading the downloaded files
         }
 
-        private async Task DownloadIndexFilesAsync(CDNConfig cdnConfig, IProgressReporter? progressReporter)
+        private async Task DownloadIndexFilesAsync(CdnConfig cdnConfig, IProgressReporter? progressReporter)
         {
             var dataPath = Path.Combine(StoragePath, "data");
             Directory.CreateDirectory(dataPath);
@@ -354,7 +354,7 @@ namespace War3Net.IO.Casc.Storage
             };
         }
 
-        private static string GetCDNsUrl(string product, string region)
+        private static string GetCdnUrl(string product, string region)
         {
             return product.ToLowerInvariant() switch
             {

@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="BLTEHeader.cs" company="Drake53">
+// <copyright file="BlteHeader.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,7 +17,7 @@ namespace War3Net.IO.Casc.Compression
     /// <summary>
     /// Represents the header of BLTE-encoded data.
     /// </summary>
-    public class BLTEHeader
+    public class BlteHeader
     {
         /// <summary>
         /// The BLTE signature.
@@ -25,11 +25,11 @@ namespace War3Net.IO.Casc.Compression
         public const uint Signature = 0x45544C42; // 'BLTE'
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BLTEHeader"/> class.
+        /// Initializes a new instance of the <see cref="BlteHeader"/> class.
         /// </summary>
-        public BLTEHeader()
+        public BlteHeader()
         {
-            Frames = new List<BLTEFrame>();
+            Frames = new List<BlteFrame>();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Gets the list of frames.
         /// </summary>
-        public List<BLTEFrame> Frames { get; }
+        public List<BlteFrame> Frames { get; }
 
         /// <summary>
         /// Gets a value indicating whether this BLTE data has multiple chunks.
@@ -67,7 +67,7 @@ namespace War3Net.IO.Casc.Compression
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
         /// <returns>The parsed header.</returns>
-        public static BLTEHeader Parse(Stream stream)
+        public static BlteHeader Parse(Stream stream)
         {
             using var reader = new BinaryReader(stream, Encoding.UTF8, true);
             return Parse(reader);
@@ -78,7 +78,7 @@ namespace War3Net.IO.Casc.Compression
         /// </summary>
         /// <param name="reader">The reader to read from.</param>
         /// <returns>The parsed header.</returns>
-        public static BLTEHeader Parse(BinaryReader reader)
+        public static BlteHeader Parse(BinaryReader reader)
         {
             var startPos = reader.BaseStream.Position;
 
@@ -89,7 +89,7 @@ namespace War3Net.IO.Casc.Compression
                 throw new CascParserException($"Invalid BLTE signature: 0x{signature:X8}, expected 0x{Signature:X8}");
             }
 
-            var header = new BLTEHeader
+            var header = new BlteHeader
             {
                 HeaderSize = reader.ReadUInt32BE(),
                 Flags = reader.ReadByte(),
@@ -106,7 +106,7 @@ namespace War3Net.IO.Casc.Compression
                 // Read frame info
                 for (uint i = 0; i < header.ChunkCount; i++)
                 {
-                    var frame = new BLTEFrame
+                    var frame = new BlteFrame
                     {
                         EncodedSize = reader.ReadUInt32BE(),
                         ContentSize = reader.ReadUInt32BE(),
@@ -125,7 +125,7 @@ namespace War3Net.IO.Casc.Compression
                 // Single chunk - create a single frame entry
                 // The frame size will be determined from the data
                 header.ChunkCount = 1;
-                header.Frames.Add(new BLTEFrame());
+                header.Frames.Add(new BlteFrame());
             }
 
             // Ensure we've read the entire header

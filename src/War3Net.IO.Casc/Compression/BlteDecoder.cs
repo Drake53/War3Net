@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="BLTEDecoder.cs" company="Drake53">
+// <copyright file="BlteDecoder.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -19,7 +19,7 @@ namespace War3Net.IO.Casc.Compression
     /// <summary>
     /// Provides BLTE decompression functionality.
     /// </summary>
-    public static class BLTEDecoder
+    public static class BlteDecoder
     {
         /// <summary>
         /// Default maximum recursion depth for nested BLTE frames.
@@ -90,7 +90,7 @@ namespace War3Net.IO.Casc.Compression
             using var reader = new BinaryReader(inputStream, System.Text.Encoding.UTF8, true);
 
             // Parse BLTE header
-            var header = BLTEHeader.Parse(reader);
+            var header = BlteHeader.Parse(reader);
 
             if (header.IsMultiChunk)
             {
@@ -127,12 +127,12 @@ namespace War3Net.IO.Casc.Compression
         /// </summary>
         /// <param name="frame">The frame to decode.</param>
         /// <returns>The decoded data.</returns>
-        public static byte[] DecodeFrame(BLTEFrame frame)
+        public static byte[] DecodeFrame(BlteFrame frame)
         {
             return DecodeFrameWithDepth(frame, 0);
         }
 
-        private static byte[] DecodeFrameWithDepth(BLTEFrame frame, int recursionDepth)
+        private static byte[] DecodeFrameWithDepth(BlteFrame frame, int recursionDepth)
         {
             if (recursionDepth > MaxRecursionDepth)
             {
@@ -178,14 +178,14 @@ namespace War3Net.IO.Casc.Compression
             }
         }
 
-        private static byte[] DecodeUncompressed(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeUncompressed(BinaryReader reader, BlteFrame frame)
         {
             // Read remaining data as-is
             var dataSize = (int)(frame.Data!.Length - 1); // -1 for compression type byte
             return reader.ReadBytes(dataSize);
         }
 
-        private static byte[] DecodeZLib(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeZLib(BinaryReader reader, BlteFrame frame)
         {
             // Read compressed data
             var compressedSize = (int)(frame.Data!.Length - 1); // -1 for compression type byte
@@ -200,7 +200,7 @@ namespace War3Net.IO.Casc.Compression
             return outputStream.ToArray();
         }
 
-        private static byte[] DecodeEncrypted(BinaryReader reader, BLTEFrame frame, int recursionDepth)
+        private static byte[] DecodeEncrypted(BinaryReader reader, BlteFrame frame, int recursionDepth)
         {
             // Read encryption key name
             var keyNameLength = reader.ReadByte();
@@ -246,37 +246,37 @@ namespace War3Net.IO.Casc.Compression
             switch ((CompressionType)encryptedType)
             {
                 case CompressionType.None:
-                    return DecodeUncompressed(decryptedReader, new BLTEFrame { Data = decryptedData });
+                    return DecodeUncompressed(decryptedReader, new BlteFrame { Data = decryptedData });
 
                 case CompressionType.ZLib:
-                    return DecodeZLib(decryptedReader, new BLTEFrame { Data = decryptedData });
+                    return DecodeZLib(decryptedReader, new BlteFrame { Data = decryptedData });
 
                 case CompressionType.Frame:
                     // Nested BLTE frame with depth check
                     return DecodeWithDepth(decryptedData, recursionDepth + 1);
 
                 case CompressionType.LZMA:
-                    return DecodeLZMA(decryptedReader, new BLTEFrame { Data = decryptedData });
+                    return DecodeLZMA(decryptedReader, new BlteFrame { Data = decryptedData });
 
                 case CompressionType.LZ4:
-                    return DecodeLZ4(decryptedReader, new BLTEFrame { Data = decryptedData });
+                    return DecodeLZ4(decryptedReader, new BlteFrame { Data = decryptedData });
 
                 case CompressionType.ZStandard:
-                    return DecodeZStandard(decryptedReader, new BLTEFrame { Data = decryptedData });
+                    return DecodeZStandard(decryptedReader, new BlteFrame { Data = decryptedData });
 
                 default:
                     throw new CascException($"Unsupported compression type in encrypted frame: 0x{encryptedType:X2}");
             }
         }
 
-        private static byte[] DecodeNestedFrame(BinaryReader reader, BLTEFrame frame, int recursionDepth)
+        private static byte[] DecodeNestedFrame(BinaryReader reader, BlteFrame frame, int recursionDepth)
         {
             // Nested BLTE frame - recurse with depth check
             var nestedData = reader.ReadBytes((int)(frame.Data!.Length - 1));
             return DecodeWithDepth(nestedData, recursionDepth + 1);
         }
 
-        private static byte[] DecodeLZMA(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeLZMA(BinaryReader reader, BlteFrame frame)
         {
             // LZMA is not commonly used in modern CASC
             // For full support, consider adding LZMA.NET or similar library
@@ -286,7 +286,7 @@ namespace War3Net.IO.Casc.Compression
                 $"To add support, consider using LZMA SDK or 7-Zip LZMA SDK NuGet package.");
         }
 
-        private static byte[] DecodeLZ4(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeLZ4(BinaryReader reader, BlteFrame frame)
         {
             // LZ4 is used in some newer CASC implementations
             // For full support, consider adding K4os.Compression.LZ4 library
@@ -296,7 +296,7 @@ namespace War3Net.IO.Casc.Compression
                 $"To add support, consider using K4os.Compression.LZ4 NuGet package.");
         }
 
-        private static byte[] DecodeZStandard(BinaryReader reader, BLTEFrame frame)
+        private static byte[] DecodeZStandard(BinaryReader reader, BlteFrame frame)
         {
             // Zstandard is used in the newest CASC implementations (Battle.net games post-2018)
             // For full support, consider adding ZstdNet library
@@ -311,7 +311,7 @@ namespace War3Net.IO.Casc.Compression
         /// </summary>
         /// <param name="data">The data to check.</param>
         /// <returns>true if the data is BLTE-encoded; otherwise, false.</returns>
-        public static bool IsBLTE(byte[] data)
+        public static bool IsBlte(byte[] data)
         {
             if (data == null || data.Length < 8)
             {
@@ -327,7 +327,7 @@ namespace War3Net.IO.Casc.Compression
         /// </summary>
         /// <param name="stream">The stream to check.</param>
         /// <returns>true if the stream contains BLTE-encoded data; otherwise, false.</returns>
-        public static bool IsBLTE(Stream stream)
+        public static bool IsBlte(Stream stream)
         {
             if (stream == null || stream.Length < 8)
             {

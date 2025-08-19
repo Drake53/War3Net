@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="CDNServersConfig.cs" company="Drake53">
+// <copyright file="VersionConfig.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace War3Net.IO.Casc.CDN
+namespace War3Net.IO.Casc.Cdn
 {
     /// <summary>
-    /// Represents a CDN servers configuration entry.
+    /// Represents a version configuration entry.
     /// </summary>
-    public class CDNServersEntry
+    public class VersionEntry
     {
         /// <summary>
         /// Gets or sets the region.
@@ -23,43 +23,53 @@ namespace War3Net.IO.Casc.CDN
         public string Region { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the CDN path.
+        /// Gets or sets the build config hash.
         /// </summary>
-        public string Path { get; set; } = string.Empty;
+        public string BuildConfig { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the CDN hosts.
+        /// Gets or sets the CDN config hash.
         /// </summary>
-        public List<string> Hosts { get; set; } = new List<string>();
+        public string CdnConfig { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the servers.
+        /// Gets or sets the build ID.
         /// </summary>
-        public List<string> Servers { get; set; } = new List<string>();
+        public string BuildId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the config path.
+        /// Gets or sets the version name.
         /// </summary>
-        public string ConfigPath { get; set; } = string.Empty;
+        public string VersionsName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the product config.
+        /// </summary>
+        public string ProductConfig { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the key ring.
+        /// </summary>
+        public string KeyRing { get; set; } = string.Empty;
     }
 
     /// <summary>
-    /// Represents a CDN servers configuration file.
+    /// Represents a versions configuration file.
     /// </summary>
-    public class CDNServersConfig
+    public class VersionConfig
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CDNServersConfig"/> class.
+        /// Initializes a new instance of the <see cref="VersionConfig"/> class.
         /// </summary>
-        public CDNServersConfig()
+        public VersionConfig()
         {
-            Entries = new List<CDNServersEntry>();
+            Entries = new List<VersionEntry>();
         }
 
         /// <summary>
-        /// Gets the CDN server entries.
+        /// Gets the version entries.
         /// </summary>
-        public List<CDNServersEntry> Entries { get; }
+        public List<VersionEntry> Entries { get; }
 
         /// <summary>
         /// Gets the column headers.
@@ -67,13 +77,13 @@ namespace War3Net.IO.Casc.CDN
         public List<string> Headers { get; private set; } = new List<string>();
 
         /// <summary>
-        /// Parses a CDN servers config from a stream.
+        /// Parses a version config from a stream.
         /// </summary>
         /// <param name="stream">The stream to parse.</param>
-        /// <returns>The parsed CDN servers config.</returns>
-        public static CDNServersConfig Parse(Stream stream)
+        /// <returns>The parsed version config.</returns>
+        public static VersionConfig Parse(Stream stream)
         {
-            var config = new CDNServersConfig();
+            var config = new VersionConfig();
             using var reader = new StreamReader(stream);
 
             string? line;
@@ -102,24 +112,22 @@ namespace War3Net.IO.Casc.CDN
                 // Parse data rows
                 if (parts.Length >= config.Headers.Count)
                 {
-                    var entry = new CDNServersEntry();
+                    var entry = new VersionEntry();
 
-                    if (columnIndices.TryGetValue("Name", out var idx))
+                    if (columnIndices.TryGetValue("Region", out var idx))
                         entry.Region = parts[idx];
-                    if (columnIndices.TryGetValue("Path", out idx))
-                        entry.Path = parts[idx];
-                    if (columnIndices.TryGetValue("Hosts", out idx))
-                    {
-                        var hosts = parts[idx].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                        entry.Hosts.AddRange(hosts.Select(h => $"http://{h}"));
-                    }
-                    if (columnIndices.TryGetValue("Servers", out idx) && idx < parts.Length && !string.IsNullOrWhiteSpace(parts[idx]))
-                    {
-                        var servers = parts[idx].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                        entry.Servers.AddRange(servers);
-                    }
-                    if (columnIndices.TryGetValue("ConfigPath", out idx) && idx < parts.Length)
-                        entry.ConfigPath = parts[idx];
+                    if (columnIndices.TryGetValue("BuildConfig", out idx))
+                        entry.BuildConfig = parts[idx];
+                    if (columnIndices.TryGetValue("CDNConfig", out idx))
+                        entry.CdnConfig = parts[idx];
+                    if (columnIndices.TryGetValue("BuildId", out idx))
+                        entry.BuildId = parts[idx];
+                    if (columnIndices.TryGetValue("VersionsName", out idx))
+                        entry.VersionsName = parts[idx];
+                    if (columnIndices.TryGetValue("ProductConfig", out idx))
+                        entry.ProductConfig = parts[idx];
+                    if (columnIndices.TryGetValue("KeyRing", out idx) && idx < parts.Length)
+                        entry.KeyRing = parts[idx];
 
                     config.Entries.Add(entry);
                 }
@@ -132,8 +140,8 @@ namespace War3Net.IO.Casc.CDN
         /// Gets the entry for a specific region.
         /// </summary>
         /// <param name="region">The region code.</param>
-        /// <returns>The CDN servers entry, or null if not found.</returns>
-        public CDNServersEntry? GetEntry(string region)
+        /// <returns>The version entry, or null if not found.</returns>
+        public VersionEntry? GetEntry(string region)
         {
             return Entries.FirstOrDefault(e => 
                 string.Equals(e.Region, region, StringComparison.OrdinalIgnoreCase));
@@ -142,8 +150,8 @@ namespace War3Net.IO.Casc.CDN
         /// <summary>
         /// Gets the first available entry.
         /// </summary>
-        /// <returns>The first CDN servers entry, or null if empty.</returns>
-        public CDNServersEntry? GetFirstEntry()
+        /// <returns>The first version entry, or null if empty.</returns>
+        public VersionEntry? GetFirstEntry()
         {
             return Entries.FirstOrDefault();
         }

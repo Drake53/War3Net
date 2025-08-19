@@ -15,7 +15,6 @@ using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Index;
-using War3Net.IO.Casc.IO;
 using War3Net.IO.Casc.Root;
 using War3Net.IO.Casc.Structures;
 
@@ -180,9 +179,9 @@ namespace War3Net.IO.Casc.Storage
                     var data = ReadDataFile(indexEntry!);
 
                     // Check if data is BLTE-encoded
-                    if (BLTEDecoder.IsBLTE(data))
+                    if (BlteDecoder.IsBlte(data))
                     {
-                        data = BLTEDecoder.Decode(data);
+                        data = BlteDecoder.Decode(data);
                     }
 
                     return new MemoryStream(data);

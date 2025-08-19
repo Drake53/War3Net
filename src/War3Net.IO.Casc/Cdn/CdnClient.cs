@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="CDNClient.cs" company="Drake53">
+// <copyright file="CdnClient.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -13,12 +13,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace War3Net.IO.Casc.CDN
+namespace War3Net.IO.Casc.Cdn
 {
     /// <summary>
     /// Client for downloading files from Blizzard CDN.
     /// </summary>
-    public class CDNClient : IDisposable
+    public class CdnClient : IDisposable
     {
         private readonly HttpClient _httpClient;
         private readonly List<string> _cdnHosts;
@@ -27,20 +27,20 @@ namespace War3Net.IO.Casc.CDN
         private int _currentHostIndex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CDNClient"/> class.
+        /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="region">The region code (us, eu, kr, cn, etc.).</param>
-        public CDNClient(string region = "us")
-            : this(GetDefaultCDNHosts(region), GetDefaultCDNPath())
+        public CdnClient(string region = "us")
+            : this(GetDefaultCdnHosts(region), GetDefaultCdnPath())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CDNClient"/> class.
+        /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="cdnHosts">The list of CDN hosts.</param>
         /// <param name="cdnPath">The CDN path.</param>
-        public CDNClient(List<string> cdnHosts, string cdnPath)
+        public CdnClient(List<string> cdnHosts, string cdnPath)
         {
             _cdnHosts = cdnHosts ?? throw new ArgumentNullException(nameof(cdnHosts));
             _cdnPath = cdnPath ?? throw new ArgumentNullException(nameof(cdnPath));
@@ -50,12 +50,12 @@ namespace War3Net.IO.Casc.CDN
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CDNClient"/> class with custom HttpClient.
+        /// Initializes a new instance of the <see cref="CdnClient"/> class with custom HttpClient.
         /// </summary>
         /// <param name="httpClient">The HTTP client to use.</param>
         /// <param name="cdnHosts">The list of CDN hosts.</param>
         /// <param name="cdnPath">The CDN path.</param>
-        public CDNClient(HttpClient httpClient, List<string> cdnHosts, string cdnPath)
+        public CdnClient(HttpClient httpClient, List<string> cdnHosts, string cdnPath)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _cdnHosts = cdnHosts ?? throw new ArgumentNullException(nameof(cdnHosts));
@@ -246,7 +246,7 @@ namespace War3Net.IO.Casc.CDN
             return $"{host}/{cdnPath}/{path}";
         }
 
-        private static List<string> GetDefaultCDNHosts(string region)
+        private static List<string> GetDefaultCdnHosts(string region)
         {
             return region.ToLowerInvariant() switch
             {
@@ -280,7 +280,7 @@ namespace War3Net.IO.Casc.CDN
             };
         }
 
-        private static string GetDefaultCDNPath()
+        private static string GetDefaultCdnPath()
         {
             return "tpr/war3";
         }

@@ -146,7 +146,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets the CDN key.
         /// </summary>
-        public string? CDNKey => GetValue("CDN Key");
+        public string? CdnKey => GetValue("CDN Key");
 
         /// <summary>
         /// Gets the product.
@@ -171,11 +171,11 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets the CDN hosts.
         /// </summary>
-        public string? CDNHosts => GetValue("CDN Hosts");
+        public string? CdnHosts => GetValue("CDN Hosts");
 
         /// <summary>
         /// Gets the CDN path.
         /// </summary>
-        public string? CDNPath => GetValue("CDN Path");
+        public string? CdnPath => GetValue("CDN Path");
     }
 }

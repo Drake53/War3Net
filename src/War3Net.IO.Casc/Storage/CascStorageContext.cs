@@ -96,6 +96,6 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets or sets the CDN base URL.
         /// </summary>
-        public string? CDNUrl { get; set; }
+        public string? CdnUrl { get; set; }
     }
 }

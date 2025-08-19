@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// <copyright file="BLTEFrame.cs" company="Drake53">
+// <copyright file="BlteFrame.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,7 +12,7 @@ namespace War3Net.IO.Casc.Compression
     /// <summary>
     /// Represents a single frame in BLTE-encoded data.
     /// </summary>
-    public class BLTEFrame
+    public class BlteFrame
     {
         /// <summary>
         /// Gets or sets the encoded size of the frame.
