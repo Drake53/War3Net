@@ -206,7 +206,18 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>true if the key was removed; otherwise, false.</returns>
         public static bool RemoveKnownKey(ulong keyName)
         {
-            return KnownKeys.TryRemove(keyName, out _);
+            if (KnownKeys.TryRemove(keyName, out var removedKey))
+            {
+                // Clear sensitive key data from memory
+                if (removedKey != null)
+                {
+                    Array.Clear(removedKey, 0, removedKey.Length);
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -266,6 +277,15 @@ namespace War3Net.IO.Casc.Crypto
         /// </summary>
         public static void ClearKnownKeys()
         {
+            // Clear sensitive data before removing
+            foreach (var kvp in KnownKeys)
+            {
+                if (kvp.Value != null)
+                {
+                    Array.Clear(kvp.Value, 0, kvp.Value.Length);
+                }
+            }
+
             KnownKeys.Clear();
         }
 
@@ -316,13 +336,11 @@ namespace War3Net.IO.Casc.Crypto
                         }
                         catch (FormatException)
                         {
-                            // Skip lines with invalid hex format
-                            System.Diagnostics.Trace.TraceWarning($"Invalid key format in line: {line}");
+                            // Skip lines with invalid hex format - silently continue
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            // Log unexpected errors
-                            System.Diagnostics.Trace.TraceError($"Error parsing key from line '{line}': {ex.Message}");
+                            // Skip lines that can't be parsed - silently continue
                         }
                     }
                 }

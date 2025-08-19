@@ -123,14 +123,28 @@ namespace War3Net.IO.Casc.Compression
                 // Process multiple frames
                 foreach (var frame in header.Frames)
                 {
+                    // Validate stream position is not negative
+                    if (inputStream.Position < 0)
+                    {
+                        throw new CascException($"Invalid stream position: {inputStream.Position}. Stream may be corrupted.");
+                    }
+
                     // Validate we have enough data to read
                     if (inputStream.Position + frame.EncodedSize > inputStream.Length)
                     {
                         throw new CascException($"Insufficient data in stream. Expected {frame.EncodedSize} bytes but only {inputStream.Length - inputStream.Position} bytes available.");
                     }
                     
-                    // Read frame data
-                    frame.Data = reader.ReadBytes((int)frame.EncodedSize);
+                    // Additional safety check for allocation size
+                    try
+                    {
+                        // Read frame data
+                        frame.Data = reader.ReadBytes((int)frame.EncodedSize);
+                    }
+                    catch (OutOfMemoryException)
+                    {
+                        throw new CascException($"Unable to allocate {frame.EncodedSize} bytes for BLTE frame. File may be corrupted.");
+                    }
 
                     // Decode frame
                     var decodedData = DecodeFrameWithDepth(frame, recursionDepth);
@@ -146,15 +160,35 @@ namespace War3Net.IO.Casc.Compression
             }
             else
             {
+                // Validate stream position
+                if (inputStream.Position < 0)
+                {
+                    throw new CascException($"Invalid stream position: {inputStream.Position}. Stream may be corrupted.");
+                }
+
                 // Single frame - read remaining data
                 var remainingBytes = inputStream.Length - inputStream.Position;
+
+                if (remainingBytes < 0)
+                {
+                    throw new CascException($"Invalid remaining bytes calculation. Stream position ({inputStream.Position}) exceeds stream length ({inputStream.Length}).");
+                }
                 
                 if (remainingBytes > MaxFrameSize)
                 {
                     throw new CascException($"Single BLTE frame size ({remainingBytes} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
                 }
                 
-                var frameData = reader.ReadBytes((int)remainingBytes);
+                // Additional safety check for allocation
+                byte[] frameData;
+                try
+                {
+                    frameData = reader.ReadBytes((int)remainingBytes);
+                }
+                catch (OutOfMemoryException)
+                {
+                    throw new CascException($"Unable to allocate {remainingBytes} bytes for BLTE frame. File may be corrupted.");
+                }
 
                 // Create frame info
                 var frame = header.Frames[0];

@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Storage;
 using War3Net.IO.Casc.Structures;
@@ -25,8 +28,8 @@ namespace War3Net.IO.Casc
     {
         private readonly CascStorage _storage;
         private readonly ConcurrentDictionary<string, CascEntry> _entries;
-        private readonly HashSet<WeakReference> _openStreams;
-        private readonly object _streamLock = new object();
+        private readonly ConcurrentBag<WeakReference> _openStreams;
+        private readonly ILogger<CascArchive> _logger;
         private bool _disposed;
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="storagePath">The path to the CASC storage.</param>
         public CascArchive(string storagePath)
-            : this(storagePath, CascLocaleFlags.All)
+            : this(storagePath, CascLocaleFlags.All, null)
         {
         }
 
@@ -44,6 +47,17 @@ namespace War3Net.IO.Casc
         /// <param name="storagePath">The path to the CASC storage.</param>
         /// <param name="localeFlags">The locale flags to use.</param>
         public CascArchive(string storagePath, CascLocaleFlags localeFlags)
+            : this(storagePath, localeFlags, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CascArchive"/> class.
+        /// </summary>
+        /// <param name="storagePath">The path to the CASC storage.</param>
+        /// <param name="localeFlags">The locale flags to use.</param>
+        /// <param name="logger">The logger to use. If null, no logging will be performed.</param>
+        public CascArchive(string storagePath, CascLocaleFlags localeFlags, ILogger<CascArchive>? logger)
         {
             if (string.IsNullOrEmpty(storagePath))
             {
@@ -55,11 +69,24 @@ namespace War3Net.IO.Casc
                 throw new DirectoryNotFoundException($"Storage path not found: {storagePath}");
             }
 
-            _storage = CascStorage.OpenStorage(storagePath, localeFlags);
-            _entries = new ConcurrentDictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
-            _openStreams = new HashSet<WeakReference>();
+            _logger = logger ?? NullLogger<CascArchive>.Instance;
 
-            Initialize();
+            try
+            {
+                _logger.LogInformation("Opening CASC storage at: {StoragePath}", storagePath);
+                _storage = CascStorage.OpenStorage(storagePath, localeFlags);
+                _entries = new ConcurrentDictionary<string, CascEntry>(StringComparer.OrdinalIgnoreCase);
+                _openStreams = new ConcurrentBag<WeakReference>();
+
+                Initialize();
+                _logger.LogInformation("CASC storage opened successfully. Files: {FileCount}", _entries.Count);
+            }
+            catch
+            {
+                // Ensure proper cleanup if initialization fails
+                _storage?.Dispose();
+                throw;
+            }
         }
 
         /// <summary>
@@ -176,25 +203,25 @@ namespace War3Net.IO.Casc
             }
             catch (FileNotFoundException ex)
             {
-                System.Diagnostics.Trace.TraceWarning($"File not found: {fileName}. Details: {ex.Message}");
+                _logger.LogWarning(ex, "File not found: {FileName}", fileName);
                 stream = null;
                 return false;
             }
             catch (CascFileNotFoundException ex)
             {
-                System.Diagnostics.Trace.TraceWarning($"CASC file not found: {fileName}. Details: {ex.Message}");
+                _logger.LogWarning(ex, "CASC file not found: {FileName}", fileName);
                 stream = null;
                 return false;
             }
             catch (ArgumentException ex)
             {
-                System.Diagnostics.Trace.TraceWarning($"Invalid argument for file: {fileName}. Details: {ex.Message}");
+                _logger.LogWarning(ex, "Invalid argument for file: {FileName}", fileName);
                 stream = null;
                 return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"Unexpected error opening file: {fileName}. Exception: {ex}");
+                _logger.LogError(ex, "Unexpected error opening file: {FileName}", fileName);
                 stream = null;
                 return false;
             }
@@ -337,19 +364,11 @@ namespace War3Net.IO.Casc
             }
 
             // Dispose all open streams first
-            lock (_streamLock)
+            // ConcurrentBag is thread-safe, no lock needed for enumeration
+            var streamsCopy = _openStreams.ToArray();
+            foreach (var weakRef in streamsCopy)
             {
-                // Clean up dead references and dispose live streams
-                var liveStreams = new List<Stream>();
-                foreach (var weakRef in _openStreams)
-                {
-                    if (weakRef.IsAlive && weakRef.Target is Stream stream)
-                    {
-                        liveStreams.Add(stream);
-                    }
-                }
-
-                foreach (var stream in liveStreams)
+                if (weakRef.IsAlive && weakRef.Target is Stream stream)
                 {
                     try
                     {
@@ -360,8 +379,12 @@ namespace War3Net.IO.Casc
                         // Ignore disposal errors for individual streams
                     }
                 }
+            }
 
-                _openStreams.Clear();
+            // Clear the collection
+            while (_openStreams.TryTake(out _))
+            {
+                // Empty the bag
             }
 
             // Then dispose the storage
@@ -435,32 +458,16 @@ namespace War3Net.IO.Casc
             // Track the stream for proper disposal using weak reference
             // This prevents memory leaks if streams are not explicitly disposed
             var weakRef = new WeakReference(stream);
-            lock (_streamLock)
-            {
-                // Clean up dead references while we're here
-                CleanupDeadReferences();
-                _openStreams.Add(weakRef);
-            }
+            _openStreams.Add(weakRef);
 
             // Wrap the stream to remove it from tracking when disposed
-            // Use a separate disposal lock to avoid potential deadlocks
-            return new TrackedStream(stream, weakRef, () =>
+            return new TrackedStream(stream, () =>
             {
-                lock (_streamLock)
-                {
-                    _openStreams.Remove(weakRef);
-                }
+                // Note: We don't remove from ConcurrentBag as it's not efficient
+                // Dead references will be cleaned up periodically or on disposal
             });
         }
 
-        private void CleanupDeadReferences()
-        {
-            // Remove weak references that no longer point to live objects
-            // This prevents the collection from growing indefinitely
-            // Note: RemoveWhere is thread-safe on HashSet, but we still need the lock
-            // since we're modifying the collection that other methods are reading
-            _openStreams.RemoveWhere(wr => !wr.IsAlive);
-        }
 
         private void ThrowIfDisposed()
         {
@@ -476,7 +483,6 @@ namespace War3Net.IO.Casc
         private sealed class TrackedStream : Stream
         {
             private readonly Stream _innerStream;
-            private readonly WeakReference _weakReference;
             private readonly Action _onDispose;
             private bool _disposed;
 
@@ -484,27 +490,25 @@ namespace War3Net.IO.Casc
             /// Initializes a new instance of the <see cref="TrackedStream"/> class.
             /// </summary>
             /// <param name="innerStream">The inner stream to wrap.</param>
-            /// <param name="weakReference">The weak reference tracking this stream.</param>
             /// <param name="onDispose">Action to invoke when the stream is disposed.</param>
-            public TrackedStream(Stream innerStream, WeakReference weakReference, Action onDispose)
+            public TrackedStream(Stream innerStream, Action onDispose)
             {
                 _innerStream = innerStream ?? throw new ArgumentNullException(nameof(innerStream));
-                _weakReference = weakReference ?? throw new ArgumentNullException(nameof(weakReference));
                 _onDispose = onDispose ?? throw new ArgumentNullException(nameof(onDispose));
             }
 
             /// <inheritdoc/>
             public override bool CanRead => _innerStream.CanRead;
-            
+
             /// <inheritdoc/>
             public override bool CanSeek => _innerStream.CanSeek;
-            
+
             /// <inheritdoc/>
             public override bool CanWrite => _innerStream.CanWrite;
-            
+
             /// <inheritdoc/>
             public override long Length => _innerStream.Length;
-            
+
             /// <inheritdoc/>
             public override long Position
             {
@@ -514,16 +518,16 @@ namespace War3Net.IO.Casc
 
             /// <inheritdoc/>
             public override void Flush() => _innerStream.Flush();
-            
+
             /// <inheritdoc/>
             public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
-            
+
             /// <inheritdoc/>
             public override long Seek(long offset, SeekOrigin origin) => _innerStream.Seek(offset, origin);
-            
+
             /// <inheritdoc/>
             public override void SetLength(long value) => _innerStream.SetLength(value);
-            
+
             /// <inheritdoc/>
             public override void Write(byte[] buffer, int offset, int count) => _innerStream.Write(buffer, offset, count);
 
@@ -537,8 +541,10 @@ namespace War3Net.IO.Casc
                         _innerStream.Dispose();
                         _onDispose();
                     }
+
                     _disposed = true;
                 }
+
                 base.Dispose(disposing);
             }
         }

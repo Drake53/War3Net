@@ -64,10 +64,10 @@ namespace War3Net.IO.Casc.Index
                 {
                     LoadIndexFile(indexFile);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // Log error but continue loading other files
-                    System.Diagnostics.Debug.WriteLine($"Failed to load index file {indexFile}: {ex.Message}");
+                    // Skip invalid index files and continue loading others
+                    // Logging should be handled by the caller if needed
                 }
             }
 
@@ -155,31 +155,17 @@ namespace War3Net.IO.Casc.Index
         /// <returns>The bucket index.</returns>
         private static byte CalculateBucketIndex(EKey eKey)
         {
-            // Match CascLib's approach: use Jenkins hash of first 9 bytes
+            // CascLib uses the first byte of the EKey directly for bucket index
+            // The bucket index is masked to 0x0F (16 buckets)
             var span = eKey.Value;
             if (span.Length == 0)
             {
                 return 0;
             }
 
-            // CascLib uses first 9 bytes of the EKey for bucket calculation
-            int bytesToHash = Math.Min(CascConstants.EKeySize, span.Length);
-            byte[] hashData = new byte[bytesToHash];
-            span.Slice(0, bytesToHash).CopyTo(hashData);
-
-            // Use Jenkins hashlittle2 to match CascLib's implementation
-            // This produces two 32-bit hash values
-            Utilities.JenkinsHash.HashLittle2(hashData, out uint pc, out uint pb);
-            
-            // CascLib uses XOR of the two hash values for better distribution
-            // Use checked arithmetic to prevent integer overflow
-            checked
-            {
-                uint combinedHash = pc ^ pb;
-                // Use lower 4 bits for 16 buckets (CascConstants.IndexCount)
-                // Ensure we stay within valid bucket range (0-15)
-                return (byte)(combinedHash & (CascConstants.IndexCount - 1));
-            }
+            // Match CascLib's implementation exactly:
+            // Use first byte of EKey masked with 0x0F for bucket index (0-15)
+            return (byte)(span[0] & 0x0F);
         }
 
         /// <summary>

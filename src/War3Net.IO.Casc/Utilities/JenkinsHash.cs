@@ -48,6 +48,22 @@ namespace War3Net.IO.Casc.Utilities
                 return;
             }
 
+            // Validate bounds
+            if (offset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset), "Offset cannot be negative.");
+            }
+            
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Length cannot be negative.");
+            }
+            
+            if (offset + length > data.Length)
+            {
+                throw new ArgumentException($"Offset ({offset}) + Length ({length}) exceeds array bounds ({data.Length}).");
+            }
+
             int pos = offset;
 
             // Handle most of the data

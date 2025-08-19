@@ -84,46 +84,16 @@ namespace War3Net.IO.Casc.Structures
                 throw new ArgumentException("Hex string cannot be null or empty.", nameof(hex));
             }
 
-            // More efficient single-pass processing
-            var bytes = new byte[CascConstants.CKeySize];
-            int byteIndex = 0;
-            int charIndex = 0;
-            
-            while (byteIndex < bytes.Length && charIndex < hex.Length)
+            // Remove common separators for cleaner parsing
+            var cleanHex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
+
+            if (cleanHex.Length != CascConstants.CKeySize * 2)
             {
-                char c = hex[charIndex];
-                
-                // Skip separators
-                if (c == '-' || c == ' ')
-                {
-                    charIndex++;
-                    continue;
-                }
-                
-                // Need at least 2 chars for a byte
-                if (charIndex + 1 >= hex.Length)
-                {
-                    throw new ArgumentException($"Invalid hex string format.", nameof(hex));
-                }
-                
-                char c2 = hex[charIndex + 1];
-                
-                // Skip separator in second char position
-                if (c2 == '-' || c2 == ' ')
-                {
-                    throw new ArgumentException($"Invalid hex string format.", nameof(hex));
-                }
-                
-                bytes[byteIndex] = Convert.ToByte(new string(new[] { c, c2 }), 16);
-                byteIndex++;
-                charIndex += 2;
-            }
-            
-            if (byteIndex != CascConstants.CKeySize)
-            {
-                throw new ArgumentException($"Invalid hex string length. Expected {CascConstants.MD5StringSize} hex characters.", nameof(hex));
+                throw new ArgumentException($"Invalid hex string length. Expected {CascConstants.CKeySize * 2} hex characters, got {cleanHex.Length}.", nameof(hex));
             }
 
+            // Use efficient hex conversion (available in .NET 5+)
+            var bytes = Convert.FromHexString(cleanHex);
             return new CascKey(bytes);
         }
 

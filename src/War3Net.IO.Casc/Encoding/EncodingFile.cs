@@ -140,17 +140,19 @@ namespace War3Net.IO.Casc.Encoding
                         
                         var keyCount = BitConverter.ToUInt16(keyCountBytes, 0);
                         
-                        // Validate key count - CascLib limits this to reasonable values
-                        // Most entries have 1-3 keys, anything over 10 is suspicious
-                        if (keyCount == 0 || keyCount > 10)
+                        // Validate key count - CascLib allows up to 256 keys per entry
+                        // Zero key count indicates padding
+                        if (keyCount == 0)
                         {
-                            // Check if this might be padding (all zeros)
-                            if (keyCountBytes[0] == 0 && keyCountBytes[1] == 0)
-                            {
-                                // Likely hit padding
-                                break;
-                            }
-                            // Otherwise it's invalid data
+                            // Hit padding - stop processing this page
+                            break;
+                        }
+                        
+                        // Sanity check: while technically up to 256 is allowed,
+                        // in practice more than 100 keys is extremely rare and likely corrupt data
+                        if (keyCount > 256)
+                        {
+                            // Invalid data - stop processing
                             pageStream.Position = entryStartPos;
                             break;
                         }
