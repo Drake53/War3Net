@@ -132,6 +132,8 @@ namespace War3Net.IO.Casc
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFile(string fileName, CascOpenFlags openFlags)
         {
+            ThrowIfDisposed();
+
             if (string.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
@@ -152,6 +154,7 @@ namespace War3Net.IO.Casc
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFile(CascKey cKey)
         {
+            ThrowIfDisposed();
             return OpenFile(cKey.ToString(), CascOpenFlags.OpenByCKey);
         }
 
@@ -162,6 +165,7 @@ namespace War3Net.IO.Casc
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFile(EKey eKey)
         {
+            ThrowIfDisposed();
             return OpenFile(eKey.ToString(), CascOpenFlags.OpenByEKey);
         }
 
@@ -172,6 +176,7 @@ namespace War3Net.IO.Casc
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFile(uint fileDataId)
         {
+            ThrowIfDisposed();
             var fileName = string.Format(CascConstants.FileIdFormat, fileDataId);
             return OpenFile(fileName, CascOpenFlags.OpenByFileId);
         }
@@ -234,6 +239,7 @@ namespace War3Net.IO.Casc
         /// <returns>true if the file exists; otherwise, false.</returns>
         public bool FileExists(string fileName)
         {
+            ThrowIfDisposed();
             return !string.IsNullOrEmpty(fileName) && _entries.ContainsKey(fileName);
         }
 
@@ -244,6 +250,8 @@ namespace War3Net.IO.Casc
         /// <returns>The CASC entry.</returns>
         public CascEntry GetEntry(string fileName)
         {
+            ThrowIfDisposed();
+
             if (!TryGetEntry(fileName, out var entry))
             {
                 throw new FileNotFoundException($"File not found in CASC archive: {fileName}");
@@ -260,6 +268,8 @@ namespace War3Net.IO.Casc
         /// <returns>true if the entry was found; otherwise, false.</returns>
         public bool TryGetEntry(string fileName, out CascEntry? entry)
         {
+            ThrowIfDisposed();
+
             if (string.IsNullOrEmpty(fileName))
             {
                 entry = null;
@@ -276,6 +286,8 @@ namespace War3Net.IO.Casc
         /// <returns>An enumerable of matching entries.</returns>
         public IEnumerable<CascEntry> FindFiles(string pattern)
         {
+            ThrowIfDisposed();
+
             if (string.IsNullOrEmpty(pattern))
             {
                 return Enumerable.Empty<CascEntry>();
@@ -300,6 +312,7 @@ namespace War3Net.IO.Casc
         /// <param name="key">The encryption key.</param>
         public void AddEncryptionKey(ulong keyName, byte[] key)
         {
+            ThrowIfDisposed();
             _storage.AddEncryptionKey(keyName, key);
         }
 
@@ -473,7 +486,7 @@ namespace War3Net.IO.Casc
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(CascArchive));
+                throw new ObjectDisposedException(GetType().FullName);
             }
         }
 

@@ -317,7 +317,15 @@ namespace War3Net.IO.Casc.Storage
                 throw new ArgumentException($"Encryption key must be {CascConstants.KeyLength} bytes", nameof(key));
             }
 
-            _context.EncryptionKeys[keyName] = key;
+            _storageLock.EnterWriteLock();
+            try
+            {
+                _context.EncryptionKeys[keyName] = key;
+            }
+            finally
+            {
+                _storageLock.ExitWriteLock();
+            }
         }
 
         /// <summary>
@@ -419,8 +427,13 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>The number of keys imported.</returns>
         public int ImportKeysFromFile(string fileName)
         {
-            // Sanitize the file path to prevent directory traversal
-            fileName = PathSanitizer.SanitizeFilePath(fileName);
+            // Note: ImportKeysFromFile should accept absolute paths to allow loading key files from any location
+            // The path sanitization is intentionally not used here to allow flexibility
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+            }
             
             if (!File.Exists(fileName))
             {

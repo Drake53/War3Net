@@ -82,6 +82,24 @@ namespace War3Net.IO.Casc.Root
         }
 
         /// <inheritdoc/>
+        public override RootEntry? GetEntry(string fileName)
+        {
+            return _rootEntries.TryGetValue(fileName, out var entry) ? entry : null;
+        }
+
+        /// <inheritdoc/>
+        public override RootEntry? GetEntry(uint fileDataId)
+        {
+            return _fileDataIdEntries.TryGetValue(fileDataId, out var entry) ? entry : null;
+        }
+
+        /// <inheritdoc/>
+        public override IEnumerable<RootEntry> GetEntries()
+        {
+            return _rootEntries.Values;
+        }
+
+        /// <inheritdoc/>
         public override void Clear()
         {
             _rootEntries.Clear();

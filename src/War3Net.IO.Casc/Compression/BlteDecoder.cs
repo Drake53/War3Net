@@ -306,6 +306,11 @@ namespace War3Net.IO.Casc.Compression
 
             // Read encrypted data
             var encryptedSize = (int)(frame.Data!.Length - 1 - 1 - keyNameLength - 4 - 1);
+            if (encryptedSize < 0)
+            {
+                throw new CascException($"Invalid encrypted data size: {encryptedSize}");
+            }
+
             var encryptedData = reader.ReadBytes(encryptedSize);
 
             // Decrypt the data

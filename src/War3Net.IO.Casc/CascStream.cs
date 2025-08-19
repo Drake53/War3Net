@@ -131,9 +131,12 @@ namespace War3Net.IO.Casc
                 return 0;
             }
 
+            // Clamp position to valid range
+            _position = Math.Max(0, Math.Min(_position, _memoryStream.Length));
+
             _memoryStream.Position = _position;
             int bytesRead = _memoryStream.Read(buffer, offset, count);
-            _position += bytesRead;
+            _position = _memoryStream.Position; // Keep positions synchronized
             return bytesRead;
         }
 
