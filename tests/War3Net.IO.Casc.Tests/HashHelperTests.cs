@@ -21,10 +21,10 @@ namespace War3Net.IO.Casc.Tests
         {
             var data = System.Text.Encoding.UTF8.GetBytes("Hello, World!");
             var hash = HashHelper.ComputeMD5(data);
-            
+
             Assert.IsNotNull(hash);
             Assert.AreEqual(16, hash.Length);
-            
+
             // Known MD5 hash of "Hello, World!"
             var expectedHex = "65A8E27D8879283831B664BD8B7F0AD4";
             var actualHex = HashHelper.ToHexString(hash);
@@ -36,10 +36,10 @@ namespace War3Net.IO.Casc.Tests
         {
             const string text = "Test String";
             var hash = HashHelper.ComputeMD5(text);
-            
+
             Assert.IsNotNull(hash);
             Assert.AreEqual(16, hash.Length);
-            
+
             // Should be same as hashing the bytes
             var bytesHash = HashHelper.ComputeMD5(System.Text.Encoding.UTF8.GetBytes(text));
             CollectionAssert.AreEqual(bytesHash, hash);
@@ -50,7 +50,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var data = System.Text.Encoding.UTF8.GetBytes("Test Data");
             var hash = HashHelper.ComputeSHA1(data);
-            
+
             Assert.IsNotNull(hash);
             Assert.AreEqual(20, hash.Length);
         }
@@ -60,7 +60,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var data = System.Text.Encoding.UTF8.GetBytes("Test Data");
             var hash = HashHelper.ComputeSHA256(data);
-            
+
             Assert.IsNotNull(hash);
             Assert.AreEqual(32, hash.Length);
         }
@@ -70,13 +70,13 @@ namespace War3Net.IO.Casc.Tests
         {
             const string text = "test.txt";
             var hash = HashHelper.ComputeJenkinsHash(text);
-            
+
             Assert.IsTrue(hash > 0);
-            
+
             // Same string should give same hash
             var hash2 = HashHelper.ComputeJenkinsHash(text);
             Assert.AreEqual(hash, hash2);
-            
+
             // Different string should give different hash
             var hash3 = HashHelper.ComputeJenkinsHash("other.txt");
             Assert.AreNotEqual(hash, hash3);
@@ -87,9 +87,9 @@ namespace War3Net.IO.Casc.Tests
         {
             var data = new byte[] { 1, 2, 3, 4, 5 };
             var hash = HashHelper.ComputeJenkinsHash(data);
-            
+
             Assert.IsTrue(hash > 0);
-            
+
             // Same data should give same hash
             var hash2 = HashHelper.ComputeJenkinsHash(data);
             Assert.AreEqual(hash, hash2);
@@ -100,10 +100,10 @@ namespace War3Net.IO.Casc.Tests
         {
             var data = new byte[] { 10, 20, 30, 40, 50 };
             uint initVal = 0x12345678;
-            
+
             var hash = HashHelper.JenkinsHashLookup3(data, initVal);
             Assert.IsTrue(hash > 0);
-            
+
             // Different init value should give different hash
             var hash2 = HashHelper.JenkinsHashLookup3(data, 0x87654321);
             Assert.AreNotEqual(hash, hash2);
@@ -114,7 +114,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var bytes = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
             var hex = HashHelper.ToHexString(bytes);
-            
+
             Assert.AreEqual("0123456789ABCDEF", hex);
         }
 
@@ -123,7 +123,7 @@ namespace War3Net.IO.Casc.Tests
         {
             const string hex = "0123456789ABCDEF";
             var bytes = HashHelper.FromHexString(hex);
-            
+
             Assert.IsNotNull(bytes);
             Assert.AreEqual(8, bytes.Length);
             Assert.AreEqual(0x01, bytes[0]);
@@ -141,13 +141,13 @@ namespace War3Net.IO.Casc.Tests
         {
             const string hex = "01-23-45-67-89-AB-CD-EF";
             var bytes = HashHelper.FromHexString(hex);
-            
+
             Assert.IsNotNull(bytes);
             Assert.AreEqual(8, bytes.Length);
-            
+
             const string hex2 = "01 23 45 67 89 AB CD EF";
             var bytes2 = HashHelper.FromHexString(hex2);
-            
+
             CollectionAssert.AreEqual(bytes, bytes2);
         }
 
@@ -156,7 +156,7 @@ namespace War3Net.IO.Casc.Tests
         {
             const string hex = "0123456789abcdef";
             var bytes = HashHelper.FromHexString(hex);
-            
+
             Assert.IsNotNull(bytes);
             Assert.AreEqual(8, bytes.Length);
             Assert.AreEqual(0xAB, bytes[5]);
@@ -170,7 +170,7 @@ namespace War3Net.IO.Casc.Tests
             var bytes = HashHelper.FromHexString(string.Empty);
             Assert.IsNotNull(bytes);
             Assert.AreEqual(0, bytes.Length);
-            
+
             var bytes2 = HashHelper.FromHexString(null!);
             Assert.IsNotNull(bytes2);
             Assert.AreEqual(0, bytes2.Length);
@@ -190,7 +190,7 @@ namespace War3Net.IO.Casc.Tests
             var originalData = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
             var hex = HashHelper.ToHexString(originalData);
             var recovered = HashHelper.FromHexString(hex);
-            
+
             CollectionAssert.AreEqual(originalData, recovered);
         }
     }

@@ -43,10 +43,10 @@ namespace War3Net.IO.Casc.Tests
         {
             const string hexString = "0123456789ABCDEF0123456789ABCDEF";
             var key = CascKey.Parse(hexString);
-            
+
             Assert.IsNotNull(key);
             Assert.IsFalse(key.IsEmpty);
-            
+
             var toString = key.ToString();
             Assert.AreEqual(hexString, toString);
         }

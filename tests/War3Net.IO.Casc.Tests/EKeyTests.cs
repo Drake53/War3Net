@@ -68,7 +68,7 @@ namespace War3Net.IO.Casc.Tests
 
             var truncatedKey = EKey.CreateTruncated(fullKey);
             Assert.AreEqual(CascConstants.EKeySize, truncatedKey.Length);
-            
+
             // Verify first 9 bytes match
             for (int i = 0; i < CascConstants.EKeySize; i++)
             {
@@ -81,10 +81,10 @@ namespace War3Net.IO.Casc.Tests
         {
             const string hexString = "0123456789ABCDEF01";
             var key = EKey.Parse(hexString);
-            
+
             Assert.IsNotNull(key);
             Assert.IsFalse(key.IsEmpty);
-            
+
             var toString = key.ToString();
             Assert.AreEqual(hexString, toString);
         }

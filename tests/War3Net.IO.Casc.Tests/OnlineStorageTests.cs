@@ -102,10 +102,10 @@ namespace War3Net.IO.Casc.Tests
             try
             {
                 using var client = new CdnClient("eu");
-                
+
                 // Try to download versions file directly
                 var data = await client.DownloadFileAsync("w3/versions");
-                
+
                 Assert.IsNotNull(data);
                 Assert.IsTrue(data.Length > 0);
             }
@@ -126,18 +126,18 @@ namespace War3Net.IO.Casc.Tests
             try
             {
                 var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
-                
+
                 var progressReporter = new TestProgressReporter();
                 using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath, progressReporter);
-                
+
                 Assert.IsNotNull(storage);
                 Assert.AreEqual("w3", storage.Product);
                 Assert.AreEqual("eu", storage.Region);
-                
+
                 // Verify some files were downloaded
                 Assert.IsTrue(Directory.Exists(tempPath));
                 Assert.IsTrue(Directory.GetFiles(tempPath, "*", SearchOption.AllDirectories).Length > 0);
-                
+
                 // Clean up
                 try
                 {
@@ -165,14 +165,14 @@ namespace War3Net.IO.Casc.Tests
             try
             {
                 var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
-                
+
                 using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath);
-                
+
                 // Try to open a known file by its key
                 // This would require knowing a specific file's key in the current build
                 // For now, just verify the storage opened successfully
                 Assert.IsNotNull(storage);
-                
+
                 // Clean up
                 try
                 {

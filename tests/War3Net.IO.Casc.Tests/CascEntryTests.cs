@@ -20,7 +20,7 @@ namespace War3Net.IO.Casc.Tests
         public void TestCascEntryCreation()
         {
             var entry = new CascEntry("test.txt");
-            
+
             Assert.AreEqual("test.txt", entry.FileName);
             Assert.IsTrue(entry.CKey.IsEmpty);
             Assert.IsTrue(entry.EKey.IsEmpty);
@@ -63,13 +63,13 @@ namespace War3Net.IO.Casc.Tests
         {
             var entry = new CascEntry("encrypted.dat");
             Assert.IsFalse(entry.IsEncrypted);
-            
+
             entry.ContentFlags = CascContentFlags.Encrypted;
             Assert.IsTrue(entry.IsEncrypted);
-            
+
             entry.ContentFlags = CascContentFlags.Encrypted | CascContentFlags.NoCompression;
             Assert.IsTrue(entry.IsEncrypted);
-            
+
             entry.ContentFlags = CascContentFlags.NoCompression;
             Assert.IsFalse(entry.IsEncrypted);
         }
@@ -79,10 +79,10 @@ namespace War3Net.IO.Casc.Tests
         {
             var entry = new CascEntry("compressed.dat");
             Assert.IsTrue(entry.IsCompressed); // Default is compressed
-            
+
             entry.ContentFlags = CascContentFlags.NoCompression;
             Assert.IsFalse(entry.IsCompressed);
-            
+
             entry.ContentFlags = CascContentFlags.None;
             Assert.IsTrue(entry.IsCompressed);
         }
@@ -113,8 +113,8 @@ namespace War3Net.IO.Casc.Tests
         {
             var entry = new CascEntry("complex.dat")
             {
-                ContentFlags = CascContentFlags.Install | 
-                               CascContentFlags.LoadOnWindows | 
+                ContentFlags = CascContentFlags.Install |
+                               CascContentFlags.LoadOnWindows |
                                CascContentFlags.X86_64,
             };
 

@@ -22,7 +22,7 @@ namespace War3Net.IO.Casc.Tests
             ushort value = 0x1234;
             ushort swapped = EndianConverter.Swap(value);
             Assert.AreEqual((ushort)0x3412, swapped);
-            
+
             // Swapping twice should give original
             ushort doubleSwapped = EndianConverter.Swap(swapped);
             Assert.AreEqual(value, doubleSwapped);
@@ -34,7 +34,7 @@ namespace War3Net.IO.Casc.Tests
             uint value = 0x12345678;
             uint swapped = EndianConverter.Swap(value);
             Assert.AreEqual(0x78563412u, swapped);
-            
+
             // Swapping twice should give original
             uint doubleSwapped = EndianConverter.Swap(swapped);
             Assert.AreEqual(value, doubleSwapped);
@@ -46,7 +46,7 @@ namespace War3Net.IO.Casc.Tests
             ulong value = 0x123456789ABCDEF0;
             ulong swapped = EndianConverter.Swap(value);
             Assert.AreEqual(0xF0DEBC9A78563412ul, swapped);
-            
+
             // Swapping twice should give original
             ulong doubleSwapped = EndianConverter.Swap(swapped);
             Assert.AreEqual(value, doubleSwapped);
@@ -81,7 +81,7 @@ namespace War3Net.IO.Casc.Tests
         {
             ushort value = 0x1234;
             var bytes = EndianConverter.ToBigEndian(value);
-            
+
             Assert.AreEqual(2, bytes.Length);
             Assert.AreEqual(0x12, bytes[0]);
             Assert.AreEqual(0x34, bytes[1]);
@@ -92,7 +92,7 @@ namespace War3Net.IO.Casc.Tests
         {
             uint value = 0x12345678;
             var bytes = EndianConverter.ToBigEndian(value);
-            
+
             Assert.AreEqual(4, bytes.Length);
             Assert.AreEqual(0x12, bytes[0]);
             Assert.AreEqual(0x34, bytes[1]);
@@ -105,7 +105,7 @@ namespace War3Net.IO.Casc.Tests
         {
             ulong value = 0x123456789ABCDEF0;
             var bytes = EndianConverter.ToBigEndian(value);
-            
+
             Assert.AreEqual(8, bytes.Length);
             Assert.AreEqual(0x12, bytes[0]);
             Assert.AreEqual(0x34, bytes[1]);
@@ -121,23 +121,23 @@ namespace War3Net.IO.Casc.Tests
         public void TestReadBigEndianValue()
         {
             var bytes = new byte[] { 0x00, 0x12, 0x34, 0x56, 0x78, 0x9A };
-            
+
             // Read 1 byte
             ulong value1 = EndianConverter.ReadBigEndianValue(bytes, 1, 1);
             Assert.AreEqual(0x12ul, value1);
-            
+
             // Read 2 bytes
             ulong value2 = EndianConverter.ReadBigEndianValue(bytes, 1, 2);
             Assert.AreEqual(0x1234ul, value2);
-            
+
             // Read 3 bytes
             ulong value3 = EndianConverter.ReadBigEndianValue(bytes, 1, 3);
             Assert.AreEqual(0x123456ul, value3);
-            
+
             // Read 4 bytes
             ulong value4 = EndianConverter.ReadBigEndianValue(bytes, 1, 4);
             Assert.AreEqual(0x12345678ul, value4);
-            
+
             // Read 5 bytes
             ulong value5 = EndianConverter.ReadBigEndianValue(bytes, 1, 5);
             Assert.AreEqual(0x123456789Aul, value5);

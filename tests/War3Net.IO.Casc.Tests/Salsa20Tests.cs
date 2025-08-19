@@ -32,14 +32,14 @@ namespace War3Net.IO.Casc.Tests
             }
 
             var plaintext = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-            
+
             var salsa20 = new Salsa20(key, iv);
             var encrypted = salsa20.Process(plaintext);
-            
+
             // Salsa20 is symmetric, so encrypting again should give original
             var salsa20_2 = new Salsa20(key, iv);
             var decrypted = salsa20_2.Process(encrypted);
-            
+
             CollectionAssert.AreEqual(plaintext, decrypted);
         }
 
@@ -53,17 +53,17 @@ namespace War3Net.IO.Casc.Tests
 
             var data = new byte[] { 10, 20, 30, 40, 50 };
             var original = data.ToArray();
-            
+
             var salsa20 = new Salsa20(key, iv);
             salsa20.ProcessInPlace(data);
-            
+
             // Data should be modified
             Assert.IsFalse(data.SequenceEqual(original));
-            
+
             // Process again to decrypt
             var salsa20_2 = new Salsa20(key, iv);
             salsa20_2.ProcessInPlace(data);
-            
+
             // Should be back to original
             CollectionAssert.AreEqual(original, data);
         }
@@ -83,13 +83,13 @@ namespace War3Net.IO.Casc.Tests
             }
 
             var plaintext = Enumerable.Range(0, 100).Select(i => (byte)i).ToArray();
-            
+
             var salsa20 = new Salsa20(key, iv);
             var encrypted = salsa20.Process(plaintext);
-            
+
             var salsa20_2 = new Salsa20(key, iv);
             var decrypted = salsa20_2.Process(encrypted);
-            
+
             CollectionAssert.AreEqual(plaintext, decrypted);
         }
 
@@ -107,15 +107,15 @@ namespace War3Net.IO.Casc.Tests
             {
                 plaintext[i] = (byte)(i % 256);
             }
-            
+
             var salsa20 = new Salsa20(key, iv);
             var encrypted = salsa20.Process(plaintext);
-            
+
             Assert.IsFalse(plaintext.SequenceEqual(encrypted));
-            
+
             var salsa20_2 = new Salsa20(key, iv);
             var decrypted = salsa20_2.Process(encrypted);
-            
+
             CollectionAssert.AreEqual(plaintext, decrypted);
         }
 
@@ -127,7 +127,7 @@ namespace War3Net.IO.Casc.Tests
 
             var salsa20 = new Salsa20(key, iv);
             var result = salsa20.Process(Array.Empty<byte>());
-            
+
             Assert.AreEqual(0, result.Length);
         }
 
@@ -137,7 +137,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var invalidKey = new byte[15]; // Should be 16 or 32
             var iv = new byte[8];
-            
+
             _ = new Salsa20(invalidKey, iv);
         }
 
@@ -147,7 +147,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var key = new byte[16];
             var invalidIv = new byte[7]; // Should be 8
-            
+
             _ = new Salsa20(key, invalidIv);
         }
 
@@ -179,7 +179,7 @@ namespace War3Net.IO.Casc.Tests
             Array.Fill(plaintext, (byte)0x33);
 
             var salsa20 = new Salsa20(key, iv);
-            
+
             // Process in chunks
             var output = new byte[100];
             salsa20.Process(plaintext, 0, 50, output, 0);
