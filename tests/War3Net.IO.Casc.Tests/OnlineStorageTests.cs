@@ -34,7 +34,7 @@ namespace War3Net.IO.Casc.Tests
             try
             {
                 using var httpClient = new System.Net.Http.HttpClient();
-                var versionsUrl = "http://us.patch.battle.net:1119/w3/versions";
+                var versionsUrl = "http://eu.patch.battle.net:1119/w3/versions";
                 var data = await httpClient.GetByteArrayAsync(versionsUrl);
 
                 Assert.IsNotNull(data);
@@ -46,10 +46,10 @@ namespace War3Net.IO.Casc.Tests
                 Assert.IsNotNull(config);
                 Assert.IsTrue(config.Entries.Count > 0);
 
-                var usEntry = config.GetEntry("us");
-                Assert.IsNotNull(usEntry);
-                Assert.IsFalse(string.IsNullOrEmpty(usEntry.BuildConfig));
-                Assert.IsFalse(string.IsNullOrEmpty(usEntry.CdnConfig));
+                var euEntry = config.GetEntry("eu");
+                Assert.IsNotNull(euEntry);
+                Assert.IsFalse(string.IsNullOrEmpty(euEntry.BuildConfig));
+                Assert.IsFalse(string.IsNullOrEmpty(euEntry.CdnConfig));
             }
             catch (System.Net.Http.HttpRequestException)
             {
@@ -68,7 +68,7 @@ namespace War3Net.IO.Casc.Tests
             try
             {
                 using var httpClient = new System.Net.Http.HttpClient();
-                var cdnsUrl = "http://us.patch.battle.net:1119/w3/cdns";
+                var cdnsUrl = "http://eu.patch.battle.net:1119/w3/cdns";
                 var data = await httpClient.GetByteArrayAsync(cdnsUrl);
 
                 Assert.IsNotNull(data);
@@ -80,10 +80,10 @@ namespace War3Net.IO.Casc.Tests
                 Assert.IsNotNull(config);
                 Assert.IsTrue(config.Entries.Count > 0);
 
-                var usEntry = config.GetEntry("us");
-                Assert.IsNotNull(usEntry);
-                Assert.IsTrue(usEntry.Hosts.Count > 0);
-                Assert.IsFalse(string.IsNullOrEmpty(usEntry.Path));
+                var euEntry = config.GetEntry("eu");
+                Assert.IsNotNull(euEntry);
+                Assert.IsTrue(euEntry.Hosts.Count > 0);
+                Assert.IsFalse(string.IsNullOrEmpty(euEntry.Path));
             }
             catch (System.Net.Http.HttpRequestException)
             {
@@ -100,7 +100,7 @@ namespace War3Net.IO.Casc.Tests
         {
             try
             {
-                using var client = new CdnClient("us");
+                using var client = new CdnClient("eu");
                 
                 // Try to download versions file directly
                 var data = await client.DownloadFileAsync("w3/versions");
@@ -127,11 +127,11 @@ namespace War3Net.IO.Casc.Tests
                 var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
                 
                 var progressReporter = new TestProgressReporter();
-                using var storage = await OnlineCascStorage.OpenWar3Async("us", tempPath, progressReporter);
+                using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath, progressReporter);
                 
                 Assert.IsNotNull(storage);
                 Assert.AreEqual("w3", storage.Product);
-                Assert.AreEqual("us", storage.Region);
+                Assert.AreEqual("eu", storage.Region);
                 
                 // Verify some files were downloaded
                 Assert.IsTrue(Directory.Exists(tempPath));
@@ -165,7 +165,7 @@ namespace War3Net.IO.Casc.Tests
             {
                 var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
                 
-                using var storage = await OnlineCascStorage.OpenWar3Async("us", tempPath);
+                using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath);
                 
                 // Try to open a known file by its key
                 // This would require knowing a specific file's key in the current build

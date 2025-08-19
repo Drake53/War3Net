@@ -67,7 +67,7 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>The opened storage.</returns>
         public static async Task<OnlineCascStorage> OpenStorageAsync(
             string product,
-            string region = "us",
+            string region = "eu",
             string? localCachePath = null,
             CascLocaleFlags localeFlags = CascLocaleFlags.All,
             IProgressReporter? progressReporter = null)
@@ -155,7 +155,7 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="progressReporter">Optional progress reporter.</param>
         /// <returns>The opened storage.</returns>
         public static async Task<OnlineCascStorage> OpenWar3Async(
-            string region = "us",
+            string region = "eu",
             string? localCachePath = null,
             IProgressReporter? progressReporter = null)
         {

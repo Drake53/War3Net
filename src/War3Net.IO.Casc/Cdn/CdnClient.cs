@@ -32,7 +32,7 @@ namespace War3Net.IO.Casc.Cdn
         /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="region">The region code (us, eu, kr, cn, etc.).</param>
-        public CdnClient(string region = "us")
+        public CdnClient(string region = "eu")
             : this(GetDefaultCdnHosts(region), GetDefaultCdnPath())
         {
         }
