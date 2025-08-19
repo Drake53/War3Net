@@ -15,6 +15,7 @@ using System.Web;
 
 using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Enums;
+using War3Net.IO.Casc.Helpers;
 using War3Net.IO.Casc.Progress;
 
 namespace War3Net.IO.Casc.Storage
@@ -226,16 +227,10 @@ namespace War3Net.IO.Casc.Storage
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, TotalProgressSteps);
 
             // Download and cache build config
-            var configPath = Path.Combine(StoragePath, "config");
-            Directory.CreateDirectory(configPath);
-
-            var buildConfigPath = Path.Combine(configPath,
-                versionEntry.BuildConfig.Substring(0, 2),
-                versionEntry.BuildConfig.Substring(2, 2),
-                versionEntry.BuildConfig);
+            var buildConfigPath = CdnPathHelper.GetConfigPath(StoragePath, versionEntry.BuildConfig);
             if (!File.Exists(buildConfigPath))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(buildConfigPath)!);
+                CdnPathHelper.EnsureDirectoryExists(buildConfigPath);
                 var buildConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.BuildConfig);
                 await File.WriteAllBytesAsync(buildConfigPath, buildConfigData);
             }
@@ -243,13 +238,10 @@ namespace War3Net.IO.Casc.Storage
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdn config", 3, TotalProgressSteps);
 
             // Download and cache CDN config
-            var cdnConfigPath = Path.Combine(configPath,
-                versionEntry.CdnConfig.Substring(0, 2),
-                versionEntry.CdnConfig.Substring(2, 2),
-                versionEntry.CdnConfig);
+            var cdnConfigPath = CdnPathHelper.GetConfigPath(StoragePath, versionEntry.CdnConfig);
             if (!File.Exists(cdnConfigPath))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(cdnConfigPath)!);
+                CdnPathHelper.EnsureDirectoryExists(cdnConfigPath);
                 var cdnConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.CdnConfig);
                 await File.WriteAllBytesAsync(cdnConfigPath, cdnConfigData);
             }
@@ -275,51 +267,39 @@ namespace War3Net.IO.Casc.Storage
 
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 5, TotalProgressSteps);
 
-            // Download encoding file
-            // The encoding entry format is "encoding = <ckey> <ekey>" where we need the ekey (second hash)
-            var encodingEntry = buildConfig.GetValue("encoding");
-            if (!string.IsNullOrEmpty(encodingEntry))
+            // Download encoding file using the helper
+            var encodingPath = await EncodingFileHelper.DownloadEncodingFileAsync(buildConfig, _cdnClient, StoragePath);
+            if (string.IsNullOrEmpty(encodingPath))
             {
-                var encodingParts = encodingEntry.Split(' ');
-                // Use the second hash (ekey) for downloading the encoding file
-                var encodingHash = encodingParts.Length > 1 ? encodingParts[1] : encodingParts[0];
-
-                if (!string.IsNullOrEmpty(encodingHash))
-                {
-                    var encodingPath = Path.Combine(StoragePath, "data",
-                        encodingHash.Substring(0, 2),
-                        encodingHash.Substring(2, 2),
-                        encodingHash);
-                    if (!File.Exists(encodingPath))
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(encodingPath)!);
-
-                        try
-                        {
-                            // Encoding files are stored as regular data files
-                            System.Diagnostics.Trace.TraceInformation($"Attempting to download encoding file with hash: {encodingHash}");
-                            var encodingData = await _cdnClient.DownloadDataAsync(encodingHash);
-                            await File.WriteAllBytesAsync(encodingPath, encodingData);
-                        }
-                        catch (CascFileNotFoundException ex)
-                        {
-                            // Encoding file not found on CDN - this is critical
-                            throw new CascException($"Encoding file {encodingHash} not found on CDN: {ex.Message}", ex);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new CascException($"Failed to download encoding file {encodingHash}: {ex.Message}", ex);
-                        }
-                    }
-                }
+                throw new CascException("Failed to download encoding file - this is required for online storage");
             }
 
-            // Skip downloading root file for online storage
-            // The build config only provides the CKey for the root file, but to download from CDN we need the EKey
-            // The reference implementation (CascLib) also skips the root file for online storage
-            // The root file contains file name mappings which aren't needed for online key-based access
+            // Download root file
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 6, TotalProgressSteps);
-            System.Diagnostics.Trace.TraceInformation("Skipping root file download for online storage (only CKey available, EKey required for CDN)");
+
+            // Try to download the root file using the encoding file to look up its EKey
+            var rootPath = await EncodingFileHelper.DownloadRootFileAsync(buildConfig, encodingPath, _cdnClient, StoragePath);
+            if (!string.IsNullOrEmpty(rootPath))
+            {
+                System.Diagnostics.Trace.TraceInformation($"Root file successfully cached at: {rootPath}");
+
+                // Try to load and parse the root file
+                if (LoadRootFile(rootPath))
+                {
+                    System.Diagnostics.Trace.TraceInformation("Root file loaded and parsed successfully");
+                }
+                else
+                {
+                    System.Diagnostics.Trace.TraceWarning("Failed to parse root file - using empty root handler");
+                    InitializeRootHandler();
+                }
+            }
+            else
+            {
+                System.Diagnostics.Trace.TraceWarning("Root file could not be downloaded - file name resolution will not be available");
+                // Initialize a basic root handler as fallback
+                InitializeRootHandler();
+            }
 
             // Continue with base initialization
             // The base class will handle loading the downloaded files

@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using War3Net.IO.Casc.Helpers;
 using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Cdn
@@ -227,11 +228,7 @@ namespace War3Net.IO.Casc.Cdn
                 throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
             }
 
-            // Config files are stored in config/xx/yy/xxyy...
-            var prefix = hash.Substring(0, 2);
-            var suffix = hash.Substring(2, 2);
-            var path = $"config/{prefix}/{suffix}/{hash}";
-
+            var path = CdnPathHelper.GetCdnUrlPath("config", hash);
             return await DownloadFileAsync(path);
         }
 
@@ -247,11 +244,7 @@ namespace War3Net.IO.Casc.Cdn
                 throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
             }
 
-            // Data files are stored in data/xx/yy/xxyy...
-            var prefix = hash.Substring(0, 2);
-            var suffix = hash.Substring(2, 2);
-            var path = $"data/{prefix}/{suffix}/{hash}";
-
+            var path = CdnPathHelper.GetCdnUrlPath("data", hash);
             return await DownloadFileAsync(path);
         }
 
@@ -267,11 +260,7 @@ namespace War3Net.IO.Casc.Cdn
                 throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
             }
 
-            // Patch files are stored in patch/xx/yy/xxyy...
-            var prefix = hash.Substring(0, 2);
-            var suffix = hash.Substring(2, 2);
-            var path = $"patch/{prefix}/{suffix}/{hash}";
-
+            var path = CdnPathHelper.GetCdnUrlPath("patch", hash);
             return await DownloadFileAsync(path);
         }
 

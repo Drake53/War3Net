@@ -44,6 +44,7 @@ namespace War3Net.IO.Casc.Storage
                 LocaleFlags = localeFlags,
                 IndexManager = new IndexManager(),
             };
+
             _storageLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         }
 
@@ -491,6 +492,78 @@ namespace War3Net.IO.Casc.Storage
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Initializes the root handler with a basic implementation.
+        /// </summary>
+        protected void InitializeRootHandler()
+        {
+            _context.RootHandler = new BasicRootHandler();
+        }
+
+        /// <summary>
+        /// Loads the root file and initializes the root handler.
+        /// </summary>
+        /// <param name="rootFilePath">The path to the root file.</param>
+        /// <returns>true if the root file was loaded successfully; otherwise, false.</returns>
+        protected bool LoadRootFile(string rootFilePath)
+        {
+            if (!File.Exists(rootFilePath))
+            {
+                return false;
+            }
+
+            try
+            {
+                // For now, we'll try to detect the format and use appropriate handler
+                // In the future, this should be based on the product type
+                using var stream = File.OpenRead(rootFilePath);
+
+                // Check if it's a text-based root file
+                var buffer = new byte[4];
+                var bytesRead = stream.Read(buffer, 0, 4);
+                stream.Position = 0;
+
+                // If it starts with text characters, use TextRootHandler
+                // Otherwise use a binary root handler (to be implemented)
+                if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
+                {
+                    var textHandler = new TextRootHandler();
+                    textHandler.Parse(stream);
+                    _context.RootHandler = textHandler;
+                }
+                else
+                {
+                    // For binary root files (like WoW's MFST format or War3's TVFS)
+                    // we'd need specific handlers - for now just use basic
+                    System.Diagnostics.Trace.TraceWarning("Binary root file format not yet supported, using empty root handler");
+                    _context.RootHandler = new BasicRootHandler();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"Failed to load root file: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static bool IsTextFile(byte[] buffer, int length)
+        {
+            // Simple heuristic: check if first bytes are printable ASCII or UTF-8
+            for (var i = 0; i < length; i++)
+            {
+                var b = buffer[i];
+                // Allow printable ASCII, tabs, newlines, and common UTF-8 start bytes
+                if (b < 0x20 && b != 0x09 && b != 0x0A && b != 0x0D)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
