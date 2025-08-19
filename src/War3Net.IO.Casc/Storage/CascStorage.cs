@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -106,7 +107,7 @@ namespace War3Net.IO.Casc.Storage
                     return OpenFileByEKey(EKey.Parse(fileName));
 
                 case CascOpenFlags.OpenByFileId:
-                    var fileId = uint.Parse(fileName);
+                    var fileId = uint.Parse(fileName, CultureInfo.InvariantCulture);
                     return OpenFileByFileId(fileId);
 
                 default:
@@ -340,7 +341,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             // Remove any spaces or dashes from the hex string
-            keyString = keyString.Replace(" ", string.Empty).Replace("-", string.Empty);
+            keyString = keyString.Replace(" ", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal);
 
             if (keyString.Length != CascConstants.KeyLength * 2)
             {
@@ -374,7 +375,7 @@ namespace War3Net.IO.Casc.Storage
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
-                if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#") || trimmedLine.StartsWith("//"))
+                if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#", StringComparison.Ordinal) || trimmedLine.StartsWith("//", StringComparison.Ordinal))
                 {
                     continue; // Skip comments and empty lines
                 }
@@ -428,7 +429,6 @@ namespace War3Net.IO.Casc.Storage
         {
             // Note: ImportKeysFromFile should accept absolute paths to allow loading key files from any location
             // The path sanitization is intentionally not used here to allow flexibility
-
             if (string.IsNullOrWhiteSpace(fileName))
             {
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
@@ -474,6 +474,7 @@ namespace War3Net.IO.Casc.Storage
                 Dispose();
                 return null;
             }
+
             return this;
         }
 
@@ -520,7 +521,7 @@ namespace War3Net.IO.Casc.Storage
         }
 
         /// <summary>
-        /// Finalizer.
+        /// Finalizes an instance of the <see cref="CascStorage"/> class.
         /// </summary>
         ~CascStorage()
         {
@@ -715,8 +716,10 @@ namespace War3Net.IO.Casc.Storage
                         {
                             System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
                         }
+
                         throw new CascException($"Unexpected end of stream reading {dataFilePath}: expected {indexEntry.EncodedSize} bytes, read {totalBytesRead} bytes");
                     }
+
                     totalBytesRead += bytesRead;
                     remaining -= bytesRead;
                 }
@@ -726,6 +729,7 @@ namespace War3Net.IO.Casc.Storage
                 {
                     var result = new byte[indexEntry.EncodedSize];
                     Buffer.BlockCopy(rentedArray, 0, result, 0, (int)indexEntry.EncodedSize);
+
                     // Return the rented array after copying
                     System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
                     rentedArray = null; // Clear reference to avoid double-return in finally
@@ -741,6 +745,7 @@ namespace War3Net.IO.Casc.Storage
                 {
                     System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
                 }
+
                 throw;
             }
             finally

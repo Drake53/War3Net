@@ -135,7 +135,7 @@ namespace War3Net.IO.Casc.Index
                     var pageIndex = pageStart / pageSize;
 
                     // Read entries for this page
-                    for (int i = 0; i < entriesPerPage; i++)
+                    for (var i = 0; i < entriesPerPage; i++)
                     {
                         // Check if we have enough data for a full entry
                         if (stream.Position + entrySize > stream.Length)

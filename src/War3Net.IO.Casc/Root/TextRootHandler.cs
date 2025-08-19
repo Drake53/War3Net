@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 using War3Net.IO.Casc.Structures;
@@ -26,7 +27,7 @@ namespace War3Net.IO.Casc.Root
 
             while ((line = reader.ReadLine()) != null)
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {
                     continue;
                 }

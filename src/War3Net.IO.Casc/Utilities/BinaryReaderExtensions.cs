@@ -37,10 +37,12 @@ namespace War3Net.IO.Casc.Utilities
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), "Maximum string length must be at least 1.");
                 }
+
                 if (value > 0x10000000) // 256MB absolute maximum
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), "Maximum string length cannot exceed 268435456 bytes (256MB).");
                 }
+
                 _maxStringLength = value;
             }
         }

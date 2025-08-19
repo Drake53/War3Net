@@ -162,7 +162,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The hex string.</returns>
         public static string ToHexString(byte[] bytes)
         {
-            return BitConverter.ToString(bytes).Replace("-", string.Empty);
+            return BitConverter.ToString(bytes).Replace("-", string.Empty, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace War3Net.IO.Casc.Utilities
                 return Array.Empty<byte>();
             }
 
-            hex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
+            hex = hex.Replace("-", string.Empty, StringComparison.Ordinal).Replace(" ", string.Empty, StringComparison.Ordinal);
 
             if (hex.Length % 2 != 0)
             {

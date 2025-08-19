@@ -74,12 +74,12 @@ namespace War3Net.IO.Casc.Cdn
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {
                     continue;
                 }
 
-                var equalIndex = line.IndexOf('=');
+                var equalIndex = line.IndexOf('=', StringComparison.Ordinal);
                 if (equalIndex < 0)
                 {
                     continue;

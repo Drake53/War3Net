@@ -111,12 +111,12 @@ namespace War3Net.IO.Casc.Storage
             // Additional validation for known product/region combinations
             var validProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "w3", "war3", "wow", "d3", "diablo3", "sc2", "hs", "hearthstone", "hots", "heroes"
+                "w3", "war3", "wow", "d3", "diablo3", "sc2", "hs", "hearthstone", "hots", "heroes",
             };
 
             var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "us", "eu", "kr", "cn", "tw", "sea"
+                "us", "eu", "kr", "cn", "tw", "sea",
             };
 
             if (!validProducts.Contains(product.ToLowerInvariant()))
@@ -338,9 +338,9 @@ namespace War3Net.IO.Casc.Storage
         {
             if (string.IsNullOrWhiteSpace(product) ||
                 product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
-                product.Contains("..") ||
-                product.Contains("/") ||
-                product.Contains("\\") ||
+                product.Contains("..", StringComparison.Ordinal) ||
+                product.Contains("/", StringComparison.Ordinal) ||
+                product.Contains("\\", StringComparison.Ordinal) ||
                 product.Length > 50) // Reasonable length limit
             {
                 throw new ArgumentException($"Invalid product name: '{product}'. Must be a valid directory name without path separators.", nameof(product));
@@ -348,9 +348,9 @@ namespace War3Net.IO.Casc.Storage
 
             if (string.IsNullOrWhiteSpace(region) ||
                 region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
-                region.Contains("..") ||
-                region.Contains("/") ||
-                region.Contains("\\") ||
+                region.Contains("..", StringComparison.Ordinal) ||
+                region.Contains("/", StringComparison.Ordinal) ||
+                region.Contains("\\", StringComparison.Ordinal) ||
                 region.Length > 10) // Reasonable length limit for region codes
             {
                 throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
@@ -391,7 +391,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             // Check for alternate data streams (Windows)
-            if (normalizedPath.Contains(':') && !Path.IsPathRooted(normalizedPath))
+            if (normalizedPath.Contains(':', StringComparison.Ordinal) && !Path.IsPathRooted(normalizedPath))
             {
                 throw new ArgumentException($"Path cannot contain alternate data stream syntax");
             }

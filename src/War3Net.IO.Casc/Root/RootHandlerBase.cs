@@ -127,7 +127,7 @@ namespace War3Net.IO.Casc.Root
 
             foreach (var line in lines)
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#") || line.StartsWith(";"))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal) || line.StartsWith(";", StringComparison.Ordinal))
                 {
                     continue;
                 }
