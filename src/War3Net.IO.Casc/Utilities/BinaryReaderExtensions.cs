@@ -138,7 +138,12 @@ namespace War3Net.IO.Casc.Utilities
         public static ushort ReadUInt16BE(this BinaryReader reader)
         {
             Span<byte> bytes = stackalloc byte[2];
-            reader.Read(bytes);
+            var bytesRead = reader.Read(bytes);
+            if (bytesRead < 2)
+            {
+                throw new EndOfStreamException();
+            }
+
             return BinaryPrimitives.ReadUInt16BigEndian(bytes);
         }
 
@@ -150,7 +155,12 @@ namespace War3Net.IO.Casc.Utilities
         public static uint ReadUInt32BE(this BinaryReader reader)
         {
             Span<byte> bytes = stackalloc byte[4];
-            reader.Read(bytes);
+            var bytesRead = reader.Read(bytes);
+            if (bytesRead < 4)
+            {
+                throw new EndOfStreamException();
+            }
+
             return BinaryPrimitives.ReadUInt32BigEndian(bytes);
         }
 
@@ -162,7 +172,12 @@ namespace War3Net.IO.Casc.Utilities
         public static ulong ReadUInt64BE(this BinaryReader reader)
         {
             Span<byte> bytes = stackalloc byte[8];
-            reader.Read(bytes);
+            var bytesRead = reader.Read(bytes);
+            if (bytesRead < 8)
+            {
+                throw new EndOfStreamException();
+            }
+
             return BinaryPrimitives.ReadUInt64BigEndian(bytes);
         }
 

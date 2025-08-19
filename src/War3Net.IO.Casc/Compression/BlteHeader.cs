@@ -90,8 +90,20 @@ namespace War3Net.IO.Casc.Compression
             var header = new BlteHeader
             {
                 HeaderSize = reader.ReadUInt32BE(),
-                Flags = reader.ReadByte(),
             };
+
+            // If HeaderSize is 0, this is a single-chunk BLTE with no additional header
+            if (header.HeaderSize == 0)
+            {
+                header.Flags = 0;
+                header.ChunkCount = 1;
+
+                // Don't add a frame - single chunk BLTEs don't have frame metadata
+                return header;
+            }
+
+            // Read flags byte (only present when HeaderSize > 0)
+            header.Flags = reader.ReadByte();
 
             if (header.IsMultiChunk)
             {
@@ -120,17 +132,17 @@ namespace War3Net.IO.Casc.Compression
             }
             else
             {
-                // Single chunk - create a single frame entry
-                // The frame size will be determined from the data
+                // Single chunk with header but not multi-chunk
+                // This case is rare but possible
                 header.ChunkCount = 1;
                 header.Frames.Add(new BlteFrame());
             }
 
             // Ensure we've read the entire header
             var bytesRead = reader.BaseStream.Position - startPos;
-            if (bytesRead < header.HeaderSize)
+            if (bytesRead < header.HeaderSize + 8) // +8 for signature and header size
             {
-                reader.Skip((int)(header.HeaderSize - bytesRead));
+                reader.Skip((int)(header.HeaderSize + 8 - bytesRead));
             }
 
             return header;
