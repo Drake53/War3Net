@@ -5,13 +5,16 @@ A .NET library for reading Blizzard's CASC (Content Addressable Storage Containe
 ## Features
 
 - ✅ **Complete CASC Support** - Read files from local CASC storages
-- ✅ **BLTE Decompression** - Full support for BLTE compression including multi-chunk files
-- ✅ **Encryption Support** - Salsa20 decryption for encrypted content
+- ✅ **BLTE Decompression** - Support for BLTE compression with ZLib (LZMA, LZ4, and Zstandard placeholders included)
+- ✅ **Encryption Support** - Salsa20 decryption for encrypted content with built-in key database
 - ✅ **Multiple Access Methods** - Open files by name, content key, encoded key, or file data ID
 - ✅ **Index File Support** - Parse both v1 and v2 index formats
 - ✅ **Encoding Manifest** - Full encoding file support for key resolution
 - ✅ **Root Handlers** - Extensible root file handling for different games
 - ✅ **Progress Reporting** - Built-in progress reporting with cancellation support
+- ✅ **Security Hardening** - Path sanitization with Unicode normalization attack prevention
+- ✅ **Thread Safety** - Concurrent access support with proper locking
+- ✅ **Memory Efficient** - ArrayPool usage for large allocations
 - ✅ **War3Net Integration** - Seamless integration with other War3Net libraries
 
 ## Installation
@@ -112,14 +115,41 @@ ulong keyName = 0xFA505078126ACB3E;
 byte[] key = new byte[] { /* 16-byte key */ };
 archive.AddEncryptionKey(keyName, key);
 
-// Load keys from a file
-// File format: KeyName(hex) Key(hex)
-// Example: FA505078126ACB3E 1234567890ABCDEF1234567890ABCDEF
+// Add encryption key from hex string
+archive.AddStringEncryptionKey(keyName, "1234567890ABCDEF1234567890ABCDEF");
+
+// Import keys from a file
+// File format: KeyName(hex)=Key(hex) or KeyName(hex) Key(hex)
+// Example: FA505078126ACB3E=1234567890ABCDEF1234567890ABCDEF
+int keysImported = archive.ImportKeysFromFile("encryption_keys.txt");
+
+// Import keys from string
+string keyList = @"
+FA505078126ACB3E=BDC51862ABED79B2DE48C8E7E66C6200
+# Comments are supported
+FF813F7D062AC0BC=AA0B5C77F088CCC2D39049BD267F066D
+";
+int imported = archive.ImportKeysFromString(keyList);
+
+// Load global keys (affects all archives)
 CascEncryption.LoadKeysFromFile("encryption_keys.txt");
 
 // Generate a key from a string (for some games)
 var generatedKey = CascEncryption.ComputeSalsa20Key("some_key_string");
 CascEncryption.AddKnownKey(keyName, generatedKey);
+
+// Check if a key is available
+if (CascEncryption.HasKey(keyName))
+{
+    var keyData = CascEncryption.GetKey(keyName);
+}
+
+// Note: The library includes many built-in encryption keys for:
+// - Warcraft III Reforged
+// - World of Warcraft
+// - Overwatch
+// - StarCraft II
+// - Battle.net App
 ```
 
 ### 3. Progress Reporting
@@ -247,6 +277,12 @@ using (var stream = storage.OpenFileByEKey(eKey))
     // Read data
 }
 
+// Access by encoded key with streaming (for large files)
+using (var stream = storage.OpenFileByEKey(eKey, useStreaming: true))
+{
+    // Stream data without loading entire file into memory
+}
+
 // Access by content key
 var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
 using (var stream = storage.OpenFileByCKey(cKey))
@@ -254,8 +290,17 @@ using (var stream = storage.OpenFileByCKey(cKey))
     // Read data
 }
 
+// Access with checksum validation
+using (var stream = storage.OpenFileByCKey(cKey, validateChecksum: true))
+{
+    // Read data with MD5 validation
+}
+
 // Add encryption keys to storage
 storage.AddEncryptionKey(0x1234567890ABCDEF, encryptionKey);
+
+// Import keys from string
+storage.ImportKeysFromString("keyname=keyvalue\nkeyname2=keyvalue2");
 ```
 
 ### 7. BLTE Decompression
@@ -280,6 +325,14 @@ using (var output = new MemoryStream())
     BlteDecoder.Decode(input, output);
     var decompressedData = output.ToArray();
 }
+
+// Configure recursion depth for nested BLTE frames
+BlteDecoder.MaxRecursionDepth = 30; // Default is 20
+
+// Note: The decoder includes safety checks:
+// - Maximum frame size: 100MB per frame
+// - Maximum total size: 500MB for all frames
+// - Recursion depth protection against malformed data
 ```
 
 ### 8. Index File Management
@@ -371,27 +424,27 @@ catch (CascException ex)
 
 3. **Batch Operations** - When reading multiple files, keep the archive open and read all files in sequence.
 
-4. **Memory Management** - For large files, consider using streaming instead of loading entire files into memory.
+4. **Memory Management** - For large files, consider using streaming instead of loading entire files into memory. The library uses ArrayPool for allocations over 80KB to reduce GC pressure.
+
+5. **Thread Safety** - The library is thread-safe for concurrent reads. Multiple threads can safely read different files from the same archive instance.
+
+6. **Encryption Keys** - Pre-load all required encryption keys at startup to avoid runtime key loading overhead.
 
 ```csharp
 // Good: Reuse archive
-using (var archive = new CascArchive(path))
+using var archive = new CascArchive(path);
+foreach (var fileName in fileList)
 {
-    foreach (var fileName in fileList)
-    {
-        using var stream = archive.OpenFile(fileName);
-        ProcessFile(stream);
-    }
+    using var stream = archive.OpenFile(fileName);
+    ProcessFile(stream);
 }
 
 // Bad: Opening archive for each file
 foreach (var fileName in fileList)
 {
-    using (var archive = new CascArchive(path))
-    using (var stream = archive.OpenFile(fileName))
-    {
-        ProcessFile(stream);
-    }
+    using var archive = new CascArchive(path);
+    using var stream = archive.OpenFile(fileName);
+    ProcessFile(stream);
 }
 ```
 
@@ -412,31 +465,34 @@ Note: Game-specific root handlers may need to be implemented for full file name 
 
 The library is organized into the following namespaces:
 
-- `War3Net.IO.Casc` - Main API classes (CascArchive, CascEntry)
-- `War3Net.IO.Casc.Compression` - BLTE compression/decompression
-- `War3Net.IO.Casc.Crypto` - Encryption/decryption support
-- `War3Net.IO.Casc.Encoding` - Encoding manifest parsing
-- `War3Net.IO.Casc.Enums` - All enumeration types
-- `War3Net.IO.Casc.Index` - Index file management
-- `War3Net.IO.Casc.Progress` - Progress reporting
-- `War3Net.IO.Casc.Root` - Root file handlers
-- `War3Net.IO.Casc.Storage` - Low-level storage access
-- `War3Net.IO.Casc.Structures` - Data structures
-- `War3Net.IO.Casc.Utilities` - Helper utilities
+- `War3Net.IO.Casc` - Main API classes (CascArchive, CascEntry, CascStream)
+- `War3Net.IO.Casc.Cdn` - CDN client implementation (partial)
+- `War3Net.IO.Casc.Compression` - BLTE compression/decompression (BlteDecoder, BlteHeader, BlteFrame)
+- `War3Net.IO.Casc.Crypto` - Encryption/decryption support (CascEncryption, Salsa20)
+- `War3Net.IO.Casc.Encoding` - Encoding manifest parsing (EncodingFile, EncodingEntry)
+- `War3Net.IO.Casc.Enums` - All enumeration types (CascOpenFlags, CascLocaleFlags, etc.)
+- `War3Net.IO.Casc.Index` - Index file management (IndexManager, IndexFile)
+- `War3Net.IO.Casc.Progress` - Progress reporting (CascProgressReporter)
+- `War3Net.IO.Casc.Root` - Root file handlers (BasicRootHandler, TextRootHandler)
+- `War3Net.IO.Casc.Storage` - Low-level storage access (CascStorage, OnlineCascStorage)
+- `War3Net.IO.Casc.Structures` - Data structures (CascKey, EKey, CascFindData)
+- `War3Net.IO.Casc.Utilities` - Helper utilities (PathSanitizer, HashHelper, ChecksumValidator)
 
 ## Limitations
 
 - **Read-Only** - The library currently only supports reading CASC archives, not creating or modifying them
-- **Local Storage** - Online/CDN storage support is not yet implemented
+- **Local Storage** - Online/CDN storage support is not yet fully implemented (CDN client structure exists but needs completion)
 - **Root Handlers** - Only basic root handler is implemented; game-specific handlers may be needed
+- **Compression Formats** - Currently supports ZLib compression; LZMA, LZ4, and Zstandard decompression are not yet implemented but have placeholders
 
 ## Contributing
 
 Contributions are welcome! Areas that could use improvement:
 
 - Additional game-specific root handlers
-- Online/CDN storage support
+- Complete online/CDN storage support implementation
 - Download/Install manifest parsing
+- LZMA, LZ4, and Zstandard compression support
 - Performance optimizations
 - Additional documentation and examples
 

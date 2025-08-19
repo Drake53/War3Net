@@ -147,7 +147,8 @@ namespace War3Net.IO.Casc.Structures
                 return 0;
             }
 
-            return BinaryPrimitives.ReadInt32LittleEndian(_key);
+            // Use first 4 bytes for hash code
+            return BinaryPrimitives.ReadInt32LittleEndian(_key.AsSpan(0, 4));
         }
 
         /// <inheritdoc/>
@@ -158,7 +159,7 @@ namespace War3Net.IO.Casc.Structures
                 return string.Empty;
             }
 
-            return BitConverter.ToString(_key).Replace("-", string.Empty);
+            return BitConverter.ToString(_key).Replace("-", string.Empty, StringComparison.Ordinal);
         }
 
         /// <summary>

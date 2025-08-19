@@ -40,8 +40,15 @@ namespace War3Net.IO.Casc.Utilities
                 throw new ArgumentException("Path cannot be null or empty.", nameof(path));
             }
 
+            // Normalize Unicode to prevent homograph attacks
+            // Use NFC (Canonical Decomposition followed by Canonical Composition)
+            path = path.Normalize(System.Text.NormalizationForm.FormC);
+
             // First, decode any URL-encoded sequences
             path = Uri.UnescapeDataString(path);
+
+            // Normalize again after decoding
+            path = path.Normalize(System.Text.NormalizationForm.FormC);
 
             // Normalize path separators to forward slash
             path = path.Replace('\\', '/');
@@ -50,6 +57,33 @@ namespace War3Net.IO.Casc.Utilities
             if (path.Contains('\0'))
             {
                 throw new ArgumentException("Path contains null bytes.", nameof(path));
+            }
+
+            // Check for Unicode control characters and zero-width characters
+            foreach (char c in path)
+            {
+                // Block control characters (except tab, newline, carriage return which are handled elsewhere)
+                if (char.IsControl(c) && c != '\t' && c != '\n' && c != '\r')
+                {
+                    throw new ArgumentException($"Path contains control character U+{(int)c:X4}.", nameof(path));
+                }
+
+                // Block zero-width and non-printing Unicode characters
+                var category = char.GetUnicodeCategory(c);
+                if (category == System.Globalization.UnicodeCategory.Format ||
+                    category == System.Globalization.UnicodeCategory.OtherNotAssigned ||
+                    category == System.Globalization.UnicodeCategory.PrivateUse)
+                {
+                    throw new ArgumentException($"Path contains invalid Unicode character U+{(int)c:X4}.", nameof(path));
+                }
+
+                // Block specific problematic Unicode characters
+                // Zero-width joiner/non-joiner, soft hyphen, etc.
+                if (c == '\u200B' || c == '\u200C' || c == '\u200D' || c == '\u00AD' ||
+                    c == '\uFEFF' || c == '\u202E' || c == '\u202D')
+                {
+                    throw new ArgumentException($"Path contains zero-width or directional Unicode character U+{(int)c:X4}.", nameof(path));
+                }
             }
 
             // Check for encoded directory traversal attempts
@@ -69,7 +103,7 @@ namespace War3Net.IO.Casc.Utilities
                 // Validate segment doesn't contain dangerous patterns
                 foreach (var pattern in DangerousPatterns)
                 {
-                    if (segment.Contains(pattern))
+                    if (segment.Contains(pattern, StringComparison.Ordinal))
                     {
                         throw new ArgumentException($"Path segment '{segment}' contains dangerous pattern '{pattern}'.", nameof(path));
                     }

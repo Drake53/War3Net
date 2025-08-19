@@ -139,7 +139,7 @@ namespace War3Net.IO.Casc
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
             }
 
-            if (!TryGetEntry(fileName, out var entry))
+            if (!TryGetEntry(fileName, out var entry) || entry == null)
             {
                 throw new FileNotFoundException($"File not found in CASC archive: {fileName}");
             }
@@ -177,7 +177,7 @@ namespace War3Net.IO.Casc
         public Stream OpenFile(uint fileDataId)
         {
             ThrowIfDisposed();
-            var fileName = string.Format(CascConstants.FileIdFormat, fileDataId);
+            var fileName = string.Format(System.Globalization.CultureInfo.InvariantCulture, CascConstants.FileIdFormat, fileDataId);
             return OpenFile(fileName, CascOpenFlags.OpenByFileId);
         }
 
@@ -224,7 +224,7 @@ namespace War3Net.IO.Casc
                 stream = null;
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 _logger.LogError(ex, "Unexpected error opening file: {FileName}", fileName);
                 stream = null;
@@ -252,7 +252,7 @@ namespace War3Net.IO.Casc
         {
             ThrowIfDisposed();
 
-            if (!TryGetEntry(fileName, out var entry))
+            if (!TryGetEntry(fileName, out var entry) || entry == null)
             {
                 throw new FileNotFoundException($"File not found in CASC archive: {fileName}");
             }
@@ -299,7 +299,7 @@ namespace War3Net.IO.Casc
                 return _entries.Values;
             }
 
-            pattern = pattern.Replace("*", ".*").Replace("?", ".");
+            pattern = pattern.Replace("*", ".*", StringComparison.Ordinal).Replace("?", ".", StringComparison.Ordinal);
             var regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
             return _entries.Values.Where(e => regex.IsMatch(e.FileName));
@@ -420,6 +420,12 @@ namespace War3Net.IO.Casc
             {
                 foreach (var rootEntry in rootHandler.GetEntries())
                 {
+                    // Validate rootEntry has required fields
+                    if (rootEntry == null || string.IsNullOrEmpty(rootEntry.FileName))
+                    {
+                        continue; // Skip invalid entries
+                    }
+
                     var entry = new CascEntry(rootEntry.FileName)
                     {
                         CKey = rootEntry.CKey,
@@ -511,38 +517,73 @@ namespace War3Net.IO.Casc
             }
 
             /// <inheritdoc/>
-            public override bool CanRead => _innerStream.CanRead;
+            public override bool CanRead => !_disposed && _innerStream.CanRead;
 
             /// <inheritdoc/>
-            public override bool CanSeek => _innerStream.CanSeek;
+            public override bool CanSeek => !_disposed && _innerStream.CanSeek;
 
             /// <inheritdoc/>
-            public override bool CanWrite => _innerStream.CanWrite;
+            public override bool CanWrite => !_disposed && _innerStream.CanWrite;
 
             /// <inheritdoc/>
-            public override long Length => _innerStream.Length;
+            public override long Length
+            {
+                get
+                {
+                    ThrowIfDisposed();
+                    return _innerStream.Length;
+                }
+            }
 
             /// <inheritdoc/>
             public override long Position
             {
-                get => _innerStream.Position;
-                set => _innerStream.Position = value;
+                get
+                {
+                    ThrowIfDisposed();
+                    return _innerStream.Position;
+                }
+                set
+                {
+                    ThrowIfDisposed();
+                    _innerStream.Position = value;
+                }
             }
 
             /// <inheritdoc/>
-            public override void Flush() => _innerStream.Flush();
+            public override void Flush()
+            {
+                ThrowIfDisposed();
+                _innerStream.Flush();
+            }
 
             /// <inheritdoc/>
-            public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                ThrowIfDisposed();
+                return _innerStream.Read(buffer, offset, count);
+            }
 
             /// <inheritdoc/>
-            public override long Seek(long offset, SeekOrigin origin) => _innerStream.Seek(offset, origin);
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                ThrowIfDisposed();
+                return _innerStream.Seek(offset, origin);
+            }
 
             /// <inheritdoc/>
-            public override void SetLength(long value) => _innerStream.SetLength(value);
+            public override void SetLength(long value)
+            {
+                ThrowIfDisposed();
+                _innerStream.SetLength(value);
+            }
 
             /// <inheritdoc/>
-            public override void Write(byte[] buffer, int offset, int count) => _innerStream.Write(buffer, offset, count);
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                ThrowIfDisposed();
+                _innerStream.Write(buffer, offset, count);
+            }
 
             /// <inheritdoc/>
             protected override void Dispose(bool disposing)
@@ -551,14 +592,35 @@ namespace War3Net.IO.Casc
                 {
                     if (disposing)
                     {
-                        _innerStream.Dispose();
-                        _onDispose();
+                        try
+                        {
+                            _innerStream?.Dispose();
+                        }
+                        finally
+                        {
+                            try
+                            {
+                                _onDispose?.Invoke();
+                            }
+                            catch
+                            {
+                                // Suppress exceptions in disposal callback
+                            }
+                        }
                     }
 
                     _disposed = true;
                 }
 
                 base.Dispose(disposing);
+            }
+
+            private void ThrowIfDisposed()
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
             }
         }
     }
