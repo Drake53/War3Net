@@ -37,13 +37,16 @@ namespace War3Net.IO.Casc.Compression
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), "Maximum recursion depth must be at least 1.");
                 }
+
                 if (value > 100)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), "Maximum recursion depth cannot exceed 100.");
                 }
+
                 _maxRecursionDepth = value;
             }
         }
+
         /// <summary>
         /// Decodes BLTE-encoded data.
         /// </summary>
