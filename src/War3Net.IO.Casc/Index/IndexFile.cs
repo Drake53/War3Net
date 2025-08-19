@@ -55,6 +55,7 @@ namespace War3Net.IO.Casc.Index
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
         /// <returns>The parsed index file.</returns>
+        /// <exception cref="CascParserException">Thrown when the index version is unknown or entry size doesn't match expected size.</exception>
         public static IndexFile Parse(Stream stream)
         {
             var index = new IndexFile();

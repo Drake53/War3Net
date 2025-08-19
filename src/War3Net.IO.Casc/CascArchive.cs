@@ -57,6 +57,9 @@ namespace War3Net.IO.Casc
         /// <param name="storagePath">The path to the CASC storage.</param>
         /// <param name="localeFlags">The locale flags to use.</param>
         /// <param name="logger">The logger to use. If null, no logging will be performed.</param>
+        /// <exception cref="ArgumentException">Thrown when the storage path is null or empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when the storage path does not exist.</exception>
+        /// <exception cref="CascException">Thrown when the CASC storage cannot be opened.</exception>
         public CascArchive(string storagePath, CascLocaleFlags localeFlags, ILogger<CascArchive>? logger)
         {
             if (string.IsNullOrEmpty(storagePath))
@@ -119,6 +122,9 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileName">The name of the file to open.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
+        /// <exception cref="ArgumentException">Thrown when the file name is null or empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file is not found in the archive.</exception>
         public Stream OpenFile(string fileName)
         {
             return OpenFile(fileName, CascOpenFlags.OpenByName);
@@ -130,6 +136,9 @@ namespace War3Net.IO.Casc
         /// <param name="fileName">The name of the file to open.</param>
         /// <param name="openFlags">Flags for opening the file.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
+        /// <exception cref="ArgumentException">Thrown when the file name is null or empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file is not found in the archive.</exception>
         public Stream OpenFile(string fileName, CascOpenFlags openFlags)
         {
             ThrowIfDisposed();
@@ -152,6 +161,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="cKey">The content key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public Stream OpenFile(CascKey cKey)
         {
             ThrowIfDisposed();
@@ -163,6 +173,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="eKey">The encoded key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public Stream OpenFile(EKey eKey)
         {
             ThrowIfDisposed();
@@ -174,6 +185,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileDataId">The file data ID.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public Stream OpenFile(uint fileDataId)
         {
             ThrowIfDisposed();
@@ -237,6 +249,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileName">The name of the file to check.</param>
         /// <returns>true if the file exists; otherwise, false.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public bool FileExists(string fileName)
         {
             ThrowIfDisposed();
@@ -248,6 +261,8 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileName">The name of the file.</param>
         /// <returns>The CASC entry.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the file is not found in the archive.</exception>
         public CascEntry GetEntry(string fileName)
         {
             ThrowIfDisposed();
@@ -266,6 +281,7 @@ namespace War3Net.IO.Casc
         /// <param name="fileName">The name of the file.</param>
         /// <param name="entry">The CASC entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public bool TryGetEntry(string fileName, out CascEntry? entry)
         {
             ThrowIfDisposed();
@@ -284,6 +300,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="pattern">The search pattern (supports wildcards).</param>
         /// <returns>An enumerable of matching entries.</returns>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public IEnumerable<CascEntry> FindFiles(string pattern)
         {
             ThrowIfDisposed();
@@ -310,6 +327,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="keyName">The key name.</param>
         /// <param name="key">The encryption key.</param>
+        /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         public void AddEncryptionKey(ulong keyName, byte[] key)
         {
             ThrowIfDisposed();

@@ -91,6 +91,8 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="fileName">The file name.</param>
         /// <param name="openFlags">The open flags.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="ArgumentException">Thrown when the open type is invalid.</exception>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
         public Stream OpenFile(string fileName, CascOpenFlags openFlags = CascOpenFlags.OpenByName)
         {
             var openType = openFlags & CascOpenFlags.OpenTypeMask;
@@ -120,6 +122,8 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="cKey">The content key.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="CascException">Thrown when the encoding file is not loaded or checksum validation fails.</exception>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
         public Stream OpenFileByCKey(CascKey cKey)
         {
             return OpenFileByCKey(cKey, true);
@@ -131,6 +135,8 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="cKey">The content key.</param>
         /// <param name="validateChecksum">Whether to validate the checksum.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="CascException">Thrown when the encoding file is not loaded or checksum validation fails.</exception>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
         public Stream OpenFileByCKey(CascKey cKey, bool validateChecksum)
         {
             // Get EKey from encoding
@@ -184,6 +190,7 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="eKey">The encoded key.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
         public Stream OpenFileByEKey(EKey eKey)
         {
             return OpenFileByEKey(eKey, false);
@@ -195,6 +202,7 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="eKey">The encoded key.</param>
         /// <param name="useStreaming">If true, returns a streaming reader; if false, loads entire file to memory.</param>
         /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
         public Stream OpenFileByEKey(EKey eKey, bool useStreaming)
         {
             _storageLock.EnterReadLock();

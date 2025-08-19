@@ -94,6 +94,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="keyName">The key name.</param>
         /// <param name="iv">The initialization vector.</param>
         /// <returns>The decrypted data.</returns>
+        /// <exception cref="CascEncryptionException">Thrown when the decryption key is not found.</exception>
         public static byte[] Decrypt(byte[] data, ulong keyName, byte[] iv)
         {
             var key = GetKey(keyName);

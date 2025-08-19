@@ -22,6 +22,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="data">The data to validate.</param>
         /// <param name="expectedHash">The expected MD5 hash.</param>
         /// <returns>true if the checksum matches; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateMD5(byte[] data, byte[] expectedHash)
         {
             if (data == null)
@@ -45,6 +47,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="stream">The stream to validate.</param>
         /// <param name="expectedHash">The expected MD5 hash.</param>
         /// <returns>true if the checksum matches; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when stream is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateMD5(Stream stream, byte[] expectedHash)
         {
             if (stream == null)
@@ -67,6 +71,7 @@ namespace War3Net.IO.Casc.Utilities
         /// </summary>
         /// <param name="data">The data to hash.</param>
         /// <returns>The MD5 hash.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
         public static byte[] ComputeMD5(byte[] data)
         {
             if (data == null)
@@ -84,6 +89,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="data">The data to validate.</param>
         /// <param name="expectedHash">The expected SHA1 hash.</param>
         /// <returns>true if the checksum matches; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateSHA1(byte[] data, byte[] expectedHash)
         {
             if (data == null)
