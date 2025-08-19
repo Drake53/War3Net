@@ -164,8 +164,8 @@ namespace War3Net.IO.Casc.Root
             var errors = new List<string>();
             using var reader = new StreamReader(stream);
             string? line;
-            int lineNumber = 0;
-            int successCount = 0;
+            var lineNumber = 0;
+            var successCount = 0;
 
             while ((line = reader.ReadLine()) != null)
             {

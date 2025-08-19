@@ -64,7 +64,7 @@ namespace War3Net.IO.Casc.Utilities
                 throw new ArgumentException($"Offset ({offset}) + Length ({length}) exceeds array bounds ({data.Length}).");
             }
 
-            int pos = offset;
+            var pos = offset;
 
             // Handle most of the data
             while (length > 12)
@@ -147,7 +147,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The hash value.</returns>
         public static uint HashLittle(byte[] data, int offset, int length)
         {
-            HashLittle2(data, offset, length, out uint pc, out _);
+            HashLittle2(data, offset, length, out var pc, out _);
             return pc;
         }
 

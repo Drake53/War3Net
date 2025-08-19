@@ -96,7 +96,7 @@ namespace War3Net.IO.Casc.Index
                 if (index.Header.EKeyCount > 0)
                 {
                     // Read specified number of entries
-                    for (int i = 0; i < index.Header.EKeyCount; i++)
+                    for (var i = 0; i < index.Header.EKeyCount; i++)
                     {
                         // Check if we need to skip page checksum data
                         if ((stream.Position % pageSize) + entrySize > pageSize)

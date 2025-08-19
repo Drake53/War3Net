@@ -100,8 +100,8 @@ namespace War3Net.IO.Casc.Utilities
         public static uint JenkinsHashLookup3(byte[] data, uint initval)
         {
             uint a, b, c;
-            int length = data.Length;
-            int offset = 0;
+            var length = data.Length;
+            var offset = 0;
 
             // Set up the internal state
             a = b = c = 0xdeadbeef + (uint)length + initval;
@@ -185,7 +185,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             var bytes = new byte[hex.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
                 bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
             }

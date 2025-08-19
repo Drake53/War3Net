@@ -61,7 +61,7 @@ namespace War3Net.IO.Casc.Cdn
                 if (config.Headers.Count == 0)
                 {
                     config.Headers.AddRange(parts.Select(p => p.TrimEnd('!')));
-                    for (int i = 0; i < config.Headers.Count; i++)
+                    for (var i = 0; i < config.Headers.Count; i++)
                     {
                         columnIndices[config.Headers[i]] = i;
                     }

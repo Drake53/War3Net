@@ -64,7 +64,7 @@ namespace War3Net.IO.Casc.Storage
             buildInfo.Headers = lines[0].Split('|').Select(h => h.Trim('!')).ToArray();
 
             // Parse entries
-            for (int i = 1; i < lines.Length; i++)
+            for (var i = 1; i < lines.Length; i++)
             {
                 if (string.IsNullOrWhiteSpace(lines[i]))
                 {
@@ -74,7 +74,7 @@ namespace War3Net.IO.Casc.Storage
                 var values = lines[i].Split('|');
                 var entry = new BuildInfoEntry();
 
-                for (int j = 0; j < Math.Min(values.Length, buildInfo.Headers.Length); j++)
+                for (var j = 0; j < Math.Min(values.Length, buildInfo.Headers.Length); j++)
                 {
                     entry.Values[buildInfo.Headers[j]] = values[j];
                 }

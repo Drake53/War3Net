@@ -326,7 +326,7 @@ namespace War3Net.IO.Casc.Crypto
                             if (keyHex.Length == 32) // 16 bytes * 2 hex chars
                             {
                                 var key = new byte[16];
-                                for (int i = 0; i < 16; i++)
+                                for (var i = 0; i < 16; i++)
                                 {
                                     key[i] = Convert.ToByte(keyHex.Substring(i * 2, 2), 16);
                                 }

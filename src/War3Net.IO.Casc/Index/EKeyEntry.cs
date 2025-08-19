@@ -102,7 +102,7 @@ namespace War3Net.IO.Casc.Index
         private static ulong ReadBigEndianValue(byte[] bytes)
         {
             ulong value = 0;
-            for (int i = 0; i < bytes.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
                 value = (value << 8) | bytes[i];
             }
@@ -113,7 +113,7 @@ namespace War3Net.IO.Casc.Index
         private static void WriteBigEndianValue(BinaryWriter writer, ulong value, int byteCount)
         {
             var bytes = new byte[byteCount];
-            for (int i = byteCount - 1; i >= 0; i--)
+            for (var i = byteCount - 1; i >= 0; i--)
             {
                 bytes[i] = (byte)(value & 0xFF);
                 value >>= 8;

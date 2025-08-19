@@ -134,7 +134,7 @@ namespace War3Net.IO.Casc
             _position = Math.Max(0, Math.Min(_position, _memoryStream.Length));
 
             _memoryStream.Position = _position;
-            int bytesRead = _memoryStream.Read(buffer, offset, count);
+            var bytesRead = _memoryStream.Read(buffer, offset, count);
             _position = _memoryStream.Position; // Keep positions synchronized
             return bytesRead;
         }
@@ -144,7 +144,7 @@ namespace War3Net.IO.Casc
         {
             EnsureDecoded();
 
-            long newPosition = origin switch
+            var newPosition = origin switch
             {
                 SeekOrigin.Begin => offset,
                 SeekOrigin.Current => _position + offset,
@@ -202,10 +202,10 @@ namespace War3Net.IO.Casc
 
             // Read encoded data
             var encodedData = new byte[_indexEntry.EncodedSize];
-            int totalRead = 0;
+            var totalRead = 0;
             while (totalRead < encodedData.Length)
             {
-                int read = _dataStream.Read(encodedData, totalRead, encodedData.Length - totalRead);
+                var read = _dataStream.Read(encodedData, totalRead, encodedData.Length - totalRead);
                 if (read == 0)
                 {
                     throw new EndOfStreamException("Unexpected end of data stream");

@@ -102,7 +102,7 @@ namespace War3Net.IO.Casc.Crypto
                 throw new ArgumentNullException(nameof(output));
             }
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 if (_keyStreamPosition >= 64)
                 {
@@ -136,7 +136,7 @@ namespace War3Net.IO.Casc.Crypto
 
             // Key
             var keyIndex = 0;
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 _state[i + 1] = ToUInt32(key, keyIndex);
                 keyIndex += 4;
@@ -144,7 +144,7 @@ namespace War3Net.IO.Casc.Crypto
 
             if (key.Length == 32)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     _state[i + 11] = ToUInt32(key, keyIndex);
                     keyIndex += 4;
@@ -154,7 +154,7 @@ namespace War3Net.IO.Casc.Crypto
             {
                 // For 16-byte key, repeat the key
                 keyIndex = 0;
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
                     _state[i + 11] = ToUInt32(key, keyIndex);
                     keyIndex += 4;
@@ -180,7 +180,7 @@ namespace War3Net.IO.Casc.Crypto
             Array.Copy(_state, workingState, StateSize);
 
             // 20 rounds (10 double-rounds)
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 QuarterRound(ref workingState[0], ref workingState[4], ref workingState[8], ref workingState[12]);
                 QuarterRound(ref workingState[5], ref workingState[9], ref workingState[13], ref workingState[1]);
@@ -194,14 +194,14 @@ namespace War3Net.IO.Casc.Crypto
             }
 
             // Add initial state
-            for (int i = 0; i < StateSize; i++)
+            for (var i = 0; i < StateSize; i++)
             {
                 workingState[i] += _state[i];
             }
 
             // Convert to byte stream
             var index = 0;
-            for (int i = 0; i < StateSize; i++)
+            for (var i = 0; i < StateSize; i++)
             {
                 _keyStream[index++] = (byte)workingState[i];
                 _keyStream[index++] = (byte)(workingState[i] >> 8);

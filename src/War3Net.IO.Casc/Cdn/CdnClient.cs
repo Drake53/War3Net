@@ -106,7 +106,7 @@ namespace War3Net.IO.Casc.Cdn
                 var isHttps = url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
 
                 // Try each host up to maxRetries times with exponential backoff and jitter
-                for (int retryCount = 0; retryCount < maxRetries; retryCount++)
+                for (var retryCount = 0; retryCount < maxRetries; retryCount++)
                 {
                     try
                     {

@@ -104,7 +104,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             var bytes = new byte[byteCount];
-            for (int i = byteCount - 1; i >= 0; i--)
+            for (var i = byteCount - 1; i >= 0; i--)
             {
                 bytes[i] = (byte)(value & 0xFF);
                 value >>= 8;

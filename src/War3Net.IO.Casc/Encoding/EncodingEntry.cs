@@ -67,7 +67,7 @@ namespace War3Net.IO.Casc.Encoding
             // Read content size (40 bits, big-endian)
             var sizeBytes = reader.ReadBytes(5);
             ulong contentSize = 0;
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 contentSize = (contentSize << 8) | sizeBytes[i];
             }
@@ -78,7 +78,7 @@ namespace War3Net.IO.Casc.Encoding
             entry.CKey = reader.ReadCKey();
 
             // Read encoded keys
-            for (int i = 0; i < ekeyCount; i++)
+            for (var i = 0; i < ekeyCount; i++)
             {
                 var ekeyBytes = reader.ReadBytes(header.EKeyLength);
                 entry.EKeys.Add(new EKey(ekeyBytes));
@@ -99,7 +99,7 @@ namespace War3Net.IO.Casc.Encoding
 
             // Write content size (40 bits, big-endian)
             ulong size = ContentSize;
-            for (int i = 4; i >= 0; i--)
+            for (var i = 4; i >= 0; i--)
             {
                 writer.Write((byte)((size >> (i * 8)) & 0xFF));
             }

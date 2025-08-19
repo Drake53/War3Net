@@ -174,7 +174,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             ulong value = 0;
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 value = (value << 8) | bytes[offset + i];
             }

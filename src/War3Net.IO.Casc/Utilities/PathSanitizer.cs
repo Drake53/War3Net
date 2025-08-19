@@ -87,7 +87,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             // Check for Unicode control characters and zero-width characters
-            foreach (char c in path)
+            foreach (var c in path)
             {
                 // Block control characters (except tab, newline, carriage return which are handled elsewhere)
                 if (char.IsControl(c) && c != '\t' && c != '\n' && c != '\r')
@@ -123,7 +123,7 @@ namespace War3Net.IO.Casc.Utilities
             var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
             var sanitizedSegments = new string[segments.Length];
 
-            for (int i = 0; i < segments.Length; i++)
+            for (var i = 0; i < segments.Length; i++)
             {
                 var segment = segments[i];
 

@@ -145,8 +145,8 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             // Use constant-time comparison to prevent timing attacks
-            int result = 0;
-            for (int i = 0; i < hash1.Length; i++)
+            var result = 0;
+            for (var i = 0; i < hash1.Length; i++)
             {
                 result |= hash1[i] ^ hash2[i];
             }

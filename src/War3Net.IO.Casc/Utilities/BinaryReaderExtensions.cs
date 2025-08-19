@@ -77,7 +77,7 @@ namespace War3Net.IO.Casc.Utilities
                     }
 
                     // Find null terminator in the chunk
-                    int nullIndex = Array.IndexOf(buffer, (byte)0, 0, bytesRead);
+                    var nullIndex = Array.IndexOf(buffer, (byte)0, 0, bytesRead);
 
                     if (nullIndex >= 0)
                     {
@@ -195,7 +195,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             ulong value = 0;
-            for (int i = 0; i < byteCount; i++)
+            for (var i = 0; i < byteCount; i++)
             {
                 value = (value << 8) | reader.ReadByte();
             }

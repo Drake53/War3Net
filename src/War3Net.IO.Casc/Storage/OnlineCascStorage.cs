@@ -266,7 +266,7 @@ namespace War3Net.IO.Casc.Storage
 
             // Download archive indexes
             var archives = cdnConfig.Archives;
-            for (int i = 0; i < Math.Min(archives.Count, 16); i++) // Limit to first 16 archives
+            for (var i = 0; i < Math.Min(archives.Count, 16); i++) // Limit to first 16 archives
             {
                 var archiveKey = archives[i];
                 if (string.IsNullOrEmpty(archiveKey))
@@ -404,7 +404,7 @@ namespace War3Net.IO.Casc.Storage
             var programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 
             // Allow paths only within safe directories
-            bool isInSafeDirectory =
+            var isInSafeDirectory =
                 normalizedPath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
                 normalizedPath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase) ||
                 normalizedPath.StartsWith(appData, StringComparison.OrdinalIgnoreCase) ||

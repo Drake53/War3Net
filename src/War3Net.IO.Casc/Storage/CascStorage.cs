@@ -357,7 +357,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             var key = new byte[CascConstants.KeyLength];
-            for (int i = 0; i < key.Length; i++)
+            for (var i = 0; i < key.Length; i++)
             {
                 key[i] = Convert.ToByte(keyString.Substring(i * 2, 2), 16);
             }
@@ -377,7 +377,7 @@ namespace War3Net.IO.Casc.Storage
                 return 0;
             }
 
-            int keysImported = 0;
+            var keysImported = 0;
             var lines = keyList.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in lines)
@@ -672,7 +672,7 @@ namespace War3Net.IO.Casc.Storage
                     }
 
                     // Calculate end position with overflow check
-                    ulong endPosition = indexEntry.DataFileOffset + indexEntry.EncodedSize;
+                    var endPosition = indexEntry.DataFileOffset + indexEntry.EncodedSize;
 
                     // Validate that the file contains the requested data
                     if (endPosition > (ulong)stream.Length)
