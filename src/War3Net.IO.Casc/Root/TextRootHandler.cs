@@ -5,9 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.IO;
-using System.Text;
 
 using War3Net.IO.Casc.Structures;
 

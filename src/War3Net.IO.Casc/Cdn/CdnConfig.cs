@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace War3Net.IO.Casc.Cdn
 {

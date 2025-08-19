@@ -8,8 +8,6 @@
 using System.Collections.Generic;
 using System.IO;
 
-using War3Net.IO.Casc.Structures;
-
 namespace War3Net.IO.Casc.Root
 {
     /// <summary>

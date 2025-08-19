@@ -7,7 +7,6 @@
 
 using System.IO;
 
-using War3Net.IO.Casc.Structures;
 using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Encoding

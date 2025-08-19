@@ -7,12 +7,9 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
 
 using War3Net.IO.Casc.Crypto;
 using War3Net.IO.Casc.Enums;
-using War3Net.IO.Casc.Utilities;
-using War3Net.IO.Compression;
 
 namespace War3Net.IO.Casc.Compression
 {

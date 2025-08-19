@@ -11,7 +11,6 @@ using System.IO;
 using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Index;
 using War3Net.IO.Casc.Storage;
-using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc
 {
