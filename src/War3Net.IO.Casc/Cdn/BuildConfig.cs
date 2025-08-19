@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace War3Net.IO.Casc.Cdn
@@ -14,6 +15,17 @@ namespace War3Net.IO.Casc.Cdn
     /// <summary>
     /// Represents a build configuration file.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The build config file contains hashes and metadata for all the critical data files needed to
+    /// reconstruct a specific game build. It serves as the entry point for accessing game content.
+    /// </para>
+    /// <para>
+    /// The first value in paired fields is typically the <see cref="Structures.CascKey"/>, while the second
+    /// (if present) is the <see cref="Structures.EKey"/>. If the second value is absent, the <see cref="Structures.EKey"/> must
+    /// be looked up in the <see cref="Encoding.EncodingFile"/>.
+    /// </para>
+    /// </remarks>
     public class BuildConfig
     {
         private readonly Dictionary<string, string> _data;
@@ -27,14 +39,168 @@ namespace War3Net.IO.Casc.Cdn
         }
 
         /// <summary>
-        /// Gets the build key.
-        /// </summary>
-        public string? BuildKey => GetValue("build-uid");
-
-        /// <summary>
-        /// Gets the root content hash.
+        /// Gets the content hash (<see cref="Structures.CascKey"/>) of the decoded root file.
+        /// Look this up in encoding to get the encoded hash.
         /// </summary>
         public string? Root => GetValue("root");
+
+        /// <summary>
+        /// Gets the install manifest hash.
+        /// First key is the content hash of the decoded install file.
+        /// Second key, if present, is the encoded hash; if absent, look up in encoding.
+        /// </summary>
+        public string? Install => GetValue("install");
+
+        /// <summary>
+        /// Gets the install size(s) corresponding to the install hash(es).
+        /// Absent in older WoW builds.
+        /// </summary>
+        public string? InstallSize => GetValue("install-size");
+
+        /// <summary>
+        /// Gets the download manifest hash.
+        /// First key is the content hash of the decoded download file.
+        /// Second key, if present, is the encoded hash; if absent, look up in encoding.
+        /// </summary>
+        public string? Download => GetValue("download");
+
+        /// <summary>
+        /// Gets the download size(s) corresponding to the download hash(es).
+        /// Absent in older WoW builds.
+        /// </summary>
+        public string? DownloadSize => GetValue("download-size");
+
+        /// <summary>
+        /// Gets the size file hash.
+        /// CKey and EKey of the download size file, respectively.
+        /// Introduced in WoW build 27547.
+        /// </summary>
+        public string? Size => GetValue("size");
+
+        /// <summary>
+        /// Gets the download size sizes corresponding to the download size keys.
+        /// </summary>
+        public string? SizeSize => GetValue("size-size");
+
+        /// <summary>
+        /// Gets the partial priority for builds.
+        /// Content hash:block size pairs for priority non-archived files, ordered by priority.
+        /// Optional field.
+        /// </summary>
+        public string? BuildPartialPriority => GetValue("build-partial-priority");
+
+        /// <summary>
+        /// Gets the partial priority file hash.
+        /// Content hash of a partial download file containing priority files to download first.
+        /// Optional field.
+        /// </summary>
+        public string? PartialPriority => GetValue("partial-priority");
+
+        /// <summary>
+        /// Gets the partial priority size.
+        /// Unknown: always 0 if present. Present if partial-priority is present.
+        /// </summary>
+        public string? PartialPrioritySize => GetValue("partial-priority-size");
+
+        /// <summary>
+        /// Gets the encoding file hash.
+        /// First key is the content hash of the decoded encoding file.
+        /// Second key is the encoded hash.
+        /// </summary>
+        public string? Encoding => GetValue("encoding");
+
+        /// <summary>
+        /// Gets the encoding sizes corresponding to the encoding hashes.
+        /// </summary>
+        public string? EncodingSize => GetValue("encoding-size");
+
+        /// <summary>
+        /// Gets the patch manifest of patchable data files.
+        /// Optional field.
+        /// </summary>
+        public string? Patch => GetValue("patch");
+
+        /// <summary>
+        /// Gets the size of the patch manifest, if any.
+        /// Optional field.
+        /// </summary>
+        public string? PatchSize => GetValue("patch-size");
+
+        /// <summary>
+        /// Gets the content hash of non-encoded patch config.
+        /// </summary>
+        public string? PatchConfig => GetValue("patch-config");
+
+        /// <summary>
+        /// Gets the build attributes.
+        /// Optional field.
+        /// </summary>
+        public string? BuildAttributes => GetValue("build-attributes");
+
+        /// <summary>
+        /// Gets the build branch.
+        /// Optional field.
+        /// </summary>
+        public string? BuildBranch => GetValue("build-branch");
+
+        /// <summary>
+        /// Gets the build comments.
+        /// Optional field.
+        /// </summary>
+        public string? BuildComments => GetValue("build-comments");
+
+        /// <summary>
+        /// Gets the build creator.
+        /// Optional field.
+        /// </summary>
+        public string? BuildCreator => GetValue("build-creator");
+
+        /// <summary>
+        /// Gets the build fixed hash.
+        /// Optional field.
+        /// </summary>
+        public string? BuildFixedHash => GetValue("build-fixed-hash");
+
+        /// <summary>
+        /// Gets the build replay hash.
+        /// Optional field.
+        /// </summary>
+        public string? BuildReplayHash => GetValue("build-replay-hash");
+
+        /// <summary>
+        /// Gets the build name.
+        /// Optional field.
+        /// </summary>
+        public string? BuildName => GetValue("build-name");
+
+        /// <summary>
+        /// Gets the build playbuild installer.
+        /// Optional field.
+        /// </summary>
+        public string? BuildPlaybuildInstaller => GetValue("build-playbuild-installer");
+
+        /// <summary>
+        /// Gets the product name.
+        /// Optional field.
+        /// </summary>
+        public string? BuildProduct => GetValue("build-product");
+
+        /// <summary>
+        /// Gets the build T1 manifest version.
+        /// Optional field.
+        /// </summary>
+        public string? BuildT1ManifestVersion => GetValue("build-t1-manifest-version");
+
+        /// <summary>
+        /// Gets the build UID (program code).
+        /// Optional field.
+        /// </summary>
+        public string? BuildUid => GetValue("build-uid");
+
+        /// <summary>
+        /// Gets the build key (alias for BuildUid).
+        /// </summary>
+        public string? BuildKey => BuildUid;
 
         /// <summary>
         /// Gets the VFS root content hash (used by Warcraft III).
@@ -42,34 +208,47 @@ namespace War3Net.IO.Casc.Cdn
         public string? VfsRoot => GetValue("vfs-root");
 
         /// <summary>
-        /// Gets the encoding hash.
+        /// Gets the VFS root size.
         /// </summary>
-        public string? Encoding => GetValue("encoding");
+        public string? VfsRootSize => GetValue("vfs-root-size");
 
         /// <summary>
-        /// Gets the install hash.
+        /// Gets a VFS manifest entry by index.
         /// </summary>
-        public string? Install => GetValue("install");
+        /// <param name="index">The index of the VFS manifest.</param>
+        /// <returns>The VFS manifest hash, or null if not found.</returns>
+        public string? GetVfsManifest(int index) => GetValue($"vfs-{index}");
 
         /// <summary>
-        /// Gets the download hash.
+        /// Gets a VFS manifest size by index.
         /// </summary>
-        public string? Download => GetValue("download");
+        /// <param name="index">The index of the VFS manifest.</param>
+        /// <returns>The VFS manifest size, or null if not found.</returns>
+        public string? GetVfsManifestSize(int index) => GetValue($"vfs-{index}-size");
 
         /// <summary>
-        /// Gets the size hash.
+        /// Gets all VFS manifest entries.
         /// </summary>
-        public string? Size => GetValue("size");
+        /// <returns>A dictionary of index to VFS manifest hash.</returns>
+        public Dictionary<int, string> GetAllVfsManifests()
+        {
+            var result = new Dictionary<int, string>();
+            foreach (var kvp in _data)
+            {
+                if (kvp.Key.StartsWith("vfs-", StringComparison.OrdinalIgnoreCase) &&
+                    !kvp.Key.EndsWith("-size", StringComparison.OrdinalIgnoreCase) &&
+                    kvp.Key != "vfs-root" && kvp.Key != "vfs-root-size")
+                {
+                    var indexStr = kvp.Key[4..];
+                    if (int.TryParse(indexStr, out var index))
+                    {
+                        result[index] = kvp.Value;
+                    }
+                }
+            }
 
-        /// <summary>
-        /// Gets the patch hash.
-        /// </summary>
-        public string? Patch => GetValue("patch");
-
-        /// <summary>
-        /// Gets the patch config hash.
-        /// </summary>
-        public string? PatchConfig => GetValue("patch-config");
+            return result;
+        }
 
         /// <summary>
         /// Parses a build config from a stream.
@@ -95,8 +274,8 @@ namespace War3Net.IO.Casc.Cdn
                     continue;
                 }
 
-                var key = line.Substring(0, equalIndex).Trim();
-                var value = line.Substring(equalIndex + 1).Trim();
+                var key = line[..equalIndex].Trim();
+                var value = line[(equalIndex + 1)..].Trim();
 
                 config._data[key] = value;
             }
@@ -105,13 +284,24 @@ namespace War3Net.IO.Casc.Cdn
         }
 
         /// <summary>
-        /// Gets a value for a key.
+        /// Gets the value corresponding to the given <paramref name="key"/>.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The value, or null if not found.</returns>
+        /// <returns>The value, or <see langword="null"/>  if not found.</returns>
         public string? GetValue(string key)
         {
             return _data.TryGetValue(key, out var value) ? value : null;
+        }
+
+        /// <summary>
+        /// Tries to get the value corresponding to the given <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, null.</param>
+        /// <returns><see langword="true"/> if the key was found; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
+        {
+            return _data.TryGetValue(key, out value);
         }
 
         /// <summary>
