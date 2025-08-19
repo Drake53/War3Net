@@ -711,12 +711,6 @@ namespace War3Net.IO.Casc.Storage
                     var bytesRead = stream.Read(data, totalBytesRead, remaining);
                     if (bytesRead == 0)
                     {
-                        // If we fail to read, ensure we clean up the rented array
-                        if (rentedArray != null)
-                        {
-                            System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
-                        }
-
                         throw new CascException($"Unexpected end of stream reading {dataFilePath}: expected {indexEntry.EncodedSize} bytes, read {totalBytesRead} bytes");
                     }
 
@@ -729,29 +723,14 @@ namespace War3Net.IO.Casc.Storage
                 {
                     var result = new byte[indexEntry.EncodedSize];
                     Buffer.BlockCopy(rentedArray, 0, result, 0, (int)indexEntry.EncodedSize);
-
-                    // Return the rented array after copying
-                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
-                    rentedArray = null; // Clear reference to avoid double-return in finally
                     return result;
                 }
 
                 return data;
             }
-            catch (Exception)
-            {
-                // Ensure we always return the rented array on any exception
-                if (rentedArray != null)
-                {
-                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
-                }
-
-                throw;
-            }
             finally
             {
-                // Final safety check - return array if somehow still rented
-                // This should rarely execute due to the catch block and normal flow handling
+                // Always return the rented array if it exists
                 if (rentedArray != null)
                 {
                     System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);

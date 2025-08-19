@@ -54,13 +54,10 @@ namespace War3Net.IO.Casc.Structures
             key.CopyTo(_key);
         }
 
-        // Static empty instance to avoid allocations
-        private static readonly byte[] EmptyKeyBytes = new byte[CascConstants.CKeySize];
-
         /// <summary>
         /// Gets an empty content key.
         /// </summary>
-        public static CascKey Empty { get; } = new CascKey(EmptyKeyBytes);
+        public static CascKey Empty { get; } = new CascKey(new byte[CascConstants.CKeySize]);
 
         /// <summary>
         /// Gets the key bytes.

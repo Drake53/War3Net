@@ -304,7 +304,7 @@ namespace War3Net.IO.Casc.Compression
                 throw new CascException("Nested encrypted frames are not supported");
             }
 
-            // Read encrypted data
+            // Read encrypted data size before validation to ensure proper bounds checking
             var encryptedSize = (int)(frame.Data!.Length - 1 - 1 - keyNameLength - 4 - 1);
             if (encryptedSize < 0)
             {

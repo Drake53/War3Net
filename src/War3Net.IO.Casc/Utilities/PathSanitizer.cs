@@ -18,7 +18,6 @@ namespace War3Net.IO.Casc.Utilities
     public static class PathSanitizer
     {
         private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
-        private static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
         private static readonly Regex EncodedTraversalPattern = new Regex(@"%2e%2e|%252e|%c0%ae|%c1%9c", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly string[] DangerousPatterns = new[]
         {
@@ -44,8 +43,16 @@ namespace War3Net.IO.Casc.Utilities
             // Use NFC (Canonical Decomposition followed by Canonical Composition)
             path = path.Normalize(System.Text.NormalizationForm.FormC);
 
-            // First, decode any URL-encoded sequences
-            path = Uri.UnescapeDataString(path);
+            // First, decode any URL-encoded sequences (safely)
+            try
+            {
+                path = Uri.UnescapeDataString(path);
+            }
+            catch (UriFormatException)
+            {
+                // If the path contains malformed URL encoding, reject it
+                throw new ArgumentException("Path contains malformed URL-encoded sequences.", nameof(path));
+            }
 
             // Normalize again after decoding
             path = path.Normalize(System.Text.NormalizationForm.FormC);
@@ -160,11 +167,8 @@ namespace War3Net.IO.Casc.Utilities
             // Normalize path separators
             path = path.Replace('\\', '/');
 
-            // Remove double slashes
-            while (path.Contains("//"))
-            {
-                path = path.Replace("//", "/");
-            }
+            // Remove double slashes efficiently using regex
+            path = Regex.Replace(path, "/+", "/");
 
             // Validate no directory traversal
             if (path.Contains("../") || path.Contains("..\\") || path == ".." || path.StartsWith(".."))

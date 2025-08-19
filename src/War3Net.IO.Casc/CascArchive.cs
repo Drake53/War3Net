@@ -376,28 +376,30 @@ namespace War3Net.IO.Casc
                 return;
             }
 
-            // Dispose all open streams first
-            // ConcurrentBag is thread-safe, no lock needed for enumeration
-            var streamsCopy = _openStreams.ToArray();
-            foreach (var weakRef in streamsCopy)
+            // Use a lock to ensure thread-safe disposal
+            lock (_openStreams)
             {
-                if (weakRef.IsAlive && weakRef.Target is Stream stream)
+                // Dispose all open streams first
+                foreach (var weakRef in _openStreams)
                 {
-                    try
+                    if (weakRef.IsAlive && weakRef.Target is Stream stream)
                     {
-                        stream.Dispose();
-                    }
-                    catch
-                    {
-                        // Ignore disposal errors for individual streams
+                        try
+                        {
+                            stream.Dispose();
+                        }
+                        catch
+                        {
+                            // Ignore disposal errors for individual streams
+                        }
                     }
                 }
-            }
 
-            // Clear the collection
-            while (_openStreams.TryTake(out _))
-            {
-                // Empty the bag
+                // Clear the collection
+                while (_openStreams.TryTake(out _))
+                {
+                    // Empty the bag
+                }
             }
 
             // Then dispose the storage
