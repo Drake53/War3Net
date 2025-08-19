@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.IO;
 
 using War3Net.IO.Casc.Structures;
@@ -60,8 +61,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="value">The value to write.</param>
         public static void WriteUInt16BE(this BinaryWriter writer, ushort value)
         {
-            var bytes = BitConverter.GetBytes(value);
-            Array.Reverse(bytes);
+            Span<byte> bytes = stackalloc byte[2];
+            BinaryPrimitives.WriteUInt16BigEndian(bytes, value);
             writer.Write(bytes);
         }
 
@@ -72,8 +73,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="value">The value to write.</param>
         public static void WriteUInt32BE(this BinaryWriter writer, uint value)
         {
-            var bytes = BitConverter.GetBytes(value);
-            Array.Reverse(bytes);
+            Span<byte> bytes = stackalloc byte[4];
+            BinaryPrimitives.WriteUInt32BigEndian(bytes, value);
             writer.Write(bytes);
         }
 
@@ -84,8 +85,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="value">The value to write.</param>
         public static void WriteUInt64BE(this BinaryWriter writer, ulong value)
         {
-            var bytes = BitConverter.GetBytes(value);
-            Array.Reverse(bytes);
+            Span<byte> bytes = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64BigEndian(bytes, value);
             writer.Write(bytes);
         }
 

@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 
@@ -136,9 +137,9 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The value.</returns>
         public static ushort ReadUInt16BE(this BinaryReader reader)
         {
-            var bytes = reader.ReadBytes(2);
-            Array.Reverse(bytes);
-            return BitConverter.ToUInt16(bytes, 0);
+            Span<byte> bytes = stackalloc byte[2];
+            reader.Read(bytes);
+            return BinaryPrimitives.ReadUInt16BigEndian(bytes);
         }
 
         /// <summary>
@@ -148,9 +149,9 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The value.</returns>
         public static uint ReadUInt32BE(this BinaryReader reader)
         {
-            var bytes = reader.ReadBytes(4);
-            Array.Reverse(bytes);
-            return BitConverter.ToUInt32(bytes, 0);
+            Span<byte> bytes = stackalloc byte[4];
+            reader.Read(bytes);
+            return BinaryPrimitives.ReadUInt32BigEndian(bytes);
         }
 
         /// <summary>
@@ -160,9 +161,9 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The value.</returns>
         public static ulong ReadUInt64BE(this BinaryReader reader)
         {
-            var bytes = reader.ReadBytes(8);
-            Array.Reverse(bytes);
-            return BitConverter.ToUInt64(bytes, 0);
+            Span<byte> bytes = stackalloc byte[8];
+            reader.Read(bytes);
+            return BinaryPrimitives.ReadUInt64BigEndian(bytes);
         }
 
         /// <summary>
