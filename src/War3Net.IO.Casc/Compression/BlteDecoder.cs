@@ -16,6 +16,47 @@ namespace War3Net.IO.Casc.Compression
     /// <summary>
     /// Provides BLTE decompression functionality.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// BLTE (Block Table Encoding) is the compression and encoding format used by TACT for storing
+    /// file data efficiently. All files stored in CASC archives and on the CDN are BLTE-encoded.
+    /// This decoder is used by <see cref="Storage.OnlineCascStorage"/> to decompress data retrieved
+    /// from archives located through <see cref="Index.IndexFile"/> entries.
+    /// </para>
+    /// <para>
+    /// BLTE structure overview:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>Signature: 4 bytes "BLTE" magic identifier</description></item>
+    /// <item><description>Header size: 4 bytes (big-endian) indicating the size of the chunk table</description></item>
+    /// <item><description>Chunk table (if header size > 0): Contains information about each chunk</description></item>
+    /// <item><description>  - Flags: Compression info and checksums</description></item>
+    /// <item><description>  - Chunk count: Number of chunks in the file</description></item>
+    /// <item><description>  - Chunk entries: For each chunk, contains compressed size, decompressed size, and checksum</description></item>
+    /// <item><description>Data blocks: The actual compressed/encoded data chunks</description></item>
+    /// </list>
+    /// <para>
+    /// Compression types supported:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>'N': No compression (raw data)</description></item>
+    /// <item><description>'Z': zlib compression (deflate)</description></item>
+    /// <item><description>'F': Frame compression (recursive BLTE)</description></item>
+    /// <item><description>'E': Encrypted data (using Salsa20 or other encryption)</description></item>
+    /// <item><description>'L': LZMA compression (not yet implemented)</description></item>
+    /// <item><description>'4': LZ4 compression (not yet implemented)</description></item>
+    /// <item><description>'S': Zstandard compression (not yet implemented)</description></item>
+    /// </list>
+    /// <para>
+    /// For chunked BLTE files, the <see cref="Structures.EKey"/> (encoding hash) covers only the BLTE headers
+    /// including the chunk table, as each chunk's content is individually hashed. For chunkless files,
+    /// the <see cref="Structures.EKey"/> covers the entire encoded file.
+    /// </para>
+    /// <para>
+    /// The encoding specification (ESpec) referenced in the <see cref="Encoding.EncodingFile"/> describes
+    /// the exact encoding parameters used for each file, allowing proper decoding.
+    /// </para>
+    /// </remarks>
     public static class BlteDecoder
     {
         /// <summary>
@@ -28,6 +69,12 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Gets or sets the maximum recursion depth for nested BLTE frames.
         /// </summary>
+        /// <value>The maximum allowed recursion depth, between 1 and 100.</value>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 1 or greater than 100.</exception>
+        /// <remarks>
+        /// This property protects against malformed or malicious BLTE data that could cause infinite recursion
+        /// through nested 'F' (Frame) compression types. The default value is <see cref="DefaultMaxRecursionDepth"/>.
+        /// </remarks>
         public static int MaxRecursionDepth
         {
             get => _maxRecursionDepth;
@@ -50,8 +97,18 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Decodes BLTE-encoded data.
         /// </summary>
-        /// <param name="data">The BLTE-encoded data.</param>
-        /// <returns>The decoded data.</returns>
+        /// <param name="data">The BLTE-encoded byte array retrieved from archives or CDN.</param>
+        /// <returns>The decoded byte array containing the original file content.</returns>
+        /// <exception cref="CascException">Thrown when decoding fails due to invalid format, unsupported compression, or recursion limits.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is the primary method used by <see cref="Storage.OnlineCascStorage"/> to decode files
+        /// after retrieving them from archive locations found in <see cref="Index.IndexFile"/>s.
+        /// </para>
+        /// <para>
+        /// The method automatically handles all supported compression types and nested BLTE frames.
+        /// </para>
+        /// </remarks>
         public static byte[] Decode(byte[] data)
         {
             return DecodeWithDepth(data, 0);
@@ -73,8 +130,13 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Decodes BLTE-encoded data from a stream.
         /// </summary>
-        /// <param name="inputStream">The input stream containing BLTE data.</param>
-        /// <param name="outputStream">The output stream for decoded data.</param>
+        /// <param name="inputStream">The input stream containing BLTE-encoded data.</param>
+        /// <param name="outputStream">The output stream where decoded data will be written.</param>
+        /// <exception cref="CascException">Thrown when decoding fails due to invalid format, unsupported compression, or recursion limits.</exception>
+        /// <remarks>
+        /// This streaming version is useful for processing large files without loading them entirely into memory.
+        /// The method automatically handles all supported compression types and nested BLTE frames.
+        /// </remarks>
         public static void Decode(Stream inputStream, Stream outputStream)
         {
             DecodeWithDepth(inputStream, outputStream, 0);
@@ -206,8 +268,13 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Decodes a single BLTE frame.
         /// </summary>
-        /// <param name="frame">The frame to decode.</param>
-        /// <returns>The decoded data.</returns>
+        /// <param name="frame">The <see cref="BlteFrame"/> containing encoded data and metadata.</param>
+        /// <returns>The decoded byte array for the frame.</returns>
+        /// <exception cref="CascException">Thrown when frame decoding fails due to unsupported compression or invalid data.</exception>
+        /// <remarks>
+        /// This method is used internally to process individual chunks within a multi-frame BLTE file.
+        /// Each frame can use a different compression method as specified by its compression type byte.
+        /// </remarks>
         public static byte[] DecodeFrame(BlteFrame frame)
         {
             return DecodeFrameWithDepth(frame, 0);
@@ -442,10 +509,14 @@ namespace War3Net.IO.Casc.Compression
         }
 
         /// <summary>
-        /// Checks if data is BLTE-encoded.
+        /// Checks if data is BLTE-encoded by examining the signature.
         /// </summary>
-        /// <param name="data">The data to check.</param>
-        /// <returns>true if the data is BLTE-encoded; otherwise, false.</returns>
+        /// <param name="data">The byte array to check for BLTE signature.</param>
+        /// <returns><see langword="true"/> if the data starts with the BLTE signature; otherwise, <see langword="false"/>.</returns>
+        /// <remarks>
+        /// This method checks for the 4-byte "BLTE" magic signature at the beginning of the data.
+        /// Used by <see cref="Storage.OnlineCascStorage"/> to determine if downloaded data requires BLTE decoding.
+        /// </remarks>
         public static bool IsBlte(byte[] data)
         {
             if (data == null || data.Length < 8)
@@ -458,10 +529,20 @@ namespace War3Net.IO.Casc.Compression
         }
 
         /// <summary>
-        /// Checks if a stream contains BLTE-encoded data.
+        /// Checks if a stream contains BLTE-encoded data by examining the signature.
         /// </summary>
-        /// <param name="stream">The stream to check.</param>
-        /// <returns>true if the stream contains BLTE-encoded data; otherwise, false.</returns>
+        /// <param name="stream">The stream to check for BLTE signature at the current position.</param>
+        /// <returns><see langword="true"/> if the stream starts with the BLTE signature; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the stream is not seekable and signature checking would consume data.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method checks for the 4-byte "BLTE" magic signature at the current stream position.
+        /// For seekable streams, the position is restored after checking.
+        /// </para>
+        /// <para>
+        /// Used by <see cref="Storage.OnlineCascStorage"/> to determine if streamed data requires BLTE decoding.
+        /// </para>
+        /// </remarks>
         public static bool IsBlte(Stream stream)
         {
             if (stream == null || stream.Length < 8)

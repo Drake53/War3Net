@@ -156,44 +156,6 @@ namespace War3Net.IO.Casc.Utilities
         }
 
         /// <summary>
-        /// Converts a byte array to a hex string.
-        /// </summary>
-        /// <param name="bytes">The bytes to convert.</param>
-        /// <returns>The hex string.</returns>
-        public static string ToHexString(byte[] bytes)
-        {
-            return BitConverter.ToString(bytes).Replace("-", string.Empty, StringComparison.Ordinal);
-        }
-
-        /// <summary>
-        /// Converts a hex string to a byte array.
-        /// </summary>
-        /// <param name="hex">The hex string.</param>
-        /// <returns>The byte array.</returns>
-        public static byte[] FromHexString(string hex)
-        {
-            if (string.IsNullOrEmpty(hex))
-            {
-                return Array.Empty<byte>();
-            }
-
-            hex = hex.Replace("-", string.Empty, StringComparison.Ordinal).Replace(" ", string.Empty, StringComparison.Ordinal);
-
-            if (hex.Length % 2 != 0)
-            {
-                throw new ArgumentException("Hex string must have an even number of characters.", nameof(hex));
-            }
-
-            var bytes = new byte[hex.Length / 2];
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
-            }
-
-            return bytes;
-        }
-
-        /// <summary>
         /// Verifies an MD5 hash.
         /// </summary>
         /// <param name="data">The data to verify.</param>

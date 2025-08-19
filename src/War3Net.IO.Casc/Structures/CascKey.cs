@@ -15,6 +15,28 @@ namespace War3Net.IO.Casc.Structures
     /// <summary>
     /// Represents a CASC content key (CKey).
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// In the TACT system, a Content Hash/CKey is the MD5 hash of the entire file in its uncompressed state,
+    /// representing the purest form of the data. This is distinct from the <see cref="EKey"/> which represents
+    /// the potentially encoded file. A single <see cref="CascKey"/> can map to multiple <see cref="EKey"/> instances
+    /// if the file has multiple encoded representations (e.g., encrypted and unencrypted versions).
+    /// </para>
+    /// <para>
+    /// CKeys are used throughout the CASC system to uniquely identify file content and are typically 16 bytes
+    /// (MD5 hash size). They serve as the primary identifier for file data before any encoding or compression
+    /// is applied. The <see cref="Encoding.EncodingFile"/> uses CKeys to look up corresponding <see cref="EKey"/>s
+    /// for content retrieval.
+    /// </para>
+    /// <para>
+    /// Content keys are referenced in:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description><see cref="Cdn.BuildConfig"/> for root file and encoding file identification</description></item>
+    /// <item><description><see cref="Encoding.EncodingFile"/> for CKey to <see cref="EKey"/> mappings</description></item>
+    /// <item><description><see cref="Root.TvfsRootHandler"/> for mapping file paths to content hashes</description></item>
+    /// </list>
+    /// </remarks>
     public readonly struct CascKey : IEquatable<CascKey>
     {
         private readonly byte[] _key;
@@ -22,7 +44,9 @@ namespace War3Net.IO.Casc.Structures
         /// <summary>
         /// Initializes a new instance of the <see cref="CascKey"/> struct.
         /// </summary>
-        /// <param name="key">The key bytes.</param>
+        /// <param name="key">The key bytes representing the MD5 hash of the uncompressed file content.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="key"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="key"/> is not exactly 16 bytes in length.</exception>
         public CascKey(byte[] key)
         {
             if (key == null)
@@ -42,7 +66,8 @@ namespace War3Net.IO.Casc.Structures
         /// <summary>
         /// Initializes a new instance of the <see cref="CascKey"/> struct.
         /// </summary>
-        /// <param name="key">The key bytes.</param>
+        /// <param name="key">The key bytes representing the MD5 hash of the uncompressed file content.</param>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="key"/> is not exactly 16 bytes in length.</exception>
         public CascKey(ReadOnlySpan<byte> key)
         {
             if (key.Length != CascConstants.CKeySize)
@@ -55,25 +80,34 @@ namespace War3Net.IO.Casc.Structures
         }
 
         /// <summary>
-        /// Gets an empty content key.
+        /// Gets an empty content key representing no content.
         /// </summary>
+        /// <value>A <see cref="CascKey"/> instance with all bytes set to zero.</value>
         public static CascKey Empty { get; } = new CascKey(new byte[CascConstants.CKeySize]);
 
         /// <summary>
-        /// Gets the key bytes.
+        /// Gets the key bytes as a read-only span.
         /// </summary>
+        /// <value>A read-only span containing the 16-byte MD5 hash, or empty if the key is not initialized.</value>
         public ReadOnlySpan<byte> Value => _key ?? ReadOnlySpan<byte>.Empty;
 
         /// <summary>
-        /// Gets a value indicating whether this key is empty.
+        /// Gets a value indicating whether this key is empty (all bytes are zero).
         /// </summary>
+        /// <value><see langword="true"/> if the key is empty or not initialized; otherwise, <see langword="false"/>.</value>
         public bool IsEmpty => _key == null || _key.All(b => b == 0);
 
         /// <summary>
-        /// Parses a content key from a hex string.
+        /// Parses a content key from a hex string representation.
         /// </summary>
-        /// <param name="hex">The hex string.</param>
-        /// <returns>The parsed content key.</returns>
+        /// <param name="hex">The hex string representing a 32-character (16-byte) MD5 hash.</param>
+        /// <returns>The parsed <see cref="CascKey"/> instance.</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="hex"/> is <see langword="null"/>, empty, or has invalid length.</exception>
+        /// <exception cref="FormatException">Thrown when <paramref name="hex"/> contains invalid hexadecimal characters.</exception>
+        /// <remarks>
+        /// The method accepts hex strings with or without separators (hyphens or spaces).
+        /// The resulting key can be used to look up files in the <see cref="Encoding.EncodingFile"/>.
+        /// </remarks>
         public static CascKey Parse(string hex)
         {
             if (string.IsNullOrEmpty(hex))
@@ -95,11 +129,15 @@ namespace War3Net.IO.Casc.Structures
         }
 
         /// <summary>
-        /// Attempts to parse a content key from a hex string.
+        /// Attempts to parse a content key from a hex string representation.
         /// </summary>
-        /// <param name="hex">The hex string.</param>
-        /// <param name="key">The parsed content key.</param>
-        /// <returns>true if parsing succeeded; otherwise, false.</returns>
+        /// <param name="hex">The hex string representing a 32-character (16-byte) MD5 hash.</param>
+        /// <param name="key">When this method returns, contains the parsed <see cref="CascKey"/> if parsing succeeded, or <see cref="Empty"/> if parsing failed.</param>
+        /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
+        /// <remarks>
+        /// This method provides a safe way to parse hex strings without throwing exceptions.
+        /// The method accepts hex strings with or without separators (hyphens or spaces).
+        /// </remarks>
         public static bool TryParse(string hex, [NotNullWhen(true)] out CascKey key)
         {
             try
@@ -156,13 +194,17 @@ namespace War3Net.IO.Casc.Structures
                 return string.Empty;
             }
 
-            return BitConverter.ToString(_key).Replace("-", string.Empty, StringComparison.Ordinal);
+            return Convert.ToHexString(_key);
         }
 
         /// <summary>
         /// Converts the content key to a byte array.
         /// </summary>
-        /// <returns>The key bytes.</returns>
+        /// <returns>A new byte array containing a copy of the 16-byte MD5 hash, or an empty array if the key is not initialized.</returns>
+        /// <remarks>
+        /// This method creates a defensive copy of the internal key data. The returned array
+        /// can be safely used for lookups in <see cref="Encoding.EncodingFile"/> or other CASC operations.
+        /// </remarks>
         public byte[] ToArray()
         {
             if (_key == null)

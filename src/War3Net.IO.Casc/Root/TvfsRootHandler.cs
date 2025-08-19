@@ -16,11 +16,56 @@ namespace War3Net.IO.Casc.Root
     /// <summary>
     /// Handles TVFS (Tree Virtual File System) root files used by Warcraft III.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// TVFS is Warcraft III's implementation of the root file system in TACT. Unlike World of Warcraft's
+    /// MFST (manifest) format, TVFS uses a more structured approach with separate tables for different
+    /// data types. This handler is used by <see cref="Storage.OnlineCascStorage"/> to resolve file paths
+    /// to <see cref="CascKey"/>s for lookup in the <see cref="Encoding.EncodingFile"/>.
+    /// </para>
+    /// <para>
+    /// TVFS file structure:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>Header: Contains signature "TVFS", version info, and offsets to various tables</description></item>
+    /// <item><description>Path table: Contains null-terminated strings of file paths</description></item>
+    /// <item><description>VFS table: Maps path indices to content and encoding key indices</description></item>
+    /// <item><description>CKey table: Contains <see cref="CascKey"/>s (content hashes) for files</description></item>
+    /// <item><description>EKey table: Contains <see cref="EKey"/>s (encoding hashes) for files</description></item>
+    /// <item><description>Patch EKey table: Contains <see cref="EKey"/>s for patch files</description></item>
+    /// <item><description>Directory manifest: Optional directory structure information</description></item>
+    /// </list>
+    /// <para>
+    /// Each VFS entry links a file path to its corresponding <see cref="CascKey"/> and <see cref="EKey"/>,
+    /// establishing the complete mapping from filename → <see cref="CascKey"/> → <see cref="EKey"/>
+    /// needed to retrieve files from the CASC storage through <see cref="Index.IndexFile"/>s.
+    /// </para>
+    /// <para>
+    /// TVFS is referenced in the <see cref="Cdn.BuildConfig"/> as "vfs-root" and is a key file that's typically
+    /// stored as a loose file on the CDN for quick access. It's essential for translating human-readable
+    /// file paths to the hashes needed to retrieve actual file data through <see cref="Compression.BlteDecoder"/>.
+    /// </para>
+    /// </remarks>
     public class TvfsRootHandler : RootHandlerBase
     {
         private const uint TvfsSignature = 0x53465654; // 'TVFS' - bytes: 54 56 46 53 in little-endian
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Parses the TVFS root file from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing TVFS root file data.</param>
+        /// <exception cref="InvalidDataException">Thrown when the TVFS signature is invalid.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method reads the entire TVFS structure including all tables and creates <see cref="RootEntry"/>
+        /// instances that map file paths to their <see cref="CascKey"/>s and <see cref="EKey"/>s.
+        /// </para>
+        /// <para>
+        /// The parsed entries are used by <see cref="Storage.OnlineCascStorage"/> to resolve file names
+        /// to content keys, which are then looked up in the <see cref="Encoding.EncodingFile"/> to find
+        /// the corresponding <see cref="EKey"/>s for retrieval from <see cref="Index.IndexFile"/>s.
+        /// </para>
+        /// </remarks>
         public override void Parse(Stream stream)
         {
             Clear();

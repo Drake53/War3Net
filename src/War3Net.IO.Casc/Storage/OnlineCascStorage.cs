@@ -17,12 +17,57 @@ using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
 using War3Net.IO.Casc.Progress;
+using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Storage
 {
     /// <summary>
     /// Online CASC storage implementation.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="OnlineCascStorage"/> provides access to CASC data directly from Blizzard's CDNs without requiring
+    /// a full local installation. This implementation follows the TACT (Trusted Application Content Transfer)
+    /// protocol for retrieving game data.
+    /// </para>
+    /// <para>
+    /// The online storage workflow:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>Retrieves version information from patch servers (via HTTP or Ribbit protocol)</description></item>
+    /// <item><description>Downloads CDN configuration to get available CDN hosts</description></item>
+    /// <item><description>Fetches <see cref="Cdn.BuildConfig"/> and <see cref="Cdn.CdnConfig"/> using hashes from version info</description></item>
+    /// <item><description>Downloads the <see cref="Encoding.EncodingFile"/> to establish <see cref="Structures.CascKey"/> → <see cref="Structures.EKey"/> mappings</description></item>
+    /// <item><description>Retrieves the root file (<see cref="Root.TvfsRootHandler"/> for Warcraft III, MFST for WoW) for filename → <see cref="Structures.CascKey"/> mappings</description></item>
+    /// <item><description>Downloads <see cref="Index.IndexFile"/>s for <see cref="Structures.EKey"/> to archive location mappings</description></item>
+    /// <item><description>Downloads install and download manifests for file metadata</description></item>
+    /// </list>
+    /// <para>
+    /// Files are retrieved on-demand from CDN using the URL format:
+    /// http://(cdnHost)/(cdnPath)/(pathType)/(FirstTwoHex)/(SecondTwoHex)/(FullHash)
+    /// </para>
+    /// <para>
+    /// Where pathType is:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>config: Configuration files (<see cref="Cdn.BuildConfig"/>, <see cref="Cdn.CdnConfig"/>, patch configs)</description></item>
+    /// <item><description>data: Archives, <see cref="Index.IndexFile"/>s, and standalone files (<see cref="Compression.BlteDecoder"/>-encoded)</description></item>
+    /// <item><description>patch: Patch manifests and patch files</description></item>
+    /// </list>
+    /// <para>
+    /// The implementation handles:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>CDN failover (trying different CDNs if one fails)</description></item>
+    /// <item><description>Local caching of downloaded files to reduce bandwidth</description></item>
+    /// <item><description>Rate limiting and HTTP 429 responses from CDNs</description></item>
+    /// <item><description>Armadillo encryption for protected content (using .ak key files)</description></item>
+    /// </list>
+    /// <para>
+    /// Supported products include Warcraft III (w3/w3t), World of Warcraft (wow/wowt/wow_classic),
+    /// and other Blizzard games that use the CASC/TACT system.
+    /// </para>
+    /// </remarks>
     public class OnlineCascStorage : CascStorage
     {
         private const int TotalProgressSteps = 6;
@@ -33,9 +78,13 @@ namespace War3Net.IO.Casc.Storage
         /// Initializes a new instance of the <see cref="OnlineCascStorage"/> class.
         /// </summary>
         /// <param name="product">The product code (e.g., "w3", "wow", "d3").</param>
-        /// <param name="region">The region (e.g., "us", "eu", "kr", "cn").</param>
-        /// <param name="localCachePath">The local cache path.</param>
-        /// <param name="localeFlags">The locale flags.</param>
+        /// <param name="region">The region code (e.g., "us", "eu", "kr", "cn").</param>
+        /// <param name="localCachePath">The local cache path for storing downloaded files.</param>
+        /// <param name="localeFlags">The locale flags for filtering content.</param>
+        /// <remarks>
+        /// This constructor is private and used internally by the static factory methods.
+        /// Use <see cref="OpenStorageAsync"/> or <see cref="OpenWar3Async"/> to create instances.
+        /// </remarks>
         private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags)
             : base(localCachePath, localeFlags)
         {
@@ -44,29 +93,55 @@ namespace War3Net.IO.Casc.Storage
         }
 
         /// <summary>
-        /// Gets the product code.
+        /// Gets the product code for this storage instance.
         /// </summary>
+        /// <value>The product identifier (e.g., "w3" for Warcraft III, "wow" for World of Warcraft).</value>
         public new string Product { get; }
 
         /// <summary>
-        /// Gets the region.
+        /// Gets the region code for this storage instance.
         /// </summary>
+        /// <value>The region identifier (e.g., "us", "eu", "kr", "cn").</value>
         public string Region { get; }
 
         /// <summary>
-        /// Gets the CDN client.
+        /// Gets the CDN client used for downloading content.
         /// </summary>
+        /// <value>The <see cref="CdnClient"/> instance, or <see langword="null"/> if not initialized.</value>
+        /// <remarks>
+        /// The CDN client is configured with CDN hosts from the <see cref="Cdn.CdnConfig"/> and handles
+        /// downloading of <see cref="Compression.BlteDecoder"/>-encoded files, <see cref="Index.IndexFile"/>s,
+        /// and configuration files.
+        /// </remarks>
         public CdnClient? CdnClient => _cdnClient;
 
         /// <summary>
-        /// Opens an online CASC storage.
+        /// Opens an online CASC storage for the specified product and region.
         /// </summary>
-        /// <param name="product">The product code.</param>
-        /// <param name="region">The region.</param>
-        /// <param name="localCachePath">The local cache path.</param>
-        /// <param name="localeFlags">The locale flags.</param>
-        /// <param name="progressReporter">Optional progress reporter.</param>
-        /// <returns>The opened storage.</returns>
+        /// <param name="product">The product code (e.g., "w3", "wow", "d3").</param>
+        /// <param name="region">The region code (e.g., "us", "eu", "kr", "cn").</param>
+        /// <param name="localCachePath">The local cache path for storing downloaded files, or <see langword="null"/> to use default temp location.</param>
+        /// <param name="localeFlags">The locale flags for content filtering.</param>
+        /// <param name="progressReporter">Optional progress reporter for tracking initialization steps.</param>
+        /// <returns>A fully initialized <see cref="OnlineCascStorage"/> instance.</returns>
+        /// <exception cref="ArgumentException">Thrown when product or region contains invalid characters or path traversal patterns.</exception>
+        /// <exception cref="CascException">Thrown when version or CDN configuration cannot be retrieved, or required files cannot be downloaded.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method performs the complete TACT initialization workflow:
+        /// </para>
+        /// <list type="number">
+        /// <item><description>Downloads version information from patch servers</description></item>
+        /// <item><description>Downloads CDN configuration</description></item>
+        /// <item><description>Downloads <see cref="Cdn.BuildConfig"/> and <see cref="Cdn.CdnConfig"/></description></item>
+        /// <item><description>Downloads <see cref="Index.IndexFile"/>s for archive lookups</description></item>
+        /// <item><description>Downloads <see cref="Encoding.EncodingFile"/> for key mappings</description></item>
+        /// <item><description>Downloads root file (e.g., <see cref="Root.TvfsRootHandler"/> for Warcraft III)</description></item>
+        /// </list>
+        /// <para>
+        /// All downloaded files are cached locally to improve performance on subsequent access.
+        /// </para>
+        /// </remarks>
         public static async Task<OnlineCascStorage> OpenStorageAsync(
             string product,
             string region = "eu",
@@ -150,12 +225,21 @@ namespace War3Net.IO.Casc.Storage
         }
 
         /// <summary>
-        /// Opens Warcraft III online storage.
+        /// Opens Warcraft III online storage with simplified parameters.
         /// </summary>
-        /// <param name="region">The region.</param>
-        /// <param name="localCachePath">The local cache path.</param>
-        /// <param name="progressReporter">Optional progress reporter.</param>
-        /// <returns>The opened storage.</returns>
+        /// <param name="region">The region code (default: "eu").</param>
+        /// <param name="localCachePath">The local cache path for storing downloaded files, or <see langword="null"/> to use default temp location.</param>
+        /// <param name="progressReporter">Optional progress reporter for tracking initialization steps.</param>
+        /// <returns>A fully initialized <see cref="OnlineCascStorage"/> instance configured for Warcraft III.</returns>
+        /// <exception cref="ArgumentException">Thrown when region contains invalid characters or path traversal patterns.</exception>
+        /// <exception cref="CascException">Thrown when Warcraft III configuration cannot be retrieved or required files cannot be downloaded.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is a convenience method that calls <see cref="OpenStorageAsync"/> with product="w3"
+        /// and <see cref="CascLocaleFlags.All"/>. It initializes the complete Warcraft III CASC system
+        /// including <see cref="Root.TvfsRootHandler"/> for file path resolution.
+        /// </para>
+        /// </remarks>
         public static async Task<OnlineCascStorage> OpenWar3Async(
             string region = "eu",
             string? localCachePath = null,
@@ -165,8 +249,14 @@ namespace War3Net.IO.Casc.Storage
         }
 
         /// <summary>
-        /// Disposes the online storage.
+        /// Disposes the online storage and releases all resources.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method disposes the <see cref="CdnClient"/> and calls the base class disposal.
+        /// It's important to dispose the storage when finished to properly release HTTP client resources.
+        /// </para>
+        /// </remarks>
         public new void Dispose()
         {
             _cdnClient?.Dispose();
