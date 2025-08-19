@@ -260,7 +260,95 @@ var storage = CascStorage.OpenStorage(@"C:\Games\CustomGame\Data");
 // Set custom root handler if needed
 ```
 
-### 6. Direct Storage Access
+### 6. CDN Client Usage
+
+```csharp
+using War3Net.IO.Casc.Cdn;
+using System.Net.Http;
+
+// Method 1: Download from CDN using default servers
+var cdnClient = new CdnClient("eu", "tpr/war3");
+
+// Download a config file by hash
+var configHash = "1234567890abcdef1234567890abcdef";
+var configData = await cdnClient.DownloadConfigAsync(configHash);
+
+// Download a data file by hash
+var dataHash = "abcdef1234567890abcdef1234567890";
+var dataFile = await cdnClient.DownloadDataAsync(dataHash);
+
+// Download a patch file by hash
+var patchHash = "fedcba0987654321fedcba0987654321";
+var patchData = await cdnClient.DownloadPatchAsync(patchHash);
+
+// Method 2: Get CDN configuration from Blizzard servers
+using var httpClient = new HttpClient();
+
+// Download versions file to get config hashes
+var versionsUrl = "http://eu.patch.battle.net:1119/w3/versions";
+var versionsStream = await httpClient.GetStreamAsync(versionsUrl);
+var versions = VersionConfig.Parse(versionsStream);
+
+// Get version entry for region
+var euEntry = versions.GetEntry("eu");
+Console.WriteLine($"Build config: {euEntry.BuildConfig}");
+Console.WriteLine($"CDN config: {euEntry.CdnConfig}");
+Console.WriteLine($"Version: {euEntry.VersionsName}");
+
+// Download CDN servers configuration
+var cdnsUrl = "http://eu.patch.battle.net:1119/w3/cdns";
+var cdnsStream = await httpClient.GetStreamAsync(cdnsUrl);
+var cdns = CdnServersConfig.Parse(cdnsStream);
+
+// Get CDN entry for region
+var cdnEntry = cdns.GetEntry("eu");
+Console.WriteLine($"CDN Path: {cdnEntry.Path}");
+foreach (var host in cdnEntry.Hosts)
+{
+    Console.WriteLine($"CDN Host: {host}");
+}
+
+// Method 3: Create CDN client with specific servers
+var cdnHosts = new List<string>
+{
+    "https://level3.blizzard.com",
+    "https://blzddist1-a.akamaihd.net",
+    "http://level3.blizzard.com",  // HTTP fallback
+};
+
+using var customClient = new CdnClient(cdnHosts, "tpr/war3");
+
+// Download build configuration using hash from versions
+var buildConfigData = await customClient.DownloadConfigAsync(euEntry.BuildConfig);
+var buildConfig = System.Text.Encoding.UTF8.GetString(buildConfigData);
+
+// Download CDN configuration
+var cdnConfigData = await customClient.DownloadConfigAsync(euEntry.CdnConfig);
+var cdnConfig = System.Text.Encoding.UTF8.GetString(cdnConfigData);
+
+// Method 4: Online storage with CDN support
+using War3Net.IO.Casc.Storage;
+
+// Open online storage (downloads from CDN as needed)
+var onlineStorage = await OnlineCascStorage.OpenWar3Async(
+    region: "eu",
+    localCachePath: @"C:\CascCache",
+    progressReporter: new CascProgressReporter());
+
+// Files are downloaded from CDN on-demand
+using (var stream = onlineStorage.OpenFile("war3.w3mod\\units\\human\\footman\\footman.mdx"))
+{
+    // File is downloaded from CDN if not cached locally
+}
+
+// CDN client automatically retries with:
+// - Multiple CDN servers (failover)
+// - Exponential backoff with jitter
+// - HTTPS with HTTP fallback
+// - Configurable timeouts
+```
+
+### 7. Direct Storage Access
 
 ```csharp
 using War3Net.IO.Casc.Storage;
@@ -302,7 +390,7 @@ storage.AddEncryptionKey(0x1234567890ABCDEF, encryptionKey);
 storage.ImportKeysFromString("keyname=keyvalue\nkeyname2=keyvalue2");
 ```
 
-### 7. BLTE Decompression
+### 8. BLTE Decompression
 
 ```csharp
 using War3Net.IO.Casc.Compression;
@@ -334,7 +422,7 @@ BlteDecoder.MaxRecursionDepth = 30; // Default is 20
 // - Recursion depth protection against malformed data
 ```
 
-### 8. Index File Management
+### 9. Index File Management
 
 ```csharp
 using War3Net.IO.Casc.Index;
@@ -353,7 +441,7 @@ if (indexManager.TryFindEntry(eKey, out var entry))
 }
 ```
 
-### 9. Encoding File Access
+### 10. Encoding File Access
 
 ```csharp
 using War3Net.IO.Casc.Encoding;
@@ -480,7 +568,7 @@ The library is organized into the following namespaces:
 ## Limitations
 
 - **Read-Only** - The library currently only supports reading CASC archives, not creating or modifying them
-- **Local Storage** - Online/CDN storage support is not yet fully implemented (CDN client structure exists but needs completion)
+- **CDN Support** - Basic CDN client is implemented for downloading files, but full online storage integration is still in progress
 - **Root Handlers** - Only basic root handler is implemented; game-specific handlers may be needed
 - **Compression Formats** - Currently supports ZLib compression; LZMA, LZ4, and Zstandard decompression are not yet implemented but have placeholders
 
