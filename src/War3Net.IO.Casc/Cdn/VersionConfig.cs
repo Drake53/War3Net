@@ -50,7 +50,7 @@ namespace War3Net.IO.Casc.Cdn
 
             while ((line = reader.ReadLine()) != null)
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {
                     continue;
                 }
