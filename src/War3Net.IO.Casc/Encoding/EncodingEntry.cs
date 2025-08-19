@@ -62,7 +62,7 @@ namespace War3Net.IO.Casc.Encoding
             var entry = new EncodingEntry();
 
             // Read EKey count
-            var ekeyCount = reader.ReadUInt16BE();
+            var ekeyCount = reader.ReadByte();
 
             // Read content size (40 bits, big-endian)
             var sizeBytes = reader.ReadBytes(5);
@@ -95,7 +95,7 @@ namespace War3Net.IO.Casc.Encoding
         public void WriteTo(BinaryWriter writer, EncodingHeader header)
         {
             // Write EKey count
-            writer.WriteUInt16BE((ushort)EKeys.Count);
+            writer.Write((byte)EKeys.Count);
 
             // Write content size (40 bits, big-endian)
             ulong size = ContentSize;

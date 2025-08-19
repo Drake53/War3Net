@@ -103,6 +103,7 @@ namespace War3Net.IO.Casc.Encoding
             }
 
             // Read CKey entries
+            var totalEntriesRead = 0;
             for (uint pageIndex = 0; pageIndex < encoding.Header.CKeyPageCount; pageIndex++)
             {
                 // Validate we have enough data remaining
@@ -115,11 +116,12 @@ namespace War3Net.IO.Casc.Encoding
                 using var pageStream = new MemoryStream(pageData);
                 using var pageReader = new BinaryReader(pageStream);
 
+                var pageEntriesRead = 0;
                 while (pageStream.Position < pageStream.Length)
                 {
                     // Check if we have enough bytes for a minimal entry
-                    // Minimal size: 2 bytes keyCount + 1 byte size + CKeyLength + at least 1 EKey
-                    var minEntrySize = 2 + 1 + encoding.Header.CKeyLength + encoding.Header.EKeyLength;
+                    // Minimal size: 1 byte keyCount + 5 bytes size + CKeyLength + at least 1 EKey
+                    var minEntrySize = 1 + 5 + encoding.Header.CKeyLength + encoding.Header.EKeyLength;
                     if (pageStream.Length - pageStream.Position < minEntrySize)
                     {
                         break; // Not enough data for a valid entry
@@ -131,14 +133,14 @@ namespace War3Net.IO.Casc.Encoding
 
                     try
                     {
-                        // Peek at the key count (first 2 bytes)
-                        var keyCountBytes = new byte[2];
-                        if (pageReader.Read(keyCountBytes, 0, 2) != 2)
+                        // Peek at the key count (first byte)
+                        var keyCountByte = pageReader.ReadByte();
+                        if (keyCountByte == -1)
                         {
-                            break; // Can't read key count
+                            break; // End of stream
                         }
 
-                        var keyCount = BitConverter.ToUInt16(keyCountBytes, 0);
+                        var keyCount = (byte)keyCountByte;
 
                         // Validate key count - CascLib allows up to 256 keys per entry
                         // Zero key count indicates padding
@@ -171,6 +173,7 @@ namespace War3Net.IO.Casc.Encoding
                         }
 
                         encoding.AddEntry(entry);
+                        pageEntriesRead++;
                     }
                     catch (EndOfStreamException)
                     {
@@ -193,7 +196,12 @@ namespace War3Net.IO.Casc.Encoding
                         }
                     }
                 }
+
+                System.Diagnostics.Trace.TraceInformation($"Page {pageIndex}: Read {pageEntriesRead} entries");
+                totalEntriesRead += pageEntriesRead;
             }
+
+            System.Diagnostics.Trace.TraceInformation($"Total entries read from encoding file: {totalEntriesRead}");
 
             // Skip EKey pages (not typically used for lookups)
             reader.Skip((int)(encoding.Header.EKeyPageCount * EncodingPage.Size));
