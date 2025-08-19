@@ -146,7 +146,7 @@ namespace War3Net.IO.Casc.Tests
                 Assert.IsNotNull(cdnConfigData);
                 Assert.IsTrue(cdnConfigData.Length > 0, "Downloaded CDN config should have content");
             }
-            catch (Exception ex) when (ex is System.Net.Http.HttpRequestException || ex is CascException)
+            catch (System.Net.Http.HttpRequestException)
             {
                 Assert.Inconclusive("Test requires internet connection to Blizzard CDN");
             }
@@ -185,7 +185,7 @@ namespace War3Net.IO.Casc.Tests
                     // Ignore cleanup errors
                 }
             }
-            catch (Exception ex) when (ex is System.Net.Http.HttpRequestException || ex is CascException)
+            catch (System.Net.Http.HttpRequestException)
             {
                 Assert.Inconclusive("Test requires internet connection to Blizzard CDN");
             }
@@ -220,7 +220,7 @@ namespace War3Net.IO.Casc.Tests
                     // Ignore cleanup errors
                 }
             }
-            catch (Exception ex) when (ex is System.Net.Http.HttpRequestException || ex is CascException)
+            catch (System.Net.Http.HttpRequestException)
             {
                 Assert.Inconclusive("Test requires internet connection to Blizzard CDN");
             }
