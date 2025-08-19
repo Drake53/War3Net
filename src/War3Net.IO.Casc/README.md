@@ -54,8 +54,7 @@ using War3Net.IO.Casc.Enums;
 // Open with specific locale
 var storage = CascStorage.OpenStorage(
     @"C:\Games\World of Warcraft\Data",
-    CascLocaleFlags.EnUS | CascLocaleFlags.EnGB
-);
+    CascLocaleFlags.EnUS | CascLocaleFlags.EnGB);
 
 // Access storage features
 Console.WriteLine($"Features: {storage.Features}");
@@ -188,7 +187,7 @@ var args = new StorageOpenArgs
 {
     LocalPath = @"C:\Games\WoW\Data",
     ProgressReporter = progressReporter,
-    LocaleFlags = CascLocaleFlags.EnUS
+    LocaleFlags = CascLocaleFlags.EnUS,
 };
 
 // The reporter will receive progress updates during loading
@@ -248,7 +247,7 @@ public class CustomRootHandler : RootHandlerBase
             {
                 FileName = reader.ReadString(),
                 CKey = reader.ReadCKey(),
-                FileDataId = reader.ReadUInt32()
+                FileDataId = reader.ReadUInt32(),
             };
             
             AddEntry(entry);
