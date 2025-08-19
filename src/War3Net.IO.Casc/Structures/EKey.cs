@@ -75,7 +75,7 @@ namespace War3Net.IO.Casc.Structures
         /// Gets an empty encoded key.
         /// </summary>
         public static EKey Empty { get; } = CreateEmpty();
-        
+
         private static EKey CreateEmpty()
         {
             return default(EKey);

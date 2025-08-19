@@ -93,7 +93,7 @@ namespace War3Net.IO.Casc.Index
                 var entrySize = index.Header.EntryLength;
                 var pageSize = CascConstants.FileIndexPageSize;
                 var entriesPerPage = pageSize / entrySize;
-                
+
                 if (index.Header.EKeyCount > 0)
                 {
                     // Read specified number of entries
@@ -106,17 +106,17 @@ namespace War3Net.IO.Casc.Index
                             var nextPageStart = ((stream.Position / pageSize) + 1) * pageSize;
                             stream.Position = nextPageStart;
                         }
-                        
+
                         // Ensure we read exactly the expected number of bytes
                         var entryStartPos = stream.Position;
                         var entry = EKeyEntry.Parse(reader, index.Header);
                         var bytesRead = stream.Position - entryStartPos;
-                        
+
                         if (bytesRead != entrySize)
                         {
                             throw new CascParserException($"Expected to read {entrySize} bytes for entry, but read {bytesRead} bytes");
                         }
-                        
+
                         if (!entry.EKey.IsEmpty)
                         {
                             index.AddEntry(entry);
@@ -130,12 +130,12 @@ namespace War3Net.IO.Casc.Index
                 var entrySize = index.Header.EntryLength;
                 var pageSize = CascConstants.FileIndexPageSize;
                 var entriesPerPage = pageSize / entrySize;
-                
+
                 while (stream.Position < stream.Length)
                 {
                     var pageStart = stream.Position;
                     var pageIndex = pageStart / pageSize;
-                    
+
                     // Read entries for this page
                     for (int i = 0; i < entriesPerPage; i++)
                     {
@@ -145,34 +145,34 @@ namespace War3Net.IO.Casc.Index
                             // End of file reached
                             goto EndOfFile;
                         }
-                        
+
                         // Check if entry position exceeds page boundary (shouldn't happen in v2)
                         if (stream.Position >= pageStart + pageSize)
                         {
                             break;
                         }
-                        
+
                         // Ensure we read exactly the expected number of bytes
                         var entryStartPos = stream.Position;
                         var entry = EKeyEntry.Parse(reader, index.Header);
                         var bytesRead = stream.Position - entryStartPos;
-                        
+
                         if (bytesRead != entrySize)
                         {
                             throw new CascParserException($"Expected to read {entrySize} bytes for entry, but read {bytesRead} bytes");
                         }
-                        
+
                         // Check if entry is valid (not all zeros)
                         if (!entry.EKey.IsEmpty)
                         {
                             index.AddEntry(entry);
                         }
                     }
-                    
+
                     // Move to the next page
                     stream.Position = (pageIndex + 1) * pageSize;
                 }
-                
+
                 EndOfFile:;
             }
 

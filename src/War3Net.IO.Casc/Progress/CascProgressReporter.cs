@@ -38,7 +38,7 @@ namespace War3Net.IO.Casc.Progress
         {
             var args = new ProgressEventArgs(message, objectName, current, total);
             ProgressChanged?.Invoke(this, args);
-            
+
             if (args.Cancel)
             {
                 _cancelled = true;

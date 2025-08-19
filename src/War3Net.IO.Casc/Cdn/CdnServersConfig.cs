@@ -104,7 +104,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <returns>The CDN servers entry, or null if not found.</returns>
         public CdnServersEntry? GetEntry(string region)
         {
-            return Entries.FirstOrDefault(e => 
+            return Entries.FirstOrDefault(e =>
                 string.Equals(e.Region, region, StringComparison.OrdinalIgnoreCase));
         }
 

@@ -26,7 +26,7 @@ namespace War3Net.IO.Casc.Crypto
         {
             // Add known keys (these are publicly available)
             // Format: KeyName (64-bit) -> Key (16 bytes)
-            
+
             // Warcraft III Reforged keys
             AddKnownKey(0x6E4296823E7D561E, new byte[] { 0xC0, 0xBF, 0xA2, 0x94, 0x3A, 0xC3, 0xE9, 0x22, 0x86, 0xE4, 0x44, 0x3E, 0xE3, 0x56, 0x0D, 0x65 }); // 1.32.0.13369 Base content
             AddKnownKey(0xE04D60E31DDEBF63, new byte[] { 0x26, 0x3D, 0xB5, 0xC4, 0x02, 0xDA, 0x8D, 0x4D, 0x68, 0x63, 0x09, 0xCB, 0x2E, 0x32, 0x54, 0xD0 }); // 1.32.0.13445 Base content
@@ -120,12 +120,12 @@ namespace War3Net.IO.Casc.Crypto
             {
                 throw new ArgumentNullException(nameof(iv));
             }
-            
+
             if (iv.Length != 4)
             {
                 throw new ArgumentException($"CASC encryption IV must be exactly 4 bytes, got {iv.Length} bytes", nameof(iv));
             }
-            
+
             // Extend 4-byte IV to 8 bytes by padding with zeros (matching CascLib)
             var fullIv = new byte[8];
             Array.Copy(iv, 0, fullIv, 0, 4);
@@ -166,12 +166,12 @@ namespace War3Net.IO.Casc.Crypto
             {
                 throw new ArgumentNullException(nameof(iv));
             }
-            
+
             if (iv.Length != 4)
             {
                 throw new ArgumentException($"CASC encryption IV must be exactly 4 bytes, got {iv.Length} bytes", nameof(iv));
             }
-            
+
             // Extend 4-byte IV to 8 bytes by padding with zeros (matching CascLib)
             var fullIv = new byte[8];
             Array.Copy(iv, 0, fullIv, 0, 4);
@@ -321,7 +321,7 @@ namespace War3Net.IO.Casc.Crypto
                         {
                             var keyName = Convert.ToUInt64(parts[0], 16);
                             var keyHex = parts[1].Replace("-", string.Empty).Replace(" ", string.Empty);
-                            
+
                             if (keyHex.Length == 32) // 16 bytes * 2 hex chars
                             {
                                 var key = new byte[16];
@@ -358,7 +358,7 @@ namespace War3Net.IO.Casc.Crypto
         {
             using var sha256 = SHA256.Create();
             var hash = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
-            
+
             // Take first 16 bytes of SHA256 hash as key
             var key = new byte[16];
             Array.Copy(hash, key, 16);

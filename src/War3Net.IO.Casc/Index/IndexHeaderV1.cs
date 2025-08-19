@@ -118,7 +118,7 @@ namespace War3Net.IO.Casc.Index
         public static IndexHeaderV1 Parse(BinaryReader reader)
         {
             var startPos = reader.BaseStream.Position;
-            
+
             var header = new IndexHeaderV1
             {
                 IndexVersion = reader.ReadUInt16(),
@@ -151,7 +151,7 @@ namespace War3Net.IO.Casc.Index
                 reader.BaseStream.Position = startPos;
                 var headerBytes = reader.ReadBytes(HeaderSize - 4); // Read all but the hash field
                 reader.BaseStream.Position = currentPos;
-                
+
                 // Use Jenkins hash or appropriate algorithm
                 var calculatedHash = Utilities.HashHelper.ComputeJenkinsHash(headerBytes);
                 if (calculatedHash != header.HeaderHash)

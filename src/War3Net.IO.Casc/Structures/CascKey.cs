@@ -56,7 +56,7 @@ namespace War3Net.IO.Casc.Structures
 
         // Static empty instance to avoid allocations
         private static readonly byte[] EmptyKeyBytes = new byte[CascConstants.CKeySize];
-        
+
         /// <summary>
         /// Gets an empty content key.
         /// </summary>

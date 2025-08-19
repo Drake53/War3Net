@@ -23,9 +23,9 @@ namespace War3Net.IO.Casc.Utilities
         /// Default maximum length for C-style strings.
         /// </summary>
         public const int DefaultMaxStringLength = 0x100000; // 1MB - reasonable for game files
-        
+
         private static int _maxStringLength = DefaultMaxStringLength;
-        
+
         /// <summary>
         /// Gets or sets the maximum allowed length for C-style strings.
         /// </summary>
@@ -57,7 +57,7 @@ namespace War3Net.IO.Casc.Utilities
             const int ChunkSize = 128; // Read in reasonable chunks
             var buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(ChunkSize);
             var result = new List<byte>(256); // Pre-allocate reasonable capacity
-            
+
             try
             {
                 while (true)
@@ -65,7 +65,7 @@ namespace War3Net.IO.Casc.Utilities
                     // Try to peek ahead if stream supports it
                     var stream = reader.BaseStream;
                     var startPos = stream.Position;
-                    
+
                     // Read a chunk of data
                     var bytesRead = stream.Read(buffer, 0, ChunkSize);
                     if (bytesRead == 0)
@@ -73,10 +73,10 @@ namespace War3Net.IO.Casc.Utilities
                         // End of stream without null terminator
                         throw new InvalidOperationException("Unexpected end of stream while reading null-terminated string");
                     }
-                    
+
                     // Find null terminator in the chunk
                     int nullIndex = Array.IndexOf(buffer, (byte)0, 0, bytesRead);
-                    
+
                     if (nullIndex >= 0)
                     {
                         // Found null terminator
@@ -84,7 +84,7 @@ namespace War3Net.IO.Casc.Utilities
                         {
                             result.AddRange(new ArraySegment<byte>(buffer, 0, nullIndex));
                         }
-                        
+
                         // Position stream after the null byte
                         stream.Position = startPos + nullIndex + 1;
                         break;
@@ -93,7 +93,7 @@ namespace War3Net.IO.Casc.Utilities
                     {
                         // No null terminator in this chunk, add all bytes
                         result.AddRange(new ArraySegment<byte>(buffer, 0, bytesRead));
-                        
+
                         // Check for excessive length
                         if (result.Count > _maxStringLength)
                         {
@@ -101,7 +101,7 @@ namespace War3Net.IO.Casc.Utilities
                         }
                     }
                 }
-                
+
                 return result.Count > 0 ? System.Text.Encoding.UTF8.GetString(result.ToArray()) : string.Empty;
             }
             finally

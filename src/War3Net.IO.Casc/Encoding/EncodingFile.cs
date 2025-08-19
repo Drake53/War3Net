@@ -128,7 +128,7 @@ namespace War3Net.IO.Casc.Encoding
                     // Improved padding detection:
                     // Save position for potential rollback
                     var entryStartPos = pageStream.Position;
-                    
+
                     try
                     {
                         // Peek at the key count (first 2 bytes)
@@ -137,9 +137,9 @@ namespace War3Net.IO.Casc.Encoding
                         {
                             break; // Can't read key count
                         }
-                        
+
                         var keyCount = BitConverter.ToUInt16(keyCountBytes, 0);
-                        
+
                         // Validate key count - CascLib allows up to 256 keys per entry
                         // Zero key count indicates padding
                         if (keyCount == 0)
@@ -147,7 +147,7 @@ namespace War3Net.IO.Casc.Encoding
                             // Hit padding - stop processing this page
                             break;
                         }
-                        
+
                         // Sanity check: while technically up to 256 is allowed,
                         // in practice more than 100 keys is extremely rare and likely corrupt data
                         if (keyCount > 256)
@@ -156,12 +156,12 @@ namespace War3Net.IO.Casc.Encoding
                             pageStream.Position = entryStartPos;
                             break;
                         }
-                        
+
                         // Reset to read the full entry
                         pageStream.Position = entryStartPos;
-                        
+
                         var entry = EncodingEntry.Parse(pageReader, encoding.Header);
-                        
+
                         // Additional validation
                         if (entry.CKey.IsEmpty || entry.EKeys.Count == 0 || entry.EKeys.Count != keyCount)
                         {
@@ -169,7 +169,7 @@ namespace War3Net.IO.Casc.Encoding
                             pageStream.Position = entryStartPos;
                             break;
                         }
-                        
+
                         encoding.AddEntry(entry);
                     }
                     catch (EndOfStreamException)
@@ -181,11 +181,11 @@ namespace War3Net.IO.Casc.Encoding
                     {
                         // Log the error for debugging but continue trying to parse
                         System.Diagnostics.Trace.TraceWarning($"Failed to parse encoding entry at position {entryStartPos}: {ex.Message}");
-                        
+
                         // Try to recover by seeking to next potential entry
                         // This is a last-resort recovery attempt
                         pageStream.Position = entryStartPos + 1;
-                        
+
                         // If we're too close to the end, just stop
                         if (pageStream.Length - pageStream.Position < minEntrySize)
                         {

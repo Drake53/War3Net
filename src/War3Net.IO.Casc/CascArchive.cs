@@ -435,7 +435,7 @@ namespace War3Net.IO.Casc
                         ContentFlags = rootEntry.ContentFlags,
                         FileDataId = rootEntry.FileDataId,
                     };
-                    
+
                     _entries.TryAdd(entry.FileName, entry);
                 }
             }
@@ -451,7 +451,7 @@ namespace War3Net.IO.Casc
             }
 
             Stream stream;
-            
+
             // Use the storage to open the file
             if (!entry.CKey.IsEmpty)
             {

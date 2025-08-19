@@ -102,7 +102,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <returns>The version entry, or null if not found.</returns>
         public VersionEntry? GetEntry(string region)
         {
-            return Entries.FirstOrDefault(e => 
+            return Entries.FirstOrDefault(e =>
                 string.Equals(e.Region, region, StringComparison.OrdinalIgnoreCase));
         }
 

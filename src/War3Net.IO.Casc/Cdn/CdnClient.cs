@@ -85,7 +85,7 @@ namespace War3Net.IO.Casc.Cdn
         {
             // Use centralized path sanitization to prevent directory traversal attacks
             path = PathSanitizer.SanitizeCdnPath(path);
-            
+
             Exception? lastException = null;
             var triedHosts = new HashSet<int>();
             var random = new Random();
@@ -118,7 +118,7 @@ namespace War3Net.IO.Casc.Cdn
                             var exponentialDelay = baseDelayMs * (int)Math.Pow(2, retryCount - 1);
                             var jitter = random.Next(0, exponentialDelay / 4); // Add up to 25% jitter
                             var delay = Math.Min(exponentialDelay + jitter, maxDelayMs);
-                            
+
                             await Task.Delay(delay, cancellationToken);
                         }
 
@@ -131,14 +131,14 @@ namespace War3Net.IO.Casc.Cdn
                         if (response.IsSuccessStatusCode)
                         {
                             var data = await response.Content.ReadAsByteArrayAsync();
-                            
+
                             // Validate data is not empty
                             if (data == null || data.Length == 0)
                             {
                                 lastException = new CascException($"Downloaded file is empty: {path}");
                                 continue; // Retry
                             }
-                            
+
                             return data;
                         }
 
@@ -149,21 +149,21 @@ namespace War3Net.IO.Casc.Cdn
                                 lastException = new CascFileNotFoundException($"File not found on CDN: {path}");
                                 retryCount = maxRetries; // Skip remaining retries for this host
                                 break;
-                                
+
                             case 403: // Forbidden - likely auth issue, try next host
                                 lastException = new HttpRequestException($"Access forbidden: {response.ReasonPhrase}");
                                 retryCount = maxRetries; // Skip remaining retries for this host
                                 break;
-                                
+
                             case >= 500: // Server error - retry with this host
                                 lastException = new HttpRequestException($"Server error {response.StatusCode}: {response.ReasonPhrase}");
                                 break;
-                                
+
                             case 429: // Too many requests - back off more aggressively
                                 lastException = new HttpRequestException("Rate limited by CDN");
                                 await Task.Delay(Math.Min(baseDelayMs * (int)Math.Pow(3, retryCount), maxDelayMs), cancellationToken);
                                 break;
-                                
+
                             default: // Other errors - retry
                                 lastException = new HttpRequestException($"HTTP {response.StatusCode}: {response.ReasonPhrase}");
                                 break;
@@ -173,7 +173,7 @@ namespace War3Net.IO.Casc.Cdn
                     {
                         lastException = ex;
                         // Network error - retry with exponential backoff
-                        
+
                         // If HTTPS failed and we have more retries, consider the error type
                         if (isHttps && retryCount == maxRetries - 1)
                         {
@@ -313,7 +313,7 @@ namespace War3Net.IO.Casc.Cdn
                 "eu" => new List<string>
                 {
                     "https://level3.blizzard.com",
-                    "https://blzddist1-a.akamaihd.net", 
+                    "https://blzddist1-a.akamaihd.net",
                     "https://cdn.blizzard.com",
                     "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",

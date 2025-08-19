@@ -74,25 +74,25 @@ namespace War3Net.IO.Casc.Storage
         {
             // Validate and sanitize product and region to prevent path traversal
             ValidateProductAndRegion(product, region);
-            
+
             // Decode any URL-encoded sequences first
             product = HttpUtility.UrlDecode(product);
             region = HttpUtility.UrlDecode(region);
-            
+
             // Re-validate after decoding
             ValidateProductAndRegion(product, region);
-            
+
             // Additional checks for various path traversal patterns
-            var pathTraversalPatterns = new[] 
+            var pathTraversalPatterns = new[]
             {
-                "..", "../", "..\\", 
+                "..", "../", "..\\",
                 "%2e%2e", "%2e%2e%2f", "%2e%2e%5c",
                 "..%2f", "..%5c",
                 ".%2e", "%2e.",
                 ":", // Alternate data streams on Windows
                 "$", "~", // Shell expansion characters
             };
-            
+
             foreach (var pattern in pathTraversalPatterns)
             {
                 if (product.Contains(pattern, StringComparison.OrdinalIgnoreCase) ||
@@ -101,7 +101,7 @@ namespace War3Net.IO.Casc.Storage
                     throw new ArgumentException($"Invalid characters or patterns detected in product or region.");
                 }
             }
-            
+
             // Validate using regex for extra safety
             var safeNamePattern = @"^[a-zA-Z0-9_-]+$";
             if (!Regex.IsMatch(product, safeNamePattern) || !Regex.IsMatch(region, safeNamePattern))
@@ -110,13 +110,13 @@ namespace War3Net.IO.Casc.Storage
             }
 
             // Additional validation for known product/region combinations
-            var validProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
-            { 
+            var validProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
                 "w3", "war3", "wow", "d3", "diablo3", "sc2", "hs", "hearthstone", "hots", "heroes"
             };
-            
-            var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
-            { 
+
+            var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
                 "us", "eu", "kr", "cn", "tw", "sea"
             };
 
@@ -334,44 +334,44 @@ namespace War3Net.IO.Casc.Storage
                 _ => throw new ArgumentException($"Unknown product: {product}"),
             };
         }
-        
+
         private static void ValidateProductAndRegion(string product, string region)
         {
-            if (string.IsNullOrWhiteSpace(product) || 
-                product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
-                product.Contains("..") || 
-                product.Contains("/") || 
+            if (string.IsNullOrWhiteSpace(product) ||
+                product.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+                product.Contains("..") ||
+                product.Contains("/") ||
                 product.Contains("\\") ||
                 product.Length > 50) // Reasonable length limit
             {
                 throw new ArgumentException($"Invalid product name: '{product}'. Must be a valid directory name without path separators.", nameof(product));
             }
 
-            if (string.IsNullOrWhiteSpace(region) || 
-                region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || 
-                region.Contains("..") || 
-                region.Contains("/") || 
+            if (string.IsNullOrWhiteSpace(region) ||
+                region.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+                region.Contains("..") ||
+                region.Contains("/") ||
                 region.Contains("\\") ||
                 region.Length > 10) // Reasonable length limit for region codes
             {
                 throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
             }
         }
-        
+
         private static string ValidateAndNormalizePath(string path)
         {
             // Decode any URL-encoded sequences
             var decodedPath = HttpUtility.UrlDecode(path);
-            
+
             // Check for path traversal patterns before normalization
-            var pathTraversalPatterns = new[] 
+            var pathTraversalPatterns = new[]
             {
                 "..", "../", "..\\",
                 "%2e%2e", "%2e%2e%2f", "%2e%2e%5c",
                 "..%2f", "..%5c",
                 ".%2e", "%2e.",
             };
-            
+
             foreach (var pattern in pathTraversalPatterns)
             {
                 if (decodedPath.Contains(pattern, StringComparison.OrdinalIgnoreCase))
@@ -379,7 +379,7 @@ namespace War3Net.IO.Casc.Storage
                     throw new ArgumentException($"Path contains invalid traversal pattern: {pattern}");
                 }
             }
-            
+
             // Normalize the path
             string normalizedPath;
             try
@@ -390,22 +390,22 @@ namespace War3Net.IO.Casc.Storage
             {
                 throw new ArgumentException($"Invalid cache path: {ex.Message}", nameof(path), ex);
             }
-            
+
             // Check for alternate data streams (Windows)
             if (normalizedPath.Contains(':') && !Path.IsPathRooted(normalizedPath))
             {
                 throw new ArgumentException($"Path cannot contain alternate data stream syntax");
             }
-            
+
             // Ensure the resolved path doesn't escape expected boundaries
             var tempPath = Path.GetFullPath(Path.GetTempPath());
             var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-            
+
             // Allow paths only within safe directories
-            bool isInSafeDirectory = 
+            bool isInSafeDirectory =
                 normalizedPath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
                 normalizedPath.StartsWith(userProfile, StringComparison.OrdinalIgnoreCase) ||
                 normalizedPath.StartsWith(appData, StringComparison.OrdinalIgnoreCase) ||
@@ -423,7 +423,7 @@ namespace War3Net.IO.Casc.Storage
             {
                 throw new ArgumentException($"Cache path cannot contain special shell characters");
             }
-            
+
             return normalizedPath;
         }
     }

@@ -95,11 +95,11 @@ namespace War3Net.IO.Casc.Compression
             // Validate frame sizes to prevent excessive memory allocation
             const uint MaxFrameSize = 100 * 1024 * 1024; // 100 MB per frame
             const uint MaxTotalSize = 500 * 1024 * 1024; // 500 MB total
-            
+
             if (header.IsMultiChunk)
             {
                 uint totalSize = 0;
-                
+
                 // Validate all frame sizes before processing
                 foreach (var frame in header.Frames)
                 {
@@ -107,19 +107,19 @@ namespace War3Net.IO.Casc.Compression
                     {
                         throw new CascException($"BLTE frame encoded size ({frame.EncodedSize} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
                     }
-                    
+
                     if (frame.ContentSize > MaxFrameSize)
                     {
                         throw new CascException($"BLTE frame decoded size ({frame.ContentSize} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
                     }
-                    
+
                     totalSize += frame.EncodedSize;
                     if (totalSize > MaxTotalSize)
                     {
                         throw new CascException($"Total BLTE frames size ({totalSize} bytes) exceeds maximum allowed size ({MaxTotalSize} bytes)");
                     }
                 }
-                
+
                 // Process multiple frames
                 foreach (var frame in header.Frames)
                 {
@@ -134,7 +134,7 @@ namespace War3Net.IO.Casc.Compression
                     {
                         throw new CascException($"Insufficient data in stream. Expected {frame.EncodedSize} bytes but only {inputStream.Length - inputStream.Position} bytes available.");
                     }
-                    
+
                     // Additional safety check for allocation size
                     try
                     {
@@ -148,13 +148,13 @@ namespace War3Net.IO.Casc.Compression
 
                     // Decode frame
                     var decodedData = DecodeFrameWithDepth(frame, recursionDepth);
-                    
+
                     // Validate decoded size if specified
                     if (frame.ContentSize > 0 && decodedData.Length != frame.ContentSize)
                     {
                         throw new CascException($"Decoded frame size mismatch. Expected {frame.ContentSize} bytes but got {decodedData.Length} bytes.");
                     }
-                    
+
                     outputStream.Write(decodedData, 0, decodedData.Length);
                 }
             }
@@ -173,12 +173,12 @@ namespace War3Net.IO.Casc.Compression
                 {
                     throw new CascException($"Invalid remaining bytes calculation. Stream position ({inputStream.Position}) exceeds stream length ({inputStream.Length}).");
                 }
-                
+
                 if (remainingBytes > MaxFrameSize)
                 {
                     throw new CascException($"Single BLTE frame size ({remainingBytes} bytes) exceeds maximum allowed size ({MaxFrameSize} bytes)");
                 }
-                
+
                 // Additional safety check for allocation
                 byte[] frameData;
                 try
@@ -369,14 +369,14 @@ namespace War3Net.IO.Casc.Compression
             // - Header format: 5 bytes properties + 8 bytes uncompressed size
             // - Reference: CascLib's CascDecompress.cpp::Decompress_LZMA()
             var dataSize = frame.Data!.Length - 1;
-            
+
             // TODO: To implement LZMA support:
             // 1. Add NuGet package: LZMA-SDK or SevenZipSharp
             // 2. Read LZMA properties (5 bytes)
             // 3. Read uncompressed size (8 bytes, little-endian)
             // 4. Initialize LZMA decoder with properties
             // 5. Decompress remaining data
-            
+
             throw new NotSupportedException(
                 $"LZMA decompression is not yet implemented in War3Net.IO.Casc.\n" +
                 $"Frame contains {dataSize} bytes of LZMA compressed data.\n" +
@@ -396,13 +396,13 @@ namespace War3Net.IO.Casc.Compression
             // - Frame format may include uncompressed size in header
             // - Reference: CascLib's CascDecompress.cpp::Decompress_LZ4()
             var dataSize = frame.Data!.Length - 1;
-            
+
             // TODO: To implement LZ4 support:
             // 1. Add NuGet package: K4os.Compression.LZ4
             // 2. Check for uncompressed size header (4 bytes, optional)
             // 3. Use LZ4Codec.Decode() for decompression
             // 4. Handle both block and frame formats
-            
+
             throw new NotSupportedException(
                 $"LZ4 decompression is not yet implemented in War3Net.IO.Casc.\n" +
                 $"Frame contains {dataSize} bytes of LZ4 compressed data.\n" +
@@ -422,13 +422,13 @@ namespace War3Net.IO.Casc.Compression
             // - Self-contained frames with magic number 0xFD2FB528
             // - Reference: CascLib's CascDecompress.cpp::Decompress_ZSTD()
             var dataSize = frame.Data!.Length - 1;
-            
+
             // TODO: To implement Zstandard support:
             // 1. Add NuGet package: ZstdSharp.Port or ZstdNet
             // 2. Create decompressor context
             // 3. Use Decompress() method with input data
             // 4. Handle streaming decompression for large files
-            
+
             throw new NotSupportedException(
                 $"Zstandard decompression is not yet implemented in War3Net.IO.Casc.\n" +
                 $"Frame contains {dataSize} bytes of Zstandard compressed data.\n" +
@@ -475,7 +475,7 @@ namespace War3Net.IO.Casc.Compression
 
             // Save the current position
             var originalPosition = stream.Position;
-            
+
             try
             {
                 // Check if we can read 4 bytes from current position
@@ -486,7 +486,7 @@ namespace War3Net.IO.Casc.Compression
 
                 var signature = new byte[4];
                 var bytesRead = stream.Read(signature, 0, 4);
-                
+
                 if (bytesRead != 4)
                 {
                     return false;

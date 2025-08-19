@@ -197,7 +197,7 @@ namespace War3Net.IO.Casc.Index
             {
                 throw new CascException($"Data file index {entry.DataFileIndex} exceeds maximum allowed value {CascConstants.MaxDataFiles}");
             }
-            
+
             return Path.Combine(dataPath, $"data.{entry.DataFileIndex:D3}");
         }
 

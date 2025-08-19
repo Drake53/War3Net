@@ -217,7 +217,7 @@ namespace War3Net.IO.Casc.Utilities
         private static bool IsReservedName(string name)
         {
             // Windows reserved names (case-insensitive)
-            string[] reservedNames = 
+            string[] reservedNames =
             {
                 "CON", "PRN", "AUX", "NUL",
                 "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
@@ -226,8 +226,8 @@ namespace War3Net.IO.Casc.Utilities
 
             // Remove extension for checking
             var nameWithoutExt = Path.GetFileNameWithoutExtension(name);
-            
-            return reservedNames.Any(reserved => 
+
+            return reservedNames.Any(reserved =>
                 string.Equals(nameWithoutExt, reserved, StringComparison.OrdinalIgnoreCase));
         }
     }

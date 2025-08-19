@@ -170,7 +170,7 @@ namespace War3Net.IO.Casc.Root
             while ((line = reader.ReadLine()) != null)
             {
                 lineNumber++;
-                
+
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
                 {
                     continue;

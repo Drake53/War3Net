@@ -66,7 +66,7 @@ namespace War3Net.IO.Casc.Storage
         /// Gets the locale flags.
         /// </summary>
         public CascLocaleFlags LocaleFlags => _context.LocaleFlags;
-        
+
         /// <summary>
         /// Gets the root handler.
         /// </summary>
@@ -146,14 +146,14 @@ namespace War3Net.IO.Casc.Storage
             }
 
             var stream = OpenFileByEKey(eKey.Value);
-            
+
             // Validate checksum if requested
             if (validateChecksum && stream.CanSeek)
             {
                 var originalPosition = stream.Position;
                 var computedHash = ChecksumValidator.ComputeMD5(StreamToArray(stream));
                 stream.Position = originalPosition;
-                
+
                 if (!ChecksumValidator.CompareHashes(computedHash, cKey.ToArray()))
                 {
                     stream.Dispose();
@@ -434,7 +434,7 @@ namespace War3Net.IO.Casc.Storage
             {
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
             }
-            
+
             if (!File.Exists(fileName))
             {
                 throw new FileNotFoundException($"Key file not found: {fileName}");
@@ -484,7 +484,7 @@ namespace War3Net.IO.Casc.Storage
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        
+
         /// <summary>
         /// Releases unmanaged and optionally managed resources.
         /// </summary>
@@ -519,7 +519,7 @@ namespace War3Net.IO.Casc.Storage
 
             _disposed = true;
         }
-        
+
         /// <summary>
         /// Finalizer.
         /// </summary>
@@ -623,17 +623,17 @@ namespace War3Net.IO.Casc.Storage
             // CascLib uses 100MB as default maximum, with configurable override
             const uint DefaultMaxFileSize = 100 * 1024 * 1024; // 100 MB
             const uint AbsoluteMaxFileSize = 2147483648; // 2 GB (max array size in .NET)
-            
+
             if (indexEntry.EncodedSize == 0)
             {
                 throw new CascException("Invalid file size: 0 bytes");
             }
-            
+
             if (indexEntry.EncodedSize >= AbsoluteMaxFileSize)
             {
                 throw new CascException($"File size {indexEntry.EncodedSize} exceeds absolute maximum of {AbsoluteMaxFileSize} bytes");
             }
-            
+
             // Check for potential decompression bombs (files that expand significantly)
             // Encoded size should be reasonable compared to expected decompressed size
             if (indexEntry.EncodedSize > DefaultMaxFileSize)
@@ -650,7 +650,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             using var stream = File.OpenRead(dataFilePath);
-            
+
             // Check for integer overflow when calculating end position
             // Use checked arithmetic to catch overflows
             checked
@@ -662,16 +662,16 @@ namespace War3Net.IO.Casc.Storage
                     {
                         throw new CascException($"Data file offset {indexEntry.DataFileOffset} exceeds file size {stream.Length}");
                     }
-                    
+
                     // Calculate end position with overflow check
                     ulong endPosition = indexEntry.DataFileOffset + indexEntry.EncodedSize;
-                    
+
                     // Validate that the file contains the requested data
                     if (endPosition > (ulong)stream.Length)
                     {
                         throw new CascException($"Data file {dataFilePath} is too small to contain the requested data at offset {indexEntry.DataFileOffset} with size {indexEntry.EncodedSize}");
                     }
-                    
+
                     // Ensure we can seek to the position (long.MaxValue limit)
                     if (indexEntry.DataFileOffset > (ulong)long.MaxValue)
                     {
@@ -689,7 +689,7 @@ namespace War3Net.IO.Casc.Storage
             // Use ArrayPool for large allocations to reduce GC pressure
             byte[]? rentedArray = null;
             byte[] data;
-            
+
             try
             {
                 if (indexEntry.EncodedSize > 81920) // 80KB threshold for ArrayPool
@@ -704,7 +704,7 @@ namespace War3Net.IO.Casc.Storage
 
                 var totalBytesRead = 0;
                 var remaining = (int)indexEntry.EncodedSize;
-                
+
                 // Read in chunks to handle large files better
                 while (remaining > 0)
                 {
