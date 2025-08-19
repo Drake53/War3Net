@@ -1,6 +1,6 @@
 # War3Net.IO.Casc
 
-A .NET library for reading Blizzard's CASC (Content Addressable Storage Container) archives, used in modern Blizzard games like World of Warcraft, Diablo III, Overwatch, and StarCraft II.
+A .NET library for reading Blizzard's CASC (Content Addressable Storage Container) archives, used in modern Blizzard games including Warcraft III: Reforged, World of Warcraft, Diablo III, Overwatch, and StarCraft II.
 
 ## Features
 
@@ -31,13 +31,13 @@ A .NET library for reading Blizzard's CASC (Content Addressable Storage Containe
 using War3Net.IO.Casc;
 
 // Open a CASC archive
-using var archive = new CascArchive(@"C:\Games\World of Warcraft\Data");
+using var archive = new CascArchive(@"C:\Games\Warcraft III\Data");
 
 // Check if a file exists
-if (archive.FileExists("Interface\\Icons\\inv_sword_01.blp"))
+if (archive.FileExists("war3.w3mod\\units\\human\\footman\\footman.mdx"))
 {
     // Open and read the file
-    using var stream = archive.OpenFile("Interface\\Icons\\inv_sword_01.blp");
+    using var stream = archive.OpenFile("war3.w3mod\\units\\human\\footman\\footman.mdx");
     var data = new byte[stream.Length];
     stream.Read(data, 0, data.Length);
     
@@ -53,7 +53,7 @@ using War3Net.IO.Casc.Enums;
 
 // Open with specific locale
 var storage = CascStorage.OpenStorage(
-    @"C:\Games\World of Warcraft\Data",
+    @"C:\Games\Warcraft III\Data",
     CascLocaleFlags.EnUS | CascLocaleFlags.EnGB);
 
 // Access storage features
@@ -71,12 +71,12 @@ using War3Net.IO.Casc;
 using War3Net.IO.Casc.Structures;
 using War3Net.IO.Casc.Enums;
 
-var archive = new CascArchive(@"C:\Games\WoW\Data");
+var archive = new CascArchive(@"C:\Games\Warcraft III\Data");
 
 // Method 1: Open by file name
-using (var stream = archive.OpenFile("DBFilesClient\\Item.db2"))
+using (var stream = archive.OpenFile("war3.w3mod\\units\\unitdata.slk"))
 {
-    // Read item database
+    // Read unit data
 }
 
 // Method 2: Open by content key (CKey)
@@ -107,7 +107,7 @@ using (var stream = archive.OpenFile(fileDataId))
 using War3Net.IO.Casc;
 using War3Net.IO.Casc.Crypto;
 
-var archive = new CascArchive(@"C:\Games\WoW\Data");
+var archive = new CascArchive(@"C:\Games\Warcraft III\Data");
 
 // Add a single encryption key
 ulong keyName = 0xFA505078126ACB3E;
@@ -185,7 +185,7 @@ progressReporter.ErrorOccurred += (sender, error) =>
 // Use with storage opening
 var args = new StorageOpenArgs
 {
-    LocalPath = @"C:\Games\WoW\Data",
+    LocalPath = @"C:\Games\Warcraft III\Data",
     ProgressReporter = progressReporter,
     LocaleFlags = CascLocaleFlags.EnUS,
 };
@@ -199,11 +199,11 @@ var storage = CascStorage.OpenStorage(args.LocalPath, args.LocaleFlags);
 ```csharp
 using War3Net.IO.Casc;
 
-var archive = new CascArchive(@"C:\Games\WoW\Data");
+var archive = new CascArchive(@"C:\Games\Warcraft III\Data");
 
 // Find files by pattern
-var icons = archive.FindFiles("Interface\\Icons\\*.blp");
-foreach (var entry in icons)
+var models = archive.FindFiles("war3.w3mod\\units\\*.mdx");
+foreach (var entry in models)
 {
     Console.WriteLine($"Found: {entry.FileName} (Size: {entry.FileSize})");
 }
@@ -218,7 +218,7 @@ foreach (var entry in archive)
 }
 
 // Get file information
-var fileEntry = archive.GetEntry("some_file.txt");
+var fileEntry = archive.GetEntry("war3.w3mod\\scripts\\common.j");
 Console.WriteLine($"Content Key: {fileEntry.CKey}");
 Console.WriteLine($"Encoded Key: {fileEntry.EKey}");
 Console.WriteLine($"File Size: {fileEntry.FileSize}");
@@ -267,7 +267,7 @@ using War3Net.IO.Casc.Storage;
 using War3Net.IO.Casc.Structures;
 
 // Open storage directly for low-level access
-var storage = CascStorage.OpenStorage(@"C:\Games\WoW\Data");
+var storage = CascStorage.OpenStorage(@"C:\Games\Warcraft III\Data");
 
 // Access by encoded key
 var eKey = EKey.Parse("1234567890");
@@ -341,7 +341,7 @@ using War3Net.IO.Casc.Index;
 
 // Load index files manually
 var indexManager = new IndexManager();
-indexManager.LoadIndexFiles(@"C:\Games\WoW\Data\data");
+indexManager.LoadIndexFiles(@"C:\Games\Warcraft III\Data\data");
 
 // Find entry by encoded key
 var eKey = EKey.Parse("1234567890");
@@ -359,7 +359,7 @@ if (indexManager.TryFindEntry(eKey, out var entry))
 using War3Net.IO.Casc.Encoding;
 
 // Parse encoding file
-var encoding = EncodingFile.ParseFile(@"C:\Games\WoW\Data\config\encoding");
+var encoding = EncodingFile.ParseFile(@"C:\Games\Warcraft III\Data\config\encoding");
 
 // Look up encoded key for content key
 var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
@@ -388,8 +388,8 @@ using War3Net.IO.Casc;
 
 try
 {
-    var archive = new CascArchive(@"C:\Games\WoW\Data");
-    var stream = archive.OpenFile("some_file.txt");
+    var archive = new CascArchive(@"C:\Games\Warcraft III\Data");
+    var stream = archive.OpenFile("war3.w3mod\\scripts\\blizzard.j");
 }
 catch (DirectoryNotFoundException ex)
 {
