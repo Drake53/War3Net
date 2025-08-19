@@ -31,8 +31,8 @@ namespace War3Net.IO.Casc.Cdn
         /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="region">The region code (us, eu, kr, cn, etc.).</param>
-        public CdnClient(string region = "eu")
-            : this(GetDefaultCdnHosts(region), GetDefaultCdnPath())
+        public CdnClient(string region = "eu", string cdnPath = "tpr/war3")
+            : this(GetDefaultCdnHosts(region), cdnPath)
         {
         }
 
@@ -200,7 +200,7 @@ namespace War3Net.IO.Casc.Cdn
                 _currentHostIndex++;
             }
 
-            throw new CascException($"Failed to download {path} from all CDN hosts after {maxRetries} retries per host", lastException);
+            throw new CascException($"Failed to download '{path}' from all CDN hosts after {maxRetries} retries per host", lastException);
         }
 
         /// <summary>
@@ -346,11 +346,6 @@ namespace War3Net.IO.Casc.Cdn
                     "http://blzddist1-a.akamaihd.net",
                 },
             };
-        }
-
-        private static string GetDefaultCdnPath()
-        {
-            return "tpr/war3";
         }
     }
 }
