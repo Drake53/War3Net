@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Enums;
-using War3Net.IO.Compression;
 
 namespace War3Net.IO.Casc.Tests
 {

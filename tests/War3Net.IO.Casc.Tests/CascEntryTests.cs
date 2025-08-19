@@ -7,7 +7,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.IO.Casc;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Structures;
 
