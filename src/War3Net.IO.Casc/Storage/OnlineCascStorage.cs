@@ -24,6 +24,8 @@ namespace War3Net.IO.Casc.Storage
     /// </summary>
     public class OnlineCascStorage : CascStorage
     {
+        private const int TotalProgressSteps = 6;
+
         private CdnClient? _cdnClient;
 
         /// <summary>
@@ -172,7 +174,7 @@ namespace War3Net.IO.Casc.Storage
 
         private async Task InitializeOnlineAsync(IProgressReporter? progressReporter)
         {
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "versions", 0, 4);
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "versions", 0, TotalProgressSteps);
 
             // Download versions file
             var versionsUrl = GetVersionsUrl(Product, Region);
@@ -195,7 +197,7 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException($"No version entry found for region {Region}");
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdns", 1, 4);
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdns", 1, TotalProgressSteps);
 
             // Download CDNs file
             var cdnUrl = GetCdnUrl(Product, Region);
@@ -221,10 +223,16 @@ namespace War3Net.IO.Casc.Storage
             // Initialize CDN client
             _cdnClient = new CdnClient(cdnEntry.Hosts, cdnEntry.Path);
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, 4);
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, TotalProgressSteps);
 
             // Download and cache build config
-            var buildConfigPath = Path.Combine(StoragePath, "config", versionEntry.BuildConfig);
+            var configPath = Path.Combine(StoragePath, "config");
+            Directory.CreateDirectory(configPath);
+
+            var buildConfigPath = Path.Combine(configPath,
+                versionEntry.BuildConfig.Substring(0, 2),
+                versionEntry.BuildConfig.Substring(2, 2),
+                versionEntry.BuildConfig);
             if (!File.Exists(buildConfigPath))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(buildConfigPath)!);
@@ -232,10 +240,13 @@ namespace War3Net.IO.Casc.Storage
                 await File.WriteAllBytesAsync(buildConfigPath, buildConfigData);
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdn config", 3, 4);
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdn config", 3, TotalProgressSteps);
 
             // Download and cache CDN config
-            var cdnConfigPath = Path.Combine(StoragePath, "config", versionEntry.CdnConfig);
+            var cdnConfigPath = Path.Combine(configPath,
+                versionEntry.CdnConfig.Substring(0, 2),
+                versionEntry.CdnConfig.Substring(2, 2),
+                versionEntry.CdnConfig);
             if (!File.Exists(cdnConfigPath))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(cdnConfigPath)!);
@@ -250,7 +261,50 @@ namespace War3Net.IO.Casc.Storage
                 cdnConfig = CdnConfig.Parse(stream);
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 4, 4);
+            // Parse build config to get encoding and root hashes
+            BuildConfig buildConfig;
+            using (var stream = File.OpenRead(buildConfigPath))
+            {
+                buildConfig = BuildConfig.Parse(stream);
+            }
+
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 4, TotalProgressSteps);
+
+            // Download encoding file
+            var encodingHash = buildConfig.GetValue("encoding")?.Split(' ')[1];
+            if (!string.IsNullOrEmpty(encodingHash))
+            {
+                var encodingPath = Path.Combine(StoragePath, "data",
+                    encodingHash.Substring(0, 2),
+                    encodingHash.Substring(2, 2),
+                    encodingHash);
+                if (!File.Exists(encodingPath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(encodingPath)!);
+                    var encodingData = await _cdnClient.DownloadDataAsync(encodingHash);
+                    await File.WriteAllBytesAsync(encodingPath, encodingData);
+                }
+            }
+
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 5, TotalProgressSteps);
+
+            // Download root file
+            var rootHash = buildConfig.GetValue("root")?.Split(' ')[0];
+            if (!string.IsNullOrEmpty(rootHash))
+            {
+                var rootPath = Path.Combine(StoragePath, "data",
+                    rootHash.Substring(0, 2),
+                    rootHash.Substring(2, 2),
+                    rootHash);
+                if (!File.Exists(rootPath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(rootPath)!);
+                    var rootData = await _cdnClient.DownloadDataAsync(rootHash);
+                    await File.WriteAllBytesAsync(rootPath, rootData);
+                }
+            }
+
+            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, TotalProgressSteps, TotalProgressSteps);
 
             // Download index files if needed
             await DownloadIndexFilesAsync(cdnConfig, progressReporter);
@@ -266,7 +320,15 @@ namespace War3Net.IO.Casc.Storage
 
             // Download archive indexes
             var archives = cdnConfig.Archives;
-            for (var i = 0; i < Math.Min(archives.Count, 16); i++) // Limit to first 16 archives
+            if (archives == null || archives.Count == 0)
+            {
+                System.Diagnostics.Trace.TraceWarning("No archives found in CDN config");
+                return;
+            }
+
+            // Download at least the first few archive indexes to get started
+            var maxIndexes = Math.Min(archives.Count, 5); // Download first 5 indexes
+            for (var i = 0; i < maxIndexes; i++)
             {
                 var archiveKey = archives[i];
                 if (string.IsNullOrEmpty(archiveKey))
@@ -274,16 +336,20 @@ namespace War3Net.IO.Casc.Storage
                     continue;
                 }
 
-                var indexFileName = $"{archiveKey.Substring(0, 16)}.idx";
+                // Index files are stored with .index extension on CDN
+                // They should be saved with .idx extension locally
+                var indexKey = archiveKey + ".index";
+                var indexFileName = $"{archiveKey.Substring(0, Math.Min(16, archiveKey.Length))}.idx";
                 var indexPath = Path.Combine(dataPath, indexFileName);
 
                 if (!File.Exists(indexPath))
                 {
-                    progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, archives.Count);
+                    progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, maxIndexes);
 
                     try
                     {
-                        var indexData = await _cdnClient!.DownloadDataAsync(archiveKey + ".index");
+                        // Download from CDN - the path will be data/xx/yy/{hash}.index
+                        var indexData = await _cdnClient!.DownloadDataAsync(indexKey);
                         await File.WriteAllBytesAsync(indexPath, indexData);
                     }
                     catch (HttpRequestException ex)
@@ -301,6 +367,25 @@ namespace War3Net.IO.Casc.Storage
                     {
                         // Log unexpected errors
                         System.Diagnostics.Trace.TraceError($"Unexpected error downloading index {indexFileName}: {ex.GetType().Name} - {ex.Message}");
+                    }
+                }
+            }
+
+            // Also download file index if present
+            var fileIndex = cdnConfig.FileIndex;
+            if (!string.IsNullOrEmpty(fileIndex))
+            {
+                var fileIndexPath = Path.Combine(dataPath, $"{fileIndex.Substring(0, Math.Min(16, fileIndex.Length))}.idx");
+                if (!File.Exists(fileIndexPath))
+                {
+                    try
+                    {
+                        var fileIndexData = await _cdnClient!.DownloadDataAsync(fileIndex + ".index");
+                        await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.TraceWarning($"Failed to download file index: {ex.Message}");
                     }
                 }
             }
