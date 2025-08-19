@@ -33,9 +33,10 @@ namespace War3Net.IO.Casc.Tests
 
             Assert.IsNotNull(header);
             Assert.AreEqual(0u, header.HeaderSize);
-            Assert.AreEqual(0, header.Flags);
+            Assert.AreEqual(0, header.MustBe0F);
             Assert.IsFalse(header.IsMultiChunk);
             Assert.IsFalse(header.HasFrameHashes);
+            Assert.AreEqual(0u, header.FrameCount);
             Assert.AreEqual(0, header.Frames.Count);
         }
 
@@ -48,13 +49,13 @@ namespace War3Net.IO.Casc.Tests
             // Write BLTE signature (little-endian)
             writer.Write(BlteHeader.Signature);
 
-            // Write header size (big-endian) - includes flags byte and frame count
-            // Header size = 1 (flags) + 3 (frame count) + frames
-            // For 2 frames: 4 + 2 * 8 = 20 bytes
+            // Write header size (big-endian)
+            // Header size = 1 (MustBe0F) + 3 (frame count) + frames
+            // For 2 frames without hashes: 4 + 2 * 8 = 20 bytes
             writer.Write(new byte[] { 0, 0, 0, 20 });
 
-            // Write flags (0x80 = multi-chunk bit set, no frame hashes)
-            writer.Write((byte)0x80);
+            // Write MustBe0F byte (must be 0x0F)
+            writer.Write((byte)0x0F);
 
             // Write frame count (big-endian, 3 bytes)
             writer.Write((byte)0);
@@ -74,10 +75,10 @@ namespace War3Net.IO.Casc.Tests
 
             Assert.IsNotNull(header);
             Assert.AreEqual(20u, header.HeaderSize);
-            Assert.AreEqual(0x80, header.Flags);
+            Assert.AreEqual(0x0F, header.MustBe0F);
             Assert.IsTrue(header.IsMultiChunk);
-            Assert.IsFalse(header.HasFrameHashes); // 0x80 doesn't include the 0x10 bit
-            Assert.AreEqual(2u, header.ChunkCount);
+            Assert.IsFalse(header.HasFrameHashes); // No hashes in this test
+            Assert.AreEqual(2u, header.FrameCount);
             Assert.AreEqual(2, header.Frames.Count);
 
             // Verify frame 1
@@ -98,11 +99,11 @@ namespace War3Net.IO.Casc.Tests
             // Write BLTE signature (little-endian)
             writer.Write(BlteHeader.Signature);
 
-            // Header size for 1 frame with hash: 1 (flags) + 3 (frame count) + 1 * (8 + 16) = 28 bytes
+            // Header size for 1 frame with hash: 1 (MustBe0F) + 3 (frame count) + 1 * (8 + 16) = 28 bytes
             writer.Write(new byte[] { 0, 0, 0, 28 });
 
-            // Write flags (0x10 = has frame hashes, also sets multi-chunk bit)
-            writer.Write((byte)0x10);
+            // Write MustBe0F byte (must be 0x0F)
+            writer.Write((byte)0x0F);
 
             // Write frame count (1 frame)
             writer.Write((byte)0);
@@ -124,10 +125,10 @@ namespace War3Net.IO.Casc.Tests
 
             Assert.IsNotNull(header);
             Assert.AreEqual(28u, header.HeaderSize);
-            Assert.AreEqual(0x10, header.Flags);
+            Assert.AreEqual(0x0F, header.MustBe0F);
             Assert.IsTrue(header.IsMultiChunk);
             Assert.IsTrue(header.HasFrameHashes);
-            Assert.AreEqual(1u, header.ChunkCount);
+            Assert.AreEqual(1u, header.FrameCount);
             Assert.AreEqual(1, header.Frames.Count);
 
             // Verify frame
@@ -142,6 +143,26 @@ namespace War3Net.IO.Casc.Tests
             {
                 Assert.AreEqual((byte)i, frame.Hash[i]);
             }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CascParserException))]
+        public void TestParseInvalidMustBe0F()
+        {
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+
+            // Write BLTE signature (little-endian)
+            writer.Write(BlteHeader.Signature);
+
+            // Write header size (big-endian) - non-zero
+            writer.Write(new byte[] { 0, 0, 0, 20 });
+
+            // Write invalid MustBe0F byte (not 0x0F)
+            writer.Write((byte)0xFF);
+
+            stream.Position = 0;
+            BlteHeader.Parse(stream);
         }
 
         [TestMethod]
@@ -183,11 +204,11 @@ namespace War3Net.IO.Casc.Tests
             // Write BLTE signature
             writer.Write(BlteHeader.Signature);
 
-            // Header size = 4 bytes (just flags and frame count, no frames)
+            // Header size = 4 bytes (MustBe0F + frame count, no frames)
             writer.Write(new byte[] { 0, 0, 0, 4 });
 
-            // Write flags (multi-chunk but no frames)
-            writer.Write((byte)0x80);
+            // Write MustBe0F byte (must be 0x0F)
+            writer.Write((byte)0x0F);
 
             // Write frame count = 0
             writer.Write((byte)0);
@@ -200,7 +221,7 @@ namespace War3Net.IO.Casc.Tests
             Assert.IsNotNull(header);
             Assert.AreEqual(4u, header.HeaderSize);
             Assert.AreEqual(0, header.Frames.Count);
-            Assert.AreEqual(0u, header.ChunkCount);
+            Assert.AreEqual(0u, header.FrameCount);
         }
 
         [TestMethod]
@@ -212,11 +233,11 @@ namespace War3Net.IO.Casc.Tests
             // Write BLTE signature
             writer.Write(BlteHeader.Signature);
 
-            // Header size for 3 frames with hashes: 1 (flags) + 3 (frame count) + 3 * 24 = 76 bytes
+            // Header size for 3 frames with hashes: 1 (MustBe0F) + 3 (frame count) + 3 * 24 = 76 bytes
             writer.Write(new byte[] { 0, 0, 0, 76 });
 
-            // Flags with hash bit
-            writer.Write((byte)0x10);
+            // Write MustBe0F byte (must be 0x0F)
+            writer.Write((byte)0x0F);
 
             // Frame count = 3
             writer.Write((byte)0);
@@ -282,13 +303,14 @@ namespace War3Net.IO.Casc.Tests
             var header = new BlteHeader
             {
                 HeaderSize = 100,
-                Flags = 0x1F,
-                ChunkCount = 5,
+                MustBe0F = 0x0F,
+                FrameCount = 5,
+                HasFrameHashes = true,
             };
 
             Assert.AreEqual(100u, header.HeaderSize);
-            Assert.AreEqual(0x1F, header.Flags);
-            Assert.AreEqual(5u, header.ChunkCount);
+            Assert.AreEqual(0x0F, header.MustBe0F);
+            Assert.AreEqual(5u, header.FrameCount);
             Assert.IsTrue(header.IsMultiChunk);
             Assert.IsTrue(header.HasFrameHashes);
             Assert.IsNotNull(header.Frames);
@@ -305,7 +327,7 @@ namespace War3Net.IO.Casc.Tests
 
             // Large frame count (max 3-byte value)
             var frameCount = 1000;
-            var headerSize = 1 + 3 + (frameCount * 8); // flags + frame count + frames (no hashes)
+            var headerSize = 1 + 3 + (frameCount * 8); // MustBe0F + frame count + frames (no hashes)
 
             // Write header size (big-endian)
             writer.Write((byte)((headerSize >> 24) & 0xFF));
@@ -313,8 +335,8 @@ namespace War3Net.IO.Casc.Tests
             writer.Write((byte)((headerSize >> 8) & 0xFF));
             writer.Write((byte)(headerSize & 0xFF));
 
-            // Flags (multi-chunk, no hashes)
-            writer.Write((byte)0x80);
+            // Write MustBe0F byte (must be 0x0F)
+            writer.Write((byte)0x0F);
 
             // Frame count (3 bytes, big-endian)
             writer.Write((byte)((frameCount >> 16) & 0xFF));
@@ -333,7 +355,7 @@ namespace War3Net.IO.Casc.Tests
 
             Assert.IsNotNull(header);
             Assert.AreEqual((uint)headerSize, header.HeaderSize);
-            Assert.AreEqual((uint)frameCount, header.ChunkCount);
+            Assert.AreEqual((uint)frameCount, header.FrameCount);
             Assert.AreEqual(frameCount, header.Frames.Count);
         }
     }

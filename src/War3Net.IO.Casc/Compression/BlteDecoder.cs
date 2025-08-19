@@ -190,10 +190,12 @@ namespace War3Net.IO.Casc.Compression
                     throw new CascException($"Unable to allocate {remainingBytes} bytes for BLTE frame. File may be corrupted.");
                 }
 
-                // Create frame info
-                var frame = header.Frames[0];
-                frame.EncodedSize = (uint)frameData.Length;
-                frame.Data = frameData;
+                // Create frame info for single chunk
+                var frame = new BlteFrame
+                {
+                    EncodedSize = (uint)frameData.Length,
+                    Data = frameData,
+                };
 
                 // Decode frame
                 var decodedData = DecodeFrameWithDepth(frame, recursionDepth);

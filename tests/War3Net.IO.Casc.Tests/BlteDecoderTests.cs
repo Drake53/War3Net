@@ -115,13 +115,10 @@ namespace War3Net.IO.Casc.Tests
             writer.Write((byte)'T');
             writer.Write((byte)'E');
 
-            // Header size (big-endian)
+            // Header size (big-endian) - 0 for single chunk
             writer.Write((byte)0);
             writer.Write((byte)0);
             writer.Write((byte)0);
-            writer.Write((byte)9); // 8 bytes header + 1 byte flags
-
-            // Flags (single chunk)
             writer.Write((byte)0);
 
             // Compression type
@@ -156,13 +153,10 @@ namespace War3Net.IO.Casc.Tests
             writer.Write((byte)'T');
             writer.Write((byte)'E');
 
-            // Header size (big-endian)
+            // Header size (big-endian) - 0 for single chunk
             writer.Write((byte)0);
             writer.Write((byte)0);
             writer.Write((byte)0);
-            writer.Write((byte)9); // 8 bytes header + 1 byte flags
-
-            // Flags (single chunk)
             writer.Write((byte)0);
 
             // Compression type

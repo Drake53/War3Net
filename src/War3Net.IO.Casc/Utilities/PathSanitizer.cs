@@ -17,7 +17,8 @@ namespace War3Net.IO.Casc.Utilities
     /// </summary>
     public static class PathSanitizer
     {
-        private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
+        // Combine platform-specific invalid chars with additional problematic characters
+        private static readonly char[] InvalidFileNameChars = GetInvalidFileNameChars();
         private static readonly Regex EncodedTraversalPattern = new Regex(@"%2e%2e|%252e|%c0%ae|%c1%9c", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly string[] DangerousPatterns = new[]
         {
@@ -25,6 +26,19 @@ namespace War3Net.IO.Casc.Utilities
             "\0", // Null byte
             ":", // Drive separator on Windows
         };
+
+        private static char[] GetInvalidFileNameChars()
+        {
+            // Start with platform-specific invalid characters
+            var platformChars = Path.GetInvalidFileNameChars();
+
+            // Add additional characters that should be blocked on all platforms
+            // These are characters that can cause issues with shell interpretation, HTML/XML injection, etc.
+            var additionalChars = new char[] { '<', '>', '"', '|', '*', '?' };
+
+            // Combine and remove duplicates
+            return platformChars.Union(additionalChars).ToArray();
+        }
 
         /// <summary>
         /// Sanitizes a file path for safe use within CASC storage.
@@ -59,6 +73,12 @@ namespace War3Net.IO.Casc.Utilities
 
             // Normalize path separators to forward slash
             path = path.Replace('\\', '/');
+
+            // Check for absolute paths early (before we process segments)
+            if (path.StartsWith('/') || Path.IsPathRooted(path))
+            {
+                throw new ArgumentException("Absolute paths are not allowed.", nameof(path));
+            }
 
             // Remove any null bytes that could terminate the string early
             if (path.Contains('\0'))
