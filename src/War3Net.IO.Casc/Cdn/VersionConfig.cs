@@ -60,11 +60,18 @@ namespace War3Net.IO.Casc.Cdn
                 // First non-comment line contains headers
                 if (config.Headers.Count == 0)
                 {
-                    config.Headers.AddRange(parts.Select(p => p.TrimEnd('!')));
+                    // Header format is <name>!<type>:<length>, extract just the name part
+                    config.Headers.AddRange(parts.Select(p =>
+                    {
+                        var exclamationIndex = p.IndexOf('!', StringComparison.Ordinal);
+                        return exclamationIndex >= 0 ? p[..exclamationIndex] : p;
+                    }));
+
                     for (var i = 0; i < config.Headers.Count; i++)
                     {
                         columnIndices[config.Headers[i]] = i;
                     }
+
                     continue;
                 }
 
