@@ -268,46 +268,58 @@ namespace War3Net.IO.Casc.Storage
                 buildConfig = BuildConfig.Parse(stream);
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 4, TotalProgressSteps);
+            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 4, TotalProgressSteps);
+
+            // Download index files FIRST - they contain the EKey mappings needed for other files
+            await DownloadIndexFilesAsync(cdnConfig, progressReporter);
+
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 5, TotalProgressSteps);
 
             // Download encoding file
-            var encodingHash = buildConfig.GetValue("encoding")?.Split(' ')[1];
-            if (!string.IsNullOrEmpty(encodingHash))
+            // The encoding entry format is "encoding = <ckey> <ekey>" where we need the ekey (second hash)
+            var encodingEntry = buildConfig.GetValue("encoding");
+            if (!string.IsNullOrEmpty(encodingEntry))
             {
-                var encodingPath = Path.Combine(StoragePath, "data",
-                    encodingHash.Substring(0, 2),
-                    encodingHash.Substring(2, 2),
-                    encodingHash);
-                if (!File.Exists(encodingPath))
+                var encodingParts = encodingEntry.Split(' ');
+                // Use the second hash (ekey) for downloading the encoding file
+                var encodingHash = encodingParts.Length > 1 ? encodingParts[1] : encodingParts[0];
+
+                if (!string.IsNullOrEmpty(encodingHash))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(encodingPath)!);
-                    var encodingData = await _cdnClient.DownloadDataAsync(encodingHash);
-                    await File.WriteAllBytesAsync(encodingPath, encodingData);
+                    var encodingPath = Path.Combine(StoragePath, "data",
+                        encodingHash.Substring(0, 2),
+                        encodingHash.Substring(2, 2),
+                        encodingHash);
+                    if (!File.Exists(encodingPath))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(encodingPath)!);
+
+                        try
+                        {
+                            // Encoding files are stored as regular data files
+                            System.Diagnostics.Trace.TraceInformation($"Attempting to download encoding file with hash: {encodingHash}");
+                            var encodingData = await _cdnClient.DownloadDataAsync(encodingHash);
+                            await File.WriteAllBytesAsync(encodingPath, encodingData);
+                        }
+                        catch (CascFileNotFoundException ex)
+                        {
+                            // Encoding file not found on CDN - this is critical
+                            throw new CascException($"Encoding file {encodingHash} not found on CDN: {ex.Message}", ex);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new CascException($"Failed to download encoding file {encodingHash}: {ex.Message}", ex);
+                        }
+                    }
                 }
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 5, TotalProgressSteps);
-
-            // Download root file
-            var rootHash = buildConfig.GetValue("root")?.Split(' ')[0];
-            if (!string.IsNullOrEmpty(rootHash))
-            {
-                var rootPath = Path.Combine(StoragePath, "data",
-                    rootHash.Substring(0, 2),
-                    rootHash.Substring(2, 2),
-                    rootHash);
-                if (!File.Exists(rootPath))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(rootPath)!);
-                    var rootData = await _cdnClient.DownloadDataAsync(rootHash);
-                    await File.WriteAllBytesAsync(rootPath, rootData);
-                }
-            }
-
-            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, TotalProgressSteps, TotalProgressSteps);
-
-            // Download index files if needed
-            await DownloadIndexFilesAsync(cdnConfig, progressReporter);
+            // Skip downloading root file for online storage
+            // The build config only provides the CKey for the root file, but to download from CDN we need the EKey
+            // The reference implementation (CascLib) also skips the root file for online storage
+            // The root file contains file name mappings which aren't needed for online key-based access
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 6, TotalProgressSteps);
+            System.Diagnostics.Trace.TraceInformation("Skipping root file download for online storage (only CKey available, EKey required for CDN)");
 
             // Continue with base initialization
             // The base class will handle loading the downloaded files
