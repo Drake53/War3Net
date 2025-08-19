@@ -120,21 +120,23 @@ namespace War3Net.IO.Casc.Compression
             header.FrameCount = (uint)((reader.ReadByte() << 16) | (reader.ReadByte() << 8) | reader.ReadByte());
 
             // Verify header size matches expected size
-            // Expected: 4 bytes (MustBe0F + FrameCount) + FrameCount * sizeof(BLTE_FRAME)
+            // According to CascLib, HeaderSize includes everything from the start:
+            // 4 bytes (Signature) + 4 bytes (HeaderSize field) + 1 byte (MustBe0F) + 3 bytes (FrameCount) = 12 bytes
+            // Plus FrameCount * sizeof(BLTE_FRAME)
             // Note: sizeof(BLTE_FRAME) = 8 bytes (EncodedSize + ContentSize) + 16 bytes (MD5 hash) = 24 bytes
-            var expectedHeaderSize = 4 + (header.FrameCount * 24);
+            var expectedHeaderSize = 12 + (header.FrameCount * 24);
             if (header.HeaderSize != expectedHeaderSize)
             {
                 // Some BLTE files may not have frame hashes, so check without them
-                expectedHeaderSize = 4 + (header.FrameCount * 8);
+                expectedHeaderSize = 12 + (header.FrameCount * 8);
                 if (header.HeaderSize != expectedHeaderSize)
                 {
-                    throw new CascParserException($"Invalid header size: {header.HeaderSize}, expected {4 + (header.FrameCount * 24)} or {expectedHeaderSize}");
+                    throw new CascParserException($"Invalid header size: {header.HeaderSize}, expected {12 + (header.FrameCount * 24)} or {expectedHeaderSize}");
                 }
             }
 
             // Determine if frames have hashes based on header size
-            header.HasFrameHashes = header.HeaderSize == (4 + (header.FrameCount * 24));
+            header.HasFrameHashes = header.HeaderSize == (12 + (header.FrameCount * 24));
 
             // Read frame info
             for (uint i = 0; i < header.FrameCount; i++)
@@ -203,8 +205,8 @@ namespace War3Net.IO.Casc.Compression
                 return 0;
             }
 
-            // 4 bytes (MustBe0F + FrameCount) + frames
-            uint size = 4;
+            // According to CascLib: 12 bytes (Signature + HeaderSize + MustBe0F + FrameCount) + frames
+            uint size = 12;
 
             // Add frame sizes (8 bytes per frame for EncodedSize + ContentSize)
             size += FrameCount * 8;
