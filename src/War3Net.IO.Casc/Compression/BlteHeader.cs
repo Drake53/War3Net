@@ -20,7 +20,7 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// The BLTE signature.
         /// </summary>
-        public const uint Signature = 0x45544C42; // 'BLTE'
+        public const uint Signature = 0x45544C42; // 'BLTE' read as little-endian
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlteHeader"/> class.
@@ -80,8 +80,8 @@ namespace War3Net.IO.Casc.Compression
         {
             var startPos = reader.BaseStream.Position;
 
-            // Read and verify signature
-            var signature = reader.ReadUInt32BE();
+            // Read and verify signature (little-endian)
+            var signature = reader.ReadUInt32();
             if (signature != Signature)
             {
                 throw new CascParserException($"Invalid BLTE signature: 0x{signature:X8}, expected 0x{Signature:X8}");

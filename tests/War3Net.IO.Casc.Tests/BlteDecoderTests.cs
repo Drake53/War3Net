@@ -146,6 +146,7 @@ namespace War3Net.IO.Casc.Tests
                 {
                     zlib.Write(data, 0, data.Length);
                 }
+
                 compressedData = compressStream.ToArray();
             }
 

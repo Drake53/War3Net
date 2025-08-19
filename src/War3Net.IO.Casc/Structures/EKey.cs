@@ -78,7 +78,7 @@ namespace War3Net.IO.Casc.Structures
 
         private static EKey CreateEmpty()
         {
-            return default(EKey);
+            return new EKey(new byte[CascConstants.EKeySize]);
         }
 
         /// <summary>
