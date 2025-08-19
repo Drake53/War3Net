@@ -195,7 +195,7 @@ namespace War3Net.IO.Casc.Tests
                     : System.Text.Encoding.ASCII.GetBytes(testCase.Data);
                 var hash = JenkinsHash.HashLittle(data);
 
-                // Note: These expected values are examples and may need adjustment
+                // TODO: These expected values are examples and need adjustment
                 // based on the exact Jenkins variant being used
                 Assert.AreNotEqual(0u, hash, $"Hash should not be zero for '{testCase.Data}'");
             }
