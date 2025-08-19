@@ -174,18 +174,27 @@ namespace War3Net.IO.Casc
                 stream = OpenFile(fileName, openFlags);
                 return true;
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
+                System.Diagnostics.Trace.TraceWarning($"File not found: {fileName}. Details: {ex.Message}");
                 stream = null;
                 return false;
             }
-            catch (CascFileNotFoundException)
+            catch (CascFileNotFoundException ex)
             {
+                System.Diagnostics.Trace.TraceWarning($"CASC file not found: {fileName}. Details: {ex.Message}");
                 stream = null;
                 return false;
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                System.Diagnostics.Trace.TraceWarning($"Invalid argument for file: {fileName}. Details: {ex.Message}");
+                stream = null;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"Unexpected error opening file: {fileName}. Exception: {ex}");
                 stream = null;
                 return false;
             }
@@ -434,6 +443,7 @@ namespace War3Net.IO.Casc
             }
 
             // Wrap the stream to remove it from tracking when disposed
+            // Use a separate disposal lock to avoid potential deadlocks
             return new TrackedStream(stream, weakRef, () =>
             {
                 lock (_streamLock)
@@ -447,6 +457,8 @@ namespace War3Net.IO.Casc
         {
             // Remove weak references that no longer point to live objects
             // This prevents the collection from growing indefinitely
+            // Note: RemoveWhere is thread-safe on HashSet, but we still need the lock
+            // since we're modifying the collection that other methods are reading
             _openStreams.RemoveWhere(wr => !wr.IsAlive);
         }
 

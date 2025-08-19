@@ -125,45 +125,70 @@ namespace War3Net.IO.Casc.Encoding
                         break; // Not enough data for a valid entry
                     }
 
-                    // More robust padding detection
-                    // Check if the next entry would be all zeros (padding)
-                    var peekPos = pageStream.Position;
-                    var peekBytes = new byte[Math.Min(16, (int)(pageStream.Length - pageStream.Position))];
-                    var bytesRead = pageReader.Read(peekBytes, 0, peekBytes.Length);
-                    pageStream.Position = peekPos;
-
-                    // If first 16 bytes (or remaining bytes) are all zeros, it's padding
-                    var isAllZeros = true;
-                    for (int i = 0; i < bytesRead; i++)
-                    {
-                        if (peekBytes[i] != 0)
-                        {
-                            isAllZeros = false;
-                            break;
-                        }
-                    }
-
-                    if (isAllZeros)
-                    {
-                        break; // Hit padding
-                    }
-
+                    // Improved padding detection:
+                    // Save position for potential rollback
+                    var entryStartPos = pageStream.Position;
+                    
                     try
                     {
+                        // Peek at the key count (first 2 bytes)
+                        var keyCountBytes = new byte[2];
+                        if (pageReader.Read(keyCountBytes, 0, 2) != 2)
+                        {
+                            break; // Can't read key count
+                        }
+                        
+                        var keyCount = BitConverter.ToUInt16(keyCountBytes, 0);
+                        
+                        // Validate key count - CascLib limits this to reasonable values
+                        // Most entries have 1-3 keys, anything over 10 is suspicious
+                        if (keyCount == 0 || keyCount > 10)
+                        {
+                            // Check if this might be padding (all zeros)
+                            if (keyCountBytes[0] == 0 && keyCountBytes[1] == 0)
+                            {
+                                // Likely hit padding
+                                break;
+                            }
+                            // Otherwise it's invalid data
+                            pageStream.Position = entryStartPos;
+                            break;
+                        }
+                        
+                        // Reset to read the full entry
+                        pageStream.Position = entryStartPos;
+                        
                         var entry = EncodingEntry.Parse(pageReader, encoding.Header);
                         
-                        // Validate the entry before adding
-                        if (entry.CKey.IsEmpty && entry.EKeys.Count == 0)
+                        // Additional validation
+                        if (entry.CKey.IsEmpty || entry.EKeys.Count == 0 || entry.EKeys.Count != keyCount)
                         {
-                            break; // Invalid entry, likely padding
+                            // Invalid entry structure
+                            pageStream.Position = entryStartPos;
+                            break;
                         }
                         
                         encoding.AddEntry(entry);
                     }
-                    catch
+                    catch (EndOfStreamException)
                     {
-                        // If parsing fails, we've likely hit padding or corrupted data
+                        // Hit end of valid data
                         break;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error for debugging but continue trying to parse
+                        System.Diagnostics.Trace.TraceWarning($"Failed to parse encoding entry at position {entryStartPos}: {ex.Message}");
+                        
+                        // Try to recover by seeking to next potential entry
+                        // This is a last-resort recovery attempt
+                        pageStream.Position = entryStartPos + 1;
+                        
+                        // If we're too close to the end, just stop
+                        if (pageStream.Length - pageStream.Position < minEntrySize)
+                        {
+                            break;
+                        }
                     }
                 }
             }

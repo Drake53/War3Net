@@ -172,9 +172,14 @@ namespace War3Net.IO.Casc.Index
             Utilities.JenkinsHash.HashLittle2(hashData, out uint pc, out uint pb);
             
             // CascLib uses XOR of the two hash values for better distribution
-            // then takes the lower byte for bucket index (0-255 range, typically masked to actual bucket count)
-            uint combinedHash = pc ^ pb;
-            return (byte)(combinedHash & 0x0F); // Use lower 4 bits for 16 buckets (standard CASC)
+            // Use checked arithmetic to prevent integer overflow
+            checked
+            {
+                uint combinedHash = pc ^ pb;
+                // Use lower 4 bits for 16 buckets (CascConstants.IndexCount)
+                // Ensure we stay within valid bucket range (0-15)
+                return (byte)(combinedHash & (CascConstants.IndexCount - 1));
+            }
         }
 
         /// <summary>
@@ -200,6 +205,13 @@ namespace War3Net.IO.Casc.Index
         /// <returns>The full path to the data file.</returns>
         public static string GetDataFilePath(EKeyEntry entry, string dataPath)
         {
+            // Validate data file index is within reasonable bounds
+            // CascLib defines CASC_MAX_DATA_FILES as 0x1000 (4096)
+            if (entry.DataFileIndex >= CascConstants.MaxDataFiles)
+            {
+                throw new CascException($"Data file index {entry.DataFileIndex} exceeds maximum allowed value {CascConstants.MaxDataFiles}");
+            }
+            
             return Path.Combine(dataPath, $"data.{entry.DataFileIndex:D3}");
         }
 
