@@ -7,8 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
+
+using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Cdn
 {
@@ -18,99 +19,120 @@ namespace War3Net.IO.Casc.Cdn
     /// <remarks>
     /// <para>
     /// The build config file contains hashes and metadata for all the critical data files needed to
-    /// reconstruct a specific game build. It serves as the entry point for accessing game content.
+    /// reconstruct a specific game build. It serves as the entry point for accessing game content
+    /// in the TACT system used by <see cref="Storage.OnlineCascStorage"/>.
     /// </para>
     /// <para>
-    /// The first value in paired fields is typically the <see cref="Structures.CascKey"/>, while the second
-    /// (if present) is the <see cref="Structures.EKey"/>. If the second value is absent, the <see cref="Structures.EKey"/> must
+    /// The first value in paired fields is typically the <see cref="CascKey"/>, while the second
+    /// (if present) is the <see cref="EKey"/>. If the second value is absent, the <see cref="EKey"/> must
     /// be looked up in the <see cref="Encoding.EncodingFile"/>.
     /// </para>
+    /// <para>
+    /// Key relationships in the build config:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description><see cref="Root"/> - Points to the root file (e.g., <see cref="Root.TvfsRootHandler"/> for Warcraft III)</description></item>
+    /// <item><description><see cref="Encoding"/> - Points to the <see cref="Encoding.EncodingFile"/> for <see cref="CascKey"/> to <see cref="EKey"/> resolution</description></item>
+    /// <item><description><see cref="Install"/> and <see cref="Download"/> - Point to manifest files for installation and patching</description></item>
+    /// <item><description><see cref="VfsRoot"/> - Specific to Warcraft III, points to the VFS root directory structure</description></item>
+    /// </list>
     /// </remarks>
-    public class BuildConfig
+    public class BuildConfig : ConfigBase
     {
-        private readonly Dictionary<string, string> _data;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildConfig"/> class.
         /// </summary>
         public BuildConfig()
+            : base()
         {
-            _data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
-        /// Gets the content hash (<see cref="Structures.CascKey"/>) of the decoded root file.
+        /// Gets the content hash of the decoded root file.
         /// </summary>
+        /// <value>The <see cref="CascKey"/> of the root file.</value>
         /// <remarks>
-        /// Look this up in encoding to get the encoded hash.
+        /// <para>
+        /// Look this up in <see cref="Encoding.EncodingFile"/> to get the corresponding <see cref="EKey"/>.
+        /// The root file contains the mapping from file paths to <see cref="CascKey"/>s, implemented
+        /// by handlers like <see cref="Root.TvfsRootHandler"/> for Warcraft III.
+        /// </para>
         /// </remarks>
-        public string? Root => GetValue("root");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'root' key is not found in the configuration.</exception>
+        public CascKey Root => CascKey.Parse(GetRequiredValue("root"));
 
         /// <summary>
-        /// Gets the install manifest hash.
+        /// Gets the install manifest hash pair.
         /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> for the install manifest.</value>
         /// <remarks>
-        /// First key is the content hash of the decoded install file.
-        /// Second key, if present, is the encoded hash; if absent, look up in encoding.
+        /// <para>
+        /// First key is the <see cref="CascKey"/> of the decoded install file.
+        /// Second key, if present, is the <see cref="EKey"/>; if absent, look up in <see cref="Encoding.EncodingFile"/>.
+        /// </para>
         /// </remarks>
-        public string? Install => GetValue("install");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'install' key is not found in the configuration.</exception>
+        public CascKeyPair Install => CascKeyPair.Parse(GetRequiredValue("install"));
 
         /// <summary>
-        /// Gets the install size(s) corresponding to the install hash(es).
+        /// Gets the install sizes corresponding to the install hash(es).
         /// </summary>
-        /// <remarks>
-        /// Absent in older WoW builds.
-        /// </remarks>
-        public string? InstallSize => GetValue("install-size");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'install-size' key is not found in the configuration.</exception>
+        public long[] InstallSizes => ParseSizes(GetRequiredValue("install-size"));
 
         /// <summary>
-        /// Gets the download manifest hash.
+        /// Gets the download manifest hash pair.
         /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> for the download manifest.</value>
         /// <remarks>
-        /// First key is the content hash of the decoded download file.
-        /// Second key, if present, is the encoded hash; if absent, look up in encoding.
+        /// <para>
+        /// First key is the <see cref="CascKey"/> of the decoded download file.
+        /// Second key, if present, is the <see cref="EKey"/>; if absent, look up in <see cref="Encoding.EncodingFile"/>.
+        /// </para>
         /// </remarks>
-        public string? Download => GetValue("download");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'download' key is not found in the configuration.</exception>
+        public CascKeyPair Download => CascKeyPair.Parse(GetRequiredValue("download"));
 
         /// <summary>
-        /// Gets the download size(s) corresponding to the download hash(es).
+        /// Gets the download sizes corresponding to the download hash(es).
         /// </summary>
-        /// <remarks>
-        /// Absent in older WoW builds.
-        /// </remarks>
-        public string? DownloadSize => GetValue("download-size");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'download-size' key is not found in the configuration.</exception>
+        public long[] DownloadSizes => ParseSizes(GetRequiredValue("download-size"));
 
         /// <summary>
-        /// Gets the size file hash.
+        /// Gets the size file hash pair.
         /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> for the download size file, or <see cref="CascKeyPair.Empty"/> if not present.</value>
         /// <remarks>
         /// CKey and EKey of the download size file, respectively.
         /// Introduced in WoW build 27547.
         /// </remarks>
-        public string? Size => GetValue("size");
+        public CascKeyPair Size => TryGetKeyPair("size");
 
         /// <summary>
         /// Gets the download size sizes corresponding to the download size keys.
         /// </summary>
-        public string? SizeSize => GetValue("size-size");
+        public long[] SizeSizes => ParseSizes(GetRequiredValue("size-size"));
 
         /// <summary>
         /// Gets the partial priority for builds.
         /// </summary>
+        /// <value>Content hash:block size pairs, or <see langword="null"/> if not present.</value>
         /// <remarks>
         /// Content hash:block size pairs for priority non-archived files, ordered by priority.
         /// Optional field.
         /// </remarks>
-        public string? BuildPartialPriority => GetValue("build-partial-priority");
+        public string? BuildPartialPriority => GetOptionalValue("build-partial-priority");
 
         /// <summary>
         /// Gets the partial priority file hash.
         /// </summary>
+        /// <value>The <see cref="CascKey"/> of the partial priority file, or <see cref="CascKey.Empty"/> if not present.</value>
         /// <remarks>
         /// Content hash of a partial download file containing priority files to download first.
         /// Optional field.
         /// </remarks>
-        public string? PartialPriority => GetValue("partial-priority");
+        public CascKey PartialPriority => TryGetCKey("partial-priority");
 
         /// <summary>
         /// Gets the partial priority size.
@@ -118,42 +140,71 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Unknown: always 0 if present. Present if partial-priority is present.
         /// </remarks>
-        public string? PartialPrioritySize => GetValue("partial-priority-size");
+        public long PartialPrioritySize => ParseSize(GetOptionalValue("partial-priority-size"));
 
         /// <summary>
-        /// Gets the encoding file hash.
+        /// Gets the encoding file hash pair.
         /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> for the encoding file.</value>
         /// <remarks>
-        /// First key is the content hash of the decoded encoding file.
-        /// Second key is the encoded hash.
+        /// <para>
+        /// First key is the <see cref="CascKey"/> of the decoded <see cref="Encoding.EncodingFile"/>.
+        /// Second key is the <see cref="EKey"/> used to retrieve the file from CDN or <see cref="Index.IndexFile"/>.
+        /// </para>
+        /// <para>
+        /// The encoding file is critical for <see cref="Storage.OnlineCascStorage"/> as it provides the mappings
+        /// needed to resolve content keys to encoded keys for file retrieval.
+        /// </para>
         /// </remarks>
-        public string? Encoding => GetValue("encoding");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'encoding' key is not found in the configuration.</exception>
+        public CascKeyPair Encoding => CascKeyPair.Parse(GetRequiredValue("encoding"));
 
         /// <summary>
         /// Gets the encoding sizes corresponding to the encoding hashes.
         /// </summary>
-        public string? EncodingSize => GetValue("encoding-size");
+        /// <exception cref="KeyNotFoundException">Thrown when the 'encoding-size' key is not found in the configuration.</exception>
+        public long[] EncodingSizes => ParseSizes(GetRequiredValue("encoding-size"));
 
         /// <summary>
-        /// Gets the patch manifest of patchable data files.
+        /// Gets the patch manifest hash.
+        /// </summary>
+        /// <value>The <see cref="CascKey"/> of the patch manifest, or <see cref="CascKey.Empty"/> if not present.</value>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
+        public CascKey Patch => TryGetCKey("patch");
+
+        /// <summary>
+        /// Gets the size of the patch manifest.
         /// </summary>
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? Patch => GetValue("patch");
-
-        /// <summary>
-        /// Gets the size of the patch manifest, if any.
-        /// </summary>
-        /// <remarks>
-        /// Optional field.
-        /// </remarks>
-        public string? PatchSize => GetValue("patch-size");
+        public long PatchSize => ParseSize(GetOptionalValue("patch-size"));
 
         /// <summary>
         /// Gets the content hash of non-encoded patch config.
         /// </summary>
-        public string? PatchConfig => GetValue("patch-config");
+        /// <value>The <see cref="CascKey"/> of the patch config, or <see cref="CascKey.Empty"/> if not present.</value>
+        public CascKey PatchConfig => TryGetCKey("patch-config");
+
+        /// <summary>
+        /// Gets the patch index hash pair.
+        /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> for the patch index file, or <see cref="CascKeyPair.Empty"/> if not present.</value>
+        /// <remarks>
+        /// The patch index contains mappings for patch data. First value is the <see cref="CascKey"/>,
+        /// second value (if present) is the <see cref="EKey"/>.
+        /// </remarks>
+        public CascKeyPair PatchIndex => TryGetKeyPair("patch-index");
+
+        /// <summary>
+        /// Gets the patch index sizes.
+        /// </summary>
+        /// <remarks>
+        /// Sizes corresponding to the patch index hashes.
+        /// </remarks>
+        public long[] PatchIndexSizes => ParseSizes(GetOptionalValue("patch-index-size"));
 
         /// <summary>
         /// Gets the build attributes.
@@ -161,7 +212,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildAttributes => GetValue("build-attributes");
+        public string? BuildAttributes => GetOptionalValue("build-attributes");
 
         /// <summary>
         /// Gets the build branch.
@@ -169,7 +220,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildBranch => GetValue("build-branch");
+        public string? BuildBranch => GetOptionalValue("build-branch");
 
         /// <summary>
         /// Gets the build comments.
@@ -177,7 +228,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildComments => GetValue("build-comments");
+        public string? BuildComments => GetOptionalValue("build-comments");
 
         /// <summary>
         /// Gets the build creator.
@@ -185,7 +236,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildCreator => GetValue("build-creator");
+        public string? BuildCreator => GetOptionalValue("build-creator");
 
         /// <summary>
         /// Gets the build fixed hash.
@@ -193,7 +244,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildFixedHash => GetValue("build-fixed-hash");
+        public string? BuildFixedHash => GetOptionalValue("build-fixed-hash");
 
         /// <summary>
         /// Gets the build replay hash.
@@ -201,7 +252,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildReplayHash => GetValue("build-replay-hash");
+        public string? BuildReplayHash => GetOptionalValue("build-replay-hash");
 
         /// <summary>
         /// Gets the build name.
@@ -209,7 +260,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildName => GetValue("build-name");
+        public string? BuildName => GetOptionalValue("build-name");
 
         /// <summary>
         /// Gets the build playbuild installer.
@@ -217,7 +268,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildPlaybuildInstaller => GetValue("build-playbuild-installer");
+        public string? BuildPlaybuildInstaller => GetOptionalValue("build-playbuild-installer");
 
         /// <summary>
         /// Gets the product name.
@@ -225,7 +276,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildProduct => GetValue("build-product");
+        public string? BuildProduct => GetOptionalValue("build-product");
 
         /// <summary>
         /// Gets the build T1 manifest version.
@@ -233,7 +284,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildT1ManifestVersion => GetValue("build-t1-manifest-version");
+        public string? BuildT1ManifestVersion => GetOptionalValue("build-t1-manifest-version");
 
         /// <summary>
         /// Gets the build UID (program code).
@@ -241,7 +292,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <remarks>
         /// Optional field.
         /// </remarks>
-        public string? BuildUid => GetValue("build-uid");
+        public string? BuildUid => GetOptionalValue("build-uid");
 
         /// <summary>
         /// Gets the build key (alias for BuildUid).
@@ -249,36 +300,93 @@ namespace War3Net.IO.Casc.Cdn
         public string? BuildKey => BuildUid;
 
         /// <summary>
-        /// Gets the VFS root content hash (used by Warcraft III).
+        /// Gets the build status.
         /// </summary>
-        public string? VfsRoot => GetValue("vfs-root");
+        /// <remarks>
+        /// Build status indicator. Optional field.
+        /// </remarks>
+        public string? BuildStatus => GetOptionalValue("build-status");
+
+        /// <summary>
+        /// Gets the build source revision.
+        /// </summary>
+        /// <remarks>
+        /// Source control revision hash. Optional field.
+        /// </remarks>
+        public string? BuildSourceRevision => GetOptionalValue("build-source-revision");
+
+        /// <summary>
+        /// Gets the build source branch.
+        /// </summary>
+        /// <remarks>
+        /// Source control branch name. Optional field.
+        /// </remarks>
+        public string? BuildSourceBranch => GetOptionalValue("build-source-branch");
+
+        /// <summary>
+        /// Gets the build data revision.
+        /// </summary>
+        /// <remarks>
+        /// Data revision number. Optional field.
+        /// </remarks>
+        public string? BuildDataRevision => GetOptionalValue("build-data-revision");
+
+        /// <summary>
+        /// Gets the build data branch.
+        /// </summary>
+        /// <remarks>
+        /// Data branch name. Optional field.
+        /// </remarks>
+        public string? BuildDataBranch => GetOptionalValue("build-data-branch");
+
+        /// <summary>
+        /// Gets the VFS root hash pair (used by Warcraft III).
+        /// </summary>
+        /// <value>The <see cref="CascKeyPair"/> of the VFS root directory structure, or <see cref="CascKeyPair.Empty"/> if not present.</value>
+        /// <remarks>
+        /// <para>
+        /// This is specific to Warcraft III and points to the Virtual File System root that contains
+        /// the directory structure. This is different from the <see cref="Root"/> property which points
+        /// to the <see cref="Root.TvfsRootHandler"/> file containing path-to-key mappings.
+        /// </para>
+        /// </remarks>
+        public CascKeyPair VfsRoot => TryGetKeyPair("vfs-root");
 
         /// <summary>
         /// Gets the VFS root size.
         /// </summary>
-        public string? VfsRootSize => GetValue("vfs-root-size");
+        public long VfsRootSize => ParseSize(GetOptionalValue("vfs-root-size"));
 
         /// <summary>
         /// Gets a VFS manifest entry by index.
         /// </summary>
-        /// <param name="index">The index of the VFS manifest.</param>
-        /// <returns>The VFS manifest hash, or null if not found.</returns>
-        public string? GetVfsManifest(int index) => GetValue($"vfs-{index}");
+        /// <param name="index">The index of the VFS manifest to retrieve.</param>
+        /// <returns>The <see cref="CascKeyPair"/> of the VFS manifest, or <see cref="CascKeyPair.Empty"/> if not found.</returns>
+        /// <remarks>
+        /// VFS manifests are numbered sequentially (vfs-0, vfs-1, etc.) and contain additional
+        /// directory and file structure information used by Warcraft III's CASC implementation.
+        /// </remarks>
+        public CascKeyPair GetVfsManifest(int index) => TryGetKeyPair($"vfs-{index}");
 
         /// <summary>
         /// Gets a VFS manifest size by index.
         /// </summary>
         /// <param name="index">The index of the VFS manifest.</param>
-        /// <returns>The VFS manifest size, or null if not found.</returns>
-        public string? GetVfsManifestSize(int index) => GetValue($"vfs-{index}-size");
+        /// <returns>The VFS manifest size, or 0 if not found.</returns>
+        public long GetVfsManifestSize(int index) => ParseSize(GetOptionalValue($"vfs-{index}-size"));
 
         /// <summary>
         /// Gets all VFS manifest entries.
         /// </summary>
-        /// <returns>A dictionary of index to VFS manifest hash.</returns>
-        public Dictionary<int, string> GetAllVfsManifests()
+        /// <returns>A dictionary mapping VFS manifest indices to their <see cref="CascKeyPair"/>s.</returns>
+        /// <remarks>
+        /// This method scans all configuration keys for VFS manifest entries (vfs-0, vfs-1, etc.)
+        /// and returns them in a dictionary for easy access. Used by Warcraft III for comprehensive
+        /// file system structure information.
+        /// </remarks>
+        public Dictionary<int, CascKeyPair> GetAllVfsManifests()
         {
-            var result = new Dictionary<int, string>();
+            var result = new Dictionary<int, CascKeyPair>();
             foreach (var kvp in _data)
             {
                 if (kvp.Key.StartsWith("vfs-", StringComparison.OrdinalIgnoreCase) &&
@@ -288,7 +396,7 @@ namespace War3Net.IO.Casc.Cdn
                     var indexStr = kvp.Key[4..];
                     if (int.TryParse(indexStr, out var index))
                     {
-                        result[index] = kvp.Value;
+                        result[index] = CascKeyPair.Parse(kvp.Value);
                     }
                 }
             }
@@ -297,66 +405,38 @@ namespace War3Net.IO.Casc.Cdn
         }
 
         /// <summary>
-        /// Parses a build config from a stream.
+        /// Parses a build configuration from a stream.
         /// </summary>
-        /// <param name="stream">The stream to parse.</param>
-        /// <returns>The parsed build config.</returns>
+        /// <param name="stream">The stream containing build configuration data.</param>
+        /// <returns>A new <see cref="BuildConfig"/> instance with all configuration values loaded.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="stream"/> is <see langword="null"/>.</exception>
+        /// <remarks>
+        /// The build configuration format is a simple key=value text format with comments starting with #.
+        /// This file is typically downloaded by <see cref="Storage.OnlineCascStorage"/> from the CDN
+        /// using hash values from version configuration files.
+        /// </remarks>
         public static BuildConfig Parse(Stream stream)
         {
-            var config = new BuildConfig();
-            using var reader = new StreamReader(stream);
+            return ParseConfig(stream, new BuildConfig());
+        }
 
-            string? line;
-            while ((line = reader.ReadLine()) != null)
+        private CascKey TryGetCKey(string key)
+        {
+            var value = GetOptionalValue(key);
+            if (string.IsNullOrWhiteSpace(value))
             {
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var equalIndex = line.IndexOf('=', StringComparison.Ordinal);
-                if (equalIndex < 0)
-                {
-                    continue;
-                }
-
-                var key = line[..equalIndex].Trim();
-                var value = line[(equalIndex + 1)..].Trim();
-
-                config._data[key] = value;
+                return CascKey.Empty;
             }
 
-            return config;
+            // If there are multiple values, take the first one (CKey)
+            var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length > 0 ? CascKey.Parse(parts[0]) : CascKey.Empty;
         }
 
-        /// <summary>
-        /// Gets the value corresponding to the given <paramref name="key"/>.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>The value, or <see langword="null"/>  if not found.</returns>
-        public string? GetValue(string key)
+        private CascKeyPair TryGetKeyPair(string key)
         {
-            return _data.TryGetValue(key, out var value) ? value : null;
-        }
-
-        /// <summary>
-        /// Tries to get the value corresponding to the given <paramref name="key"/>.
-        /// </summary>
-        /// <param name="key">The key to look up.</param>
-        /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, null.</param>
-        /// <returns><see langword="true"/> if the key was found; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
-        {
-            return _data.TryGetValue(key, out value);
-        }
-
-        /// <summary>
-        /// Gets all key-value pairs.
-        /// </summary>
-        /// <returns>A dictionary of all key-value pairs.</returns>
-        public IReadOnlyDictionary<string, string> GetAll()
-        {
-            return _data;
+            var value = GetOptionalValue(key);
+            return string.IsNullOrWhiteSpace(value) ? CascKeyPair.Empty : CascKeyPair.Parse(value);
         }
     }
 }
