@@ -156,7 +156,7 @@ namespace War3Net.IO.Casc.Index
         private static byte CalculateBucketIndex(EKey ekey)
         {
             // Match CascLib's approach: use Jenkins hash of first 9 bytes
-            var span = ekey.Value.Span;
+            var span = ekey.Value;
             if (span.Length == 0)
             {
                 return 0;

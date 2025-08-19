@@ -71,13 +71,15 @@ namespace War3Net.IO.Casc.Structures
             key.CopyTo(_key);
         }
 
-        // Static empty instance
-        private static readonly EKey EmptyInstance = new EKey { _key = null, _length = 0 };
-        
         /// <summary>
         /// Gets an empty encoded key.
         /// </summary>
-        public static EKey Empty { get; } = EmptyInstance;
+        public static EKey Empty { get; } = CreateEmpty();
+        
+        private static EKey CreateEmpty()
+        {
+            return default(EKey);
+        }
 
         /// <summary>
         /// Gets the key bytes.

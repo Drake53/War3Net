@@ -30,7 +30,7 @@ namespace War3Net.IO.Casc.Utilities
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var bytes = Encoding.UTF8.GetBytes(value);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(value);
             writer.Write(bytes);
             writer.Write((byte)0);
         }
@@ -49,7 +49,7 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             var bytes = new byte[length];
-            var stringBytes = Encoding.UTF8.GetBytes(value);
+            var stringBytes = System.Text.Encoding.UTF8.GetBytes(value);
             Array.Copy(stringBytes, bytes, Math.Min(stringBytes.Length, length - 1));
             writer.Write(bytes);
         }

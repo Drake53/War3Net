@@ -69,7 +69,7 @@ namespace War3Net.IO.Casc.Compression
         /// <returns>The parsed header.</returns>
         public static BlteHeader Parse(Stream stream)
         {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            using var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
             return Parse(reader);
         }
 

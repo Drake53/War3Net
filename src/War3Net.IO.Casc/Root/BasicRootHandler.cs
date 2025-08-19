@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Structures;
@@ -31,23 +32,39 @@ namespace War3Net.IO.Casc.Root
             _fileDataIdEntries = new Dictionary<uint, RootEntry>();
         }
 
-        /// <inheritdoc/>
-        public override int RootEntryCount => _rootEntries.Count;
+        /// <summary>
+        /// Gets the root entry count.
+        /// </summary>
+        public int RootEntryCount => _rootEntries.Count;
 
-        /// <inheritdoc/>
-        public override bool TryGetEntry(string fileName, out RootEntry? entry)
+        /// <summary>
+        /// Tries to get an entry by file name.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="entry">The entry, if found.</param>
+        /// <returns>true if the entry was found; otherwise, false.</returns>
+        public bool TryGetEntry(string fileName, out RootEntry? entry)
         {
             return _rootEntries.TryGetValue(fileName, out entry);
         }
 
-        /// <inheritdoc/>
-        public override bool TryGetEntry(uint fileDataId, out RootEntry? entry)
+        /// <summary>
+        /// Tries to get an entry by file data ID.
+        /// </summary>
+        /// <param name="fileDataId">The file data ID.</param>
+        /// <param name="entry">The entry, if found.</param>
+        /// <returns>true if the entry was found; otherwise, false.</returns>
+        public bool TryGetEntry(uint fileDataId, out RootEntry? entry)
         {
             return _fileDataIdEntries.TryGetValue(fileDataId, out entry);
         }
 
-        /// <inheritdoc/>
-        public override IEnumerable<RootEntry> GetEntries(string fileName)
+        /// <summary>
+        /// Gets entries for a file name.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <returns>The entries.</returns>
+        public IEnumerable<RootEntry> GetEntries(string fileName)
         {
             if (_rootEntries.TryGetValue(fileName, out var entry))
             {
@@ -55,8 +72,11 @@ namespace War3Net.IO.Casc.Root
             }
         }
 
-        /// <inheritdoc/>
-        public override IEnumerable<RootEntry> GetAllEntries()
+        /// <summary>
+        /// Gets all entries.
+        /// </summary>
+        /// <returns>All root entries.</returns>
+        public IEnumerable<RootEntry> GetAllEntries()
         {
             return _rootEntries.Values;
         }
@@ -66,6 +86,12 @@ namespace War3Net.IO.Casc.Root
         {
             _rootEntries.Clear();
             _fileDataIdEntries.Clear();
+        }
+
+        /// <inheritdoc/>
+        public override void Parse(Stream stream)
+        {
+            LoadFromStream(stream);
         }
 
         /// <summary>

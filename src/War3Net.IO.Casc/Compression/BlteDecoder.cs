@@ -193,7 +193,7 @@ namespace War3Net.IO.Casc.Compression
 
             // Use War3Net.IO.Compression for zlib decompression
             using var compressedStream = new MemoryStream(compressedData);
-            using var decompressor = new ZLibStream(compressedStream, CompressionMode.Decompress);
+            using var decompressor = new Ionic.Zlib.ZlibStream(compressedStream, Ionic.Zlib.CompressionMode.Decompress);
             using var outputStream = new MemoryStream();
 
             decompressor.CopyTo(outputStream);
@@ -235,7 +235,7 @@ namespace War3Net.IO.Casc.Compression
             // Validate decrypted data
             if (decryptedData == null || decryptedData.Length == 0)
             {
-                throw new CascEncryptionException(keyName, "Decryption failed or produced empty data");
+                throw new CascEncryptionException($"Decryption failed or produced empty data for key: 0x{keyName:X16}");
             }
 
             // The decrypted data should be processed based on the compression type

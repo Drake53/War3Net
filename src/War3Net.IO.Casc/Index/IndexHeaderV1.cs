@@ -153,7 +153,7 @@ namespace War3Net.IO.Casc.Index
                 reader.BaseStream.Position = currentPos;
                 
                 // Use Jenkins hash or appropriate algorithm
-                var calculatedHash = Utilities.HashHelper.JenkinsHash(headerBytes);
+                var calculatedHash = Utilities.HashHelper.ComputeJenkinsHash(headerBytes);
                 if (calculatedHash != header.HeaderHash)
                 {
                     System.Diagnostics.Trace.TraceWarning($"Index header hash mismatch: calculated 0x{calculatedHash:X8}, expected 0x{header.HeaderHash:X8}");

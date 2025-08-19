@@ -34,7 +34,7 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="context">The storage context.</param>
         /// <param name="indexEntry">The index entry for the file.</param>
-        public CascStream(CascStorageContext context, EKeyEntry indexEntry)
+        internal CascStream(CascStorageContext context, EKeyEntry indexEntry)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _indexEntry = indexEntry ?? throw new ArgumentNullException(nameof(indexEntry));

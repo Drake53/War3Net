@@ -47,7 +47,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The MD5 hash.</returns>
         public static byte[] ComputeMD5(string text)
         {
-            return ComputeMD5(Encoding.UTF8.GetBytes(text));
+            return ComputeMD5(System.Text.Encoding.UTF8.GetBytes(text));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The Jenkins hash.</returns>
         public static uint ComputeJenkinsHash(string text)
         {
-            return ComputeJenkinsHash(Encoding.UTF8.GetBytes(text));
+            return ComputeJenkinsHash(System.Text.Encoding.UTF8.GetBytes(text));
         }
 
         /// <summary>

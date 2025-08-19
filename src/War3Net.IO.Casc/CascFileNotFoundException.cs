@@ -42,15 +42,6 @@ namespace War3Net.IO.Casc
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CascFileNotFoundException"/> class.
-        /// </summary>
-        /// <param name="fileName">The name of the file that was not found.</param>
-        public CascFileNotFoundException(string fileName)
-            : base($"File not found in CASC storage: {fileName}")
-        {
-            FileName = fileName;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CascFileNotFoundException"/> class.

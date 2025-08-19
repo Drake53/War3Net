@@ -102,7 +102,7 @@ namespace War3Net.IO.Casc.Utilities
                     }
                 }
                 
-                return result.Count > 0 ? Encoding.UTF8.GetString(result.ToArray()) : string.Empty;
+                return result.Count > 0 ? System.Text.Encoding.UTF8.GetString(result.ToArray()) : string.Empty;
             }
             finally
             {
@@ -122,10 +122,10 @@ namespace War3Net.IO.Casc.Utilities
             var nullIndex = Array.IndexOf(bytes, (byte)0);
             if (nullIndex >= 0)
             {
-                return Encoding.UTF8.GetString(bytes, 0, nullIndex);
+                return System.Text.Encoding.UTF8.GetString(bytes, 0, nullIndex);
             }
 
-            return Encoding.UTF8.GetString(bytes);
+            return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
         /// <summary>

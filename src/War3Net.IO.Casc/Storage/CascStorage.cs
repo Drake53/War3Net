@@ -133,7 +133,7 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascFileNotFoundException(ckey);
             }
 
-            return OpenFileByEKey(ekey);
+            return OpenFileByEKey(ekey.Value);
         }
 
         /// <summary>
@@ -255,7 +255,8 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException("Root handler not loaded. Cannot resolve file names.");
             }
 
-            if (!_context.RootHandler.TryGetEntry(fileName, out var rootEntry) || rootEntry == null)
+            var rootEntry = _context.RootHandler.GetEntry(fileName);
+            if (rootEntry == null)
             {
                 throw new CascFileNotFoundException($"File not found in root: {fileName}");
             }
@@ -287,7 +288,8 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException("Root handler not loaded. Cannot resolve file data IDs.");
             }
 
-            if (!_context.RootHandler.TryGetEntry(fileDataId, out var rootEntry) || rootEntry == null)
+            var rootEntry = _context.RootHandler.GetEntry(fileDataId);
+            if (rootEntry == null)
             {
                 throw new CascFileNotFoundException($"File data ID not found in root: {fileDataId}");
             }

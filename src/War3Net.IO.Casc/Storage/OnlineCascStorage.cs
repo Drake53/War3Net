@@ -44,7 +44,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Gets the product code.
         /// </summary>
-        public string Product { get; }
+        public new string Product { get; }
 
         /// <summary>
         /// Gets the region.
@@ -162,8 +162,10 @@ namespace War3Net.IO.Casc.Storage
             return await OpenStorageAsync("w3", region, localCachePath, CascLocaleFlags.All, progressReporter);
         }
 
-        /// <inheritdoc/>
-        public override void Dispose()
+        /// <summary>
+        /// Disposes the online storage.
+        /// </summary>
+        public new void Dispose()
         {
             _cdnClient?.Dispose();
             base.Dispose();
@@ -171,13 +173,7 @@ namespace War3Net.IO.Casc.Storage
 
         private async Task InitializeOnlineAsync(IProgressReporter? progressReporter)
         {
-            progressReporter?.Report(new ProgressEventArgs
-            {
-                Message = CascProgressMessage.DownloadingFile,
-                Current = 0,
-                Total = 4,
-                FileName = "versions",
-            });
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "versions", 0, 4);
 
             // Download versions file
             var versionsUrl = GetVersionsUrl(Product, Region);
@@ -200,13 +196,7 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException($"No version entry found for region {Region}");
             }
 
-            progressReporter?.Report(new ProgressEventArgs
-            {
-                Message = CascProgressMessage.DownloadingFile,
-                Current = 1,
-                Total = 4,
-                FileName = "cdns",
-            });
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdns", 1, 4);
 
             // Download CDNs file
             var cdnUrl = GetCdnUrl(Product, Region);
@@ -232,13 +222,7 @@ namespace War3Net.IO.Casc.Storage
             // Initialize CDN client
             _cdnClient = new CdnClient(cdnEntry.Hosts, cdnEntry.Path);
 
-            progressReporter?.Report(new ProgressEventArgs
-            {
-                Message = CascProgressMessage.DownloadingFile,
-                Current = 2,
-                Total = 4,
-                FileName = "build config",
-            });
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, 4);
 
             // Download and cache build config
             var buildConfigPath = Path.Combine(StoragePath, "config", versionEntry.BuildConfig);
@@ -249,13 +233,7 @@ namespace War3Net.IO.Casc.Storage
                 await File.WriteAllBytesAsync(buildConfigPath, buildConfigData);
             }
 
-            progressReporter?.Report(new ProgressEventArgs
-            {
-                Message = CascProgressMessage.DownloadingFile,
-                Current = 3,
-                Total = 4,
-                FileName = "cdn config",
-            });
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "cdn config", 3, 4);
 
             // Download and cache CDN config
             var cdnConfigPath = Path.Combine(StoragePath, "config", versionEntry.CdnConfig);
@@ -273,12 +251,7 @@ namespace War3Net.IO.Casc.Storage
                 cdnConfig = CdnConfig.Parse(stream);
             }
 
-            progressReporter?.Report(new ProgressEventArgs
-            {
-                Message = CascProgressMessage.LoadingIndexes,
-                Current = 4,
-                Total = 4,
-            });
+            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 4, 4);
 
             // Download index files if needed
             await DownloadIndexFilesAsync(cdnConfig, progressReporter);
@@ -307,13 +280,7 @@ namespace War3Net.IO.Casc.Storage
 
                 if (!File.Exists(indexPath))
                 {
-                    progressReporter?.Report(new ProgressEventArgs
-                    {
-                        Message = CascProgressMessage.DownloadingArchiveIndexes,
-                        Current = i,
-                        Total = archives.Count,
-                        FileName = indexFileName,
-                    });
+                    progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, archives.Count);
 
                     try
                     {

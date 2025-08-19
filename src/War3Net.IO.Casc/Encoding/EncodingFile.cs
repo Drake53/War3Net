@@ -62,7 +62,7 @@ namespace War3Net.IO.Casc.Encoding
         public static EncodingFile Parse(Stream stream)
         {
             var encoding = new EncodingFile();
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            using var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
 
             // Parse header
             encoding.Header = EncodingHeader.Parse(reader);
@@ -308,7 +308,7 @@ namespace War3Net.IO.Casc.Encoding
         {
             try
             {
-                var text = Encoding.UTF8.GetString(especData);
+                var text = System.Text.Encoding.UTF8.GetString(especData);
                 var strings = text.Split(new[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
                 ESpecStrings.AddRange(strings);
             }

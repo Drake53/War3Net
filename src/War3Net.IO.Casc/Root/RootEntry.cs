@@ -23,6 +23,8 @@ namespace War3Net.IO.Casc.Root
             FileName = string.Empty;
             CKey = CascKey.Empty;
             FileDataId = CascConstants.InvalidId;
+            EKey = EKey.Empty;
+            FileSize = 0;
         }
 
         /// <summary>
@@ -54,6 +56,16 @@ namespace War3Net.IO.Casc.Root
         /// Gets or sets the content flags.
         /// </summary>
         public CascContentFlags ContentFlags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the encoded key.
+        /// </summary>
+        public EKey EKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file size.
+        /// </summary>
+        public ulong FileSize { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this entry has a valid file name.

@@ -23,7 +23,7 @@ namespace War3Net.IO.Casc.Root
         {
             Clear();
 
-            using var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
+            using var reader = new StreamReader(stream, System.Text.Encoding.UTF8, true, 1024, true);
             string? line;
 
             while ((line = reader.ReadLine()) != null)
