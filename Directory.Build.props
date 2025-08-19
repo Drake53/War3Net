@@ -28,6 +28,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>
   <PropertyGroup>
     <TfmGroupDotNet>net5.0</TfmGroupDotNet>
