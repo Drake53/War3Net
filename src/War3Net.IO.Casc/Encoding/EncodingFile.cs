@@ -189,35 +189,35 @@ namespace War3Net.IO.Casc.Encoding
         /// <summary>
         /// Tries to get an entry by content key.
         /// </summary>
-        /// <param name="ckey">The content key.</param>
+        /// <param name="cKey">The content key.</param>
         /// <param name="entry">The found entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
-        public bool TryGetEntry(CascKey ckey, out EncodingEntry? entry)
+        public bool TryGetEntry(CascKey cKey, out EncodingEntry? entry)
         {
-            return _entriesByCKey.TryGetValue(ckey, out entry);
+            return _entriesByCKey.TryGetValue(cKey, out entry);
         }
 
         /// <summary>
         /// Tries to get an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <param name="entry">The found entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
-        public bool TryGetEntry(EKey ekey, out EncodingEntry? entry)
+        public bool TryGetEntry(EKey eKey, out EncodingEntry? entry)
         {
-            return _entriesByEKey.TryGetValue(ekey, out entry);
+            return _entriesByEKey.TryGetValue(eKey, out entry);
         }
 
         /// <summary>
         /// Gets an entry by content key.
         /// </summary>
-        /// <param name="ckey">The content key.</param>
+        /// <param name="cKey">The content key.</param>
         /// <returns>The entry.</returns>
-        public EncodingEntry GetEntry(CascKey ckey)
+        public EncodingEntry GetEntry(CascKey cKey)
         {
-            if (!_entriesByCKey.TryGetValue(ckey, out var entry))
+            if (!_entriesByCKey.TryGetValue(cKey, out var entry))
             {
-                throw new CascFileNotFoundException(ckey);
+                throw new CascFileNotFoundException(cKey);
             }
 
             return entry;
@@ -226,13 +226,13 @@ namespace War3Net.IO.Casc.Encoding
         /// <summary>
         /// Gets an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>The entry.</returns>
-        public EncodingEntry GetEntry(EKey ekey)
+        public EncodingEntry GetEntry(EKey eKey)
         {
-            if (!_entriesByEKey.TryGetValue(ekey, out var entry))
+            if (!_entriesByEKey.TryGetValue(eKey, out var entry))
             {
-                throw new CascFileNotFoundException(ekey);
+                throw new CascFileNotFoundException(eKey);
             }
 
             return entry;
@@ -241,21 +241,21 @@ namespace War3Net.IO.Casc.Encoding
         /// <summary>
         /// Gets the encoded key for a content key.
         /// </summary>
-        /// <param name="ckey">The content key.</param>
+        /// <param name="cKey">The content key.</param>
         /// <returns>The encoded key, or null if not found.</returns>
-        public EKey? GetEKey(CascKey ckey)
+        public EKey? GetEKey(CascKey cKey)
         {
-            return TryGetEntry(ckey, out var entry) ? entry?.PrimaryEKey : null;
+            return TryGetEntry(cKey, out var entry) ? entry?.PrimaryEKey : null;
         }
 
         /// <summary>
         /// Gets the content key for an encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>The content key, or null if not found.</returns>
-        public CascKey? GetCKey(EKey ekey)
+        public CascKey? GetCKey(EKey eKey)
         {
-            return TryGetEntry(ekey, out var entry) ? entry?.CKey : null;
+            return TryGetEntry(eKey, out var entry) ? entry?.CKey : null;
         }
 
         /// <summary>
@@ -266,26 +266,26 @@ namespace War3Net.IO.Casc.Encoding
         {
             _entriesByCKey[entry.CKey] = entry;
 
-            foreach (var ekey in entry.EKeys)
+            foreach (var eKey in entry.EKeys)
             {
-                _entriesByEKey[ekey] = entry;
+                _entriesByEKey[eKey] = entry;
             }
         }
 
         /// <summary>
         /// Removes an entry by content key.
         /// </summary>
-        /// <param name="ckey">The content key.</param>
+        /// <param name="cKey">The content key.</param>
         /// <returns>true if the entry was removed; otherwise, false.</returns>
-        public bool RemoveEntry(CascKey ckey)
+        public bool RemoveEntry(CascKey cKey)
         {
-            if (_entriesByCKey.TryGetValue(ckey, out var entry))
+            if (_entriesByCKey.TryGetValue(cKey, out var entry))
             {
-                _entriesByCKey.Remove(ckey);
+                _entriesByCKey.Remove(cKey);
 
-                foreach (var ekey in entry.EKeys)
+                foreach (var eKey in entry.EKeys)
                 {
-                    _entriesByEKey.Remove(ekey);
+                    _entriesByEKey.Remove(eKey);
                 }
 
                 return true;

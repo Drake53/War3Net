@@ -108,9 +108,9 @@ namespace War3Net.IO.Casc.Encoding
             writer.WriteCKey(CKey);
 
             // Write encoded keys
-            foreach (var ekey in EKeys)
+            foreach (var eKey in EKeys)
             {
-                writer.WriteEKey(ekey, header.EKeyLength);
+                writer.WriteEKey(eKey, header.EKeyLength);
             }
         }
     }

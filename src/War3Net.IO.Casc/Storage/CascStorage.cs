@@ -117,9 +117,9 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Opens a file by content key.
         /// </summary>
-        /// <param name="ckey">The content key.</param>
+        /// <param name="cKey">The content key.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFileByCKey(CascKey ckey)
+        public Stream OpenFileByCKey(CascKey cKey)
         {
             // Get EKey from encoding
             if (_context.EncodingFile == null)
@@ -127,32 +127,32 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException("Encoding file not loaded");
             }
 
-            var ekey = _context.EncodingFile.GetEKey(ckey);
-            if (ekey == null)
+            var eKey = _context.EncodingFile.GetEKey(cKey);
+            if (eKey == null)
             {
-                throw new CascFileNotFoundException(ckey);
+                throw new CascFileNotFoundException(cKey);
             }
 
-            return OpenFileByEKey(ekey.Value);
+            return OpenFileByEKey(eKey.Value);
         }
 
         /// <summary>
         /// Opens a file by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFileByEKey(EKey ekey)
+        public Stream OpenFileByEKey(EKey eKey)
         {
-            return OpenFileByEKey(ekey, false);
+            return OpenFileByEKey(eKey, false);
         }
 
         /// <summary>
         /// Opens a file by encoded key with streaming option.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <param name="useStreaming">If true, returns a streaming reader; if false, loads entire file to memory.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFileByEKey(EKey ekey, bool useStreaming)
+        public Stream OpenFileByEKey(EKey eKey, bool useStreaming)
         {
             _storageLock.EnterReadLock();
             try
@@ -163,9 +163,9 @@ namespace War3Net.IO.Casc.Storage
                 }
 
                 // Find entry in index
-                if (!_context.IndexManager.TryFindEntry(ekey, out var indexEntry))
+                if (!_context.IndexManager.TryFindEntry(eKey, out var indexEntry))
                 {
-                    throw new CascFileNotFoundException(ekey);
+                    throw new CascFileNotFoundException(eKey);
                 }
 
                 if (useStreaming)

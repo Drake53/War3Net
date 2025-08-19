@@ -193,24 +193,24 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Tries to get an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <param name="entry">The found entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
-        public bool TryGetEntry(EKey ekey, out EKeyEntry? entry)
+        public bool TryGetEntry(EKey eKey, out EKeyEntry? entry)
         {
-            return _entries.TryGetValue(ekey, out entry);
+            return _entries.TryGetValue(eKey, out entry);
         }
 
         /// <summary>
         /// Gets an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>The entry.</returns>
-        public EKeyEntry GetEntry(EKey ekey)
+        public EKeyEntry GetEntry(EKey eKey)
         {
-            if (!_entries.TryGetValue(ekey, out var entry))
+            if (!_entries.TryGetValue(eKey, out var entry))
             {
-                throw new CascFileNotFoundException(ekey);
+                throw new CascFileNotFoundException(eKey);
             }
 
             return entry;
@@ -228,11 +228,11 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Removes an entry from the index.
         /// </summary>
-        /// <param name="ekey">The encoded key of the entry to remove.</param>
+        /// <param name="eKey">The encoded key of the entry to remove.</param>
         /// <returns>true if the entry was removed; otherwise, false.</returns>
-        public bool RemoveEntry(EKey ekey)
+        public bool RemoveEntry(EKey eKey)
         {
-            return _entries.Remove(ekey);
+            return _entries.Remove(eKey);
         }
 
         /// <summary>

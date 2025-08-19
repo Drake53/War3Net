@@ -121,21 +121,21 @@ namespace War3Net.IO.Casc
         /// <summary>
         /// Opens a file from the CASC archive using a content key.
         /// </summary>
-        /// <param name="ckey">The content key of the file.</param>
+        /// <param name="cKey">The content key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFile(CascKey ckey)
+        public Stream OpenFile(CascKey cKey)
         {
-            return OpenFile(ckey.ToString(), CascOpenFlags.OpenByCKey);
+            return OpenFile(cKey.ToString(), CascOpenFlags.OpenByCKey);
         }
 
         /// <summary>
         /// Opens a file from the CASC archive using an encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key of the file.</param>
+        /// <param name="eKey">The encoded key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFile(EKey ekey)
+        public Stream OpenFile(EKey eKey)
         {
-            return OpenFile(ekey.ToString(), CascOpenFlags.OpenByEKey);
+            return OpenFile(eKey.ToString(), CascOpenFlags.OpenByEKey);
         }
 
         /// <summary>

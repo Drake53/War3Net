@@ -46,21 +46,21 @@ namespace War3Net.IO.Casc
         /// <summary>
         /// Initializes a new instance of the <see cref="CascFileNotFoundException"/> class.
         /// </summary>
-        /// <param name="ckey">The content key of the file that was not found.</param>
-        public CascFileNotFoundException(CascKey ckey)
-            : base($"File with CKey {ckey} not found in CASC storage")
+        /// <param name="cKey">The content key of the file that was not found.</param>
+        public CascFileNotFoundException(CascKey cKey)
+            : base($"File with CKey {cKey} not found in CASC storage")
         {
-            CKey = ckey;
+            CKey = cKey;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CascFileNotFoundException"/> class.
         /// </summary>
-        /// <param name="ekey">The encoded key of the file that was not found.</param>
-        public CascFileNotFoundException(EKey ekey)
-            : base($"File with EKey {ekey} not found in CASC storage")
+        /// <param name="eKey">The encoded key of the file that was not found.</param>
+        public CascFileNotFoundException(EKey eKey)
+            : base($"File with EKey {eKey} not found in CASC storage")
         {
-            EKey = ekey;
+            EKey = eKey;
         }
 
         /// <summary>

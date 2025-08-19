@@ -78,15 +78,15 @@ using (var stream = archive.OpenFile("DBFilesClient\\Item.db2"))
 }
 
 // Method 2: Open by content key (CKey)
-var ckey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
-using (var stream = archive.OpenFile(ckey))
+var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
+using (var stream = archive.OpenFile(cKey))
 {
     // Read file by content key
 }
 
 // Method 3: Open by encoded key (EKey)
-var ekey = EKey.Parse("ABCDEF1234567890AB");
-using (var stream = archive.OpenFile(ekey))
+var eKey = EKey.Parse("ABCDEF1234567890AB");
+using (var stream = archive.OpenFile(eKey))
 {
     // Read file by encoded key
 }
@@ -241,15 +241,15 @@ using War3Net.IO.Casc.Structures;
 var storage = CascStorage.OpenStorage(@"C:\Games\WoW\Data");
 
 // Access by encoded key
-var ekey = EKey.Parse("1234567890");
-using (var stream = storage.OpenFileByEKey(ekey))
+var eKey = EKey.Parse("1234567890");
+using (var stream = storage.OpenFileByEKey(eKey))
 {
     // Read data
 }
 
 // Access by content key
-var ckey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
-using (var stream = storage.OpenFileByCKey(ckey))
+var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
+using (var stream = storage.OpenFileByCKey(cKey))
 {
     // Read data
 }
@@ -292,8 +292,8 @@ var indexManager = new IndexManager();
 indexManager.LoadIndexFiles(@"C:\Games\WoW\Data\data");
 
 // Find entry by encoded key
-var ekey = EKey.Parse("1234567890");
-if (indexManager.TryFindEntry(ekey, out var entry))
+var eKey = EKey.Parse("1234567890");
+if (indexManager.TryFindEntry(eKey, out var entry))
 {
     Console.WriteLine($"Data file: data.{entry.DataFileIndex:D3}");
     Console.WriteLine($"Offset: {entry.DataFileOffset}");
@@ -310,15 +310,15 @@ using War3Net.IO.Casc.Encoding;
 var encoding = EncodingFile.ParseFile(@"C:\Games\WoW\Data\config\encoding");
 
 // Look up encoded key for content key
-var ckey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
-var ekey = encoding.GetEKey(ckey);
+var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
+var eKey = encoding.GetEKey(cKey);
 
 // Look up content key for encoded key
 var ekey2 = EKey.Parse("1234567890");
 var ckey2 = encoding.GetCKey(ekey2);
 
 // Get entry details
-if (encoding.TryGetEntry(ckey, out var entry))
+if (encoding.TryGetEntry(cKey, out var entry))
 {
     Console.WriteLine($"Content size: {entry.ContentSize}");
     Console.WriteLine($"EKey count: {entry.EKeyCount}");

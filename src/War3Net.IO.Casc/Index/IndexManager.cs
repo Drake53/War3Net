@@ -106,28 +106,28 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Tries to find an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <param name="entry">The found entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
-        public bool TryFindEntry(EKey ekey, out EKeyEntry? entry)
+        public bool TryFindEntry(EKey eKey, out EKeyEntry? entry)
         {
             // First check global index
-            if (_globalIndex.TryGetValue(ekey, out entry))
+            if (_globalIndex.TryGetValue(eKey, out entry))
             {
                 return true;
             }
 
             // Calculate bucket index using a hash of the EKey for better distribution
             // CascLib uses a more complex calculation for bucket distribution
-            var bucketIndex = CalculateBucketIndex(ekey);
+            var bucketIndex = CalculateBucketIndex(eKey);
 
             // Check if we have that bucket's index file
             if (_indexFiles.TryGetValue(bucketIndex, out var indexFile))
             {
-                if (indexFile.TryGetEntry(ekey, out entry))
+                if (indexFile.TryGetEntry(eKey, out entry))
                 {
                     // Add to global index for faster future lookups
-                    _globalIndex[ekey] = entry;
+                    _globalIndex[eKey] = entry;
                     return true;
                 }
             }
@@ -136,10 +136,10 @@ namespace War3Net.IO.Casc.Index
             // This handles cases where the bucket calculation might differ
             foreach (var kvp in _indexFiles)
             {
-                if (kvp.Key != bucketIndex && kvp.Value.TryGetEntry(ekey, out entry))
+                if (kvp.Key != bucketIndex && kvp.Value.TryGetEntry(eKey, out entry))
                 {
                     // Add to global index for faster future lookups
-                    _globalIndex[ekey] = entry;
+                    _globalIndex[eKey] = entry;
                     return true;
                 }
             }
@@ -151,12 +151,12 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Calculates the bucket index for an EKey.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>The bucket index.</returns>
-        private static byte CalculateBucketIndex(EKey ekey)
+        private static byte CalculateBucketIndex(EKey eKey)
         {
             // Match CascLib's approach: use Jenkins hash of first 9 bytes
-            var span = ekey.Value;
+            var span = eKey.Value;
             if (span.Length == 0)
             {
                 return 0;
@@ -179,13 +179,13 @@ namespace War3Net.IO.Casc.Index
         /// <summary>
         /// Finds an entry by encoded key.
         /// </summary>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <returns>The entry.</returns>
-        public EKeyEntry FindEntry(EKey ekey)
+        public EKeyEntry FindEntry(EKey eKey)
         {
-            if (!TryFindEntry(ekey, out var entry))
+            if (!TryFindEntry(eKey, out var entry))
             {
-                throw new CascFileNotFoundException(ekey);
+                throw new CascFileNotFoundException(eKey);
             }
 
             return entry!;

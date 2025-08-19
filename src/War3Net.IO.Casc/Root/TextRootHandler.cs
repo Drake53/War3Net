@@ -43,9 +43,9 @@ namespace War3Net.IO.Casc.Root
                     };
 
                     // Parse CKey
-                    if (CascKey.TryParse(parts[1].Trim(), out var ckey))
+                    if (CascKey.TryParse(parts[1].Trim(), out var cKey))
                     {
-                        entry.CKey = ckey;
+                        entry.CKey = cKey;
                     }
 
                     // Parse file size if available

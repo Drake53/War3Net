@@ -117,31 +117,31 @@ namespace War3Net.IO.Casc.Utilities
         /// Writes a content key.
         /// </summary>
         /// <param name="writer">The binary writer.</param>
-        /// <param name="ckey">The content key.</param>
-        public static void WriteCKey(this BinaryWriter writer, CascKey ckey)
+        /// <param name="cKey">The content key.</param>
+        public static void WriteCKey(this BinaryWriter writer, CascKey cKey)
         {
-            writer.Write(ckey.ToArray());
+            writer.Write(cKey.ToArray());
         }
 
         /// <summary>
         /// Writes an encoded key.
         /// </summary>
         /// <param name="writer">The binary writer.</param>
-        /// <param name="ekey">The encoded key.</param>
-        public static void WriteEKey(this BinaryWriter writer, EKey ekey)
+        /// <param name="eKey">The encoded key.</param>
+        public static void WriteEKey(this BinaryWriter writer, EKey eKey)
         {
-            writer.Write(ekey.ToArray());
+            writer.Write(eKey.ToArray());
         }
 
         /// <summary>
         /// Writes an encoded key with a specific length.
         /// </summary>
         /// <param name="writer">The binary writer.</param>
-        /// <param name="ekey">The encoded key.</param>
+        /// <param name="eKey">The encoded key.</param>
         /// <param name="length">The length to write.</param>
-        public static void WriteEKey(this BinaryWriter writer, EKey ekey, int length)
+        public static void WriteEKey(this BinaryWriter writer, EKey eKey, int length)
         {
-            var bytes = ekey.ToArray();
+            var bytes = eKey.ToArray();
             if (bytes.Length < length)
             {
                 Array.Resize(ref bytes, length);
