@@ -106,7 +106,7 @@ namespace War3Net.IO.Casc.Cdn
         /// Gets the entry for a specific region.
         /// </summary>
         /// <param name="region">The region code.</param>
-        /// <returns>The version entry, or null if not found.</returns>
+        /// <returns>The version entry, or <see langword="null"/> if not found.</returns>
         public VersionEntry? GetEntry(string region)
         {
             return Entries.FirstOrDefault(e =>
@@ -116,7 +116,7 @@ namespace War3Net.IO.Casc.Cdn
         /// <summary>
         /// Gets the first available entry.
         /// </summary>
-        /// <returns>The first version entry, or null if empty.</returns>
+        /// <returns>The first version entry, or <see langword="null"/> if empty.</returns>
         public VersionEntry? GetFirstEntry()
         {
             return Entries.FirstOrDefault();
