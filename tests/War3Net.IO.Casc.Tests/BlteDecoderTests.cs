@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,63 +20,63 @@ namespace War3Net.IO.Casc.Tests
     public class BlteDecoderTests
     {
         [TestMethod]
-        public void TestBLTESignatureDetection()
+        public void TestBlteSignatureDetection()
         {
             // Valid BLTE data
-            var validBLTE = new byte[] { (byte)'B', (byte)'L', (byte)'T', (byte)'E', 0, 0, 0, 8 };
-            Assert.IsTrue(BLTEDecoder.IsBLTE(validBLTE));
+            var validBlte = new byte[] { (byte)'B', (byte)'L', (byte)'T', (byte)'E', 0, 0, 0, 8 };
+            Assert.IsTrue(BlteDecoder.IsBlte(validBlte));
 
             // Invalid data
             var invalidData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
-            Assert.IsFalse(BLTEDecoder.IsBLTE(invalidData));
+            Assert.IsFalse(BlteDecoder.IsBlte(invalidData));
 
             // Too short
             var shortData = new byte[] { (byte)'B', (byte)'L' };
-            Assert.IsFalse(BLTEDecoder.IsBLTE(shortData));
+            Assert.IsFalse(BlteDecoder.IsBlte(shortData));
         }
 
         [TestMethod]
-        public void TestBLTEUncompressedData()
+        public void TestBlteUncompressedData()
         {
             var testData = new byte[] { 1, 2, 3, 4, 5 };
-            var blteData = CreateUncompressedBLTE(testData);
+            var blteData = CreateUncompressedBlte(testData);
             
-            var decoded = BLTEDecoder.Decode(blteData);
+            var decoded = BlteDecoder.Decode(blteData);
             CollectionAssert.AreEqual(testData, decoded);
         }
 
         [TestMethod]
-        public void TestBLTECompressedData()
+        public void TestBlteCompressedData()
         {
             var testData = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var blteData = CreateCompressedBLTE(testData);
+            var blteData = CreateCompressedBlte(testData);
             
-            var decoded = BLTEDecoder.Decode(blteData);
+            var decoded = BlteDecoder.Decode(blteData);
             CollectionAssert.AreEqual(testData, decoded);
         }
 
         [TestMethod]
-        public void TestBLTEStreamDecoding()
+        public void TestBlteStreamDecoding()
         {
             var testData = new byte[] { 10, 20, 30, 40, 50 };
-            var blteData = CreateUncompressedBLTE(testData);
+            var blteData = CreateUncompressedBlte(testData);
             
             using var inputStream = new MemoryStream(blteData);
             using var outputStream = new MemoryStream();
             
-            BLTEDecoder.Decode(inputStream, outputStream);
+            BlteDecoder.Decode(inputStream, outputStream);
             
             var decoded = outputStream.ToArray();
             CollectionAssert.AreEqual(testData, decoded);
         }
 
         [TestMethod]
-        public void TestBLTEFrameDecoding()
+        public void TestBlteFrameDecoding()
         {
             var testData = new byte[] { 100, 101, 102, 103, 104 };
             
             // Create a frame with uncompressed data
-            var frame = new BLTEFrame
+            var frame = new BlteFrame
             {
                 CompressionType = CompressionType.None,
                 Data = new byte[testData.Length + 1],
@@ -86,27 +85,27 @@ namespace War3Net.IO.Casc.Tests
             frame.Data[0] = (byte)CompressionType.None;
             Array.Copy(testData, 0, frame.Data, 1, testData.Length);
             
-            var decoded = BLTEDecoder.DecodeFrame(frame);
+            var decoded = BlteDecoder.DecodeFrame(frame);
             CollectionAssert.AreEqual(testData, decoded);
         }
 
         [TestMethod]
-        public void TestBLTEEmptyData()
+        public void TestBlteEmptyData()
         {
-            var blteData = CreateUncompressedBLTE(Array.Empty<byte>());
-            var decoded = BLTEDecoder.Decode(blteData);
+            var blteData = CreateUncompressedBlte(Array.Empty<byte>());
+            var decoded = BlteDecoder.Decode(blteData);
             Assert.AreEqual(0, decoded.Length);
         }
 
         [TestMethod]
         [ExpectedException(typeof(CascParserException))]
-        public void TestBLTEInvalidSignature()
+        public void TestBlteInvalidSignature()
         {
             var invalidData = new byte[] { 0, 0, 0, 0, 0, 0, 0, 8, 0 };
-            BLTEDecoder.Decode(invalidData);
+            BlteDecoder.Decode(invalidData);
         }
 
-        private static byte[] CreateUncompressedBLTE(byte[] data)
+        private static byte[] CreateUncompressedBlte(byte[] data)
         {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
@@ -135,7 +134,7 @@ namespace War3Net.IO.Casc.Tests
             return stream.ToArray();
         }
 
-        private static byte[] CreateCompressedBLTE(byte[] data)
+        private static byte[] CreateCompressedBlte(byte[] data)
         {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
@@ -144,7 +143,7 @@ namespace War3Net.IO.Casc.Tests
             byte[] compressedData;
             using (var compressStream = new MemoryStream())
             {
-                using (var zlib = new ZLibStream(compressStream, CompressionMode.Compress))
+                using (var zlib = new Ionic.Zlib.ZlibStream(compressStream, Ionic.Zlib.CompressionMode.Compress))
                 {
                     zlib.Write(data, 0, data.Length);
                 }

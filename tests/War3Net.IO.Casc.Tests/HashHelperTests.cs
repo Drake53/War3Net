@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,7 +19,7 @@ namespace War3Net.IO.Casc.Tests
         [TestMethod]
         public void TestMD5Hash()
         {
-            var data = Encoding.UTF8.GetBytes("Hello, World!");
+            var data = System.Text.Encoding.UTF8.GetBytes("Hello, World!");
             var hash = HashHelper.ComputeMD5(data);
             
             Assert.IsNotNull(hash);
@@ -42,14 +41,14 @@ namespace War3Net.IO.Casc.Tests
             Assert.AreEqual(16, hash.Length);
             
             // Should be same as hashing the bytes
-            var bytesHash = HashHelper.ComputeMD5(Encoding.UTF8.GetBytes(text));
+            var bytesHash = HashHelper.ComputeMD5(System.Text.Encoding.UTF8.GetBytes(text));
             CollectionAssert.AreEqual(bytesHash, hash);
         }
 
         [TestMethod]
         public void TestSHA1Hash()
         {
-            var data = Encoding.UTF8.GetBytes("Test Data");
+            var data = System.Text.Encoding.UTF8.GetBytes("Test Data");
             var hash = HashHelper.ComputeSHA1(data);
             
             Assert.IsNotNull(hash);
@@ -59,7 +58,7 @@ namespace War3Net.IO.Casc.Tests
         [TestMethod]
         public void TestSHA256Hash()
         {
-            var data = Encoding.UTF8.GetBytes("Test Data");
+            var data = System.Text.Encoding.UTF8.GetBytes("Test Data");
             var hash = HashHelper.ComputeSHA256(data);
             
             Assert.IsNotNull(hash);

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.IO.Casc.Cdn;
+using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Progress;
 using War3Net.IO.Casc.Storage;
 
@@ -190,9 +191,25 @@ namespace War3Net.IO.Casc.Tests
 
         private class TestProgressReporter : IProgressReporter
         {
-            public void Report(ProgressEventArgs args)
+            public bool ReportProgress(CascProgressMessage message, string? objectName, int current, int total)
             {
-                Console.WriteLine($"[{args.Current}/{args.Total}] {args.Message}: {args.FileName}");
+                Console.WriteLine($"[{current}/{total}] {message}: {objectName}");
+                return true;
+            }
+
+            public void ReportStatus(string message)
+            {
+                Console.WriteLine($"Status: {message}");
+            }
+
+            public void ReportError(string message)
+            {
+                Console.WriteLine($"Error: {message}");
+            }
+
+            public bool IsCancelled()
+            {
+                return false;
             }
         }
     }

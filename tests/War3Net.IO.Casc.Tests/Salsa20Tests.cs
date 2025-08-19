@@ -184,11 +184,11 @@ namespace War3Net.IO.Casc.Tests
             var output = new byte[100];
             salsa20.Process(plaintext, 0, 50, output, 0);
             salsa20.Process(plaintext, 50, 50, output, 50);
-            
+
             // Compare with processing all at once
             var salsa20_2 = new Salsa20(key, iv);
             var expected = salsa20_2.Process(plaintext);
-            
+
             CollectionAssert.AreEqual(expected, output);
         }
     }
