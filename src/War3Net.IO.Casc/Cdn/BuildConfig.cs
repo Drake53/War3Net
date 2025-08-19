@@ -40,41 +40,53 @@ namespace War3Net.IO.Casc.Cdn
 
         /// <summary>
         /// Gets the content hash (<see cref="Structures.CascKey"/>) of the decoded root file.
-        /// Look this up in encoding to get the encoded hash.
         /// </summary>
+        /// <remarks>
+        /// Look this up in encoding to get the encoded hash.
+        /// </remarks>
         public string? Root => GetValue("root");
 
         /// <summary>
         /// Gets the install manifest hash.
+        /// </summary>
+        /// <remarks>
         /// First key is the content hash of the decoded install file.
         /// Second key, if present, is the encoded hash; if absent, look up in encoding.
-        /// </summary>
+        /// </remarks>
         public string? Install => GetValue("install");
 
         /// <summary>
         /// Gets the install size(s) corresponding to the install hash(es).
-        /// Absent in older WoW builds.
         /// </summary>
+        /// <remarks>
+        /// Absent in older WoW builds.
+        /// </remarks>
         public string? InstallSize => GetValue("install-size");
 
         /// <summary>
         /// Gets the download manifest hash.
+        /// </summary>
+        /// <remarks>
         /// First key is the content hash of the decoded download file.
         /// Second key, if present, is the encoded hash; if absent, look up in encoding.
-        /// </summary>
+        /// </remarks>
         public string? Download => GetValue("download");
 
         /// <summary>
         /// Gets the download size(s) corresponding to the download hash(es).
-        /// Absent in older WoW builds.
         /// </summary>
+        /// <remarks>
+        /// Absent in older WoW builds.
+        /// </remarks>
         public string? DownloadSize => GetValue("download-size");
 
         /// <summary>
         /// Gets the size file hash.
+        /// </summary>
+        /// <remarks>
         /// CKey and EKey of the download size file, respectively.
         /// Introduced in WoW build 27547.
-        /// </summary>
+        /// </remarks>
         public string? Size => GetValue("size");
 
         /// <summary>
@@ -84,29 +96,37 @@ namespace War3Net.IO.Casc.Cdn
 
         /// <summary>
         /// Gets the partial priority for builds.
+        /// </summary>
+        /// <remarks>
         /// Content hash:block size pairs for priority non-archived files, ordered by priority.
         /// Optional field.
-        /// </summary>
+        /// </remarks>
         public string? BuildPartialPriority => GetValue("build-partial-priority");
 
         /// <summary>
         /// Gets the partial priority file hash.
+        /// </summary>
+        /// <remarks>
         /// Content hash of a partial download file containing priority files to download first.
         /// Optional field.
-        /// </summary>
+        /// </remarks>
         public string? PartialPriority => GetValue("partial-priority");
 
         /// <summary>
         /// Gets the partial priority size.
-        /// Unknown: always 0 if present. Present if partial-priority is present.
         /// </summary>
+        /// <remarks>
+        /// Unknown: always 0 if present. Present if partial-priority is present.
+        /// </remarks>
         public string? PartialPrioritySize => GetValue("partial-priority-size");
 
         /// <summary>
         /// Gets the encoding file hash.
+        /// </summary>
+        /// <remarks>
         /// First key is the content hash of the decoded encoding file.
         /// Second key is the encoded hash.
-        /// </summary>
+        /// </remarks>
         public string? Encoding => GetValue("encoding");
 
         /// <summary>
@@ -116,14 +136,18 @@ namespace War3Net.IO.Casc.Cdn
 
         /// <summary>
         /// Gets the patch manifest of patchable data files.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? Patch => GetValue("patch");
 
         /// <summary>
         /// Gets the size of the patch manifest, if any.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? PatchSize => GetValue("patch-size");
 
         /// <summary>
@@ -133,68 +157,90 @@ namespace War3Net.IO.Casc.Cdn
 
         /// <summary>
         /// Gets the build attributes.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildAttributes => GetValue("build-attributes");
 
         /// <summary>
         /// Gets the build branch.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildBranch => GetValue("build-branch");
 
         /// <summary>
         /// Gets the build comments.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildComments => GetValue("build-comments");
 
         /// <summary>
         /// Gets the build creator.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildCreator => GetValue("build-creator");
 
         /// <summary>
         /// Gets the build fixed hash.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildFixedHash => GetValue("build-fixed-hash");
 
         /// <summary>
         /// Gets the build replay hash.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildReplayHash => GetValue("build-replay-hash");
 
         /// <summary>
         /// Gets the build name.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildName => GetValue("build-name");
 
         /// <summary>
         /// Gets the build playbuild installer.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildPlaybuildInstaller => GetValue("build-playbuild-installer");
 
         /// <summary>
         /// Gets the product name.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildProduct => GetValue("build-product");
 
         /// <summary>
         /// Gets the build T1 manifest version.
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildT1ManifestVersion => GetValue("build-t1-manifest-version");
 
         /// <summary>
         /// Gets the build UID (program code).
-        /// Optional field.
         /// </summary>
+        /// <remarks>
+        /// Optional field.
+        /// </remarks>
         public string? BuildUid => GetValue("build-uid");
 
         /// <summary>
