@@ -518,27 +518,57 @@ namespace War3Net.IO.Casc.Storage
             {
                 // For now, we'll try to detect the format and use appropriate handler
                 // In the future, this should be based on the product type
-                using var stream = File.OpenRead(rootFilePath);
+                Stream stream = File.OpenRead(rootFilePath);
 
-                // Check if it's a text-based root file
-                var buffer = new byte[4];
-                var bytesRead = stream.Read(buffer, 0, 4);
-                stream.Position = 0;
-
-                // If it starts with text characters, use TextRootHandler
-                // Otherwise use a binary root handler (to be implemented)
-                if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
+                // Check if the root file is BLTE compressed
+                if (BlteDecoder.IsBlte(stream))
                 {
-                    var textHandler = new TextRootHandler();
-                    textHandler.Parse(stream);
-                    _context.RootHandler = textHandler;
+                    System.Diagnostics.Trace.TraceInformation("Root file is BLTE compressed, decompressing...");
+                    var decompressedStream = new MemoryStream();
+                    BlteDecoder.Decode(stream, decompressedStream);
+                    stream.Dispose();
+                    decompressedStream.Position = 0;
+                    stream = decompressedStream;
                 }
-                else
+
+                using (stream)
                 {
-                    // For binary root files (like WoW's MFST format or War3's TVFS)
-                    // we'd need specific handlers - for now just use basic
-                    System.Diagnostics.Trace.TraceWarning("Binary root file format not yet supported, using empty root handler");
-                    _context.RootHandler = new BasicRootHandler();
+                    // Check if it's a text-based root file
+                    var buffer = new byte[4];
+                    var bytesRead = stream.Read(buffer, 0, 4);
+                    stream.Position = 0;
+
+                    // Log the first 4 bytes for debugging
+                    if (bytesRead >= 4)
+                    {
+                        System.Diagnostics.Trace.TraceInformation($"Root file first 4 bytes: 0x{buffer[0]:X2} 0x{buffer[1]:X2} 0x{buffer[2]:X2} 0x{buffer[3]:X2}");
+                    }
+
+                    // If it starts with text characters, use TextRootHandler
+                    // Otherwise check for specific binary formats
+                    if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
+                    {
+                        System.Diagnostics.Trace.TraceInformation("Detected text root file format");
+                        var textHandler = new TextRootHandler();
+                        textHandler.Parse(stream);
+                        _context.RootHandler = textHandler;
+                    }
+                    else if (bytesRead >= 4 && IsTvfsFile(buffer))
+                    {
+                        // TVFS format used by Warcraft III
+                        System.Diagnostics.Trace.TraceInformation("Detected TVFS root file format");
+                        var tvfsHandler = new TvfsRootHandler();
+                        tvfsHandler.Parse(stream);
+                        _context.RootHandler = tvfsHandler;
+                        System.Diagnostics.Trace.TraceInformation($"TVFS root file parsed successfully, handler type: {_context.RootHandler?.GetType().Name}");
+                    }
+                    else
+                    {
+                        // For other binary root files (like WoW's MFST format)
+                        // we'd need specific handlers - for now just use basic
+                        System.Diagnostics.Trace.TraceWarning($"Unknown binary root file format (first 4 bytes: 0x{buffer[0]:X2} 0x{buffer[1]:X2} 0x{buffer[2]:X2} 0x{buffer[3]:X2}), using empty root handler");
+                        _context.RootHandler = new BasicRootHandler();
+                    }
                 }
 
                 return true;
@@ -548,6 +578,20 @@ namespace War3Net.IO.Casc.Storage
                 System.Diagnostics.Trace.TraceError($"Failed to load root file: {ex.Message}");
                 return false;
             }
+        }
+
+        private static bool IsTvfsFile(byte[] buffer)
+        {
+            // TVFS signature is 'TVFS' (0x53465654 in little-endian)
+            if (buffer.Length < 4)
+            {
+                return false;
+            }
+
+            return buffer[0] == 0x54  // 'T'
+                && buffer[1] == 0x56  // 'V'
+                && buffer[2] == 0x46  // 'F'
+                && buffer[3] == 0x53; // 'S'
         }
 
         private static bool IsTextFile(byte[] buffer, int length)

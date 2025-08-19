@@ -79,38 +79,72 @@ namespace War3Net.IO.Casc.Helpers
         /// <returns>The path to the cached root file, or null if download failed.</returns>
         public static async Task<string?> DownloadRootFileAsync(BuildConfig buildConfig, string encodingPath, CdnClient cdnClient, string storagePath)
         {
-            var rootCKeyString = buildConfig.Root;
-            if (string.IsNullOrEmpty(rootCKeyString) || !File.Exists(encodingPath))
+            // Try vfs-root first (Warcraft III), then fall back to regular root
+            var rootEntry = buildConfig.VfsRoot ?? buildConfig.Root;
+            if (string.IsNullOrEmpty(rootEntry) || !File.Exists(encodingPath))
             {
                 return null;
             }
 
+            // Root entry might contain two hashes (CKey and EKey) separated by space
+            // Format: "CKey EKey" or just "CKey"
+            var rootParts = rootEntry.Split(' ');
+            var rootCKeyString = rootParts[0];
+
             try
             {
                 // Parse the encoding file to get the EKey for the root CKey
+                // The encoding file may be BLTE compressed
                 EncodingFile? encodingFile;
                 using (var encodingStream = File.OpenRead(encodingPath))
                 {
-                    encodingFile = EncodingFile.Parse(encodingStream);
+                    if (Compression.BlteDecoder.IsBlte(encodingStream))
+                    {
+                        // BLTE compressed - decompress first
+                        using var decompressedStream = new MemoryStream();
+                        Compression.BlteDecoder.Decode(encodingStream, decompressedStream);
+                        decompressedStream.Position = 0;
+                        encodingFile = EncodingFile.Parse(decompressedStream);
+                    }
+                    else
+                    {
+                        // Not compressed, parse directly (IsBlte already reset position)
+                        encodingFile = EncodingFile.Parse(encodingStream);
+                    }
                 }
 
-                // Look up the root file's EKey
-                var rootCKey = CascKey.Parse(rootCKeyString);
-                var rootEKey = encodingFile.GetEKey(rootCKey);
-
-                if (!rootEKey.HasValue || rootEKey.Value.IsEmpty)
+                // Get the root file's EKey
+                // If the build config already has the EKey (second part), use it directly
+                // Otherwise look it up in the encoding file
+                EKey rootEKey;
+                if (rootParts.Length > 1 && !string.IsNullOrEmpty(rootParts[1]))
                 {
-                    System.Diagnostics.Trace.TraceWarning($"Could not find EKey for root CKey {rootCKeyString} in encoding file");
-                    return null;
+                    // Use the EKey directly from build config
+                    System.Diagnostics.Trace.TraceInformation($"Using root EKey from build config: {rootParts[1]}");
+                    rootEKey = EKey.Parse(rootParts[1]);
+                }
+                else
+                {
+                    // Look up the root file's EKey in encoding file
+                    var rootCKey = CascKey.Parse(rootCKeyString);
+                    var foundEKey = encodingFile.GetEKey(rootCKey);
+
+                    if (!foundEKey.HasValue || foundEKey.Value.IsEmpty)
+                    {
+                        System.Diagnostics.Trace.TraceWarning($"Could not find EKey for root CKey {rootCKeyString} in encoding file");
+                        return null;
+                    }
+
+                    rootEKey = foundEKey.Value;
                 }
 
-                var rootPath = CdnPathHelper.GetDataPath(storagePath, rootEKey.Value.ToString());
+                var rootPath = CdnPathHelper.GetDataPath(storagePath, rootEKey.ToString());
 
                 if (!File.Exists(rootPath))
                 {
                     CdnPathHelper.EnsureDirectoryExists(rootPath);
-                    System.Diagnostics.Trace.TraceInformation($"Downloading root file with EKey: {rootEKey.Value}");
-                    var rootData = await cdnClient.DownloadDataAsync(rootEKey.Value.ToString());
+                    System.Diagnostics.Trace.TraceInformation($"Downloading root file with EKey: {rootEKey}");
+                    var rootData = await cdnClient.DownloadDataAsync(rootEKey.ToString());
                     await File.WriteAllBytesAsync(rootPath, rootData);
                     System.Diagnostics.Trace.TraceInformation("Root file downloaded successfully");
                 }

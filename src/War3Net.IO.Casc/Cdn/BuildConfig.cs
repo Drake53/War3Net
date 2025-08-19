@@ -37,6 +37,11 @@ namespace War3Net.IO.Casc.Cdn
         public string? Root => GetValue("root");
 
         /// <summary>
+        /// Gets the VFS root content hash (used by Warcraft III).
+        /// </summary>
+        public string? VfsRoot => GetValue("vfs-root");
+
+        /// <summary>
         /// Gets the encoding hash.
         /// </summary>
         public string? Encoding => GetValue("encoding");
