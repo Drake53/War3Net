@@ -46,5 +46,8 @@ namespace War3Net.IO.Casc.Cdn
         /// Gets or sets the key ring.
         /// </summary>
         public string KeyRing { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{VersionsName} ({Region})";
     }
 }

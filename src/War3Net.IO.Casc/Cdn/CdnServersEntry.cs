@@ -38,5 +38,8 @@ namespace War3Net.IO.Casc.Cdn
         /// Gets or sets the config path.
         /// </summary>
         public string ConfigPath { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Path} ({Region})";
     }
 }
