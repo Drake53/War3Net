@@ -40,15 +40,15 @@ namespace War3Net.IO.Casc.Helpers
         }
 
         /// <summary>
-        /// Constructs a path for loose files downloaded from CDN.
+        /// Constructs a path for CDN data files downloaded directly (not from archives).
         /// </summary>
         /// <param name="storagePath">The base storage path.</param>
         /// <param name="ekey">The EKey.</param>
-        /// <returns>The full path for the loose file.</returns>
+        /// <returns>The full path for the CDN data file.</returns>
         /// <remarks>
-        /// For online storage without data archives, loose files (encoding, root, etc.)
-        /// are stored directly in the storage path, not in Data/data/ which is reserved
-        /// for data.### archives and .idx files.
+        /// For cached online CASC storage, data files (encoding, root, install, download manifests)
+        /// are stored in data/XX/YY/[hash] structure, matching CascLib's FetchCascFile behavior
+        /// and CASC_DIRECTORY_STRUCTURE_CORRECT.md specification for online storage.
         /// </remarks>
         public static string GetLooseFilePath(string storagePath, EKey ekey)
         {
@@ -58,9 +58,19 @@ namespace War3Net.IO.Casc.Helpers
                 throw new ArgumentException("EKey cannot be empty", nameof(ekey));
             }
 
-            // For online storage, store loose files directly with their hash as filename
-            // Not in Data/data/ which is for archives only
-            return Path.Combine(storagePath, $"{hash}.dat");
+            if (hash.Length < 4)
+            {
+                throw new ArgumentException("Hash must be at least 4 characters long", nameof(ekey));
+            }
+
+            // For cached online storage: data/XX/YY/[hash]
+            // This matches CascLib's FetchCascFile with PathTypeData
+            return Path.Combine(
+                storagePath,
+                "data",
+                hash.Substring(0, 2),
+                hash.Substring(2, 2),
+                hash);
         }
 
         /// <summary>
@@ -68,7 +78,7 @@ namespace War3Net.IO.Casc.Helpers
         /// </summary>
         /// <param name="storagePath">The base storage path.</param>
         /// <param name="hash">The hash string.</param>
-        /// <returns>The full path in the format: storagePath/Data/config/XX/YY/hash.</returns>
+        /// <returns>The full path in the format: storagePath/config/XX/YY/hash.</returns>
         public static string GetConfigPath(string storagePath, string hash)
         {
             if (string.IsNullOrEmpty(hash))
@@ -82,9 +92,9 @@ namespace War3Net.IO.Casc.Helpers
                 throw new ArgumentException("Hash must be at least 4 characters long", nameof(hash));
             }
 
+            // For cached online storage: config/XX/YY/[hash]
             return Path.Combine(
                 storagePath,
-                "Data",
                 "config",
                 hash.Substring(0, 2),
                 hash.Substring(2, 2),

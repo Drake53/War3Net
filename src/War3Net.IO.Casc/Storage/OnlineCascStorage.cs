@@ -221,11 +221,13 @@ namespace War3Net.IO.Casc.Storage
             // If no cache path provided, use default temp path
             if (string.IsNullOrWhiteSpace(localCachePath))
             {
-                localCachePath = Path.Combine(Path.GetTempPath(), "CascCache", product, region);
+                // Follow CascLib convention: just product folder in temp
+                localCachePath = Path.Combine(Path.GetTempPath(), "CascCache", product);
             }
             else
             {
-                localCachePath = ValidateAndNormalizePath(localCachePath);
+                // Add product subfolder to the provided path
+                localCachePath = Path.Combine(ValidateAndNormalizePath(localCachePath), product);
             }
 
             Directory.CreateDirectory(localCachePath);
@@ -332,6 +334,19 @@ namespace War3Net.IO.Casc.Storage
 
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, TotalProgressSteps);
 
+            // Save versions and cdns files for reference (CascLib pattern)
+            var versionsPath = Path.Combine(StoragePath, "versions");
+            if (!File.Exists(versionsPath))
+            {
+                await File.WriteAllBytesAsync(versionsPath, versionsData);
+            }
+
+            var cdnsPath = Path.Combine(StoragePath, "cdns");
+            if (!File.Exists(cdnsPath))
+            {
+                await File.WriteAllBytesAsync(cdnsPath, cdnsData);
+            }
+
             // Download and cache build config
             var buildConfigPath = CdnPathHelper.GetConfigPath(StoragePath, versionEntry.BuildConfig);
             if (!File.Exists(buildConfigPath))
@@ -402,14 +417,25 @@ namespace War3Net.IO.Casc.Storage
             var fileIndex = cdnConfig.FileIndex;
             if (!string.IsNullOrEmpty(fileIndex))
             {
-                // File-index should also go in indices directory with full hash name
-                var indicesPath = Path.Combine(StoragePath, "Data", "indices");
-                Directory.CreateDirectory(indicesPath);
-                fileIndexPath = Path.Combine(indicesPath, $"{fileIndex.ToLowerInvariant()}.index");
+                // For online storage, file-index goes in data/XX/YY/[hash].index
+                var hashLower = fileIndex.ToLowerInvariant();
+                fileIndexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    hashLower.Substring(0, 2),
+                    hashLower.Substring(2, 2),
+                    $"{hashLower}.index");
                 if (!File.Exists(fileIndexPath))
                 {
                     try
                     {
+                        // Ensure directory exists
+                        var indexDir = Path.GetDirectoryName(fileIndexPath);
+                        if (!string.IsNullOrEmpty(indexDir))
+                        {
+                            Directory.CreateDirectory(indexDir);
+                        }
+
                         _logger.LogInformation("Downloading file-index with hash: {FileIndex}", fileIndex);
                         var fileIndexData = await _cdnClient!.DownloadIndexAsync(EKey.Parse(fileIndex));
                         await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
@@ -497,10 +523,6 @@ namespace War3Net.IO.Casc.Storage
 
         private async Task DownloadIndexFilesAsync(CdnConfig cdnConfig, IProgressReporter? progressReporter)
         {
-            // Create indices directory according to CASC spec under Data/
-            var indicesPath = Path.Combine(StoragePath, "Data", "indices");
-            Directory.CreateDirectory(indicesPath);
-
             // Download archive indexes
             var archives = cdnConfig.Archives;
             if (archives == null || archives.Count == 0)
@@ -521,10 +543,14 @@ namespace War3Net.IO.Casc.Storage
                     continue;
                 }
 
-                // Index files are stored with .index extension on CDN
-                // They should be saved in indices/ directory with full hash name
-                var indexFileName = $"{archiveKey.ToLowerInvariant()}.index";
-                var indexPath = Path.Combine(indicesPath, indexFileName);
+                // For online storage, index files go in data/XX/YY/[hash].index
+                var hashLower = archiveKey.ToLowerInvariant();
+                var indexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    hashLower.Substring(0, 2),
+                    hashLower.Substring(2, 2),
+                    $"{hashLower}.index");
 
                 if (File.Exists(indexPath))
                 {
@@ -532,25 +558,32 @@ namespace War3Net.IO.Casc.Storage
                     continue;
                 }
 
-                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, maxIndexes);
+                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, $"{hashLower}.index", i, maxIndexes);
 
                 try
                 {
+                    // Ensure directory exists
+                    var indexDir = Path.GetDirectoryName(indexPath);
+                    if (!string.IsNullOrEmpty(indexDir))
+                    {
+                        Directory.CreateDirectory(indexDir);
+                    }
+
                     // Download from CDN - the .index extension is added by the CDN client
                     var ekey = EKey.Parse(archiveKey);
                     var indexData = await _cdnClient!.DownloadIndexAsync(ekey);
                     await File.WriteAllBytesAsync(indexPath, indexData);
-                    _logger.LogInformation("Successfully downloaded index: {IndexFileName}", indexFileName);
+                    _logger.LogInformation("Successfully downloaded index: {IndexPath}", indexPath);
                     successfulDownloads++;
                 }
                 catch (HttpRequestException ex)
                 {
-                    failedDownloads.Add($"{indexFileName}: {ex.Message}");
-                    _logger.LogError(ex, "Failed to download index {IndexFileName}", indexFileName);
+                    failedDownloads.Add($"{hashLower}.index: {ex.Message}");
+                    _logger.LogError(ex, "Failed to download index {IndexFileName}", $"{hashLower}.index");
                 }
                 catch (IOException ex)
                 {
-                    throw new CascException($"Failed to save index {indexFileName} to {indexPath}: {ex.Message}", ex);
+                    throw new CascException($"Failed to save index {hashLower}.index to {indexPath}: {ex.Message}", ex);
                 }
             }
 
@@ -599,19 +632,20 @@ namespace War3Net.IO.Casc.Storage
 
         private void LoadDownloadedIndexFiles()
         {
-            var indicesPath = Path.Combine(StoragePath, "Data", "indices");
-            if (!Directory.Exists(indicesPath))
+            // For online storage, index files are in data/XX/YY/ subdirectories
+            var dataPath = Path.Combine(StoragePath, "data");
+            if (!Directory.Exists(dataPath))
             {
-                throw new CascException($"Indices directory does not exist at: {indicesPath}");
+                throw new CascException($"Data directory does not exist at: {dataPath}");
             }
 
-            var indexFiles = Directory.GetFiles(indicesPath, "*.index");
+            var indexFiles = Directory.GetFiles(dataPath, "*.index", SearchOption.AllDirectories);
             if (indexFiles.Length == 0)
             {
-                throw new CascException($"No index files found in: {indicesPath}");
+                throw new CascException($"No index files found in: {dataPath}");
             }
 
-            _logger.LogInformation("Loading {IndexFileCount} index files from: {IndicesPath}", indexFiles.Length, indicesPath);
+            _logger.LogInformation("Loading {IndexFileCount} index files from: {DataPath}", indexFiles.Length, dataPath);
         }
 
         private void LoadDownloadedEncodingFile(string encodingPath)
@@ -647,17 +681,16 @@ namespace War3Net.IO.Casc.Storage
         private void InitializeOnlineStorageContext()
         {
             // Set up the storage context for online mode
-            // This includes setting features flags and ensuring paths are correct
+            // For cached online storage, we use a simpler structure:
+            // - config/XX/YY/ for config files
+            // - data/XX/YY/ for data files and index files
 
-            // Ensure all required CASC directories exist according to spec under Data/
-            var dataRootPath = Path.Combine(StoragePath, "Data");
-            var dataPath = Path.Combine(dataRootPath, "data");
-            var configPath = Path.Combine(dataRootPath, "config");
-            var indicesPath = Path.Combine(dataRootPath, "indices");
+            // Ensure base directories exist
+            var configPath = Path.Combine(StoragePath, "config");
+            var dataPath = Path.Combine(StoragePath, "data");
 
-            Directory.CreateDirectory(dataPath);
             Directory.CreateDirectory(configPath);
-            Directory.CreateDirectory(indicesPath);
+            Directory.CreateDirectory(dataPath);
 
             // Create a minimal .build.info file for the base class
             if (_versionEntry is not null && _buildConfig is not null)
