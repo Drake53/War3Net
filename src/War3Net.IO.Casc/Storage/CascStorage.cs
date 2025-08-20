@@ -263,7 +263,7 @@ namespace War3Net.IO.Casc.Storage
             var rootEntry = _context.RootHandler.GetEntry(fileName);
             if (rootEntry == null)
             {
-                throw new CascFileNotFoundException($"File not found in root: {fileName}");
+                throw new CascFileNotFoundException($"{_context.RootHandler.GetType().Name} does not contain an entry for: {fileName}");
             }
 
             // Try to open by CKey first
