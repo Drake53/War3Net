@@ -61,13 +61,13 @@ namespace War3Net.IO.Casc.Tests
             // Test archive group
             var archiveGroup = config.ArchiveGroup;
             Assert.IsFalse(string.IsNullOrEmpty(archiveGroup));
-            Assert.AreEqual("def07feb3aa97dbc3bf17544b464196c", archiveGroup);
+            Assert.AreEqual("cf830df29efb6cddcff51378a0008e1b", archiveGroup);
 
             // Test patch archives
             var patchArchives = config.PatchArchives;
             Assert.IsNotNull(patchArchives);
             Assert.AreEqual(1, patchArchives.Count, "Should have 1 patch archive");
-            Assert.AreEqual("b8abfc0fa101b10f5f591aa440123426", patchArchives[0]);
+            Assert.AreEqual("510dd3f60182fcbc77d002fbb11e12c3", patchArchives[0]);
 
             // Test patch archive index sizes
             var patchArchiveIndexSizes = config.PatchArchiveIndexSizes;
@@ -78,12 +78,12 @@ namespace War3Net.IO.Casc.Tests
             // Test patch archive group
             var patchArchiveGroup = config.PatchArchiveGroup;
             Assert.IsFalse(string.IsNullOrEmpty(patchArchiveGroup));
-            Assert.AreEqual("32207983d368c53aa0dd667459c90f30", patchArchiveGroup);
+            Assert.AreEqual("2ad5f069f111251510de318f55fe100e", patchArchiveGroup);
 
             // Test file index
             var fileIndex = config.FileIndex;
             Assert.IsFalse(string.IsNullOrEmpty(fileIndex));
-            Assert.AreEqual("ffa8a61a063080cd99e925856dc7aa8b", fileIndex);
+            Assert.AreEqual("ff69d85200cf975bec7a9269c085051d", fileIndex);
 
             // Test file index size
             var fileIndexSize = config.FileIndexSize;
@@ -92,7 +92,7 @@ namespace War3Net.IO.Casc.Tests
             // Test patch file index
             var patchFileIndex = config.PatchFileIndex;
             Assert.IsFalse(string.IsNullOrEmpty(patchFileIndex));
-            Assert.AreEqual("63275e1270fcdf4346cbef10c3770d70", patchFileIndex);
+            Assert.AreEqual("68761a45b434be38d02f4ccd5093d515", patchFileIndex);
 
             // Test patch file index size
             var patchFileIndexSize = config.PatchFileIndexSize;
@@ -114,10 +114,10 @@ namespace War3Net.IO.Casc.Tests
 
             // Assert - Test TryGetValue method
             Assert.IsTrue(config.TryGetValue("archive-group", out var archiveGroupValue));
-            Assert.AreEqual("def07feb3aa97dbc3bf17544b464196c", archiveGroupValue);
+            Assert.AreEqual("cf830df29efb6cddcff51378a0008e1b", archiveGroupValue);
 
             Assert.IsTrue(config.TryGetValue("file-index", out var fileIndexValue));
-            Assert.AreEqual("ffa8a61a063080cd99e925856dc7aa8b", fileIndexValue);
+            Assert.AreEqual("ff69d85200cf975bec7a9269c085051d", fileIndexValue);
 
             Assert.IsTrue(config.TryGetValue("archives", out var archivesValue));
             Assert.IsNotNull(archivesValue);
