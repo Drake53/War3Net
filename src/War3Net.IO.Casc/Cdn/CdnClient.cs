@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
 using War3Net.IO.Casc.Utilities;
 
@@ -32,7 +33,7 @@ namespace War3Net.IO.Casc.Cdn
         /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="region">The region code (us, eu, kr, cn, etc.).</param>
-        public CdnClient(string region = "eu", string cdnPath = "tpr/war3")
+        public CdnClient(string region = CascRegion.EU, string cdnPath = "tpr/war3")
             : this(GetDefaultCdnHosts(region), cdnPath)
         {
         }
@@ -290,7 +291,7 @@ namespace War3Net.IO.Casc.Cdn
             // Updated URLs based on current Blizzard CDN infrastructure
             return region.ToLowerInvariant() switch
             {
-                "us" => new List<string>
+                CascRegion.US => new List<string>
                 {
                     "https://level3.blizzard.com",
                     "https://blzddist1-a.akamaihd.net",
@@ -298,7 +299,7 @@ namespace War3Net.IO.Casc.Cdn
                     "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",
                 },
-                "eu" => new List<string>
+                CascRegion.EU => new List<string>
                 {
                     "https://level3.blizzard.com",
                     "https://blzddist1-a.akamaihd.net",
@@ -306,21 +307,21 @@ namespace War3Net.IO.Casc.Cdn
                     "http://level3.blizzard.com",  // HTTP fallback
                     "http://blzddist1-a.akamaihd.net",
                 },
-                "kr" => new List<string>
+                CascRegion.KR => new List<string>
                 {
                     "https://blzddist1-a.akamaihd.net",
                     "https://blzddistkr1-a.akamaihd.net",
                     "http://blzddist1-a.akamaihd.net",  // HTTP fallback
                     "http://blzddistkr1-a.akamaihd.net",
                 },
-                "cn" => new List<string>
+                CascRegion.CN => new List<string>
                 {
                     "https://client04.pdl.wow.battlenet.com.cn",
                     "https://client02.pdl.wow.battlenet.com.cn",
                     "http://client04.pdl.wow.battlenet.com.cn",  // HTTP fallback
                     "http://client02.pdl.wow.battlenet.com.cn",
                 },
-                "tw" => new List<string>
+                CascRegion.TW => new List<string>
                 {
                     "https://level3.blizzard.com",
                     "https://blzddist1-a.akamaihd.net",

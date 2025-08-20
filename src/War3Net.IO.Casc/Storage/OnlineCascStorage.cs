@@ -144,7 +144,7 @@ namespace War3Net.IO.Casc.Storage
         /// </remarks>
         public static async Task<OnlineCascStorage> OpenStorageAsync(
             string product,
-            string region = "eu",
+            string region = CascRegion.EU,
             string? localCachePath = null,
             CascLocaleFlags localeFlags = CascLocaleFlags.All,
             IProgressReporter? progressReporter = null)
@@ -186,23 +186,13 @@ namespace War3Net.IO.Casc.Storage
                 throw new ArgumentException($"Product and region must contain only alphanumeric characters, hyphens, and underscores.");
             }
 
-            // Additional validation for known product/region combinations
-            var validProducts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "w3", "war3", "wow", "d3", "diablo3", "sc2", "hs", "hearthstone", "hots", "heroes",
-            };
-
-            var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "us", "eu", "kr", "cn", "tw",
-            };
-
-            if (!validProducts.Contains(product.ToLowerInvariant()))
+            // Validate known product/region combinations
+            if (!CascValidation.IsValidProduct(product))
             {
                 System.Diagnostics.Trace.TraceWarning($"Unknown product '{product}' - proceeding anyway");
             }
 
-            if (!validRegions.Contains(region.ToLowerInvariant()))
+            if (!CascValidation.IsValidRegion(region))
             {
                 System.Diagnostics.Trace.TraceWarning($"Unknown region '{region}' - proceeding anyway");
             }
@@ -227,7 +217,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Opens Warcraft III online storage with simplified parameters.
         /// </summary>
-        /// <param name="region">The region code (default: "eu").</param>
+        /// <param name="region">The region code (default: <see cref="CascRegion.EU"/>).</param>
         /// <param name="localCachePath">The local cache path for storing downloaded files, or <see langword="null"/> to use default temp location.</param>
         /// <param name="progressReporter">Optional progress reporter for tracking initialization steps.</param>
         /// <returns>A fully initialized <see cref="OnlineCascStorage"/> instance configured for Warcraft III.</returns>
@@ -241,11 +231,11 @@ namespace War3Net.IO.Casc.Storage
         /// </para>
         /// </remarks>
         public static async Task<OnlineCascStorage> OpenWar3Async(
-            string region = "eu",
+            string region = CascRegion.EU,
             string? localCachePath = null,
             IProgressReporter? progressReporter = null)
         {
-            return await OpenStorageAsync("w3", region, localCachePath, CascLocaleFlags.All, progressReporter);
+            return await OpenStorageAsync(CascProduct.Warcraft.W3, region, localCachePath, CascLocaleFlags.All, progressReporter);
         }
 
         /// <summary>
