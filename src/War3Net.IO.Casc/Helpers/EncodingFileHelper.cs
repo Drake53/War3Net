@@ -37,7 +37,7 @@ namespace War3Net.IO.Casc.Helpers
             }
 
             var encodingHash = encodingEntry.EKey;
-            var encodingPath = CdnPathHelper.GetDataPath(storagePath, encodingHash);
+            var encodingPath = CdnPathHelper.GetLooseFilePath(storagePath, encodingHash);
 
             if (!File.Exists(encodingPath))
             {
@@ -117,7 +117,7 @@ namespace War3Net.IO.Casc.Helpers
 
                 var rootEKey = foundEKey.Value;
 
-                var rootPath = CdnPathHelper.GetDataPath(storagePath, rootEKey);
+                var rootPath = CdnPathHelper.GetLooseFilePath(storagePath, rootEKey);
 
                 if (!File.Exists(rootPath))
                 {

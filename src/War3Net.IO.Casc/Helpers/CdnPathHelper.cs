@@ -40,12 +40,17 @@ namespace War3Net.IO.Casc.Helpers
         }
 
         /// <summary>
-        /// Constructs a CDN data file path from an EKey.
+        /// Constructs a path for loose files downloaded from CDN.
         /// </summary>
         /// <param name="storagePath">The base storage path.</param>
         /// <param name="ekey">The EKey.</param>
-        /// <returns>The full path in the format: storagePath/Data/data/XX/YY/hash.</returns>
-        public static string GetDataPath(string storagePath, EKey ekey)
+        /// <returns>The full path for the loose file.</returns>
+        /// <remarks>
+        /// For online storage without data archives, loose files (encoding, root, etc.)
+        /// are stored directly in the storage path, not in Data/data/ which is reserved
+        /// for data.### archives and .idx files.
+        /// </remarks>
+        public static string GetLooseFilePath(string storagePath, EKey ekey)
         {
             var hash = ekey.ToString().ToLowerInvariant();
             if (string.IsNullOrEmpty(hash))
@@ -53,18 +58,9 @@ namespace War3Net.IO.Casc.Helpers
                 throw new ArgumentException("EKey cannot be empty", nameof(ekey));
             }
 
-            if (hash.Length < 4)
-            {
-                throw new ArgumentException("EKey string must be at least 4 characters long", nameof(ekey));
-            }
-
-            return Path.Combine(
-                storagePath,
-                "Data",
-                "data",
-                hash.Substring(0, 2),
-                hash.Substring(2, 2),
-                hash);
+            // For online storage, store loose files directly with their hash as filename
+            // Not in Data/data/ which is for archives only
+            return Path.Combine(storagePath, $"{hash}.dat");
         }
 
         /// <summary>
