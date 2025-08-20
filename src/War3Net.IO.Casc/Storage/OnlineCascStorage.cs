@@ -465,30 +465,12 @@ namespace War3Net.IO.Casc.Storage
 
         private static string GetVersionsUrl(string product, string region)
         {
-            return product.ToLowerInvariant() switch
-            {
-                "w3" or "war3" => $"http://{region}.patch.battle.net:1119/w3/versions",
-                "wow" => $"http://{region}.patch.battle.net:1119/wow/versions",
-                "d3" or "diablo3" => $"http://{region}.patch.battle.net:1119/d3/versions",
-                "hs" or "hearthstone" => $"http://{region}.patch.battle.net:1119/hs/versions",
-                "sc2" => $"http://{region}.patch.battle.net:1119/sc2/versions",
-                "hots" or "heroes" => $"http://{region}.patch.battle.net:1119/hero/versions",
-                _ => throw new ArgumentException($"Unknown product: {product}"),
-            };
+            return $"http://{region}.patch.battle.net:1119/{product}/versions";
         }
 
         private static string GetCdnUrl(string product, string region)
         {
-            return product.ToLowerInvariant() switch
-            {
-                "w3" or "war3" => $"http://{region}.patch.battle.net:1119/w3/cdns",
-                "wow" => $"http://{region}.patch.battle.net:1119/wow/cdns",
-                "d3" or "diablo3" => $"http://{region}.patch.battle.net:1119/d3/cdns",
-                "hs" or "hearthstone" => $"http://{region}.patch.battle.net:1119/hs/cdns",
-                "sc2" => $"http://{region}.patch.battle.net:1119/sc2/cdns",
-                "hots" or "heroes" => $"http://{region}.patch.battle.net:1119/hero/cdns",
-                _ => throw new ArgumentException($"Unknown product: {product}"),
-            };
+            return $"http://{region}.patch.battle.net:1119/{product}/cdns";
         }
 
         private static void ValidateProductAndRegion(string product, string region)
