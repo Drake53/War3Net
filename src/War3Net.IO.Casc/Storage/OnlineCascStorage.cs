@@ -194,7 +194,7 @@ namespace War3Net.IO.Casc.Storage
 
             var validRegions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "us", "eu", "kr", "cn", "tw", "sea",
+                "us", "eu", "kr", "cn", "tw",
             };
 
             if (!validProducts.Contains(product.ToLowerInvariant()))
