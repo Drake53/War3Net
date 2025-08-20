@@ -128,7 +128,7 @@ namespace War3Net.IO.Casc.Tests
                 // Download the build config file
                 // The CdnClient.DownloadConfigAsync constructs the path as: config/{xx}/{yy}/{hash}
                 // where xx and yy are the first two pairs of hex digits from the hash
-                var buildConfigData = await client.DownloadConfigAsync(buildConfigHash);
+                var buildConfigData = await client.DownloadConfigAsync(Structures.EKey.Parse(buildConfigHash));
 
                 // Verify we actually downloaded something
                 Assert.IsNotNull(buildConfigData);
@@ -142,7 +142,7 @@ namespace War3Net.IO.Casc.Tests
                 var cdnConfigHash = euEntry.CdnConfig;
                 Assert.IsFalse(string.IsNullOrEmpty(cdnConfigHash), "CDN config hash should not be empty");
 
-                var cdnConfigData = await client.DownloadConfigAsync(cdnConfigHash);
+                var cdnConfigData = await client.DownloadConfigAsync(Structures.EKey.Parse(cdnConfigHash));
                 Assert.IsNotNull(cdnConfigData);
                 Assert.IsTrue(cdnConfigData.Length > 0, "Downloaded CDN config should have content");
             }
@@ -162,7 +162,10 @@ namespace War3Net.IO.Casc.Tests
         {
             try
             {
-                var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
+                var tempPath = Path.Combine(Path.GetTempPath(), "CascTest");
+
+                // Clean up previous test data
+                Directory.Delete(tempPath, true);
 
                 var progressReporter = new TestProgressReporter();
                 using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath, progressReporter);
@@ -174,16 +177,6 @@ namespace War3Net.IO.Casc.Tests
                 // Verify some files were downloaded
                 Assert.IsTrue(Directory.Exists(tempPath));
                 Assert.IsTrue(Directory.GetFiles(tempPath, "*", SearchOption.AllDirectories).Length > 0);
-
-                // Clean up
-                try
-                {
-                    Directory.Delete(tempPath, true);
-                }
-                catch
-                {
-                    // Ignore cleanup errors
-                }
             }
             catch (System.Net.Http.HttpRequestException)
             {
@@ -201,24 +194,33 @@ namespace War3Net.IO.Casc.Tests
         {
             try
             {
-                var tempPath = Path.Combine(Path.GetTempPath(), "CascTest", Guid.NewGuid().ToString());
+                var tempPath = Path.Combine(Path.GetTempPath(), "CascTest");
+
+                // Clean up previous test data
+                Directory.Delete(tempPath, true);
 
                 using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath);
 
-                // Try to open a known file by its key
-                // This would require knowing a specific file's key in the current build
-                // For now, just verify the storage opened successfully
-                Assert.IsNotNull(storage);
+                Assert.IsNotNull(storage, "Storage should be opened successfully");
 
-                // Clean up
-                try
-                {
-                    Directory.Delete(tempPath, true);
-                }
-                catch
-                {
-                    // Ignore cleanup errors
-                }
+                // Try to open a known file from the storage
+                // Note: War3 uses a binary TVFS root format which we don't fully support yet
+                // File name resolution may not work until we implement TVFS parsing
+                const string testFileName = "war3.w3mod/ui/triggerdata.txt";
+
+                using var fileStream = storage.OpenFileByName(testFileName);
+                Assert.IsNotNull(fileStream, "File stream should not be null");
+
+                // Read some data from the file to verify it opened correctly
+                var buffer = new byte[1024];
+                var bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length);
+
+                Assert.IsTrue(bytesRead > 0, "Should be able to read data from the file");
+
+                // Optionally verify the content starts with expected text
+                // TriggerData files typically start with comments or section headers
+                var content = System.Text.Encoding.UTF8.GetString(buffer, 0, Math.Min(bytesRead, 100));
+                Console.WriteLine($"First 100 bytes of {testFileName}: {content}");
             }
             catch (System.Net.Http.HttpRequestException)
             {
