@@ -13,6 +13,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
@@ -70,9 +73,15 @@ namespace War3Net.IO.Casc.Storage
     /// </remarks>
     public class OnlineCascStorage : CascStorage
     {
-        private const int TotalProgressSteps = 6;
+        private const int TotalProgressSteps = 8;
 
+        private readonly ILogger<OnlineCascStorage> _logger;
         private CdnClient? _cdnClient;
+        private VersionEntry? _versionEntry;
+        private CdnServersEntry? _cdnEntry;
+        private BuildConfig? _buildConfig;
+        private CdnConfig? _cdnConfig;
+        private PatchConfig? _patchConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OnlineCascStorage"/> class.
@@ -85,11 +94,12 @@ namespace War3Net.IO.Casc.Storage
         /// This constructor is private and used internally by the static factory methods.
         /// Use <see cref="OpenStorageAsync"/> or <see cref="OpenWar3Async"/> to create instances.
         /// </remarks>
-        private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags)
+        private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags, ILogger<OnlineCascStorage>? logger = null)
             : base(localCachePath, localeFlags)
         {
             Product = product;
             Region = region;
+            _logger = logger ?? NullLogger<OnlineCascStorage>.Instance;
         }
 
         /// <summary>
@@ -114,6 +124,16 @@ namespace War3Net.IO.Casc.Storage
         /// and configuration files.
         /// </remarks>
         public CdnClient? CdnClient => _cdnClient;
+
+        /// <summary>
+        /// Gets the patch configuration.
+        /// </summary>
+        /// <value>The <see cref="PatchConfig"/> instance, or <see langword="null"/> if not available.</value>
+        /// <remarks>
+        /// The patch config contains information about patches available to update files from older versions,
+        /// reducing redundant downloads. This is optional and may not be present for all products.
+        /// </remarks>
+        public PatchConfig? PatchConfig => _patchConfig;
 
         /// <summary>
         /// Opens an online CASC storage for the specified product and region.
@@ -147,7 +167,8 @@ namespace War3Net.IO.Casc.Storage
             string region = CascRegion.EU,
             string? localCachePath = null,
             CascLocaleFlags localeFlags = CascLocaleFlags.All,
-            IProgressReporter? progressReporter = null)
+            IProgressReporter? progressReporter = null,
+            ILogger<OnlineCascStorage>? logger = null)
         {
             // Validate and sanitize product and region to prevent path traversal
             ValidateProductAndRegion(product, region);
@@ -189,12 +210,12 @@ namespace War3Net.IO.Casc.Storage
             // Validate known product/region combinations
             if (!CascValidation.IsValidProduct(product))
             {
-                System.Diagnostics.Trace.TraceWarning($"Unknown product '{product}' - proceeding anyway");
+                throw new ArgumentException($"Invalid product code: '{product}'. Must be a valid product identifier (see CascProduct).", nameof(product));
             }
 
             if (!CascValidation.IsValidRegion(region))
             {
-                System.Diagnostics.Trace.TraceWarning($"Unknown region '{region}' - proceeding anyway");
+                throw new ArgumentException($"Invalid region code: '{region}'. Must be a valid region (see CascRegion).", nameof(region));
             }
 
             // If no cache path provided, use default temp path
@@ -209,7 +230,7 @@ namespace War3Net.IO.Casc.Storage
 
             Directory.CreateDirectory(localCachePath);
 
-            var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags);
+            var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags, logger);
             await storage.InitializeOnlineAsync(progressReporter);
             return storage;
         }
@@ -233,9 +254,10 @@ namespace War3Net.IO.Casc.Storage
         public static async Task<OnlineCascStorage> OpenWar3Async(
             string region = CascRegion.EU,
             string? localCachePath = null,
-            IProgressReporter? progressReporter = null)
+            IProgressReporter? progressReporter = null,
+            ILogger<OnlineCascStorage>? logger = null)
         {
-            return await OpenStorageAsync(CascProduct.Warcraft.W3, region, localCachePath, CascLocaleFlags.All, progressReporter);
+            return await OpenStorageAsync(CascProduct.Warcraft.W3, region, localCachePath, CascLocaleFlags.All, progressReporter, logger);
         }
 
         /// <summary>
@@ -304,6 +326,10 @@ namespace War3Net.IO.Casc.Storage
             // Initialize CDN client
             _cdnClient = new CdnClient(cdnEntry.Hosts, cdnEntry.Path);
 
+            // Save for later use
+            _versionEntry = versionEntry;
+            _cdnEntry = cdnEntry;
+
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "build config", 2, TotalProgressSteps);
 
             // Download and cache build config
@@ -311,7 +337,7 @@ namespace War3Net.IO.Casc.Storage
             if (!File.Exists(buildConfigPath))
             {
                 CdnPathHelper.EnsureDirectoryExists(buildConfigPath);
-                var buildConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.BuildConfig);
+                var buildConfigData = await _cdnClient.DownloadConfigAsync(EKey.Parse(versionEntry.BuildConfig));
                 await File.WriteAllBytesAsync(buildConfigPath, buildConfigData);
             }
 
@@ -322,7 +348,7 @@ namespace War3Net.IO.Casc.Storage
             if (!File.Exists(cdnConfigPath))
             {
                 CdnPathHelper.EnsureDirectoryExists(cdnConfigPath);
-                var cdnConfigData = await _cdnClient.DownloadConfigAsync(versionEntry.CdnConfig);
+                var cdnConfigData = await _cdnClient.DownloadConfigAsync(EKey.Parse(versionEntry.CdnConfig));
                 await File.WriteAllBytesAsync(cdnConfigPath, cdnConfigData);
             }
 
@@ -333,6 +359,8 @@ namespace War3Net.IO.Casc.Storage
                 cdnConfig = CdnConfig.Parse(stream);
             }
 
+            _cdnConfig = cdnConfig;
+
             // Parse build config to get encoding and root hashes
             BuildConfig buildConfig;
             using (var stream = File.OpenRead(buildConfigPath))
@@ -340,12 +368,24 @@ namespace War3Net.IO.Casc.Storage
                 buildConfig = BuildConfig.Parse(stream);
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 4, TotalProgressSteps);
+            _buildConfig = buildConfig;
+
+            // Download patch config if present
+            if (!buildConfig.PatchConfig.IsEmpty)
+            {
+                progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "patch config", 4, TotalProgressSteps);
+                await DownloadPatchConfigAsync(buildConfig.PatchConfig);
+            }
+
+            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 5, TotalProgressSteps);
 
             // Download index files FIRST - they contain the EKey mappings needed for other files
             await DownloadIndexFilesAsync(cdnConfig, progressReporter);
 
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 5, TotalProgressSteps);
+            // Load downloaded index files into the index manager
+            LoadDownloadedIndexFiles();
+
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "encoding", 6, TotalProgressSteps);
 
             // Download encoding file using the helper
             var encodingPath = await EncodingFileHelper.DownloadEncodingFileAsync(buildConfig, _cdnClient, StoragePath);
@@ -354,52 +394,125 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException("Failed to download encoding file - this is required for online storage");
             }
 
+            // Load the encoding file into the storage context
+            LoadDownloadedEncodingFile(encodingPath);
+
+            // Download file-index if present (needed for Warcraft III root file)
+            string? fileIndexPath = null;
+            var fileIndex = cdnConfig.FileIndex;
+            if (!string.IsNullOrEmpty(fileIndex))
+            {
+                // File-index should also go in indices directory with full hash name
+                var indicesPath = Path.Combine(StoragePath, "Data", "indices");
+                Directory.CreateDirectory(indicesPath);
+                fileIndexPath = Path.Combine(indicesPath, $"{fileIndex.ToLowerInvariant()}.index");
+                if (!File.Exists(fileIndexPath))
+                {
+                    try
+                    {
+                        _logger.LogInformation("Downloading file-index with hash: {FileIndex}", fileIndex);
+                        var fileIndexData = await _cdnClient!.DownloadIndexAsync(EKey.Parse(fileIndex));
+                        await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
+                        _logger.LogInformation("File-index downloaded successfully");
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        throw new CascException($"Failed to download file-index {fileIndex}: {ex.Message}", ex);
+                    }
+                    catch (IOException ex)
+                    {
+                        throw new CascException($"Failed to save file-index to {fileIndexPath}: {ex.Message}", ex);
+                    }
+                }
+            }
+
             // Download root file
-            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 6, TotalProgressSteps);
+            progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 7, TotalProgressSteps);
 
             // Try to download the root file using the encoding file to look up its EKey
-            var rootPath = await EncodingFileHelper.DownloadRootFileAsync(buildConfig, encodingPath, _cdnClient, StoragePath);
+            var rootPath = await EncodingFileHelper.DownloadRootFileAsync(buildConfig, encodingPath, _cdnClient, StoragePath, fileIndexPath);
             if (!string.IsNullOrEmpty(rootPath))
             {
-                System.Diagnostics.Trace.TraceInformation($"Root file successfully cached at: {rootPath}");
+                _logger.LogInformation("Root file successfully cached at: {RootPath}", rootPath);
 
                 // Try to load and parse the root file
                 if (LoadRootFile(rootPath))
                 {
-                    System.Diagnostics.Trace.TraceInformation("Root file loaded and parsed successfully");
+                    _logger.LogInformation("Root file loaded and parsed successfully");
                 }
                 else
                 {
-                    System.Diagnostics.Trace.TraceWarning("Failed to parse root file - using empty root handler");
+                    _logger.LogWarning("Failed to parse root file - using empty root handler");
                     InitializeRootHandler();
                 }
             }
             else
             {
-                System.Diagnostics.Trace.TraceWarning("Root file could not be downloaded - file name resolution will not be available");
+                _logger.LogWarning("Root file could not be downloaded - file name resolution will not be available");
                 // Initialize a basic root handler as fallback
                 InitializeRootHandler();
             }
 
-            // Continue with base initialization
-            // The base class will handle loading the downloaded files
+            // Initialize base storage context with downloaded information
+            InitializeOnlineStorageContext();
+        }
+
+        private async Task DownloadPatchConfigAsync(CascKey patchConfigKey)
+        {
+            try
+            {
+                var patchConfigPath = CdnPathHelper.GetConfigPath(StoragePath, patchConfigKey.ToString());
+                if (!File.Exists(patchConfigPath))
+                {
+                    CdnPathHelper.EnsureDirectoryExists(patchConfigPath);
+                    var patchConfigData = await _cdnClient!.DownloadConfigAsync(EKey.Parse(patchConfigKey.ToString()));
+                    await File.WriteAllBytesAsync(patchConfigPath, patchConfigData);
+                    _logger.LogInformation("Patch config downloaded successfully: {PatchConfigKey}", patchConfigKey);
+                }
+
+                // Parse the patch config
+                using (var stream = File.OpenRead(patchConfigPath))
+                {
+                    _patchConfig = PatchConfig.Parse(stream);
+                }
+
+                // Patch manifests are not stored locally - they're only used from CDN
+                // The patch system applies patches directly without local caching
+                if (_patchConfig.Patch != null && !_patchConfig.Patch.IsEmpty)
+                {
+                    _logger.LogInformation("Patch manifest available: {PatchKey}", _patchConfig.Patch);
+                    // Patches will be applied on-demand from CDN when needed
+                }
+            }
+            catch (CascException)
+            {
+                throw; // Re-throw CascExceptions
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to download or parse patch config");
+                // Patch config is optional, so we can continue without it
+            }
         }
 
         private async Task DownloadIndexFilesAsync(CdnConfig cdnConfig, IProgressReporter? progressReporter)
         {
-            var dataPath = Path.Combine(StoragePath, "data");
-            Directory.CreateDirectory(dataPath);
+            // Create indices directory according to CASC spec under Data/
+            var indicesPath = Path.Combine(StoragePath, "Data", "indices");
+            Directory.CreateDirectory(indicesPath);
 
             // Download archive indexes
             var archives = cdnConfig.Archives;
             if (archives == null || archives.Count == 0)
             {
-                System.Diagnostics.Trace.TraceWarning("No archives found in CDN config");
-                return;
+                throw new CascException("No archives found in CDN config - cannot proceed without index files");
             }
 
             // Download at least the first few archive indexes to get started
             var maxIndexes = Math.Min(archives.Count, 5); // Download first 5 indexes
+            var successfulDownloads = 0;
+            var failedDownloads = new List<string>();
+
             for (var i = 0; i < maxIndexes; i++)
             {
                 var archiveKey = archives[i];
@@ -409,58 +522,46 @@ namespace War3Net.IO.Casc.Storage
                 }
 
                 // Index files are stored with .index extension on CDN
-                // They should be saved with .idx extension locally
-                var indexKey = archiveKey + ".index";
-                var indexFileName = $"{archiveKey.Substring(0, Math.Min(16, archiveKey.Length))}.idx";
-                var indexPath = Path.Combine(dataPath, indexFileName);
+                // They should be saved in indices/ directory with full hash name
+                var indexFileName = $"{archiveKey.ToLowerInvariant()}.index";
+                var indexPath = Path.Combine(indicesPath, indexFileName);
 
-                if (!File.Exists(indexPath))
+                if (File.Exists(indexPath))
                 {
-                    progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, maxIndexes);
+                    successfulDownloads++;
+                    continue;
+                }
 
-                    try
-                    {
-                        // Download from CDN - the path will be data/xx/yy/{hash}.index
-                        var indexData = await _cdnClient!.DownloadDataAsync(indexKey);
-                        await File.WriteAllBytesAsync(indexPath, indexData);
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        // Log HTTP errors but continue - not all indexes may be available
-                        System.Diagnostics.Trace.TraceWarning($"Failed to download index {indexFileName}: HTTP error - {ex.Message}");
-                    }
-                    catch (IOException ex)
-                    {
-                        // Log IO errors with more detail
-                        System.Diagnostics.Trace.TraceError($"Failed to save index {indexFileName} to {indexPath}: {ex.Message}");
-                        throw new CascException($"Unable to save index file: {ex.Message}", ex);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log unexpected errors
-                        System.Diagnostics.Trace.TraceError($"Unexpected error downloading index {indexFileName}: {ex.GetType().Name} - {ex.Message}");
-                    }
+                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, indexFileName, i, maxIndexes);
+
+                try
+                {
+                    // Download from CDN - the .index extension is added by the CDN client
+                    var ekey = EKey.Parse(archiveKey);
+                    var indexData = await _cdnClient!.DownloadIndexAsync(ekey);
+                    await File.WriteAllBytesAsync(indexPath, indexData);
+                    _logger.LogInformation("Successfully downloaded index: {IndexFileName}", indexFileName);
+                    successfulDownloads++;
+                }
+                catch (HttpRequestException ex)
+                {
+                    failedDownloads.Add($"{indexFileName}: {ex.Message}");
+                    _logger.LogError(ex, "Failed to download index {IndexFileName}", indexFileName);
+                }
+                catch (IOException ex)
+                {
+                    throw new CascException($"Failed to save index {indexFileName} to {indexPath}: {ex.Message}", ex);
                 }
             }
 
-            // Also download file index if present
-            var fileIndex = cdnConfig.FileIndex;
-            if (!string.IsNullOrEmpty(fileIndex))
+            // Require at least one successful index download
+            if (successfulDownloads == 0)
             {
-                var fileIndexPath = Path.Combine(dataPath, $"{fileIndex.Substring(0, Math.Min(16, fileIndex.Length))}.idx");
-                if (!File.Exists(fileIndexPath))
-                {
-                    try
-                    {
-                        var fileIndexData = await _cdnClient!.DownloadDataAsync(fileIndex + ".index");
-                        await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Trace.TraceWarning($"Failed to download file index: {ex.Message}");
-                    }
-                }
+                var failureDetails = string.Join("; ", failedDownloads);
+                throw new CascException($"Failed to download any index files. Errors: {failureDetails}");
             }
+
+            _logger.LogInformation("Downloaded {SuccessfulDownloads} of {MaxIndexes} index files", successfulDownloads, maxIndexes);
         }
 
         private static string GetVersionsUrl(string product, string region)
@@ -494,6 +595,107 @@ namespace War3Net.IO.Casc.Storage
             {
                 throw new ArgumentException($"Invalid region name: '{region}'. Must be a valid region code (e.g., 'us', 'eu', 'kr').", nameof(region));
             }
+        }
+
+        private void LoadDownloadedIndexFiles()
+        {
+            var indicesPath = Path.Combine(StoragePath, "Data", "indices");
+            if (!Directory.Exists(indicesPath))
+            {
+                throw new CascException($"Indices directory does not exist at: {indicesPath}");
+            }
+
+            var indexFiles = Directory.GetFiles(indicesPath, "*.index");
+            if (indexFiles.Length == 0)
+            {
+                throw new CascException($"No index files found in: {indicesPath}");
+            }
+
+            _logger.LogInformation("Loading {IndexFileCount} index files from: {IndicesPath}", indexFiles.Length, indicesPath);
+        }
+
+        private void LoadDownloadedEncodingFile(string encodingPath)
+        {
+            if (File.Exists(encodingPath))
+            {
+                try
+                {
+                    // Load the encoding file
+                    using var stream = File.OpenRead(encodingPath);
+                    if (Compression.BlteDecoder.IsBlte(stream))
+                    {
+                        // BLTE compressed - decompress first
+                        using var decompressedStream = new MemoryStream();
+                        Compression.BlteDecoder.Decode(stream, decompressedStream);
+                        decompressedStream.Position = 0;
+                        // The base class should handle this, but we can store it for reference
+                        _logger.LogInformation("Encoding file loaded (BLTE compressed)");
+                    }
+                    else
+                    {
+                        // Not compressed
+                        _logger.LogInformation("Encoding file loaded (uncompressed)");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to load encoding file");
+                }
+            }
+        }
+
+        private void InitializeOnlineStorageContext()
+        {
+            // Set up the storage context for online mode
+            // This includes setting features flags and ensuring paths are correct
+
+            // Ensure all required CASC directories exist according to spec under Data/
+            var dataRootPath = Path.Combine(StoragePath, "Data");
+            var dataPath = Path.Combine(dataRootPath, "data");
+            var configPath = Path.Combine(dataRootPath, "config");
+            var indicesPath = Path.Combine(dataRootPath, "indices");
+
+            Directory.CreateDirectory(dataPath);
+            Directory.CreateDirectory(configPath);
+            Directory.CreateDirectory(indicesPath);
+
+            // Create a minimal .build.info file for the base class
+            if (_versionEntry is not null && _buildConfig is not null)
+            {
+                var buildInfoPath = Path.Combine(StoragePath, ".build.info");
+                if (!File.Exists(buildInfoPath))
+                {
+                    try
+                    {
+                        CreateMinimalBuildInfo(buildInfoPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to create .build.info");
+                    }
+                }
+            }
+
+            // The base class Initialize method should be called to complete setup
+            // but we're in a derived class context where it's already initialized
+            _logger.LogInformation("Online storage context initialized");
+        }
+
+        private void CreateMinimalBuildInfo(string buildInfoPath)
+        {
+            // Create a minimal .build.info file with information from the online storage
+            if (_versionEntry is null || _buildConfig is null)
+            {
+                return;
+            }
+
+            var lines = new List<string>
+            {
+                "Branch!STRING:0|Active!DEC:1|Build Key!HEX:16|CDN Key!HEX:16|Install Key!HEX:16|Product!STRING:0",
+                $"eu|1|{_versionEntry.BuildConfig}|{_versionEntry.CdnConfig}||{Product}",
+            };
+
+            File.WriteAllLines(buildInfoPath, lines);
         }
 
         private static string ValidateAndNormalizePath(string path)

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Encoding;
-using War3Net.IO.Casc.Structures;
+using War3Net.IO.Casc.Index;
 
 namespace War3Net.IO.Casc.Helpers
 {
@@ -29,21 +29,14 @@ namespace War3Net.IO.Casc.Helpers
         /// <returns>The path to the cached encoding file, or null if download failed.</returns>
         public static async Task<string?> DownloadEncodingFileAsync(BuildConfig buildConfig, CdnClient cdnClient, string storagePath)
         {
-            var encodingEntry = buildConfig.GetValue("encoding");
-            if (string.IsNullOrEmpty(encodingEntry))
+            var encodingEntry = buildConfig.Encoding;
+
+            if (!encodingEntry.HasEKey)
             {
                 return null;
             }
 
-            var encodingParts = encodingEntry.Split(' ');
-            // Use the second hash (ekey) for downloading the encoding file
-            var encodingHash = encodingParts.Length > 1 ? encodingParts[1] : encodingParts[0];
-
-            if (string.IsNullOrEmpty(encodingHash))
-            {
-                return null;
-            }
-
+            var encodingHash = encodingEntry.EKey;
             var encodingPath = CdnPathHelper.GetDataPath(storagePath, encodingHash);
 
             if (!File.Exists(encodingPath))
@@ -76,20 +69,20 @@ namespace War3Net.IO.Casc.Helpers
         /// <param name="encodingPath">The path to the encoding file.</param>
         /// <param name="cdnClient">The CDN client.</param>
         /// <param name="storagePath">The storage path.</param>
+        /// <param name="fileIndexPath">The path to the file-index file (optional, for Warcraft III).</param>
         /// <returns>The path to the cached root file, or null if download failed.</returns>
-        public static async Task<string?> DownloadRootFileAsync(BuildConfig buildConfig, string encodingPath, CdnClient cdnClient, string storagePath)
+        public static async Task<string?> DownloadRootFileAsync(BuildConfig buildConfig, string encodingPath, CdnClient cdnClient, string storagePath, string? fileIndexPath = null)
         {
-            // Try vfs-root first (Warcraft III), then fall back to regular root
-            var rootEntry = buildConfig.VfsRoot ?? buildConfig.Root;
-            if (string.IsNullOrEmpty(rootEntry) || !File.Exists(encodingPath))
+            var rootEntry = buildConfig.Root;
+            var vfsRoot = buildConfig.VfsRoot;
+
+            if (rootEntry.IsEmpty || !File.Exists(encodingPath))
             {
                 return null;
             }
 
-            // Root entry might contain two hashes (CKey and EKey) separated by space
-            // Format: "CKey EKey" or just "CKey"
-            var rootParts = rootEntry.Split(' ');
-            var rootCKeyString = rootParts[0];
+            // Root entry is a CascKey that we need to look up in the encoding file
+            var rootCKey = rootEntry;
 
             try
             {
@@ -113,38 +106,64 @@ namespace War3Net.IO.Casc.Helpers
                     }
                 }
 
-                // Get the root file's EKey
-                // If the build config already has the EKey (second part), use it directly
-                // Otherwise look it up in the encoding file
-                EKey rootEKey;
-                if (rootParts.Length > 1 && !string.IsNullOrEmpty(rootParts[1]))
-                {
-                    // Use the EKey directly from build config
-                    System.Diagnostics.Trace.TraceInformation($"Using root EKey from build config: {rootParts[1]}");
-                    rootEKey = EKey.Parse(rootParts[1]);
-                }
-                else
-                {
-                    // Look up the root file's EKey in encoding file
-                    var rootCKey = CascKey.Parse(rootCKeyString);
-                    var foundEKey = encodingFile.GetEKey(rootCKey);
+                // Look up the root file's EKey in encoding file
+                var foundEKey = encodingFile.GetEKey(rootCKey);
 
-                    if (!foundEKey.HasValue || foundEKey.Value.IsEmpty)
-                    {
-                        System.Diagnostics.Trace.TraceWarning($"Could not find EKey for root CKey {rootCKeyString} in encoding file");
-                        return null;
-                    }
-
-                    rootEKey = foundEKey.Value;
+                if (!foundEKey.HasValue || foundEKey.Value.IsEmpty)
+                {
+                    System.Diagnostics.Trace.TraceWarning($"Could not find EKey for root CKey {rootCKey} in encoding file");
+                    return null;
                 }
 
-                var rootPath = CdnPathHelper.GetDataPath(storagePath, rootEKey.ToString());
+                var rootEKey = foundEKey.Value;
+
+                var rootPath = CdnPathHelper.GetDataPath(storagePath, rootEKey);
 
                 if (!File.Exists(rootPath))
                 {
                     CdnPathHelper.EnsureDirectoryExists(rootPath);
+
+                    // For Warcraft III, the root file is in the file-index, not available as a loose file
+                    // We need to check if the file is in the file-index first
+                    var foundInFileIndex = false;
+                    if (!string.IsNullOrEmpty(fileIndexPath) && File.Exists(fileIndexPath))
+                    {
+                        try
+                        {
+                            // Parse the file-index to find the root file
+                            using var indexStream = File.OpenRead(fileIndexPath);
+                            var indexFile = IndexFile.Parse(indexStream);
+
+                            // Try to find the root file's EKey in the index
+                            if (indexFile.TryGetEntry(rootEKey, out var entry))
+                            {
+                                System.Diagnostics.Trace.TraceInformation($"Found root file in file-index: DataFileIndex={entry.DataFileIndex}, Offset={entry.DataFileOffset}, Size={entry.EncodedSize}");
+
+                                // For loose files in file-index, offset should be 0 and DataFileIndex indicates it's not in an archive
+                                // The file should be downloadable directly using the EKey
+                                if (entry.DataFileOffset == 0)
+                                {
+                                    // This is a loose file, but it's indexed
+                                    // The file-index just confirms it exists as a loose file
+                                    foundInFileIndex = true;
+                                }
+                            }
+                            else
+                            {
+                                System.Diagnostics.Trace.TraceWarning($"Root file EKey {rootEKey} not found in file-index");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Trace.TraceWarning($"Failed to check file-index for root file: {ex.Message}");
+                        }
+                    }
+
+                    // Try to download the root file
+                    // If it was found in file-index with offset 0, it should be available as a loose file
+                    // If not found in file-index, still try as it might be a regular loose file
                     System.Diagnostics.Trace.TraceInformation($"Downloading root file with EKey: {rootEKey}");
-                    var rootData = await cdnClient.DownloadDataAsync(rootEKey.ToString());
+                    var rootData = await cdnClient.DownloadDataAsync(rootEKey);
                     await File.WriteAllBytesAsync(rootPath, rootData);
                     System.Diagnostics.Trace.TraceInformation("Root file downloaded successfully");
                 }

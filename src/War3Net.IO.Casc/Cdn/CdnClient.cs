@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
+using War3Net.IO.Casc.Structures;
 using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Cdn
@@ -220,48 +221,46 @@ namespace War3Net.IO.Casc.Cdn
         /// <summary>
         /// Downloads a config file.
         /// </summary>
-        /// <param name="hash">The config file hash.</param>
+        /// <param name="eKey">The config file hash.</param>
         /// <returns>The config data.</returns>
-        public async Task<byte[]> DownloadConfigAsync(string hash)
+        public async Task<byte[]> DownloadConfigAsync(EKey eKey)
         {
-            if (string.IsNullOrEmpty(hash))
-            {
-                throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
-            }
-
-            var path = CdnPathHelper.GetCdnUrlPath("config", hash);
+            var path = CdnPathHelper.GetCdnUrlPath("config", eKey);
             return await DownloadFileAsync(path);
         }
 
         /// <summary>
         /// Downloads a data file.
         /// </summary>
-        /// <param name="hash">The data file hash.</param>
+        /// <param name="eKey">The data file hash.</param>
         /// <returns>The data.</returns>
-        public async Task<byte[]> DownloadDataAsync(string hash)
+        public async Task<byte[]> DownloadDataAsync(EKey eKey)
         {
-            if (string.IsNullOrEmpty(hash))
-            {
-                throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
-            }
-
-            var path = CdnPathHelper.GetCdnUrlPath("data", hash);
+            var path = CdnPathHelper.GetCdnUrlPath("data", eKey);
             return await DownloadFileAsync(path);
         }
 
         /// <summary>
         /// Downloads a patch file.
         /// </summary>
-        /// <param name="hash">The patch file hash.</param>
+        /// <param name="eKey">The patch file hash.</param>
         /// <returns>The patch data.</returns>
-        public async Task<byte[]> DownloadPatchAsync(string hash)
+        public async Task<byte[]> DownloadPatchAsync(EKey eKey)
         {
-            if (string.IsNullOrEmpty(hash))
-            {
-                throw new ArgumentException("Hash cannot be null or empty", nameof(hash));
-            }
+            var path = CdnPathHelper.GetCdnUrlPath("patch", eKey);
+            return await DownloadFileAsync(path);
+        }
 
-            var path = CdnPathHelper.GetCdnUrlPath("patch", hash);
+        /// <summary>
+        /// Downloads an index file.
+        /// </summary>
+        /// <param name="eKey">The archive hash (without .index extension).</param>
+        /// <returns>The index data.</returns>
+        public async Task<byte[]> DownloadIndexAsync(EKey eKey)
+        {
+            // Index files have .index extension on CDN
+            var hash = eKey.ToString().ToLowerInvariant();
+            var path = $"data/{hash.Substring(0, 2)}/{hash.Substring(2, 2)}/{hash}.index";
             return await DownloadFileAsync(path);
         }
 
