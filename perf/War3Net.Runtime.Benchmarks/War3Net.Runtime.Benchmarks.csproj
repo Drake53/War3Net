@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <TargetFrameworks>net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 

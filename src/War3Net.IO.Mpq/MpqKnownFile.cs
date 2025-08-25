@@ -28,7 +28,7 @@ namespace War3Net.IO.Mpq
 
         internal override uint HashCollisions => 0;
 
-        protected override uint? EncryptionSeed => MpqEntry.CalculateEncryptionSeed(_fileName, out var encryptionSeed) ? encryptionSeed : null;
+        protected override uint? EncryptionSeed => MpqEncryptionUtils.CalculateEncryptionSeed(_fileName, out var encryptionSeed) ? encryptionSeed : null;
 
         public override string ToString()
         {

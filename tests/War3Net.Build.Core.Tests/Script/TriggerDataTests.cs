@@ -18,7 +18,7 @@ namespace War3Net.Build.Core.Tests.Script
     [TestClass]
     public class TriggerDataTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestParseTriggerData(string triggerDataPath)
         {

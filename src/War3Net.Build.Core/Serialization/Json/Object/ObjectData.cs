@@ -154,6 +154,8 @@ namespace War3Net.Build.Object
                 writer.WritePropertyName(nameof(UpgradeData));
                 writer.Write(UpgradeData, options);
             }
+
+            writer.WriteEndObject();
         }
     }
 }

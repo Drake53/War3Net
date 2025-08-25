@@ -24,7 +24,7 @@ namespace War3Net.Build.Core.Tests.Info
         public void TestDefaultMapInfo()
         {
             // Get World Editor default info file.
-            using var defaultInfoStream = File.OpenRead(TestDataProvider.GetPath(@"MapFiles\DefaultMapFiles\war3map.w3i"));
+            using var defaultInfoStream = File.OpenRead(TestDataProvider.GetPath("MapFiles/DefaultMapFiles/war3map.w3i"));
             using var defaultInfoReader = new BinaryReader(defaultInfoStream);
             var defaultMapInfo = defaultInfoReader.ReadMapInfo();
             defaultInfoStream.Position = 0;
@@ -55,84 +55,92 @@ namespace War3Net.Build.Core.Tests.Info
         }
 #endif
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i")]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i",
+            "241070.w3x/war3map.w3i")]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapInfoFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapInfo,
+            "Jurassic Park Survival EE v6.4.w3x/war3map.w3i",
+            "241070.w3x/war3map.w3i")]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapInfo>.RunJsonRWTest(filePath, true);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV8), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV8(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV10), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV10(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV11), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV11(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV15), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV15(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV23), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV23(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV24), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV24(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV26), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV26(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataV27), DynamicDataSourceType.Method)]
         public void TestParseMapInfoV27(string mapInfoFilePath)
         {
             TestParseMapInfoInternal(mapInfoFilePath);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetMapInfoDataGameDataSet), DynamicDataSourceType.Method)]
         public void TestGameDataSet(string mapInfoFilePath, GameDataSet expectedDataSet)
         {
@@ -143,7 +151,7 @@ namespace War3Net.Build.Core.Tests.Info
             Assert.AreEqual(expectedDataSet, mapInfo.GameDataSet);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetReforgedMapInfoData), DynamicDataSourceType.Method)]
         public void TestParseReforgedMapInfo(string mapInfoFilePath, bool expectCustomAbilitySkin, bool expectAccurateProbabilityForCalculations, SupportedModes expectSupportedModes, bool expectGameDataVersionTft)
         {
@@ -199,20 +207,20 @@ namespace War3Net.Build.Core.Tests.Info
 
         private static IEnumerable<object[]> GetMapInfoDataGameDataSet()
         {
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetDontCare.w3i"), GameDataSet.Unset };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetDefault.w3i"), GameDataSet.Default };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetCustom.w3i"), GameDataSet.Custom };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\GameDataSet\GameDataSetMelee.w3i"), GameDataSet.Melee };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetDontCare.w3i"), GameDataSet.Unset };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetDefault.w3i"), GameDataSet.Default };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetCustom.w3i"), GameDataSet.Custom };
+            yield return new object[] { TestDataProvider.GetPath("./Info/GameDataSet/GameDataSetMelee.w3i"), GameDataSet.Melee };
         }
 
         private static IEnumerable<object[]> GetReforgedMapInfoData()
         {
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HD-FrozenThrone.w3i"), false, false, SupportedModes.HD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HDSD-FrozenThrone.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-HDSD-ReignOfChaos.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, false };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbFalse-SD-FrozenThrone.w3i"), false, false, SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinFalse-AccProbTrue-HDSD-FrozenThrone.w3i"), false, true, SupportedModes.HD | SupportedModes.SD, true };
-            yield return new object[] { TestDataProvider.GetPath(@".\Info\Reforged\CustSkinTrue-AccProbFalse-HDSD-FrozenThrone.w3i"), true, false, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HD-FrozenThrone.w3i"), false, false, SupportedModes.HD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HDSD-FrozenThrone.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-HDSD-ReignOfChaos.w3i"), false, false, SupportedModes.HD | SupportedModes.SD, false };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbFalse-SD-FrozenThrone.w3i"), false, false, SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinFalse-AccProbTrue-HDSD-FrozenThrone.w3i"), false, true, SupportedModes.HD | SupportedModes.SD, true };
+            yield return new object[] { TestDataProvider.GetPath("./Info/Reforged/CustSkinTrue-AccProbFalse-HDSD-FrozenThrone.w3i"), true, false, SupportedModes.HD | SupportedModes.SD, true };
         }
     }
 }

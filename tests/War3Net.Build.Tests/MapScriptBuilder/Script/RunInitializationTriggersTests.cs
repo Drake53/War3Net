@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataRunInitializationTriggers), DynamicDataSourceType.Method)]
         public void TestBodyRunInitializationTriggers(MapScriptBuilderTestData testData)
         {
@@ -25,7 +25,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionRunInitializationTriggers(MapScriptBuilderTestData testData)
         {

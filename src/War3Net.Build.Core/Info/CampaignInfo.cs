@@ -62,6 +62,8 @@ namespace War3Net.Build.Info
 
         public CampaignRace Race { get; set; }
 
+        public CampaignBackgroundVersion BackgroundVersion { get; set; }
+
         public List<CampaignMapButton> MapButtons { get; init; } = new();
 
         public List<CampaignMap> Maps { get; init; } = new();

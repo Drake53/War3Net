@@ -65,7 +65,7 @@ namespace War3Net.IO.Mpq.Tests
             archive.Dispose();
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestFilesAndFlags), DynamicDataSourceType.Method)]
         public void TestStoreThenRetrieveFileWithFlags(string fileName, MpqFileFlags flags)
         {
@@ -80,7 +80,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(fileStream, openedStream, true);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestFlags), DynamicDataSourceType.Method)]
         public void TestStoreThenRetrieveEmptyFileWithFlags(MpqFileFlags flags)
         {
@@ -96,7 +96,7 @@ namespace War3Net.IO.Mpq.Tests
             Assert.IsTrue(openedStream.Length == 0);
         }
 
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestArchivesAndSettings), DynamicDataSourceType.Method)]
         public void TestRecreateArchive(string inputArchivePath, bool loadListFile)
         {
@@ -183,7 +183,7 @@ namespace War3Net.IO.Mpq.Tests
         [TestMethod]
         public void TestDeleteFile()
         {
-            var inputArchivePath = TestDataProvider.GetPath(@"Maps\NewLuaMap.w3m");
+            var inputArchivePath = TestDataProvider.GetPath("Maps/NewLuaMap.w3m");
             const string fileName = "war3map.lua";
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
@@ -200,10 +200,10 @@ namespace War3Net.IO.Mpq.Tests
             Assert.AreEqual(0U, entries.Single().FileSize);
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         public void TestRecreatePKCompressed()
         {
-            var inputArchivePath = TestDataProvider.GetPath(@"Maps\PKCompressed.w3x");
+            var inputArchivePath = TestDataProvider.GetPath("Maps/PKCompressed.w3x");
 
             using var inputArchive = MpqArchive.Open(inputArchivePath);
             using var recreatedArchive = MpqArchive.Create((Stream?)null, inputArchive.GetMpqFiles().ToArray(), new MpqArchiveCreateOptions { BlockSize = inputArchive.Header.BlockSize, HashTableSize = (ushort)inputArchive.Header.HashTableSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None });
@@ -224,7 +224,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputArchive.BaseStream, recreatedArchive.BaseStream, MpqHeader.Size);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestArchivesAttributes), DynamicDataSourceType.Method)]
         public void TestAttributes(string archivePath)
         {

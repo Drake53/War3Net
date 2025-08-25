@@ -14,14 +14,14 @@ namespace War3Net.CodeAnalysis.Jass.Tests
     [TestClass]
     public class JassSyntaxFactsTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetValidIdentifiers), DynamicDataSourceType.Method)]
         public void TestValidIdentifiers(string? identifier)
         {
             Assert.IsTrue(JassSyntaxFacts.IsValidIdentifier(identifier));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetInvalidIdentifiers), DynamicDataSourceType.Method)]
         public void TestInvalidIdentifiers(string? identifier)
         {
