@@ -4,7 +4,6 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
     <Version>$(War3NetDrawingBlpVersion)</Version>
-    <UseWPF Condition="'$(TargetFramework)' == 'net5.0-windows'">true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup>
