@@ -17,5 +17,4 @@
     <Content Remove="TestData\Script\**" />
   </ItemGroup>
 
-
 </Project>
