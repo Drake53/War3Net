@@ -91,7 +91,7 @@ namespace War3Net.Build
                 {
                     var isEdgeTile = x != width && y != height && (x < leftBound || x >= rightEdge || y < bottomBound || y >= topEdge);
 
-                    mapEnvironment.TerrainTiles.Add(new TerrainTile
+                    mapEnvironment.TerrainTiles.Add(new TerrainTile(mapEnvironment.FormatVersion)
                     {
                         Height = 0,
                         WaterHeight = 0,
