@@ -196,6 +196,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region UnaryExpression
+            yield return new object?[] { @"-2147483647", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(2147483647)) };
+            yield return new object?[] { @"-2147483648", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(2147483648)) };
+            yield return new object?[] { @"--2147483648", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(2147483648))) };
             yield return new object?[] { @"+6", new JassUnaryExpressionSyntax(UnaryOperatorType.Plus, new JassDecimalLiteralExpressionSyntax(6)) };
             yield return new object?[] { @"-7", new JassUnaryExpressionSyntax(UnaryOperatorType.Minus, new JassDecimalLiteralExpressionSyntax(7)) };
             yield return new object?[] { @"+ 6", new JassUnaryExpressionSyntax(UnaryOperatorType.Plus, new JassDecimalLiteralExpressionSyntax(6)) };
