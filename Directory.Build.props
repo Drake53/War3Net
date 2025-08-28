@@ -54,7 +54,7 @@
     <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
     <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
     -->
-    <War3NetCSharpLuaVersion>1.7.20</War3NetCSharpLuaVersion>
-    <War3NetCSharpLuaCoreSystemVersion>1.7.18</War3NetCSharpLuaCoreSystemVersion>
+    <War3NetCSharpLuaVersion>2.0.1</War3NetCSharpLuaVersion>
+    <War3NetCSharpLuaCoreSystemVersion>2.0.1</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>
