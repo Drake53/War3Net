@@ -92,5 +92,13 @@
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-08-30", "GamePatch": "v1_33_0",  "Version": "1.33.0.19252",  "EditorVersion": 6114 },
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-09-13", "GamePatch": "v1_33_0",  "Version": "1.33.0.19308",  "EditorVersion": 6114 },
 	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-09-29", "GamePatch": "v1_33_0",  "Version": "1.33.0.19378",  "EditorVersion": 6114 },
-	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-12-01", "GamePatch": "v1_34_0",  "Version": "1.34.0.19632",  "EditorVersion": 6114 }
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2022-12-01", "GamePatch": "v1_34_0",  "Version": "1.34.0.19632",  "EditorVersion": 6114 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2023-01-19", "GamePatch": "v1_35_0",  "Version": "1.35.0.19882",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2023-01-20", "GamePatch": "v1_35_0",  "Version": "1.35.0.19887",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2023-03-22", "GamePatch": "v1_35_0a",  "Version": "1.35.0.20063",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2023-11-20", "GamePatch": "v1_36_1",  "Version": "1.36.0.20719",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2024-06-05", "GamePatch": "v1_36_2",  "Version": "1.36.0.21179",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2024-11-13", "GamePatch": "v2_0_0",  "Version": "2.0.0.22365",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2024-12-17", "GamePatch": "v2_0_1",  "Version": "2.0.1.22474",  "EditorVersion": 6115 },
+	{ "GameExpansion": 3, "GameReleaseType": "Retail", "ReleaseDate": "2025-04-15", "GamePatch": "v2_0_2",  "Version": "2.0.2.22761",  "EditorVersion": 6115 }
 ]
