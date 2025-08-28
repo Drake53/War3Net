@@ -14,22 +14,20 @@ namespace War3Net.Build.Environment
         public const int TileWidth = 128;
         public const int TileHeight = 128;
 
-        /// <summary>
-        /// Size in bytes.
-        /// </summary>
-        public const int Size = 7;
-
         private ushort _heightData;
         private ushort _waterDataAndEdgeFlag;
-        private byte _textureDataAndFlags;
+        private ushort _textureDataAndFlags;
         private byte _variationData;
         private byte _cliffData;
+
+        private MapEnvironmentFormatVersion _formatVersion;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TerrainTile"/> class.
         /// </summary>
-        public TerrainTile()
+        public TerrainTile(MapEnvironmentFormatVersion formatVersion)
         {
+            _formatVersion = formatVersion;
         }
 
         public float Height
@@ -52,32 +50,117 @@ namespace War3Net.Build.Environment
 
         public int Texture
         {
-            get => _textureDataAndFlags & 0x0F;
-            set => _textureDataAndFlags = (value >= 0 && value <= 0x0F) ? (byte)(value | (_textureDataAndFlags & 0xF0)) : throw new ArgumentOutOfRangeException(nameof(value));
+            get
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    return _textureDataAndFlags & 0x3F;
+                }
+                return _textureDataAndFlags & 0x0F;
+            }
+
+            set
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    _textureDataAndFlags = (value >= 0 && value <= 0x3F) ? (ushort)(value | (_textureDataAndFlags & 0xFFC0)) : throw new ArgumentOutOfRangeException(nameof(value));
+                }
+                else
+                {
+                    _textureDataAndFlags = (value >= 0 && value <= 0x0F) ? (ushort)(value | (_textureDataAndFlags & 0xF0)) : throw new ArgumentOutOfRangeException(nameof(value));
+                }
+            }
         }
 
         public bool IsRamp
         {
-            get => (_textureDataAndFlags & 0x10) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x10 : _textureDataAndFlags & 0xEF);
+            get
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    return (_textureDataAndFlags & 0x40) != 0;
+                }
+                return (_textureDataAndFlags & 0x10) != 0;
+            }
+
+            set
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x40 : _textureDataAndFlags & 0xBF);
+                }
+
+                _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x10 : _textureDataAndFlags & 0xEF);
+            }
         }
 
         public bool IsBlighted
         {
-            get => (_textureDataAndFlags & 0x20) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x20 : _textureDataAndFlags & 0xDF);
+            get
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    return (_textureDataAndFlags & 0x80) != 0;
+                }
+                return (_textureDataAndFlags & 0x20) != 0;
+            }
+
+            set
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x80 : _textureDataAndFlags & 0x7F);
+                }
+                _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x20 : _textureDataAndFlags & 0xDF);
+            }
         }
 
         public bool IsWater
         {
-            get => (_textureDataAndFlags & 0x40) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x40 : _textureDataAndFlags & 0xBF);
+            get
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    return (_textureDataAndFlags & 0x100) != 0;
+                }
+                return (_textureDataAndFlags & 0x40) != 0;
+            }
+
+            set
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x100 : _textureDataAndFlags & 0xEFF);
+                }
+                else
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x40 : _textureDataAndFlags & 0xBF);
+                }
+            }
         }
 
         public bool IsBoundary
         {
-            get => (_textureDataAndFlags & 0x80) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x80 : _textureDataAndFlags & 0x7F);
+            get
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    return (_textureDataAndFlags & 0x200) != 0;
+                }
+                return (_textureDataAndFlags & 0x80) != 0;
+            }
+
+            set
+            {
+                if (_formatVersion >= MapEnvironmentFormatVersion.v12)
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x200 : _textureDataAndFlags & 0xDFF);
+                }
+                else
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x80 : _textureDataAndFlags & 0x7F);
+                }
+            }
         }
 
         public int Variation

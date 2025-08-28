@@ -13,6 +13,7 @@ namespace War3Net.Build.Environment
     {
         internal TerrainTile(BinaryReader reader, MapEnvironmentFormatVersion formatVersion)
         {
+            _formatVersion = formatVersion;
             ReadFrom(reader, formatVersion);
         }
 
@@ -20,7 +21,14 @@ namespace War3Net.Build.Environment
         {
             _heightData = reader.ReadUInt16();
             _waterDataAndEdgeFlag = reader.ReadUInt16();
-            _textureDataAndFlags = reader.ReadByte();
+            if (formatVersion >= MapEnvironmentFormatVersion.v12)
+            {
+                _textureDataAndFlags = reader.ReadUInt16();
+            }
+            else
+            {
+                _textureDataAndFlags = reader.ReadByte();
+            }
             _variationData = reader.ReadByte();
             _cliffData = reader.ReadByte();
         }
@@ -29,7 +37,14 @@ namespace War3Net.Build.Environment
         {
             writer.Write(_heightData);
             writer.Write(_waterDataAndEdgeFlag);
-            writer.Write(_textureDataAndFlags);
+            if (formatVersion >= MapEnvironmentFormatVersion.v12)
+            {
+                writer.Write(_textureDataAndFlags);
+            }
+            else
+            {
+                writer.Write((byte)_textureDataAndFlags);
+            }
             writer.Write(_variationData);
             writer.Write(_cliffData);
         }

@@ -17,5 +17,7 @@ namespace War3Net.Build.Environment
     {
         /// <summary>The initial version.</summary>
         v11 = 11,
+        /// <summary>Introduced in v2.0.3.23052.</summary>
+        v12 = 12,
     }
 }
