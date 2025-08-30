@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Root
@@ -49,6 +52,16 @@ namespace War3Net.IO.Casc.Root
     public class TvfsRootHandler : RootHandlerBase
     {
         private const uint TvfsSignature = 0x53465654; // 'TVFS' - bytes: 54 56 46 53 in little-endian
+        private readonly ILogger<TvfsRootHandler> _logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TvfsRootHandler"/> class.
+        /// </summary>
+        /// <param name="logger">The logger instance.</param>
+        public TvfsRootHandler(ILogger<TvfsRootHandler>? logger = null)
+        {
+            _logger = logger ?? NullLogger<TvfsRootHandler>.Instance;
+        }
 
         /// <summary>
         /// Parses the TVFS root file from a stream.
@@ -105,7 +118,7 @@ namespace War3Net.IO.Casc.Root
                 var pathData = reader.ReadBytes((int)pathTableSize);
                 var pathString = System.Text.Encoding.UTF8.GetString(pathData);
                 paths.AddRange(pathString.Split('\0', StringSplitOptions.RemoveEmptyEntries));
-                System.Diagnostics.Trace.TraceInformation($"TVFS: Read {paths.Count} paths from path table");
+                _logger.LogInformation("TVFS: Read {PathCount} paths from path table", paths.Count);
             }
 
             // Read VFS table (Virtual File System entries)
@@ -113,7 +126,7 @@ namespace War3Net.IO.Casc.Root
             {
                 stream.Position = vfsTableOffset;
                 var entryCount = vfsTableSize / 24; // Each entry is 24 bytes
-                System.Diagnostics.Trace.TraceInformation($"TVFS: Processing {entryCount} VFS entries");
+                _logger.LogInformation("TVFS: Processing {EntryCount} VFS entries", entryCount);
 
                 var addedCount = 0;
                 for (uint i = 0; i < entryCount; i++)
@@ -176,7 +189,7 @@ namespace War3Net.IO.Casc.Root
                     }
                 }
 
-                System.Diagnostics.Trace.TraceInformation($"TVFS: Added {addedCount} entries to root handler");
+                _logger.LogInformation("TVFS: Added {AddedCount} entries to root handler", addedCount);
             }
         }
     }

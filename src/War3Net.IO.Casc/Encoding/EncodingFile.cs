@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using Microsoft.Extensions.Logging;
+
 using War3Net.IO.Casc.Structures;
 using War3Net.IO.Casc.Utilities;
 
@@ -102,7 +104,7 @@ namespace War3Net.IO.Casc.Encoding
         /// The method includes validation to prevent excessive memory allocation from corrupted files.
         /// </para>
         /// </remarks>
-        public static EncodingFile Parse(Stream stream)
+        public static EncodingFile Parse(Stream stream, ILogger? logger = null)
         {
             var encoding = new EncodingFile();
             using var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
@@ -226,7 +228,7 @@ namespace War3Net.IO.Casc.Encoding
                     catch (Exception ex)
                     {
                         // Log the error for debugging but continue trying to parse
-                        System.Diagnostics.Trace.TraceWarning($"Failed to parse encoding entry at position {entryStartPos}: {ex.Message}");
+                        logger?.LogWarning(ex, "Failed to parse encoding entry at position {Position}", entryStartPos);
 
                         // Try to recover by seeking to next potential entry
                         // This is a last-resort recovery attempt
@@ -240,11 +242,11 @@ namespace War3Net.IO.Casc.Encoding
                     }
                 }
 
-                System.Diagnostics.Trace.TraceInformation($"Page {pageIndex}: Read {pageEntriesRead} entries");
+                logger?.LogInformation("Page {PageIndex}: Read {EntriesRead} entries", pageIndex, pageEntriesRead);
                 totalEntriesRead += pageEntriesRead;
             }
 
-            System.Diagnostics.Trace.TraceInformation($"Total entries read from encoding file: {totalEntriesRead}");
+            logger?.LogInformation("Total entries read from encoding file: {TotalEntries}", totalEntriesRead);
 
             // Skip EKey pages (not typically used for lookups)
             reader.Skip((int)(encoding.Header.EKeyPageCount * EncodingPage.Size));
@@ -260,10 +262,10 @@ namespace War3Net.IO.Casc.Encoding
         /// <returns>A new <see cref="EncodingFile"/> instance with all entries loaded.</returns>
         /// <exception cref="FileNotFoundException">Thrown when the file at <paramref name="filePath"/> does not exist.</exception>
         /// <exception cref="CascParserException">Thrown when the file format is invalid or corrupted.</exception>
-        public static EncodingFile ParseFile(string filePath)
+        public static EncodingFile ParseFile(string filePath, ILogger? logger = null)
         {
             using var stream = File.OpenRead(filePath);
-            return Parse(stream);
+            return Parse(stream, logger);
         }
 
         /// <summary>

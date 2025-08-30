@@ -11,6 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Enums;
@@ -28,6 +31,7 @@ namespace War3Net.IO.Casc.Storage
     {
         private readonly CascStorageContext _context;
         private readonly ReaderWriterLockSlim _storageLock;
+        private readonly ILogger<CascStorage> _logger;
         private int _referenceCount = 1;
         private bool _disposed;
 
@@ -36,7 +40,8 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="storagePath">The path to the CASC storage.</param>
         /// <param name="localeFlags">The locale flags.</param>
-        public CascStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All)
+        /// <param name="logger">The logger instance.</param>
+        public CascStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILogger<CascStorage>? logger = null)
         {
             _context = new CascStorageContext
             {
@@ -46,6 +51,7 @@ namespace War3Net.IO.Casc.Storage
             };
 
             _storageLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            _logger = logger ?? NullLogger<CascStorage>.Instance;
         }
 
         /// <summary>
@@ -78,10 +84,11 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="storagePath">The path to the storage.</param>
         /// <param name="localeFlags">The locale flags.</param>
+        /// <param name="logger">The logger instance.</param>
         /// <returns>The opened storage.</returns>
-        public static CascStorage OpenStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All)
+        public static CascStorage OpenStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILogger<CascStorage>? logger = null)
         {
-            var storage = new CascStorage(storagePath, localeFlags);
+            var storage = new CascStorage(storagePath, localeFlags, logger);
             storage.Initialize();
             return storage;
         }
@@ -475,7 +482,7 @@ namespace War3Net.IO.Casc.Storage
         /// <summary>
         /// Releases a reference to the storage.
         /// </summary>
-        /// <returns>The storage instance if still referenced; otherwise, null.</returns>
+        /// <returns>The storage instance if still referenced; otherwise, <see langword="null"/>.</returns>
         public CascStorage? Release()
         {
             if (Interlocked.Decrement(ref _referenceCount) == 0)
@@ -523,7 +530,7 @@ namespace War3Net.IO.Casc.Storage
                 // Check if the root file is BLTE compressed
                 if (BlteDecoder.IsBlte(stream))
                 {
-                    System.Diagnostics.Trace.TraceInformation("Root file is BLTE compressed, decompressing...");
+                    _logger.LogInformation("Root file is BLTE compressed, decompressing...");
                     var decompressedStream = new MemoryStream();
                     BlteDecoder.Decode(stream, decompressedStream);
                     stream.Dispose();
@@ -541,14 +548,14 @@ namespace War3Net.IO.Casc.Storage
                     // Log the first 4 bytes for debugging
                     if (bytesRead >= 4)
                     {
-                        System.Diagnostics.Trace.TraceInformation($"Root file first 4 bytes: 0x{buffer[0]:X2} 0x{buffer[1]:X2} 0x{buffer[2]:X2} 0x{buffer[3]:X2}");
+                        _logger.LogInformation("Root file first 4 bytes: 0x{Byte0:X2} 0x{Byte1:X2} 0x{Byte2:X2} 0x{Byte3:X2}", buffer[0], buffer[1], buffer[2], buffer[3]);
                     }
 
                     // If it starts with text characters, use TextRootHandler
                     // Otherwise check for specific binary formats
                     if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
                     {
-                        System.Diagnostics.Trace.TraceInformation("Detected text root file format");
+                        _logger.LogInformation("Detected text root file format");
                         var textHandler = new TextRootHandler();
                         textHandler.Parse(stream);
                         _context.RootHandler = textHandler;
@@ -556,17 +563,17 @@ namespace War3Net.IO.Casc.Storage
                     else if (bytesRead >= 4 && IsTvfsFile(buffer))
                     {
                         // TVFS format used by Warcraft III
-                        System.Diagnostics.Trace.TraceInformation("Detected TVFS root file format");
+                        _logger.LogInformation("Detected TVFS root file format");
                         var tvfsHandler = new TvfsRootHandler();
                         tvfsHandler.Parse(stream);
                         _context.RootHandler = tvfsHandler;
-                        System.Diagnostics.Trace.TraceInformation($"TVFS root file parsed successfully, handler type: {_context.RootHandler?.GetType().Name}");
+                        _logger.LogInformation("TVFS root file parsed successfully, handler type: {HandlerType}", _context.RootHandler?.GetType().Name);
                     }
                     else
                     {
                         // For other binary root files (like WoW's MFST format)
                         // we'd need specific handlers - for now just use basic
-                        System.Diagnostics.Trace.TraceWarning($"Unknown binary root file format (first 4 bytes: 0x{buffer[0]:X2} 0x{buffer[1]:X2} 0x{buffer[2]:X2} 0x{buffer[3]:X2}), using empty root handler");
+                        _logger.LogWarning("Unknown binary root file format (first 4 bytes: 0x{Byte0:X2} 0x{Byte1:X2} 0x{Byte2:X2} 0x{Byte3:X2}), using empty root handler", buffer[0], buffer[1], buffer[2], buffer[3]);
                         _context.RootHandler = new BasicRootHandler();
                     }
                 }
@@ -575,7 +582,7 @@ namespace War3Net.IO.Casc.Storage
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"Failed to load root file: {ex.Message}");
+                _logger.LogError(ex, "Failed to load root file");
                 return false;
             }
         }
@@ -764,7 +771,7 @@ namespace War3Net.IO.Casc.Storage
             if (indexEntry.EncodedSize > DefaultMaxFileSize)
             {
                 // Log warning but allow - some legitimate game files can be large
-                System.Diagnostics.Trace.TraceWarning($"Large file size: {indexEntry.EncodedSize} bytes. Proceeding with caution.");
+                _logger.LogWarning("Large file size: {FileSize} bytes. Proceeding with caution.", indexEntry.EncodedSize);
             }
 
             var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath!);

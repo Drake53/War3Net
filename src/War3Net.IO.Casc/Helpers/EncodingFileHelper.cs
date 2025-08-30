@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Index;
@@ -26,8 +28,9 @@ namespace War3Net.IO.Casc.Helpers
         /// <param name="buildConfig">The build configuration.</param>
         /// <param name="cdnClient">The CDN client.</param>
         /// <param name="storagePath">The storage path.</param>
+        /// <param name="logger">The logger instance.</param>
         /// <returns>The path to the cached encoding file, or null if download failed.</returns>
-        public static async Task<string?> DownloadEncodingFileAsync(BuildConfig buildConfig, CdnClient cdnClient, string storagePath)
+        public static async Task<string?> DownloadEncodingFileAsync(BuildConfig buildConfig, CdnClient cdnClient, string storagePath, ILogger? logger = null)
         {
             var encodingEntry = buildConfig.Encoding;
 
@@ -45,7 +48,7 @@ namespace War3Net.IO.Casc.Helpers
 
                 try
                 {
-                    System.Diagnostics.Trace.TraceInformation($"Attempting to download encoding file with hash: {encodingHash}");
+                    logger?.LogInformation("Attempting to download encoding file with hash: {EncodingHash}", encodingHash);
                     var encodingData = await cdnClient.DownloadDataAsync(encodingHash);
                     await File.WriteAllBytesAsync(encodingPath, encodingData);
                 }
@@ -70,8 +73,9 @@ namespace War3Net.IO.Casc.Helpers
         /// <param name="cdnClient">The CDN client.</param>
         /// <param name="storagePath">The storage path.</param>
         /// <param name="fileIndexPath">The path to the file-index file (optional, for Warcraft III).</param>
+        /// <param name="logger">The logger instance.</param>
         /// <returns>The path to the cached root file, or null if download failed.</returns>
-        public static async Task<string?> DownloadRootFileAsync(BuildConfig buildConfig, string encodingPath, CdnClient cdnClient, string storagePath, string? fileIndexPath = null)
+        public static async Task<string?> DownloadRootFileAsync(BuildConfig buildConfig, string encodingPath, CdnClient cdnClient, string storagePath, string? fileIndexPath = null, ILogger? logger = null)
         {
             var rootEntry = buildConfig.Root;
             var vfsRoot = buildConfig.VfsRoot;
@@ -111,7 +115,7 @@ namespace War3Net.IO.Casc.Helpers
 
                 if (!foundEKey.HasValue || foundEKey.Value.IsEmpty)
                 {
-                    System.Diagnostics.Trace.TraceWarning($"Could not find EKey for root CKey {rootCKey} in encoding file");
+                    logger?.LogWarning("Could not find EKey for root CKey {RootCKey} in encoding file", rootCKey);
                     return null;
                 }
 
@@ -137,7 +141,7 @@ namespace War3Net.IO.Casc.Helpers
                             // Try to find the root file's EKey in the index
                             if (indexFile.TryGetEntry(rootEKey, out var entry))
                             {
-                                System.Diagnostics.Trace.TraceInformation($"Found root file in file-index: DataFileIndex={entry.DataFileIndex}, Offset={entry.DataFileOffset}, Size={entry.EncodedSize}");
+                                logger?.LogInformation("Found root file in file-index: DataFileIndex={DataFileIndex}, Offset={Offset}, Size={Size}", entry.DataFileIndex, entry.DataFileOffset, entry.EncodedSize);
 
                                 // For loose files in file-index, offset should be 0 and DataFileIndex indicates it's not in an archive
                                 // The file should be downloadable directly using the EKey
@@ -150,29 +154,29 @@ namespace War3Net.IO.Casc.Helpers
                             }
                             else
                             {
-                                System.Diagnostics.Trace.TraceWarning($"Root file EKey {rootEKey} not found in file-index");
+                                logger?.LogWarning("Root file EKey {RootEKey} not found in file-index", rootEKey);
                             }
                         }
                         catch (Exception ex)
                         {
-                            System.Diagnostics.Trace.TraceWarning($"Failed to check file-index for root file: {ex.Message}");
+                            logger?.LogWarning(ex, "Failed to check file-index for root file");
                         }
                     }
 
                     // Try to download the root file
                     // If it was found in file-index with offset 0, it should be available as a loose file
                     // If not found in file-index, still try as it might be a regular loose file
-                    System.Diagnostics.Trace.TraceInformation($"Downloading root file with EKey: {rootEKey}");
+                    logger?.LogInformation("Downloading root file with EKey: {RootEKey}", rootEKey);
                     var rootData = await cdnClient.DownloadDataAsync(rootEKey);
                     await File.WriteAllBytesAsync(rootPath, rootData);
-                    System.Diagnostics.Trace.TraceInformation("Root file downloaded successfully");
+                    logger?.LogInformation("Root file downloaded successfully");
                 }
 
                 return rootPath;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceWarning($"Failed to download root file: {ex.Message}");
+                logger?.LogWarning(ex, "Failed to download root file");
                 return null;
             }
         }
@@ -182,23 +186,15 @@ namespace War3Net.IO.Casc.Helpers
         /// </summary>
         /// <param name="encodingPath">The path to the encoding file.</param>
         /// <returns>The parsed encoding file, or null if parsing failed.</returns>
-        public static EncodingFile? LoadEncodingFile(string encodingPath)
+        public static EncodingFile LoadEncodingFile(string encodingPath)
         {
             if (!File.Exists(encodingPath))
             {
-                return null;
+                throw new ArgumentException("File does not exist.", nameof(encodingPath));
             }
 
-            try
-            {
-                using var stream = File.OpenRead(encodingPath);
-                return EncodingFile.Parse(stream);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.TraceError($"Failed to parse encoding file: {ex.Message}");
-                return null;
-            }
+            using var stream = File.OpenRead(encodingPath);
+            return EncodingFile.Parse(stream);
         }
     }
 }

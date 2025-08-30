@@ -12,6 +12,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
 using War3Net.IO.Casc.Structures;
@@ -28,14 +31,17 @@ namespace War3Net.IO.Casc.Cdn
         private readonly List<string> _cdnHosts;
         private readonly string _cdnPath;
         private readonly bool _ownsHttpClient;
+        private readonly ILogger<CdnClient> _logger;
         private int _currentHostIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CdnClient"/> class.
         /// </summary>
         /// <param name="region">The region code (us, eu, kr, cn, etc.).</param>
-        public CdnClient(string region = CascRegion.EU, string cdnPath = "tpr/war3")
-            : this(GetDefaultCdnHosts(region), cdnPath)
+        /// <param name="cdnPath">The CDN path.</param>
+        /// <param name="logger">The logger instance.</param>
+        public CdnClient(string region = CascRegion.EU, string cdnPath = "tpr/war3", ILogger<CdnClient>? logger = null)
+            : this(GetDefaultCdnHosts(region), cdnPath, logger)
         {
         }
 
@@ -44,10 +50,12 @@ namespace War3Net.IO.Casc.Cdn
         /// </summary>
         /// <param name="cdnHosts">The list of CDN hosts.</param>
         /// <param name="cdnPath">The CDN path.</param>
-        public CdnClient(List<string> cdnHosts, string cdnPath)
+        /// <param name="logger">The logger instance.</param>
+        public CdnClient(List<string> cdnHosts, string cdnPath, ILogger<CdnClient>? logger = null)
         {
             _cdnHosts = cdnHosts ?? throw new ArgumentNullException(nameof(cdnHosts));
             _cdnPath = cdnPath ?? throw new ArgumentNullException(nameof(cdnPath));
+            _logger = logger ?? NullLogger<CdnClient>.Instance;
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "War3Net.IO.Casc/1.0");
             _ownsHttpClient = true;
@@ -59,11 +67,13 @@ namespace War3Net.IO.Casc.Cdn
         /// <param name="httpClient">The HTTP client to use.</param>
         /// <param name="cdnHosts">The list of CDN hosts.</param>
         /// <param name="cdnPath">The CDN path.</param>
-        public CdnClient(HttpClient httpClient, List<string> cdnHosts, string cdnPath)
+        /// <param name="logger">The logger instance.</param>
+        public CdnClient(HttpClient httpClient, List<string> cdnHosts, string cdnPath, ILogger<CdnClient>? logger = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _cdnHosts = cdnHosts ?? throw new ArgumentNullException(nameof(cdnHosts));
             _cdnPath = cdnPath ?? throw new ArgumentNullException(nameof(cdnPath));
+            _logger = logger ?? NullLogger<CdnClient>.Instance;
             _ownsHttpClient = false;
         }
 
@@ -180,7 +190,7 @@ namespace War3Net.IO.Casc.Cdn
                         if (isHttps && retryCount == maxRetries - 1)
                         {
                             // Last retry on HTTPS failed, will try HTTP fallback on next host
-                            System.Diagnostics.Trace.TraceWarning($"HTTPS request failed for {url}: {ex.Message}");
+                            _logger.LogWarning(ex, "HTTPS request failed for {Url}", url);
                         }
                     }
                     catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)

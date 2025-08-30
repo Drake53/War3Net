@@ -7,6 +7,8 @@
 
 using System.IO;
 
+using Microsoft.Extensions.Logging;
+
 namespace War3Net.IO.Casc.Index
 {
     /// <summary>
@@ -103,19 +105,21 @@ namespace War3Net.IO.Casc.Index
         /// Parses an index header v1 from a stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
+        /// <param name="logger">The logger instance.</param>
         /// <returns>The parsed header.</returns>
-        public static IndexHeaderV1 Parse(Stream stream)
+        public static IndexHeaderV1 Parse(Stream stream, ILogger? logger = null)
         {
             using var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
-            return Parse(reader);
+            return Parse(reader, logger);
         }
 
         /// <summary>
         /// Parses an index header v1 from a binary reader.
         /// </summary>
         /// <param name="reader">The reader to read from.</param>
+        /// <param name="logger">The logger instance.</param>
         /// <returns>The parsed header.</returns>
-        public static IndexHeaderV1 Parse(BinaryReader reader)
+        public static IndexHeaderV1 Parse(BinaryReader reader, ILogger? logger = null)
         {
             var startPos = reader.BaseStream.Position;
 
@@ -156,7 +160,7 @@ namespace War3Net.IO.Casc.Index
                 var calculatedHash = Utilities.HashHelper.ComputeJenkinsHash(headerBytes);
                 if (calculatedHash != header.HeaderHash)
                 {
-                    System.Diagnostics.Trace.TraceWarning($"Index header hash mismatch: calculated 0x{calculatedHash:X8}, expected 0x{header.HeaderHash:X8}");
+                    logger?.LogWarning("Index header hash mismatch: calculated 0x{CalculatedHash:X8}, expected 0x{ExpectedHash:X8}", calculatedHash, header.HeaderHash);
                 }
             }
 

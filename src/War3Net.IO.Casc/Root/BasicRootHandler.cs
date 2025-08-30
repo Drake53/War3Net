@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Structures;
 
@@ -22,14 +25,17 @@ namespace War3Net.IO.Casc.Root
     {
         private readonly Dictionary<string, RootEntry> _rootEntries;
         private readonly Dictionary<uint, RootEntry> _fileDataIdEntries;
+        private readonly ILogger<BasicRootHandler> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BasicRootHandler"/> class.
         /// </summary>
-        public BasicRootHandler()
+        /// <param name="logger">The logger instance.</param>
+        public BasicRootHandler(ILogger<BasicRootHandler>? logger = null)
         {
             _rootEntries = new Dictionary<string, RootEntry>(StringComparer.OrdinalIgnoreCase);
             _fileDataIdEntries = new Dictionary<uint, RootEntry>();
+            _logger = logger ?? NullLogger<BasicRootHandler>.Instance;
         }
 
         /// <summary>
@@ -237,19 +243,19 @@ namespace War3Net.IO.Casc.Root
             // Log summary
             if (errors.Count > 0)
             {
-                System.Diagnostics.Trace.TraceWarning($"Loaded {successCount} root entries with {errors.Count} errors");
+                _logger.LogWarning("Loaded {SuccessCount} root entries with {ErrorCount} errors", successCount, errors.Count);
                 foreach (var error in errors.Take(10)) // Log first 10 errors
                 {
-                    System.Diagnostics.Trace.TraceWarning($"Root loading error: {error}");
+                    _logger.LogWarning("Root loading error: {Error}", error);
                 }
                 if (errors.Count > 10)
                 {
-                    System.Diagnostics.Trace.TraceWarning($"... and {errors.Count - 10} more errors");
+                    _logger.LogWarning("... and {RemainingErrors} more errors", errors.Count - 10);
                 }
             }
             else
             {
-                System.Diagnostics.Trace.TraceInformation($"Successfully loaded {successCount} root entries");
+                _logger.LogInformation("Successfully loaded {SuccessCount} root entries", successCount);
             }
 
             return errors;
