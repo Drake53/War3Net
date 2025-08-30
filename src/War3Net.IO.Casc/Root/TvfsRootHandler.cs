@@ -94,17 +94,17 @@ namespace War3Net.IO.Casc.Root
 
             var version = reader.ReadByte();
             var headerSize = reader.ReadByte();
-            var ekeySize = reader.ReadByte();
+            var eKeySize = reader.ReadByte();
             var patchKeySize = reader.ReadByte();
             var flags = reader.ReadUInt32();
             var pathTableOffset = reader.ReadUInt32();
             var pathTableSize = reader.ReadUInt32();
             var vfsTableOffset = reader.ReadUInt32();
             var vfsTableSize = reader.ReadUInt32();
-            var ckeyTableOffset = reader.ReadUInt32();
-            var ckeyTableSize = reader.ReadUInt32();
-            var ekeyTableOffset = reader.ReadUInt32();
-            var ekeyTableSize = reader.ReadUInt32();
+            var cKeyTableOffset = reader.ReadUInt32();
+            var cKeyTableSize = reader.ReadUInt32();
+            var eKeyTableOffset = reader.ReadUInt32();
+            var eKeyTableSize = reader.ReadUInt32();
             var patchEkeyTableOffset = reader.ReadUInt32();
             var patchEkeyTableSize = reader.ReadUInt32();
             var directoryManifestOffset = reader.ReadUInt32();
@@ -134,8 +134,8 @@ namespace War3Net.IO.Casc.Root
                     // Read VFS entry
                     var pathOffset = reader.ReadUInt32();
                     var pathIndex = reader.ReadUInt32();
-                    var ckeyIndex = reader.ReadUInt32();
-                    var ekeyIndex = reader.ReadUInt32();
+                    var cKeyIndex = reader.ReadUInt32();
+                    var eKeyIndex = reader.ReadUInt32();
                     var fileSize = reader.ReadUInt32();
                     var flags2 = reader.ReadUInt32();
 
@@ -151,33 +151,33 @@ namespace War3Net.IO.Casc.Root
                     };
 
                     // Read CKey if available
-                    if (ckeyIndex != 0xFFFFFFFF && ckeyTableSize > 0)
+                    if (cKeyIndex != 0xFFFFFFFF && cKeyTableSize > 0)
                     {
-                        var ckeyOffset = ckeyTableOffset + (ckeyIndex * 16);
-                        if (ckeyOffset + 16 <= stream.Length)
+                        var cKeyOffset = cKeyTableOffset + (cKeyIndex * 16);
+                        if (cKeyOffset + 16 <= stream.Length)
                         {
                             var currentPos = stream.Position;
-                            stream.Position = ckeyOffset;
-                            var ckeyBytes = reader.ReadBytes(16);
-                            entry.CKey = new CascKey(ckeyBytes);
+                            stream.Position = cKeyOffset;
+                            var cKeyBytes = reader.ReadBytes(16);
+                            entry.CKey = new CascKey(cKeyBytes);
                             stream.Position = currentPos;
                         }
                     }
 
                     // Read EKey if available
-                    if (ekeyIndex != 0xFFFFFFFF && ekeyTableSize > 0)
+                    if (eKeyIndex != 0xFFFFFFFF && eKeyTableSize > 0)
                     {
-                        var ekeyOffset = ekeyTableOffset + (ekeyIndex * ekeySize);
-                        if (ekeyOffset + ekeySize <= stream.Length)
+                        var eKeyOffset = eKeyTableOffset + (eKeyIndex * eKeySize);
+                        if (eKeyOffset + eKeySize <= stream.Length)
                         {
                             var currentPos = stream.Position;
-                            stream.Position = ekeyOffset;
-                            var ekeyBytes = reader.ReadBytes(ekeySize);
+                            stream.Position = eKeyOffset;
+                            var eKeyBytes = reader.ReadBytes(eKeySize);
 
                             // Pad or truncate to 16 bytes for EKey
-                            var ekeyData = new byte[16];
-                            Array.Copy(ekeyBytes, 0, ekeyData, 0, Math.Min(ekeyBytes.Length, 16));
-                            entry.EKey = new EKey(ekeyData);
+                            var eKeyData = new byte[16];
+                            Array.Copy(eKeyBytes, 0, eKeyData, 0, Math.Min(eKeyBytes.Length, 16));
+                            entry.EKey = new EKey(eKeyData);
                             stream.Position = currentPos;
                         }
                     }

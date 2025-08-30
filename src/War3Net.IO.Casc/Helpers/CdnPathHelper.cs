@@ -43,24 +43,24 @@ namespace War3Net.IO.Casc.Helpers
         /// Constructs a path for CDN data files downloaded directly (not from archives).
         /// </summary>
         /// <param name="storagePath">The base storage path.</param>
-        /// <param name="ekey">The EKey.</param>
+        /// <param name="eKey">The EKey.</param>
         /// <returns>The full path for the CDN data file.</returns>
         /// <remarks>
         /// For cached online CASC storage, data files (encoding, root, install, download manifests)
         /// are stored in data/XX/YY/[hash] structure, matching CascLib's FetchCascFile behavior
         /// and CASC_DIRECTORY_STRUCTURE_CORRECT.md specification for online storage.
         /// </remarks>
-        public static string GetLooseFilePath(string storagePath, EKey ekey)
+        public static string GetLooseFilePath(string storagePath, EKey eKey)
         {
-            var hash = ekey.ToString().ToLowerInvariant();
+            var hash = eKey.ToString().ToLowerInvariant();
             if (string.IsNullOrEmpty(hash))
             {
-                throw new ArgumentException("EKey cannot be empty", nameof(ekey));
+                throw new ArgumentException("EKey cannot be empty", nameof(eKey));
             }
 
             if (hash.Length < 4)
             {
-                throw new ArgumentException("Hash must be at least 4 characters long", nameof(ekey));
+                throw new ArgumentException("Hash must be at least 4 characters long", nameof(eKey));
             }
 
             // For cached online storage: data/XX/YY/[hash]

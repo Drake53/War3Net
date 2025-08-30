@@ -392,7 +392,7 @@ namespace War3Net.IO.Casc.Storage
                 await DownloadPatchConfigAsync(buildConfig.PatchConfig);
             }
 
-            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndexes, null, 5, TotalProgressSteps);
+            progressReporter?.ReportProgress(CascProgressMessage.LoadingIndices, null, 5, TotalProgressSteps);
 
             // Download index files FIRST - they contain the EKey mappings needed for other files
             await DownloadIndexFilesAsync(cdnConfig, progressReporter);
@@ -523,7 +523,7 @@ namespace War3Net.IO.Casc.Storage
 
         private async Task DownloadIndexFilesAsync(CdnConfig cdnConfig, IProgressReporter? progressReporter)
         {
-            // Download archive indexes
+            // Download archive indices
             var archives = cdnConfig.Archives;
             if (archives == null || archives.Count == 0)
             {
@@ -558,7 +558,7 @@ namespace War3Net.IO.Casc.Storage
                     continue;
                 }
 
-                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndexes, $"{hashLower}.index", i, maxIndexes);
+                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndices, $"{hashLower}.index", i, maxIndexes);
 
                 try
                 {
@@ -570,8 +570,8 @@ namespace War3Net.IO.Casc.Storage
                     }
 
                     // Download from CDN - the .index extension is added by the CDN client
-                    var ekey = EKey.Parse(archiveKey);
-                    var indexData = await _cdnClient!.DownloadIndexAsync(ekey);
+                    var eKey = EKey.Parse(archiveKey);
+                    var indexData = await _cdnClient!.DownloadIndexAsync(eKey);
                     await File.WriteAllBytesAsync(indexPath, indexData);
                     _logger.LogInformation("Successfully downloaded index: {IndexPath}", indexPath);
                     successfulDownloads++;

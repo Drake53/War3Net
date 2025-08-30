@@ -30,11 +30,11 @@ namespace War3Net.IO.Casc.Enums
         /// <summary>
         /// Loading index files.
         /// </summary>
-        LoadingIndexes,
+        LoadingIndices,
 
         /// <summary>
-        /// Downloading archive indexes.
+        /// Downloading archive indices.
         /// </summary>
-        DownloadingArchiveIndexes,
+        DownloadingArchiveIndices,
     }
 }

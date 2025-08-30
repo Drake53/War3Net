@@ -29,8 +29,8 @@ namespace War3Net.IO.Casc.Encoding
     /// <list type="bullet">
     /// <item><description>keyCount (1 byte): Number of <see cref="EKey"/>s for this content</description></item>
     /// <item><description>file_size (40 bits, big-endian): Size of the non-encoded version of the file</description></item>
-    /// <item><description>ckey: The <see cref="CascKey"/> this entry represents</description></item>
-    /// <item><description>ekeys: Array of <see cref="EKey"/>s (count = keyCount)</description></item>
+    /// <item><description>cKey: The <see cref="CascKey"/> this entry represents</description></item>
+    /// <item><description>eKeys: Array of <see cref="EKey"/>s (count = keyCount)</description></item>
     /// </list>
     /// <para>
     /// Multiple <see cref="EKey"/>s for a single <see cref="CascKey"/> allow the CASC system to support different
@@ -99,7 +99,7 @@ namespace War3Net.IO.Casc.Encoding
             var entry = new EncodingEntry();
 
             // Read EKey count
-            var ekeyCount = reader.ReadByte();
+            var eKeyCount = reader.ReadByte();
 
             // Read content size (40 bits, big-endian)
             var sizeBytes = reader.ReadBytes(5);
@@ -115,10 +115,10 @@ namespace War3Net.IO.Casc.Encoding
             entry.CKey = reader.ReadCKey();
 
             // Read encoded keys
-            for (var i = 0; i < ekeyCount; i++)
+            for (var i = 0; i < eKeyCount; i++)
             {
-                var ekeyBytes = reader.ReadBytes(header.EKeyLength);
-                entry.EKeys.Add(new EKey(ekeyBytes));
+                var eKeyBytes = reader.ReadBytes(header.EKeyLength);
+                entry.EKeys.Add(new EKey(eKeyBytes));
             }
 
             return entry;

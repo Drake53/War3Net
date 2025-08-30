@@ -72,8 +72,8 @@ namespace War3Net.IO.Casc.Progress
                 CascProgressMessage.LoadingFile => "Loading file",
                 CascProgressMessage.LoadingManifest => "Loading manifest",
                 CascProgressMessage.DownloadingFile => "Downloading file",
-                CascProgressMessage.LoadingIndexes => "Loading index files",
-                CascProgressMessage.DownloadingArchiveIndexes => "Downloading archive indexes",
+                CascProgressMessage.LoadingIndices => "Loading index files",
+                CascProgressMessage.DownloadingArchiveIndices => "Downloading archive indices",
                 _ => "Processing",
             };
 

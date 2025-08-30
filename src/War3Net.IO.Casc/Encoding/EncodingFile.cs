@@ -120,10 +120,10 @@ namespace War3Net.IO.Casc.Encoding
             }
 
             // Read CKey pages
-            var ckeyPages = new List<EncodingPage>();
+            var cKeyPages = new List<EncodingPage>();
             for (uint i = 0; i < encoding.Header.CKeyPageCount; i++)
             {
-                ckeyPages.Add(EncodingPage.Parse(reader));
+                cKeyPages.Add(EncodingPage.Parse(reader));
             }
 
             // Validate page sizes to prevent excessive memory allocation

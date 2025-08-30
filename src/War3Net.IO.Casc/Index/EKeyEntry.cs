@@ -48,8 +48,8 @@ namespace War3Net.IO.Casc.Index
             var entry = new EKeyEntry();
 
             // Read EKey
-            var ekeyBytes = reader.ReadBytes(header.EKeyLength);
-            entry.EKey = new EKey(ekeyBytes);
+            var eKeyBytes = reader.ReadBytes(header.EKeyLength);
+            entry.EKey = new EKey(eKeyBytes);
 
             // Read storage offset (big-endian)
             var storageOffsetBytes = reader.ReadBytes(header.StorageOffsetLength);
@@ -78,13 +78,13 @@ namespace War3Net.IO.Casc.Index
         public void WriteTo(BinaryWriter writer, IndexHeader header)
         {
             // Write EKey
-            var ekeyBytes = EKey.ToArray();
-            if (ekeyBytes.Length < header.EKeyLength)
+            var eKeyBytes = EKey.ToArray();
+            if (eKeyBytes.Length < header.EKeyLength)
             {
-                Array.Resize(ref ekeyBytes, header.EKeyLength);
+                Array.Resize(ref eKeyBytes, header.EKeyLength);
             }
 
-            writer.Write(ekeyBytes, 0, header.EKeyLength);
+            writer.Write(eKeyBytes, 0, header.EKeyLength);
 
             // Combine data file index and offset
             var storageOffset = ((ulong)DataFileIndex << header.FileOffsetBits) | DataFileOffset;

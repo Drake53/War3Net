@@ -46,7 +46,7 @@ namespace War3Net.IO.Casc.Enums
         FileNameHashesOptional = 0x00000010,
 
         /// <summary>
-        /// The storage indexes files by FileDataId.
+        /// The storage indices files by FileDataId.
         /// </summary>
         FileDataIds = 0x00000020,
 

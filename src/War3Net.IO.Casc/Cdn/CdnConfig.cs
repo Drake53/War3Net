@@ -16,7 +16,7 @@ namespace War3Net.IO.Casc.Cdn
     /// <remarks>
     /// <para>
     /// The CDN config file contains information about how data is organized on the CDN for a specific build.
-    /// It lists archives, indexes, and other data structures needed to retrieve game files from the CDN.
+    /// It lists archives, indices, and other data structures needed to retrieve game files from the CDN.
     /// This configuration is used by <see cref="Storage.OnlineCascStorage"/> to locate and download game content.
     /// </para>
     /// <para>
