@@ -50,7 +50,7 @@ namespace War3Net.IO.Casc.Root
                     // Parse file size if available
                     if (parts.Length >= 3 && ulong.TryParse(parts[2].Trim(), out var fileSize))
                     {
-                        // Store file size in entry if needed
+                        entry.FileSize = fileSize;
                     }
 
                     if (entry.HasFileName && entry.HasCKey)
