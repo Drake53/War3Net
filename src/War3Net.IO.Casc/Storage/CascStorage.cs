@@ -259,9 +259,6 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         public Stream OpenFileByName(string fileName)
         {
-            // Use centralized path sanitization
-            fileName = PathSanitizer.SanitizeFilePath(fileName);
-
             if (_context.RootHandler == null)
             {
                 throw new CascException("Root handler not loaded. Cannot resolve file names.");
@@ -273,16 +270,16 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascFileNotFoundException($"{_context.RootHandler.GetType().Name} does not contain an entry for: {fileName}");
             }
 
-            // Try to open by CKey first
-            if (!rootEntry.CKey.IsEmpty)
-            {
-                return OpenFileByCKey(rootEntry.CKey);
-            }
-
-            // Fall back to EKey if available
+            // Try to open by EKey first
             if (!rootEntry.EKey.IsEmpty)
             {
                 return OpenFileByEKey(rootEntry.EKey);
+            }
+
+            // Fall back to CKey if available
+            if (!rootEntry.CKey.IsEmpty)
+            {
+                return OpenFileByCKey(rootEntry.CKey);
             }
 
             throw new CascException($"Root entry for '{fileName}' has no valid keys");

@@ -58,9 +58,6 @@ namespace War3Net.IO.Casc.Root
                 return null;
             }
 
-            // Normalize path separators
-            fileName = fileName.Replace('/', '\\');
-
             return EntriesByName.TryGetValue(fileName, out var entry) ? entry : null;
         }
 
