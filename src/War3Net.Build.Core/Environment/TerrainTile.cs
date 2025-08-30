@@ -89,8 +89,10 @@ namespace War3Net.Build.Environment
                 {
                     _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x40 : _textureDataAndFlags & 0xBF);
                 }
-
-                _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x10 : _textureDataAndFlags & 0xEF);
+                else
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x10 : _textureDataAndFlags & 0xEF);
+                }
             }
         }
 
@@ -111,7 +113,10 @@ namespace War3Net.Build.Environment
                 {
                     _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x80 : _textureDataAndFlags & 0x7F);
                 }
-                _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x20 : _textureDataAndFlags & 0xDF);
+                else
+                {
+                    _textureDataAndFlags = (ushort)(value ? _textureDataAndFlags | 0x20 : _textureDataAndFlags & 0xDF);
+                }
             }
         }
 
