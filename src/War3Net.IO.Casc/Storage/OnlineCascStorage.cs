@@ -530,12 +530,11 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException("No archives found in CDN config - cannot proceed without index files");
             }
 
-            // Download at least the first few archive indexes to get started
-            var maxIndexes = Math.Min(archives.Count, 5); // Download first 5 indexes
+            // Download all archive indices
             var successfulDownloads = 0;
             var failedDownloads = new List<string>();
 
-            for (var i = 0; i < maxIndexes; i++)
+            for (var i = 0; i < archives.Count; i++)
             {
                 var archiveKey = archives[i];
                 if (string.IsNullOrEmpty(archiveKey))
@@ -558,7 +557,7 @@ namespace War3Net.IO.Casc.Storage
                     continue;
                 }
 
-                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndices, $"{hashLower}.index", i, maxIndexes);
+                progressReporter?.ReportProgress(CascProgressMessage.DownloadingArchiveIndices, $"{hashLower}.index", i, archives.Count);
 
                 try
                 {
@@ -594,7 +593,7 @@ namespace War3Net.IO.Casc.Storage
                 throw new CascException($"Failed to download any index files. Errors: {failureDetails}");
             }
 
-            _logger.LogInformation("Downloaded {SuccessfulDownloads} of {MaxIndexes} index files", successfulDownloads, maxIndexes);
+            _logger.LogInformation("Downloaded {SuccessfulDownloads} of {TotalDownloads} index files", successfulDownloads, archives.Count);
         }
 
         private static string GetVersionsUrl(string product, string region)
