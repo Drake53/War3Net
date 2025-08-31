@@ -42,7 +42,7 @@ namespace War3Net.IO.Casc.Compression
         /// <summary>
         /// Gets a value indicating whether this frame has a hash.
         /// </summary>
-        public bool HasHash => Hash != null && Hash.Length == CascConstants.MD5HashSize;
+        public bool HasHash => Hash is not null && Hash.Length == CascConstants.MD5HashSize;
 
         /// <summary>
         /// Gets a value indicating whether this frame is encrypted.

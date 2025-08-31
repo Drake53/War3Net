@@ -25,7 +25,7 @@ namespace War3Net.IO.Casc.Root
             using var reader = new StreamReader(stream, System.Text.Encoding.UTF8, true, 1024, true);
             string? line;
 
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {

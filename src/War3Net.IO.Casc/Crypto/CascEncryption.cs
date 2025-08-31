@@ -98,7 +98,7 @@ namespace War3Net.IO.Casc.Crypto
         public static byte[] Decrypt(byte[] data, ulong keyName, byte[] iv)
         {
             var key = GetKey(keyName);
-            if (key == null)
+            if (key is null)
             {
                 throw new CascEncryptionException(keyName);
             }
@@ -117,7 +117,7 @@ namespace War3Net.IO.Casc.Crypto
         {
             // CASC uses 4-byte IVs that need to be extended to 8 bytes for Salsa20
             // CascLib validates that IV is exactly 4 bytes
-            if (iv == null)
+            if (iv is null)
             {
                 throw new ArgumentNullException(nameof(iv));
             }
@@ -145,7 +145,7 @@ namespace War3Net.IO.Casc.Crypto
         public static void DecryptInPlace(byte[] data, ulong keyName, byte[] iv)
         {
             var key = GetKey(keyName);
-            if (key == null)
+            if (key is null)
             {
                 throw new CascEncryptionException(keyName);
             }
@@ -163,7 +163,7 @@ namespace War3Net.IO.Casc.Crypto
         {
             // CASC uses 4-byte IVs that need to be extended to 8 bytes for Salsa20
             // CascLib validates that IV is exactly 4 bytes
-            if (iv == null)
+            if (iv is null)
             {
                 throw new ArgumentNullException(nameof(iv));
             }
@@ -189,7 +189,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="key">The encryption key.</param>
         public static void AddKnownKey(ulong keyName, byte[] key)
         {
-            if (key == null || key.Length != CascConstants.KeyLength)
+            if (key is null || key.Length != CascConstants.KeyLength)
             {
                 throw new ArgumentException($"Key must be {CascConstants.KeyLength} bytes", nameof(key));
             }
@@ -210,7 +210,7 @@ namespace War3Net.IO.Casc.Crypto
             if (KnownKeys.TryRemove(keyName, out var removedKey))
             {
                 // Clear sensitive key data from memory
-                if (removedKey != null)
+                if (removedKey is not null)
                 {
                     Array.Clear(removedKey, 0, removedKey.Length);
                 }
@@ -281,7 +281,7 @@ namespace War3Net.IO.Casc.Crypto
             // Clear sensitive data before removing
             foreach (var kvp in KnownKeys)
             {
-                if (kvp.Value != null)
+                if (kvp.Value is not null)
                 {
                     Array.Clear(kvp.Value, 0, kvp.Value.Length);
                 }

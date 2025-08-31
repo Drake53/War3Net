@@ -173,7 +173,7 @@ namespace War3Net.IO.Casc.Root
             var lineNumber = 0;
             var successCount = 0;
 
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 lineNumber++;
 

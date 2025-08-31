@@ -19,7 +19,6 @@ namespace War3Net.IO.Casc.Structures
         {
             CKey = CascKey.Empty;
             EKey = EKey.Empty;
-            DataFileName = string.Empty;
             FileDataId = CascConstants.InvalidId;
             LocaleFlags = CascConstants.InvalidId;
             ContentFlags = CascConstants.InvalidId;
@@ -38,7 +37,7 @@ namespace War3Net.IO.Casc.Structures
         /// <summary>
         /// Gets or sets the plain name of the data file where the file is stored.
         /// </summary>
-        public string DataFileName { get; set; }
+        public string? DataFileName { get; set; }
 
         /// <summary>
         /// Gets or sets the offset of the file over the entire storage.

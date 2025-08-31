@@ -454,8 +454,8 @@ var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
 var eKey = encoding.GetEKey(cKey);
 
 // Look up content key for encoded key
-var ekey2 = EKey.Parse("1234567890");
-var ckey2 = encoding.GetCKey(ekey2);
+var eKey2 = EKey.Parse("1234567890");
+var cKey2 = encoding.GetCKey(eKey2);
 
 // Get entry details
 if (encoding.TryGetEntry(cKey, out var entry))

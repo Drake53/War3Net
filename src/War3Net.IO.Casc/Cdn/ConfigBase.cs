@@ -112,7 +112,7 @@ namespace War3Net.IO.Casc.Cdn
         protected static T ParseConfig<T>(Stream stream, T config)
             where T : ConfigBase
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -120,7 +120,7 @@ namespace War3Net.IO.Casc.Cdn
             using var reader = new StreamReader(stream);
 
             string? line;
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {

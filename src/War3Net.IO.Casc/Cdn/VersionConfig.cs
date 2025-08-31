@@ -48,7 +48,7 @@ namespace War3Net.IO.Casc.Cdn
             string? line;
             var columnIndices = new Dictionary<string, int>();
 
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {

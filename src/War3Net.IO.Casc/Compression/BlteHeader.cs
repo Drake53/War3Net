@@ -186,7 +186,7 @@ namespace War3Net.IO.Casc.Compression
                     writer.WriteUInt32BE(frame.EncodedSize);
                     writer.WriteUInt32BE(frame.ContentSize);
 
-                    if (HasFrameHashes && frame.Hash != null)
+                    if (HasFrameHashes && frame.Hash is not null)
                     {
                         writer.WriteMD5Hash(frame.Hash);
                     }
@@ -212,7 +212,7 @@ namespace War3Net.IO.Casc.Compression
             size += FrameCount * 8;
 
             // Check if all frames have hashes
-            if (Frames.Count > 0 && Frames.All(f => f.Hash != null && f.Hash.Length == CascConstants.MD5HashSize))
+            if (Frames.Count > 0 && Frames.All(f => f.Hash is not null && f.Hash.Length == CascConstants.MD5HashSize))
             {
                 size += FrameCount * CascConstants.MD5HashSize;
             }

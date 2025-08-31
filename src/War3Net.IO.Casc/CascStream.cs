@@ -103,7 +103,7 @@ namespace War3Net.IO.Casc
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -125,7 +125,7 @@ namespace War3Net.IO.Casc
 
             EnsureDecoded();
 
-            if (_memoryStream == null)
+            if (_memoryStream is null)
             {
                 return 0;
             }
@@ -195,7 +195,7 @@ namespace War3Net.IO.Casc
 
         private void EnsureDecoded()
         {
-            if (_decodedData != null)
+            if (_decodedData is not null)
             {
                 return;
             }

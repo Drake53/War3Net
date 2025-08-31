@@ -56,7 +56,7 @@ namespace War3Net.IO.Casc.Utilities
             a = b = c = 0xdeadbeef + (uint)length;
             pc = pb = 0;
 
-            if (data == null || length == 0)
+            if (data is null || length == 0)
             {
                 pc = c;
                 pb = b;

@@ -287,7 +287,7 @@ namespace War3Net.IO.Casc.Compression
                 throw new CascException($"Maximum BLTE recursion depth ({MaxRecursionDepth}) exceeded. Possible corrupted data or infinite loop.");
             }
 
-            if (frame.Data == null || frame.Data.Length == 0)
+            if (frame.Data is null || frame.Data.Length == 0)
             {
                 return Array.Empty<byte>();
             }
@@ -386,7 +386,7 @@ namespace War3Net.IO.Casc.Compression
             var decryptedData = CascEncryption.Decrypt(encryptedData, keyName, iv);
 
             // Validate decrypted data
-            if (decryptedData == null || decryptedData.Length == 0)
+            if (decryptedData is null || decryptedData.Length == 0)
             {
                 throw new CascEncryptionException($"Decryption failed or produced empty data for key: 0x{keyName:X16}");
             }
@@ -519,7 +519,7 @@ namespace War3Net.IO.Casc.Compression
         /// </remarks>
         public static bool IsBlte(byte[] data)
         {
-            if (data == null || data.Length < 8)
+            if (data is null || data.Length < 8)
             {
                 return false;
             }
@@ -545,7 +545,7 @@ namespace War3Net.IO.Casc.Compression
         /// </remarks>
         public static bool IsBlte(Stream stream)
         {
-            if (stream == null || stream.Length < 8)
+            if (stream is null || stream.Length < 8)
             {
                 return false;
             }

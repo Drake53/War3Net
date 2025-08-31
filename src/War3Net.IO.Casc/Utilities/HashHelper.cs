@@ -163,7 +163,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>true if the hash matches; otherwise, false.</returns>
         public static bool VerifyMD5(byte[] data, byte[] expectedHash)
         {
-            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            if (expectedHash is null ||
+                expectedHash.Length != CascConstants.MD5HashSize)
             {
                 return false;
             }
@@ -180,7 +181,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>true if the hash matches; otherwise, false.</returns>
         public static bool VerifyMD5(Stream stream, byte[] expectedHash)
         {
-            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            if (expectedHash is null ||
+                expectedHash.Length != CascConstants.MD5HashSize)
             {
                 return false;
             }

@@ -22,11 +22,12 @@ namespace War3Net.IO.Casc.Tests
         {
             var key = new byte[16];
             var iv = new byte[8];
-            for (int i = 0; i < key.Length; i++)
+            for (var i = 0; i < key.Length; i++)
             {
                 key[i] = (byte)i;
             }
-            for (int i = 0; i < iv.Length; i++)
+
+            for (var i = 0; i < iv.Length; i++)
             {
                 iv[i] = (byte)(i + 16);
             }
@@ -73,11 +74,12 @@ namespace War3Net.IO.Casc.Tests
         {
             var key = new byte[32];
             var iv = new byte[8];
-            for (int i = 0; i < key.Length; i++)
+            for (var i = 0; i < key.Length; i++)
             {
                 key[i] = (byte)(i * 2);
             }
-            for (int i = 0; i < iv.Length; i++)
+
+            for (var i = 0; i < iv.Length; i++)
             {
                 iv[i] = (byte)(i * 3);
             }
@@ -103,7 +105,7 @@ namespace War3Net.IO.Casc.Tests
 
             // Test with data larger than one keystream block (64 bytes)
             var plaintext = new byte[256];
-            for (int i = 0; i < plaintext.Length; i++)
+            for (var i = 0; i < plaintext.Length; i++)
             {
                 plaintext[i] = (byte)(i % 256);
             }

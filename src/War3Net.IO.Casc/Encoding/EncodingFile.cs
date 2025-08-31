@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -293,7 +294,7 @@ namespace War3Net.IO.Casc.Encoding
         /// This method is typically used for reverse lookups when you have an <see cref="EKey"/> from
         /// an <see cref="Index.IndexFile"/> and need to find the corresponding <see cref="CascKey"/>.
         /// </remarks>
-        public bool TryGetEntry(EKey eKey, out EncodingEntry? entry)
+        public bool TryGetEntry(EKey eKey, [NotNullWhen(true)] out EncodingEntry? entry)
         {
             return _entriesByEKey.TryGetValue(eKey, out entry);
         }

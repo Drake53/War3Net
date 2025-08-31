@@ -26,7 +26,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="iv">The initialization vector (8 bytes).</param>
         public Salsa20(byte[] key, byte[] iv)
         {
-            if (key == null)
+            if (key is null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -36,7 +36,7 @@ namespace War3Net.IO.Casc.Crypto
                 throw new ArgumentException("Key must be 16 or 32 bytes", nameof(key));
             }
 
-            if (iv == null)
+            if (iv is null)
             {
                 throw new ArgumentNullException(nameof(iv));
             }
@@ -60,7 +60,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <returns>The processed data.</returns>
         public byte[] Process(byte[] data)
         {
-            if (data == null)
+            if (data is null)
             {
                 return Array.Empty<byte>();
             }
@@ -76,7 +76,7 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="data">The data to process.</param>
         public void ProcessInPlace(byte[] data)
         {
-            if (data != null)
+            if (data is not null)
             {
                 Process(data, 0, data.Length, data, 0);
             }
@@ -92,12 +92,12 @@ namespace War3Net.IO.Casc.Crypto
         /// <param name="outputOffset">The output offset.</param>
         public void Process(byte[] input, int inputOffset, int length, byte[] output, int outputOffset)
         {
-            if (input == null)
+            if (input is null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
 
-            if (output == null)
+            if (output is null)
             {
                 throw new ArgumentNullException(nameof(output));
             }

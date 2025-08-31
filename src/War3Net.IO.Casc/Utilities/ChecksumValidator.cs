@@ -26,12 +26,13 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateMD5(byte[] data, byte[] expectedHash)
         {
-            if (data == null)
+            if (data is null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            if (expectedHash is null ||
+                expectedHash.Length != CascConstants.MD5HashSize)
             {
                 throw new ArgumentException($"Expected hash must be {CascConstants.MD5HashSize} bytes.", nameof(expectedHash));
             }
@@ -51,12 +52,13 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateMD5(Stream stream, byte[] expectedHash)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (expectedHash == null || expectedHash.Length != CascConstants.MD5HashSize)
+            if (expectedHash is null ||
+                expectedHash.Length != CascConstants.MD5HashSize)
             {
                 throw new ArgumentException($"Expected hash must be {CascConstants.MD5HashSize} bytes.", nameof(expectedHash));
             }
@@ -74,7 +76,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentNullException">Thrown when data is null.</exception>
         public static byte[] ComputeMD5(byte[] data)
         {
-            if (data == null)
+            if (data is null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
@@ -93,12 +95,13 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentException">Thrown when expectedHash is null or not the correct size.</exception>
         public static bool ValidateSHA1(byte[] data, byte[] expectedHash)
         {
-            if (data == null)
+            if (data is null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            if (expectedHash == null || expectedHash.Length != CascConstants.SHA1HashSize)
+            if (expectedHash is null ||
+                expectedHash.Length != CascConstants.SHA1HashSize)
             {
                 throw new ArgumentException($"Expected hash must be {CascConstants.SHA1HashSize} bytes.", nameof(expectedHash));
             }
@@ -116,12 +119,13 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>true if the checksum matches; otherwise, false.</returns>
         public static bool ValidateSHA256(byte[] data, byte[] expectedHash)
         {
-            if (data == null)
+            if (data is null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
 
-            if (expectedHash == null || expectedHash.Length != 32)
+            if (expectedHash is null ||
+                expectedHash.Length != 32)
             {
                 throw new ArgumentException("Expected hash must be 32 bytes.", nameof(expectedHash));
             }

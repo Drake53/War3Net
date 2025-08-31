@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 using War3Net.IO.Casc.Structures;
@@ -245,7 +246,7 @@ namespace War3Net.IO.Casc.Index
         /// This method is used by <see cref="Storage.OnlineCascStorage"/> to locate files in archives
         /// after resolving <see cref="CascKey"/>s to <see cref="EKey"/>s through the <see cref="Encoding.EncodingFile"/>.
         /// </remarks>
-        public bool TryGetEntry(EKey eKey, out EKeyEntry? entry)
+        public bool TryGetEntry(EKey eKey, [NotNullWhen(true)] out EKeyEntry? entry)
         {
             return _entries.TryGetValue(eKey, out entry);
         }

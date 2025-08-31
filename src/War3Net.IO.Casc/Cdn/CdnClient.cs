@@ -145,7 +145,7 @@ namespace War3Net.IO.Casc.Cdn
                             var data = await response.Content.ReadAsByteArrayAsync();
 
                             // Validate data is not empty
-                            if (data == null || data.Length == 0)
+                            if (data is null || data.Length == 0)
                             {
                                 lastException = new CascException($"Downloaded file is empty: {path}");
                                 continue; // Retry

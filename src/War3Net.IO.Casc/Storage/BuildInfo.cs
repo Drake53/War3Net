@@ -99,7 +99,7 @@ namespace War3Net.IO.Casc.Storage
                     e.GetValue("Region") == region &&
                     e.GetValue("Active") == "1");
 
-                if (regionalBuild != null)
+                if (regionalBuild is not null)
                 {
                     return regionalBuild;
                 }

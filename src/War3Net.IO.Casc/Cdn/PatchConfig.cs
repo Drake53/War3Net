@@ -76,7 +76,7 @@ namespace War3Net.IO.Casc.Cdn
         {
             // Find install entry from the stored patch entries list
             var installEntry = _patchEntries.FirstOrDefault(e => e.StartsWith("install ", StringComparison.OrdinalIgnoreCase));
-            return installEntry != null ? ParsePatchEntry(installEntry, PatchEntryType.Install) : null;
+            return installEntry is not null ? ParsePatchEntry(installEntry, PatchEntryType.Install) : null;
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace War3Net.IO.Casc.Cdn
         {
             // Find download entry from the stored patch entries list
             var downloadEntry = _patchEntries.FirstOrDefault(e => e.StartsWith("download ", StringComparison.OrdinalIgnoreCase));
-            return downloadEntry != null ? ParsePatchEntry(downloadEntry, PatchEntryType.Download) : null;
+            return downloadEntry is not null ? ParsePatchEntry(downloadEntry, PatchEntryType.Download) : null;
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace War3Net.IO.Casc.Cdn
         {
             // Find encoding entry from the stored patch entries list
             var encodingEntry = _patchEntries.FirstOrDefault(e => e.StartsWith("encoding ", StringComparison.OrdinalIgnoreCase));
-            return encodingEntry != null ? ParsePatchEntry(encodingEntry, PatchEntryType.Encoding) : null;
+            return encodingEntry is not null ? ParsePatchEntry(encodingEntry, PatchEntryType.Encoding) : null;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace War3Net.IO.Casc.Cdn
         {
             // Find size entry from the stored patch entries list
             var sizeEntry = _patchEntries.FirstOrDefault(e => e.StartsWith("size ", StringComparison.OrdinalIgnoreCase));
-            return sizeEntry != null ? ParsePatchEntry(sizeEntry, PatchEntryType.Size) : null;
+            return sizeEntry is not null ? ParsePatchEntry(sizeEntry, PatchEntryType.Size) : null;
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace War3Net.IO.Casc.Cdn
         /// </remarks>
         public static PatchConfig Parse(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -177,7 +177,7 @@ namespace War3Net.IO.Casc.Cdn
             using var reader = new StreamReader(stream);
 
             string? line;
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#", StringComparison.Ordinal))
                 {

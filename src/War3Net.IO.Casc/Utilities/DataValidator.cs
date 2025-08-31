@@ -44,7 +44,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentException">Thrown when buffer is insufficient.</exception>
         public static void ValidateBuffer(byte[] buffer, int offset, int count, string paramName)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(paramName);
             }
@@ -75,7 +75,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <exception cref="ArgumentOutOfRangeException">Thrown when index is out of bounds.</exception>
         public static void ValidateArrayBounds<T>(T[] array, int index, string paramName)
         {
-            if (array == null)
+            if (array is null)
             {
                 throw new ArgumentNullException(paramName);
             }
