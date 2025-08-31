@@ -7,6 +7,7 @@
 
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Structures;
+using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Root
 {
@@ -43,9 +44,9 @@ namespace War3Net.IO.Casc.Root
         public uint FileDataId { get; set; }
 
         /// <summary>
-        /// Gets or sets the file name hash.
+        /// Gets the file name hash.
         /// </summary>
-        public ulong FileNameHash { get; set; }
+        public ulong FileNameHash => HasFileName ? JenkinsHash.HashFileName(FileName) : 0;
 
         /// <summary>
         /// Gets or sets the locale flags.

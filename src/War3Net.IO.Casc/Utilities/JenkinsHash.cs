@@ -14,6 +14,21 @@ namespace War3Net.IO.Casc.Utilities
     /// </summary>
     public static class JenkinsHash
     {
+        public static ulong HashFileName(string fileName)
+        {
+            if (fileName is null)
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
+            var normalizedFileName = fileName.ToUpperInvariant().Replace('/', '\\');
+            var data = System.Text.Encoding.ASCII.GetBytes(normalizedFileName);
+
+            HashLittle2(data, out var pc, out var pb);
+
+            return ((ulong)pc << 0x20) | pb;
+        }
+
         /// <summary>
         /// Computes the Jenkins "hashlittle2" hash.
         /// </summary>

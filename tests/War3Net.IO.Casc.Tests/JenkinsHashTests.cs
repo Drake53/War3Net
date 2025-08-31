@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -272,6 +273,20 @@ namespace War3Net.IO.Casc.Tests
             Assert.AreNotEqual(fullHash, partialHash);
             Assert.AreNotEqual(fullHash, middleHash);
             Assert.AreNotEqual(partialHash, middleHash);
+        }
+
+        [TestMethod]
+        [DataRow("war3.w3mod:ui/triggerdata.txt", "EE8F9C79297D024F")]
+        public void TestHashLittle2_KnownFileNameHashes(string fileName, string expectedHash)
+        {
+            var hashBytes = new byte[8];
+            var result = JenkinsHash.HashFileName(fileName);
+
+            BinaryPrimitives.WriteUInt64BigEndian(hashBytes, result);
+
+            var actualHash = Convert.ToHexString(hashBytes);
+
+            Assert.AreEqual(expectedHash, actualHash);
         }
     }
 }
