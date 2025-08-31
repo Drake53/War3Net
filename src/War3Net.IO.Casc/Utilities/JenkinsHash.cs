@@ -78,7 +78,6 @@ namespace War3Net.IO.Casc.Utilities
             }
 
             // Handle the last (less than 12) bytes
-            c += (uint)length;
             switch (length)
             {
                 case 12:
