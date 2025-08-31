@@ -34,7 +34,7 @@ namespace War3Net.IO.Casc.Tests
             var entry = new CascEntry("file.dat")
             {
                 CKey = CascKey.Parse("0123456789ABCDEF0123456789ABCDEF"),
-                EKey = EKey.Parse("FEDCBA9876543210"),
+                EKey = EKey.Parse("FEDCBA9876543210FF"),
                 FileSize = 1024,
                 CompressedSize = 512,
                 FileDataId = 12345,
@@ -112,9 +112,9 @@ namespace War3Net.IO.Casc.Tests
         {
             var entry = new CascEntry("complex.dat")
             {
-                ContentFlags = CascContentFlags.Install |
-                               CascContentFlags.LoadOnWindows |
-                               CascContentFlags.X86_64,
+                ContentFlags = CascContentFlags.Install
+                             | CascContentFlags.LoadOnWindows
+                             | CascContentFlags.X86_64,
             };
 
             Assert.IsTrue(entry.ContentFlags.HasFlag(CascContentFlags.Install));
@@ -152,7 +152,7 @@ namespace War3Net.IO.Casc.Tests
             var entry4 = new CascEntry("FEDCBA9876543210")
             {
                 NameType = CascNameType.EKey,
-                EKey = EKey.Parse("FEDCBA9876543210"),
+                EKey = EKey.Parse("FEDCBA9876543210FF"),
             };
             Assert.AreEqual(CascNameType.EKey, entry4.NameType);
             Assert.IsFalse(entry4.EKey.IsEmpty);

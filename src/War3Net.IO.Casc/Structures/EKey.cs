@@ -44,73 +44,17 @@ namespace War3Net.IO.Casc.Structures
     /// </remarks>
     public readonly struct EKey : IEquatable<EKey>
     {
-        private readonly byte[] _key;
-        private readonly int _length;
+        private readonly byte[]? _key;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EKey"/> struct.
-        /// </summary>
-        /// <param name="key">The key bytes representing the MD5 hash of the encoded file content.</param>
-        /// <param name="length">The actual length of the key. If not specified, uses the array length.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="key"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the key length exceeds 16 bytes or is negative, or when the source array is smaller than the requested length.</exception>
-        public EKey(byte[] key, int? length = null)
+        private EKey(byte[]? key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            var actualLength = length ?? key.Length;
-            // EKeys can be variable length, but typically 9 bytes (truncated) or 16 bytes (full)
-            // Maximum size is same as CKey (16 bytes)
-            if (actualLength > CascConstants.CKeySize)
-            {
-                throw new ArgumentException($"Encoded key cannot be larger than {CascConstants.CKeySize} bytes.", nameof(key));
-            }
-
-            if (actualLength < 0)
-            {
-                throw new ArgumentException("Key length cannot be negative.", nameof(length));
-            }
-
-            if (key.Length < actualLength)
-            {
-                throw new ArgumentException($"Source array length {key.Length} is smaller than requested length {actualLength}.", nameof(key));
-            }
-
-            _length = actualLength;
-            _key = new byte[_length];
-            Array.Copy(key, _key, _length);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EKey"/> struct.
-        /// </summary>
-        /// <param name="key">The key bytes representing the MD5 hash of the encoded file content.</param>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="key"/> length exceeds 16 bytes.</exception>
-        public EKey(ReadOnlySpan<byte> key)
-        {
-            if (key.Length > CascConstants.CKeySize)
-            {
-                throw new ArgumentException($"Encoded key cannot be larger than {CascConstants.CKeySize} bytes.");
-            }
-
-            _length = key.Length;
-            _key = new byte[_length];
-            key.CopyTo(_key);
+            _key = key;
         }
 
         /// <summary>
         /// Gets an empty encoded key representing no encoded content.
         /// </summary>
-        /// <value>An <see cref="EKey"/> instance with all bytes set to zero.</value>
-        public static EKey Empty { get; } = CreateEmpty();
-
-        private static EKey CreateEmpty()
-        {
-            return new EKey(new byte[CascConstants.EKeySize]);
-        }
+        public static EKey Empty => default;
 
         /// <summary>
         /// Gets the key bytes as a read-only span.
@@ -121,35 +65,33 @@ namespace War3Net.IO.Casc.Structures
         /// <summary>
         /// Gets the length of the encoded key in bytes.
         /// </summary>
-        /// <value>The actual length of the key, which can be between 0 and 16 bytes.</value>
-        public int Length => _length;
+        public int Length => IsEmpty ? 0 : _key.Length;
 
         /// <summary>
-        /// Gets a value indicating whether this key is empty (all bytes are zero).
+        /// Gets a value indicating whether this key is empty.
         /// </summary>
-        /// <value><see langword="true"/> if the key is empty or not initialized; otherwise, <see langword="false"/>.</value>
-        public bool IsEmpty => _key == null || _key.All(b => b == 0);
+        /// <value><see langword="true"/> if the key is empty; otherwise, <see langword="false"/>.</value>
+        [MemberNotNullWhen(false, nameof(_key))]
+        public bool IsEmpty => _key is null;
 
         /// <summary>
-        /// Creates a truncated encoded key (9 bytes) from a full key.
+        /// Gets a value indicating whether this key has been truncated to 9 bytes.
         /// </summary>
-        /// <param name="fullKey">The full key bytes to truncate.</param>
-        /// <returns>A new <see cref="EKey"/> containing the first 9 bytes of the input key.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="fullKey"/> is <see langword="null"/>.</exception>
-        /// <remarks>
-        /// Truncated EKeys are commonly used in <see cref="Cdn.CdnConfig"/> files for size optimization.
-        /// The truncated key maintains sufficient uniqueness for most lookup operations.
-        /// </remarks>
-        public static EKey CreateTruncated(byte[] fullKey)
+        public bool IsPartial => Length == CascConstants.PartialEKeySize;
+
+        public static bool operator ==(EKey left, EKey right) => left.Equals(right);
+
+        public static bool operator !=(EKey left, EKey right) => !left.Equals(right);
+
+        public static EKey FromBytes(ReadOnlySpan<byte> bytes)
         {
-            if (fullKey == null)
+            if (bytes.Length != CascConstants.PartialEKeySize &&
+                bytes.Length != CascConstants.EKeySize)
             {
-                throw new ArgumentNullException(nameof(fullKey));
+                throw new ArgumentException($"Invalid byte array length. Must be {CascConstants.PartialEKeySize} or {CascConstants.EKeySize} bytes long.", nameof(bytes));
             }
 
-            var truncated = new byte[CascConstants.EKeySize];
-            Array.Copy(fullKey, truncated, Math.Min(fullKey.Length, CascConstants.EKeySize));
-            return new EKey(truncated);
+            return new EKey(bytes.ToArray());
         }
 
         /// <summary>
@@ -157,35 +99,26 @@ namespace War3Net.IO.Casc.Structures
         /// </summary>
         /// <param name="hex">The hex string representing the encoded key hash.</param>
         /// <returns>The parsed <see cref="EKey"/> instance.</returns>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="hex"/> is <see langword="null"/>, empty, has invalid length, or exceeds maximum key size.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="hex"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="hex"/> has invalid length.</exception>
         /// <exception cref="FormatException">Thrown when <paramref name="hex"/> contains invalid hexadecimal characters.</exception>
         /// <remarks>
-        /// The method accepts hex strings with or without separators (hyphens or spaces).
         /// The resulting key can be used for lookups in <see cref="Index.IndexFile"/> or <see cref="Encoding.EncodingFile"/>.
         /// </remarks>
         public static EKey Parse(string hex)
         {
-            if (string.IsNullOrEmpty(hex))
+            if (hex is null)
             {
-                throw new ArgumentException("Hex string cannot be null or empty.", nameof(hex));
+                throw new ArgumentNullException(nameof(hex));
             }
 
-            // Remove common separators for cleaner parsing
-            var cleanHex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
-
-            if (cleanHex.Length % 2 != 0)
+            if (hex.Length != CascConstants.PartialEKeyStringLength &&
+                hex.Length != CascConstants.EKeyStringLength)
             {
-                throw new ArgumentException($"Invalid hex string length. Must be even number of characters, got {cleanHex.Length}.", nameof(hex));
+                throw new ArgumentException($"Invalid hex string length. Must be {CascConstants.PartialEKeyStringLength} or {CascConstants.EKeyStringLength} characters long.", nameof(hex));
             }
 
-            if (cleanHex.Length > CascConstants.CKeySize * 2)
-            {
-                throw new ArgumentException($"Encoded key hex string too long. Maximum {CascConstants.CKeySize * 2} characters, got {cleanHex.Length}.", nameof(hex));
-            }
-
-            // Use efficient hex conversion (available in .NET 5+)
-            var bytes = Convert.FromHexString(cleanHex);
-            return new EKey(bytes);
+            return new EKey(Convert.FromHexString(hex));
         }
 
         /// <summary>
@@ -196,7 +129,6 @@ namespace War3Net.IO.Casc.Structures
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This method provides a safe way to parse hex strings without throwing exceptions.
-        /// The method accepts hex strings with or without separators (hyphens or spaces).
         /// </remarks>
         public static bool TryParse(string hex, [NotNullWhen(true)] out EKey key)
         {
@@ -213,19 +145,22 @@ namespace War3Net.IO.Casc.Structures
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Only the first 9 bytes are compared, allowing partial and full keys to be mixed for hashset/dictionary lookup and comparison.
+        /// </remarks>
         public bool Equals(EKey other)
         {
-            if (_key == null)
+            if (IsEmpty)
             {
-                return other._key == null;
+                return other.IsEmpty;
             }
 
-            if (other._key == null || _length != other._length)
+            if (other.IsEmpty)
             {
                 return false;
             }
 
-            return _key.SequenceEqual(other._key);
+            return _key.AsSpan()[..CascConstants.PartialEKeySize].SequenceEqual(other._key.AsSpan()[..CascConstants.PartialEKeySize]);
         }
 
         /// <inheritdoc/>
@@ -237,23 +172,18 @@ namespace War3Net.IO.Casc.Structures
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            if (_key == null || _key.Length < 4)
+            if (IsEmpty || _key.Length < 4)
             {
                 return 0;
             }
 
-            return BinaryPrimitives.ReadInt32LittleEndian(_key);
+            return BinaryPrimitives.ReadInt32LittleEndian(_key.AsSpan(0, 4));
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (_key == null)
-            {
-                return string.Empty;
-            }
-
-            return Convert.ToHexString(_key);
+            return IsEmpty ? string.Empty : Convert.ToHexString(_key);
         }
 
         /// <summary>
@@ -266,30 +196,14 @@ namespace War3Net.IO.Casc.Structures
         /// </remarks>
         public byte[] ToArray()
         {
-            if (_key == null)
+            if (IsEmpty)
             {
                 return Array.Empty<byte>();
             }
 
-            var result = new byte[_length];
-            Array.Copy(_key, result, _length);
+            var result = new byte[_key.Length];
+            Array.Copy(_key, result, _key.Length);
             return result;
-        }
-
-        /// <summary>
-        /// Equality operator.
-        /// </summary>
-        public static bool operator ==(EKey left, EKey right)
-        {
-            return left.Equals(right);
-        }
-
-        /// <summary>
-        /// Inequality operator.
-        /// </summary>
-        public static bool operator !=(EKey left, EKey right)
-        {
-            return !left.Equals(right);
         }
     }
 }

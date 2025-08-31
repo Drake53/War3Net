@@ -20,12 +20,12 @@ namespace War3Net.IO.Casc.Tests
         public void TestEKeyCreation()
         {
             var keyBytes = new byte[CascConstants.EKeySize];
-            for (int i = 0; i < keyBytes.Length; i++)
+            for (var i = 0; i < keyBytes.Length; i++)
             {
                 keyBytes[i] = (byte)i;
             }
 
-            var key = new EKey(keyBytes);
+            var key = EKey.FromBytes(keyBytes);
             Assert.IsNotNull(key);
             Assert.IsFalse(key.IsEmpty);
             Assert.AreEqual(CascConstants.EKeySize, key.Length);
@@ -36,44 +36,48 @@ namespace War3Net.IO.Casc.Tests
         {
             var emptyKey = EKey.Empty;
             Assert.IsTrue(emptyKey.IsEmpty);
-            Assert.AreEqual(CascConstants.EKeySize, emptyKey.Value.Length);
+            Assert.AreEqual(0, emptyKey.Value.Length);
         }
 
         [TestMethod]
-        public void TestEKeyVariableLength()
+        [DataRow(0)]
+        [DataRow(1)]
+        [DataRow(8)]
+        [DataRow(10)]
+        [DataRow(11)]
+        [DataRow(15)]
+        [DataRow(17)]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestEKeyInvalidLength(int length)
         {
-            // Test with different lengths
-            for (int length = 1; length <= CascConstants.CKeySize; length++)
+            var bytes = new byte[length];
+            for (var i = 0; i < length; i++)
             {
-                var bytes = new byte[length];
-                for (int i = 0; i < length; i++)
-                {
-                    bytes[i] = (byte)i;
-                }
-
-                var key = new EKey(bytes);
-                Assert.AreEqual(length, key.Length);
-                Assert.AreEqual(length, key.Value.Length);
+                bytes[i] = (byte)i;
             }
+
+            _ = EKey.FromBytes(bytes);
         }
 
         [TestMethod]
-        public void TestEKeyCreateTruncated()
+        public void TestEKeyPartialEquality()
         {
-            var fullKey = new byte[CascConstants.CKeySize];
-            for (int i = 0; i < fullKey.Length; i++)
+            var partialKeyBytes = new byte[CascConstants.PartialEKeySize];
+            for (var i = 0; i < partialKeyBytes.Length; i++)
             {
-                fullKey[i] = (byte)i;
+                partialKeyBytes[i] = (byte)i;
             }
 
-            var truncatedKey = EKey.CreateTruncated(fullKey);
-            Assert.AreEqual(CascConstants.EKeySize, truncatedKey.Length);
-
-            // Verify first 9 bytes match
-            for (int i = 0; i < CascConstants.EKeySize; i++)
+            var fullKeyBytes = new byte[CascConstants.EKeySize];
+            for (var i = 0; i < fullKeyBytes.Length; i++)
             {
-                Assert.AreEqual(fullKey[i], truncatedKey.Value[i]);
+                fullKeyBytes[i] = (byte)i;
             }
+
+            var partialKey = EKey.FromBytes(partialKeyBytes);
+            var fullKey = EKey.FromBytes(fullKeyBytes);
+
+            Assert.IsTrue(partialKey.Equals(fullKey));
         }
 
         [TestMethod]
@@ -105,11 +109,11 @@ namespace War3Net.IO.Casc.Tests
         [TestMethod]
         public void TestEKeyEquality()
         {
-            var bytes1 = new byte[] { 1, 2, 3, 4, 5 };
-            var bytes2 = new byte[] { 1, 2, 3, 4, 5 };
+            var bytes1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var bytes2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            var key1 = new EKey(bytes1);
-            var key2 = new EKey(bytes2);
+            var key1 = EKey.FromBytes(bytes1);
+            var key2 = EKey.FromBytes(bytes2);
 
             Assert.AreEqual(key1, key2);
             Assert.IsTrue(key1 == key2);
@@ -120,11 +124,11 @@ namespace War3Net.IO.Casc.Tests
         [TestMethod]
         public void TestEKeyInequalityDifferentValues()
         {
-            var bytes1 = new byte[] { 1, 2, 3, 4, 5 };
-            var bytes2 = new byte[] { 1, 2, 3, 4, 6 };
+            var bytes1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var bytes2 = new byte[] { 1, 2, 3, 4, 0, 6, 7, 8, 9 };
 
-            var key1 = new EKey(bytes1);
-            var key2 = new EKey(bytes2);
+            var key1 = EKey.FromBytes(bytes1);
+            var key2 = EKey.FromBytes(bytes2);
 
             Assert.AreNotEqual(key1, key2);
             Assert.IsFalse(key1 == key2);
@@ -134,37 +138,37 @@ namespace War3Net.IO.Casc.Tests
         [TestMethod]
         public void TestEKeyInequalityDifferentLengths()
         {
-            var bytes1 = new byte[] { 1, 2, 3, 4, 5 };
-            var bytes2 = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var bytes1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var bytes2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
-            var key1 = new EKey(bytes1);
-            var key2 = new EKey(bytes2);
+            var key1 = EKey.FromBytes(bytes1);
+            var key2 = EKey.FromBytes(bytes2);
 
-            Assert.AreNotEqual(key1, key2);
-            Assert.IsFalse(key1 == key2);
-            Assert.IsTrue(key1 != key2);
+            Assert.AreEqual(key1, key2);
+            Assert.IsTrue(key1 == key2);
+            Assert.IsFalse(key1 != key2);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestEKeyTooLarge()
         {
-            var invalidBytes = new byte[CascConstants.CKeySize + 1]; // Too large
-            _ = new EKey(invalidBytes);
+            var invalidBytes = new byte[CascConstants.EKeySize + 1]; // Too large
+            _ = EKey.FromBytes(invalidBytes);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void TestEKeyNullBytes()
         {
-            _ = new EKey((byte[])null!);
+            _ = EKey.FromBytes((byte[]?)null);
         }
 
         [TestMethod]
         public void TestEKeyToArray()
         {
             var originalBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            var key = new EKey(originalBytes);
+            var key = EKey.FromBytes(originalBytes);
             var arrayBytes = key.ToArray();
 
             CollectionAssert.AreEqual(originalBytes, arrayBytes);

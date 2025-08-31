@@ -39,51 +39,17 @@ namespace War3Net.IO.Casc.Structures
     /// </remarks>
     public readonly struct CascKey : IEquatable<CascKey>
     {
-        private readonly byte[] _key;
+        private readonly byte[]? _key;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CascKey"/> struct.
-        /// </summary>
-        /// <param name="key">The key bytes representing the MD5 hash of the uncompressed file content.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="key"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="key"/> is not exactly 16 bytes in length.</exception>
-        public CascKey(byte[] key)
+        private CascKey(byte[]? key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            if (key.Length != CascConstants.CKeySize)
-            {
-                throw new ArgumentException($"Content key must be exactly {CascConstants.CKeySize} bytes.", nameof(key));
-            }
-
-            _key = new byte[CascConstants.CKeySize];
-            Array.Copy(key, _key, CascConstants.CKeySize);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CascKey"/> struct.
-        /// </summary>
-        /// <param name="key">The key bytes representing the MD5 hash of the uncompressed file content.</param>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="key"/> is not exactly 16 bytes in length.</exception>
-        public CascKey(ReadOnlySpan<byte> key)
-        {
-            if (key.Length != CascConstants.CKeySize)
-            {
-                throw new ArgumentException($"Content key must be exactly {CascConstants.CKeySize} bytes.");
-            }
-
-            _key = new byte[CascConstants.CKeySize];
-            key.CopyTo(_key);
+            _key = key;
         }
 
         /// <summary>
         /// Gets an empty content key representing no content.
         /// </summary>
-        /// <value>A <see cref="CascKey"/> instance with all bytes set to zero.</value>
-        public static CascKey Empty { get; } = new CascKey(new byte[CascConstants.CKeySize]);
+        public static CascKey Empty => default;
 
         /// <summary>
         /// Gets the key bytes as a read-only span.
@@ -92,40 +58,50 @@ namespace War3Net.IO.Casc.Structures
         public ReadOnlySpan<byte> Value => _key ?? ReadOnlySpan<byte>.Empty;
 
         /// <summary>
-        /// Gets a value indicating whether this key is empty (all bytes are zero).
+        /// Gets a value indicating whether this key is empty.
         /// </summary>
-        /// <value><see langword="true"/> if the key is empty or not initialized; otherwise, <see langword="false"/>.</value>
-        public bool IsEmpty => _key == null || _key.All(b => b == 0);
+        /// <value><see langword="true"/> if the key is empty; otherwise, <see langword="false"/>.</value>
+        [MemberNotNullWhen(false, nameof(_key))]
+        public bool IsEmpty => _key is null;
+
+        public static bool operator ==(CascKey left, CascKey right) => left.Equals(right);
+
+        public static bool operator !=(CascKey left, CascKey right) => !left.Equals(right);
+
+        public static CascKey FromBytes(ReadOnlySpan<byte> bytes)
+        {
+            if (bytes.Length != CascConstants.CKeySize)
+            {
+                throw new ArgumentException($"Invalid byte array length. Must be {CascConstants.CKeySize} bytes long.", nameof(bytes));
+            }
+
+            return new CascKey(bytes.ToArray());
+        }
 
         /// <summary>
         /// Parses a content key from a hex string representation.
         /// </summary>
         /// <param name="hex">The hex string representing a 32-character (16-byte) MD5 hash.</param>
         /// <returns>The parsed <see cref="CascKey"/> instance.</returns>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="hex"/> is <see langword="null"/>, empty, or has invalid length.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="hex"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="hex"/> has invalid length.</exception>
         /// <exception cref="FormatException">Thrown when <paramref name="hex"/> contains invalid hexadecimal characters.</exception>
         /// <remarks>
-        /// The method accepts hex strings with or without separators (hyphens or spaces).
         /// The resulting key can be used to look up files in the <see cref="Encoding.EncodingFile"/>.
         /// </remarks>
         public static CascKey Parse(string hex)
         {
-            if (string.IsNullOrEmpty(hex))
+            if (hex is null)
             {
-                throw new ArgumentException("Hex string cannot be null or empty.", nameof(hex));
+                throw new ArgumentNullException(nameof(hex));
             }
 
-            // Remove common separators for cleaner parsing
-            var cleanHex = hex.Replace("-", string.Empty).Replace(" ", string.Empty);
-
-            if (cleanHex.Length != CascConstants.CKeySize * 2)
+            if (hex.Length != CascConstants.CKeyStringLength)
             {
-                throw new ArgumentException($"Invalid hex string length. Expected {CascConstants.CKeySize * 2} hex characters, got {cleanHex.Length}.", nameof(hex));
+                throw new ArgumentException($"Invalid hex string length. Must be {CascConstants.CKeyStringLength} characters long.", nameof(hex));
             }
 
-            // Use efficient hex conversion (available in .NET 5+)
-            var bytes = Convert.FromHexString(cleanHex);
-            return new CascKey(bytes);
+            return new CascKey(Convert.FromHexString(hex));
         }
 
         /// <summary>
@@ -136,7 +112,6 @@ namespace War3Net.IO.Casc.Structures
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This method provides a safe way to parse hex strings without throwing exceptions.
-        /// The method accepts hex strings with or without separators (hyphens or spaces).
         /// </remarks>
         public static bool TryParse(string hex, [NotNullWhen(true)] out CascKey key)
         {
@@ -155,17 +130,17 @@ namespace War3Net.IO.Casc.Structures
         /// <inheritdoc/>
         public bool Equals(CascKey other)
         {
-            if (_key == null)
+            if (IsEmpty)
             {
-                return other._key == null;
+                return other.IsEmpty;
             }
 
-            if (other._key == null)
+            if (other.IsEmpty)
             {
                 return false;
             }
 
-            return _key.SequenceEqual(other._key);
+            return _key.AsSpan().SequenceEqual(other._key.AsSpan());
         }
 
         /// <inheritdoc/>
@@ -177,24 +152,18 @@ namespace War3Net.IO.Casc.Structures
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            if (_key == null || _key.Length < 4)
+            if (IsEmpty || _key.Length < 4)
             {
                 return 0;
             }
 
-            // Use first 4 bytes for hash code
             return BinaryPrimitives.ReadInt32LittleEndian(_key.AsSpan(0, 4));
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (_key == null)
-            {
-                return string.Empty;
-            }
-
-            return Convert.ToHexString(_key);
+            return IsEmpty ? string.Empty : Convert.ToHexString(_key);
         }
 
         /// <summary>
@@ -207,30 +176,14 @@ namespace War3Net.IO.Casc.Structures
         /// </remarks>
         public byte[] ToArray()
         {
-            if (_key == null)
+            if (IsEmpty)
             {
                 return Array.Empty<byte>();
             }
 
-            var result = new byte[CascConstants.CKeySize];
-            Array.Copy(_key, result, CascConstants.CKeySize);
+            var result = new byte[_key.Length];
+            Array.Copy(_key, result, _key.Length);
             return result;
-        }
-
-        /// <summary>
-        /// Equality operator.
-        /// </summary>
-        public static bool operator ==(CascKey left, CascKey right)
-        {
-            return left.Equals(right);
-        }
-
-        /// <summary>
-        /// Inequality operator.
-        /// </summary>
-        public static bool operator !=(CascKey left, CascKey right)
-        {
-            return !left.Equals(right);
         }
     }
 }

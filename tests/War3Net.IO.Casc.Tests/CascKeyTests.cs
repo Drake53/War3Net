@@ -20,12 +20,12 @@ namespace War3Net.IO.Casc.Tests
         public void TestCascKeyCreation()
         {
             var keyBytes = new byte[CascConstants.CKeySize];
-            for (int i = 0; i < keyBytes.Length; i++)
+            for (var i = 0; i < keyBytes.Length; i++)
             {
                 keyBytes[i] = (byte)i;
             }
 
-            var key = new CascKey(keyBytes);
+            var key = CascKey.FromBytes(keyBytes);
             Assert.IsNotNull(key);
             Assert.IsFalse(key.IsEmpty);
         }
@@ -35,7 +35,7 @@ namespace War3Net.IO.Casc.Tests
         {
             var emptyKey = CascKey.Empty;
             Assert.IsTrue(emptyKey.IsEmpty);
-            Assert.AreEqual(CascConstants.CKeySize, emptyKey.Value.Length);
+            Assert.AreEqual(0, emptyKey.Value.Length);
         }
 
         [TestMethod]
@@ -69,13 +69,13 @@ namespace War3Net.IO.Casc.Tests
         {
             var bytes1 = new byte[CascConstants.CKeySize];
             var bytes2 = new byte[CascConstants.CKeySize];
-            for (int i = 0; i < bytes1.Length; i++)
+            for (var i = 0; i < bytes1.Length; i++)
             {
                 bytes1[i] = bytes2[i] = (byte)i;
             }
 
-            var key1 = new CascKey(bytes1);
-            var key2 = new CascKey(bytes2);
+            var key1 = CascKey.FromBytes(bytes1);
+            var key2 = CascKey.FromBytes(bytes2);
 
             Assert.AreEqual(key1, key2);
             Assert.IsTrue(key1 == key2);
@@ -91,8 +91,8 @@ namespace War3Net.IO.Casc.Tests
             bytes1[0] = 1;
             bytes2[0] = 2;
 
-            var key1 = new CascKey(bytes1);
-            var key2 = new CascKey(bytes2);
+            var key1 = CascKey.FromBytes(bytes1);
+            var key2 = CascKey.FromBytes(bytes2);
 
             Assert.AreNotEqual(key1, key2);
             Assert.IsFalse(key1 == key2);
@@ -104,26 +104,26 @@ namespace War3Net.IO.Casc.Tests
         public void TestCascKeyInvalidSize()
         {
             var invalidBytes = new byte[10]; // Wrong size
-            _ = new CascKey(invalidBytes);
+            _ = CascKey.FromBytes(invalidBytes);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void TestCascKeyNullBytes()
         {
-            _ = new CascKey((byte[])null!);
+            _ = CascKey.FromBytes((byte[]?)null);
         }
 
         [TestMethod]
         public void TestCascKeyToArray()
         {
             var originalBytes = new byte[CascConstants.CKeySize];
-            for (int i = 0; i < originalBytes.Length; i++)
+            for (var i = 0; i < originalBytes.Length; i++)
             {
                 originalBytes[i] = (byte)i;
             }
 
-            var key = new CascKey(originalBytes);
+            var key = CascKey.FromBytes(originalBytes);
             var arrayBytes = key.ToArray();
 
             CollectionAssert.AreEqual(originalBytes, arrayBytes);

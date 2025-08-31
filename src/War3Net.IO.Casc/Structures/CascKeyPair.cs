@@ -94,6 +94,10 @@ namespace War3Net.IO.Casc.Structures
         /// </summary>
         public bool IsEmpty => CKey.IsEmpty && EKey.IsEmpty;
 
+        public static bool operator ==(CascKeyPair left, CascKeyPair right) => left.Equals(right);
+
+        public static bool operator !=(CascKeyPair left, CascKeyPair right) => !left.Equals(right);
+
         /// <summary>
         /// Parses a key pair from a space-separated string.
         /// </summary>
@@ -218,28 +222,6 @@ namespace War3Net.IO.Casc.Structures
             cKey = CKey;
             eKey = EKey;
             hasEKey = HasEKey;
-        }
-
-        /// <summary>
-        /// Determines whether two <see cref="CascKeyPair"/> instances are equal.
-        /// </summary>
-        /// <param name="left">The first <see cref="CascKeyPair"/> to compare.</param>
-        /// <param name="right">The second <see cref="CascKeyPair"/> to compare.</param>
-        /// <returns><see langword="true"/> if the instances are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(CascKeyPair left, CascKeyPair right)
-        {
-            return left.Equals(right);
-        }
-
-        /// <summary>
-        /// Determines whether two <see cref="CascKeyPair"/> instances are not equal.
-        /// </summary>
-        /// <param name="left">The first <see cref="CascKeyPair"/> to compare.</param>
-        /// <param name="right">The second <see cref="CascKeyPair"/> to compare.</param>
-        /// <returns><see langword="true"/> if the instances are not equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(CascKeyPair left, CascKeyPair right)
-        {
-            return !left.Equals(right);
         }
     }
 }

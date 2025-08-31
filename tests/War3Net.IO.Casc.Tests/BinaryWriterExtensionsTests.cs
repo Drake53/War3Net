@@ -280,7 +280,7 @@ namespace War3Net.IO.Casc.Tests
                 keyBytes[i] = (byte)i;
             }
 
-            var cKey = new CascKey(keyBytes);
+            var cKey = CascKey.FromBytes(keyBytes);
             writer.WriteCKey(cKey);
 
             var result = stream.ToArray();
@@ -299,7 +299,7 @@ namespace War3Net.IO.Casc.Tests
                 keyBytes[i] = (byte)i;
             }
 
-            var eKey = new EKey(keyBytes);
+            var eKey = EKey.FromBytes(keyBytes);
             writer.WriteEKey(eKey);
 
             var result = stream.ToArray();
@@ -312,23 +312,23 @@ namespace War3Net.IO.Casc.Tests
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
 
-            var keyBytes = new byte[5] { 1, 2, 3, 4, 5 };
-            var eKey = new EKey(keyBytes);
+            var keyBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var eKey = EKey.FromBytes(keyBytes);
 
-            // Write with padding to 10 bytes
-            writer.WriteEKey(eKey, 10);
+            // Write with padding to 16 bytes
+            writer.WriteEKey(eKey, 16);
 
             var result = stream.ToArray();
-            Assert.AreEqual(10, result.Length);
+            Assert.AreEqual(16, result.Length);
 
-            // First 5 bytes should match
-            for (var i = 0; i < 5; i++)
+            // First 9 bytes should match
+            for (var i = 0; i < 9; i++)
             {
                 Assert.AreEqual(keyBytes[i], result[i]);
             }
 
-            // Last 5 bytes should be zero (padding)
-            for (var i = 5; i < 10; i++)
+            // Last 7 bytes should be zero (padding)
+            for (var i = 9; i < 16; i++)
             {
                 Assert.AreEqual(0, result[i]);
             }
