@@ -25,7 +25,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="value">The string to write.</param>
         public static void WriteCString(this BinaryWriter writer, string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -43,7 +43,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="length">The fixed length.</param>
         public static void WriteCString(this BinaryWriter writer, string value, int length)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -157,7 +157,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="hash">The MD5 hash.</param>
         public static void WriteMD5Hash(this BinaryWriter writer, byte[] hash)
         {
-            if (hash == null || hash.Length != CascConstants.MD5HashSize)
+            if (hash is null || hash.Length != CascConstants.MD5HashSize)
             {
                 throw new ArgumentException($"MD5 hash must be exactly {CascConstants.MD5HashSize} bytes.", nameof(hash));
             }
@@ -172,7 +172,7 @@ namespace War3Net.IO.Casc.Utilities
         /// <param name="hash">The SHA1 hash.</param>
         public static void WriteSHA1Hash(this BinaryWriter writer, byte[] hash)
         {
-            if (hash == null || hash.Length != CascConstants.SHA1HashSize)
+            if (hash is null || hash.Length != CascConstants.SHA1HashSize)
             {
                 throw new ArgumentException($"SHA1 hash must be exactly {CascConstants.SHA1HashSize} bytes.", nameof(hash));
             }
