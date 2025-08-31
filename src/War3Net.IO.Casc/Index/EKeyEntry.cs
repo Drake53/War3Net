@@ -49,7 +49,7 @@ namespace War3Net.IO.Casc.Index
 
             // Read EKey
             var eKeyBytes = reader.ReadBytes(header.EKeyLength);
-            entry.EKey = new EKey(eKeyBytes);
+            entry.EKey = EKey.FromBytes(eKeyBytes);
 
             // Read storage offset (big-endian)
             var storageOffsetBytes = reader.ReadBytes(header.StorageOffsetLength);

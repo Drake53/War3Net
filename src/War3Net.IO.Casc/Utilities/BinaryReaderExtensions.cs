@@ -211,7 +211,7 @@ namespace War3Net.IO.Casc.Utilities
         public static CascKey ReadCKey(this BinaryReader reader)
         {
             var bytes = reader.ReadBytes(CascConstants.CKeySize);
-            return new CascKey(bytes);
+            return CascKey.FromBytes(bytes);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace War3Net.IO.Casc.Utilities
         public static EKey ReadEKey(this BinaryReader reader, int length)
         {
             var bytes = reader.ReadBytes(length);
-            return new EKey(bytes);
+            return EKey.FromBytes(bytes);
         }
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace War3Net.IO.Casc.Utilities
         /// <returns>The truncated encoded key.</returns>
         public static EKey ReadEKeyTruncated(this BinaryReader reader)
         {
-            var bytes = reader.ReadBytes(CascConstants.EKeySize);
-            return new EKey(bytes);
+            var bytes = reader.ReadBytes(CascConstants.PartialEKeySize);
+            return EKey.FromBytes(bytes);
         }
 
         /// <summary>

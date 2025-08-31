@@ -13,39 +13,14 @@ namespace War3Net.IO.Casc
     public static class CascConstants
     {
         /// <summary>
-        /// CASC library version.
-        /// </summary>
-        public const int Version = 0x0300;
-
-        /// <summary>
-        /// CASC library version string.
-        /// </summary>
-        public const string VersionString = "3.0";
-
-        /// <summary>
         /// Size of MD5 hash in bytes.
         /// </summary>
         public const int MD5HashSize = 0x10;
 
         /// <summary>
-        /// Size of MD5 hash as string.
-        /// </summary>
-        public const int MD5StringSize = 0x20;
-
-        /// <summary>
         /// Size of SHA1 hash in bytes.
         /// </summary>
         public const int SHA1HashSize = 0x14;
-
-        /// <summary>
-        /// Size of SHA1 hash as string.
-        /// </summary>
-        public const int SHA1StringSize = 0x28;
-
-        /// <summary>
-        /// Number of index files.
-        /// </summary>
-        public const int IndexCount = 0x10;
 
         /// <summary>
         /// Size of the content key.
@@ -55,7 +30,27 @@ namespace War3Net.IO.Casc
         /// <summary>
         /// Size of the encoded key (truncated).
         /// </summary>
-        public const int EKeySize = 0x09;
+        public const int PartialEKeySize = 0x09;
+
+        /// <summary>
+        /// Size of the encoded key (full).
+        /// </summary>
+        public const int EKeySize = 0x10;
+
+        /// <summary>
+        /// String length of the hexadecimal string representation of the content key.
+        /// </summary>
+        public const int CKeyStringLength = CKeySize * 2;
+
+        /// <summary>
+        /// String length of the hexadecimal string representation of the encoded key (truncated).
+        /// </summary>
+        public const int PartialEKeyStringLength = PartialEKeySize * 2;
+
+        /// <summary>
+        /// String length of the hexadecimal string representation of the encoded key (full).
+        /// </summary>
+        public const int EKeyStringLength = EKeySize * 2;
 
         /// <summary>
         /// Maximum number of data files.

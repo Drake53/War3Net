@@ -358,7 +358,7 @@ using War3Net.IO.Casc.Structures;
 var storage = CascStorage.OpenStorage(@"C:\Games\Warcraft III\Data");
 
 // Access by encoded key
-var eKey = EKey.Parse("1234567890");
+var eKey = EKey.Parse("ABCDEF1234567890AB");
 using (var stream = storage.OpenFileByEKey(eKey))
 {
     // Read data
@@ -432,7 +432,7 @@ var indexManager = new IndexManager();
 indexManager.LoadIndexFiles(@"C:\Games\Warcraft III\Data\data");
 
 // Find entry by encoded key
-var eKey = EKey.Parse("1234567890");
+var eKey = EKey.Parse("ABCDEF1234567890AB");
 if (indexManager.TryFindEntry(eKey, out var entry))
 {
     Console.WriteLine($"Data file: data.{entry.DataFileIndex:D3}");
@@ -454,7 +454,7 @@ var cKey = CascKey.Parse("1234567890ABCDEF1234567890ABCDEF");
 var eKey = encoding.GetEKey(cKey);
 
 // Look up content key for encoded key
-var eKey2 = EKey.Parse("1234567890");
+var eKey2 = EKey.Parse("ABCDEF1234567890AB");
 var cKey2 = encoding.GetCKey(eKey2);
 
 // Get entry details

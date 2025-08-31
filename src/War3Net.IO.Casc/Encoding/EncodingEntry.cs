@@ -118,7 +118,7 @@ namespace War3Net.IO.Casc.Encoding
             for (var i = 0; i < eKeyCount; i++)
             {
                 var eKeyBytes = reader.ReadBytes(header.EKeyLength);
-                entry.EKeys.Add(new EKey(eKeyBytes));
+                entry.EKeys.Add(EKey.FromBytes(eKeyBytes));
             }
 
             return entry;
