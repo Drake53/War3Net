@@ -378,32 +378,6 @@ namespace War3Net.IO.Casc.Encoding
         }
 
         /// <summary>
-        /// Removes an encoding entry by content key.
-        /// </summary>
-        /// <param name="cKey">The <see cref="CascKey"/> of the entry to remove.</param>
-        /// <returns><see langword="true"/> if the entry was removed; otherwise, <see langword="false"/>.</returns>
-        /// <remarks>
-        /// This method removes the entry from both <see cref="CascKey"/> and <see cref="EKey"/> lookup dictionaries.
-        /// All <see cref="EKey"/>s associated with the <see cref="CascKey"/> will be removed.
-        /// </remarks>
-        public bool RemoveEntry(CascKey cKey)
-        {
-            if (_entriesByCKey.TryGetValue(cKey, out var entry))
-            {
-                _entriesByCKey.Remove(cKey);
-
-                foreach (var eKey in entry.EKeys)
-                {
-                    _entriesByEKey.Remove(eKey);
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Clears all encoding entries and ESpec strings.
         /// </summary>
         /// <remarks>
