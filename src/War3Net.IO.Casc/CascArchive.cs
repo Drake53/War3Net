@@ -9,8 +9,10 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -125,9 +127,9 @@ namespace War3Net.IO.Casc
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         /// <exception cref="ArgumentException">Thrown when the file name is null or empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file is not found in the archive.</exception>
-        public Stream OpenFile(string fileName)
+        public Task<Stream> OpenFileAsync(string fileName)
         {
-            return OpenFile(fileName, CascOpenFlags.OpenByName);
+            return OpenFileAsync(fileName, CascOpenFlags.OpenByName);
         }
 
         /// <summary>
@@ -139,7 +141,7 @@ namespace War3Net.IO.Casc
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
         /// <exception cref="ArgumentException">Thrown when the file name is null or empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the file is not found in the archive.</exception>
-        public Stream OpenFile(string fileName, CascOpenFlags openFlags)
+        public async Task<Stream> OpenFileAsync(string fileName, CascOpenFlags openFlags)
         {
             ThrowIfDisposed();
 
@@ -148,12 +150,12 @@ namespace War3Net.IO.Casc
                 throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
             }
 
-            if (!TryGetEntry(fileName, out var entry) || entry == null)
+            if (!TryGetEntry(fileName, out var entry))
             {
                 throw new FileNotFoundException($"File not found in CASC archive: {fileName}");
             }
 
-            return OpenFileInternal(entry, openFlags);
+            return await OpenFileInternalAsync(entry, openFlags);
         }
 
         /// <summary>
@@ -162,10 +164,10 @@ namespace War3Net.IO.Casc
         /// <param name="cKey">The content key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
-        public Stream OpenFile(CascKey cKey)
+        public Task<Stream> OpenFileAsync(CascKey cKey)
         {
             ThrowIfDisposed();
-            return OpenFile(cKey.ToString(), CascOpenFlags.OpenByCKey);
+            return OpenFileAsync(cKey.ToString(), CascOpenFlags.OpenByCKey);
         }
 
         /// <summary>
@@ -174,10 +176,10 @@ namespace War3Net.IO.Casc
         /// <param name="eKey">The encoded key of the file.</param>
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
-        public Stream OpenFile(EKey eKey)
+        public Task<Stream> OpenFileAsync(EKey eKey)
         {
             ThrowIfDisposed();
-            return OpenFile(eKey.ToString(), CascOpenFlags.OpenByEKey);
+            return OpenFileAsync(eKey.ToString(), CascOpenFlags.OpenByEKey);
         }
 
         /// <summary>
@@ -186,22 +188,21 @@ namespace War3Net.IO.Casc
         /// <param name="fileDataId">The file data ID.</param>
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
-        public Stream OpenFile(uint fileDataId)
+        public async Task<Stream> OpenFileAsync(uint fileDataId)
         {
             ThrowIfDisposed();
             var fileName = string.Format(System.Globalization.CultureInfo.InvariantCulture, CascConstants.FileIdFormat, fileDataId);
-            return OpenFile(fileName, CascOpenFlags.OpenByFileId);
+            return await OpenFileAsync(fileName, CascOpenFlags.OpenByFileId);
         }
 
         /// <summary>
         /// Attempts to open a file from the CASC archive.
         /// </summary>
         /// <param name="fileName">The name of the file to open.</param>
-        /// <param name="stream">The stream containing the file data.</param>
-        /// <returns>true if the file was opened successfully; otherwise, false.</returns>
-        public bool TryOpenFile(string fileName, out Stream? stream)
+        /// <returns>The stream containing the file data if successful; otherwise, <see langword="null"/>.</returns>
+        public async Task<Stream?> TryOpenFileAsync(string fileName)
         {
-            return TryOpenFile(fileName, CascOpenFlags.OpenByName, out stream);
+            return await TryOpenFileAsync(fileName, CascOpenFlags.OpenByName).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -209,38 +210,33 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileName">The name of the file to open.</param>
         /// <param name="openFlags">Flags for opening the file.</param>
-        /// <param name="stream">The stream containing the file data.</param>
-        /// <returns>true if the file was opened successfully; otherwise, false.</returns>
-        public bool TryOpenFile(string fileName, CascOpenFlags openFlags, out Stream? stream)
+        /// <returns>The stream containing the file data if successful; otherwise, <see langword="null"/>.</returns>
+        public async Task<Stream?> TryOpenFileAsync(string fileName, CascOpenFlags openFlags)
         {
             try
             {
-                stream = OpenFile(fileName, openFlags);
-                return true;
+                var stream = await OpenFileAsync(fileName, openFlags).ConfigureAwait(false);
+                return stream;
             }
             catch (FileNotFoundException ex)
             {
                 _logger.LogWarning(ex, "File not found: {FileName}", fileName);
-                stream = null;
-                return false;
+                return null;
             }
             catch (CascFileNotFoundException ex)
             {
                 _logger.LogWarning(ex, "CASC file not found: {FileName}", fileName);
-                stream = null;
-                return false;
+                return null;
             }
             catch (ArgumentException ex)
             {
                 _logger.LogWarning(ex, "Invalid argument for file: {FileName}", fileName);
-                stream = null;
-                return false;
+                return null;
             }
             catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 _logger.LogError(ex, "Unexpected error opening file: {FileName}", fileName);
-                stream = null;
-                return false;
+                return null;
             }
         }
 
@@ -267,7 +263,7 @@ namespace War3Net.IO.Casc
         {
             ThrowIfDisposed();
 
-            if (!TryGetEntry(fileName, out var entry) || entry == null)
+            if (!TryGetEntry(fileName, out var entry))
             {
                 throw new FileNotFoundException($"File not found in CASC archive: {fileName}");
             }
@@ -282,7 +278,7 @@ namespace War3Net.IO.Casc
         /// <param name="entry">The CASC entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
-        public bool TryGetEntry(string fileName, out CascEntry? entry)
+        public bool TryGetEntry(string fileName, [NotNullWhen(true)] out CascEntry? entry)
         {
             ThrowIfDisposed();
 
@@ -328,10 +324,10 @@ namespace War3Net.IO.Casc
         /// <param name="keyName">The key name.</param>
         /// <param name="key">The encryption key.</param>
         /// <exception cref="ObjectDisposedException">Thrown when the archive has been disposed.</exception>
-        public void AddEncryptionKey(ulong keyName, byte[] key)
+        public Task AddEncryptionKeyAsync(ulong keyName, byte[] key)
         {
             ThrowIfDisposed();
-            _storage.AddEncryptionKey(keyName, key);
+            return _storage.AddEncryptionKeyAsync(keyName, key);
         }
 
         /// <summary>
@@ -339,9 +335,9 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="keyName">The key name.</param>
         /// <param name="keyString">The encryption key as a hex string.</param>
-        public void AddStringEncryptionKey(ulong keyName, string keyString)
+        public Task AddStringEncryptionKeyAsync(ulong keyName, string keyString)
         {
-            _storage.AddStringEncryptionKey(keyName, keyString);
+            return _storage.AddStringEncryptionKeyAsync(keyName, keyString);
         }
 
         /// <summary>
@@ -349,9 +345,9 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="keyList">The key list in format "KeyName=KeyValue" separated by newlines.</param>
         /// <returns>The number of keys imported.</returns>
-        public int ImportKeysFromString(string keyList)
+        public Task<int> ImportKeysFromStringAsync(string keyList)
         {
-            return _storage.ImportKeysFromString(keyList);
+            return _storage.ImportKeysFromStringAsync(keyList);
         }
 
         /// <summary>
@@ -359,9 +355,9 @@ namespace War3Net.IO.Casc
         /// </summary>
         /// <param name="fileName">The path to the key file.</param>
         /// <returns>The number of keys imported.</returns>
-        public int ImportKeysFromFile(string fileName)
+        public Task<int> ImportKeysFromFileAsync(string fileName)
         {
-            return _storage.ImportKeysFromFile(fileName);
+            return _storage.ImportKeysFromFileAsync(fileName);
         }
 
         /// <summary>
@@ -429,19 +425,19 @@ namespace War3Net.IO.Casc
 
         private void Initialize()
         {
-            if (_storage == null)
+            if (_storage is null)
             {
                 throw new InvalidOperationException("Storage is not initialized");
             }
 
             // Build file list from root handler if available
             var rootHandler = _storage.RootHandler;
-            if (rootHandler != null)
+            if (rootHandler is not null)
             {
                 foreach (var rootEntry in rootHandler.GetEntries())
                 {
                     // Validate rootEntry has required fields
-                    if (rootEntry == null || string.IsNullOrEmpty(rootEntry.FileName))
+                    if (rootEntry is null || string.IsNullOrEmpty(rootEntry.FileName))
                     {
                         continue; // Skip invalid entries
                     }
@@ -461,11 +457,11 @@ namespace War3Net.IO.Casc
             }
         }
 
-        private Stream OpenFileInternal(CascEntry entry, CascOpenFlags openFlags)
+        private async Task<Stream> OpenFileInternalAsync(CascEntry entry, CascOpenFlags openFlags)
         {
             ThrowIfDisposed();
 
-            if (entry == null)
+            if (entry is null)
             {
                 throw new ArgumentNullException(nameof(entry));
             }
@@ -475,19 +471,19 @@ namespace War3Net.IO.Casc
             // Use the storage to open the file
             if (!entry.CKey.IsEmpty)
             {
-                stream = _storage.OpenFileByCKey(entry.CKey);
+                stream = await _storage.OpenFileByCKeyAsync(entry.CKey);
             }
             else if (!entry.EKey.IsEmpty)
             {
-                stream = _storage.OpenFileByEKey(entry.EKey);
+                stream = await _storage.OpenFileByEKeyAsync(entry.EKey);
             }
             else if (entry.FileDataId != CascConstants.InvalidId)
             {
-                stream = _storage.OpenFileByFileId(entry.FileDataId);
+                stream = await _storage.OpenFileByFileIdAsync(entry.FileDataId);
             }
             else if (!string.IsNullOrEmpty(entry.FileName))
             {
-                stream = _storage.OpenFile(entry.FileName, openFlags);
+                stream = await _storage.OpenFileAsync(entry.FileName, openFlags);
             }
             else
             {
