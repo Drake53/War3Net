@@ -7,9 +7,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
+using War3Net.IO.Casc.Compression;
 using War3Net.IO.Casc.Structures;
 
 namespace War3Net.IO.Casc.Index
@@ -21,14 +26,16 @@ namespace War3Net.IO.Casc.Index
     {
         private readonly Dictionary<byte, IndexFile> _indexFiles;
         private readonly Dictionary<EKey, EKeyEntry> _globalIndex;
+        private readonly ILogger<IndexManager> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexManager"/> class.
         /// </summary>
-        public IndexManager()
+        public IndexManager(ILogger<IndexManager>? logger = null)
         {
             _indexFiles = new Dictionary<byte, IndexFile>();
             _globalIndex = new Dictionary<EKey, EKeyEntry>();
+            _logger = logger ?? NullLogger<IndexManager>.Instance;
         }
 
         /// <summary>
@@ -109,7 +116,7 @@ namespace War3Net.IO.Casc.Index
         /// <param name="eKey">The encoded key.</param>
         /// <param name="entry">The found entry.</param>
         /// <returns>true if the entry was found; otherwise, false.</returns>
-        public bool TryFindEntry(EKey eKey, out EKeyEntry? entry)
+        public bool TryFindEntry(EKey eKey, [NotNullWhen(true)] out EKeyEntry? entry)
         {
             // First check global index
             if (_globalIndex.TryGetValue(eKey, out entry))

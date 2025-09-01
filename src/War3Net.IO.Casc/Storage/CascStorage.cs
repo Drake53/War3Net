@@ -6,10 +6,14 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -30,8 +34,9 @@ namespace War3Net.IO.Casc.Storage
     public class CascStorage : IDisposable
     {
         private readonly CascStorageContext _context;
-        private readonly ReaderWriterLockSlim _storageLock;
+        private readonly SemaphoreSlim _storageLock;
         private readonly ILogger<CascStorage> _logger;
+        private readonly ILoggerFactory? _loggerFactory;
         private int _referenceCount = 1;
         private bool _disposed;
 
@@ -40,8 +45,8 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="storagePath">The path to the CASC storage.</param>
         /// <param name="localeFlags">The locale flags.</param>
-        /// <param name="logger">The logger instance.</param>
-        public CascStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILogger<CascStorage>? logger = null)
+        /// <param name="loggerFactory">The loggerFactory instance.</param>
+        public CascStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILoggerFactory? loggerFactory = null)
         {
             _context = new CascStorageContext
             {
@@ -50,8 +55,9 @@ namespace War3Net.IO.Casc.Storage
                 IndexManager = new IndexManager(),
             };
 
-            _storageLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-            _logger = logger ?? NullLogger<CascStorage>.Instance;
+            _storageLock = new SemaphoreSlim(1, 1);
+            _logger = loggerFactory?.CreateLogger<CascStorage>() ?? NullLogger<CascStorage>.Instance;
+            _loggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -80,15 +86,20 @@ namespace War3Net.IO.Casc.Storage
         internal IRootHandler? RootHandler => _context.RootHandler;
 
         /// <summary>
+        /// Gets the storage context for derived classes.
+        /// </summary>
+        private protected CascStorageContext Context => _context;
+
+        /// <summary>
         /// Opens a local CASC storage.
         /// </summary>
         /// <param name="storagePath">The path to the storage.</param>
         /// <param name="localeFlags">The locale flags.</param>
         /// <param name="logger">The logger instance.</param>
         /// <returns>The opened storage.</returns>
-        public static CascStorage OpenStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILogger<CascStorage>? logger = null)
+        public static CascStorage OpenStorage(string storagePath, CascLocaleFlags localeFlags = CascLocaleFlags.All, ILoggerFactory? loggerFactory = null)
         {
-            var storage = new CascStorage(storagePath, localeFlags, logger);
+            var storage = new CascStorage(storagePath, localeFlags, loggerFactory);
             storage.Initialize();
             return storage;
         }
@@ -101,27 +112,54 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="ArgumentException">Thrown when the open type is invalid.</exception>
         /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
-        public Stream OpenFile(string fileName, CascOpenFlags openFlags = CascOpenFlags.OpenByName)
+        public async Task<Stream> OpenFileAsync(string fileName, CascOpenFlags openFlags = CascOpenFlags.OpenByName)
         {
             var openType = openFlags & CascOpenFlags.OpenTypeMask;
 
             switch (openType)
             {
                 case CascOpenFlags.OpenByName:
-                    return OpenFileByName(fileName);
+                    return await OpenFileByNameAsync(fileName);
 
                 case CascOpenFlags.OpenByCKey:
-                    return OpenFileByCKey(CascKey.Parse(fileName));
+                    return await OpenFileByCKeyAsync(CascKey.Parse(fileName));
 
                 case CascOpenFlags.OpenByEKey:
-                    return OpenFileByEKey(EKey.Parse(fileName));
+                    return await OpenFileByEKeyAsync(EKey.Parse(fileName));
 
                 case CascOpenFlags.OpenByFileId:
                     var fileId = uint.Parse(fileName, CultureInfo.InvariantCulture);
-                    return OpenFileByFileId(fileId);
+                    return await OpenFileByFileIdAsync(fileId);
 
                 default:
                     throw new ArgumentException($"Invalid open type: {openType}");
+            }
+        }
+
+        /// <summary>
+        /// Opens a file from the storage using the information from CascFindData.
+        /// </summary>
+        /// <param name="findData">The find data containing file information.</param>
+        /// <returns>A stream containing the file data.</returns>
+        /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
+        public async Task<Stream> OpenFileAsync(CascFindData findData)
+        {
+            switch (findData.NameType)
+            {
+                case CascNameType.Full:
+                    return await OpenFileByNameAsync(findData.FilePath);
+
+                case CascNameType.DataId:
+                    return await OpenFileByFileIdAsync(findData.FileDataId);
+
+                case CascNameType.CKey:
+                    return await OpenFileByCKeyAsync(findData.CKey);
+
+                case CascNameType.EKey:
+                    return await OpenFileByEKeyAsync(findData.EKey);
+
+                default:
+                    throw new CascFileNotFoundException($"Unable to open file: unsupported name type {findData.NameType}");
             }
         }
 
@@ -132,9 +170,9 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="CascException">Thrown when the encoding file is not loaded or checksum validation fails.</exception>
         /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
-        public Stream OpenFileByCKey(CascKey cKey)
+        public Task<Stream> OpenFileByCKeyAsync(CascKey cKey)
         {
-            return OpenFileByCKey(cKey, true);
+            return OpenFileByCKeyAsync(cKey, true);
         }
 
         /// <summary>
@@ -145,21 +183,21 @@ namespace War3Net.IO.Casc.Storage
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="CascException">Thrown when the encoding file is not loaded or checksum validation fails.</exception>
         /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
-        public Stream OpenFileByCKey(CascKey cKey, bool validateChecksum)
+        public async Task<Stream> OpenFileByCKeyAsync(CascKey cKey, bool validateChecksum)
         {
             // Get EKey from encoding
-            if (_context.EncodingFile == null)
+            if (_context.EncodingFile is null)
             {
                 throw new CascException("Encoding file not loaded");
             }
 
             var eKey = _context.EncodingFile.GetEKey(cKey);
-            if (eKey == null)
+            if (eKey is null)
             {
                 throw new CascFileNotFoundException(cKey);
             }
 
-            var stream = OpenFileByEKey(eKey.Value);
+            var stream = await OpenFileByEKeyAsync(eKey.Value);
 
             // Validate checksum if requested
             if (validateChecksum && stream.CanSeek)
@@ -199,9 +237,9 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="eKey">The encoded key.</param>
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
-        public Stream OpenFileByEKey(EKey eKey)
+        public Task<Stream> OpenFileByEKeyAsync(EKey eKey)
         {
-            return OpenFileByEKey(eKey, false);
+            return OpenFileByEKeyAsync(eKey, false);
         }
 
         /// <summary>
@@ -211,12 +249,12 @@ namespace War3Net.IO.Casc.Storage
         /// <param name="useStreaming">If true, returns a streaming reader; if false, loads entire file to memory.</param>
         /// <returns>A stream containing the file data.</returns>
         /// <exception cref="CascFileNotFoundException">Thrown when the file is not found.</exception>
-        public Stream OpenFileByEKey(EKey eKey, bool useStreaming)
+        public virtual async Task<Stream> OpenFileByEKeyAsync(EKey eKey, bool useStreaming)
         {
-            _storageLock.EnterReadLock();
+            await _storageLock.WaitAsync().ConfigureAwait(false);
             try
             {
-                if (_context.IndexManager == null)
+                if (_context.IndexManager is null)
                 {
                     throw new CascException("Index files not loaded");
                 }
@@ -230,12 +268,12 @@ namespace War3Net.IO.Casc.Storage
                 if (useStreaming)
                 {
                     // Return a streaming reader
-                    return new CascStream(_context, indexEntry!);
+                    return new CascStream(_context, indexEntry);
                 }
                 else
                 {
                     // Read data from data file
-                    var data = ReadDataFile(indexEntry!);
+                    var data = await ReadDataFileAsync(indexEntry).ConfigureAwait(false);
 
                     // Check if data is BLTE-encoded
                     if (BlteDecoder.IsBlte(data))
@@ -248,8 +286,7 @@ namespace War3Net.IO.Casc.Storage
             }
             finally
             {
-                _storageLock.ExitReadLock();
-            }
+                _storageLock.Release();
         }
 
         /// <summary>
@@ -257,15 +294,15 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFileByName(string fileName)
+        public async Task<Stream> OpenFileByNameAsync(string fileName)
         {
-            if (_context.RootHandler == null)
+            if (_context.RootHandler is null)
             {
                 throw new CascException("Root handler not loaded. Cannot resolve file names.");
             }
 
             var rootEntry = _context.RootHandler.GetEntry(fileName);
-            if (rootEntry == null)
+            if (rootEntry is null)
             {
                 throw new CascFileNotFoundException($"{_context.RootHandler.GetType().Name} does not contain an entry for: {fileName}");
             }
@@ -273,13 +310,13 @@ namespace War3Net.IO.Casc.Storage
             // Try to open by EKey first
             if (!rootEntry.EKey.IsEmpty)
             {
-                return OpenFileByEKey(rootEntry.EKey);
+                return await OpenFileByEKeyAsync(rootEntry.EKey);
             }
 
             // Fall back to CKey if available
             if (!rootEntry.CKey.IsEmpty)
             {
-                return OpenFileByCKey(rootEntry.CKey);
+                return await OpenFileByCKeyAsync(rootEntry.CKey);
             }
 
             throw new CascException($"Root entry for '{fileName}' has no valid keys");
@@ -290,15 +327,15 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="fileDataId">The file data ID.</param>
         /// <returns>A stream containing the file data.</returns>
-        public Stream OpenFileByFileId(uint fileDataId)
+        public async Task<Stream> OpenFileByFileIdAsync(uint fileDataId)
         {
-            if (_context.RootHandler == null)
+            if (_context.RootHandler is null)
             {
                 throw new CascException("Root handler not loaded. Cannot resolve file data IDs.");
             }
 
             var rootEntry = _context.RootHandler.GetEntry(fileDataId);
-            if (rootEntry == null)
+            if (rootEntry is null)
             {
                 throw new CascFileNotFoundException($"File data ID not found in root: {fileDataId}");
             }
@@ -306,13 +343,13 @@ namespace War3Net.IO.Casc.Storage
             // Try to open by CKey first
             if (!rootEntry.CKey.IsEmpty)
             {
-                return OpenFileByCKey(rootEntry.CKey);
+                return await OpenFileByCKeyAsync(rootEntry.CKey);
             }
 
             // Fall back to EKey if available
             if (!rootEntry.EKey.IsEmpty)
             {
-                return OpenFileByEKey(rootEntry.EKey);
+                return await OpenFileByEKeyAsync(rootEntry.EKey);
             }
 
             throw new CascException($"Root entry for file data ID {fileDataId} has no valid keys");
@@ -323,21 +360,21 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="keyName">The key name.</param>
         /// <param name="key">The encryption key.</param>
-        public void AddEncryptionKey(ulong keyName, byte[] key)
+        public async Task AddEncryptionKeyAsync(ulong keyName, byte[] key)
         {
-            if (key == null || key.Length != CascConstants.KeyLength)
+            if (key is null || key.Length != CascConstants.KeyLength)
             {
                 throw new ArgumentException($"Encryption key must be {CascConstants.KeyLength} bytes", nameof(key));
             }
 
-            _storageLock.EnterWriteLock();
+            await _storageLock.WaitAsync().ConfigureAwait(false);
             try
             {
                 _context.EncryptionKeys[keyName] = key;
             }
             finally
             {
-                _storageLock.ExitWriteLock();
+                _storageLock.Release();
             }
         }
 
@@ -346,7 +383,7 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="keyName">The key name.</param>
         /// <param name="keyString">The encryption key as a hex string.</param>
-        public void AddStringEncryptionKey(ulong keyName, string keyString)
+        public async Task AddStringEncryptionKeyAsync(ulong keyName, string keyString)
         {
             if (string.IsNullOrEmpty(keyString))
             {
@@ -367,7 +404,7 @@ namespace War3Net.IO.Casc.Storage
                 key[i] = Convert.ToByte(keyString.Substring(i * 2, 2), 16);
             }
 
-            AddEncryptionKey(keyName, key);
+            await AddEncryptionKeyAsync(keyName, key).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -375,7 +412,7 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="keyList">The key list in format "KeyName=KeyValue" separated by newlines.</param>
         /// <returns>The number of keys imported.</returns>
-        public int ImportKeysFromString(string keyList)
+        public async Task<int> ImportKeysFromStringAsync(string keyList)
         {
             if (string.IsNullOrEmpty(keyList))
             {
@@ -421,7 +458,7 @@ namespace War3Net.IO.Casc.Storage
 
                 try
                 {
-                    AddStringEncryptionKey(keyName, keyValueStr);
+                    await AddStringEncryptionKeyAsync(keyName, keyValueStr).ConfigureAwait(false);
                     keysImported++;
                 }
                 catch
@@ -438,7 +475,7 @@ namespace War3Net.IO.Casc.Storage
         /// </summary>
         /// <param name="fileName">The path to the key file.</param>
         /// <returns>The number of keys imported.</returns>
-        public int ImportKeysFromFile(string fileName)
+        public async Task<int> ImportKeysFromFileAsync(string fileName)
         {
             // Note: ImportKeysFromFile should accept absolute paths to allow loading key files from any location
             // The path sanitization is intentionally not used here to allow flexibility
@@ -452,8 +489,8 @@ namespace War3Net.IO.Casc.Storage
                 throw new FileNotFoundException($"Key file not found: {fileName}");
             }
 
-            var keyList = File.ReadAllText(fileName);
-            return ImportKeysFromString(keyList);
+            var keyList = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
+            return await ImportKeysFromStringAsync(keyList).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -510,8 +547,9 @@ namespace War3Net.IO.Casc.Storage
         /// Loads the root file and initializes the root handler.
         /// </summary>
         /// <param name="rootFilePath">The path to the root file.</param>
+        /// <param name="buildConfig">Optional build config for populating VFS root list.</param>
         /// <returns>true if the root file was loaded successfully; otherwise, false.</returns>
-        protected bool LoadRootFile(string rootFilePath)
+        protected async Task<bool> LoadRootFileAsync(string rootFilePath, Cdn.BuildConfig? buildConfig = null)
         {
             if (!File.Exists(rootFilePath))
             {
@@ -550,21 +588,53 @@ namespace War3Net.IO.Casc.Storage
 
                     // If it starts with text characters, use TextRootHandler
                     // Otherwise check for specific binary formats
-                    if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
+                    if (bytesRead >= 4 && IsTvfsFile(buffer))
+                    {
+                        // TVFS format used by Warcraft III
+                        _logger.LogInformation("Detected TVFS root file format");
+                        var tvfsHandler = new TvfsRootHandler(_loggerFactory?.CreateLogger<TvfsRootHandler>());
+
+                        // Populate VFS root list from build config if available
+                        if (buildConfig is not null)
+                        {
+                            var vfsRootList = new HashSet<EKey>();
+
+                            // Add main VFS root if it has an EKey
+                            var vfsRoot = buildConfig.VfsRoot;
+                            if (!vfsRoot.IsEmpty && vfsRoot.HasEKey)
+                            {
+                                vfsRootList.Add(vfsRoot.EKey);
+                                _logger.LogWarning("Added main VFS root to list: {EKey}", vfsRoot.EKey);
+                            }
+
+                            // Add all VFS manifests (vfs-1, vfs-2, etc.)
+                            var vfsManifests = buildConfig.GetAllVfsManifests();
+                            foreach (var manifest in vfsManifests)
+                            {
+                                if (manifest.Value.HasEKey)
+                                {
+                                    vfsRootList.Add(manifest.Value.EKey);
+                                    _logger.LogWarning("Added VFS manifest {Index} to list: {EKey}", manifest.Key, manifest.Value.EKey);
+                                }
+                            }
+
+                            if (vfsRootList.Count > 0)
+                            {
+                                tvfsHandler.SetVfsRootList(vfsRootList);
+                                _logger.LogInformation("Set VFS root list with {Count} entries", vfsRootList.Count);
+                            }
+                        }
+
+                        await tvfsHandler.ParseAsync(stream, this, _context);
+                        _context.RootHandler = tvfsHandler;
+                        _logger.LogInformation("TVFS root file parsed successfully, handler type: {HandlerType}", _context.RootHandler?.GetType().Name);
+                    }
+                    else if (bytesRead >= 2 && IsTextFile(buffer, bytesRead))
                     {
                         _logger.LogInformation("Detected text root file format");
                         var textHandler = new TextRootHandler();
                         textHandler.Parse(stream);
                         _context.RootHandler = textHandler;
-                    }
-                    else if (bytesRead >= 4 && IsTvfsFile(buffer))
-                    {
-                        // TVFS format used by Warcraft III
-                        _logger.LogInformation("Detected TVFS root file format");
-                        var tvfsHandler = new TvfsRootHandler();
-                        tvfsHandler.Parse(stream);
-                        _context.RootHandler = tvfsHandler;
-                        _logger.LogInformation("TVFS root file parsed successfully, handler type: {HandlerType}", _context.RootHandler?.GetType().Name);
                     }
                     else
                     {
@@ -625,9 +695,12 @@ namespace War3Net.IO.Casc.Storage
                 return;
             }
 
+            // Mark as disposed first to prevent new operations
+            _disposed = true;
+
             if (disposing)
             {
-                _storageLock.EnterWriteLock();
+                _storageLock.Wait();
                 try
                 {
                     // Dispose managed resources
@@ -641,12 +714,10 @@ namespace War3Net.IO.Casc.Storage
                 }
                 finally
                 {
-                    _storageLock.ExitWriteLock();
+                    _storageLock.Release();
                     _storageLock.Dispose();
                 }
             }
-
-            _disposed = true;
         }
 
         /// <summary>
@@ -670,7 +741,7 @@ namespace War3Net.IO.Casc.Storage
                 _context.BuildInfo = BuildInfo.ParseFile(buildInfoPath);
                 _context.ActiveBuild = _context.BuildInfo.GetActiveBuild();
 
-                if (_context.ActiveBuild != null)
+                if (_context.ActiveBuild is not null)
                 {
                     _context.Product = new CascStorageProduct(
                         _context.ActiveBuild.Product ?? "unknown",
@@ -696,7 +767,7 @@ namespace War3Net.IO.Casc.Storage
 
         private void LoadEncodingFile()
         {
-            if (_context.ActiveBuild == null || string.IsNullOrEmpty(_context.ActiveBuild.BuildKey))
+            if (_context.ActiveBuild is null || string.IsNullOrEmpty(_context.ActiveBuild.BuildKey))
             {
                 return;
             }
@@ -740,13 +811,13 @@ namespace War3Net.IO.Casc.Storage
             }
 
             // Check for encoding support
-            if (_context.EncodingFile != null)
+            if (_context.EncodingFile is not null)
             {
                 _context.Features |= CascFeatures.RootCKey;
             }
         }
 
-        private byte[] ReadDataFile(EKeyEntry indexEntry)
+        protected virtual Task<byte[]> ReadDataFileAsync(EKeyEntry indexEntry)
         {
             // Validate size to prevent excessive memory allocation
             // CascLib uses 100MB as default maximum, with configurable override
@@ -771,11 +842,11 @@ namespace War3Net.IO.Casc.Storage
                 _logger.LogWarning("Large file size: {FileSize} bytes. Proceeding with caution.", indexEntry.EncodedSize);
             }
 
-            var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath!);
+            var dataFilePath = IndexManager.GetDataFilePath(indexEntry, _context.DataPath);
 
             if (!File.Exists(dataFilePath))
             {
-                throw new FileNotFoundException($"Data file not found: {dataFilePath}");
+                throw new CascFileNotFoundException($"Data file not found: {dataFilePath}");
             }
 
             using var stream = File.OpenRead(dataFilePath);
@@ -848,19 +919,19 @@ namespace War3Net.IO.Casc.Storage
                 }
 
                 // If we used a rented array, copy to exact-sized array before returning
-                if (rentedArray != null)
+                if (rentedArray is not null)
                 {
                     var result = new byte[indexEntry.EncodedSize];
                     Buffer.BlockCopy(rentedArray, 0, result, 0, (int)indexEntry.EncodedSize);
-                    return result;
+                    return Task.FromResult(result);
                 }
 
-                return data;
+                return Task.FromResult(data);
             }
             finally
             {
                 // Always return the rented array if it exists
-                if (rentedArray != null)
+                if (rentedArray is not null)
                 {
                     System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray, clearArray: true);
                 }

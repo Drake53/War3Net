@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace War3Net.IO.Casc.Structures
 {
     /// <summary>
@@ -19,6 +21,9 @@ namespace War3Net.IO.Casc.Structures
         {
             CKey = CascKey.Empty;
             EKey = EKey.Empty;
+            StorageOffset = CascConstants.InvalidOffset64;
+            SegmentOffset = CascConstants.InvalidOffset64;
+            SegmentIndex = CascConstants.InvalidIndex;
             FileDataId = CascConstants.InvalidId;
             LocaleFlags = CascConstants.InvalidId;
             ContentFlags = CascConstants.InvalidId;
@@ -93,5 +98,9 @@ namespace War3Net.IO.Casc.Structures
         /// Gets or sets the content flags.
         /// </summary>
         public uint ContentFlags { get; set; }
+
+        public bool AvailableLocally { get; set; }
+
+        public List<string> Tags { get; set; }
     }
 }

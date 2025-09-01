@@ -17,8 +17,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 using War3Net.IO.Casc.Cdn;
+using War3Net.IO.Casc.Encoding;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Helpers;
+using War3Net.IO.Casc.Index;
 using War3Net.IO.Casc.Progress;
 using War3Net.IO.Casc.Structures;
 
@@ -94,12 +96,15 @@ namespace War3Net.IO.Casc.Storage
         /// This constructor is private and used internally by the static factory methods.
         /// Use <see cref="OpenStorageAsync"/> or <see cref="OpenWar3Async"/> to create instances.
         /// </remarks>
-        private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags, ILogger<OnlineCascStorage>? logger = null)
-            : base(localCachePath, localeFlags)
+        private OnlineCascStorage(string product, string region, string localCachePath, CascLocaleFlags localeFlags, ILoggerFactory? loggerFactory = null)
+            : base(localCachePath, localeFlags, loggerFactory)
         {
             Product = product;
             Region = region;
-            _logger = logger ?? NullLogger<OnlineCascStorage>.Instance;
+            _logger = loggerFactory?.CreateLogger<OnlineCascStorage>() ?? NullLogger<OnlineCascStorage>.Instance;
+
+            // Mark this as online storage
+            Context.IsOnline = true;
         }
 
         /// <summary>
@@ -168,7 +173,7 @@ namespace War3Net.IO.Casc.Storage
             string? localCachePath = null,
             CascLocaleFlags localeFlags = CascLocaleFlags.All,
             IProgressReporter? progressReporter = null,
-            ILogger<OnlineCascStorage>? logger = null)
+            ILoggerFactory? loggerFactory = null)
         {
             // Validate and sanitize product and region to prevent path traversal
             ValidateProductAndRegion(product, region);
@@ -232,7 +237,7 @@ namespace War3Net.IO.Casc.Storage
 
             Directory.CreateDirectory(localCachePath);
 
-            var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags, logger);
+            var storage = new OnlineCascStorage(product, region, localCachePath, localeFlags, loggerFactory);
             await storage.InitializeOnlineAsync(progressReporter);
             return storage;
         }
@@ -257,9 +262,9 @@ namespace War3Net.IO.Casc.Storage
             string region = CascRegion.EU,
             string? localCachePath = null,
             IProgressReporter? progressReporter = null,
-            ILogger<OnlineCascStorage>? logger = null)
+            ILoggerFactory? loggerFactory = null)
         {
-            return await OpenStorageAsync(CascProduct.Warcraft.W3, region, localCachePath, CascLocaleFlags.All, progressReporter, logger);
+            return await OpenStorageAsync(CascProduct.Warcraft.W3, region, localCachePath, CascLocaleFlags.All, progressReporter, loggerFactory);
         }
 
         /// <summary>
@@ -297,7 +302,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             var versionEntry = versions.GetEntry(Region) ?? versions.GetFirstEntry();
-            if (versionEntry == null)
+            if (versionEntry is null)
             {
                 throw new CascException($"No version entry found for region {Region}");
             }
@@ -320,7 +325,7 @@ namespace War3Net.IO.Casc.Storage
             }
 
             var cdnEntry = cdns.GetEntry(Region) ?? cdns.GetFirstEntry();
-            if (cdnEntry == null)
+            if (cdnEntry is null)
             {
                 throw new CascException($"No CDN entry found for region {Region}");
             }
@@ -412,75 +417,38 @@ namespace War3Net.IO.Casc.Storage
             // Load the encoding file into the storage context
             LoadDownloadedEncodingFile(encodingPath);
 
-            // Download file-index if present (needed for Warcraft III root file)
-            string? fileIndexPath = null;
-            var fileIndex = cdnConfig.FileIndex;
-            if (!string.IsNullOrEmpty(fileIndex))
-            {
-                // For online storage, file-index goes in data/XX/YY/[hash].index
-                var hashLower = fileIndex.ToLowerInvariant();
-                fileIndexPath = Path.Combine(
-                    StoragePath,
-                    "data",
-                    hashLower.Substring(0, 2),
-                    hashLower.Substring(2, 2),
-                    $"{hashLower}.index");
-                if (!File.Exists(fileIndexPath))
-                {
-                    try
-                    {
-                        // Ensure directory exists
-                        var indexDir = Path.GetDirectoryName(fileIndexPath);
-                        if (!string.IsNullOrEmpty(indexDir))
-                        {
-                            Directory.CreateDirectory(indexDir);
-                        }
-
-                        _logger.LogInformation("Downloading file-index with hash: {FileIndex}", fileIndex);
-                        var fileIndexData = await _cdnClient!.DownloadIndexAsync(EKey.Parse(fileIndex));
-                        await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
-                        _logger.LogInformation("File-index downloaded successfully");
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        throw new CascException($"Failed to download file-index {fileIndex}: {ex.Message}", ex);
-                    }
-                    catch (IOException ex)
-                    {
-                        throw new CascException($"Failed to save file-index to {fileIndexPath}: {ex.Message}", ex);
-                    }
-                }
-            }
+            // Initialize storage context paths early so they're available for TVFS parsing
+            InitializeOnlineStorageContext();
 
             // Download root file
             progressReporter?.ReportProgress(CascProgressMessage.DownloadingFile, "root", 7, TotalProgressSteps);
 
             // Try to download the root file using the encoding file to look up its EKey
-            var rootPath = await EncodingFileHelper.DownloadRootFileAsync(buildConfig, encodingPath, _cdnClient, StoragePath, fileIndexPath);
+            var rootPath = await EncodingFileHelper.DownloadRootFileAsync(buildConfig, encodingPath, _cdnClient, StoragePath);
             if (!string.IsNullOrEmpty(rootPath))
             {
                 _logger.LogInformation("Root file successfully cached at: {RootPath}", rootPath);
 
                 // Try to load and parse the root file
-                if (LoadRootFile(rootPath))
+                if (await LoadRootFileAsync(rootPath, buildConfig))
                 {
                     _logger.LogInformation("Root file loaded and parsed successfully");
                 }
                 else
                 {
                     _logger.LogWarning("Failed to parse root file - using empty root handler");
+
+                    // Initialize a basic root handler as fallback
                     InitializeRootHandler();
                 }
             }
             else
             {
                 _logger.LogWarning("Root file could not be downloaded - file name resolution will not be available");
+
                 // Initialize a basic root handler as fallback
                 InitializeRootHandler();
             }
-
-            // Initialize base storage context with downloaded information
-            InitializeOnlineStorageContext();
         }
 
         private async Task DownloadPatchConfigAsync(CascKey patchConfigKey)
@@ -504,7 +472,7 @@ namespace War3Net.IO.Casc.Storage
 
                 // Patch manifests are not stored locally - they're only used from CDN
                 // The patch system applies patches directly without local caching
-                if (_patchConfig.Patch != null && !_patchConfig.Patch.IsEmpty)
+                if (!_patchConfig.Patch.IsEmpty)
                 {
                     _logger.LogInformation("Patch manifest available: {PatchKey}", _patchConfig.Patch);
                     // Patches will be applied on-demand from CDN when needed
@@ -525,7 +493,7 @@ namespace War3Net.IO.Casc.Storage
         {
             // Download archive indices
             var archives = cdnConfig.Archives;
-            if (archives == null || archives.Count == 0)
+            if (archives is null || archives.Count == 0)
             {
                 throw new CascException("No archives found in CDN config - cannot proceed without index files");
             }
@@ -586,6 +554,52 @@ namespace War3Net.IO.Casc.Storage
                 }
             }
 
+            // Download file-index if present BEFORE loading indices
+            // The file-index contains full 16-byte EKeys that are needed when parsing TVFS
+            var fileIndex = cdnConfig.FileIndex;
+            if (!string.IsNullOrEmpty(fileIndex))
+            {
+                // For online storage, file-index goes in data/XX/YY/[hash].index
+                var hashLower = fileIndex.ToLowerInvariant();
+                var fileIndexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    hashLower.Substring(0, 2),
+                    hashLower.Substring(2, 2),
+                    $"{hashLower}.index");
+
+                if (!File.Exists(fileIndexPath))
+                {
+                    try
+                    {
+                        // Ensure directory exists
+                        var indexDir = Path.GetDirectoryName(fileIndexPath);
+                        if (!string.IsNullOrEmpty(indexDir))
+                        {
+                            Directory.CreateDirectory(indexDir);
+                        }
+
+                        _logger.LogInformation("Downloading file-index with hash: {FileIndex}", fileIndex);
+                        if (_cdnClient is null)
+                        {
+                            throw new CascException("CDN client not initialized");
+                        }
+
+                        var fileIndexData = await _cdnClient.DownloadIndexAsync(EKey.Parse(fileIndex));
+                        await File.WriteAllBytesAsync(fileIndexPath, fileIndexData);
+                        _logger.LogInformation("File-index downloaded successfully");
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        throw new CascException($"Failed to download file-index {fileIndex}: {ex.Message}", ex);
+                    }
+                    catch (IOException ex)
+                    {
+                        throw new CascException($"Failed to save file-index to {fileIndexPath}: {ex.Message}", ex);
+                    }
+                }
+            }
+
             // Require at least one successful index download
             if (successfulDownloads == 0)
             {
@@ -631,20 +645,91 @@ namespace War3Net.IO.Casc.Storage
 
         private void LoadDownloadedIndexFiles()
         {
-            // For online storage, index files are in data/XX/YY/ subdirectories
-            var dataPath = Path.Combine(StoragePath, "data");
-            if (!Directory.Exists(dataPath))
+            // For online storage, we need to load archive index files with their proper archive numbers
+            // The archives were downloaded in order from the CDN config
+            if (_cdnConfig is null)
             {
-                throw new CascException($"Data directory does not exist at: {dataPath}");
+                throw new CascException("CDN config not loaded");
             }
 
-            var indexFiles = Directory.GetFiles(dataPath, "*.index", SearchOption.AllDirectories);
-            if (indexFiles.Length == 0)
+            var archives = _cdnConfig.Archives;
+            if (archives is null || archives.Count == 0)
             {
-                throw new CascException($"No index files found in: {dataPath}");
+                throw new CascException("No archives in CDN config");
             }
 
-            _logger.LogInformation("Loading {IndexFileCount} index files from: {DataPath}", indexFiles.Length, dataPath);
+            var successfulLoads = 0;
+
+            // Load each archive index with its proper archive number
+            for (var i = 0; i < archives.Count; i++)
+            {
+                var archiveKey = archives[i];
+                if (string.IsNullOrEmpty(archiveKey))
+                {
+                    continue;
+                }
+
+                // Construct the path where we downloaded this index
+                var hashLower = archiveKey.ToLowerInvariant();
+                var indexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    hashLower.Substring(0, 2),
+                    hashLower.Substring(2, 2),
+                    $"{hashLower}.index");
+
+                if (!File.Exists(indexPath))
+                {
+                    continue; // This index wasn't downloaded
+                }
+
+                try
+                {
+                    // Load with the proper archive number (i)
+                    Context.IndexManager?.LoadArchiveIndexFile(indexPath, i);
+                    _logger.LogInformation("Loaded archive index {ArchiveNumber}: {IndexFile}", i, Path.GetFileName(indexPath));
+                    successfulLoads++;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to load archive index {ArchiveNumber}: {IndexFile}", i, indexPath);
+                }
+            }
+
+            // Also load the file-index if it exists (for loose files)
+            if (!string.IsNullOrEmpty(_cdnConfig.FileIndex))
+            {
+                var fileIndexHash = _cdnConfig.FileIndex.ToLowerInvariant();
+                var fileIndexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    fileIndexHash.Substring(0, 2),
+                    fileIndexHash.Substring(2, 2),
+                    $"{fileIndexHash}.index");
+
+                if (File.Exists(fileIndexPath))
+                {
+                    try
+                    {
+                        // File-index doesn't have an archive number, use -1 or special value
+                        Context.IndexManager?.LoadArchiveIndexFile(fileIndexPath, -1);
+                        _logger.LogInformation("Loaded file-index: {IndexFile}", Path.GetFileName(fileIndexPath));
+                        successfulLoads++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to load file-index: {IndexFile}", fileIndexPath);
+                    }
+                }
+            }
+
+            if (successfulLoads == 0)
+            {
+                throw new CascException("Failed to load any index files");
+            }
+
+            _logger.LogInformation("Loaded {SuccessfulLoads} index files, total entries: {EntryCount}",
+                successfulLoads, Context.IndexManager?.TotalEntryCount ?? 0);
         }
 
         private void LoadDownloadedEncodingFile(string encodingPath)
@@ -653,7 +738,7 @@ namespace War3Net.IO.Casc.Storage
             {
                 try
                 {
-                    // Load the encoding file
+                    // Load and parse the encoding file
                     using var stream = File.OpenRead(encodingPath);
                     if (Compression.BlteDecoder.IsBlte(stream))
                     {
@@ -661,19 +746,25 @@ namespace War3Net.IO.Casc.Storage
                         using var decompressedStream = new MemoryStream();
                         Compression.BlteDecoder.Decode(stream, decompressedStream);
                         decompressedStream.Position = 0;
-                        // The base class should handle this, but we can store it for reference
-                        _logger.LogInformation("Encoding file loaded (BLTE compressed)");
+                        Context.EncodingFile = EncodingFile.Parse(decompressedStream, _logger);
+                        _logger.LogInformation("Encoding file loaded and parsed (BLTE compressed), {EntryCount} entries", Context.EncodingFile.EntryCount);
                     }
                     else
                     {
                         // Not compressed
-                        _logger.LogInformation("Encoding file loaded (uncompressed)");
+                        Context.EncodingFile = EncodingFile.Parse(stream, _logger);
+                        _logger.LogInformation("Encoding file loaded and parsed (uncompressed), {EntryCount} entries", Context.EncodingFile.EntryCount);
                     }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(ex, "Failed to load encoding file");
+                    throw new CascException($"Failed to load encoding file from {encodingPath}: {ex.Message}", ex);
                 }
+            }
+            else
+            {
+                throw new CascException($"Encoding file does not exist at {encodingPath}");
             }
         }
 
@@ -690,6 +781,10 @@ namespace War3Net.IO.Casc.Storage
 
             Directory.CreateDirectory(configPath);
             Directory.CreateDirectory(dataPath);
+
+            // Set the paths in the context
+            Context.ConfigPath = configPath;
+            Context.DataPath = dataPath;
 
             // Create a minimal .build.info file for the base class
             if (_versionEntry is not null && _buildConfig is not null)
@@ -728,6 +823,465 @@ namespace War3Net.IO.Casc.Storage
             };
 
             File.WriteAllLines(buildInfoPath, lines);
+        }
+
+        /// <summary>
+        /// Reads data from a data file, downloading from CDN if necessary.
+        /// </summary>
+        /// <param name="indexEntry">The index entry containing file location information.</param>
+        /// <returns>The raw file data.</returns>
+        protected override async Task<byte[]> ReadDataFileAsync(EKeyEntry indexEntry)
+        {
+            // Check if this is a file that needs to be downloaded from CDN
+            // Following CascLib's pattern: InvalidIndex means the file is not present locally
+            if (indexEntry.DataFileIndex == CascConstants.InvalidIndex)
+            {
+                // This file was registered but not found in indices - try to download it
+                _logger.LogInformation("File with EKey {EKey} not in index, attempting CDN download", indexEntry.EKey);
+
+                var eKey = indexEntry.EKey;
+
+                // The EKey should be the full 16-byte version from file-index
+                // If we only have a truncated key, we can't download from CDN
+                if (eKey.Length != 16)
+                {
+                    throw new CascException($"Cannot download file from CDN without full 16-byte EKey (have {eKey.Length} bytes). This usually means the file-index was not loaded properly.");
+                }
+
+                // First try as a loose file
+                var looseFileData = await TryDownloadLooseFileAsync(eKey).ConfigureAwait(false);
+                if (looseFileData is not null)
+                {
+                    return looseFileData;
+                }
+
+                throw new CascFileNotFoundException($"File with EKey {eKey} not found on CDN (tried loose and archives)");
+            }
+
+            // Check if it's explicitly marked as a loose file (0xFF is our convention)
+            if (indexEntry.IsLooseFile)
+            {
+                try
+                {
+                    // Loose files are stored as data/XX/YY/hash where hash is the EKey
+                    var eKeyString = indexEntry.EKey.ToString().ToLowerInvariant();
+
+                    // todo: code deduplication
+                    var loosePath = Path.Combine(
+                        Context.DataPath,
+                        eKeyString.Substring(0, 2),
+                        eKeyString.Substring(2, 2),
+                        eKeyString);
+
+                    byte[] encodedData;
+                    if (File.Exists(loosePath))
+                    {
+                        encodedData = File.ReadAllBytes(loosePath);
+                    }
+                    else
+                    {
+                        // This is a loose file, download it directly from CDN using its EKey
+                        _logger.LogInformation("Downloading loose file from CDN");
+
+                        if (_cdnClient is null)
+                        {
+                            throw new CascException("CDN client not initialized");
+                        }
+
+                        // Download the loose file directly using its EKey
+                        encodedData = await _cdnClient.DownloadDataAsync(indexEntry.EKey).ConfigureAwait(false);
+
+                        // Ensure directory exists
+                        var directory = Path.GetDirectoryName(loosePath);
+                        Directory.CreateDirectory(directory);
+
+                        // Cache the loose file locally for future use
+                        await File.WriteAllBytesAsync(loosePath, encodedData).ConfigureAwait(false);
+                        _logger.LogInformation("Downloaded and cached loose file {EKey} ({Size} bytes)", indexEntry.EKey, encodedData.Length);
+                    }
+
+                    // Check if data is BLTE-encoded and decode if necessary
+                    if (Compression.BlteDecoder.IsBlte(encodedData))
+                    {
+                        using var inputStream = new MemoryStream(encodedData);
+                        using var outputStream = new MemoryStream();
+                        Compression.BlteDecoder.Decode(inputStream, outputStream);
+                        return outputStream.ToArray();
+                    }
+                    else
+                    {
+                        return encodedData;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to download loose file {EKey} from CDN", indexEntry.EKey);
+                    throw new CascFileNotFoundException($"Loose file not found on CDN: {indexEntry.EKey}");
+                }
+            }
+
+            try
+            {
+                return await DownloadFromArchiveAsync(indexEntry).ConfigureAwait(false);
+            }
+            catch (CascFileNotFoundException)
+            {
+                var archiveIndex = indexEntry.DataFileIndex;
+
+                // This is an archived file
+                var dataFilePath = IndexManager.GetDataFilePath(indexEntry, Context.DataPath);
+                _logger.LogInformation("Archive file not found locally at {Path}, attempting CDN download", dataFilePath);
+
+                var archiveKey = _cdnConfig.Archives[(int)archiveIndex];
+                _logger.LogInformation("File is in archive {ArchiveIndex} with key {ArchiveKey}", archiveIndex, archiveKey);
+
+                // Download the archive from CDN
+                if (_cdnClient is null)
+                {
+                    throw new CascException("CDN client not initialized - cannot download missing archives");
+                }
+
+                try
+                {
+                    // The data file path for archives is: data/XX/YY/hash
+                    // where hash is the archive key
+                    var archiveKeyLower = archiveKey.ToLowerInvariant();
+                    var archivePath = Path.Combine(
+                        Context.DataPath ?? Path.Combine(Context.StoragePath ?? ".", "data"),
+                        archiveKeyLower.Substring(0, 2),
+                        archiveKeyLower.Substring(2, 2),
+                        archiveKeyLower);
+
+                    // Download the archive if it doesn't exist
+                    if (!File.Exists(archivePath))
+                    {
+                        _logger.LogInformation("Downloading archive {ArchiveKey} to {Path}", archiveKey, archivePath);
+                        var archiveData = await _cdnClient.DownloadDataAsync(EKey.Parse(archiveKey)).ConfigureAwait(false);
+
+                        // Ensure directory exists
+                        var directory = Path.GetDirectoryName(archivePath);
+                        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                        {
+                            Directory.CreateDirectory(directory);
+                        }
+
+                        await File.WriteAllBytesAsync(archivePath, archiveData).ConfigureAwait(false);
+                        _logger.LogInformation("Downloaded and cached archive {ArchiveKey} ({Size} bytes)", archiveKey, archiveData.Length);
+                    }
+
+                    // Now try reading again
+                    return await DownloadFromArchiveAsync(indexEntry).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to download archive {ArchiveKey} from CDN", archiveKey);
+                    throw new CascFileNotFoundException($"Archive not found locally and CDN download failed: {archiveKey}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tries to download a file as a loose file from CDN.
+        /// </summary>
+        /// <param name="eKey">The encoded key of the file.</param>
+        /// <returns>The decoded file data, or null if not found.</returns>
+        private async Task<byte[]?> TryDownloadLooseFileAsync(EKey eKey)
+        {
+            // Check local cache first
+            var eKeyString = eKey.ToString().ToLowerInvariant();
+            var loosePath = Path.Combine(
+                Context.DataPath,
+                eKeyString.Substring(0, 2),
+                eKeyString.Substring(2, 2),
+                eKeyString);
+
+            if (File.Exists(loosePath))
+            {
+                return await File.ReadAllBytesAsync(loosePath).ConfigureAwait(false);
+            }
+
+            if (_cdnClient is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                _logger.LogInformation("Attempting to download file as loose file from CDN: {EKey}", eKey);
+
+                // Try to download as a loose file
+                var encodedData = await _cdnClient.DownloadDataAsync(eKey).ConfigureAwait(false);
+
+                // Cache the file locally
+                var directory = Path.GetDirectoryName(loosePath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                await File.WriteAllBytesAsync(loosePath, encodedData).ConfigureAwait(false);
+                _logger.LogInformation("Downloaded and cached loose file {EKey} ({Size} bytes)", eKey, encodedData.Length);
+
+                // Decode if BLTE-encoded
+                if (Compression.BlteDecoder.IsBlte(encodedData))
+                {
+                    using var inputStream = new MemoryStream(encodedData);
+                    using var outputStream = new MemoryStream();
+                    Compression.BlteDecoder.Decode(inputStream, outputStream);
+                    return outputStream.ToArray();
+                }
+                else
+                {
+                    return encodedData;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // File not found as loose file - this is expected for archived files
+                _logger.LogDebug("File {EKey} not found as loose file: {Message}", eKey, ex.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error downloading loose file {EKey}", eKey);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Downloads a file from an archive.
+        /// </summary>
+        /// <param name="eKey">The encoded key of the file to download.</param>
+        /// <returns>The decoded file data, or null if not found.</returns>
+        private async Task<byte[]?> DownloadFromArchiveAsync(EKey eKey)
+        {
+            if (_cdnClient is null || _cdnConfig is null)
+            {
+                return null;
+            }
+
+            // Go through all archives to find which one contains this file
+            var archives = _cdnConfig.Archives;
+            for (var archiveIndex = 0; archiveIndex < archives.Count; archiveIndex++)
+            {
+                var archiveKey = archives[archiveIndex];
+
+                // Check if we have the archive index loaded
+                var archiveIndexPath = Path.Combine(
+                    StoragePath,
+                    "data",
+                    archiveKey.Substring(0, 2).ToLowerInvariant(),
+                    archiveKey.Substring(2, 2).ToLowerInvariant(),
+                    $"{archiveKey.ToLowerInvariant()}.index");
+
+                if (!File.Exists(archiveIndexPath))
+                {
+                    // Download the archive index if we don't have it
+                    try
+                    {
+                        _logger.LogDebug("Downloading archive index {ArchiveKey} to check for file", archiveKey);
+                        var indexData = await _cdnClient.DownloadIndexAsync(EKey.Parse(archiveKey)).ConfigureAwait(false);
+
+                        var dir = Path.GetDirectoryName(archiveIndexPath);
+                        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
+
+                        await File.WriteAllBytesAsync(archiveIndexPath, indexData).ConfigureAwait(false);
+
+                        // Load the newly downloaded index into the IndexManager
+                        Context.IndexManager?.LoadArchiveIndexFile(archiveIndexPath, archiveIndex);
+                        _logger.LogInformation("Loaded newly downloaded archive index {ArchiveNumber}: {IndexFile}", archiveIndex, Path.GetFileName(archiveIndexPath));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to download archive index {ArchiveKey}", archiveKey);
+                        //continue;
+                    }
+                }
+
+                // Check if this archive contains our file (either already loaded or just downloaded)
+                // Now check the IndexManager to see if this file is in this archive
+                if (Context.IndexManager?.TryFindEntry(eKey, out var entry) == true && entry.DataFileIndex == archiveIndex)
+                {
+                    return await DownloadFromArchiveAsync(entry);
+                }
+            }
+
+            _logger.LogWarning("File with EKey {EKey} not found in any archive", eKey);
+            return null;
+        }
+
+        private async Task<byte[]> DownloadFromArchiveAsync(EKeyEntry entry)
+        {
+            var archiveKey = _cdnConfig.Archives[(int)entry.DataFileIndex];
+
+            _logger.LogInformation("Found file with EKey {EKey} in archive {ArchiveKey} at offset {Offset}",
+                entry.EKey, archiveKey, entry.DataFileOffset);
+
+            // Download the archive file if needed
+            var archivePath = Path.Combine(
+                StoragePath,
+                "data",
+                archiveKey.Substring(0, 2).ToLowerInvariant(),
+                archiveKey.Substring(2, 2).ToLowerInvariant(),
+                archiveKey.ToLowerInvariant());
+
+            if (!File.Exists(archivePath))
+            {
+                _logger.LogInformation("Downloading archive {ArchiveKey} to extract file", archiveKey);
+                var archiveData = await _cdnClient.DownloadDataAsync(EKey.Parse(archiveKey)).ConfigureAwait(false);
+
+                var archiveDir = Path.GetDirectoryName(archivePath);
+                if (!string.IsNullOrEmpty(archiveDir) && !Directory.Exists(archiveDir))
+                {
+                    Directory.CreateDirectory(archiveDir);
+                }
+
+                await File.WriteAllBytesAsync(archivePath, archiveData).ConfigureAwait(false);
+            }
+
+            // Extract the file from the archive
+            using var archiveStream = File.OpenRead(archivePath);
+
+            var archiveOffset = entry.DataFileOffset;
+
+            // Seek to the file position in the archive
+            archiveStream.Seek(archiveOffset, SeekOrigin.Begin);
+
+            // Read the encoded data
+            var encodedData = new byte[entry.EncodedSize];
+            await archiveStream.ReadAsync(encodedData, 0, (int)entry.EncodedSize).ConfigureAwait(false);
+
+            // Decode if BLTE-encoded
+            if (Compression.BlteDecoder.IsBlte(encodedData))
+            {
+                using var inputStream = new MemoryStream(encodedData);
+                using var outputStream = new MemoryStream();
+                Compression.BlteDecoder.Decode(inputStream, outputStream);
+
+                _logger.LogInformation("Extracted and decoded file from archive {ArchiveKey} ({EncodedSize} -> {DecodedSize} bytes)",
+                    archiveKey, encodedData.Length, outputStream.Length);
+
+                return outputStream.ToArray();
+            }
+            else
+            {
+                _logger.LogInformation("Extracted unencoded file from archive {ArchiveKey} ({Size} bytes)",
+                    archiveKey, encodedData.Length);
+
+                return encodedData;
+            }
+        }
+
+        /// <summary>
+        /// Caches a downloaded file locally for future use.
+        /// </summary>
+        /// <param name="eKey">The encoded key of the file.</param>
+        /// <param name="data">The encoded file data.</param>
+        private async Task CacheDownloadedFileAsync(EKey eKey, byte[] data)
+        {
+            try
+            {
+                // Store as a loose file in the cache
+                // Format: data/XX/YY/[hash] where XX and YY are first two bytes of hash
+                var hashString = eKey.ToString().ToLowerInvariant();
+                if (hashString.Length >= 4)
+                {
+                    var dataDir = Path.Combine(StoragePath, "data", hashString.Substring(0, 2), hashString.Substring(2, 2));
+                    if (!Directory.Exists(dataDir))
+                    {
+                        Directory.CreateDirectory(dataDir);
+                    }
+
+                    var filePath = Path.Combine(dataDir, hashString);
+                    await File.WriteAllBytesAsync(filePath, data).ConfigureAwait(false);
+                    _logger.LogDebug("Cached file with EKey {EKey} to {Path}", eKey, filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Caching is optional, don't fail if it doesn't work
+                _logger.LogWarning(ex, "Failed to cache file with EKey {EKey}", eKey);
+            }
+        }
+
+        private async Task DownloadVfsManifestFilesAsync(BuildConfig buildConfig)
+        {
+            // Download VFS manifest files to ensure they are available when parsing subdirectories
+            var vfsManifests = buildConfig.GetAllVfsManifests();
+            if (vfsManifests.Count == 0)
+            {
+                _logger.LogDebug("No VFS manifest files found in build config");
+                return;
+            }
+
+            _logger.LogInformation("Downloading {Count} VFS manifest files", vfsManifests.Count);
+
+            foreach (var manifest in vfsManifests)
+            {
+                try
+                {
+                    // Check if the manifest has an EKey
+                    if (!manifest.Value.HasEKey)
+                    {
+                        _logger.LogWarning("VFS manifest {Index} has no EKey, skipping", manifest.Key);
+                        continue;
+                    }
+
+                    var eKey = manifest.Value.EKey;
+                    var eKeyString = eKey.ToString().ToLowerInvariant();
+
+                    // Check if already downloaded
+                    var vfsPath = Path.Combine(
+                        Context.DataPath ?? Path.Combine(StoragePath, "data"),
+                        eKeyString.Substring(0, 2),
+                        eKeyString.Substring(2, 2),
+                        eKeyString);
+
+                    if (File.Exists(vfsPath))
+                    {
+                        _logger.LogDebug("VFS manifest {Index} already cached at {Path}", manifest.Key, vfsPath);
+                        continue;
+                    }
+
+                    // Download from CDN
+                    if (_cdnClient is null)
+                    {
+                        _logger.LogWarning("CDN client not initialized, cannot download VFS manifest {Index}", manifest.Key);
+                        continue;
+                    }
+
+                    _logger.LogInformation("Downloading VFS manifest {Index} with EKey {EKey}", manifest.Key, eKey);
+                    var vfsData = await _cdnClient.DownloadDataAsync(eKey).ConfigureAwait(false);
+
+                    // Ensure directory exists
+                    var directory = Path.GetDirectoryName(vfsPath);
+                    if (!string.IsNullOrEmpty(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    // Cache the file
+                    await File.WriteAllBytesAsync(vfsPath, vfsData).ConfigureAwait(false);
+                    _logger.LogInformation("Downloaded and cached VFS manifest {Index} ({Size} bytes)", manifest.Key, vfsData.Length);
+
+                    // Register in the index manager for lookup
+                    if (Context.IndexManager is not null)
+                    {
+                        // Register as a loose file so it can be found
+                        var entry = Context.IndexManager.RegisterUnknownEKey(eKey);
+                        entry.DataFileIndex = 0xFF; // Mark as loose file
+                        _logger.LogDebug("Registered VFS manifest {Index} in index manager", manifest.Key);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to download VFS manifest {Index}", manifest.Key);
+                    // Continue with other manifests even if one fails
+                }
+            }
         }
 
         private static string ValidateAndNormalizePath(string path)

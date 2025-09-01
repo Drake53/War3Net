@@ -78,6 +78,11 @@ namespace War3Net.IO.Casc
         public const uint InvalidId = 0xFFFFFFFF;
 
         /// <summary>
+        /// Invalid 32-bit offset value.
+        /// </summary>
+        public const uint InvalidOffset32 = 0xFFFFFFFF;
+
+        /// <summary>
         /// Invalid 64-bit offset value.
         /// </summary>
         public const ulong InvalidOffset64 = 0xFFFFFFFFFFFFFFFF;
@@ -101,6 +106,11 @@ namespace War3Net.IO.Casc
         /// Separator character for path-product delimiter.
         /// </summary>
         public const char ParamSeparator = '*';
+
+        /// <summary>
+        /// Separator character for vfs root directories.
+        /// </summary>
+        public const char VfsSeparator = ':';
 
         /// <summary>
         /// Magic number for ENCODING file.

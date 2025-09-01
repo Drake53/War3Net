@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Structures;
 using War3Net.IO.Casc.Utilities;
@@ -71,6 +73,7 @@ namespace War3Net.IO.Casc.Root
         /// <summary>
         /// Gets a value indicating whether this entry has a valid file name.
         /// </summary>
+        [MemberNotNullWhen(true, nameof(FileName))]
         public bool HasFileName => !string.IsNullOrEmpty(FileName);
 
         /// <summary>

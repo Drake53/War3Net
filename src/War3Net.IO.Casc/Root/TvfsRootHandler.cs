@@ -6,13 +6,19 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+using War3Net.IO.Casc.Storage;
 using War3Net.IO.Casc.Structures;
+using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Root
 {

@@ -164,7 +164,7 @@ namespace War3Net.IO.Casc.Root
         /// Adds an entry to the root handler.
         /// </summary>
         /// <param name="entry">The entry to add.</param>
-        protected void AddEntry(RootEntry entry)
+        protected virtual void AddEntry(RootEntry entry)
         {
             if (entry.HasFileName)
             {
