@@ -6,15 +6,20 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.IO.Casc.Cdn;
 using War3Net.IO.Casc.Enums;
 using War3Net.IO.Casc.Progress;
 using War3Net.IO.Casc.Storage;
+using War3Net.IO.Casc.Structures;
+using War3Net.IO.Casc.Utilities;
 
 namespace War3Net.IO.Casc.Tests
 {
@@ -184,48 +189,28 @@ namespace War3Net.IO.Casc.Tests
             }
         }
 
-        /// <summary>
-        /// Tests reading a file from online storage.
-        /// </summary>
         [TestMethod]
         [TestCategory("Online")]
         [TestCategory("LongRunning")]
-        public async Task TestReadFileFromOnlineStorage()
+        public async Task TestReadTriggerDataFromOnlineStorage()
         {
-            try
-            {
-                var tempPath = Path.Combine(Path.GetTempPath(), "CascTest");
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().AddDebug().SetMinimumLevel(LogLevel.Warning));
 
-                // Clean up previous test data
-                Directory.Delete(tempPath, true);
+            var tempPath = Path.Combine(Path.GetTempPath(), "CascTest");
 
-                using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath);
+            // Clean up previous test data
+            Directory.Delete(tempPath, true);
 
-                Assert.IsNotNull(storage, "Storage should be opened successfully");
+            using var storage = await OnlineCascStorage.OpenWar3Async("eu", tempPath, loggerFactory: loggerFactory);
 
-                // Try to open a known file from the storage
-                // Note: War3 uses a binary TVFS root format which we don't fully support yet
-                // File name resolution may not work until we implement TVFS parsing
-                const string testFileName = "war3.w3mod/ui/triggerdata.txt";
+            const string TriggerDataFileName = "war3.w3mod:ui/triggerdata.txt";
 
-                using var fileStream = storage.OpenFileByName(testFileName);
-                Assert.IsNotNull(fileStream, "File stream should not be null");
+            var info = storage.GetFileInfo(TriggerDataFileName);
 
-                // Read some data from the file to verify it opened correctly
-                var buffer = new byte[1024];
-                var bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length);
+            using var readFileStream = await storage.OpenFileByNameAsync(TriggerDataFileName);
+            using var writeFileStream = File.Create("../../../../../src/War3Net.Build.Core/Resources/TriggerData.txt");
 
-                Assert.IsTrue(bytesRead > 0, "Should be able to read data from the file");
-
-                // Optionally verify the content starts with expected text
-                // TriggerData files typically start with comments or section headers
-                var content = System.Text.Encoding.UTF8.GetString(buffer, 0, Math.Min(bytesRead, 100));
-                Console.WriteLine($"First 100 bytes of {testFileName}: {content}");
-            }
-            catch (System.Net.Http.HttpRequestException)
-            {
-                Assert.Inconclusive("Test requires internet connection to Blizzard CDN");
-            }
+            await readFileStream.CopyToAsync(writeFileStream);
         }
 
         private class TestProgressReporter : IProgressReporter

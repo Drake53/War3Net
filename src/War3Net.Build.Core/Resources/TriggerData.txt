@@ -3230,7 +3230,7 @@ HeroSkillLocustSwarm=1,heroskillcode,'AUls',WESTRING_HEROSKILL_LOCUSTSWARM
 HeroSkillDeathCoil=0,heroskillcode,'AUdc',WESTRING_HEROSKILL_DEATHCOIL
 HeroSkillDeathPact=0,heroskillcode,'AUdp',WESTRING_HEROSKILL_DEATHPACT
 HeroSkillUnholyAura=0,heroskillcode,'AUau',WESTRING_HEROSKILL_UNHOLYAURA
-HeroSkillAnimateDead=0,heroskillcode,'AUan',WESTRING_HEROSKILL_ANIMATEDEAD
+HeroSkillAnimateDead=0,heroskillcode,'AUa2',WESTRING_HEROSKILL_ANIMATEDEAD
 // Undead Dread Lord
 HeroSkillCarrionSwarm=0,heroskillcode,'AUcs',WESTRING_HEROSKILL_CARRIONSWARM
 HeroSkillSleep=0,heroskillcode,'AUsl',WESTRING_HEROSKILL_SLEEP
@@ -3925,7 +3925,7 @@ _OperatorCompareBoolean_AIDefaults=true,OperatorEqualENE,true
 OperatorCompareAbilityId=1,abilcode,EqualNotEqualOperator,abilcode
 _OperatorCompareAbilityId_DisplayName="Ability Comparison"
 _OperatorCompareAbilityId_Parameters=~Value," ",~Operator," ",~Value
-_OperatorCompareAbilityId_Defaults=GetSpellAbilityId,OperatorEqualENE,AUan
+_OperatorCompareAbilityId_Defaults=GetSpellAbilityId,OperatorEqualENE,AUa2
 _OperatorCompareAbilityId_Category=TC_CONDITION
 
 OperatorCompareBuffId=1,buffcode,EqualNotEqualOperator,buffcode
