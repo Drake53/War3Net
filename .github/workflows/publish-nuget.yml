@@ -42,7 +42,7 @@ jobs:
     - name: Set release date
       run: |
         echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
-        echo "RELEASE_TAG=v$(date +%Y.%m.%d)" >> $GITHUB_ENV
+        echo "RELEASE_TAG=v$(date +%Y.%-m.%-d)" >> $GITHUB_ENV
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2.3.2
