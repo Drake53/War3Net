@@ -30,11 +30,20 @@ jobs:
         chmod +x .github/scripts/build-and-pack-nuget.sh
         .github/scripts/build-and-pack-nuget.sh
 
-    - name: Push all packages to NuGet
-      run: |
-        dotnet nuget push "./artifacts/*/*.nupkg" \
-          --api-key $NUGET_API_KEY \
-          --source https://api.nuget.org/v3/index.json \
-          --skip-duplicate
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    # - name: Push all packages to NuGet
+    #   run: |
+    #     dotnet nuget push "./artifacts/*/*.nupkg" \
+    #       --api-key $NUGET_API_KEY \
+    #       --source https://api.nuget.org/v3/index.json \
+    #       --skip-duplicate
+    #   env:
+    #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2.3.2
+      with:
+        name: War3Net Release $(date +%Y-%m-%d)
+        tag_name: release-$(date +%Y%m%d-%H%M%S)
+        files: |
+          ./artifacts/*/*.nupkg
+        draft: true
