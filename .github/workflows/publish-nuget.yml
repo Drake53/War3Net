@@ -33,17 +33,22 @@ jobs:
     # - name: Push all packages to NuGet
     #   run: |
     #     dotnet nuget push "./artifacts/*/*.nupkg" \
-    #       --api-key $NUGET_API_KEY \
-    #       --source https://api.nuget.org/v3/index.json \
+    #       --api-key "$NUGET_API_KEY" \
+    #       --source "https://api.nuget.org/v3/index.json" \
     #       --skip-duplicate
     #   env:
     #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
+    - name: Set release date
+      run: |
+        echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        echo "RELEASE_TAG=v$(date +%Y.%m.%d)" >> $GITHUB_ENV
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2.3.2
       with:
-        name: War3Net Release $(date +%Y-%m-%d)
-        tag_name: release-$(date +%Y%m%d-%H%M%S)
+        name: War3Net Release ${{ env.RELEASE_DATE }}
+        tag_name: ${{ env.RELEASE_TAG }}
         files: |
           ./artifacts/*/*.nupkg
         draft: true
