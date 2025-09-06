@@ -33,7 +33,11 @@ jobs:
     - name: Push packages to NuGet
       run: |
         chmod +x .github/scripts/push-nuget-packages.sh
-        .github/scripts/push-nuget-packages.sh
+        if [[ "${{ github.ref_name }}" != "master" ]]; then
+          .github/scripts/push-nuget-packages.sh --mock
+        else
+          .github/scripts/push-nuget-packages.sh
+        fi
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
@@ -49,4 +53,4 @@ jobs:
         tag_name: ${{ env.RELEASE_TAG }}
         files: |
           ./artifacts/Packages.zip
-        draft: true
+        draft: ${{ github.ref_name != 'master' }}
