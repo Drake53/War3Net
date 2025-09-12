@@ -14,9 +14,9 @@ namespace War3Net.IO.Slk
 {
     public sealed class SylkTable : IEnumerable<object[]>
     {
-        private readonly int _width;
-        private readonly int _height;
-        private readonly object[,] _values;
+        private int _width;
+        private int _height;
+        private object[,] _values;
 
         private int _rows;
         private int _columns;
@@ -26,6 +26,28 @@ namespace War3Net.IO.Slk
             _width = width;
             _height = height;
             _values = new object[_width, _height];
+        }
+
+        public void Resize(int width, int height)
+        {
+            var oldWidth = _width;
+            var oldHeight = _height;
+            var oldValues = _values;
+
+            _width = width;
+            _height = height;
+            _values = new object[_width, _height];
+
+            for (int column = 0; column < Math.Min(_width, oldWidth); column++)
+            {
+                for (int row = 0; row < Math.Min(height, oldHeight); row++)
+                {
+                    _values[column, row] = oldValues[column, row];
+                }
+            }
+
+            _rows = Math.Min(_rows, _height-1);
+            _columns = Math.Min(_columns, _width-1);
         }
 
         /// <summary>
