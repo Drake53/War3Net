@@ -168,5 +168,8 @@ namespace War3Net.Build.Info
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         v6071 = 6071,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v6113 = 6113,
     }
 }
