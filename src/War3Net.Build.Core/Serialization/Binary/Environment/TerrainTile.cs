@@ -49,7 +49,7 @@ namespace War3Net.Build.Environment
             if (formatVersion >= MapEnvironmentFormatVersion.v12)
             {
                 writer.Write((byte)((_textureData & 0x3F) | (((byte)_tileFlags & 0x03) << 6)));
-                writer.Write((byte)((byte)_tileFlags & 0x0C) >> 2);
+                writer.Write((byte)(((byte)_tileFlags & 0x0C) >> 2));
             }
             else
             {
