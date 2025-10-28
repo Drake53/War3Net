@@ -5,6 +5,10 @@
     <TargetFrameworks>net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
   </ItemGroup>
