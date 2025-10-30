@@ -88,18 +88,24 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     if [ -z "$project" ]; then continue; fi
     PROJECT_NAME=$(basename $(dirname "$project"))
 
-    # Get the version from the project file by evaluating MSBuild properties
+    # Get the version and PackageId from the project file by evaluating MSBuild properties
     VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release 2>/dev/null | tail -1)
+    PACKAGE_ID=$(dotnet msbuild "$project" -getProperty:PackageId -p:Configuration=Release 2>/dev/null | tail -1)
+
+    # If PackageId is not set, fall back to project name
+    if [ -z "$PACKAGE_ID" ]; then
+      PACKAGE_ID="$PROJECT_NAME"
+    fi
 
     if [ -z "$VERSION" ]; then
       echo "❌ ERROR: Could not extract version from $PROJECT_NAME, skipping"
       echo "  Make sure the project has a <Version> property defined"
       SHOULD_BUILD=false
     else
-      echo "Checking if $PROJECT_NAME $VERSION exists on NuGet.org..."
+      echo "Checking if $PACKAGE_ID $VERSION exists on NuGet.org..."
 
       # Query NuGet API to check if this version exists
-      API_URL="https://api.nuget.org/v3/registration5-semver1/${PROJECT_NAME,,}/index.json"
+      API_URL="https://api.nuget.org/v3/registration5-semver1/${PACKAGE_ID,,}/index.json"
 
       if response=$(curl -s -f "$API_URL" 2>/dev/null); then
         # Check if the specific version exists in the response
