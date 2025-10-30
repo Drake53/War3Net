@@ -10,6 +10,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 permissions:
+  contents: write
   id-token: write
 
 jobs:
@@ -17,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: write
       id-token: write
     
     steps:
@@ -36,6 +38,20 @@ jobs:
         chmod +x .github/scripts/build-and-pack-nuget.sh
         .github/scripts/build-and-pack-nuget.sh
 
+    - name: Set release date
+      run: |
+        echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        echo "RELEASE_TAG=v$(date +%Y.%-m.%-d)" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2.3.2
+      with:
+        name: War3Net Release ${{ env.RELEASE_DATE }}
+        tag_name: ${{ env.RELEASE_TAG }}
+        files: |
+          ./artifacts/Packages.zip
+        draft: ${{ github.ref_name != 'master' }}
+
     - name: NuGet login
       uses: NuGet/login@v1
       id: login
@@ -52,17 +68,3 @@ jobs:
         fi
       env:
         NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-
-    - name: Set release date
-      run: |
-        echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
-        echo "RELEASE_TAG=v$(date +%Y.%-m.%-d)" >> $GITHUB_ENV
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2.3.2
-      with:
-        name: War3Net Release ${{ env.RELEASE_DATE }}
-        tag_name: ${{ env.RELEASE_TAG }}
-        files: |
-          ./artifacts/Packages.zip
-        draft: ${{ github.ref_name != 'master' }}
