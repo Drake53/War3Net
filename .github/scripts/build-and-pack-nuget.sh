@@ -87,17 +87,49 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
   while IFS= read -r project; do
     if [ -z "$project" ]; then continue; fi
     PROJECT_NAME=$(basename $(dirname "$project"))
-    echo "Building $PROJECT_NAME..."
-    
-    # Restore with local feed for dependencies from previous iterations
-    dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
-    
-    # Build the project
-    dotnet build "$project" --configuration Release --no-restore --verbosity minimal
-    
-    # Pack directly to artifacts with project name folder structure for proper NuGet feed
-    dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
-    
+
+    # Get the version from the project file by evaluating MSBuild properties
+    VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release 2>/dev/null | tail -1)
+
+    if [ -z "$VERSION" ]; then
+      echo "❌ ERROR: Could not extract version from $PROJECT_NAME, skipping"
+      echo "  Make sure the project has a <Version> property defined"
+      SHOULD_BUILD=false
+    else
+      echo "Checking if $PROJECT_NAME $VERSION exists on NuGet.org..."
+
+      # Query NuGet API to check if this version exists
+      API_URL="https://api.nuget.org/v3/registration5-semver1/${PROJECT_NAME,,}/index.json"
+
+      if response=$(curl -s -f "$API_URL" 2>/dev/null); then
+        # Check if the specific version exists in the response
+        if echo "$response" | grep -q "\"$VERSION\""; then
+          echo "  ⚪ Already exists on NuGet.org, skipping build"
+          SHOULD_BUILD=false
+        else
+          echo "  🟢 New version, will build"
+          SHOULD_BUILD=true
+        fi
+      else
+        # Package ID doesn't exist at all, so this version is definitely new
+        echo "  🟢 New package, will build"
+        SHOULD_BUILD=true
+      fi
+    fi
+
+    if [ "$SHOULD_BUILD" = true ]; then
+      echo "Building $PROJECT_NAME..."
+
+      # Restore with local feed for dependencies from previous iterations
+      dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
+
+      # Build the project
+      dotnet build "$project" --configuration Release --no-restore --verbosity minimal
+
+      # Pack directly to artifacts with project name folder structure for proper NuGet feed
+      dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
+    fi
+
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
   done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
   
@@ -112,5 +144,17 @@ if [ $ITERATION -eq $MAX_ITERATIONS ]; then
   exit 1
 fi
 
+PACKAGE_COUNT=$(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)
+
+if [ $PACKAGE_COUNT -eq 0 ]; then
+    echo ""
+    echo "No new packages to release (all packages are up-to-date)"
+    exit 1
+fi
+
 echo ""
-echo "Successfully created $(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l) packages"
+echo "=== Build Summary ==="
+echo "Successfully created $PACKAGE_COUNT new package(s)"
+echo "Creating release archive with new packages..."
+find ./artifacts -name "*.nupkg" | zip -j "artifacts/Packages.zip" -@
+echo "Created: artifacts/Packages.zip"
