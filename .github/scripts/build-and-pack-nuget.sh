@@ -4,6 +4,9 @@ set -e
 # Script to build and pack NuGet packages in dependency order
 # Usage: ./build-and-pack-nuget.sh
 
+# Create artifacts directory for local NuGet feed
+mkdir -p ./artifacts
+
 # Get all packable projects from the solution filter
 # Extract project paths from the solution filter and convert Windows paths to Unix paths
 PROJECTS=$(jq -r '.solution.projects[]' War3NetPublish.slnf | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
