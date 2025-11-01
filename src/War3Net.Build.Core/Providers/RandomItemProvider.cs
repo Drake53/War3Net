@@ -23,7 +23,9 @@ namespace War3Net.Build.Providers
         public static bool IsRandomItem(int code, out ItemClass itemClass, out int level)
         {
             var codeString = code.ToRawcode();
-            if (codeString[0] == 'Y' && codeString[2] == 'I' && (codeString[1] == 'Y' || Enum.IsDefined(typeof(ItemClass), codeString[1] - 'i')))
+            if (codeString[0] == 'Y' &&
+                codeString[2] == 'I' &&
+                (codeString[1] == 'Y' || Enum.IsDefined(typeof(ItemClass), (ItemClass)(codeString[1] - 'i'))))
             {
                 itemClass = codeString[1] == 'Y' ? ItemClass.Any : (ItemClass)(codeString[1] - 'i');
                 level = codeString[3] - '0';

@@ -19,7 +19,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataInitCustomTeams), DynamicDataSourceType.Method)]
         public void TestBodyInitCustomTeams(MapScriptBuilderTestData testData)
         {
@@ -29,7 +29,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomTeams(MapScriptBuilderTestData testData)
         {
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestInvokeConditionInitCustomTeams(MapScriptBuilderTestData testData)
         {

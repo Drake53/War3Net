@@ -24,7 +24,7 @@ namespace War3Net.IO.Mpq.Tests
         private const byte FixedInputByte = 100;
         private const uint FileEncryptionOffset = 10000;
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressMpqStream(int fileSize, bool randomizedInput)
         {
@@ -38,7 +38,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestEncryptMpqStream(int fileSize, bool randomizedInput)
         {
@@ -55,7 +55,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressAndEncryptMpqStream(int fileSize, bool randomizedInput)
         {
@@ -75,7 +75,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestEncryptMpqStreamWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
         {
@@ -92,7 +92,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressAndEncryptMpqStreamWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
         {
@@ -112,7 +112,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
@@ -127,7 +127,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestEncryptMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
@@ -144,7 +144,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressAndEncryptMpqStreamSingleUnit(int fileSize, bool randomizedInput)
         {
@@ -164,7 +164,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestEncryptMpqStreamSingleUnitWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
         {
@@ -181,7 +181,7 @@ namespace War3Net.IO.Mpq.Tests
             StreamAssert.AreEqual(inputStream, mpqStream, true, false);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestCompressAndEncryptMpqStreamSingleUnitWithOffsetAdjustedKey(int fileSize, bool randomizedInput)
         {

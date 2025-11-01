@@ -17,14 +17,14 @@ namespace War3Net.IO.Mpq.Tests
     [TestClass]
     public class MpqFileTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetFileProviderFileExistsTestCases), DynamicDataSourceType.Method)]
         public void TestFileProviderFileExists(string path, bool expected)
         {
             Assert.AreEqual(expected, MpqFile.Exists(path));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetFileProviderFileExistsTestCases), DynamicDataSourceType.Method)]
         public void TestFileProviderGetFile(string path, bool expected)
         {

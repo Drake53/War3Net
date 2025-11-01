@@ -27,7 +27,7 @@ namespace War3Net.Build.Info
             if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 MapVersion = reader.ReadInt32();
-                EditorVersion = reader.ReadInt32<EditorVersion>();
+                EditorVersion = (EditorVersion)reader.ReadInt32();
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {

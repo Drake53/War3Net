@@ -14,22 +14,22 @@ namespace War3Net.Build.Core.Tests.Object
     [TestClass]
     public class BuffObjectDataTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetBuffObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.BuffObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<BuffObjectData>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetBuffObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.BuffObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<BuffObjectData>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetBuffObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.BuffObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<BuffObjectData>.RunJsonRWTest(filePath, true);

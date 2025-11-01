@@ -18,7 +18,7 @@ namespace War3Net.IO.Mpq.Tests
     [TestClass]
     public class MpqFilesTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestGetMpqFiles(string mpqFilePath)
         {

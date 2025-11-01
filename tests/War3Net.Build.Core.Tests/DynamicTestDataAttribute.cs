@@ -1,0 +1,52 @@
+// ------------------------------------------------------------------------------
+// <copyright file="DynamicTestDataAttribute.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace War3Net.Build.Core.Tests
+{
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class DynamicTestDataAttribute : Attribute, ITestDataSource
+    {
+        private readonly TestDataFileType _testDataFileType;
+
+        public DynamicTestDataAttribute(TestDataFileType testDataFileType)
+        {
+            _testDataFileType = testDataFileType;
+        }
+
+        public TestDataFileType TestDataFileType => _testDataFileType;
+
+        public virtual IEnumerable<object[]> GetData(MethodInfo methodInfo)
+        {
+            return TestDataFileProvider.GetFilePathsForTestDataType(_testDataFileType);
+        }
+
+        public string GetDisplayName(MethodInfo methodInfo, object[] data)
+        {
+            if (data.Length == 1 && data[0] is string filePath)
+            {
+                return GetFileDisplayName(filePath);
+            }
+
+            return methodInfo.Name;
+        }
+
+        protected string GetFileDisplayName(string filePath)
+        {
+            var fileName = Path.GetFileName(filePath);
+            var directoryName = Path.GetFileName(Path.GetDirectoryName(filePath));
+
+            return Path.Combine(directoryName, fileName);
+        }
+    }
+}

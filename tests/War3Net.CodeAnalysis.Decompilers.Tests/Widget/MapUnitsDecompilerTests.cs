@@ -5,15 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Extensions;
-using War3Net.Build.Info;
 using War3Net.Common.Extensions;
 using War3Net.TestTools.UnitTesting;
 
@@ -22,10 +19,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
     [TestClass]
     public class MapUnitsDecompilerTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapUnits(Map map)
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Units;
+
+        [FlakyTestMethod]
+        [DynamicTestData(FilesToOpen)]
+        public void TestDecompileMapUnits(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapUnits(map.Units.FormatVersion, map.Units.SubVersion, map.Units.UseNewFormat, out var decompiledMapUnits), "Failed to decompile map units.");
 
             var expectedMapUnits = map.Units.Units
@@ -87,22 +88,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
                     {
                         Assert.AreEqual(expectedUnit.SkinId, actualUnit.SkinId, $"\r\nExpected: '{expectedUnit.SkinId.ToRawcode()}'. Actual: '{actualUnit.SkinId.ToRawcode()}'.");
                     }
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Units) &&
-                    map.Info is not null &&
-                    map.Units is not null &&
-                    map.Units.Units.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return new[] { map };
                 }
             }
         }

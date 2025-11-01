@@ -14,22 +14,22 @@ namespace War3Net.Build.Core.Tests.Configuration
     [TestClass]
     public class GameConfigurationTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetGameConfigurationFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.GameConfiguration)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<GameConfiguration>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetGameConfigurationFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.GameConfiguration)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<GameConfiguration>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetGameConfigurationFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.GameConfiguration)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<GameConfiguration>.RunJsonRWTest(filePath, true);

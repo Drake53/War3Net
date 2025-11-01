@@ -14,22 +14,22 @@ namespace War3Net.Build.Core.Tests.Object
     [TestClass]
     public class DestructableObjectDataTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDestructableObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.DestructableObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<DestructableObjectData>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDestructableObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.DestructableObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<DestructableObjectData>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetDestructableObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.DestructableObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<DestructableObjectData>.RunJsonRWTest(filePath, true);

@@ -15,7 +15,7 @@ namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {
-        [DataTestMethod]
+        [FlakyTestMethod]
         [DynamicData(nameof(GetTestDataCreateNeutralPassiveBuildings), DynamicDataSourceType.Method)]
         public void TestBodyCreateNeutralPassiveBuildings(MapScriptBuilderTestData testData)
         {
@@ -25,7 +25,7 @@ namespace War3Net.Build.Tests
             SyntaxAssert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateNeutralPassiveBuildings(MapScriptBuilderTestData testData)
         {

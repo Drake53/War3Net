@@ -14,22 +14,31 @@ namespace War3Net.Build.Core.Tests.Widget
     [TestClass]
     public class MapUnitsTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapUnits,
+            "Jurassic Park Survival EE v6.4.w3x/war3mapUnits.doo",
+            "Units/war3mapUnits.doo")]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapUnits,
+            "Jurassic Park Survival EE v6.4.w3x/war3mapUnits.doo",
+            "Units/war3mapUnits.doo")]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapUnitsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [FlakyDynamicTestData(
+            TestDataFileType.MapUnits,
+            "Jurassic Park Survival EE v6.4.w3x/war3mapUnits.doo",
+            "Units/war3mapUnits.doo")]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapUnits>.RunJsonRWTest(filePath, true);

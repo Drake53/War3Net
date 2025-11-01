@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
     [TestClass]
     public class ExpressionParserTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestExpressions), DynamicDataSourceType.Method)]
         public void TestExpressionParser(string expression, JassExpressionSyntax? expected = null)
         {

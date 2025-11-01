@@ -47,10 +47,7 @@ namespace War3Net.Build.Tests
 
         private static IEnumerable<object[]> GetMapPaths()
         {
-            foreach (var data in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                yield return data;
-            }
+            return TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps");
         }
     }
 }

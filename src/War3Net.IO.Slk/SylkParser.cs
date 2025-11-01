@@ -15,10 +15,12 @@ namespace War3Net.IO.Slk
     public sealed class SylkParser
     {
         private SylkTable _table;
+        private int? _lastX;
         private int? _lastY;
 
         public SylkParser()
         {
+            _lastX = null;
             _lastY = null;
         }
 
@@ -33,19 +35,27 @@ namespace War3Net.IO.Slk
                 var fields = line.Split(';');
                 var recordType = fields[0];
 
-                string GetField(string fieldName, bool mandatory)
+                string GetField(string fieldName)
                 {
                     foreach (var field in fields)
                     {
-                        if (field.StartsWith(fieldName))
+                        if (field.StartsWith(fieldName, StringComparison.Ordinal))
                         {
                             return field.Substring(fieldName.Length);
                         }
                     }
 
-                    if (mandatory)
+                    throw new InvalidDataException($"Record does not contain mandatory field of type '{fieldName}'.");
+                }
+
+                string? GetOptionalField(string fieldName)
+                {
+                    foreach (var field in fields)
                     {
-                        throw new InvalidDataException($"Record does not contain mandatory field of type '{fieldName}'.");
+                        if (field.StartsWith(fieldName, StringComparison.Ordinal))
+                        {
+                            return field.Substring(fieldName.Length);
+                        }
                     }
 
                     return null;
@@ -59,7 +69,7 @@ namespace War3Net.IO.Slk
                         throw new InvalidDataException("SYLK file must start with 'ID'.");
                     }
 
-                    GetField("P", true);
+                    GetField("P");
                 }
                 else
                 {
@@ -74,7 +84,10 @@ namespace War3Net.IO.Slk
                                 throw new InvalidDataException("Only one record of type 'B' may be present.");
                             }
 
-                            _table = new SylkTable(int.Parse(GetField("X", true)), int.Parse(GetField("Y", true)));
+                            _table = new SylkTable(
+                                int.Parse(GetField("X"), NumberStyles.Integer, CultureInfo.InvariantCulture),
+                                int.Parse(GetField("Y"), NumberStyles.Integer, CultureInfo.InvariantCulture));
+
                             break;
 
                         case "C":
@@ -83,7 +96,11 @@ namespace War3Net.IO.Slk
                                 throw new InvalidDataException("Unable to parse record of type 'C' before encountering a record of type 'B'.");
                             }
 
-                            SetCellContent(GetField("X", true), GetField("Y", false), GetField("K", false));
+                            SetCellContent(
+                                GetOptionalField("X"),
+                                GetOptionalField("Y"),
+                                GetOptionalField("K") ?? string.Empty);
+
                             break;
 
                         case "E":
@@ -98,15 +115,15 @@ namespace War3Net.IO.Slk
 
         /// <param name="x">The cell's 1-indexed X position.</param>
         /// <param name="y">The cell's 1-indexed Y position.</param>
-        private void SetCellContent(string x, string? y, string value)
+        private void SetCellContent(string? x, string? y, string value)
         {
-            if (y == null && _lastY == null)
-            {
-                throw new InvalidDataException("Row for cell is not defined.");
-            }
+            var xi = x is not null
+                ? (int.Parse(x, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1)
+                : _lastX ?? throw new InvalidDataException("Column for cell is not defined.");
 
-            var xi = int.Parse(x, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1;
-            var yi = y == null ? _lastY.Value : (int.Parse(y, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1);
+            var yi = y is not null
+                ? (int.Parse(y, NumberStyles.Integer, CultureInfo.InvariantCulture) - 1)
+                : _lastY ?? throw new InvalidDataException("Row for cell is not defined.");
 
             if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
             {
@@ -137,6 +154,7 @@ namespace War3Net.IO.Slk
                 throw new NotSupportedException($"Unable to parse value '{value}'. Can only parse strings, integers, floats, and booleans.");
             }
 
+            _lastX = xi;
             _lastY = yi;
         }
     }

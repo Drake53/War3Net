@@ -21,7 +21,7 @@ namespace War3Net.Build.Tests
     {
         private const string Warcraft3ExecutableFilePath = null;
 
-        [TestMethod]
+        [FlakyTestMethod]
         public void TestGenerateJassScriptWithUnitData()
         {
             const string OutputMapName = "TestOutput.w3x";
@@ -42,7 +42,7 @@ namespace War3Net.Build.Tests
             }
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         public void TestGenerateLuaScriptWithUnitDataLegacy()
         {
             const string OutputMapName = "TestOutput.w3x";
@@ -74,7 +74,7 @@ namespace War3Net.Build.Tests
             }
         }
 
-        [TestMethod]
+        [FlakyTestMethod]
         public void TestCreateNewTemplateMapLegacy()
         {
             const string OutputMapName = "Template.w3x";

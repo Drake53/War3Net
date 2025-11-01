@@ -21,7 +21,8 @@ namespace War3Net.Build.Environment
 
         private ushort _heightData;
         private ushort _waterDataAndEdgeFlag;
-        private byte _textureDataAndFlags;
+        private byte _textureData;
+        private TileFlags _tileFlags;
         private byte _variationData;
         private byte _cliffData;
 
@@ -52,32 +53,38 @@ namespace War3Net.Build.Environment
 
         public int Texture
         {
-            get => _textureDataAndFlags & 0x0F;
-            set => _textureDataAndFlags = (value >= 0 && value <= 0x0F) ? (byte)(value | (_textureDataAndFlags & 0xF0)) : throw new ArgumentOutOfRangeException(nameof(value));
+            get => _textureData;
+            set => _textureData = (value >= 0 && value < 64) ? (byte)value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        public TileFlags Flags
+        {
+            get => _tileFlags;
+            set => _tileFlags = value;
         }
 
         public bool IsRamp
         {
-            get => (_textureDataAndFlags & 0x10) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x10 : _textureDataAndFlags & 0xEF);
+            get => _tileFlags.HasFlag(TileFlags.Ramp);
+            set => _tileFlags = value ? _tileFlags | TileFlags.Ramp : _tileFlags & ~TileFlags.Ramp;
         }
 
         public bool IsBlighted
         {
-            get => (_textureDataAndFlags & 0x20) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x20 : _textureDataAndFlags & 0xDF);
+            get => _tileFlags.HasFlag(TileFlags.Blighted);
+            set => _tileFlags = value ? _tileFlags | TileFlags.Blighted : _tileFlags & ~TileFlags.Blighted;
         }
 
         public bool IsWater
         {
-            get => (_textureDataAndFlags & 0x40) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x40 : _textureDataAndFlags & 0xBF);
+            get => _tileFlags.HasFlag(TileFlags.Water);
+            set => _tileFlags = value ? _tileFlags | TileFlags.Water : _tileFlags & ~TileFlags.Water;
         }
 
         public bool IsBoundary
         {
-            get => (_textureDataAndFlags & 0x80) != 0;
-            set => _textureDataAndFlags = (byte)(value ? _textureDataAndFlags | 0x80 : _textureDataAndFlags & 0x7F);
+            get => _tileFlags.HasFlag(TileFlags.Boundary);
+            set => _tileFlags = value ? _tileFlags | TileFlags.Boundary : _tileFlags & ~TileFlags.Boundary;
         }
 
         public int Variation

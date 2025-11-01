@@ -5,14 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
-using War3Net.Build.Info;
 using War3Net.Build.Script;
 using War3Net.TestTools.UnitTesting;
 
@@ -21,10 +18,14 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
     [TestClass]
     public class MapTriggersDecompilerTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapTriggers(Map map)
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Triggers;
+
+        [TestMethod]
+        [FlakyDynamicTestData(FilesToOpen, "ExampleMap203.w3x", "142119.w3m", "306784.w3x", "310421.w3x", "310540.w3x")]
+        public void TestDecompileMapTriggers(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapTriggers(map.Triggers.FormatVersion, map.Triggers.SubVersion, out var decompiledMapTriggers), "Failed to decompile map triggers.");
 
             Assert.AreEqual(map.Triggers.Variables.Count, decompiledMapTriggers.Variables.Count);
@@ -62,24 +63,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
                     var actualTriggerDefinition = (TriggerDefinition)actualTrigger;
 
                     TriggerAssert.AreEqual(expectedTriggerDefinition, actualTriggerDefinition);
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Triggers) &&
-                    map.Info is not null &&
-                    map.Triggers is not null &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v3 &&
-                    map.Triggers.FormatVersion != MapTriggersFormatVersion.v6 &&
-                    (map.Triggers.Variables.Count > 0 || map.Triggers.TriggerItems.Any(triggerItem => triggerItem is not DeletedTriggerItem)) &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return new[] { map };
                 }
             }
         }

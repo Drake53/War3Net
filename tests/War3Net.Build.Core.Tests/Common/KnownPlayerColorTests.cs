@@ -18,7 +18,7 @@ namespace War3Net.Build.Core.Tests.Common
     [TestClass]
     public class KnownPlayerColorTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestKnownPlayerColor(Color color, KnownPlayerColor playerColor)
         {

@@ -41,22 +41,22 @@ namespace War3Net.Build.Core.Tests.Object
             reader.ReadObjectData();
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.ObjectData)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<ObjectData>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.ObjectData)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetObjectDataFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.ObjectData)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<ObjectData>.RunJsonRWTest(filePath, true);

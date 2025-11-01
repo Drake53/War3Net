@@ -14,22 +14,22 @@ namespace War3Net.Build.Core.Tests.Environment
     [TestClass]
     public class MapRegionsTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapRegionsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapRegions)]
         public void TestBinarySerialization(string filePath)
         {
             SerializationTestHelper<MapRegions>.RunBinaryRWTest(filePath);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapRegionsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapRegions)]
         public void TestJsonSerialization(string filePath)
         {
             SerializationTestHelper<MapRegions>.RunJsonRWTest(filePath, false);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(TestDataFileProvider.GetMapRegionsFilePaths), typeof(TestDataFileProvider), DynamicDataSourceType.Method)]
+        [TestMethod]
+        [DynamicTestData(TestDataFileType.MapRegions)]
         public void TestJsonSerializationStringEnums(string filePath)
         {
             SerializationTestHelper<MapRegions>.RunJsonRWTest(filePath, true);

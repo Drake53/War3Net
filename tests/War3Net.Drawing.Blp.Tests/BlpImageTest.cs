@@ -19,7 +19,7 @@ namespace War3Net.Drawing.Blp.Tests
     public class BlpImageTest
     {
 #if WINDOWS
-        [DataTestMethod]
+        [TestMethod]
         [DynamicData(nameof(GetBlpImageData), DynamicDataSourceType.Method)]
         public void TestGetBlpBitmapSource(string inputImagePath, string expectedImagePath, int mipMapLevel)
         {

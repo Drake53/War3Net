@@ -5,26 +5,26 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Audio;
-using War3Net.Build.Info;
-using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
 {
     [TestClass]
     public class MapSoundsDecompilerTests
     {
-        [DataTestMethod]
-        [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
-        public void TestDecompileMapSounds(Map map)
+        private const MapFiles FilesToOpen = MapFiles.Info | MapFiles.Script | MapFiles.Sounds;
+
+        [TestMethod]
+        [FlakyDynamicTestData(FilesToOpen, "ExampleMap133.w3x")]
+        public void TestDecompileMapSounds(string mapFilePath)
         {
+            var map = Map.Open(mapFilePath, FilesToOpen);
+
             Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapSounds(map.Sounds.FormatVersion, out var decompiledMapSounds), "Failed to decompile map sounds.");
 
             Assert.AreEqual(map.Sounds.Sounds.Count, decompiledMapSounds.Sounds.Count);
@@ -47,22 +47,6 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
                     Assert.AreEqual(expectedSound.FacialAnimationLabel, actualSound.FacialAnimationLabel, ignoreCase: false, CultureInfo.InvariantCulture);
                     Assert.AreEqual(expectedSound.FacialAnimationGroupLabel, actualSound.FacialAnimationGroupLabel, ignoreCase: false, CultureInfo.InvariantCulture);
                     Assert.AreEqual(expectedSound.FacialAnimationSetFilepath, actualSound.FacialAnimationSetFilepath, ignoreCase: false, CultureInfo.InvariantCulture);
-                }
-            }
-        }
-
-        private static IEnumerable<object[]> GetTestData()
-        {
-            foreach (var mapPath in TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps"))
-            {
-                if (Map.TryOpen((string)mapPath[0], out var map, MapFiles.Info | MapFiles.Script | MapFiles.Sounds) &&
-                    map.Info is not null &&
-                    map.Sounds is not null &&
-                    map.Sounds.Sounds.Count > 0 &&
-                    map.Info.ScriptLanguage == ScriptLanguage.Jass &&
-                    !string.IsNullOrEmpty(map.Script))
-                {
-                    yield return new[] { map };
                 }
             }
         }

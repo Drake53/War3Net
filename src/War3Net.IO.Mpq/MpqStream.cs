@@ -376,6 +376,17 @@ namespace War3Net.IO.Mpq
             }
         }
 
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing && _isStreamOwner)
+            {
+                _stream.Dispose();
+            }
+        }
+
         /// <summary>
         /// Copy the base stream, so that the contents do not get decompressed nor decrypted.
         /// </summary>
