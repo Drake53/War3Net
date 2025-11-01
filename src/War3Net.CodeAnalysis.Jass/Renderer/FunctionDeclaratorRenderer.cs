@@ -13,11 +13,19 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassFunctionDeclaratorSyntax functionDeclarator)
         {
+            if (functionDeclarator.ConstantToken is not null)
+            {
+                Render(functionDeclarator.ConstantToken);
+                WriteSpace();
+            }
+
+            Render(functionDeclarator.FunctionToken);
+            WriteSpace();
             Render(functionDeclarator.IdentifierName);
-            Write($" {JassKeyword.Takes} ");
+            WriteSpace();
             Render(functionDeclarator.ParameterList);
-            Write($" {JassKeyword.Returns} ");
-            Render(functionDeclarator.ReturnType);
+            WriteSpace();
+            Render(functionDeclarator.ReturnClause);
         }
     }
 }

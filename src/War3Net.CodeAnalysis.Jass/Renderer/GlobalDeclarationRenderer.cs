@@ -15,16 +15,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassGlobalDeclarationSyntax globalDeclaration)
         {
-            Render(globalDeclaration.Declarator);
-        }
-
-        public void Render(IGlobalDeclarationSyntax declaration)
-        {
-            switch (declaration)
+            switch (globalDeclaration)
             {
-                case JassEmptySyntax empty: Render(empty); break;
-                case JassCommentSyntax comment: Render(comment); break;
-                case JassGlobalDeclarationSyntax globalDeclaration: Render(globalDeclaration); break;
+                case JassGlobalConstantDeclarationSyntax globalConstantDeclaration: Render(globalConstantDeclaration); break;
+                case JassGlobalVariableDeclarationSyntax globalVariableDeclaration: Render(globalVariableDeclaration); break;
 
                 default: throw new NotSupportedException();
             }

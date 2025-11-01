@@ -22,26 +22,36 @@ namespace War3Net.CodeAnalysis.Jass
                 throw new ArgumentNullException(nameof(compilationUnit));
             }
 
-            var isRenamed = false;
-
-            var declarationsBuilder = ImmutableArray.CreateBuilder<ITopLevelDeclarationSyntax>();
-            foreach (var declaration in compilationUnit.Declarations)
+            for (var i = 0; i < compilationUnit.Declarations.Length; i++)
             {
-                if (TryRenameDeclaration(declaration, out var renamedDeclaration))
+                if (TryRenameDeclaration(compilationUnit.Declarations[i], out var renamedDeclaration))
                 {
-                    declarationsBuilder.Add(renamedDeclaration);
-                    isRenamed = true;
-                }
-                else
-                {
-                    declarationsBuilder.Add(declaration);
-                }
-            }
+                    var builder = ImmutableArray.CreateBuilder<JassTopLevelDeclarationSyntax>(compilationUnit.Declarations.Length);
+                    for (var j = 0; j < i; j++)
+                    {
+                        builder.Add(compilationUnit.Declarations[j]);
+                    }
 
-            if (isRenamed)
-            {
-                renamedCompilationUnit = new JassCompilationUnitSyntax(declarationsBuilder.ToImmutable());
-                return true;
+                    builder.Add(renamedDeclaration);
+
+                    while (++i < compilationUnit.Declarations.Length)
+                    {
+                        if (TryRenameDeclaration(compilationUnit.Declarations[i], out renamedDeclaration))
+                        {
+                            builder.Add(renamedDeclaration);
+                        }
+                        else
+                        {
+                            builder.Add(compilationUnit.Declarations[i]);
+                        }
+                    }
+
+                    renamedCompilationUnit = new JassCompilationUnitSyntax(
+                        builder.ToImmutable(),
+                        compilationUnit.EndOfFileToken);
+
+                    return true;
+                }
             }
 
             renamedCompilationUnit = null;

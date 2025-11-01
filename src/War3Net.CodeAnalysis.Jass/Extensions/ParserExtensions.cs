@@ -11,20 +11,56 @@ using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
 
+using static Pidgin.Parser;
+
 namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     internal static class ParserExtensions
     {
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax>> Prefix(
-            this Parser<char, UnaryOperatorType> parser)
+        internal static Parser<char, Func<JassExpressionSyntax, JassExpressionSyntax>> Prefix(
+            this Parser<char, JassSyntaxToken> operatorTokenParser)
         {
-            return parser.Select<Func<IExpressionSyntax, IExpressionSyntax>>(@operator => expression => new JassUnaryExpressionSyntax(@operator, expression));
+            return operatorTokenParser.Select<Func<JassExpressionSyntax, JassExpressionSyntax>>(operatorToken => expression => new JassUnaryExpressionSyntax(
+                operatorToken,
+                expression));
         }
 
-        internal static Parser<char, Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>> Infix(
-            this Parser<char, BinaryOperatorType> parser)
+        internal static Parser<char, Func<JassExpressionSyntax, JassExpressionSyntax, JassExpressionSyntax>> Infix(
+            this Parser<char, JassSyntaxToken> operatorTokenParser)
         {
-            return parser.Select<Func<IExpressionSyntax, IExpressionSyntax, IExpressionSyntax>>(@operator => (left, right) => new JassBinaryExpressionSyntax(@operator, left, right));
+            return operatorTokenParser.Select<Func<JassExpressionSyntax, JassExpressionSyntax, JassExpressionSyntax>>(operatorToken => (left, right) => new JassBinaryExpressionSyntax(
+                left,
+                operatorToken,
+                right));
+        }
+
+        internal static Parser<char, JassSyntaxToken> AsToken(
+            this Parser<char, char> tokenSymbolParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser,
+            JassSyntaxKind syntaxKind,
+            string symbol)
+        {
+            return Map(
+                (_, trailingTrivia) => new JassSyntaxToken(
+                    syntaxKind,
+                    symbol,
+                    trailingTrivia),
+                tokenSymbolParser,
+                trailingTriviaParser);
+        }
+
+        internal static Parser<char, JassSyntaxToken> AsToken(
+            this Parser<char, string> tokenTextParser,
+            Parser<char, JassSyntaxTriviaList> trailingTriviaParser,
+            JassSyntaxKind syntaxKind)
+        {
+            return Map(
+                (text, trailingTrivia) => new JassSyntaxToken(
+                    syntaxKind,
+                    text,
+                    trailingTrivia),
+                tokenTextParser,
+                trailingTriviaParser);
         }
     }
 }

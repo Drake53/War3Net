@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement)
         {
-            Write($"{JassKeyword.Local} ");
+            Render(localVariableDeclarationStatement.LocalToken);
+            WriteSpace();
             Render(localVariableDeclarationStatement.Declarator);
         }
     }

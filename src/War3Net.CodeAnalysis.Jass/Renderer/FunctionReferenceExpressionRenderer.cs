@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassFunctionReferenceExpressionSyntax functionReferenceExpression)
         {
-            Write($"{JassKeyword.Function} ");
+            Render(functionReferenceExpression.FunctionToken);
+            WriteSpace();
             Render(functionReferenceExpression.IdentifierName);
         }
     }

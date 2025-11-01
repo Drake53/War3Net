@@ -11,9 +11,20 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassExitStatementSyntax ExitStatement(IExpressionSyntax expression)
+        public static JassExitStatementSyntax ExitStatement(JassExpressionSyntax expression)
         {
-            return new JassExitStatementSyntax(expression);
+            return new JassExitStatementSyntax(
+                Token(JassSyntaxKind.ExitWhenKeyword),
+                expression);
+        }
+
+        public static JassExitStatementSyntax ExitStatement(JassSyntaxToken exitWhenToken, JassExpressionSyntax expression)
+        {
+            ThrowHelper.ThrowIfInvalidToken(exitWhenToken, JassSyntaxKind.ExitWhenKeyword);
+
+            return new JassExitStatementSyntax(
+                exitWhenToken,
+                expression);
         }
     }
 }

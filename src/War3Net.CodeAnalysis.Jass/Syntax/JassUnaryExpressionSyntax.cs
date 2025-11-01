@@ -5,34 +5,105 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass.Extensions;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassUnaryExpressionSyntax : IExpressionSyntax
+    public class JassUnaryExpressionSyntax : JassExpressionSyntax
     {
-        public JassUnaryExpressionSyntax(UnaryOperatorType @operator, IExpressionSyntax expression)
+        internal JassUnaryExpressionSyntax(
+            JassSyntaxToken operatorToken,
+            JassExpressionSyntax expression)
         {
-            Operator = @operator;
+            OperatorToken = operatorToken;
             Expression = expression;
         }
 
-        public UnaryOperatorType Operator { get; init; }
+        public JassSyntaxToken OperatorToken { get; }
 
-        public IExpressionSyntax Expression { get; init; }
+        public JassExpressionSyntax Expression { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetUnaryExpressionKind(OperatorToken.SyntaxKind);
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassUnaryExpressionSyntax unaryExpression
-                && Operator == unaryExpression.Operator
-                && Expression.Equals(unaryExpression.Expression);
+                && OperatorToken.IsEquivalentTo(unaryExpression.OperatorToken)
+                && Expression.IsEquivalentTo(unaryExpression.Expression);
         }
 
-        public override string ToString()
+        public override void WriteTo(TextWriter writer)
         {
-            return Operator == UnaryOperatorType.Not
-                ? $"{Operator.GetSymbol()} {Expression}"
-                : $"{Operator.GetSymbol()}{Expression}";
+            OperatorToken.WriteTo(writer);
+            Expression.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Expression;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return OperatorToken;
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
+        {
+            yield return OperatorToken;
+            yield return Expression;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return OperatorToken;
+
+            foreach (var descendant in Expression.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
+        {
+            yield return OperatorToken;
+
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? " " : string.Empty)}{Expression}";
+
+        public override JassSyntaxToken GetFirstToken() => OperatorToken;
+
+        public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
+
+        protected internal override JassUnaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassUnaryExpressionSyntax(
+                newToken,
+                Expression);
+        }
+
+        protected internal override JassUnaryExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassUnaryExpressionSyntax(
+                OperatorToken,
+                Expression.ReplaceLastToken(newToken));
         }
     }
 }

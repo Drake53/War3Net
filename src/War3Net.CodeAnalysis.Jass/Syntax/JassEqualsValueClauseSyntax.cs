@@ -5,25 +5,104 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassEqualsValueClauseSyntax : IEquatable<JassEqualsValueClauseSyntax>
+    public class JassEqualsValueClauseSyntax : JassSyntaxNode
     {
-        public JassEqualsValueClauseSyntax(IExpressionSyntax expression)
+        internal JassEqualsValueClauseSyntax(
+            JassSyntaxToken equalsToken,
+            JassExpressionSyntax expression)
         {
+            EqualsToken = equalsToken;
             Expression = expression;
         }
 
-        public IExpressionSyntax Expression { get; init; }
+        public JassSyntaxToken EqualsToken { get; }
 
-        public bool Equals(JassEqualsValueClauseSyntax? other)
+        public JassExpressionSyntax Expression { get; }
+
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.EqualsValueClause;
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
-            return other is not null
-                && Expression.Equals(other.Expression);
+            return other is JassEqualsValueClauseSyntax equalsValueClause
+                && Expression.IsEquivalentTo(equalsValueClause.Expression);
         }
 
-        public override string ToString() => $"{JassSymbol.EqualsSign} {Expression}";
+        public override void WriteTo(TextWriter writer)
+        {
+            EqualsToken.WriteTo(writer);
+            Expression.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return Expression;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield return EqualsToken;
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
+        {
+            yield return EqualsToken;
+            yield return Expression;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            yield return EqualsToken;
+
+            foreach (var descendant in Expression.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
+        {
+            yield return EqualsToken;
+
+            yield return Expression;
+            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override string ToString() => $"{EqualsToken} {Expression}";
+
+        public override JassSyntaxToken GetFirstToken() => EqualsToken;
+
+        public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
+
+        protected internal override JassEqualsValueClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassEqualsValueClauseSyntax(
+                newToken,
+                Expression);
+        }
+
+        protected internal override JassEqualsValueClauseSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassEqualsValueClauseSyntax(
+                EqualsToken,
+                Expression.ReplaceLastToken(newToken));
+        }
     }
 }

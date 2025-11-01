@@ -8,19 +8,17 @@
 using System;
 using System.Collections.Generic;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private readonly Dictionary<string, JassIdentifierNameSyntax> _functionDeclarationRenames;
-        private readonly Dictionary<string, JassIdentifierNameSyntax> _globalVariableRenames;
+        private readonly Dictionary<string, string> _functionDeclarationRenames;
+        private readonly Dictionary<string, string> _globalVariableRenames;
         private readonly HashSet<string> _localVariableNames;
 
         public JassRenamer(
-            Dictionary<string, JassIdentifierNameSyntax> functionDeclarationRenames,
-            Dictionary<string, JassIdentifierNameSyntax> globalVariableRenames)
+            Dictionary<string, string> functionDeclarationRenames,
+            Dictionary<string, string> globalVariableRenames)
         {
             _functionDeclarationRenames = functionDeclarationRenames;
             _globalVariableRenames = globalVariableRenames;

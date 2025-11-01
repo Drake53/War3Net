@@ -13,11 +13,9 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassElseIfClauseSyntax elseIfClause)
         {
-            Write($"{JassKeyword.ElseIf} ");
-            Render(elseIfClause.Condition);
-            WriteLine($" {JassKeyword.Then}");
+            Render(elseIfClause.ElseIfClauseDeclarator);
             Indent();
-            Render(elseIfClause.Body);
+            Render(elseIfClause.Statements);
             Outdent();
         }
     }

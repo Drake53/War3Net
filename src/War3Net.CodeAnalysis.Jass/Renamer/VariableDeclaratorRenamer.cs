@@ -13,18 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {
-        private bool TryRenameVariableDeclarator(IVariableDeclaratorSyntax declarator, [NotNullWhen(true)] out IVariableDeclaratorSyntax? renamedDeclarator)
-        {
-            return declarator switch
-            {
-                JassArrayDeclaratorSyntax arrayDeclarator => TryRenameArrayDeclarator(arrayDeclarator, out renamedDeclarator),
-                JassVariableDeclaratorSyntax variableDeclarator => TryRenameVariableDeclarator(variableDeclarator, out renamedDeclarator),
-
-                _ => TryRenameDummy(declarator, out renamedDeclarator),
-            };
-        }
-
-        private bool TryRenameVariableDeclarator(JassVariableDeclaratorSyntax variableDeclarator, [NotNullWhen(true)] out IVariableDeclaratorSyntax? renamedVariableDeclarator)
+        private bool TryRenameVariableDeclarator(JassVariableDeclaratorSyntax variableDeclarator, [NotNullWhen(true)] out JassVariableOrArrayDeclaratorSyntax? renamedVariableDeclarator)
         {
             if (TryRenameVariableIdentifierName(variableDeclarator.IdentifierName, out var renamedIdentifierName) |
                 TryRenameEqualsValueClause(variableDeclarator.Value, out var renamedValue))
