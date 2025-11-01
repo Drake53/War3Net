@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
-		<Version>$(War3NetCodeAnalysisVJassVersion)</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -16,8 +15,8 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="War3Net.CodeAnalysis" Version="$(War3NetCodeAnalysisVersion)" />
-		<PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
+		<PackageReference Include="War3Net.CodeAnalysis" />
+		<PackageReference Include="War3Net.Common" />
 	</ItemGroup>
 
 </Project>

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
-    <Version>$(War3NetDrawingBlpVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JpegLibrary" Version="0.3.30" />
+    <PackageReference Include="JpegLibrary" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -24,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
+    <PackageReference Include="War3Net.Common" />
   </ItemGroup>
 
 </Project>

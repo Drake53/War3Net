@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build" Version="$(War3NetBuildVersion)" />
-    <PackageReference Include="War3Net.CodeAnalysis.Decompilers" Version="$(War3NetCodeAnalysisDecompilersVersion)" />
+    <PackageReference Include="War3Net.Build" />
+    <PackageReference Include="War3Net.CodeAnalysis.Decompilers" />
   </ItemGroup>
 
 </Project>

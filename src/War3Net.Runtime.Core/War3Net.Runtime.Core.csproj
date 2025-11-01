@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="1.10.0" />
-    <PackageReference Include="OptimizedPriorityQueue" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="NAudio" />
+    <PackageReference Include="OptimizedPriorityQueue" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build.Core" Version="1.7.2" />
+    <PackageReference Include="War3Net.Build.Core" />
     <!-- TODO: packageref -->
     <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
   </ItemGroup>
