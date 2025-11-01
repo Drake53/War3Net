@@ -20,6 +20,7 @@
 		<PackageVersion Include="Portable.BouncyCastle" Version="1.9.0" />
 		<PackageVersion Include="Serilog.Sinks.Console" Version="3.1.1" />
 		<PackageVersion Include="Serilog.Sinks.File" Version="4.1.0" />
+		<PackageVersion Include="SixLabors.ImageSharp" Version="3.1.11" />
 		<PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.435" />
 		<PackageVersion Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageVersion Include="System.Text.Json" Version="8.0.4" />
@@ -29,21 +30,21 @@
 		<PackageVersion Include="Veldrid.StartupUtilities" Version="4.8.0" />
 		<PackageVersion Include="Veldrid.Utilities" Version="4.8.0" />
 		<PackageVersion Include="War3Api.Object" Version="1.31.1-rc.11" />
-		<PackageVersion Include="War3Net.Build" Version="5.7.0" />
-		<PackageVersion Include="War3Net.Build.Core" Version="5.7.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis" Version="5.6.1" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="5.7.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="5.6.1" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="5.6.1" />
+		<PackageVersion Include="War3Net.Build" Version="5.8.2" />
+		<PackageVersion Include="War3Net.Build.Core" Version="5.8.2" />
+		<PackageVersion Include="War3Net.CodeAnalysis" Version="5.8.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="5.8.2" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="5.8.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="5.8.0" />
 		<PackageVersion Include="War3Net.CodeAnalysis.VJass" Version="0.1.0" />
-		<PackageVersion Include="War3Net.Common" Version="5.6.1" />
-		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.0-preview.2" />
-		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.0-preview.2" />
-		<PackageVersion Include="War3Net.Drawing.Blp" Version="5.6.1" />
+		<PackageVersion Include="War3Net.Common" Version="5.8.0" />
+		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.1" />
+		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.1" />
+		<PackageVersion Include="War3Net.Drawing.Blp" Version="5.9.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
-		<PackageVersion Include="War3Net.IO.Compression" Version="5.6.1" />
-		<PackageVersion Include="War3Net.IO.Mpq" Version="5.6.1" />
-		<PackageVersion Include="War3Net.IO.Slk" Version="5.6.1" />
+		<PackageVersion Include="War3Net.IO.Compression" Version="5.8.0" />
+		<PackageVersion Include="War3Net.IO.Mpq" Version="5.8.1" />
+		<PackageVersion Include="War3Net.IO.Slk" Version="5.8.1" />
 		<PackageVersion Include="War3Net.Modeling" Version="0.1.0" />
 	</ItemGroup>
 </Project>

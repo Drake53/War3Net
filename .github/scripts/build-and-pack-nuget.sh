@@ -7,6 +7,9 @@ set -e
 SKIP_VERSION_CHECK=false
 [[ "$1" == "--skip-version-check" ]] && SKIP_VERSION_CHECK=true
 
+# Track version extraction failures
+VERSION_EXTRACTION_FAILURES=0
+
 # Create artifacts directory for local NuGet feed
 mkdir -p ./artifacts
 
@@ -99,8 +102,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       echo "Building $PROJECT_NAME (version check skipped)..."
       SHOULD_BUILD=true
     else
-      # Get the version and PackageId from the project file by evaluating MSBuild properties
-      VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release 2>/dev/null | tail -1)
+      # Get the PackageId from the project file by evaluating the MSBuild property
       PACKAGE_ID=$(dotnet msbuild "$project" -getProperty:PackageId -p:Configuration=Release 2>/dev/null | tail -1)
 
       # If PackageId is not set, fall back to project name
@@ -108,9 +110,24 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
         PACKAGE_ID="$PROJECT_NAME"
       fi
 
+      # Get the version - submodule projects use <Version> property, main projects use CPM
+      if [[ "$project" == *submodules/* ]]; then
+        # Submodule projects have their own Version property
+        VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
+      else
+        # Main projects use CPM - the version is set by the SetProjectVersionsFromCentralPackageManagement target
+        # We suppress stderr as GetAssemblyVersion task may not be found but PackageVersion is still set correctly
+        VERSION=$(dotnet msbuild "$project" -t:SetProjectVersionsFromCentralPackageManagement -getProperty:PackageVersion -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
+      fi
+
       if [ -z "$VERSION" ]; then
-        echo "❌ ERROR: Could not extract version from $PROJECT_NAME, skipping"
-        echo "  Make sure the project has a <Version> property defined"
+        echo "❌ ERROR: Could not extract version from $PACKAGE_ID, skipping"
+        if [[ "$project" == *submodules/* ]]; then
+          echo "  Make sure the project has a <Version> property defined"
+        else
+          echo "  Make sure the project has a version defined in Directory.Packages.props"
+        fi
+        VERSION_EXTRACTION_FAILURES=$((VERSION_EXTRACTION_FAILURES + 1))
         SHOULD_BUILD=false
       else
         echo "Checking if $PACKAGE_ID $VERSION exists on NuGet.org..."
@@ -167,6 +184,13 @@ PACKAGE_COUNT=$(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)
 echo ""
 echo "=== Build Summary ==="
 echo "Successfully created $PACKAGE_COUNT package(s)"
+
+# Exit with error if any version extractions failed
+if [ $VERSION_EXTRACTION_FAILURES -gt 0 ]; then
+  echo ""
+  echo "❌ ERROR: Failed to extract version for $VERSION_EXTRACTION_FAILURES project(s)"
+  exit 1
+fi
 
 # Only create zip and check for updates when NOT skipping version check
 if [ "$SKIP_VERSION_CHECK" = false ]; then

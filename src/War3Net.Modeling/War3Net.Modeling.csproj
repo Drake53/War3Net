@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <Description>Library for handling Warcraft III models (.mdl and .mdx files).</Description>
     <PackageTags>mdl;mdx;warcraft3</PackageTags>
