@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassBooleanLiteralExpressionSyntax : IExpressionSyntax
+    public class JassBooleanLiteralExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public static readonly JassBooleanLiteralExpressionSyntax True = new JassBooleanLiteralExpressionSyntax(true);
         public static readonly JassBooleanLiteralExpressionSyntax False = new JassBooleanLiteralExpressionSyntax(false);

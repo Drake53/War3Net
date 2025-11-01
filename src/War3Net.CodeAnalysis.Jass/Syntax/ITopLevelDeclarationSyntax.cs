@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public interface ITopLevelDeclarationSyntax : IEquatable<ITopLevelDeclarationSyntax>
+    public interface ITopLevelDeclarationSyntax : IEquatable<ITopLevelDeclarationSyntax>, IJassSyntaxToken
     {
     }
 }

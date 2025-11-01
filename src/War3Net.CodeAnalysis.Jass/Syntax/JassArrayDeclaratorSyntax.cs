@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassArrayDeclaratorSyntax : IVariableDeclaratorSyntax
+    public class JassArrayDeclaratorSyntax : IVariableDeclaratorSyntax, IJassSyntaxToken
     {
         public JassArrayDeclaratorSyntax(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
         {

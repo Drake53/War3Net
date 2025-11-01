@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassParenthesizedExpressionSyntax : IExpressionSyntax
+    public class JassParenthesizedExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
         public JassParenthesizedExpressionSyntax(IExpressionSyntax expression)
         {

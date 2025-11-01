@@ -11,13 +11,22 @@ using War3Net.Build;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
-    internal sealed class ObjectDataContext
+    public sealed class ObjectDataContext
     {
+        /*
+        public readonly Map map;
+        public readonly Campaign campaign;
+        */
+
         public ObjectDataContext(Map map, Campaign? campaign)
         {
-            // TODO
+            /*
+            this.map = map;
+            this.campaign = campaign;
+            */
         }
 
+        /*
         public ImmutableHashSet<int> KnownUnitIds { get; set; }
 
         public ImmutableHashSet<int> KnownItemIds { get; set; }
@@ -35,5 +44,6 @@ namespace War3Net.CodeAnalysis.Decompilers
         public ImmutableHashSet<int> KnownTechIds { get; set; }
 
         public ImmutableHashSet<int> KnownObjectIds { get; set; }
+        */
     }
 }

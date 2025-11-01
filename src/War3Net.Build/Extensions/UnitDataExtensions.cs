@@ -25,7 +25,7 @@ namespace War3Net.Build.Extensions
 
         public static string GetVariableName(this UnitData unitData)
         {
-            return $"gg_unit_{unitData.TypeId.ToRawcode()}_{unitData.CreationNumber:D4}";
+            return $"{(unitData.IsItem() ? "gg_item_" : "gg_unit_")}{unitData.TypeId.ToRawcode()}_{unitData.CreationNumber:D4}";
         }
 
         public static string GetDropItemsFunctionName(this UnitData unitData, int id)

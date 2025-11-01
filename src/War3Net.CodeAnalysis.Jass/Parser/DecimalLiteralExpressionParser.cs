@@ -17,9 +17,17 @@ namespace War3Net.CodeAnalysis.Jass
     {
         internal static Parser<char, IExpressionSyntax> GetDecimalLiteralExpressionParser()
         {
-            return Try(UnsignedInt(10))
-                .Select<IExpressionSyntax>(value => new JassDecimalLiteralExpressionSyntax(value))
+            return Try(UnsignedLong(10)
+                .Bind(value =>
+                    value - 1 == int.MaxValue
+                        ? Parser<char>.Return<IExpressionSyntax>(new JassDecimalLiteralExpressionSyntax(value))
+                        : Parser<char>.Fail<IExpressionSyntax>("Edge case only. Fall-through to UnsignedInt")
+                ))
+                .Or(
+                    Try(UnsignedInt(10)
+                        .Select<IExpressionSyntax>(value => new JassDecimalLiteralExpressionSyntax(value)))
+                )
                 .Labelled("decimal literal");
-        }
+       }
     }
 }

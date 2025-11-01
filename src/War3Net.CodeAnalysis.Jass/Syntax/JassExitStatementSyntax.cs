@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassExitStatementSyntax : IStatementSyntax, IStatementLineSyntax
+    public class JassExitStatementSyntax : IStatementSyntax, IStatementLineSyntax, IJassSyntaxToken
     {
         public JassExitStatementSyntax(IExpressionSyntax condition)
         {

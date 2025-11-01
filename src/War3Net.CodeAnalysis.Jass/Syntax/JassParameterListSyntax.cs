@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassParameterListSyntax : IEquatable<JassParameterListSyntax>
+    public class JassParameterListSyntax : IEquatable<JassParameterListSyntax>, IJassSyntaxToken
     {
         public static readonly JassParameterListSyntax Empty = new JassParameterListSyntax(ImmutableArray<JassParameterSyntax>.Empty);
 

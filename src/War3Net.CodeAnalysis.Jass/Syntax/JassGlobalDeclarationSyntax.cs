@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationSyntax : IGlobalDeclarationSyntax, IGlobalLineSyntax
+    public class JassGlobalDeclarationSyntax : IGlobalDeclarationSyntax, IGlobalLineSyntax, IJassSyntaxToken
     {
         public JassGlobalDeclarationSyntax(IVariableDeclaratorSyntax declarator)
         {

@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Extensions;
+using War3Net.CodeAnalysis.Jass;
 using War3Net.Common.Extensions;
 using War3Net.TestTools.UnitTesting;
 
@@ -27,8 +28,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Widget
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
 
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapUnits(map.Units.FormatVersion, map.Units.SubVersion, map.Units.UseNewFormat, out var decompiledMapUnits), "Failed to decompile map units.");
-
+            var decompiledMap = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(map.Script), new DecompileOptions() { mapWidgetsFormatVersion = map.Units.FormatVersion, mapWidgetsSubVersion = map.Units.SubVersion, mapWidgetsUseNewFormat = map.Units.UseNewFormat }, map.Info).DecompileObjectManagerData();
+            var decompiledMapUnits = decompiledMap.Units;
             var expectedMapUnits = map.Units.Units
 #if true
                 .Where(unit => !unit.IsRandomUnit())

@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public interface IGlobalLineSyntax : IEquatable<IGlobalLineSyntax>
+    public interface IGlobalLineSyntax : IEquatable<IGlobalLineSyntax>, IJassSyntaxToken
     {
     }
 }

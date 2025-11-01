@@ -10,6 +10,7 @@ using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 {
@@ -24,7 +25,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
 
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapCameras(map.Cameras.FormatVersion, map.Cameras.UseNewFormat, out var decompiledMapCameras), "Failed to decompile map cameras.");
+            var decompiledMap = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(map.Script), new DecompileOptions() { mapCamerasFormatVersion = map.Cameras.FormatVersion, mapCamerasUseNewFormat = map.Cameras.UseNewFormat }, map.Info).DecompileObjectManagerData();
+            var decompiledMapCameras = decompiledMap.Cameras;
 
             Assert.AreEqual(map.Cameras.Cameras.Count, decompiledMapCameras.Cameras.Count);
             for (var i = 0; i < decompiledMapCameras.Cameras.Count; i++)

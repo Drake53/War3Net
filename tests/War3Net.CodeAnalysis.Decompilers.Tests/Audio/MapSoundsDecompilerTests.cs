@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build;
 using War3Net.Build.Audio;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
 {
@@ -25,7 +26,8 @@ namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
         {
             var map = Map.Open(mapFilePath, FilesToOpen);
 
-            Assert.IsTrue(new JassScriptDecompiler(map).TryDecompileMapSounds(map.Sounds.FormatVersion, out var decompiledMapSounds), "Failed to decompile map sounds.");
+            var decompiledMap = new JassScriptDecompiler(JassSyntaxFactory.ParseCompilationUnit(map.Script), new DecompileOptions() { mapSoundsFormatVersion = map.Sounds.FormatVersion }, map.Info).DecompileObjectManagerData();
+            var decompiledMapSounds = decompiledMap.Sounds;
 
             Assert.AreEqual(map.Sounds.Sounds.Count, decompiledMapSounds.Sounds.Count);
             for (var i = 0; i < decompiledMapSounds.Sounds.Count; i++)

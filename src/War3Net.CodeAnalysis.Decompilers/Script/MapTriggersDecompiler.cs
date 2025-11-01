@@ -156,7 +156,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             var variableDefinition = mapTriggers.Variables.Single(v => string.Equals(v.Name, variableName, StringComparison.Ordinal));
 
-                            variableDefinition.ArraySize = arraySize;
+                            variableDefinition.ArraySize = (int)arraySize;
 
                             if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.Value.Expression, variableDefinition.Type, out var initialValue))
                             {

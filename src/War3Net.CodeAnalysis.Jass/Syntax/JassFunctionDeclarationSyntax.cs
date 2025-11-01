@@ -7,7 +7,7 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassFunctionDeclarationSyntax : ITopLevelDeclarationSyntax
+    public class JassFunctionDeclarationSyntax : ITopLevelDeclarationSyntax, IJassSyntaxToken
     {
         public JassFunctionDeclarationSyntax(JassFunctionDeclaratorSyntax functionDeclarator, JassStatementListSyntax body)
         {

@@ -1,15 +1,15 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="MapUnitsDecompiler.cs" company="Drake53">
+// 
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
-// </copyright>
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Numerics;
 
+using War3Net.Build.Common;
+using War3Net.Build.Environment;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -19,734 +19,620 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private int CreationNumber = 0;
-
-        public bool TryDecompileMapUnits(
-            MapWidgetsFormatVersion formatVersion,
-            MapWidgetsSubVersion subVersion,
-            bool useNewFormat,
-            [NotNullWhen(true)] out MapUnits? mapUnits)
+        [RegisterStatementParser]
+        internal void ParseUnitCreation(StatementParserInput input)
         {
-            var createAllUnits = GetFunction("CreateAllUnits");
-            var createAllItems = GetFunction("CreateAllItems");
-            var config = GetFunction("config");
-            var initCustomPlayerSlots = GetFunction("InitCustomPlayerSlots");
-
-            if (createAllUnits is null ||
-                createAllItems is null ||
-                config is null ||
-                initCustomPlayerSlots is null)
+            var variableAssignment = GetVariableAssignment(input.StatementChildren);
+            var unitData = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "CreateUnit" || x.IdentifierName.Name == "BlzCreateUnitWithSkin").SafeMapFirst(x =>
             {
-                mapUnits = null;
-                return false;
-            }
+                var args = x.Arguments.Arguments;
 
-            if (TryDecompileMapUnits(
-                createAllUnits.FunctionDeclaration,
-                createAllItems.FunctionDeclaration,
-                config.FunctionDeclaration,
-                initCustomPlayerSlots.FunctionDeclaration,
-                formatVersion,
-                subVersion,
-                useNewFormat,
-                out mapUnits))
+                int? ownerId = GetPlayerIndex(args[0]) ?? GetLastCreatedPlayerIndex();
+
+                if (ownerId == null)
+                {
+                    return null;
+                }
+
+                if (!args[1].TryGetValue<int>(out var typeId))
+                {
+                    return null;
+                }
+
+                var result = new UnitData
+                {
+                    OwnerId = ownerId.Value,
+                    TypeId = typeId.InvertEndianness(),
+                    Position = new Vector3(
+                            args[2].GetValueOrDefault<float>(),
+                            args[3].GetValueOrDefault<float>(),
+                            0f
+                        ),
+                    Rotation = args[4].GetValueOrDefault<float>() * (MathF.PI / 180f),
+                    Scale = Vector3.One,
+                    Flags = 2,
+                    GoldAmount = 12500,
+                    HeroLevel = 1,
+                    CreationNumber = Context.GetNextCreationNumber()
+                };
+
+                result.SkinId = args.Length > 5 ? args[5].GetValueOrDefault<int>() : result.TypeId;
+                return result;
+            });
+
+            if (unitData != null)
             {
-                createAllUnits.Handled = true;
-                createAllItems.Handled = true;
-                initCustomPlayerSlots.Handled = true;
-
-                return true;
+                Context.HandledStatements.Add(input.Statement);
+                Context.Add(unitData, variableAssignment);
             }
-
-            mapUnits = null;
-            return false;
         }
 
-        public bool TryDecompileMapUnits(
-            JassFunctionDeclarationSyntax createAllUnitsFunction,
-            JassFunctionDeclarationSyntax createAllItemsFunction,
-            JassFunctionDeclarationSyntax configFunction,
-            JassFunctionDeclarationSyntax initCustomPlayerSlotsFunction,
-            MapWidgetsFormatVersion formatVersion,
-            MapWidgetsSubVersion subVersion,
-            bool useNewFormat,
-            [NotNullWhen(true)] out MapUnits? mapUnits)
+        [RegisterStatementParser]
+        internal void ParsePlayerIndex(StatementParserInput input)
         {
-            if (createAllUnitsFunction is null)
+            var variableAssignment = GetVariableAssignment(input.StatementChildren);
+            var match = input.StatementChildren.OfType<JassEqualsValueClauseSyntax>().Where(x => x.Expression is IInvocationSyntax invocationSyntax && invocationSyntax.IdentifierName.Name == "Player").SafeMapFirst(x =>
             {
-                throw new ArgumentNullException(nameof(createAllUnitsFunction));
-            }
+                var playerId = GetPlayerIndex(x.Expression);
+                if (!playerId.HasValue)
+                {
+                    return null;
+                }
 
-            if (createAllItemsFunction is null)
+                return new
+                {
+                    PlayerIndex = playerId.Value
+                };
+            });
+
+            if (match != null && variableAssignment != null)
             {
-                throw new ArgumentNullException(nameof(createAllItemsFunction));
+                Context.Add_Struct(match.PlayerIndex, Context.CreatePseudoVariableName(nameof(ParsePlayerIndex), variableAssignment));
+                Context.Add_Struct(match.PlayerIndex, Context.CreatePseudoVariableName(nameof(ParsePlayerIndex)));
+                Context.HandledStatements.Add(input.Statement);
             }
-
-            if (configFunction is null)
-            {
-                throw new ArgumentNullException(nameof(configFunction));
-            }
-
-            if (initCustomPlayerSlotsFunction is null)
-            {
-                throw new ArgumentNullException(nameof(initCustomPlayerSlotsFunction));
-            }
-
-            if (TryDecompileCreateUnitsFunction(createAllUnitsFunction, out var units) &&
-                TryDecompileCreateItemsFunction(createAllItemsFunction, out var items) &&
-                TryDecompileStartLocationPositionsConfigFunction(configFunction, out var startLocationPositions) &&
-                TryDecompileInitCustomPlayerSlotsFunction(initCustomPlayerSlotsFunction, startLocationPositions, out var startLocations))
-            {
-                mapUnits = new MapUnits(formatVersion, subVersion, useNewFormat);
-
-                mapUnits.Units.AddRange(units);
-                mapUnits.Units.AddRange(items);
-                mapUnits.Units.AddRange(startLocations);
-
-                return true;
-            }
-
-            mapUnits = null;
-            return false;
         }
 
-        private bool TryDecompileCreateUnitsFunction(JassFunctionDeclarationSyntax createUnitsFunction, [NotNullWhen(true)] out List<UnitData>? units)
+        [RegisterStatementParser]
+        internal void ParseResourceAmount(StatementParserInput input)
         {
-            var localPlayerVariableName = (string?)null;
-            var localPlayerVariableValue = (int?)null;
-
-            var result = new List<UnitData>();
-
-            foreach (var statement in createUnitsFunction.Body.Statements)
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetResourceAmount").SafeMapFirst(x =>
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
+                return new
                 {
-                    continue;
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Amount = x.Arguments.Arguments[1].GetValueOrDefault<int>()
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.GoldAmount = match.Amount;
+                    Context.HandledStatements.Add(input.Statement);
                 }
-                else if (statement is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement)
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetUnitColor(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetUnitColor").SafeMapFirst(x =>
+            {
+                return new
                 {
-                    var typeName = localVariableDeclarationStatement.Declarator.Type.TypeName.Name;
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    CustomPlayerColorId = x.Arguments.Arguments[1].GetValueOrDefault<int>()
+                };
+            });
 
-                    if (string.Equals(typeName, "player", StringComparison.Ordinal))
-                    {
-                        if (localVariableDeclarationStatement.Declarator is JassVariableDeclaratorSyntax variableDeclarator &&
-                            variableDeclarator.Value is not null &&
-                            variableDeclarator.Value.Expression is JassInvocationExpressionSyntax playerInvocationExpression &&
-                            string.Equals(playerInvocationExpression.IdentifierName.Name, "Player", StringComparison.Ordinal) &&
-                            playerInvocationExpression.Arguments.Arguments.Length == 1 &&
-                            playerInvocationExpression.Arguments.Arguments[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId))
-                        {
-                            localPlayerVariableName = variableDeclarator.IdentifierName.Name;
-                            localPlayerVariableValue = playerId;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(typeName, "unit", StringComparison.Ordinal) ||
-                             string.Equals(typeName, "integer", StringComparison.Ordinal) ||
-                             string.Equals(typeName, "trigger", StringComparison.Ordinal) ||
-                             string.Equals(typeName, "real", StringComparison.Ordinal))
-                    {
-                        // TODO
-
-                        if (localVariableDeclarationStatement.Declarator is not JassVariableDeclaratorSyntax variableDeclarator ||
-                            variableDeclarator.Value is not null)
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        units = null;
-                        return false;
-                    }
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.CustomPlayerColorId = match.CustomPlayerColorId;
+                    Context.HandledStatements.Add(input.Statement);
                 }
-                else if (statement is JassSetStatementSyntax setStatement)
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseAcquireRange(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "SetUnitAcquireRange")
+            .SafeMapFirst(x =>
+            {
+                return new
                 {
-                    if (setStatement.Indexer is null)
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Range = x.Arguments.Arguments[1].GetValueOrDefault<float>()
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.TargetAcquisition = match.Range;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseUnitState(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "SetUnitState")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    StateType = ((JassVariableReferenceExpressionSyntax)x.Arguments.Arguments[1]).IdentifierName.Name,
+                    Value = x.Arguments.Arguments[2].GetValueOrDefault<float>()
+                };
+            });
+
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    if (match.StateType == "UNIT_STATE_LIFE")
                     {
-                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
-                        {
-                            if (string.Equals(invocationExpression.IdentifierName.Name, "CreateUnit", StringComparison.Ordinal))
-                            {
-                                if (invocationExpression.Arguments.Arguments.Length == 5 &&
-                                    invocationExpression.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax playerVariableReferenceExpression &&
-                                    invocationExpression.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var unitId) &&
-                                    invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var x) &&
-                                    invocationExpression.Arguments.Arguments[3].TryGetRealExpressionValue(out var y) &&
-                                    invocationExpression.Arguments.Arguments[4].TryGetRealExpressionValue(out var face) &&
-                                    string.Equals(playerVariableReferenceExpression.IdentifierName.Name, localPlayerVariableName, StringComparison.Ordinal))
-                                {
-                                    var unit = new UnitData
-                                    {
-                                        OwnerId = localPlayerVariableValue.Value,
-                                        TypeId = unitId.InvertEndianness(),
-                                        Position = new Vector3(x, y, 0f),
-                                        Rotation = face * (MathF.PI / 180f),
-                                        Scale = Vector3.One,
-                                        Flags = 2,
-                                        GoldAmount = 12500,
-                                        HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
-                                    };
-
-                                    unit.SkinId = unit.TypeId;
-
-                                    result.Add(unit);
-                                }
-                                else
-                                {
-                                    units = null;
-                                    return false;
-                                }
-                            }
-                            else if (string.Equals(invocationExpression.IdentifierName.Name, "BlzCreateUnitWithSkin", StringComparison.Ordinal))
-                            {
-                                if (invocationExpression.Arguments.Arguments.Length == 6 &&
-                                    invocationExpression.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax playerVariableReferenceExpression &&
-                                    invocationExpression.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var unitId) &&
-                                    invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var x) &&
-                                    invocationExpression.Arguments.Arguments[3].TryGetRealExpressionValue(out var y) &&
-                                    invocationExpression.Arguments.Arguments[4].TryGetRealExpressionValue(out var face) &&
-                                    invocationExpression.Arguments.Arguments[5].TryGetIntegerExpressionValue(out var skinId) &&
-                                    string.Equals(playerVariableReferenceExpression.IdentifierName.Name, localPlayerVariableName, StringComparison.Ordinal))
-                                {
-                                    var unit = new UnitData
-                                    {
-                                        OwnerId = localPlayerVariableValue.Value,
-                                        TypeId = unitId.InvertEndianness(),
-                                        Position = new Vector3(x, y, 0f),
-                                        Rotation = face * (MathF.PI / 180f),
-                                        Scale = Vector3.One,
-                                        SkinId = skinId.InvertEndianness(),
-                                        Flags = 2,
-                                        GoldAmount = 12500,
-                                        HeroLevel = 1,
-                                        CreationNumber = CreationNumber++
-                                    };
-
-                                    result.Add(unit);
-                                }
-                                else
-                                {
-                                    units = null;
-                                    return false;
-                                }
-                            }
-                            else if (string.Equals(invocationExpression.IdentifierName.Name, "CreateTrigger", StringComparison.Ordinal))
-                            {
-                                // TODO
-                                continue;
-                            }
-                            else if (string.Equals(invocationExpression.IdentifierName.Name, "GetUnitState", StringComparison.Ordinal))
-                            {
-                                // TODO
-                                continue;
-                            }
-                            else if (string.Equals(invocationExpression.IdentifierName.Name, "RandomDistChoose", StringComparison.Ordinal))
-                            {
-                                // TODO
-                                continue;
-                            }
-                            else
-                            {
-                                units = null;
-                                return false;
-                            }
-                        }
-                        else if (setStatement.Value.Expression is JassArrayReferenceExpressionSyntax)
-                        {
-                            // TODO
-                            continue;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
+                        unit.HP = (int)match.Value;
+                        Context.HandledStatements.Add(input.Statement);
                     }
-                    else
+                    else if (match.StateType == "UNIT_STATE_MANA")
                     {
-                        units = null;
-                        return false;
+                        unit.MP = (int)match.Value;
+                        Context.HandledStatements.Add(input.Statement);
                     }
                 }
-                else if (statement is JassCallStatementSyntax callStatement)
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseUnitInventory(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "UnitAddItemToSlotById")
+            .SafeMapFirst(x =>
+            {
+                return new
                 {
-                    if (string.Equals(callStatement.IdentifierName.Name, "SetResourceAmount", StringComparison.Ordinal))
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    ItemId = x.Arguments.Arguments[1].GetValueOrDefault<int>(),
+                    Slot = x.Arguments.Arguments[2].GetValueOrDefault<int>()
+                };
+            });
+
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.InventoryData.Add(new InventoryItemData
                     {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var amount))
-                        {
-                            result[^1].GoldAmount = amount;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
+                        ItemId = match.ItemId,
+                        Slot = match.Slot
+                    });
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseHeroLevel(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "SetHeroLevel").SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Level = x.Arguments.Arguments[1].GetValueOrDefault<int>()
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.HeroLevel = match.Level;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseHeroAttributes(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "SetHeroStr" ||
+                 x.IdentifierName.Name == "SetHeroAgi" ||
+                 x.IdentifierName.Name == "SetHeroInt")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    Attribute = x.IdentifierName.Name,
+                    Value = x.Arguments.Arguments[1].GetValueOrDefault<int>()
+                };
+            });
+
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    var handled = true;
+                    switch (match.Attribute)
+                    {
+                        case "SetHeroStr":
+                            unit.HeroStrength = match.Value;
+                            break;
+                        case "SetHeroAgi":
+                            unit.HeroAgility = match.Value;
+                            break;
+                        case "SetHeroInt":
+                            unit.HeroIntelligence = match.Value;
+                            break;
+                        default:
+                            handled = false;
+                            break;
                     }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetUnitColor", StringComparison.Ordinal))
+
+                    if (handled)
                     {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassInvocationExpressionSyntax convertPlayerColorInvocationExpression &&
-                            string.Equals(convertPlayerColorInvocationExpression.IdentifierName.Name, "ConvertPlayerColor", StringComparison.Ordinal) &&
-                            convertPlayerColorInvocationExpression.Arguments.Arguments.Length == 1 &&
-                            convertPlayerColorInvocationExpression.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var playerColorId))
-                        {
-                            result[^1].CustomPlayerColorId = playerColorId;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetUnitAcquireRange", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var acquireRange))
-                        {
-                            const float CampAcquireRange = 200f;
-                            result[^1].TargetAcquisition = acquireRange == CampAcquireRange ? -2f : acquireRange;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetUnitState", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1] is JassVariableReferenceExpressionSyntax unitStateVariableReferenceExpression)
-                        {
-                            if (string.Equals(unitStateVariableReferenceExpression.IdentifierName.Name, "UNIT_STATE_LIFE", StringComparison.Ordinal))
-                            {
-                                if (callStatement.Arguments.Arguments[2] is JassBinaryExpressionSyntax binaryExpression &&
-                                    binaryExpression.Left.TryGetRealExpressionValue(out var hp) &&
-                                    binaryExpression.Operator == BinaryOperatorType.Multiplication &&
-                                    binaryExpression.Right is JassVariableReferenceExpressionSyntax)
-                                {
-                                    result[^1].HP = (int)(100 * hp);
-                                }
-                                else
-                                {
-                                    units = null;
-                                    return false;
-                                }
-                            }
-                            else if (string.Equals(unitStateVariableReferenceExpression.IdentifierName.Name, "UNIT_STATE_MANA", StringComparison.Ordinal))
-                            {
-                                if (callStatement.Arguments.Arguments[2].TryGetIntegerExpressionValue(out var mp))
-                                {
-                                    result[^1].MP = mp;
-                                }
-                                else
-                                {
-                                    units = null;
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                units = null;
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "UnitAddItemToSlotById", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.Arguments.Arguments[2].TryGetIntegerExpressionValue(out var slot))
-                        {
-                            result[^1].InventoryData.Add(new InventoryItemData
-                            {
-                                ItemId = itemId,
-                                Slot = slot,
-                            });
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroLevel", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var level) &&
-                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
-                        {
-                            result[^1].HeroLevel = level;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroStr", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
-                        {
-                            result[^1].HeroStrength = value;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroAgi", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
-                        {
-                            result[^1].HeroAgility = value;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SetHeroInt", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0] is JassVariableReferenceExpressionSyntax unitVariableReferenceExpression &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.Arguments.Arguments[2] is JassBooleanLiteralExpressionSyntax)
-                        {
-                            result[^1].HeroIntelligence = value;
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "SelectHeroSkill", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "IssueImmediateOrder", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "RandomDistReset", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "RandomDistAddItem", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "TriggerRegisterUnitEvent", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "TriggerAddAction", StringComparison.Ordinal))
-                    {
-                        // TODO
-                        continue;
-                    }
-                    else if (callStatement.Arguments.Arguments.IsEmpty)
-                    {
-                        if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var subFunction) &&
-                            TryDecompileCreateUnitsFunction(subFunction.FunctionDeclaration, out var subFunctionResult))
-                        {
-                            result.AddRange(subFunctionResult);
-                        }
-                        else
-                        {
-                            units = null;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        units = null;
-                        return false;
+                        Context.HandledStatements.Add(input.Statement);
                     }
                 }
-                else if (statement is JassIfStatementSyntax ifStatement)
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseHeroSkills(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "SelectHeroSkill")
+            .SafeMapFirst(x =>
+            {
+                return new
                 {
-                    if (ifStatement.Condition.Deparenthesize() is JassBinaryExpressionSyntax binaryExpression &&
-                        binaryExpression.Left is JassVariableReferenceExpressionSyntax &&
-                        binaryExpression.Operator == BinaryOperatorType.NotEquals &&
-                        binaryExpression.Right.TryGetIntegerExpressionValue(out var value) &&
-                        value == -1)
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    SkillId = x.Arguments.Arguments[1].GetValueOrDefault<int>()
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    unit.AbilityData.Add(new ModifiedAbilityData
                     {
-                        // TODO
-                        continue;
-                    }
-                    else
-                    {
-                        units = null;
-                        return false;
-                    }
+                        AbilityId = match.SkillId,
+                        HeroAbilityLevel = 1,
+                        IsAutocastActive = false
+                    });
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseIssueImmediateOrder(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "IssueImmediateOrder")
+            .SafeMapFirst(x =>
+            {
+                var abilityName = (x.Arguments.Arguments[1] as JassStringLiteralExpressionSyntax)?.Value;
+                bool? isAutoCastActive = null;
+                if (abilityName?.EndsWith("on", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    isAutoCastActive = true;
+                }
+                else if (abilityName?.EndsWith("off", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    isAutoCastActive = false;
                 }
                 else
                 {
-                    units = null;
-                    return false;
+                    return null;
+                }
+
+                return new
+                {
+                    VariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    //AbilityName = abilityName,
+                    IsAutocastActive = isAutoCastActive.Value
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.VariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    //todo: lookup abilityId by searching for name in _context.ObjectData.map.AbilityObjectData
+                    //todo: lookup on/off via SLK Metadata instead of abilityName suffix [example: Modifications with FourCC aoro/aord are names for "on", aorf/aoru are names for "off"]
+                    var ability = unit.AbilityData.LastOrDefault();
+                    if (ability != null)
+                    {
+                        ability.IsAutocastActive = match.IsAutocastActive;
+                        Context.HandledStatements.Add(input.Statement);
+                    }
                 }
             }
-
-            units = result;
-            return true;
         }
 
-        private bool TryDecompileCreateItemsFunction(JassFunctionDeclarationSyntax createItemsFunction, [NotNullWhen(true)] out List<UnitData>? items)
+        [RegisterStatementParser]
+        internal void ParseDropItemsOnDeath_TriggerRegister(StatementParserInput input)
         {
-            var result = new List<UnitData>();
-
-            foreach (var statement in createItemsFunction.Body.Statements)
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "TriggerRegisterUnitEvent")
+            .SafeMapFirst(x =>
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
+                var eventName = (x.Arguments.Arguments[2] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name;
+                if (eventName != "EVENT_UNIT_DEATH" && eventName != "EVENT_UNIT_CHANGE_OWNER")
                 {
-                    continue;
+                    return null;
                 }
-                else if (statement is JassSetStatementSyntax setStatement)
+
+                return new
                 {
-                    if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
-                    {
-                        if (string.Equals(invocationExpression.IdentifierName.Name, "CreateItem", StringComparison.Ordinal))
-                        {
-                            if (invocationExpression.Arguments.Arguments.Length == 3 &&
-                                invocationExpression.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var y))
-                            {
-                                var unit = new UnitData
-                                {
-                                    OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                    TypeId = unitId.InvertEndianness(),
-                                    Position = new Vector3(x, y, 0f),
-                                    Rotation = 0,
-                                    Scale = Vector3.One,
-                                    Flags = 2,
-                                    GoldAmount = 12500,
-                                    HeroLevel = 1,
-                                    CreationNumber = CreationNumber++
-                                };
+                    TriggerVariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    UnitVariableName = (x.Arguments.Arguments[1] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name
+                };
+            });
 
-                                unit.SkinId = unit.TypeId;
-
-                                result.Add(unit);
-                            }
-                        }
-                        else if (string.Equals(invocationExpression.IdentifierName.Name, "BlzCreateItemWithSkin", StringComparison.Ordinal))
-                        {
-                            if (invocationExpression.Arguments.Arguments.Length == 4 &&
-                                invocationExpression.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                                invocationExpression.Arguments.Arguments[3].TryGetIntegerExpressionValue(out var skinId))
-                            {
-                                var unit = new UnitData
-                                {
-                                    OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                    TypeId = unitId.InvertEndianness(),
-                                    Position = new Vector3(x, y, 0f),
-                                    Rotation = 0,
-                                    Scale = Vector3.One,
-                                    SkinId = skinId.InvertEndianness(),
-                                    Flags = 2,
-                                    GoldAmount = 12500,
-                                    HeroLevel = 1,
-                                    CreationNumber = CreationNumber++
-                                };
-
-                                result.Add(unit);
-                            }
-                        }
-                    }
-                }
-                else if (statement is JassCallStatementSyntax callStatement)
-                {
-                    if (string.Equals(callStatement.IdentifierName.Name, "CreateItem", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 3 &&
-                            callStatement.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y))
-                        {
-                            var item = new UnitData
-                            {
-                                OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                TypeId = itemId.InvertEndianness(),
-                                Position = new Vector3(x, y, 0f),
-                                Rotation = 0,
-                                Scale = Vector3.One,
-                                Flags = 2,
-                                GoldAmount = 12500,
-                                HeroLevel = 1,
-                                CreationNumber = CreationNumber++
-                            };
-
-                            item.SkinId = item.TypeId;
-
-                            result.Add(item);
-                        }
-                    }
-                    else if (string.Equals(callStatement.IdentifierName.Name, "BlzCreateItemWithSkin", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 4 &&
-                            callStatement.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.Arguments.Arguments[3].TryGetIntegerExpressionValue(out var skinId))
-                        {
-                            var item = new UnitData
-                            {
-                                OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
-                                TypeId = itemId.InvertEndianness(),
-                                Position = new Vector3(x, y, 0f),
-                                Rotation = 0,
-                                Scale = Vector3.One,
-                                SkinId = skinId.InvertEndianness(),
-                                Flags = 2,
-                                GoldAmount = 12500,
-                                HeroLevel = 1,
-                                CreationNumber = CreationNumber++
-                            };
-
-                            result.Add(item);
-                        }
-                    }
-                }
+            if (match != null)
+            {
+                Context.Add(match.UnitVariableName, Context.CreatePseudoVariableName(nameof(ParseDropItemsOnDeath_TriggerRegister), match.TriggerVariableName));
+                Context.HandledStatements.Add(input.Statement);
             }
-
-            items = result;
-            return true;
         }
 
-        private bool TryDecompileStartLocationPositionsConfigFunction(JassFunctionDeclarationSyntax configFunction, [NotNullWhen(true)] out Dictionary<int, Vector2>? startLocationPositions)
+        [RegisterStatementParser]
+        internal void ParseDropItemsOnDeath_TriggerAction(StatementParserInput input)
         {
-            var result = new Dictionary<int, Vector2>();
-
-            foreach (var statement in configFunction.Body.Statements)
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "TriggerAddAction")
+            .SafeMapFirst(x =>
             {
-                if (statement is JassCallStatementSyntax callStatement &&
-                    string.Equals(callStatement.IdentifierName.Name, "DefineStartLocation", StringComparison.Ordinal))
+                return new
                 {
-                    if (callStatement.Arguments.Arguments.Length == 3 &&
-                        callStatement.Arguments.Arguments[0].TryGetIntegerExpressionValue(out var index) &&
-                        callStatement.Arguments.Arguments[1].TryGetRealExpressionValue(out var x) &&
-                        callStatement.Arguments.Arguments[2].TryGetRealExpressionValue(out var y))
-                    {
-                        result.Add(index, new Vector2(x, y));
-                    }
-                    else
-                    {
-                        startLocationPositions = null;
-                        return false;
-                    }
-                }
-                else
+                    TriggerVariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    FunctionName = (x.Arguments.Arguments[1] as JassFunctionReferenceExpressionSyntax)?.IdentifierName?.Name
+                };
+            });
+
+            if (match != null)
+            {
+                var unitVariableName = Context.Get<string>(Context.CreatePseudoVariableName(nameof(ParseDropItemsOnDeath_TriggerRegister), match.TriggerVariableName));
+
+                if (match.FunctionName != null && Context.FunctionDeclarations.TryGetValue(match.FunctionName, out var function))
                 {
-                    continue;
+                    var statements = function.FunctionDeclaration.GetChildren_RecursiveDepthFirst().OfType<IStatementLineSyntax>().ToList();
+                    foreach (var statement in statements)
+                    {
+                        ProcessStatementParsers(statement, new Action<StatementParserInput>[] {
+                            input => ParseRandomDistReset(input, unitVariableName),
+                            input => ParseRandomDistAddItem(input, unitVariableName),
+                        });
+                    }
+
+                    Context.HandledStatements.Add(input.Statement);
                 }
             }
-
-            startLocationPositions = result;
-            return true;
         }
 
-        private bool TryDecompileInitCustomPlayerSlotsFunction(
-            JassFunctionDeclarationSyntax initCustomPlayerSlotsFunction,
-            Dictionary<int, Vector2> startLocationPositions,
-            [NotNullWhen(true)] out List<UnitData>? startLocations)
+        private void ParseRandomDistReset(StatementParserInput input, string unitVariableName)
         {
-            var result = new List<UnitData>();
-
-            foreach (var statement in initCustomPlayerSlotsFunction.Body.Statements)
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "RandomDistReset")
+            .SafeMapFirst(x =>
             {
-                if (statement is JassCommentSyntax ||
-                    statement is JassEmptySyntax)
-                {
-                    continue;
-                }
-                else if (statement is JassCallStatementSyntax callStatement)
-                {
-                    if (string.Equals(callStatement.IdentifierName.Name, "SetPlayerStartLocation", StringComparison.Ordinal))
-                    {
-                        if (callStatement.Arguments.Arguments.Length == 2 &&
-                            callStatement.Arguments.Arguments[0] is JassInvocationExpressionSyntax playerInvocationExpression &&
-                            string.Equals(playerInvocationExpression.IdentifierName.Name, "Player", StringComparison.Ordinal) &&
-                            playerInvocationExpression.Arguments.Arguments.Length == 1 &&
-                            playerInvocationExpression.Arguments.Arguments[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId) &&
-                            callStatement.Arguments.Arguments[1].TryGetIntegerExpressionValue(out var startLocationNumber) &&
-                            startLocationPositions.TryGetValue(startLocationNumber, out var startLocationPosition))
-                        {
-                            var unit = new UnitData
-                            {
-                                OwnerId = playerId,
-                                TypeId = "sloc".FromRawcode(),
-                                Position = new Vector3(startLocationPosition, 0f),
-                                Rotation = MathF.PI * 1.5f,
-                                Scale = Vector3.One,
-                                Flags = 2,
-                                GoldAmount = 12500,
-                                HeroLevel = 0,
-                                TargetAcquisition = 0,
-                                CreationNumber = CreationNumber++
-                            };
+                return new RandomItemSet();
+            });
 
-                            unit.SkinId = unit.TypeId;
-
-                            result.Add(unit);
-                        }
-                        else
-                        {
-                            startLocations = null;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(unitVariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
                 {
-                    startLocations = null;
-                    return false;
+                    unit.ItemTableSets.Add(match);
+                }
+                Context.Add(match);
+                Context.HandledStatements.Add(input.Statement);
+            }
+        }
+
+        private void ParseRandomDistAddItem(StatementParserInput input, string unitVariableName)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "RandomDistAddItem")
+            .SafeMapFirst(x =>
+            {
+                return new RandomItemSetItem()
+                {
+                    ItemId = x.Arguments.Arguments[0].GetValueOrDefault<int>().InvertEndianness(),
+                    Chance = x.Arguments.Arguments[1].GetValueOrDefault<int>(),
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(unitVariableName) ?? Context.GetLastCreated<UnitData>();
+                if (unit != null)
+                {
+                    var itemSet = unit.ItemTableSets.LastOrDefault();
+                    if (itemSet != null)
+                    {
+                        itemSet.Items.Add(match);
+                        Context.HandledStatements.Add(input.Statement);
+                    }
                 }
             }
+        }
 
-            startLocations = result;
-            return true;
+        [RegisterStatementParser]
+        internal void ParseItemCreation(StatementParserInput input)
+        {
+            var variableAssignment = GetVariableAssignment(input.StatementChildren);
+            var unitData = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "CreateItem" || x.IdentifierName.Name == "BlzCreateItemWithSkin").SafeMapFirst(x =>
+            {
+                var args = x.Arguments.Arguments;
+
+                if (!args[0].TryGetValue<int>(out var typeId))
+                {
+                    return null;
+                }
+
+                var result = new UnitData
+                {
+                    OwnerId = Context.MaxPlayerSlots + 3, // NEUTRAL_PASSIVE
+                    TypeId = typeId.InvertEndianness(),
+                    Position = new Vector3(
+                            args[1].GetValueOrDefault<float>(),
+                            args[2].GetValueOrDefault<float>(),
+                            0f
+                        ),
+                    Rotation = 0,
+                    Scale = Vector3.One,
+                    Flags = 2,
+                    GoldAmount = 12500,
+                    HeroLevel = 1,
+                    CreationNumber = Context.GetNextCreationNumber()
+                };
+
+                result.SkinId = args.Length > 3 ? args[3].GetValueOrDefault<int>() : result.TypeId;
+
+                return result;
+            });
+
+            if (unitData != null)
+            {
+                Context.Add(unitData, variableAssignment);
+                Context.HandledStatements.Add(input.Statement);
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseDefineStartLocation(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "DefineStartLocation")
+            .SafeMapFirst(x =>
+            {
+                return new
+                {
+                    Index = x.Arguments.Arguments[0].GetValueOrDefault<int>(),
+                    Location = new Vector2(x.Arguments.Arguments[1].GetValueOrDefault<float>(), x.Arguments.Arguments[2].GetValueOrDefault<float>())
+                };
+            });
+
+            if (match != null)
+            {
+                Context.Add_Struct(match.Location, Context.CreatePseudoVariableName(nameof(ParseDefineStartLocation), match.Index.ToString()));
+                Context.HandledStatements.Add(input.Statement);
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseSetPlayerStartLocation(StatementParserInput input)
+        {
+            var variableAssignment = GetVariableAssignment(input.StatementChildren);
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+               x.IdentifierName.Name == "SetPlayerStartLocation")
+           .SafeMapFirst(x =>
+           {
+               int? playerId = GetPlayerIndex(x.Arguments.Arguments[0]) ?? GetLastCreatedPlayerIndex();
+
+               if (playerId == null)
+               {
+                   return null;
+               }
+
+               var startLocationIndex = x.Arguments.Arguments[1].GetValueOrDefault<int>();
+               var startLocationPosition = Context.Get_Struct<Vector2>(Context.CreatePseudoVariableName(nameof(ParseDefineStartLocation), startLocationIndex.ToString()));
+
+               if (startLocationPosition == null)
+               {
+                   return null;
+               }
+
+               var args = x.Arguments.Arguments;
+               var result = new UnitData
+               {
+                   OwnerId = playerId.Value,
+                   TypeId = "sloc".FromRawcode(),
+                   Position = new Vector3(startLocationPosition.Value, 0f),
+                   Rotation = MathF.PI * 1.5f,
+                   Scale = Vector3.One,
+                   Flags = 2,
+                   GoldAmount = 12500,
+                   HeroLevel = 0,
+                   TargetAcquisition = 0,
+                   CreationNumber = Context.GetNextCreationNumber()
+               };
+
+               result.SkinId = result.TypeId;
+
+               return result;
+           });
+
+            if (match != null)
+            {
+                Context.Add(match, variableAssignment);
+                Context.HandledStatements.Add(input.Statement);
+            }
+        }
+
+        [RegisterStatementParser]
+        internal void ParseWaygateDestination(StatementParserInput input)
+        {
+            var match = input.StatementChildren.OfType<IInvocationSyntax>().Where(x =>
+                x.IdentifierName.Name == "WaygateSetDestination")
+            .SafeMapFirst(x =>
+            {
+                var regionVariableName = input.StatementChildren.OfType<IInvocationSyntax>().Where(x => x.IdentifierName.Name == "GetRectCenterX" || x.IdentifierName.Name == "GetRectCenterY").SafeMapFirst(x => ((JassVariableReferenceExpressionSyntax)x.Arguments.Arguments[0]).IdentifierName.Name);
+                if (regionVariableName == null)
+                {
+                    var destination = new Vector2(x.Arguments.Arguments[1].GetValueOrDefault<float>(), x.Arguments.Arguments[2].GetValueOrDefault<float>());
+                    var region = Context.GetAll<Region>().LastOrDefault(x => x.CenterX == destination.X && x.CenterY == destination.Y);
+                    regionVariableName = Context.GetVariableName(region);
+                }
+
+                return new
+                {
+                    UnitVariableName = (x.Arguments.Arguments[0] as JassVariableReferenceExpressionSyntax)?.IdentifierName?.Name,
+                    RegionVariableName = regionVariableName
+                };
+            });
+
+            if (match != null)
+            {
+                var unit = Context.Get<UnitData>(match.UnitVariableName) ?? Context.GetLastCreated<UnitData>();
+                var region = Context.Get<Region>(match.RegionVariableName) ?? Context.GetLastCreated<Region>();
+                if (unit != null && region != null)
+                {
+                    unit.WaygateDestinationRegionId = region.CreationNumber;
+                    Context.HandledStatements.Add(input.Statement);
+                }
+            }
         }
     }
 }

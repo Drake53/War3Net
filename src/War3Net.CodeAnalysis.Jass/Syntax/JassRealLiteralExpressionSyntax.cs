@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassRealLiteralExpressionSyntax : IExpressionSyntax
+    public class JassRealLiteralExpressionSyntax : IExpressionSyntax, IJassSyntaxToken
     {
 #if true
         public JassRealLiteralExpressionSyntax(string intPart, string fracPart)

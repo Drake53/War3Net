@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationListSyntax : ITopLevelDeclarationSyntax
+    public class JassGlobalDeclarationListSyntax : ITopLevelDeclarationSyntax, IJassSyntaxToken
     {
         public JassGlobalDeclarationListSyntax(ImmutableArray<IGlobalDeclarationSyntax> globals)
         {

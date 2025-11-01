@@ -9,7 +9,7 @@ using System;
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassIdentifierNameSyntax : IEquatable<JassIdentifierNameSyntax>
+    public class JassIdentifierNameSyntax : IEquatable<JassIdentifierNameSyntax>, IJassSyntaxToken
     {
         public JassIdentifierNameSyntax(string name)
         {
