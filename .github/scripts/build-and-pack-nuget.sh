@@ -108,7 +108,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       fi
 
       # Get the version - submodule projects use <Version> property, main projects use CPM
-      if [[ "$project" == *"/submodules/"* ]]; then
+      if [[ "$project" == *submodules/* ]]; then
         # Submodule projects have their own Version property
         VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
       else
@@ -119,7 +119,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
 
       if [ -z "$VERSION" ]; then
         echo "❌ ERROR: Could not extract version from $PACKAGE_ID, skipping"
-        if [[ "$project" == *"/submodules/"* ]]; then
+        if [[ "$project" == *submodules/* ]]; then
           echo "  Make sure the project has a <Version> property defined"
         else
           echo "  Make sure the project has a version defined in Directory.Packages.props"
