@@ -1,6 +1,6 @@
 <Project>
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+    <PackageReference Include="StyleCop.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -9,10 +9,10 @@
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
   </ItemGroup>
   <ItemGroup Condition="'$(PACK)'!='true'">
-    <Content Include="$(MSBuildThisFileDirectory)LICENSE">
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Visible="false" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="README.md" />
@@ -32,29 +32,5 @@
   <PropertyGroup>
     <TfmGroupDotNet>net5.0</TfmGroupDotNet>
     <TfmGroupDotNetWindows>net5.0;net5.0-windows</TfmGroupDotNetWindows>
-    <War3NetBuildVersion>5.8.2</War3NetBuildVersion>
-    <War3NetBuildCoreVersion>5.8.2</War3NetBuildCoreVersion>
-    <War3NetCodeAnalysisVersion>5.8.0</War3NetCodeAnalysisVersion>
-    <War3NetCodeAnalysisDecompilersVersion>5.8.2</War3NetCodeAnalysisDecompilersVersion>
-    <War3NetCodeAnalysisJassVersion>5.8.0</War3NetCodeAnalysisJassVersion>
-    <War3NetCodeAnalysisTranspilersVersion>5.8.0</War3NetCodeAnalysisTranspilersVersion>
-    <War3NetCodeAnalysisVJassVersion>0.1.0</War3NetCodeAnalysisVJassVersion>
-    <War3NetCommonVersion>5.8.0</War3NetCommonVersion>
-    <War3NetDrawingBlpVersion>5.9.0</War3NetDrawingBlpVersion>
-    <War3NetIOCascVersion>0.1.0</War3NetIOCascVersion>
-    <War3NetIOCompressionVersion>5.8.0</War3NetIOCompressionVersion>
-    <War3NetIOMpqVersion>5.8.1</War3NetIOMpqVersion>
-    <War3NetIOSlkVersion>5.8.1</War3NetIOSlkVersion>
-    <War3NetModelingVersion>0.1.0</War3NetModelingVersion>
-    <!--
-    <War3NetRenderingVersion></War3NetRenderingVersion>
-    <War3NetReplayVersion></War3NetReplayVersion>
-    <War3NetRuntimeVersion></War3NetRuntimeVersion>
-    <War3NetRuntimeApiBlizzardVersion></War3NetRuntimeApiBlizzardVersion>
-    <War3NetRuntimeApiCommonVersion></War3NetRuntimeApiCommonVersion>
-    <War3NetRuntimeCoreVersion></War3NetRuntimeCoreVersion>
-    -->
-    <War3NetCSharpLuaVersion>2.0.1</War3NetCSharpLuaVersion>
-    <War3NetCSharpLuaCoreSystemVersion>2.0.1</War3NetCSharpLuaCoreSystemVersion>
   </PropertyGroup>
 </Project>

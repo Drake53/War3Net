@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
-    <Version>$(War3NetCodeAnalysisTranspilersVersion)</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
-    <PackageReference Include="War3Net.CSharpLua" Version="$(War3NetCSharpLuaVersion)" />
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" />
+    <PackageReference Include="War3Net.CSharpLua" />
   </ItemGroup>
 
 </Project>

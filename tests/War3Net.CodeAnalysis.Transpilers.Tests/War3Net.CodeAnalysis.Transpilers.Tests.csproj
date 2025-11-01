@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Transpilers" Version="$(War3NetCodeAnalysisTranspilersVersion)" />
+    <PackageReference Include="War3Net.CodeAnalysis.Transpilers" />
   </ItemGroup>
 
 </Project>

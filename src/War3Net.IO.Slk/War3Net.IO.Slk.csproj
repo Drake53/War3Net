@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
-    <Version>$(War3NetIOSlkVersion)</Version>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <Description>Library for opening and creating files in SLK format.</Description>
     <PackageTags>slk;warcraft3</PackageTags>
@@ -15,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Common" Version="$(War3NetCommonVersion)" />
+    <PackageReference Include="War3Net.Common" />
   </ItemGroup>
 
 </Project>

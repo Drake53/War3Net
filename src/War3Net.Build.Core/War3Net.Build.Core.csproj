@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
-    <Version>$(War3NetBuildCoreVersion)</Version>
     <RootNamespace>War3Net.Build</RootNamespace>
   </PropertyGroup>
 
@@ -18,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.Jass" Version="$(War3NetCodeAnalysisJassVersion)" />
-    <PackageReference Include="War3Net.IO.Mpq" Version="$(War3NetIOMpqVersion)" />
-    <PackageReference Include="War3Net.IO.Slk" Version="$(War3NetIOSlkVersion)" />
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" />
+    <PackageReference Include="War3Net.IO.Mpq" />
+    <PackageReference Include="War3Net.IO.Slk" />
   </ItemGroup>
 
   <ItemGroup>
