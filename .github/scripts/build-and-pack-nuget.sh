@@ -7,6 +7,9 @@ set -e
 SKIP_VERSION_CHECK=false
 [[ "$1" == "--skip-version-check" ]] && SKIP_VERSION_CHECK=true
 
+# Track version extraction failures
+VERSION_EXTRACTION_FAILURES=0
+
 # Create artifacts directory for local NuGet feed
 mkdir -p ./artifacts
 
@@ -124,6 +127,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
         else
           echo "  Make sure the project has a version defined in Directory.Packages.props"
         fi
+        VERSION_EXTRACTION_FAILURES=$((VERSION_EXTRACTION_FAILURES + 1))
         SHOULD_BUILD=false
       else
         echo "Checking if $PACKAGE_ID $VERSION exists on NuGet.org..."
@@ -180,6 +184,13 @@ PACKAGE_COUNT=$(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)
 echo ""
 echo "=== Build Summary ==="
 echo "Successfully created $PACKAGE_COUNT package(s)"
+
+# Exit with error if any version extractions failed
+if [ $VERSION_EXTRACTION_FAILURES -gt 0 ]; then
+  echo ""
+  echo "❌ ERROR: Failed to extract version for $VERSION_EXTRACTION_FAILURES project(s)"
+  exit 1
+fi
 
 # Only create zip and check for updates when NOT skipping version check
 if [ "$SKIP_VERSION_CHECK" = false ]; then
