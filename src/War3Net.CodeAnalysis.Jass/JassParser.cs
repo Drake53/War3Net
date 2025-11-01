@@ -164,6 +164,8 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal Parser<char, JassExpressionSyntax> ExpressionParser => _expressionParser;
 
+        internal Parser<char, JassFunctionDeclarationSyntax> FunctionDeclarationParser => throw new NotImplementedException("FunctionDeclarationParser is not supported in the new syntax system. Use TopLevelDeclarationParser instead.");
+
         internal Parser<char, JassGlobalDeclarationSyntax> GlobalDeclarationParser => _globalDeclarationParser;
 
         internal Parser<char, JassIdentifierNameSyntax> IdentifierNameParser => _identifierNameParser;

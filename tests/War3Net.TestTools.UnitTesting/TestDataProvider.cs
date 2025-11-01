@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+// #define ENABLE_WEB_CAPABILITIES
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,7 +98,9 @@ namespace War3Net.TestTools.UnitTesting
                 }
                 else
                 {
+#if ENABLE_WEB_CAPABILITIES
                     DownloadTestData(directory);
+#endif
                 }
             }
 
