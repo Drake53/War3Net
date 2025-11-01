@@ -34,6 +34,13 @@ namespace War3Net.CodeAnalysis
 
         public ImmutableArray<TSeparator> Separators => _separators;
 
+        public bool IsEmpty => _items.IsEmpty;
+
+        public static SeparatedSyntaxList<TItem, TSeparator> Create(TItem item)
+        {
+            return new SeparatedSyntaxList<TItem, TSeparator>(ImmutableArray.Create(item), ImmutableArray<TSeparator>.Empty);
+        }
+
         public static SeparatedSyntaxList<TItem, TSeparator> Create(ImmutableArray<TItem> items, ImmutableArray<TSeparator> separators)
         {
             if (items.IsEmpty)
@@ -42,6 +49,8 @@ namespace War3Net.CodeAnalysis
                 {
                     throw new ArgumentException("Separators must be empty if items is empty.", nameof(separators));
                 }
+
+                return Empty;
             }
             else if (items.Length - 1 != separators.Length)
             {
@@ -54,6 +63,16 @@ namespace War3Net.CodeAnalysis
         public static Builder CreateBuilder(TItem firstItem)
         {
             return new Builder(firstItem);
+        }
+
+        public static Builder CreateBuilder(TItem firstItem, int initialCapacity)
+        {
+            if (initialCapacity < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+            }
+
+            return new Builder(firstItem, initialCapacity);
         }
 
         public override string ToString()
@@ -86,6 +105,13 @@ namespace War3Net.CodeAnalysis
                 _itemBuilder = ImmutableArray.CreateBuilder<TItem>();
                 _itemBuilder.Add(firstItem);
                 _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>();
+            }
+
+            internal Builder(TItem firstItem, int initialCapacity)
+            {
+                _itemBuilder = ImmutableArray.CreateBuilder<TItem>(initialCapacity);
+                _itemBuilder.Add(firstItem);
+                _separatorBuilder = ImmutableArray.CreateBuilder<TSeparator>(initialCapacity - 1);
             }
 
             public void Add(TSeparator separator, TItem item)

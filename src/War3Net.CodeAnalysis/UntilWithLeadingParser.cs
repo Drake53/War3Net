@@ -113,6 +113,10 @@ namespace War3Net.CodeAnalysis
 
                 if (state.Location <= itemStartLoc)
                 {
+                    leadingExpecteds.Dispose();
+                    closeExpecteds.Dispose();
+                    itemExpecteds.Dispose();
+
                     throw new InvalidOperationException("UntilWithLeading() used with a parser which consumed no input");
                 }
 

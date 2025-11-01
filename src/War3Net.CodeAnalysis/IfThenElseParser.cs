@@ -185,6 +185,12 @@ namespace War3Net.CodeAnalysis
 
                         if (state.Location <= terminatorStartLoc)
                         {
+                            leadingExpecteds.Dispose();
+                            elseIfExpecteds.Dispose();
+                            elseExpecteds.Dispose();
+                            endIfExpecteds.Dispose();
+                            itemExpecteds.Dispose();
+
                             throw new InvalidOperationException("IfThenElse() used with an elseif parser which consumed no input");
                         }
 
@@ -252,6 +258,12 @@ namespace War3Net.CodeAnalysis
 
                 if (state.Location <= itemStartLoc)
                 {
+                    leadingExpecteds.Dispose();
+                    elseIfExpecteds.Dispose();
+                    elseExpecteds.Dispose();
+                    endIfExpecteds.Dispose();
+                    itemExpecteds.Dispose();
+
                     throw new InvalidOperationException("IfThenElse() used with a parser which consumed no input");
                 }
 
