@@ -107,14 +107,23 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
         PACKAGE_ID="$PROJECT_NAME"
       fi
 
-      # Get the version - with CPM, the version is set by the SetProjectVersionsFromCentralPackageManagement target
-      # Run the target to set PackageVersion property, then extract it
-      # We suppress stderr as GetAssemblyVersion task may not be found but PackageVersion is still set correctly
-      VERSION=$(dotnet msbuild "$project" -t:SetProjectVersionsFromCentralPackageManagement -getProperty:PackageVersion -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
+      # Get the version - submodule projects use <Version> property, main projects use CPM
+      if [[ "$project" == *"/submodules/"* ]]; then
+        # Submodule projects have their own Version property
+        VERSION=$(dotnet msbuild "$project" -getProperty:Version -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
+      else
+        # Main projects use CPM - the version is set by the SetProjectVersionsFromCentralPackageManagement target
+        # We suppress stderr as GetAssemblyVersion task may not be found but PackageVersion is still set correctly
+        VERSION=$(dotnet msbuild "$project" -t:SetProjectVersionsFromCentralPackageManagement -getProperty:PackageVersion -p:Configuration=Release -nologo 2>/dev/null | grep -v "^$" | tail -1)
+      fi
 
       if [ -z "$VERSION" ]; then
-        echo "❌ ERROR: Could not extract version from $PROJECT_NAME, skipping"
-        echo "  Make sure the project has a version defined in Directory.Packages.props"
+        echo "❌ ERROR: Could not extract version from $PACKAGE_ID, skipping"
+        if [[ "$project" == *"/submodules/"* ]]; then
+          echo "  Make sure the project has a <Version> property defined"
+        else
+          echo "  Make sure the project has a version defined in Directory.Packages.props"
+        fi
         SHOULD_BUILD=false
       else
         echo "Checking if $PACKAGE_ID $VERSION exists on NuGet.org..."
