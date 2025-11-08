@@ -1,11 +1,12 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="HexadecimalLiteralExpressionTranspiler.cs" company="Drake53">
+// <copyright file="GlobalsDeclarationTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Generic;
+
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -14,9 +15,12 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public ExpressionSyntax Transpile(JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression)
+        public IEnumerable<MemberDeclarationSyntax> Transpile(JassGlobalsDeclarationSyntax globalsDeclaration)
         {
-            return SyntaxFactory.ParseExpression(hexadecimalLiteralExpression.ToString());
+            foreach (var declaration in globalsDeclaration.GlobalDeclarations)
+            {
+                yield return Transpile(declaration);
+            }
         }
     }
 }

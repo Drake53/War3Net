@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -16,7 +15,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ExpressionSyntax Transpile(JassFunctionReferenceExpressionSyntax functionReferenceExpression)
         {
-            return SyntaxFactory.IdentifierName(Transpile(functionReferenceExpression.IdentifierName));
+            return Transpile(functionReferenceExpression.IdentifierName);
         }
     }
 }

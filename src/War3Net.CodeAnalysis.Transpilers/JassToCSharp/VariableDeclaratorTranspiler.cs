@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public VariableDeclarationSyntax Transpile(IVariableDeclaratorSyntax declarator)
+        public VariableDeclarationSyntax Transpile(JassVariableOrArrayDeclaratorSyntax declarator)
         {
             return declarator switch
             {
@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 return SyntaxFactory.VariableDeclaration(
                     type,
                     SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(
-                        Transpile(variableDeclarator.IdentifierName),
+                        Transpile(variableDeclarator.IdentifierName.Token),
                         null,
                         SyntaxFactory.EqualsValueClause(SyntaxFactory.DefaultExpression(type)))));
             }
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 return SyntaxFactory.VariableDeclaration(
                     type,
                     SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(
-                        Transpile(variableDeclarator.IdentifierName),
+                        Transpile(variableDeclarator.IdentifierName.Token),
                         null,
                         Transpile(variableDeclarator.Value))));
             }

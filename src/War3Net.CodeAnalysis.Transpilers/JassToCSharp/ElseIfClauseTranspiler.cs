@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -18,8 +20,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.IfStatement(
                 SyntaxFactory.List<AttributeListSyntax>(),
-                Transpile(elseIfClause.Condition),
-                SyntaxFactory.Block(Transpile(elseIfClause.Body)),
+                Transpile(elseIfClause.ElseIfClauseDeclarator.Condition),
+                SyntaxFactory.Block(elseIfClause.Statements.Select(Transpile)),
                 elseClause);
         }
     }

@@ -15,9 +15,9 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaExpressionSyntax Transpile(JassFunctionReferenceExpressionSyntax functionReferenceExpression, out JassTypeSyntax type)
         {
-            type = JassTypeSyntax.Code;
+            type = JassPredefinedTypeSyntax.Code;
 
-            return Transpile(functionReferenceExpression.IdentifierName);
+            return Transpile(functionReferenceExpression.IdentifierName, out _);
         }
     }
 }

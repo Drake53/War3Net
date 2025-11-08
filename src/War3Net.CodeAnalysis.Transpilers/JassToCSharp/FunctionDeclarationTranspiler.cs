@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,13 +24,13 @@ namespace War3Net.CodeAnalysis.Transpilers
                 new SyntaxTokenList(
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
-                Transpile(functionDeclaration.FunctionDeclarator.ReturnType),
+                Transpile(functionDeclaration.FunctionDeclarator.ReturnClause.ReturnType),
                 null,
-                Transpile(functionDeclaration.FunctionDeclarator.IdentifierName),
+                Transpile(functionDeclaration.FunctionDeclarator.IdentifierName.Token),
                 null,
                 SyntaxFactory.ParameterList(Transpile(functionDeclaration.FunctionDeclarator.ParameterList)),
                 default,
-                SyntaxFactory.Block(Transpile(functionDeclaration.Body)),
+                SyntaxFactory.Block(functionDeclaration.Statements.Select(Transpile)),
                 null);
         }
     }

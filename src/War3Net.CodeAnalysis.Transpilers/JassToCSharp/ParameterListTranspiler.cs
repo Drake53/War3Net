@@ -17,9 +17,18 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
+        public SeparatedSyntaxList<ParameterSyntax> Transpile(JassParameterListOrEmptyParameterListSyntax parameterListOrEmptyParameterList)
+        {
+            return parameterListOrEmptyParameterList switch
+            {
+                JassParameterListSyntax parameterList => Transpile(parameterList),
+                JassEmptyParameterListSyntax => SyntaxFactory.SeparatedList<ParameterSyntax>(),
+            };
+        }
+
         public SeparatedSyntaxList<ParameterSyntax> Transpile(JassParameterListSyntax parameterList)
         {
-            return SyntaxFactory.SeparatedList(parameterList.Parameters.Select(Transpile));
+            return SyntaxFactory.SeparatedList(parameterList.ParameterList.Items.Select(Transpile));
         }
     }
 }

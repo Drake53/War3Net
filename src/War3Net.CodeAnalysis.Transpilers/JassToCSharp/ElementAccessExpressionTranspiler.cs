@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CommentTranspiler.cs" company="Drake53">
+// <copyright file="ElementAccessExpressionTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,9 +14,11 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public StatementSyntax Transpile(JassCommentSyntax comment)
+        public ExpressionSyntax Transpile(JassElementAccessExpressionSyntax elementAccessExpression)
         {
-            return SyntaxFactory.ParseStatement(comment.ToString());
+            return SyntaxFactory.ElementAccessExpression(
+                Transpile(elementAccessExpression.IdentifierName),
+                SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(elementAccessExpression.ElementAccessClause.Expression)))));
         }
     }
 }

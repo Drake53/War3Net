@@ -18,17 +18,58 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public MemberDeclarationSyntax Transpile(JassGlobalDeclarationSyntax globalDeclaration)
         {
+            return globalDeclaration switch
+            {
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(globalConstantDeclaration),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(globalVariableDeclaration),
+            };
+        }
+
+        public MemberDeclarationSyntax Transpile(JassGlobalConstantDeclarationSyntax globalConstantDeclaration)
+        {
+            var variableDeclaration = SyntaxFactory.VariableDeclaration(
+                Transpile(globalConstantDeclaration.Type),
+                SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(
+                    Transpile(globalConstantDeclaration.IdentifierName.Token),
+                    null,
+                    Transpile(globalConstantDeclaration.Value))));
+
+            var declaration = SyntaxFactory.FieldDeclaration(
+                default,
+                new SyntaxTokenList(
+                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                    SyntaxFactory.Token(SyntaxKind.ConstKeyword)),
+                variableDeclaration);
+
+            if (ApplyCSharpLuaTemplateAttribute)
+            {
+                var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
+
+                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(globalConstantDeclaration.IdentifierName.Token));
+            }
+
+            return declaration;
+        }
+
+        public MemberDeclarationSyntax Transpile(JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
+        {
             var declaration = SyntaxFactory.FieldDeclaration(
                 default,
                 new SyntaxTokenList(
                     SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
-                Transpile(globalDeclaration.Declarator));
+                Transpile(globalVariableDeclaration.Declarator));
 
             if (ApplyCSharpLuaTemplateAttribute)
             {
                 var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
-                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(globalDeclaration.Declarator.IdentifierName));
+                var token = globalVariableDeclaration.Declarator switch
+                {
+                    JassArrayDeclaratorSyntax arrayDeclarator => arrayDeclarator.IdentifierName.Token,
+                    JassVariableDeclaratorSyntax variableDeclarator => variableDeclarator.IdentifierName.Token,
+                };
+
+                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(token));
             }
 
             return declaration;

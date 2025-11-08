@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             return SyntaxFactory.VariableDeclaration(
                 SyntaxFactory.ArrayType(type),
                 SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(
-                    Transpile(arrayDeclarator.IdentifierName),
+                    Transpile(arrayDeclarator.IdentifierName.Token),
                     null,
                     SyntaxFactory.EqualsValueClause(SyntaxFactory.ArrayCreationExpression(SyntaxFactory.ArrayType(type))))));
         }

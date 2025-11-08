@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             RegisterLocalVariableType(parameter);
 
-            return Transpile(parameter.IdentifierName);
+            return Transpile(parameter.IdentifierName, out _);
         }
     }
 }

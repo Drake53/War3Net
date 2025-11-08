@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -18,7 +20,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.WhileStatement(
                 SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression),
-                SyntaxFactory.Block(Transpile(loopStatement.Body)));
+                SyntaxFactory.Block(loopStatement.Statements.Select(Transpile)));
         }
     }
 }

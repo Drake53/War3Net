@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ElseClauseSyntax Transpile(JassElseClauseSyntax elseClause)
         {
-            return SyntaxFactory.ElseClause(SyntaxFactory.Block(Transpile(elseClause.Body)));
+            return SyntaxFactory.ElseClause(SyntaxFactory.Block(elseClause.Statements.Select(Transpile)));
         }
     }
 }

@@ -7,6 +7,7 @@
 
 using CSharpLua.LuaAst;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -17,7 +18,17 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return new LuaPrefixUnaryExpressionSyntax(
                 Transpile(unaryExpression.Expression, out type),
-                Transpile(unaryExpression.Operator));
+                TranspileUnaryExpressionKind(unaryExpression.SyntaxKind));
+        }
+
+        public string TranspileUnaryExpressionKind(JassSyntaxKind expressionKind)
+        {
+            return expressionKind switch
+            {
+                JassSyntaxKind.UnaryPlusExpression => LuaSyntaxNode.Tokens.Plus,
+                JassSyntaxKind.UnaryMinusExpression => LuaSyntaxNode.Tokens.Sub,
+                JassSyntaxKind.LogicalNotExpression => LuaSyntaxNode.Keyword.Not,
+            };
         }
     }
 }

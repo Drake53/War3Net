@@ -8,6 +8,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -17,8 +18,18 @@ namespace War3Net.CodeAnalysis.Transpilers
         public ExpressionSyntax Transpile(JassUnaryExpressionSyntax unaryExpression)
         {
             return SyntaxFactory.PrefixUnaryExpression(
-                Transpile(unaryExpression.Operator),
+                TranspileUnaryExpressionKind(unaryExpression.SyntaxKind),
                 Transpile(unaryExpression.Expression));
+        }
+
+        public SyntaxKind TranspileUnaryExpressionKind(JassSyntaxKind expressionKind)
+        {
+            return expressionKind switch
+            {
+                JassSyntaxKind.UnaryPlusExpression => SyntaxKind.UnaryPlusExpression,
+                JassSyntaxKind.UnaryMinusExpression => SyntaxKind.UnaryMinusExpression,
+                JassSyntaxKind.LogicalNotExpression => SyntaxKind.LogicalNotExpression,
+            };
         }
     }
 }

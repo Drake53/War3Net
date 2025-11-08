@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public MemberDeclarationSyntax Transpile(JassTypeDeclarationSyntax typeDeclaration)
         {
-            var identifier = Transpile(typeDeclaration.IdentifierName);
+            var identifier = Transpile(typeDeclaration.IdentifierName.Token);
             var baseList = SyntaxFactory.BaseList(SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(SyntaxFactory.SimpleBaseType(Transpile(typeDeclaration.BaseType))));
 
             return SyntaxFactory.ClassDeclaration(

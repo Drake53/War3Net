@@ -17,9 +17,9 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             type = GetFunctionReturnType(invocationExpression.IdentifierName);
 
-            var luaInvocationExpression = new LuaInvocationExpressionSyntax(Transpile(invocationExpression.IdentifierName));
+            var luaInvocationExpression = new LuaInvocationExpressionSyntax(Transpile(invocationExpression.IdentifierName, out _));
 
-            luaInvocationExpression.AddArguments(Transpile(invocationExpression.Arguments));
+            luaInvocationExpression.AddArguments(Transpile(invocationExpression.ArgumentList));
 
             return luaInvocationExpression;
         }
