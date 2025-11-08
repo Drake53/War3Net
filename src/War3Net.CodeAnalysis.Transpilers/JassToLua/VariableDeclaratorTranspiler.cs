@@ -37,7 +37,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 ? LuaIdentifierLiteralExpressionSyntax.Nil
                 : Transpile(variableDeclarator.Value);
 
-            return new LuaVariableDeclaratorSyntax(Transpile(variableDeclarator.IdentifierName, out _), expression);
+            return new LuaVariableDeclaratorSyntax(Transpile(variableDeclarator.IdentifierName), expression);
         }
     }
 }

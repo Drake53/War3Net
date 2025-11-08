@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return new LuaAssignmentExpressionSyntax(
                 setStatement.ElementAccessClause is null
-                    ? Transpile(setStatement.IdentifierName, out _)
-                    : new LuaTableIndexAccessExpressionSyntax(Transpile(setStatement.IdentifierName, out _), Transpile(setStatement.ElementAccessClause.Expression, out _)),
+                    ? Transpile(setStatement.IdentifierName)
+                    : new LuaTableIndexAccessExpressionSyntax(Transpile(setStatement.IdentifierName), Transpile(setStatement.ElementAccessClause.Expression, out _)),
                 Transpile(setStatement.Value.Expression, out _));
         }
     }

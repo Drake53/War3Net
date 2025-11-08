@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             var expression = Transpile(globalConstantDeclaration.Value);
 
-            var luaDeclarator = new LuaVariableDeclaratorSyntax(Transpile(globalConstantDeclaration.IdentifierName, out _), expression);
+            var luaDeclarator = new LuaVariableDeclaratorSyntax(Transpile(globalConstantDeclaration.IdentifierName), expression);
             luaDeclarator.IsLocalDeclaration = false;
 
             var declaration = new LuaVariableListDeclarationSyntax();

@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         public LuaStatementSyntax Transpile(JassCallStatementSyntax callStatement)
         {
             return new LuaInvocationExpressionSyntax(
-                Transpile(callStatement.IdentifierName, out _),
+                Transpile(callStatement.IdentifierName),
                 Transpile(callStatement.ArgumentList));
         }
     }

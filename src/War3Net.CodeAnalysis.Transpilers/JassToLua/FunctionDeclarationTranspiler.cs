@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             ClearLocalTypes();
 
-            var luaFunctionDeclaration = new LuaVariableDeclaratorSyntax(Transpile(functionDeclaration.FunctionDeclarator.IdentifierName, out _), functionExpression);
+            var luaFunctionDeclaration = new LuaVariableDeclaratorSyntax(Transpile(functionDeclaration.FunctionDeclarator.IdentifierName), functionExpression);
             luaFunctionDeclaration.IsLocalDeclaration = false;
 
             var declaration = new LuaVariableListDeclarationSyntax();

@@ -43,9 +43,15 @@ namespace War3Net.CodeAnalysis.Transpilers
                 {
                     foreach (var globalDeclaration in globalsDeclaration.GlobalDeclarations)
                     {
-                        if (globalDeclaration is JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
+                        switch (globalDeclaration)
                         {
-                            RegisterVariableType(globalVariableDeclaration.Declarator, false);
+                            case JassGlobalConstantDeclarationSyntax globalConstantDeclaration:
+                                RegisterVariableType(globalConstantDeclaration);
+                                break;
+
+                            case JassGlobalVariableDeclarationSyntax globalVariableDeclaration:
+                                RegisterVariableType(globalVariableDeclaration.Declarator, false);
+                                break;
                         }
                     }
                 }

@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             type = GetVariableType(elementAccessExpression.IdentifierName);
 
             return new LuaTableIndexAccessExpressionSyntax(
-                Transpile(elementAccessExpression.IdentifierName, out _),
+                Transpile(elementAccessExpression.IdentifierName),
                 Transpile(elementAccessExpression.ElementAccessClause.Expression, out _));
         }
     }

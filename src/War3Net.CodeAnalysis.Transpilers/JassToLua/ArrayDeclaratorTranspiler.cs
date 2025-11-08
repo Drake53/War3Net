@@ -25,7 +25,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 _ => new LuaTableExpression(),
             };
 
-            return new LuaVariableDeclaratorSyntax(Transpile(arrayDeclarator.IdentifierName, out _), expression);
+            return new LuaVariableDeclaratorSyntax(Transpile(arrayDeclarator.IdentifierName), expression);
         }
     }
 }

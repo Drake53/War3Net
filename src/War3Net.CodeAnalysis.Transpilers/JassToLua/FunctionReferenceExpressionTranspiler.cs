@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             type = JassPredefinedTypeSyntax.Code;
 
-            return Transpile(functionReferenceExpression.IdentifierName, out _);
+            return Transpile(functionReferenceExpression.IdentifierName);
         }
     }
 }
