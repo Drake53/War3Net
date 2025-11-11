@@ -59,5 +59,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         }
 
         public override string ToString() => Text;
+
+        public string ToFullString() => $"{LeadingTrivia}{Text}{TrailingTrivia}";
     }
 }

@@ -45,5 +45,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         protected internal abstract JassSyntaxNode ReplaceFirstToken(JassSyntaxToken newToken);
 
         protected internal abstract JassSyntaxNode ReplaceLastToken(JassSyntaxToken newToken);
+
+        public string ToFullString()
+        {
+            using var writer = new StringWriter();
+            WriteTo(writer);
+            return writer.ToString();
+        }
     }
 }

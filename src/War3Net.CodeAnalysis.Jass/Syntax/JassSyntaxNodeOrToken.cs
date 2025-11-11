@@ -135,5 +135,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 ? $"Node: {_node}"
                 : $"Token: {_token}";
         }
+
+        public string ToFullString()
+        {
+            return TryPickNode(out var node, out var token)
+                ? node.ToFullString()
+                : token.ToFullString();
+        }
     }
 }
