@@ -46,8 +46,7 @@ namespace War3Net.CodeAnalysis.Jass
                             callStatementParser,
                             ifStatementParser,
                             loopStatementParser,
-                            triviaParser,
-                            trailingTriviaParser));
+                            triviaParser));
                 });
         }
     }

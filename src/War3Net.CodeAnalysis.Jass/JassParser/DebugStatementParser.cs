@@ -21,20 +21,18 @@ namespace War3Net.CodeAnalysis.Jass
             Parser<char, JassStatementSyntax> callStatementParser,
             Parser<char, JassStatementSyntax> ifStatementParser,
             Parser<char, JassStatementSyntax> loopStatementParser,
-            Parser<char, JassSyntaxTriviaList> triviaParser,
-            Parser<char, JassSyntaxTriviaList> trailingTriviaParser)
+            Parser<char, JassSyntaxTriviaList> triviaParser)
         {
             return Map(
-                (debugToken, statement, trailingTrivia) => (JassStatementSyntax)new JassDebugStatementSyntax(
+                (debugToken, statement) => (JassStatementSyntax)new JassDebugStatementSyntax(
                     debugToken,
-                    statement.AppendTrailingTrivia(trailingTrivia)),
+                    statement),
                 Keyword.Debug.AsToken(triviaParser, JassSyntaxKind.DebugKeyword),
                 OneOf(
                     setStatementParser,
                     callStatementParser,
                     ifStatementParser,
-                    loopStatementParser),
-                trailingTriviaParser);
+                    loopStatementParser));
         }
     }
 }
