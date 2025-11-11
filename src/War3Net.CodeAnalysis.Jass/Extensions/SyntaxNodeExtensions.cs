@@ -14,6 +14,16 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class SyntaxNodeExtensions
     {
+        public static JassSyntaxTriviaList GetLeadingTrivia(this JassSyntaxNode syntaxNode)
+        {
+            return syntaxNode.GetFirstToken().LeadingTrivia;
+        }
+
+        public static JassSyntaxTriviaList GetTrailingTrivia(this JassSyntaxNode syntaxNode)
+        {
+            return syntaxNode.GetLastToken().TrailingTrivia;
+        }
+
         public static TSyntaxNode WithLeadingTrivia<TSyntaxNode>(this TSyntaxNode syntaxNode, JassSyntaxTriviaList triviaList)
             where TSyntaxNode : JassSyntaxNode
         {
