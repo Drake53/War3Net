@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using War3Net.CodeAnalysis.Jass;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -20,6 +19,11 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public SyntaxTriviaList Transpile(JassSyntaxTriviaList triviaList)
         {
+            if (triviaList.Trivia.Length == 0)
+            {
+                return SyntaxTriviaList.Empty;
+            }
+
             return SyntaxFactory.TriviaList(triviaList.Trivia.Select(Transpile));
         }
 

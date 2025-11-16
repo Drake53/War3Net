@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -26,6 +27,11 @@ namespace War3Net.CodeAnalysis.Transpilers
                 JassUnaryExpressionSyntax unaryExpression => Transpile(unaryExpression),
                 JassBinaryExpressionSyntax binaryExpression => Transpile(binaryExpression),
             };
+        }
+
+        public ArgumentSyntax TranspileArgument(JassExpressionSyntax expression)
+        {
+            return SyntaxFactory.Argument(Transpile(expression));
         }
     }
 }

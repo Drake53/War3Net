@@ -86,7 +86,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             }
         }
 
-        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? " " : string.Empty)}{Expression}";
+        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? JassSymbol.Space : string.Empty)}{Expression}";
 
         public override JassSyntaxToken GetFirstToken() => OperatorToken;
 

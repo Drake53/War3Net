@@ -15,7 +15,11 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ExpressionSyntax Transpile(JassFunctionReferenceExpressionSyntax functionReferenceExpression)
         {
-            return Transpile(functionReferenceExpression.IdentifierName);
+            var leadingTrivia = MergeTrivia(
+                functionReferenceExpression.FunctionToken,
+                functionReferenceExpression.IdentifierName.Token.LeadingTrivia);
+
+            return Transpile(leadingTrivia, functionReferenceExpression.IdentifierName);
         }
     }
 }

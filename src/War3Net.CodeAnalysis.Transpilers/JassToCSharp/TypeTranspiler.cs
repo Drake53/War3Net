@@ -5,38 +5,103 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public TypeSyntax Transpile(JassTypeSyntax type)
+        public TypeSyntax Transpile(
+            JassTypeSyntax type)
         {
             return type switch
             {
-                JassIdentifierNameSyntax identifierName => SyntaxFactory.ParseTypeName(Transpile(identifierName.Token).Text),
+                JassIdentifierNameSyntax identifierName => Transpile(identifierName),
                 JassPredefinedTypeSyntax predefinedType => Transpile(predefinedType),
             };
         }
 
-        public TypeSyntax Transpile(JassPredefinedTypeSyntax type)
+        public TypeSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type)
         {
-            return type.SyntaxKind switch
+            return type switch
             {
-                JassSyntaxKind.BooleanKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword)),
-                JassSyntaxKind.CodeKeyword => SyntaxFactory.ParseTypeName(typeof(Action).FullName!),
-                JassSyntaxKind.HandleKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword)),
-                JassSyntaxKind.IntegerKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)),
-                JassSyntaxKind.NothingKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                JassSyntaxKind.RealKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.FloatKeyword)),
-                JassSyntaxKind.StringKeyword => SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword)),
+                JassIdentifierNameSyntax identifierName => Transpile(leadingTrivia, identifierName),
+                JassPredefinedTypeSyntax predefinedType => Transpile(leadingTrivia, predefinedType),
+            };
+        }
+
+        public TypeSyntax Transpile(
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => Transpile(identifierName, trailingTrivia),
+                JassPredefinedTypeSyntax predefinedType => Transpile(predefinedType, trailingTrivia),
+            };
+        }
+
+        public TypeSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => Transpile(leadingTrivia, identifierName, trailingTrivia),
+                JassPredefinedTypeSyntax predefinedType => Transpile(leadingTrivia, predefinedType, trailingTrivia),
+            };
+        }
+
+        public TypeSyntax TranspileAligned(
+            JassTypeSyntax type,
+            bool isArray)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => TranspileAligned(identifierName, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(predefinedType, isArray),
+            };
+        }
+
+        public TypeSyntax TranspileAligned(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            bool isArray)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => TranspileAligned(leadingTrivia, identifierName, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(leadingTrivia, predefinedType, isArray),
+            };
+        }
+
+        public TypeSyntax TranspileAligned(
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia,
+            bool isArray)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => TranspileAligned(identifierName, trailingTrivia, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(predefinedType, trailingTrivia, isArray),
+            };
+        }
+
+        public TypeSyntax TranspileAligned(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia,
+            bool isArray)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => TranspileAligned(leadingTrivia, identifierName, trailingTrivia, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(leadingTrivia, predefinedType, trailingTrivia, isArray),
             };
         }
     }

@@ -52,6 +52,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const string GreaterThan = ">";
         public const string OpenBracket = "[";
         public const string CloseBracket = "]";
+        public const string Space = " ";
 
         public const string CarriageReturnLineFeed = "\r\n";
         public const string SlashSlash = "//";

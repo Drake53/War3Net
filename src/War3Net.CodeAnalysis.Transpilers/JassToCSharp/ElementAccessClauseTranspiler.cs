@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="ElementAccessExpressionTranspiler.cs" company="Drake53">
+// <copyright file="ElementAccessClauseTranspiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,11 +14,12 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public ExpressionSyntax Transpile(JassElementAccessExpressionSyntax elementAccessExpression)
+        public BracketedArgumentListSyntax Transpile(JassElementAccessClauseSyntax elementAccessClause)
         {
-            return SyntaxFactory.ElementAccessExpression(
-                Transpile(elementAccessExpression.IdentifierName),
-                Transpile(elementAccessExpression.ElementAccessClause));
+            return SyntaxFactory.BracketedArgumentList(
+                Transpile(SyntaxKind.OpenBracketToken, elementAccessClause.OpenBracketToken),
+                SyntaxFactory.SingletonSeparatedList(TranspileArgument(elementAccessClause.Expression)),
+                Transpile(SyntaxKind.CloseBracketToken, elementAccessClause.CloseBracketToken));
         }
     }
 }

@@ -23,10 +23,10 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return literalExpression.SyntaxKind switch
             {
-                JassSyntaxKind.TrueLiteralExpression => SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression),
-                JassSyntaxKind.FalseLiteralExpression => SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression),
-                JassSyntaxKind.NullLiteralExpression => SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression),
-                JassSyntaxKind.DecimalLiteralExpression => SyntaxFactory.ParseExpression(literalExpression.Token.Text),
+                JassSyntaxKind.TrueLiteralExpression => TranspileLiteral(SyntaxKind.TrueLiteralExpression, SyntaxKind.TrueKeyword, literalExpression.Token),
+                JassSyntaxKind.FalseLiteralExpression => TranspileLiteral(SyntaxKind.FalseLiteralExpression, SyntaxKind.FalseKeyword, literalExpression.Token),
+                JassSyntaxKind.NullLiteralExpression => TranspileLiteral(SyntaxKind.NullLiteralExpression, SyntaxKind.NullKeyword, literalExpression.Token),
+                JassSyntaxKind.DecimalLiteralExpression => TranspileDecimalLiteral(literalExpression),
                 JassSyntaxKind.OctalLiteralExpression => TranspileOctalLiteral(literalExpression),
                 JassSyntaxKind.HexadecimalLiteralExpression => TranspileHexadecimalLiteral(literalExpression),
                 JassSyntaxKind.FourCCLiteralExpression => TranspileFourCCLiteral(literalExpression),
@@ -36,34 +36,95 @@ namespace War3Net.CodeAnalysis.Transpilers
             };
         }
 
+        private ExpressionSyntax TranspileLiteral(SyntaxKind expressionKind, SyntaxKind tokenKind, JassSyntaxToken token)
+        {
+            return SyntaxFactory.LiteralExpression(
+                expressionKind,
+                Transpile(tokenKind, token));
+        }
+
+        private ExpressionSyntax TranspileDecimalLiteral(JassLiteralExpressionSyntax literalExpression)
+        {
+            var value = Convert.ToInt32(literalExpression.Token.Text, 10);
+            var text = value.ToString(CultureInfo.InvariantCulture);
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
+        }
+
         private ExpressionSyntax TranspileOctalLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var text = Convert.ToInt32(literalExpression.Token.Text, 8).ToString(CultureInfo.InvariantCulture);
-            return SyntaxFactory.ParseExpression(text);
+            var value = Convert.ToInt32(literalExpression.Token.Text, 8);
+            var text = value.ToString(CultureInfo.InvariantCulture);
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
 
         private ExpressionSyntax TranspileHexadecimalLiteral(JassLiteralExpressionSyntax literalExpression)
         {
             var text = literalExpression.Token.Text.Replace(JassSymbol.Dollar, "0x", StringComparison.Ordinal);
-            return SyntaxFactory.ParseExpression(text);
+            var value = Convert.ToInt32(text[2..], 16);
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
 
         private ExpressionSyntax TranspileFourCCLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var text = literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar).FromRawcode().ToString(CultureInfo.InvariantCulture);
-            return SyntaxFactory.ParseExpression(text);
+            var value = literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar).FromRawcode();
+            var text = value.ToString(CultureInfo.InvariantCulture);
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
 
         private ExpressionSyntax TranspileCharacterLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var text = ((int)char.Parse(literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar))).ToString(CultureInfo.InvariantCulture);
-            return SyntaxFactory.ParseExpression(text);
+            var value = (int)char.Parse(literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar));
+            var text = $"(int){literalExpression.Token.Text}";
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
 
         private ExpressionSyntax TranspileRealLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var text = $"{literalExpression.Token.Text.TrimEnd(JassSymbol.DotChar)}f";
-            return SyntaxFactory.ParseExpression(text);
+            var text = literalExpression.Token.Text.TrimEnd(JassSymbol.DotChar);
+            var value = float.Parse(text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.NumericLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    $"{text}f",
+                    value,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
 
         private ExpressionSyntax TranspileStringLiteral(JassLiteralExpressionSyntax literalExpression)
@@ -72,7 +133,13 @@ namespace War3Net.CodeAnalysis.Transpilers
                 .Replace(JassSymbol.CarriageReturn, @"\r", StringComparison.Ordinal)
                 .Replace(JassSymbol.LineFeed, @"\n", StringComparison.Ordinal);
 
-            return SyntaxFactory.ParseExpression(text);
+            return SyntaxFactory.LiteralExpression(
+                SyntaxKind.StringLiteralExpression,
+                SyntaxFactory.Literal(
+                    Transpile(literalExpression.Token.LeadingTrivia),
+                    text,
+                    text,
+                    Transpile(literalExpression.Token.TrailingTrivia)));
         }
     }
 }

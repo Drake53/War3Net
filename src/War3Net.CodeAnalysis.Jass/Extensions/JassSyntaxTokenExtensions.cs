@@ -26,139 +26,107 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
 
         public static JassSyntaxToken AppendLeadingTrivia(this JassSyntaxToken token, JassSyntaxTrivia trivia)
         {
-            return token.WithLeadingTrivia(AppendTriviaToList(token.LeadingTrivia.Trivia, trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.AppendTriviaToList(token.LeadingTrivia.Trivia, trivia));
         }
 
         public static JassSyntaxToken AppendLeadingTrivia(this JassSyntaxToken token, JassSyntaxTriviaList triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList.Trivia));
         }
 
         public static JassSyntaxToken AppendLeadingTrivia(this JassSyntaxToken token, params JassSyntaxTrivia[] triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken AppendLeadingTrivia(this JassSyntaxToken token, IEnumerable<JassSyntaxTrivia> triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken AppendLeadingTrivia(this JassSyntaxToken token, ImmutableArray<JassSyntaxTrivia> triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.LeadingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken PrependLeadingTrivia(this JassSyntaxToken token, JassSyntaxTrivia trivia)
         {
-            return token.WithLeadingTrivia(PrependTriviaToList(trivia, token.LeadingTrivia.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.PrependTriviaToList(trivia, token.LeadingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependLeadingTrivia(this JassSyntaxToken token, JassSyntaxTriviaList triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(triviaList.Trivia, token.LeadingTrivia.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList.Trivia, token.LeadingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependLeadingTrivia(this JassSyntaxToken token, params JassSyntaxTrivia[] triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependLeadingTrivia(this JassSyntaxToken token, IEnumerable<JassSyntaxTrivia> triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependLeadingTrivia(this JassSyntaxToken token, ImmutableArray<JassSyntaxTrivia> triviaList)
         {
-            return token.WithLeadingTrivia(ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
+            return token.WithLeadingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.LeadingTrivia.Trivia));
         }
 
         public static JassSyntaxToken AppendTrailingTrivia(this JassSyntaxToken token, JassSyntaxTrivia trivia)
         {
-            return token.WithTrailingTrivia(AppendTriviaToList(token.TrailingTrivia.Trivia, trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.AppendTriviaToList(token.TrailingTrivia.Trivia, trivia));
         }
 
         public static JassSyntaxToken AppendTrailingTrivia(this JassSyntaxToken token, JassSyntaxTriviaList triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList.Trivia));
         }
 
         public static JassSyntaxToken AppendTrailingTrivia(this JassSyntaxToken token, params JassSyntaxTrivia[] triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken AppendTrailingTrivia(this JassSyntaxToken token, IEnumerable<JassSyntaxTrivia> triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken AppendTrailingTrivia(this JassSyntaxToken token, ImmutableArray<JassSyntaxTrivia> triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(token.TrailingTrivia.Trivia, triviaList));
         }
 
         public static JassSyntaxToken PrependTrailingTrivia(this JassSyntaxToken token, JassSyntaxTrivia trivia)
         {
-            return token.WithTrailingTrivia(PrependTriviaToList(trivia, token.TrailingTrivia.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.PrependTriviaToList(trivia, token.TrailingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependTrailingTrivia(this JassSyntaxToken token, JassSyntaxTriviaList triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(triviaList.Trivia, token.TrailingTrivia.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList.Trivia, token.TrailingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependTrailingTrivia(this JassSyntaxToken token, params JassSyntaxTrivia[] triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependTrailingTrivia(this JassSyntaxToken token, IEnumerable<JassSyntaxTrivia> triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
         }
 
         public static JassSyntaxToken PrependTrailingTrivia(this JassSyntaxToken token, ImmutableArray<JassSyntaxTrivia> triviaList)
         {
-            return token.WithTrailingTrivia(ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
+            return token.WithTrailingTrivia(JassSyntaxFactory.ConcatTriviaLists(triviaList, token.TrailingTrivia.Trivia));
         }
 
         internal static bool NullableEquals(this JassSyntaxToken? objA, JassSyntaxToken? objB)
         {
             return (objA is null) == (objB is null);
-        }
-
-        private static JassSyntaxTriviaList AppendTriviaToList(ImmutableArray<JassSyntaxTrivia> triviaList, JassSyntaxTrivia trivia)
-        {
-            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(triviaList.Length + 1);
-            builder.AddRange(triviaList);
-            builder.Add(trivia);
-            return new JassSyntaxTriviaList(builder.MoveToImmutable());
-        }
-
-        private static JassSyntaxTriviaList PrependTriviaToList(JassSyntaxTrivia trivia, ImmutableArray<JassSyntaxTrivia> triviaList)
-        {
-            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(triviaList.Length + 1);
-            builder.Add(trivia);
-            builder.AddRange(triviaList);
-            return new JassSyntaxTriviaList(builder.MoveToImmutable());
-        }
-
-        private static JassSyntaxTriviaList ConcatTriviaLists(ImmutableArray<JassSyntaxTrivia> firstList, ImmutableArray<JassSyntaxTrivia> secondList)
-        {
-            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>(firstList.Length + secondList.Length);
-            builder.AddRange(firstList);
-            builder.AddRange(secondList);
-            return new JassSyntaxTriviaList(builder.MoveToImmutable());
-        }
-
-        private static JassSyntaxTriviaList ConcatTriviaLists(IEnumerable<JassSyntaxTrivia> firstList, IEnumerable<JassSyntaxTrivia> secondList)
-        {
-            var builder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>();
-            builder.AddRange(firstList);
-            builder.AddRange(secondList);
-            return new JassSyntaxTriviaList(builder.ToImmutable());
         }
     }
 }

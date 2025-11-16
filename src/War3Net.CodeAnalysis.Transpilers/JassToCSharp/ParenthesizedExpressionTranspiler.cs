@@ -16,7 +16,10 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ExpressionSyntax Transpile(JassParenthesizedExpressionSyntax parenthesizedExpression)
         {
-            return SyntaxFactory.ParenthesizedExpression(Transpile(parenthesizedExpression.Expression));
+            return SyntaxFactory.ParenthesizedExpression(
+                Transpile(SyntaxKind.OpenParenToken, parenthesizedExpression.OpenParenToken),
+                Transpile(parenthesizedExpression.Expression),
+                Transpile(SyntaxKind.CloseParenToken, parenthesizedExpression.CloseParenToken));
         }
     }
 }

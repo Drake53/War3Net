@@ -5,18 +5,16 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Transpilers.Extensions;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public MemberDeclarationSyntax Transpile(JassGlobalDeclarationSyntax globalDeclaration)
+        public MemberDeclarationSyntax Transpile(
+            JassGlobalDeclarationSyntax globalDeclaration)
         {
             return globalDeclaration switch
             {
@@ -25,54 +23,38 @@ namespace War3Net.CodeAnalysis.Transpilers
             };
         }
 
-        public MemberDeclarationSyntax Transpile(JassGlobalConstantDeclarationSyntax globalConstantDeclaration)
+        public MemberDeclarationSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassGlobalDeclarationSyntax globalDeclaration)
         {
-            var variableDeclaration = SyntaxFactory.VariableDeclaration(
-                Transpile(globalConstantDeclaration.Type),
-                SyntaxFactory.SingletonSeparatedList(SyntaxFactory.VariableDeclarator(
-                    Transpile(globalConstantDeclaration.IdentifierName.Token),
-                    null,
-                    Transpile(globalConstantDeclaration.Value))));
-
-            var declaration = SyntaxFactory.FieldDeclaration(
-                default,
-                new SyntaxTokenList(
-                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(SyntaxKind.ConstKeyword)),
-                variableDeclaration);
-
-            if (ApplyCSharpLuaTemplateAttribute)
+            return globalDeclaration switch
             {
-                var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
-
-                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(globalConstantDeclaration.IdentifierName.Token));
-            }
-
-            return declaration;
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(leadingTrivia, globalConstantDeclaration),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(leadingTrivia, globalVariableDeclaration),
+            };
         }
 
-        public MemberDeclarationSyntax Transpile(JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
+        public MemberDeclarationSyntax Transpile(
+            JassGlobalDeclarationSyntax globalDeclaration,
+            JassSyntaxTriviaList trailingTrivia)
         {
-            var declaration = SyntaxFactory.FieldDeclaration(
-                default,
-                new SyntaxTokenList(
-                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword)),
-                Transpile(globalVariableDeclaration.Declarator));
-
-            if (ApplyCSharpLuaTemplateAttribute)
+            return globalDeclaration switch
             {
-                var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
-                var token = globalVariableDeclaration.Declarator switch
-                {
-                    JassArrayDeclaratorSyntax arrayDeclarator => arrayDeclarator.IdentifierName.Token,
-                    JassVariableDeclaratorSyntax variableDeclarator => variableDeclarator.IdentifierName.Token,
-                };
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(globalConstantDeclaration, trailingTrivia),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(globalVariableDeclaration, trailingTrivia),
+            };
+        }
 
-                declaration = declaration.WithCSharpLuaTemplateAttribute(jassToLuaTranspiler.Transpile(token));
-            }
-
-            return declaration;
+        public MemberDeclarationSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassGlobalDeclarationSyntax globalDeclaration,
+            JassSyntaxTriviaList trailingTrivia)
+        {
+            return globalDeclaration switch
+            {
+                JassGlobalConstantDeclarationSyntax globalConstantDeclaration => Transpile(leadingTrivia, globalConstantDeclaration, trailingTrivia),
+                JassGlobalVariableDeclarationSyntax globalVariableDeclaration => Transpile(leadingTrivia, globalVariableDeclaration, trailingTrivia),
+            };
         }
     }
 }

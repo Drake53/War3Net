@@ -105,6 +105,28 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
         }
 
+        public static JassSyntaxTriviaList GetLeadingTrivia<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list)
+            where TItem : JassSyntaxNode
+        {
+            if (list.IsEmpty)
+            {
+                return JassSyntaxTriviaList.Empty;
+            }
+
+            return list.Items[0].GetLeadingTrivia();
+        }
+
+        public static JassSyntaxTriviaList GetTrailingTrivia<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list)
+            where TItem : JassSyntaxNode
+        {
+            if (list.IsEmpty)
+            {
+                return JassSyntaxTriviaList.Empty;
+            }
+
+            return list.Items[^1].GetTrailingTrivia();
+        }
+
         internal static SeparatedSyntaxList<TItem, TSeparator> ReplaceFirstItem<TItem, TSeparator>(this SeparatedSyntaxList<TItem, TSeparator> list, TItem newItem)
         {
             var items = list.Items.ReplaceFirstItem(newItem);

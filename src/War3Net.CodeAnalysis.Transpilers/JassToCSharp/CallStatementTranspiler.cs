@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,9 +17,22 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public StatementSyntax Transpile(JassCallStatementSyntax callStatement)
         {
-            return SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(
-                Transpile(callStatement.IdentifierName),
-                Transpile(callStatement.ArgumentList)));
+            var leadingTrivia = MergeTrivia(
+                callStatement.CallToken,
+                callStatement.IdentifierName.Token.LeadingTrivia);
+
+            var invocationExpression = SyntaxFactory.InvocationExpression(
+                Transpile(leadingTrivia, callStatement.IdentifierName),
+                Transpile(callStatement.ArgumentList));
+
+            var trailingTrivia = invocationExpression.GetTrailingTrivia();
+
+            return SyntaxFactory.ExpressionStatement(
+                invocationExpression.WithoutTrailingTrivia(),
+                SyntaxFactory.Token(
+                    SyntaxTriviaList.Empty,
+                    SyntaxKind.SemicolonToken,
+                    trailingTrivia));
         }
     }
 }
