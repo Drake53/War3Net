@@ -4,6 +4,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageVersion Include="BenchmarkDotNet" Version="0.13.2" />
+		<PackageVersion Include="DiffPlex" Version="1.7.0" />
 		<PackageVersion Include="DotNetZip" Version="1.16.0" />
 		<PackageVersion Include="JpegLibrary" Version="0.3.30" />
 		<PackageVersion Include="MessagePack" Version="2.2.60" />
