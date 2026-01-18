@@ -6,6 +6,7 @@
 // ------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -19,6 +20,12 @@ namespace War3Net.TestTools.UnitTesting
 {
     public static class DiffAssert
     {
+        /// <summary>
+        /// Gets or sets the number of context lines to show around differences in diff output.
+        /// Default is 3.
+        /// </summary>
+        public static int ContextLines { get; set; } = 3;
+
         /// <summary>
         /// Asserts that two strings are equal, providing a detailed diff output if they are not.
         /// </summary>
@@ -106,9 +113,42 @@ namespace War3Net.TestTools.UnitTesting
             var addedLines = 0;
             var deletedLines = 0;
             var modifiedLines = 0;
+            var contextBuffer = new Queue<string>();
+            var skippedLines = 0;
+            var unchangedLines = ContextLines;
 
             foreach (var line in diff.Lines)
             {
+                var isChange = line.Type != ChangeType.Unchanged && line.Type != ChangeType.Imaginary;
+
+                if (line.Type == ChangeType.Unchanged && unchangedLines >= ContextLines)
+                {
+                    contextBuffer.Enqueue($"  {line.Text}");
+                    if (contextBuffer.Count > ContextLines)
+                    {
+                        contextBuffer.Dequeue();
+                        skippedLines++;
+                    }
+
+                    continue;
+                }
+
+                if (isChange)
+                {
+                    if (skippedLines > 0)
+                    {
+                        messageBuilder.AppendLine($"... ({skippedLines} unchanged lines omitted) ...");
+                        skippedLines = 0;
+                    }
+
+                    while (contextBuffer.Count > 0)
+                    {
+                        messageBuilder.AppendLine(contextBuffer.Dequeue());
+                    }
+
+                    unchangedLines = 0;
+                }
+
                 switch (line.Type)
                 {
                     case ChangeType.Inserted:
@@ -133,8 +173,19 @@ namespace War3Net.TestTools.UnitTesting
 
                     case ChangeType.Unchanged:
                         messageBuilder.AppendLine($"  {line.Text}");
+                        unchangedLines++;
                         break;
                 }
+            }
+
+            if (contextBuffer.Count > 0)
+            {
+                skippedLines += contextBuffer.Count;
+            }
+
+            if (skippedLines > 0)
+            {
+                messageBuilder.AppendLine($"... ({skippedLines} unchanged lines omitted) ...");
             }
 
             messageBuilder.AppendLine();
