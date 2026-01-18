@@ -19,7 +19,7 @@ namespace War3Net.Build.Extensions
             return $"udg_{variable.Name}";
         }
 
-        public static IExpressionSyntax GetInitialValueExpression(this VariableDefinition variable)
+        public static JassExpressionSyntax GetInitialValueExpression(this VariableDefinition variable)
         {
             throw new NotImplementedException();
         }

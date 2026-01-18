@@ -8,9 +8,8 @@
 using System;
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -30,30 +29,21 @@ namespace War3Net.Build
         {
             var argumentTypes = GetArgumentTypes(function);
 
-            context.Renderer.Render(SyntaxFactory.SetStatement(indexName, GetParameter(function.Parameters[0], argumentTypes[0], 0, context)));
-            context.Renderer.RenderNewLine();
-            context.Renderer.Render(SyntaxFactory.SetStatement(indexEndName, GetParameter(function.Parameters[1], argumentTypes[1], 1, context)));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteSet(indexName, GetParameter(function.Parameters[0], argumentTypes[0], 0, context.TrigFunctionIdentifierBuilder));
+            context.Writer.WriteSet(indexEndName, GetParameter(function.Parameters[1], argumentTypes[1], 1, context.TrigFunctionIdentifierBuilder));
 
-            context.Renderer.Render(JassLoopCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
-
-            context.Renderer.Render(SyntaxFactory.ExitStatement(SyntaxFactory.BinaryGreaterThanExpression(
-                SyntaxFactory.VariableReferenceExpression(indexName),
-                SyntaxFactory.VariableReferenceExpression(indexEndName))));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteLoop();
+            context.Writer.WriteExitWhen(JassExpression.GreaterThan(
+                indexName,
+                indexEndName));
 
             RenderTriggerAction(function.Parameters[2].Function, context);
 
-            context.Renderer.Render(SyntaxFactory.SetStatement(
+            context.Writer.WriteSet(
                 indexName,
-                SyntaxFactory.BinaryAdditionExpression(
-                    SyntaxFactory.VariableReferenceExpression(indexName),
-                    SyntaxFactory.LiteralExpression(1))));
-            context.Renderer.RenderNewLine();
+                JassExpression.Add(indexName, "1"));
 
-            context.Renderer.Render(JassEndLoopCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteEndLoop();
         }
 
         private void RenderForLoopVar(TriggerFunction function, TriggerRendererContext context)

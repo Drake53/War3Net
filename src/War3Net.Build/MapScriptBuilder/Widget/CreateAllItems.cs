@@ -13,31 +13,37 @@ using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateAllItems(Map map)
+        protected internal virtual void GenerateCreateAllItems(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapUnits = map.Units;
             if (mapUnits is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateAllItems)}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateAllItems}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.ItemId));
+            writer.WriteFunction(GeneratedFunctionName.CreateAllItems);
 
-            foreach (var item in mapUnits.Units.Where(item => CreateAllItemsConditionSingleItem(map, item)))
+            writer.WriteLocal(JassKeyword.Integer, VariableName.ItemId);
+
+            foreach (var item in mapUnits.Units.Where(item => ShouldGenerateCreateAllItemsForItem(map, item)))
             {
                 if (item.IsRandomItem())
                 {
@@ -45,12 +51,12 @@ namespace War3Net.Build
                     switch (randomData)
                     {
                         case RandomUnitAny randomUnitAny:
-                            statements.Add(SyntaxFactory.SetStatement(
+                            writer.WriteSet(
                                 VariableName.ItemId,
-                                SyntaxFactory.InvocationExpression(
+                                JassExpression.InvokeSpaced(
                                     NativeName.ChooseRandomItemEx,
-                                    SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)randomUnitAny.Class)),
-                                    SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
+                                    JassExpression.Invoke(NativeName.ConvertItemType, JassLiteral.Int((int)randomUnitAny.Class)),
+                                    JassLiteral.Int(randomUnitAny.Level)));
 
                             break;
 
@@ -58,37 +64,37 @@ namespace War3Net.Build
                             break;
 
                         case RandomUnitCustomTable randomUnitCustomTable:
-                            statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
+                            writer.WriteCall(FunctionName.RandomDistReset);
 
                             var summedChance = 0;
                             foreach (var randomItem in randomUnitCustomTable.RandomUnits)
                             {
-                                IExpressionSyntax id = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
-                                    ? SyntaxFactory.InvocationExpression(
+                                var itemIdExpression = RandomItemProvider.IsRandomItem(randomItem.UnitId, out var itemClass, out var level)
+                                    ? JassExpression.Invoke(
                                         NativeName.ChooseRandomItemEx,
-                                        SyntaxFactory.InvocationExpression(NativeName.ConvertItemType, SyntaxFactory.LiteralExpression((int)itemClass)),
-                                        SyntaxFactory.LiteralExpression(level))
-                                    : SyntaxFactory.FourCCLiteralExpression(randomItem.UnitId);
+                                        JassExpression.Invoke(NativeName.ConvertItemType, JassLiteral.Int((int)itemClass)),
+                                        JassLiteral.Int(level))
+                                    : JassLiteral.FourCC(randomItem.UnitId);
 
-                                statements.Add(SyntaxFactory.CallStatement(
+                                writer.WriteCall(
                                     FunctionName.RandomDistAddItem,
-                                    id,
-                                    SyntaxFactory.LiteralExpression(randomItem.Chance)));
+                                    itemIdExpression,
+                                    JassLiteral.Int(randomItem.Chance));
 
                                 summedChance += randomItem.Chance;
                             }
 
                             if (summedChance < 100)
                             {
-                                statements.Add(SyntaxFactory.CallStatement(
+                                writer.WriteCall(
                                     FunctionName.RandomDistAddItem,
-                                    SyntaxFactory.LiteralExpression(-1),
-                                    SyntaxFactory.LiteralExpression(100 - summedChance)));
+                                    "-1",
+                                    JassLiteral.Int(100 - summedChance));
                             }
 
-                            statements.Add(SyntaxFactory.SetStatement(
+                            writer.WriteSet(
                                 VariableName.ItemId,
-                                SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
+                                JassExpression.InvokeSpaced(FunctionName.RandomDistChoose));
 
                             break;
 
@@ -96,39 +102,43 @@ namespace War3Net.Build
                             break;
                     }
 
-                    statements.Add(SyntaxFactory.IfStatement(
-                        SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.ItemId), SyntaxFactory.LiteralExpression(-1)),
-                        SyntaxFactory.CallStatement(
-                            NativeName.CreateItem,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.ItemId),
-                            SyntaxFactory.LiteralExpression(item.Position.X),
-                            SyntaxFactory.LiteralExpression(item.Position.Y))));
+                    writer.WriteIf(JassExpression.NotEqual(VariableName.ItemId, "-1"));
+
+                    writer.WriteCall(
+                        NativeName.CreateItem,
+                        VariableName.ItemId,
+                        JassLiteral.Real(item.Position.X),
+                        JassLiteral.Real(item.Position.Y));
+
+                    writer.WriteEndIf();
                 }
                 else
                 {
-                    var args = new List<IExpressionSyntax>()
+                    var args = new List<string>
                     {
-                        SyntaxFactory.FourCCLiteralExpression(item.TypeId),
-                        SyntaxFactory.LiteralExpression(item.Position.X),
-                        SyntaxFactory.LiteralExpression(item.Position.Y),
+                        JassLiteral.FourCC(item.TypeId),
+                        JassLiteral.Real(item.Position.X),
+                        JassLiteral.Real(item.Position.Y),
                     };
 
                     var hasSkin = item.SkinId != 0 && item.SkinId != item.TypeId;
                     if (hasSkin)
                     {
-                        args.Add(SyntaxFactory.FourCCLiteralExpression(item.SkinId));
+                        args.Add(JassLiteral.FourCC(item.SkinId));
                     }
 
-                    statements.Add(SyntaxFactory.CallStatement(hasSkin ? NativeName.BlzCreateItemWithSkin : NativeName.CreateItem, args.ToArray()));
+                    writer.WriteCall(
+                        hasSkin ? NativeName.BlzCreateItemWithSkin : NativeName.CreateItem,
+                        args.ToArray());
                 }
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            writer.WriteLine();
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllItems)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateAllItemsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateAllItems(Map map)
         {
             if (map is null)
             {
@@ -141,10 +151,10 @@ namespace War3Net.Build
             }
 
             return map.Units is not null
-                && map.Units.Units.Any(item => CreateAllItemsConditionSingleItem(map, item));
+                && map.Units.Units.Any(item => ShouldGenerateCreateAllItemsForItem(map, item));
         }
 
-        protected internal virtual bool CreateAllItemsConditionSingleItem(Map map, UnitData unitData)
+        protected internal virtual bool ShouldGenerateCreateAllItemsForItem(Map map, UnitData unitData)
         {
             if (map is null)
             {

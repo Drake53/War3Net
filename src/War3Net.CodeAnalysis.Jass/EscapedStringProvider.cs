@@ -8,7 +8,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace War3Net.Build.Providers
+namespace War3Net.CodeAnalysis.Jass
 {
     // Based on https://referencesource.microsoft.com/#System/regex/system/text/regularexpressions/RegexParser.cs,845bf727ea7a0421
     public static class EscapedStringProvider

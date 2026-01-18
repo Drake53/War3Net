@@ -8,13 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -33,38 +32,29 @@ namespace War3Net.Build
                 throw new ArgumentException("Parameter function must be enabled and of type 'Condition'.", nameof(parameter));
             }
 
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new StringWriter(stringBuilder);
-            var renderer = new JassRenderer(stringWriter);
+            using var writer = IndentedTextWriter.New(_writer);
 
-            var context = new TriggerRendererContext(renderer, identifierBuilder);
+            var context = new TriggerRendererContext(writer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.ConditionFunctionDeclarator(functionName)));
-            renderer.RenderNewLine();
+            writer.WriteFilterFunction(functionName);
 
             var expression = GetTriggerConditionExpression(function, context);
 
-            renderer.Render(new JassReturnStatementSyntax(expression));
-            renderer.RenderNewLine();
+            writer.WriteReturn(expression);
+            writer.EndFunction();
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
-            renderer.RenderNewLine();
-
-            _writer.WriteLine(stringBuilder.ToString());
+            _writer.WriteLine(writer.ToString());
         }
 
         private void RenderConditionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, bool returnValue, List<TriggerFunction> functions)
         {
             identifierBuilder.Append("Func");
 
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new StringWriter(stringBuilder);
-            var renderer = new JassRenderer(stringWriter);
+            using var writer = IndentedTextWriter.New(_writer);
 
-            var context = new TriggerRendererContext(renderer, identifierBuilder);
+            var context = new TriggerRendererContext(writer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.ConditionFunctionDeclarator(functionName)));
-            renderer.RenderNewLine();
+            writer.WriteFilterFunction(functionName);
 
             for (var i = 0; i < functions.Count; i++)
             {
@@ -80,32 +70,27 @@ namespace War3Net.Build
 
                 if (returnValue)
                 {
-                    context.Renderer.Render(SyntaxFactory.IfStatement(
-                        SyntaxFactory.ParenthesizedExpression(SyntaxFactory.UnaryNotExpression(expression)),
-                        new JassReturnStatementSyntax(JassBooleanLiteralExpressionSyntax.False)));
-                    context.Renderer.RenderNewLine();
+                    writer.WriteIf(JassExpression.Parenthesized(JassExpression.Not(expression)));
+                    writer.WriteReturn(JassKeyword.False);
+                    writer.WriteEndIf();
                 }
                 else
                 {
-                    context.Renderer.Render(SyntaxFactory.IfStatement(
-                        SyntaxFactory.ParenthesizedExpression(expression),
-                        new JassReturnStatementSyntax(JassBooleanLiteralExpressionSyntax.True)));
-                    context.Renderer.RenderNewLine();
+                    writer.WriteIf(JassExpression.Parenthesized(expression));
+                    writer.WriteReturn(JassKeyword.True);
+                    writer.WriteEndIf();
                 }
             }
 
-            context.Renderer.Render(new JassReturnStatementSyntax(SyntaxFactory.LiteralExpression(returnValue)));
-            context.Renderer.RenderNewLine();
+            writer.WriteReturn(JassLiteral.Bool(returnValue));
+            writer.EndFunction();
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
-            renderer.RenderNewLine();
-
-            _writer.WriteLine(stringBuilder.ToString());
+            _writer.WriteLine(writer.ToString());
 
             identifierBuilder.Remove();
         }
 
-        private IExpressionSyntax GetTriggerConditionExpression(TriggerFunction function, TriggerRendererContext context)
+        private string GetTriggerConditionExpression(TriggerFunction function, TriggerRendererContext context)
         {
             if (function.Type != TriggerFunctionType.Condition || !function.IsEnabled)
             {
@@ -117,7 +102,7 @@ namespace War3Net.Build
                 var conditionFunctionName = $"{context.TrigFunctionIdentifierBuilder}C";
                 RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Name == "AndMultiple", function.ChildFunctions);
 
-                return SyntaxFactory.InvocationExpression(conditionFunctionName);
+                return JassExpression.Invoke(conditionFunctionName);
             }
             else if (function.Name == "GetBooleanAnd" || function.Name == "GetBooleanOr")
             {
@@ -131,19 +116,19 @@ namespace War3Net.Build
                 RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName2, function.Parameters[1]);
                 context.TrigFunctionIdentifierBuilder.Remove();
 
-                return SyntaxFactory.InvocationExpression(
+                return JassExpression.InvokeSpaced(
                     function.Name,
-                    SyntaxFactory.InvocationExpression(conditionFunctionName1),
-                    SyntaxFactory.InvocationExpression(conditionFunctionName2));
+                    JassExpression.Invoke(conditionFunctionName1),
+                    JassExpression.Invoke(conditionFunctionName2));
             }
             else
             {
-                var parameters = GetParameters(function, context);
+                var parameters = GetParameters(function, context.TrigFunctionIdentifierBuilder).ToArray();
 
-                return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(
-                    parameters.Arguments[0],
-                    parameters.Arguments[2],
-                    SyntaxFactory.ParseBinaryOperator(((JassStringLiteralExpressionSyntax)parameters.Arguments[1]).Value)));
+                return JassExpression.Parenthesized(JassExpression.Binary(
+                    parameters[0],
+                    parameters[1],
+                    parameters[2]));
             }
         }
     }

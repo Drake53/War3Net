@@ -11,27 +11,24 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using War3Net.Build.Extensions;
-using War3Net.Build.Providers;
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class TriggerRenderer
     {
-        private readonly TextWriter _writer;
+        private readonly IndentedTextWriter _writer;
         private readonly TriggerData _triggerData;
         private readonly ImmutableDictionary<string, string> _variableTypes;
         private readonly bool _isLuaTrigger;
 
         public TriggerRenderer(
-            TextWriter writer,
+            IndentedTextWriter writer,
             TriggerData triggerData,
             IEnumerable<VariableDefinition> variables,
             bool isLuaTrigger = false)
@@ -49,14 +46,14 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(triggerDefinition));
             }
 
-            var commentLine = new JassCommentSyntax("===========================================================================").ToString();
+            var commentLine = "//===========================================================================";
 
             _writer.WriteLine(commentLine);
-            _writer.WriteLine(new JassCommentSyntax($" Trigger: {triggerDefinition.Name}").ToString());
+            _writer.WriteComment($"Trigger: {triggerDefinition.Name}");
 
             if (!string.IsNullOrEmpty(triggerDefinition.Description))
             {
-                _writer.WriteLine(new JassCommentSyntax(string.Empty));
+                _writer.WriteLine(JassSymbol.SlashSlash);
 
                 using var stringReader = new StringReader(triggerDefinition.Description);
                 while (true)
@@ -67,7 +64,7 @@ namespace War3Net.Build
                         break;
                     }
 
-                    _writer.WriteLine(new JassCommentSyntax($" {line}").ToString());
+                    _writer.WriteComment(line);
                 }
             }
 
@@ -88,24 +85,22 @@ namespace War3Net.Build
 
         private void RenderInitTrig(TriggerDefinition triggerDefinition)
         {
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new StringWriter(stringBuilder);
-            var renderer = new JassRenderer(stringWriter);
-
             var triggerVariableName = triggerDefinition.GetVariableName();
 
-            var statements = new List<IStatementSyntax>();
+            _writer.WriteFunction(triggerDefinition.GetInitTrigFunctionName());
 
-            statements.Add(SyntaxFactory.SetStatement(
+            _writer.WriteSet(
                 triggerVariableName,
-                SyntaxFactory.InvocationExpression(WellKnownNatives.CreateTrigger)));
+                JassExpression.InvokeSpaced(WellKnownNatives.CreateTrigger));
 
             if (!triggerDefinition.IsInitiallyOn)
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                _writer.WriteCall(
                     WellKnownNatives.DisableTrigger,
-                    SyntaxFactory.VariableReferenceExpression(triggerVariableName)));
+                    triggerVariableName);
             }
+
+            var identifierBuilder = new TrigFunctionIdentifierBuilder(triggerDefinition.GetTriggerIdentifierName() + "_Func");
 
             foreach (var function in triggerDefinition.Functions.Where(function => function.Type == TriggerFunctionType.Event && function.IsEnabled))
             {
@@ -114,37 +109,31 @@ namespace War3Net.Build
                     continue;
                 }
 
-                var stringBuilder2 = new StringBuilder();
-                using var stringWriter2 = new StringWriter(stringBuilder2);
-                var renderer2 = new JassRenderer(stringWriter2);
+                var arguments = GetParameters(function, identifierBuilder)
+                    .Prepend(triggerVariableName)
+                    .ToArray();
 
-                var identifierBuilder = new TrigFunctionIdentifierBuilder(triggerDefinition.GetTriggerIdentifierName() + "_Func");
-
-                var context = new TriggerRendererContext(renderer2, identifierBuilder);
-
-                var argumentListBuilder = ImmutableArray.CreateBuilder<IExpressionSyntax>();
-                argumentListBuilder.Add(SyntaxFactory.VariableReferenceExpression(triggerVariableName));
-                BuildParameters(function, context, argumentListBuilder);
-
-                statements.Add(SyntaxFactory.CallStatement(function.Name, new JassArgumentListSyntax(argumentListBuilder.ToImmutable())));
+                _writer.WriteCall(
+                    function.Name,
+                    arguments);
             }
 
             if (triggerDefinition.Functions.Any(function => function.Type == TriggerFunctionType.Condition && function.IsEnabled))
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                _writer.WriteCall(
                     WellKnownNatives.TriggerAddCondition,
-                    SyntaxFactory.VariableReferenceExpression(triggerVariableName),
-                    SyntaxFactory.InvocationExpression(WellKnownNatives.Condition, SyntaxFactory.FunctionReferenceExpression(triggerDefinition.GetTrigConditionsFunctionName()))));
+                    triggerVariableName,
+                    JassExpression.InvokeSpaced(
+                        WellKnownNatives.Condition,
+                        JassExpression.FunctionRef(triggerDefinition.GetTrigConditionsFunctionName())));
             }
 
-            statements.Add(SyntaxFactory.CallStatement(
+            _writer.WriteCall(
                 WellKnownNatives.TriggerAddAction,
-                SyntaxFactory.VariableReferenceExpression(triggerVariableName),
-                SyntaxFactory.FunctionReferenceExpression(triggerDefinition.GetTrigActionsFunctionName())));
+                triggerVariableName,
+                JassExpression.FunctionRef(triggerDefinition.GetTrigActionsFunctionName()));
 
-            renderer.Render(SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(triggerDefinition.GetInitTrigFunctionName()), statements));
-
-            _writer.WriteLine(stringBuilder.ToString());
+            _writer.EndFunction();
         }
 
         private ImmutableArray<string> GetArgumentTypes(TriggerFunction function)
@@ -167,47 +156,19 @@ namespace War3Net.Build
             return argumentTypes;
         }
 
-        private void BuildParameters(TriggerFunction function, TriggerRendererContext context, ImmutableArray<IExpressionSyntax>.Builder argumentListBuilder)
+        private IEnumerable<string> GetParameters(TriggerFunction function, TrigFunctionIdentifierBuilder identifierBuilder)
         {
             var argumentTypes = GetArgumentTypes(function);
 
             for (var i = 0; i < argumentTypes.Length; i++)
             {
-                argumentListBuilder.Add(GetParameter(function.Parameters[i], argumentTypes[i], i, context));
+                yield return GetParameter(function.Parameters[i], argumentTypes[i], i, identifierBuilder);
             }
         }
 
-        private void BuildParametersSkipLast(TriggerFunction function, TriggerRendererContext context, ImmutableArray<IExpressionSyntax>.Builder argumentListBuilder)
+        private string GetParameter(TriggerFunctionParameter parameter, string type, int parameterIndex, TrigFunctionIdentifierBuilder identifierBuilder)
         {
-            var argumentTypes = GetArgumentTypes(function);
-
-            for (var i = 0; i + 1 < argumentTypes.Length; i++)
-            {
-                argumentListBuilder.Add(GetParameter(function.Parameters[i], argumentTypes[i], i, context));
-            }
-        }
-
-        private ImmutableArray<IExpressionSyntax>.Builder BuildParameters(TriggerFunction function, TriggerRendererContext context)
-        {
-            var argumentTypes = GetArgumentTypes(function);
-
-            var argumentListBuilder = ImmutableArray.CreateBuilder<IExpressionSyntax>();
-            for (var i = 0; i < argumentTypes.Length; i++)
-            {
-                argumentListBuilder.Add(GetParameter(function.Parameters[i], argumentTypes[i], i, context));
-            }
-
-            return argumentListBuilder;
-        }
-
-        private JassArgumentListSyntax GetParameters(TriggerFunction function, TriggerRendererContext context)
-        {
-            return new JassArgumentListSyntax(BuildParameters(function, context).ToImmutable());
-        }
-
-        private IExpressionSyntax GetParameter(TriggerFunctionParameter parameter, string type, int parameterIndex, TriggerRendererContext context)
-        {
-            context.TrigFunctionIdentifierBuilder.Append(parameterIndex + 1);
+            identifierBuilder.Append(parameterIndex + 1);
             try
             {
                 switch (parameter.Type)
@@ -216,19 +177,19 @@ namespace War3Net.Build
                         var triggerParam = _triggerData.TriggerParams[parameter.Value];
                         if (triggerParam.ScriptText.StartsWith('`') && triggerParam.ScriptText.EndsWith('`'))
                         {
-                            return SyntaxFactory.ParseExpression($"\"{triggerParam.ScriptText[1..^1]}\"");
+                            return $"{JassSymbol.DoubleQuoteChar}{triggerParam.ScriptText[1..^1]}{JassSymbol.DoubleQuoteChar}";
                         }
 
-                        return SyntaxFactory.ParseExpression(triggerParam.ScriptText);
+                        return triggerParam.ScriptText;
 
                     case TriggerFunctionParameterType.Variable:
-                        var variableeName = parameter.Value.StartsWith("gg_", StringComparison.Ordinal)
+                        var variableName = parameter.Value.StartsWith("gg_", StringComparison.Ordinal)
                             ? parameter.Value
                             : $"udg_{parameter.Value}";
 
                         return parameter.ArrayIndexer is null
-                            ? SyntaxFactory.VariableReferenceExpression(variableeName)
-                            : SyntaxFactory.ArrayReferenceExpression(variableeName, GetParameter(parameter.ArrayIndexer, JassKeyword.Integer, 0, context));
+                            ? variableName
+                            : JassExpression.ElementAccess(variableName, GetParameter(parameter.ArrayIndexer, JassKeyword.Integer, 0, identifierBuilder));
 
                     case TriggerFunctionParameterType.Function:
                         if (parameter.Function is null)
@@ -238,10 +199,10 @@ namespace War3Net.Build
 
                         if (type == "boolexpr")
                         {
-                            var conditionFunctionName = context.TrigFunctionIdentifierBuilder.ToString();
-                            RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, parameter);
+                            var conditionFunctionName = identifierBuilder.ToString();
+                            RenderConditionFunction(identifierBuilder, conditionFunctionName, parameter);
 
-                            return SyntaxFactory.InvocationExpression(WellKnownNatives.Condition, SyntaxFactory.FunctionReferenceExpression(conditionFunctionName));
+                            return JassExpression.Invoke(WellKnownNatives.Condition, JassExpression.FunctionRef(conditionFunctionName));
                         }
 
                         var scriptName = GetScriptName(parameter.Function);
@@ -249,25 +210,26 @@ namespace War3Net.Build
                         if (string.Equals(scriptName, "OperatorInt", StringComparison.Ordinal) ||
                             string.Equals(scriptName, "OperatorReal", StringComparison.Ordinal))
                         {
-                            var parameters = GetParameters(parameter.Function, context);
+                            var parameters = GetParameters(parameter.Function, identifierBuilder).ToArray();
 
-                            return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(
-                                parameters.Arguments[0],
-                                parameters.Arguments[2],
-                                SyntaxFactory.ParseBinaryOperator(((JassStringLiteralExpressionSyntax)parameters.Arguments[1]).Value)));
+                            return JassExpression.ParenthesizedCompact(JassExpression.Binary(
+                                parameters[0],
+                                parameters[1],
+                                parameters[2]));
                         }
                         else if (string.Equals(scriptName, "OperatorString", StringComparison.Ordinal))
                         {
-                            var parameters = GetParameters(parameter.Function, context);
+                            var parameters = GetParameters(parameter.Function, identifierBuilder).ToArray();
 
-                            return SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryExpression(
-                                parameters.Arguments[0],
-                                parameters.Arguments[1],
-                                BinaryOperatorType.Add));
+                            return JassExpression.ParenthesizedCompact(JassExpression.Add(
+                                parameters[0],
+                                parameters[1]));
                         }
                         else
                         {
-                            return SyntaxFactory.InvocationExpression(scriptName, GetParameters(parameter.Function, context));
+                            return JassExpression.Invoke(
+                                scriptName,
+                                GetParameters(parameter.Function, identifierBuilder).ToArray());
                         }
 
                     case TriggerFunctionParameterType.String:
@@ -293,15 +255,15 @@ namespace War3Net.Build
 
                         if (knownStringTypes.Contains(type))
                         {
-                            return SyntaxFactory.ParseExpression($"\"{EscapedStringProvider.GetEscapedString(parameter.Value)}\"");
+                            return JassLiteral.String(parameter.Value);
                         }
                         else if (knownFourCCTypes.Contains(type))
                         {
-                            return SyntaxFactory.ParseExpression($"'{parameter.Value}'");
+                            return JassLiteral.FourCC(parameter.Value);
                         }
                         else
                         {
-                            return SyntaxFactory.ParseExpression(parameter.Value);
+                            return parameter.Value;
                         }
 
                     default:
@@ -310,7 +272,7 @@ namespace War3Net.Build
             }
             finally
             {
-                context.TrigFunctionIdentifierBuilder.Remove();
+                identifierBuilder.Remove();
             }
         }
 

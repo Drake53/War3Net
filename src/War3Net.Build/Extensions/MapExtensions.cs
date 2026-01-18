@@ -53,17 +53,7 @@ namespace War3Net.Build.Extensions
                 throw new ArgumentException($"The map's script language must be set to jass in order to use the jass compiler.", nameof(map));
             }
 
-            var compilationUnit = mapScriptBuilder.Build(map);
-
-            using var stream = new MemoryStream();
-            using (var writer = new StreamWriter(stream, _defaultEncoding, leaveOpen: true))
-            {
-                var renderer = new JassRenderer(writer);
-                renderer.Render(compilationUnit);
-            }
-
-            stream.Position = 0;
-            map.SetScriptFile(stream);
+            map.Script = mapScriptBuilder.Build(map);
         }
 
         public static CompileResult CompileScript(this Map map, Compiler compiler, IEnumerable<string> luaSystemLibs)
@@ -133,7 +123,9 @@ namespace War3Net.Build.Extensions
             transpiler.RegisterJassFile(JassSyntaxFactory.ParseCompilationUnit(File.ReadAllText(commonJPath)));
             transpiler.RegisterJassFile(JassSyntaxFactory.ParseCompilationUnit(File.ReadAllText(blizzardJPath)));
 
-            var luaCompilationUnit = transpiler.Transpile(mapScriptBuilder.Build(map));
+            var mapScript = mapScriptBuilder.Build(map);
+            var jassCompilationUnit = JassSyntaxFactory.ParseCompilationUnit(mapScript);
+            var luaCompilationUnit = transpiler.Transpile(jassCompilationUnit);
             using (var writer = new StreamWriter(stream, _defaultEncoding, leaveOpen: true))
             {
                 var luaRenderOptions = new LuaSyntaxGenerator.SettingInfo

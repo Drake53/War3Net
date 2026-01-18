@@ -6,66 +6,80 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
 using War3Net.Build.Extensions;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Variables(Map map)
+        protected internal virtual void GenerateUserDefinedVariables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapTriggers = map.Triggers;
             if (mapTriggers is null)
             {
-                yield break;
+                return;
             }
 
             foreach (var variable in mapTriggers.Variables)
             {
-                var type = TriggerData.TriggerTypes.TryGetValue(variable.Type, out var triggerType) && !string.IsNullOrEmpty(triggerType.BaseType)
+                var variableType = TriggerData.TriggerTypes.TryGetValue(variable.Type, out var triggerType) && !string.IsNullOrEmpty(triggerType.BaseType)
                     ? triggerType.BaseType
                     : variable.Type;
 
                 if (variable.IsArray)
                 {
-                    yield return SyntaxFactory.GlobalArrayDeclaration(
-                        SyntaxFactory.ParseTypeName(type),
+                    writer.WriteAlignedGlobal(
+                        $"{variableType} {JassKeyword.Array}",
                         variable.GetVariableName());
                 }
                 else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                 {
-                    yield return SyntaxFactory.GlobalDeclaration(
-                        JassTypeSyntax.String,
+                    writer.WriteAlignedGlobal(
+                        JassKeyword.String,
                         variable.GetVariableName());
                 }
                 else
                 {
-                    var value = variable.Type switch
+                    var defaultValue = variable.Type switch
                     {
-                        JassKeyword.Integer => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.Real => SyntaxFactory.LiteralExpression(0),
-                        JassKeyword.Boolean => JassBooleanLiteralExpressionSyntax.False,
+                        JassKeyword.Integer => "0",
+                        JassKeyword.Real => "0",
+                        JassKeyword.Boolean => JassKeyword.False,
 
-                        _ => JassNullLiteralExpressionSyntax.Value,
+                        _ => JassKeyword.Null,
                     };
 
-                    yield return SyntaxFactory.GlobalDeclaration(
-                        SyntaxFactory.ParseTypeName(type),
+                    writer.WriteAlignedGlobal(
+                        variableType,
                         variable.GetVariableName(),
-                        value);
+                        defaultValue);
                 }
             }
+        }
+
+        protected internal virtual bool ShouldGenerateUserDefinedVariables(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Triggers?.Variables is not null
+                && map.Triggers.Variables.Count > 0;
         }
     }
 }

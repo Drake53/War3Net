@@ -6,105 +6,108 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using War3Net.Build.Common;
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateRegions(Map map)
+        protected internal virtual void GenerateCreateRegions(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapRegions = map.Regions;
             if (mapRegions is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateRegions)}' cannot be generated without {nameof(MapRegions)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateRegions}' cannot be generated without {nameof(MapRegions)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.CreateRegions);
 
             if (UseWeatherEffectVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.WeatherEffect), VariableName.WeatherEffect));
-                statements.Add(JassEmptySyntax.Value);
+                writer.WriteLocal(TypeName.WeatherEffect, VariableName.WeatherEffect);
+                writer.WriteLine();
             }
 
             foreach (var region in mapRegions.Regions)
             {
                 var regionName = region.GetVariableName();
 
-                statements.Add(SyntaxFactory.SetStatement(
+                writer.WriteSet(
                     regionName,
-                    SyntaxFactory.InvocationExpression(
+                    JassExpression.InvokeSpaced(
                         NativeName.Rect,
-                        SyntaxFactory.LiteralExpression(region.Left, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Bottom, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Right, precision: 1),
-                        SyntaxFactory.LiteralExpression(region.Top, precision: 1))));
+                        JassLiteral.Real(region.Left),
+                        JassLiteral.Real(region.Bottom),
+                        JassLiteral.Real(region.Right),
+                        JassLiteral.Real(region.Top)));
 
                 if (region.WeatherType != WeatherType.None)
                 {
                     if (UseWeatherEffectVariable)
                     {
-                        statements.Add(SyntaxFactory.SetStatement(
+                        writer.WriteSet(
                             VariableName.WeatherEffect,
-                            SyntaxFactory.InvocationExpression(
+                            JassExpression.InvokeSpaced(
                                 NativeName.AddWeatherEffect,
-                                SyntaxFactory.VariableReferenceExpression(regionName),
-                                SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType))));
+                                regionName,
+                                JassLiteral.FourCC((int)region.WeatherType)));
 
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.EnableWeatherEffect,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.WeatherEffect),
-                            JassBooleanLiteralExpressionSyntax.True));
+                            VariableName.WeatherEffect,
+                            JassKeyword.True);
                     }
                     else
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.EnableWeatherEffect,
-                            SyntaxFactory.InvocationExpression(
+                            JassExpression.Invoke(
                                 NativeName.AddWeatherEffect,
-                                SyntaxFactory.VariableReferenceExpression(regionName),
-                                SyntaxFactory.FourCCLiteralExpression((int)region.WeatherType)),
-                            JassBooleanLiteralExpressionSyntax.True));
+                                regionName,
+                                JassLiteral.FourCC((int)region.WeatherType)),
+                            JassKeyword.True);
                     }
                 }
 
                 if (!string.IsNullOrEmpty(region.AmbientSound))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SetSoundPosition,
-                        SyntaxFactory.VariableReferenceExpression(region.AmbientSound),
-                        SyntaxFactory.LiteralExpression(region.CenterX),
-                        SyntaxFactory.LiteralExpression(region.CenterY),
-                        SyntaxFactory.LiteralExpression(0f)));
+                        region.AmbientSound,
+                        JassLiteral.Real(region.CenterX),
+                        JassLiteral.Real(region.CenterY),
+                        "0.0");
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.RegisterStackedSound,
-                        SyntaxFactory.VariableReferenceExpression(region.AmbientSound),
-                        SyntaxFactory.LiteralExpression(true),
-                        SyntaxFactory.LiteralExpression(region.Width),
-                        SyntaxFactory.LiteralExpression(region.Height)));
+                        region.AmbientSound,
+                        JassKeyword.True,
+                        JassLiteral.Real(region.Width),
+                        JassLiteral.Real(region.Height));
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateRegions)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateRegionsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateRegions(Map map)
         {
             if (map is null)
             {
@@ -117,7 +120,7 @@ namespace War3Net.Build
             }
 
             return map.Regions is not null
-                && map.Regions.Regions.Any();
+                && map.Regions.Regions.Count > 0;
         }
     }
 }

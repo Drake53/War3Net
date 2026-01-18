@@ -5,12 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Immutable;
+using System.Linq;
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -23,12 +22,12 @@ namespace War3Net.Build
             RenderActionFunction(context.TrigFunctionIdentifierBuilder, actionFunctionName, function.Parameters[^1]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            var argumentListBuilder = ImmutableArray.CreateBuilder<IExpressionSyntax>();
-            BuildParametersSkipLast(function, context, argumentListBuilder);
-            argumentListBuilder.Add(SyntaxFactory.FunctionReferenceExpression(actionFunctionName));
-
-            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), new JassArgumentListSyntax(argumentListBuilder.ToImmutable())));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteCall(
+                GetScriptName(function),
+                GetParameters(function, context.TrigFunctionIdentifierBuilder)
+                    .SkipLast(1)
+                    .Append(JassExpression.FunctionRef(actionFunctionName))
+                    .ToArray());
         }
 
         private void RenderForeachLoopMultiple(TriggerFunction function, TriggerRendererContext context)
@@ -36,11 +35,11 @@ namespace War3Net.Build
             var actionFunctionName = $"{context.TrigFunctionIdentifierBuilder}A";
             RenderActionFunction(context.TrigFunctionIdentifierBuilder, actionFunctionName, function.ChildFunctions);
 
-            var argumentListBuilder = BuildParameters(function, context);
-            argumentListBuilder.Add(SyntaxFactory.FunctionReferenceExpression(actionFunctionName));
-
-            context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), new JassArgumentListSyntax(argumentListBuilder.ToImmutable())));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteCall(
+                GetScriptName(function),
+                GetParameters(function, context.TrigFunctionIdentifierBuilder)
+                    .Append(JassExpression.FunctionRef(actionFunctionName))
+                    .ToArray());
         }
     }
 }

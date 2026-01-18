@@ -6,36 +6,38 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.Build.Providers;
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitGlobals(Map map)
+        protected internal virtual void GenerateInitGlobals(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapTriggers = map.Triggers;
             if (mapTriggers is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitGlobals)}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitGlobals}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitGlobals);
 
             if (mapTriggers.Variables.Any(variable =>
                 (variable.IsArray ||
@@ -44,75 +46,85 @@ namespace War3Net.Build
                  TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out _) ||
                  string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))))
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(
-                    JassTypeSyntax.Integer,
+                writer.WriteLocal(
+                    JassKeyword.Integer,
                     "i",
-                    SyntaxFactory.LiteralExpression(0)));
+                    "0");
             }
 
             foreach (var variable in mapTriggers.Variables)
             {
+                string? initialValueExpression = null;
+
                 if (variable.IsInitialized)
                 {
-                    var initialValue = TriggerData.TriggerParams.TryGetValue(variable.InitialValue, out var triggerParam) && string.Equals(triggerParam.VariableType, variable.Type, StringComparison.Ordinal)
+                    initialValueExpression = TriggerData.TriggerParams.TryGetValue(variable.InitialValue, out var triggerParam) && string.Equals(triggerParam.VariableType, variable.Type, StringComparison.Ordinal)
                         ? triggerParam.ScriptText
                         : string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal)
                             ? $"\"{EscapedStringProvider.GetEscapedString(variable.InitialValue)}\""
                             : variable.InitialValue;
-
-                    statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(initialValue)));
                 }
                 else if (TriggerData.TriggerTypeDefaults.TryGetValue(variable.Type, out var triggerTypeDefault))
                 {
-                    statements.AddRange(InitGlobal(variable, SyntaxFactory.ParseExpression(triggerTypeDefault.ScriptText)));
+                    initialValueExpression = triggerTypeDefault.ScriptText;
                 }
                 else if (string.Equals(variable.Type, JassKeyword.String, StringComparison.Ordinal))
                 {
-                    statements.AddRange(InitGlobal(variable, SyntaxFactory.LiteralExpression(string.Empty)));
+                    initialValueExpression = "\"\"";
+                }
+
+                if (initialValueExpression is not null)
+                {
+                    WriteInitGlobal(variable, initialValueExpression, writer);
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitGlobals)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual IEnumerable<IStatementSyntax> InitGlobal(VariableDefinition variable, IExpressionSyntax expression)
+        protected internal virtual void WriteInitGlobal(VariableDefinition variable, string initialValueExpression, IndentedTextWriter writer)
         {
             if (variable is null)
             {
                 throw new ArgumentNullException(nameof(variable));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             if (variable.IsArray)
             {
-                yield return SyntaxFactory.SetStatement(
+                writer.WriteSet(
                     "i",
-                    SyntaxFactory.LiteralExpression(0));
+                    "0");
 
-                yield return SyntaxFactory.LoopStatement(
-                    SyntaxFactory.ExitStatement(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryGreaterThanExpression(
-                        SyntaxFactory.VariableReferenceExpression("i"),
-                        SyntaxFactory.LiteralExpression(variable.ArraySize)))),
-                    SyntaxFactory.SetStatement(
-                        variable.GetVariableName(),
-                        SyntaxFactory.VariableReferenceExpression("i"),
-                        expression),
-                    SyntaxFactory.SetStatement(
-                        "i",
-                        SyntaxFactory.BinaryAdditionExpression(
-                            SyntaxFactory.VariableReferenceExpression("i"),
-                            SyntaxFactory.LiteralExpression(1))));
+                writer.WriteLoop();
+                writer.WriteExitWhen(JassExpression.ParenthesizedCompact(JassExpression.GreaterThan(
+                    "i",
+                    JassLiteral.Int(variable.ArraySize))));
 
-                yield return JassEmptySyntax.Value;
+                writer.WriteSet(
+                    JassExpression.ElementAccess(variable.GetVariableName(), "i"),
+                    initialValueExpression);
+
+                writer.WriteSet(
+                    "i",
+                    JassExpression.Add("i", "1"));
+
+                writer.WriteEndLoop();
+                writer.WriteLine();
             }
             else
             {
-                yield return SyntaxFactory.SetStatement(
+                writer.WriteSet(
                     variable.GetVariableName(),
-                    expression);
+                    initialValueExpression);
             }
         }
 
-        protected internal virtual bool InitGlobalsCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitGlobals(Map map)
         {
             if (map is null)
             {

@@ -6,55 +6,72 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 using War3Net.Build.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Transpilers;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.Build.Widget;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        public virtual IEnumerable<MemberDeclarationSyntax> UnitsApi(Map map, JassToCSharpTranspiler transpiler)
-        {
-            if (transpiler is null)
-            {
-                throw new ArgumentNullException(nameof(transpiler));
-            }
-
-            return Units(map).Select(unit => transpiler.Transpile(unit));
-        }
-
-        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Units(Map map)
+        protected internal virtual void GenerateUnitVariables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapUnits = map.Units;
             if (mapUnits is null)
             {
-                yield break;
+                return;
             }
 
-            foreach (var unit in mapUnits.Units.Where(unit => CreateAllUnitsConditionSingleUnit(map, unit)))
+            foreach (var unit in mapUnits.Units.Where(ShouldGenerateUnitVariable))
             {
-                var unitVariableName = unit.GetVariableName();
-                if (ForceGenerateGlobalUnitVariable || TriggerVariableReferences.ContainsKey(unitVariableName))
-                {
-                    yield return SyntaxFactory.GlobalDeclaration(
-                        SyntaxFactory.ParseTypeName(TypeName.Unit),
-                        unitVariableName,
-                        JassNullLiteralExpressionSyntax.Value);
-                }
+                writer.WriteAlignedGlobal(
+                    TypeName.Unit,
+                    unit.GetVariableName(),
+                    JassKeyword.Null);
             }
+        }
+
+        protected internal virtual bool ShouldGenerateUnitVariables(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Units is not null
+                && map.Units.Units.Any(ShouldGenerateUnitVariable);
+        }
+
+        protected internal virtual bool ShouldGenerateUnitVariable(UnitData unitData)
+        {
+            if (unitData is null)
+            {
+                throw new ArgumentNullException(nameof(unitData));
+            }
+
+            if (!unitData.IsUnit() || unitData.IsPlayerStartLocation())
+            {
+                return false;
+            }
+
+            var unitVariableName = unitData.GetVariableName();
+
+            return ForceGenerateGlobalUnitVariable
+                || TriggerVariableReferences.ContainsKey(unitVariableName);
         }
     }
 }

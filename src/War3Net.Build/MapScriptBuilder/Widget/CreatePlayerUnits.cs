@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreatePlayerUnits.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,41 +6,44 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreatePlayerUnits(Map map)
+        protected internal virtual void GenerateCreatePlayerUnits(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            writer.WriteFunction(GeneratedFunctionName.CreatePlayerUnits);
 
             for (var i = 0; i < MaxPlayerSlots; i++)
             {
-                if (CreateUnitsForPlayerCondition(map, i))
+                if (ShouldGenerateCreateUnitsForPlayer(map, i))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(nameof(CreateUnitsForPlayer) + i));
+                    writer.WriteCall(GeneratedFunctionName.CreateUnitsForPlayer(i));
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreatePlayerUnits)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreatePlayerUnitsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreatePlayerUnits(Map map)
         {
             if (map is null)
             {

@@ -5,22 +5,24 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis;
 
 namespace War3Net.Build
 {
     public class TriggerRendererContext
     {
-        private readonly JassRenderer _renderer;
+        private readonly IndentedTextWriter _writer;
         private readonly TrigFunctionIdentifierBuilder _builder;
 
-        public TriggerRendererContext(JassRenderer renderer, TrigFunctionIdentifierBuilder builder)
+        public TriggerRendererContext(
+            IndentedTextWriter writer,
+            TrigFunctionIdentifierBuilder builder)
         {
-            _renderer = renderer;
+            _writer = writer;
             _builder = builder;
         }
 
-        public JassRenderer Renderer => _renderer;
+        public IndentedTextWriter Writer => _writer;
 
         public TrigFunctionIdentifierBuilder TrigFunctionIdentifierBuilder => _builder;
     }

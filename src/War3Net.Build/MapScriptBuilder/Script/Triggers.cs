@@ -6,42 +6,65 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Triggers(Map map)
+        protected internal virtual void GenerateTriggerVariables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapTriggers = map.Triggers;
             if (mapTriggers is null)
             {
-                yield break;
+                return;
             }
 
-            foreach (var trigger in mapTriggers.TriggerItems)
+            foreach (var triggerItem in mapTriggers.TriggerItems.Where(ShouldGenerateTriggerVariable))
             {
-                if (trigger is TriggerDefinition triggerDefinition &&
-                    !triggerDefinition.IsComment)
-                {
-                    yield return SyntaxFactory.GlobalDeclaration(
-                        SyntaxFactory.ParseTypeName(TypeName.Trigger),
-                        triggerDefinition.GetVariableName(),
-                        JassNullLiteralExpressionSyntax.Value);
-                }
+                writer.WriteAlignedGlobal(
+                    TypeName.Trigger,
+                    triggerItem.GetVariableName(),
+                    JassKeyword.Null);
             }
+        }
+
+        protected internal virtual bool ShouldGenerateTriggerVariables(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Triggers is not null
+                && map.Triggers.TriggerItems.Any(ShouldGenerateTriggerVariable);
+        }
+
+        protected internal virtual bool ShouldGenerateTriggerVariable(TriggerItem triggerItem)
+        {
+            if (triggerItem is null)
+            {
+                throw new ArgumentNullException(nameof(triggerItem));
+            }
+
+            return triggerItem is TriggerDefinition triggerDefinition
+                && !triggerDefinition.IsComment;
         }
     }
 }

@@ -8,8 +8,8 @@
 using System;
 
 using War3Net.Build.Script;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -25,21 +25,17 @@ namespace War3Net.Build
                 throw new InvalidOperationException($"Unable to determine the type of the global variable '{variableParameter.Value}'.");
             }
 
+            var variableName = $"udg_{variableParameter.Value}";
             if (variableParameter.ArrayIndexer is not null)
             {
-                context.Renderer.Render(SyntaxFactory.SetStatement(
-                    $"udg_{variableParameter.Value}",
-                    GetParameter(variableParameter.ArrayIndexer, "integer", 0, context),
-                    GetParameter(valueParameter, type, 1, context)));
-            }
-            else
-            {
-                context.Renderer.Render(SyntaxFactory.SetStatement(
-                    $"udg_{variableParameter.Value}",
-                    GetParameter(valueParameter, type, 1, context)));
+                variableName = JassExpression.ElementAccess(
+                    variableName,
+                    GetParameter(variableParameter.ArrayIndexer, "integer", 0, context.TrigFunctionIdentifierBuilder));
             }
 
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteSet(
+                variableName,
+                GetParameter(valueParameter, type, 1, context.TrigFunctionIdentifierBuilder));
         }
     }
 }

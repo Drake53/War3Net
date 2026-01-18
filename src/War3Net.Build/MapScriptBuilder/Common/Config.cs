@@ -1,127 +1,124 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="Config.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
-#pragma warning disable IDE1006, SA1300
-
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Info;
-using War3Net.Build.Providers;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax config(Map map)
+        protected internal virtual void GenerateConfig(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapInfo = map.Info;
             if (mapInfo is null)
             {
-                throw new ArgumentException($"Function '{nameof(config)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.Config}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.Config);
 
             var playerDataCount = mapInfo.Players.Count;
-            var forceDataCount = mapInfo.Forces.Count;
 
-            statements.Add(SyntaxFactory.CallStatement(NativeName.SetMapName, SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapName))));
-            statements.Add(SyntaxFactory.CallStatement(NativeName.SetMapDescription, SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(mapInfo.MapDescription))));
-            statements.Add(SyntaxFactory.CallStatement(NativeName.SetPlayers, SyntaxFactory.LiteralExpression(playerDataCount)));
-            statements.Add(SyntaxFactory.CallStatement(NativeName.SetTeams, SyntaxFactory.LiteralExpression(playerDataCount)));
+            writer.WriteCall(NativeName.SetMapName, JassLiteral.String(mapInfo.MapName));
+            writer.WriteCall(NativeName.SetMapDescription, JassLiteral.String(mapInfo.MapDescription));
+            writer.WriteCall(NativeName.SetPlayers, JassLiteral.Int(playerDataCount));
+            writer.WriteCall(NativeName.SetTeams, JassLiteral.Int(playerDataCount));
+            var placement = mapInfo.Players.Any(player => player.AllyHighPriorityFlags != 0 || player.AllyLowPriorityFlags != 0)
+                ? PlacementName.TeamsTogether
+                : PlacementName.UseMapSettings;
 
-            if (mapInfo.Players.Any(player => player.AllyHighPriorityFlags != 0 || player.AllyLowPriorityFlags != 0))
-            {
-                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.TeamsTogether)));
-            }
-            else
-            {
-                statements.Add(SyntaxFactory.CallStatement(NativeName.SetGamePlacement, SyntaxFactory.VariableReferenceExpression(PlacementName.UseMapSettings)));
-            }
+            writer.WriteCall(NativeName.SetGamePlacement, placement);
 
-            statements.Add(JassEmptySyntax.Value);
+            writer.WriteLine();
 
             if (!string.IsNullOrEmpty(LobbyMusic))
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.PlayMusic,
-                    SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(LobbyMusic))));
+                    JassLiteral.String(LobbyMusic));
             }
 
             for (var i = 0; i < playerDataCount; i++)
             {
                 var location = mapInfo.Players[i].StartPosition;
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.DefineStartLocation,
-                    SyntaxFactory.LiteralExpression(i),
-                    SyntaxFactory.LiteralExpression(location.X, precision: 1),
-                    SyntaxFactory.LiteralExpression(location.Y, precision: 1)));
+                    JassLiteral.Int(i),
+                    JassLiteral.Real(location.X),
+                    JassLiteral.Real(location.Y));
             }
 
-            statements.Add(JassEmptySyntax.Value);
-            statements.Add(new JassCommentSyntax(" Player setup"));
+            writer.WriteLine();
+            writer.WriteComment("Player setup");
 
-            if (InitCustomPlayerSlotsCondition(map))
+            if (ShouldGenerateInitCustomPlayerSlots(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(InitCustomPlayerSlots)));
+                writer.WriteCall(GeneratedFunctionName.InitCustomPlayerSlots);
             }
 
-            var elseStatements = new List<IStatementSyntax>();
             if (!mapInfo.MapFlags.HasFlag(MapFlags.UseCustomForces))
             {
-                for (var i = 0; i < playerDataCount; i++)
+                if (mapInfo.FormatVersion < MapInfoFormatVersion.v15)
                 {
-                    elseStatements.Add(SyntaxFactory.CallStatement(
-                        FunctionName.SetPlayerSlotAvailable,
-                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(mapInfo.Players[i].Id)),
-                        SyntaxFactory.VariableReferenceExpression(MapControlName.User)));
+                    var condition = JassExpression.Equal(
+                        JassExpression.InvokeSpaced(NativeName.GetGameTypeSelected),
+                        GameType.UseMapSettings);
+
+                    writer.WriteIf(JassExpression.ParenthesizedCompact(condition));
+                    writer.WriteCall(GeneratedFunctionName.InitCustomTeams);
+                    writer.WriteElse();
                 }
 
-                elseStatements.Add(SyntaxFactory.CallStatement(FunctionName.InitGenericPlayerSlots));
+                for (var i = 0; i < playerDataCount; i++)
+                {
+                    writer.WriteCall(
+                        FunctionName.SetPlayerSlotAvailable,
+                        JassExpression.Invoke(NativeName.Player, JassLiteral.Int(mapInfo.Players[i].Id)),
+                        MapControlName.User);
+                }
+
+                writer.WriteCall(FunctionName.InitGenericPlayerSlots);
+
+                if (mapInfo.FormatVersion < MapInfoFormatVersion.v15)
+                {
+                    writer.WriteEndIf();
+                }
             }
 
-            if (mapInfo.FormatVersion < MapInfoFormatVersion.v15)
+            if (ShouldGenerateInitCustomTeams(map) && ShouldCallInitCustomTeams(map))
             {
-                statements.Add(SyntaxFactory.IfStatement(
-                    SyntaxFactory.ParenthesizedExpression(SyntaxFactory.BinaryEqualsExpression(
-                        SyntaxFactory.InvocationExpression(NativeName.GetGameTypeSelected),
-                        SyntaxFactory.VariableReferenceExpression(GameType.UseMapSettings))),
-                    SyntaxFactory.StatementList(SyntaxFactory.CallStatement(nameof(InitCustomTeams))),
-                    new JassElseClauseSyntax(SyntaxFactory.StatementList(elseStatements))));
-            }
-            else
-            {
-                statements.AddRange(elseStatements);
+                writer.WriteCall(GeneratedFunctionName.InitCustomTeams);
             }
 
-            if (InitCustomTeamsCondition(map) && InitCustomTeamsInvokeCondition(map))
+            if (ShouldGenerateInitAllyPriorities(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(InitCustomTeams)));
+                writer.WriteCall(GeneratedFunctionName.InitAllyPriorities);
             }
 
-            if (InitAllyPrioritiesCondition(map))
-            {
-                statements.Add(SyntaxFactory.CallStatement(nameof(InitAllyPriorities)));
-            }
-
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(config)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool configCondition(Map map)
+        protected internal virtual bool ShouldGenerateConfig(Map map)
         {
             if (map is null)
             {

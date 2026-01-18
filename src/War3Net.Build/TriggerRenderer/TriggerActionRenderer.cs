@@ -8,13 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -33,35 +32,26 @@ namespace War3Net.Build
                 throw new ArgumentException("Parameter function must be enabled and of type 'Action'.", nameof(parameter));
             }
 
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new StringWriter(stringBuilder);
-            var renderer = new JassRenderer(stringWriter);
+            using var writer = IndentedTextWriter.New(_writer);
 
-            var context = new TriggerRendererContext(renderer, identifierBuilder);
+            var context = new TriggerRendererContext(writer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.FunctionDeclarator(functionName)));
-            renderer.RenderNewLine();
-
+            writer.WriteFunction(functionName);
             RenderTriggerAction(function, context);
+            writer.EndFunction();
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
-            renderer.RenderNewLine();
-
-            _writer.WriteLine(stringBuilder.ToString());
+            _writer.WriteLine(writer.ToString());
         }
 
         private void RenderActionFunction(TrigFunctionIdentifierBuilder identifierBuilder, string functionName, List<TriggerFunction> functions)
         {
             identifierBuilder.Append("Func");
 
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new StringWriter(stringBuilder);
-            var renderer = new JassRenderer(stringWriter);
+            using var writer = IndentedTextWriter.New(_writer);
 
-            var context = new TriggerRendererContext(renderer, identifierBuilder);
+            var context = new TriggerRendererContext(writer, identifierBuilder);
 
-            renderer.Render(new JassFunctionCustomScriptAction(SyntaxFactory.FunctionDeclarator(functionName)));
-            renderer.RenderNewLine();
+            writer.WriteFunction(functionName);
 
             for (var i = 0; i < functions.Count; i++)
             {
@@ -76,10 +66,9 @@ namespace War3Net.Build
                 context.TrigFunctionIdentifierBuilder.Remove();
             }
 
-            renderer.Render(JassEndFunctionCustomScriptAction.Value);
-            renderer.RenderNewLine();
+            writer.EndFunction();
 
-            _writer.WriteLine(stringBuilder.ToString());
+            _writer.WriteLine(writer.ToString());
 
             identifierBuilder.Remove();
         }
@@ -125,37 +114,32 @@ namespace War3Net.Build
                     break;
 
                 case "CommentString":
-                    context.Renderer.Render(new JassCommentSyntax(" " + function.Parameters[0].Value));
-                    context.Renderer.RenderNewLine();
+                    context.Writer.WriteComment(function.Parameters[0].Value);
                     break;
 
                 case "CustomScriptCode":
                     if (_isLuaTrigger)
                     {
-                        context.Renderer.Render(new JassCommentSyntax("! beginusercode"));
-                        context.Renderer.RenderNewLine();
-
-                        context.Renderer.RenderLine(function.Parameters[0].Value);
-
-                        context.Renderer.Render(new JassCommentSyntax("! endusercode"));
-                        context.Renderer.RenderNewLine();
+                        context.Writer.WriteLine("//! beginusercode");
+                        context.Writer.WriteLine(function.Parameters[0].Value);
+                        context.Writer.WriteLine("//! endusercode");
                     }
                     else
                     {
-                        context.Renderer.Render(SyntaxFactory.ParseStatementLine(function.Parameters[0].Value));
-                        context.Renderer.RenderNewLine();
+                        context.Writer.WriteLine(function.Parameters[0].Value);
                     }
 
                     break;
 
                 case "ReturnAction":
-                    context.Renderer.Render(JassReturnStatementSyntax.Empty);
-                    context.Renderer.RenderNewLine();
+                    context.Writer.WriteReturn();
                     break;
 
                 default:
-                    context.Renderer.Render(SyntaxFactory.CallStatement(GetScriptName(function), GetParameters(function, context)));
-                    context.Renderer.RenderNewLine();
+                    context.Writer.WriteCall(
+                        GetScriptName(function),
+                        GetParameters(function, context.TrigFunctionIdentifierBuilder).ToArray());
+
                     break;
             }
         }

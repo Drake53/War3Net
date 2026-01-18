@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="InitCustomTeams.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,32 +6,36 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitCustomTeams(Map map)
+        protected internal virtual void GenerateInitCustomTeams(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapInfo = map.Info;
             if (mapInfo is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitCustomTeams)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitCustomTeams}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitCustomTeams);
 
             var forceDataCount = mapInfo.Forces.Count;
             var useBlizzardAllianceFunctions = mapInfo.FormatVersion > MapInfoFormatVersion.v15;
@@ -45,28 +49,30 @@ namespace War3Net.Build
                     .Select(player => player.Id)
                     .ToList();
 
-                if (!playerSlots.Any())
+                if (playerSlots.Count == 0)
                 {
                     continue;
                 }
 
-                statements.Add(new JassCommentSyntax($" Force: {forceData.Name}"));
+                writer.WriteComment($"Force: {forceData.Name}");
 
                 var alliedVictory = forceData.Flags.HasFlag(ForceFlags.AlliedVictory);
                 foreach (var playerSlot in playerSlots)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    var playerExpr = JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerSlot));
+
+                    writer.WriteCall(
                         NativeName.SetPlayerTeam,
-                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot)),
-                        SyntaxFactory.LiteralExpression(i)));
+                        playerExpr,
+                        JassLiteral.Int(i));
 
                     if (alliedVictory)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetPlayerState,
-                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot)),
-                            SyntaxFactory.VariableReferenceExpression(PlayerStateName.AlliedVictory),
-                            SyntaxFactory.LiteralExpression(1)));
+                            playerExpr,
+                            PlayerStateName.AlliedVictory,
+                            "1");
                     }
                 }
 
@@ -74,15 +80,15 @@ namespace War3Net.Build
 
                 if (useBlizzardAllianceFunctions)
                 {
-                    void AddSetAllianceStateStatement(string statementName)
+                    void WriteSetAllianceStateStatement(string statementName)
                     {
                         foreach (var (playerSlot1, playerSlot2) in playerSlotPairs)
                         {
-                            statements.Add(SyntaxFactory.CallStatement(
+                            writer.WriteCall(
                                 statementName,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot1)),
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot2)),
-                                SyntaxFactory.LiteralExpression(true)));
+                                JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerSlot1)),
+                                JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerSlot2)),
+                                JassKeyword.True);
                         }
                     }
 
@@ -90,74 +96,74 @@ namespace War3Net.Build
                     {
                         if (mapInfo.FormatVersion >= MapInfoFormatVersion.v31)
                         {
-                            statements.Add(JassEmptySyntax.Value);
-                            statements.Add(new JassCommentSyntax("   Allied"));
+                            writer.WriteLine();
+                            writer.WriteComment("  Allied");
                         }
 
-                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
+                        WriteSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateAllyBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareVision))
                     {
-                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateVisionBJ);
+                        WriteSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateVisionBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareUnitControl))
                     {
-                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateControlBJ);
+                        WriteSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateControlBJ);
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareAdvancedUnitControl))
                     {
-                        AddSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateFullControlBJ);
+                        WriteSetAllianceStateStatement(FunctionName.SetPlayerAllianceStateFullControlBJ);
                     }
                 }
                 else
                 {
-                    void AddSetAllianceStateStatement(string variableName, string comment)
+                    void WriteSetAllianceStateStatement(string variableName, string comment)
                     {
-                        statements.Add(JassEmptySyntax.Value);
-                        statements.Add(new JassCommentSyntax(comment));
+                        writer.WriteLine();
+                        writer.WriteComment(comment);
 
                         foreach (var (playerSlot1, playerSlot2) in playerSlotPairs)
                         {
-                            statements.Add(SyntaxFactory.CallStatement(
+                            writer.WriteCall(
                                 NativeName.SetPlayerAlliance,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot1)),
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerSlot2)),
-                                SyntaxFactory.VariableReferenceExpression(variableName),
-                                SyntaxFactory.LiteralExpression(true)));
+                                JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerSlot1)),
+                                JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerSlot2)),
+                                variableName,
+                                JassKeyword.True);
                         }
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.Allied))
                     {
-                        AddSetAllianceStateStatement(AllianceTypeName.Passive, "   Allied");
+                        WriteSetAllianceStateStatement(AllianceTypeName.Passive, "  Allied");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareVision))
                     {
-                        AddSetAllianceStateStatement(AllianceTypeName.SharedVision, "   Shared Vision");
+                        WriteSetAllianceStateStatement(AllianceTypeName.SharedVision, "  Shared Vision");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareUnitControl))
                     {
-                        AddSetAllianceStateStatement(AllianceTypeName.SharedControl, "   Shared Control");
+                        WriteSetAllianceStateStatement(AllianceTypeName.SharedControl, "  Shared Control");
                     }
 
                     if (forceData.Flags.HasFlag(ForceFlags.ShareAdvancedUnitControl))
                     {
-                        AddSetAllianceStateStatement(AllianceTypeName.SharedAdvancedControl, "   Advanced Control");
+                        WriteSetAllianceStateStatement(AllianceTypeName.SharedAdvancedControl, "  Advanced Control");
                     }
                 }
 
-                statements.Add(JassEmptySyntax.Value);
+                writer.WriteLine();
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTeams)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitCustomTeamsCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitCustomTeams(Map map)
         {
             if (map is null)
             {
@@ -167,7 +173,7 @@ namespace War3Net.Build
             return map.Info is not null;
         }
 
-        protected internal virtual bool InitCustomTeamsInvokeCondition(Map map)
+        protected internal virtual bool ShouldCallInitCustomTeams(Map map)
         {
             if (map is null)
             {

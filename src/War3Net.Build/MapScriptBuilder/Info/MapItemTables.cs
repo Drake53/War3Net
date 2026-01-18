@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="MapItemTables.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,33 +6,42 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual IEnumerable<JassFunctionDeclarationSyntax> MapItemTables(Map map)
+        protected internal virtual void GenerateMapItemTables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var randomItemTables = map.Info?.RandomItemTables;
             if (randomItemTables is null)
             {
-                throw new ArgumentException($"'ItemTable_DropItems' functions cannot be generated without {nameof(MapInfo.RandomItemTables)}.");
+                throw new ArgumentException($"DropItems functions cannot be generated without {nameof(MapInfo.RandomItemTables)}.");
             }
 
-            return randomItemTables.Select(table => ItemTableDropItems(map, table));
+            foreach (var table in randomItemTables)
+            {
+                GenerateItemTableDropItems(map, table, writer);
+            }
+
+            writer.WriteLine();
         }
 
-        protected internal virtual bool MapItemTablesCondition(Map map)
+        protected internal virtual bool ShouldGenerateMapItemTables(Map map)
         {
             if (map is null)
             {
@@ -40,7 +49,7 @@ namespace War3Net.Build
             }
 
             return map.Info?.RandomItemTables is not null
-                && map.Info.RandomItemTables.Any();
+                && map.Info.RandomItemTables.Count > 0;
         }
     }
 }

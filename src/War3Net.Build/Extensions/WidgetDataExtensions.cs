@@ -20,7 +20,7 @@ namespace War3Net.Build.Extensions
 
         public static bool HasItemTableSets(this WidgetData widgetData)
         {
-            return widgetData.ItemTableSets.Any(itemTableSet => itemTableSet.Items.Any());
+            return widgetData.ItemTableSets.Any(itemTableSet => itemTableSet.Items.Count > 0);
         }
     }
 }
