@@ -143,6 +143,13 @@ namespace War3Net.TestTools.UnitTesting
             messageBuilder.AppendLine($"  Lines deleted: {deletedLines}");
             messageBuilder.AppendLine($"  Lines modified: {modifiedLines}");
 
+            if (addedLines == 0 && deletedLines == 0 && modifiedLines == 0)
+            {
+                return BuildDiffMessage(
+                    StringHelper.ShowNewLineCharacters(expected),
+                    StringHelper.ShowNewLineCharacters(actual));
+            }
+
             return messageBuilder.ToString();
         }
 
