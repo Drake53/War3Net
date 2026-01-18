@@ -73,7 +73,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
             yield return IdentifierName;
-            foreach (var descendant in BaseType.GetDescendantNodes())
+            foreach (var descendant in IdentifierName.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -89,7 +89,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return TypeToken;
 
-            foreach (var descendant in BaseType.GetDescendantTokens())
+            foreach (var descendant in IdentifierName.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -107,7 +107,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return TypeToken;
 
             yield return IdentifierName;
-            foreach (var descendant in BaseType.GetDescendantNodesAndTokens())
+            foreach (var descendant in IdentifierName.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
