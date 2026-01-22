@@ -212,9 +212,15 @@ namespace War3Net.Build
                         {
                             var parameters = GetParameters(parameter.Function, identifierBuilder).ToArray();
 
+                            var @operator = parameters[1];
+                            if (@operator.StartsWith('"') && @operator.EndsWith('"'))
+                            {
+                                @operator = @operator[1..^1];
+                            }
+
                             return JassExpression.ParenthesizedCompact(JassExpression.Binary(
                                 parameters[0],
-                                parameters[1],
+                                @operator,
                                 parameters[2]));
                         }
                         else if (string.Equals(scriptName, "OperatorString", StringComparison.Ordinal))

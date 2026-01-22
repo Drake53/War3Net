@@ -21,16 +21,12 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static string Real(float value, int decimals = 1)
         {
-            var rounded = MathF.Round(value, decimals, MidpointRounding.AwayFromZero);
-            var format = $"0.{new string('0', decimals)}";
-            return rounded.ToString(format, CultureInfo.InvariantCulture);
+            return value.ToString($"F{decimals}", CultureInfo.InvariantCulture);
         }
 
         public static string Real(double value, int decimals = 1)
         {
-            var rounded = Math.Round(value, decimals, MidpointRounding.AwayFromZero);
-            var format = $"0.{new string('0', decimals)}";
-            return rounded.ToString(format, CultureInfo.InvariantCulture);
+            return value.ToString($"F{decimals}", CultureInfo.InvariantCulture);
         }
 
         public static string String(string? value)
