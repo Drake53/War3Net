@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitRandomGroups), DynamicDataSourceType.Method)]
         public void TestBodyInitRandomGroups(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitRandomGroups"];
-            var actual = testData.MapScriptBuilder.InitRandomGroups(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitRandomGroups,
+                writer => testData.MapScriptBuilder.GenerateInitRandomGroups(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitRandomGroups(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitRandomGroups");
-            var actual = testData.MapScriptBuilder.InitRandomGroupsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitRandomGroups);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitRandomGroups(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitRandomGroups"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitRandomGroups))
                 {
                     yield return new object[] { testData };
                 }

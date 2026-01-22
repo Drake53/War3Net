@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataRunInitializationTriggers), DynamicDataSourceType.Method)]
         public void TestBodyRunInitializationTriggers(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["RunInitializationTriggers"];
-            var actual = testData.MapScriptBuilder.RunInitializationTriggers(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.RunInitializationTriggers,
+                writer => testData.MapScriptBuilder.GenerateRunInitializationTriggers(testData.Map, writer));
         }
 
         [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionRunInitializationTriggers(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("RunInitializationTriggers");
-            var actual = testData.MapScriptBuilder.RunInitializationTriggersCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.RunInitializationTriggers);
+            var actual = testData.MapScriptBuilder.ShouldGenerateRunInitializationTriggers(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("RunInitializationTriggers"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.RunInitializationTriggers))
                 {
                     yield return new object[] { testData };
                 }

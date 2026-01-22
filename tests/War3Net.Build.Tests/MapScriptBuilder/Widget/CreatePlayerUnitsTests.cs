@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreatePlayerUnits), DynamicDataSourceType.Method)]
         public void TestBodyCreatePlayerUnits(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreatePlayerUnits"];
-            var actual = testData.MapScriptBuilder.CreatePlayerUnits(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreatePlayerUnits,
+                writer => testData.MapScriptBuilder.GenerateCreatePlayerUnits(testData.Map, writer));
         }
 
         [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreatePlayerUnits(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreatePlayerUnits");
-            var actual = testData.MapScriptBuilder.CreatePlayerUnitsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreatePlayerUnits);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreatePlayerUnits(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("CreatePlayerUnits"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreatePlayerUnits))
                 {
                     yield return new object[] { testData };
                 }

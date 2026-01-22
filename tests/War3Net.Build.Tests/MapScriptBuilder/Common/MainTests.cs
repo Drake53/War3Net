@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataMain), DynamicDataSourceType.Method)]
         public void TestBodyMain(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["main"];
-            var actual = testData.MapScriptBuilder.main(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.Main,
+                writer => testData.MapScriptBuilder.GenerateMain(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionMain(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("main");
-            var actual = testData.MapScriptBuilder.mainCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.Main);
+            var actual = testData.MapScriptBuilder.ShouldGenerateMain(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in GetUnobfuscatedTestData())
             {
-                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("main"))
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.Main))
                 {
                     yield return testData;
                 }

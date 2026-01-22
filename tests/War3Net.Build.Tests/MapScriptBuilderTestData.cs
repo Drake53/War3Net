@@ -29,7 +29,7 @@ namespace War3Net.Build.Tests
             {
                 if (declaration is JassFunctionDeclarationSyntax functionDeclaration)
                 {
-                    builder.Add(functionDeclaration.FunctionDeclarator.IdentifierName.Name, functionDeclaration);
+                    builder.Add(functionDeclaration.FunctionDeclarator.IdentifierName.Token.Text, functionDeclaration);
                 }
             }
 

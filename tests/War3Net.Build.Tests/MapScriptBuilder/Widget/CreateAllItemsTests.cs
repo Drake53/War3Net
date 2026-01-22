@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreateAllItems), DynamicDataSourceType.Method)]
         public void TestBodyCreateAllItems(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreateAllItems"];
-            var actual = testData.MapScriptBuilder.CreateAllItems(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreateAllItems,
+                writer => testData.MapScriptBuilder.GenerateCreateAllItems(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateAllItems(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreateAllItems");
-            var actual = testData.MapScriptBuilder.CreateAllItemsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateAllItems);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreateAllItems(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("CreateAllItems"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateAllItems))
                 {
                     yield return new object[] { testData };
                 }

@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreateNeutralPassive), DynamicDataSourceType.Method)]
         public void TestBodyCreateNeutralPassive(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreateNeutralPassive"];
-            var actual = testData.MapScriptBuilder.CreateNeutralPassive(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreateNeutralPassive,
+                writer => testData.MapScriptBuilder.GenerateCreateNeutralPassive(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateNeutralPassive(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreateNeutralPassive");
-            var actual = testData.MapScriptBuilder.CreateNeutralPassiveCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateNeutralPassive);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreateNeutralPassive(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in GetUnobfuscatedTestData())
             {
-                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey("CreateNeutralPassive"))
+                if (((MapScriptBuilderTestData)testData[0]).DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateNeutralPassive))
                 {
                     yield return testData;
                 }
