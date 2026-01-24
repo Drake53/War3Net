@@ -29,13 +29,13 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal static Parser<char, JassSyntaxTriviaList> GetLeadingTriviaListParser(
             Parser<char, JassSyntaxTrivia> whitespaceTriviaParser,
-            Parser<char, JassSyntaxTrivia> newlineTriviaParser,
+            Parser<char, JassSyntaxTrivia> newLineTriviaParser,
             Parser<char, JassSyntaxTrivia> singleLineCommentTriviaParser)
         {
             return OneOf(
                 OneOf(
                     whitespaceTriviaParser,
-                    newlineTriviaParser,
+                    newLineTriviaParser,
                     singleLineCommentTriviaParser)
                     .Many()
                     .Select(trivia => new JassSyntaxTriviaList(trivia.ToImmutableArray())),
@@ -44,7 +44,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         internal static Parser<char, JassSyntaxTriviaList> GetTrailingTriviaListParser(
             Parser<char, JassSyntaxTrivia> whitespaceTriviaParser,
-            Parser<char, JassSyntaxTrivia> singleNewlineTriviaParser,
+            Parser<char, JassSyntaxTrivia> singleNewLineTriviaParser,
             Parser<char, JassSyntaxTrivia> singleLineCommentTriviaParser)
         {
             return OneOf(
@@ -54,9 +54,9 @@ namespace War3Net.CodeAnalysis.Jass
                     .Many()
                     .Then(
                         OneOf(
-                            singleNewlineTriviaParser.Select(newline => Maybe.Just(newline)),
+                            singleNewLineTriviaParser.Select(newLine => Maybe.Just(newLine)),
                             End.ThenReturn(Maybe.Nothing<JassSyntaxTrivia>())),
-                        (trivia, newline) => new JassSyntaxTriviaList((newline.HasValue ? trivia.Append(newline.Value) : trivia).ToImmutableArray())),
+                        (trivia, newLine) => new JassSyntaxTriviaList((newLine.HasValue ? trivia.Append(newLine.Value) : trivia).ToImmutableArray())),
                 Return(JassSyntaxTriviaList.Empty));
         }
     }

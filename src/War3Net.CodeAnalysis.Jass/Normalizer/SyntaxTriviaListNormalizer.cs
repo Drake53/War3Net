@@ -19,11 +19,11 @@ namespace War3Net.CodeAnalysis.Jass
         {
             var triviaBuilder = ImmutableArray.CreateBuilder<JassSyntaxTrivia>();
 
-            if (_requireNewlineTrivia)
+            if (_requireNewLineTrivia)
             {
-                triviaBuilder.Add(JassSyntaxTrivia.Newline);
+                triviaBuilder.Add(JassSyntaxTrivia.NewLine);
                 _encounteredAnyTextOnCurrentLine = false;
-                _requireNewlineTrivia = false;
+                _requireNewLineTrivia = false;
             }
 
             HandleExistingTrivia(triviaList, triviaBuilder);
@@ -157,11 +157,11 @@ namespace War3Net.CodeAnalysis.Jass
             for (var i = 0; i < triviaList.Trivia.Length; i++)
             {
                 var trivia = triviaList.Trivia[i];
-                if (trivia.SyntaxKind == JassSyntaxKind.NewlineTrivia)
+                if (trivia.SyntaxKind == JassSyntaxKind.NewLineTrivia)
                 {
                     triviaBuilder.Add(trivia);
                     _encounteredAnyTextOnCurrentLine = false;
-                    _requireNewlineTrivia = false;
+                    _requireNewLineTrivia = false;
                 }
                 else if (trivia.SyntaxKind == JassSyntaxKind.SingleLineCommentTrivia)
                 {
@@ -187,15 +187,15 @@ namespace War3Net.CodeAnalysis.Jass
                         triviaBuilder.Add(trivia);
                     }
 
-                    _requireNewlineTrivia = true;
+                    _requireNewLineTrivia = true;
                 }
             }
 
-            if (_requireNewlineTrivia)
+            if (_requireNewLineTrivia)
             {
-                triviaBuilder.Add(JassSyntaxTrivia.Newline);
+                triviaBuilder.Add(JassSyntaxTrivia.NewLine);
                 _encounteredAnyTextOnCurrentLine = false;
-                _requireNewlineTrivia = false;
+                _requireNewLineTrivia = false;
             }
         }
     }

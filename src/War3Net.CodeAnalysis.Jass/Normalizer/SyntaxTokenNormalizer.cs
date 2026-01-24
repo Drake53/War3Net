@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         private static readonly HashSet<JassSyntaxKind> _increaseIndentationSyntaxKinds = GetIncreaseIndentationSyntaxKinds();
         private static readonly HashSet<JassSyntaxKind> _decreaseIndentationSyntaxKinds = GetDecreaseIndentationSyntaxKinds();
-        private static readonly HashSet<JassSyntaxKind> _requireNewlineSyntaxKinds = GetRequireNewlineSyntaxKinds();
+        private static readonly HashSet<JassSyntaxKind> _requireNewLineSyntaxKinds = GetRequireNewLineSyntaxKinds();
 
         /// <inheritdoc/>
         protected override bool RewriteToken(JassSyntaxToken? token, [NotNullIfNotNull("token")] out JassSyntaxToken? result)
@@ -36,9 +36,9 @@ namespace War3Net.CodeAnalysis.Jass
 
             var normalizedLeadingTrivia = RewriteLeadingTrivia(token.LeadingTrivia, out var leadingTrivia);
 
-            if (_requireNewlineSyntaxKinds.Contains(_currentToken.SyntaxKind))
+            if (_requireNewLineSyntaxKinds.Contains(_currentToken.SyntaxKind))
             {
-                _requireNewlineTrivia = true;
+                _requireNewLineTrivia = true;
             }
 
             if (_increaseIndentationSyntaxKinds.Contains(_currentToken.SyntaxKind))
@@ -98,7 +98,7 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
-        private static HashSet<JassSyntaxKind> GetRequireNewlineSyntaxKinds()
+        private static HashSet<JassSyntaxKind> GetRequireNewLineSyntaxKinds()
         {
             return new HashSet<JassSyntaxKind>
             {

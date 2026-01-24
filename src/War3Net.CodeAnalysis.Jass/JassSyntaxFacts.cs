@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Jass
                 || ch == JassSymbol.TabChar;
         }
 
-        public static bool IsNewlineCharacter(char ch)
+        public static bool IsNewLineCharacter(char ch)
         {
             return ch == JassSymbol.CarriageReturnChar
                 || ch == JassSymbol.LineFeedChar;

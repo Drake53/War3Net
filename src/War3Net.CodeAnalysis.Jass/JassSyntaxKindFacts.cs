@@ -48,7 +48,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static bool IsTrivia(JassSyntaxKind syntaxKind)
         {
-            return syntaxKind >= JassSyntaxKind.NewlineTrivia && syntaxKind <= JassSyntaxKind.SingleLineCommentTrivia;
+            return syntaxKind >= JassSyntaxKind.NewLineTrivia && syntaxKind <= JassSyntaxKind.SingleLineCommentTrivia;
         }
 
         public static bool IsBinaryExpressionToken(JassSyntaxKind binaryOperatorTokenSyntaxKind)

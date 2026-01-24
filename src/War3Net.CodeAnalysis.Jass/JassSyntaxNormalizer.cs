@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         private int _currentLevelOfIndentation;
         private bool _encounteredAnyTextOnCurrentLine;
-        private bool _requireNewlineTrivia;
+        private bool _requireNewLineTrivia;
 
         public JassSyntaxNormalizer(
             bool addSpacesToOuterInvocation = true,
@@ -46,7 +46,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             _currentLevelOfIndentation = 0;
             _encounteredAnyTextOnCurrentLine = false;
-            _requireNewlineTrivia = false;
+            _requireNewLineTrivia = false;
         }
     }
 }

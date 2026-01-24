@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Jass
                 WriteSpace();
                 Write(trivia.Text.TrimEnd());
             }
-            else if (trivia.SyntaxKind == JassSyntaxKind.NewlineTrivia)
+            else if (trivia.SyntaxKind == JassSyntaxKind.NewLineTrivia)
             {
                 var lines = 0;
                 var isCarriageReturn = false;

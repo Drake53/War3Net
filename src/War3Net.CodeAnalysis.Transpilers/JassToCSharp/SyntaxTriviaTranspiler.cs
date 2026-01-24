@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return trivia.SyntaxKind switch
             {
-                JassSyntaxKind.NewlineTrivia => SyntaxFactory.EndOfLine(trivia.Text),
+                JassSyntaxKind.NewLineTrivia => SyntaxFactory.EndOfLine(trivia.Text),
                 JassSyntaxKind.WhitespaceTrivia => SyntaxFactory.Whitespace(trivia.Text),
                 JassSyntaxKind.SingleLineCommentTrivia => SyntaxFactory.Comment(trivia.Text),
             };

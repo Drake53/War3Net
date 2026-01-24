@@ -37,8 +37,8 @@ namespace War3Net.CodeAnalysis.Jass
         private JassParser()
         {
             var whitespaceTriviaParser = GetWhitespaceTriviaParser();
-            var newlineTriviaParser = GetNewlineTriviaParser();
-            var singleNewlineTriviaParser = GetSingleNewlineTriviaParser();
+            var newLineTriviaParser = GetNewLineTriviaParser();
+            var singleNewLineTriviaParser = GetSingleNewLineTriviaParser();
             var singleLineCommentTriviaParser = GetSingleLineCommentTriviaParser();
 
             var simpleTriviaListParser = GetSimpleTriviaListParser(
@@ -46,12 +46,12 @@ namespace War3Net.CodeAnalysis.Jass
 
             var leadingTriviaListParser = GetLeadingTriviaListParser(
                 whitespaceTriviaParser,
-                newlineTriviaParser,
+                newLineTriviaParser,
                 singleLineCommentTriviaParser);
 
             var trailingTriviaListParser = GetTrailingTriviaListParser(
                 whitespaceTriviaParser,
-                singleNewlineTriviaParser,
+                singleNewLineTriviaParser,
                 singleLineCommentTriviaParser);
 
             var identifierParser = GetIdentifierParser();

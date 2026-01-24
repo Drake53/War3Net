@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             return syntaxKind switch
             {
-                JassSyntaxKind.NewlineTrivia => NewlineTrivia(text),
+                JassSyntaxKind.NewLineTrivia => NewLineTrivia(text),
                 JassSyntaxKind.WhitespaceTrivia => WhitespaceTrivia(text),
                 JassSyntaxKind.SingleLineCommentTrivia => SingleLineCommentTrivia(text),
 
@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Jass
             };
         }
 
-        public static JassSyntaxTrivia NewlineTrivia(string text)
+        public static JassSyntaxTrivia NewLineTrivia(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass
                 throw new ArgumentException("Text may only contain '\\r' and '\\n' characters.", nameof(text));
             }
 
-            return new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, text);
+            return new JassSyntaxTrivia(JassSyntaxKind.NewLineTrivia, text);
         }
 
         public static JassSyntaxTrivia WhitespaceTrivia(string text)

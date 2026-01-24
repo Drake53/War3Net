@@ -242,7 +242,7 @@ namespace War3Net.CodeAnalysis.Jass
         OctalLiteralToken = 8514,
         FourCCLiteralToken = 8515,
 
-        NewlineTrivia = 8539,
+        NewLineTrivia = 8539,
         WhitespaceTrivia = 8540,
         SingleLineCommentTrivia = 8541,
 

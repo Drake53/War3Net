@@ -23,20 +23,20 @@ namespace War3Net.CodeAnalysis.Jass
                 .Select(whitespace => new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, whitespace));
         }
 
-        internal static Parser<char, JassSyntaxTrivia> GetNewlineTriviaParser()
+        internal static Parser<char, JassSyntaxTrivia> GetNewLineTriviaParser()
         {
             return OneOf(Symbol.CarriageReturn, Symbol.LineFeed)
                 .AtLeastOnceString()
-                .Select(newline => new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, newline));
+                .Select(newLine => new JassSyntaxTrivia(JassSyntaxKind.NewLineTrivia, newLine));
         }
 
-        internal static Parser<char, JassSyntaxTrivia> GetSingleNewlineTriviaParser()
+        internal static Parser<char, JassSyntaxTrivia> GetSingleNewLineTriviaParser()
         {
             return OneOf(
                 Try(Symbol.CarriageReturnLineFeed),
                 Symbol.CarriageReturnString,
                 Symbol.LineFeedString)
-                .Select(newline => new JassSyntaxTrivia(JassSyntaxKind.NewlineTrivia, newline));
+                .Select(newLine => new JassSyntaxTrivia(JassSyntaxKind.NewLineTrivia, newLine));
         }
 
         internal static Parser<char, JassSyntaxTrivia> GetSingleLineCommentTriviaParser()
