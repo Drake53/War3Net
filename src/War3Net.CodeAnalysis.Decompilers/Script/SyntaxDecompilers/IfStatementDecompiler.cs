@@ -40,6 +40,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             foreach (var elseIfClause in ifStatement.ElseIfClauses)
             {
+                DecompileLeadingTrivia(elseIfClause.ElseIfClauseDeclarator.ElseIfToken.LeadingTrivia, ref functions);
                 functions.Add(DecompileCustomScriptAction(elseIfClause.ElseIfClauseDeclarator.ToString()));
 
                 if (TryDecompileActionStatements(elseIfClause.Statements, out var elseIfActions))
@@ -54,6 +55,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (ifStatement.ElseClause is not null)
             {
+                DecompileLeadingTrivia(ifStatement.ElseClause.ElseToken.LeadingTrivia, ref functions);
                 functions.Add(DecompileCustomScriptAction(ifStatement.ElseClause.ElseToken.ToString()));
 
                 if (TryDecompileActionStatements(ifStatement.ElseClause.Statements, out var elseActions))
@@ -66,6 +68,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
+            DecompileLeadingTrivia(ifStatement.EndIfToken.LeadingTrivia, ref functions);
             functions.Add(DecompileCustomScriptAction(ifStatement.EndIfToken.ToString()));
 
             return true;

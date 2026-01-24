@@ -24,6 +24,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             for (var i = 0; i < statements.Length; i++)
             {
+                DecompileLeadingTrivia(statements[i].GetLeadingTrivia(), ref result);
+
                 if (!TryDecompileActionStatement(statements, ref i, ref result))
                 {
                     result.Add(DecompileCustomScriptAction(statements[i].ToString()));

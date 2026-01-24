@@ -279,7 +279,9 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             if (TryDecompileActionStatements(actionsFunction.Statements, out var actionFunctions))
                             {
-                                trigger.Functions.AddRange(actionFunctions);
+                                var functions = trigger.Functions;
+                                functions.AddRange(actionFunctions);
+                                DecompileLeadingTrivia(actionsFunction.EndFunctionToken.LeadingTrivia, ref functions);
                             }
                             else
                             {
@@ -309,7 +311,9 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             if (TryDecompileConditionStatements(conditionsFunction.Statements, out var conditionFunctions))
                             {
-                                trigger.Functions.AddRange(conditionFunctions);
+                                var functions = trigger.Functions;
+                                functions.AddRange(conditionFunctions);
+                                DecompileLeadingTrivia(conditionsFunction.EndFunctionToken.LeadingTrivia, ref functions);
                             }
                             else
                             {
