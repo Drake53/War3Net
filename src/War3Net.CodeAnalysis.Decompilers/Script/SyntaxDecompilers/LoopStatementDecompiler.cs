@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             DecompileLeadingTrivia(loopStatement.EndLoopToken.LeadingTrivia, ref functions);
             functions.Add(DecompileCustomScriptAction(loopStatement.EndLoopToken.ToString()));
 
-            return false;
+            return true;
         }
     }
 }
