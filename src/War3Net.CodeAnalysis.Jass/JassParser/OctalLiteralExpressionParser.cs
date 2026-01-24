@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
         internal static Parser<char, JassExpressionSyntax> GetOctalLiteralExpressionParser(
             Parser<char, JassSyntaxTriviaList> triviaParser)
         {
-            return Try(Symbol.Zero.Then(UnsignedInt(8).Optional()))
+            return Try(Symbol.Zero.Then(UnsignedInt(8)))
                 .MapWithInput((s, _) => s.ToString())
                 .AsToken(triviaParser, JassSyntaxKind.OctalLiteralToken)
                 .Map(token => (JassExpressionSyntax)new JassLiteralExpressionSyntax(token))

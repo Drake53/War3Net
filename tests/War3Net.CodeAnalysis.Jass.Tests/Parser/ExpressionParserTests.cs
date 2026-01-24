@@ -76,6 +76,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region DecimalLiteralExpression
+            yield return new object?[] { @"0", LiteralExpression(Literal(0)) };
             yield return new object?[] { @"1", LiteralExpression(Literal(1)) };
             yield return new object?[] { @"255", LiteralExpression(Literal(255)) };
             yield return new object?[] { @"255abc" };
@@ -83,7 +84,6 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region OctalLiteralExpression
-            yield return new object?[] { @"0", LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0")) };
             yield return new object?[] { @"010", LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "010")) };
             yield return new object?[] { @"0abc" };
             yield return new object?[] { @"0_" };
@@ -143,7 +143,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             #endregion
 
             #region ParenthesizedExpression
-            yield return new object?[] { @"(0)", ParenthesizedExpression(LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0"))) };
+            yield return new object?[] { @"(0)", ParenthesizedExpression(LiteralExpression(Literal(0))) };
             yield return new object?[] { @"(1)", ParenthesizedExpression(LiteralExpression(Literal(1))) };
             yield return new object?[] { @"(player_id)", ParenthesizedExpression(IdentifierName(@"player_id")) };
             yield return new object?[] { @"( player_id )", ParenthesizedExpression(IdentifierName(@"player_id")) };
@@ -160,14 +160,14 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
                 @"(5 > 0)",
                 ParenthesizedExpression(BinaryGreaterThanExpression(
                     LiteralExpression(Literal(5)),
-                    LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
+                    LiteralExpression(Literal(0)))),
             };
 
             yield return new object?[]
             {
                 @"(0 > foo())",
                 ParenthesizedExpression(BinaryGreaterThanExpression(
-                    LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0")),
+                    LiteralExpression(Literal(0)),
                     InvocationExpression("foo"))),
             };
 
@@ -176,7 +176,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
                 @"(foo() > 0)",
                 ParenthesizedExpression(BinaryGreaterThanExpression(
                     InvocationExpression("foo"),
-                    LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
+                    LiteralExpression(Literal(0)))),
             };
 
             yield return new object?[]
@@ -187,7 +187,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
                         "GetUnitState",
                         IdentifierName("oldUnit"),
                         IdentifierName("UNIT_STATE_MAX_LIFE")),
-                    LiteralExpression(Token(JassSyntaxKind.OctalLiteralToken, "0")))),
+                    LiteralExpression(Literal(0)))),
             };
             #endregion
 
