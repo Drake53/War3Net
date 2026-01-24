@@ -28,29 +28,13 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        //public static void AreEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
-        //{
-        //    if (!expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail("Declaration lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-        //    }
-        //}
-
-        //public static void AreEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
-        //{
-        //    if (!expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail("Global lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-        //    }
-        //}
-
-        //public static void AreEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
-        //{
-        //    if (!expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail("Statement lines are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-        //    }
-        //}
+        public static void AreEqual(JassSyntaxNode? expected, JassSyntaxNode? actual)
+        {
+           if (!expected.NullableEquivalentTo(actual))
+           {
+               Assert.Fail("Syntax nodes are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+           }
+        }
 
         public static void AreEqual(JassExpressionSyntax? expected, JassExpressionSyntax? actual)
         {
@@ -84,29 +68,13 @@ namespace War3Net.TestTools.UnitTesting
             }
         }
 
-        //public static void AreNotEqual(IDeclarationLineSyntax? expected, IDeclarationLineSyntax? actual)
-        //{
-        //    if (expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail($"Declaration lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-        //    }
-        //}
-
-        //public static void AreNotEqual(IGlobalLineSyntax? expected, IGlobalLineSyntax? actual)
-        //{
-        //    if (expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail($"Global lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-        //    }
-        //}
-
-        //public static void AreNotEqual(IStatementLineSyntax? expected, IStatementLineSyntax? actual)
-        //{
-        //    if (expected.NullableEquals(actual))
-        //    {
-        //        Assert.Fail($"Statement lines are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-        //    }
-        //}
+        public static void AreNotEqual(JassSyntaxNode? expected, JassSyntaxNode? actual)
+        {
+           if (expected.NullableEquivalentTo(actual))
+           {
+               Assert.Fail($"Syntax nodes are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+           }
+        }
 
         public static void AreNotEqual(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
