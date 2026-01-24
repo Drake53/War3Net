@@ -255,11 +255,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
-                        // else if (setStatement.Value.Expression is JassArrayReferenceExpressionSyntax)
-                        // {
-                        //     // TODO
-                        //     continue;
-                        // }
+                        else if (setStatement.Value.Expression is JassElementAccessExpressionSyntax)
+                        {
+                            // TODO
+                            continue;
+                        }
                         else
                         {
                             units = null;
