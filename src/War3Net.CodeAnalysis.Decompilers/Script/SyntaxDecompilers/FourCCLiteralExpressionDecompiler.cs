@@ -19,11 +19,11 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileFourCCLiteralExpression(
-            JassFourCCLiteralExpressionSyntax fourCCLiteralExpression,
+            JassLiteralExpressionSyntax fourCCLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            if (TryDecompileTriggerFunctionParameterPreset(fourCCLiteralExpression.ToString(), expectedType, out _, out functionParameter))
+            if (TryDecompileTriggerFunctionParameterPreset(fourCCLiteralExpression.Token.Text, expectedType, out _, out functionParameter))
             {
                 return true;
             }
@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = fourCCLiteralExpression.Value.ToJassRawcode(),
+                    Value = fourCCLiteralExpression.Token.Text[1..^1],
                 };
 
                 return true;
@@ -43,7 +43,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = fourCCLiteralExpression.Value.ToJassRawcode(),
+                    Value = fourCCLiteralExpression.Token.Text[1..^1],
                 };
 
                 return true;
@@ -54,7 +54,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileFourCCLiteralExpression(
-            JassFourCCLiteralExpressionSyntax fourCCLiteralExpression,
+            JassLiteralExpressionSyntax fourCCLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (Context.TriggerData.TriggerTypes.TryGetValue(JassKeyword.Integer, out var customTypes))
@@ -68,7 +68,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         Parameter = new TriggerFunctionParameter
                         {
                             Type = TriggerFunctionParameterType.String,
-                            Value = fourCCLiteralExpression.Value.ToJassRawcode(),
+                            Value = fourCCLiteralExpression.Token.Text[1..^1],
                         },
                     });
                 }

@@ -16,19 +16,19 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileNullLiteralExpression(
-            JassNullLiteralExpressionSyntax nullLiteralExpression,
+            JassLiteralExpressionSyntax nullLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            return TryDecompileTriggerFunctionParameterPreset(nullLiteralExpression.ToString(), expectedType, out _, out functionParameter);
+            return TryDecompileTriggerFunctionParameterPreset(nullLiteralExpression.Token.Text, expectedType, out _, out functionParameter);
         }
 
         private bool TryDecompileNullLiteralExpression(
-            JassNullLiteralExpressionSyntax nullLiteralExpression,
+            JassLiteralExpressionSyntax nullLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(nullLiteralExpression.ToString(), out var triggerParams))
+                triggerParamsForAllTypes.TryGetValue(nullLiteralExpression.Token.Text, out var triggerParams))
             {
                 decompileOptions = new();
 

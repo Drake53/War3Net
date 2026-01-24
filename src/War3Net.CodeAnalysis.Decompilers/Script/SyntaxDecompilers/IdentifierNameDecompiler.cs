@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="VariableReferenceExpressionDecompiler.cs" company="Drake53">
+// <copyright file="IdentifierNameDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,13 +17,13 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileVariableReferenceExpression(
-            JassVariableReferenceExpressionSyntax variableReferenceExpression,
+        private bool TryDecompileIdentifierName(
+            JassIdentifierNameSyntax identifierName,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams))
+                triggerParamsForAllTypes.TryGetValue(identifierName.Token.Text, out var triggerParams))
             {
                 var triggerParam = triggerParams.SingleOrDefault(param => string.Equals(param.VariableType, expectedType, StringComparison.Ordinal));
                 if (triggerParam is not null)
@@ -39,18 +39,18 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             return TryDecompileVariableDeclarationReference(
-                variableReferenceExpression.IdentifierName.Name,
+                identifierName.Token.Text,
                 null,
                 expectedType,
                 out functionParameter);
         }
 
-        private bool TryDecompileVariableReferenceExpression(
-            JassVariableReferenceExpressionSyntax variableReferenceExpression,
+        private bool TryDecompileIdentifierName(
+            JassIdentifierNameSyntax identifierName,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             if (Context.TriggerData.TriggerParams.TryGetValue(string.Empty, out var triggerParamsForAllTypes) &&
-                triggerParamsForAllTypes.TryGetValue(variableReferenceExpression.ToString(), out var triggerParams) &&
+                triggerParamsForAllTypes.TryGetValue(identifierName.Token.Text, out var triggerParams) &&
                 triggerParams.Length == 1)
             {
                 var triggerParam = triggerParams[0];
@@ -70,7 +70,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             }
 
             return TryDecompileVariableDeclarationReference(
-                variableReferenceExpression.IdentifierName.Name,
+                identifierName.Token.Text,
                 null,
                 out decompileOptions);
         }

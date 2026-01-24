@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileCharacterLiteralExpression(
-            JassCharacterLiteralExpressionSyntax characterLiteralExpression,
+            JassLiteralExpressionSyntax characterLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = ((int)characterLiteralExpression.Value).ToString(CultureInfo.InvariantCulture),
+                    Value = ((int)characterLiteralExpression.Token.Text[1]).ToString(CultureInfo.InvariantCulture),
                 };
 
                 return true;
@@ -40,10 +40,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileCharacterLiteralExpression(
-            JassCharacterLiteralExpressionSyntax characterLiteralExpression,
+            JassLiteralExpressionSyntax characterLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = ((int)characterLiteralExpression.Value).ToString(CultureInfo.InvariantCulture);
+            var value = ((int)characterLiteralExpression.Token.Text[1]).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 

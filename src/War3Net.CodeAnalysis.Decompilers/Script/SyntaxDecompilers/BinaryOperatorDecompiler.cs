@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="BinaryOperatorTypeDecompiler.cs" company="Drake53">
+// <copyright file="BinaryOperatorDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,8 +16,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private bool TryDecompileBinaryOperatorType(
-            BinaryOperatorType binaryOperatorType,
+        private bool TryDecompileBinaryOperator(
+            JassSyntaxToken operatorToken,
             string expectedType,
             TriggerFunctionParameter leftOperandParameter,
             TriggerFunctionParameter rightOperandParameter,
@@ -36,7 +36,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (triggerCall.ArgumentTypes.Length == 2)
                 {
-                    if (binaryOperatorType == BinaryOperatorType.Add)
+                    if (operatorToken.SyntaxKind == JassSyntaxKind.PlusToken)
                     {
                         function = new TriggerFunction
                         {
@@ -53,7 +53,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else if (triggerCall.ArgumentTypes.Length == 3)
                 {
-                    if (TryDecompileTriggerFunctionParameter(binaryOperatorType, triggerCall.ArgumentTypes[1], out var operatorFunctionParameter))
+                    if (TryDecompileTriggerFunctionParameter(operatorToken, triggerCall.ArgumentTypes[1], out var operatorFunctionParameter))
                     {
                         function = new TriggerFunction
                         {

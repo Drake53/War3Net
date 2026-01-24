@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileRealLiteralExpression(
-            JassRealLiteralExpressionSyntax realLiteralExpression,
+            JassLiteralExpressionSyntax realLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = realLiteralExpression.ToString(),
+                    Value = realLiteralExpression.Token.Text,
                 };
 
                 return true;
@@ -38,7 +38,7 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileRealLiteralExpression(
-            JassRealLiteralExpressionSyntax realLiteralExpression,
+            JassLiteralExpressionSyntax realLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
             decompileOptions = new();
@@ -49,7 +49,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Parameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = realLiteralExpression.ToString(),
+                    Value = realLiteralExpression.Token.Text,
                 },
             });
 

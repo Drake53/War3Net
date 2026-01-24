@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall))
+            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Token.Text, out var triggerCall))
             {
                 if (string.Equals(triggerCall.ReturnType, expectedType, StringComparison.Ordinal) &&
                     TryDecompileTriggerCallFunction(invocationExpression, triggerCall, out var callFunction))
@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     functionParameter = new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.Function,
-                        Value = invocationExpression.IdentifierName.Name,
+                        Value = invocationExpression.IdentifierName.Token.Text,
                         Function = callFunction,
                     };
 
@@ -42,17 +42,17 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            if (string.Equals(invocationExpression.IdentifierName.Name, "Condition", StringComparison.Ordinal))
+            if (string.Equals(invocationExpression.IdentifierName.Token.Text, "Condition", StringComparison.Ordinal))
             {
-                if (invocationExpression.Arguments.Arguments.Length == 1 &&
-                    invocationExpression.Arguments.Arguments[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
-                    Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Name, out var conditionFunctionDeclaration) &&
+                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
+                    invocationExpression.ArgumentList.ArgumentList.Items[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                    Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Token.Text, out var conditionFunctionDeclaration) &&
                     conditionFunctionDeclaration.IsConditionsFunction)
                 {
                     var conditionFunction = conditionFunctionDeclaration.FunctionDeclaration;
 
-                    if (conditionFunction.Body.Statements.Length == 1 &&
-                        TryDecompileConditionStatement(conditionFunction.Body.Statements[0], true, out var function))
+                    if (conditionFunction.Statements.Length == 1 &&
+                        TryDecompileConditionStatement(conditionFunction.Statements[0], true, out var function))
                     {
                         functionParameter = new TriggerFunctionParameter
                         {
@@ -93,7 +93,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Name, out var triggerCall) &&
+            if (Context.TriggerData.TriggerData.TriggerCalls.TryGetValue(invocationExpression.IdentifierName.Token.Text, out var triggerCall) &&
                 TryDecompileTriggerCallFunction(invocationExpression, triggerCall, out var callFunction))
             {
                 result.Add(new DecompileOption
@@ -102,7 +102,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     Parameter = new TriggerFunctionParameter
                     {
                         Type = TriggerFunctionParameterType.Function,
-                        Value = invocationExpression.IdentifierName.Name,
+                        Value = invocationExpression.IdentifierName.Token.Text,
                         Function = callFunction,
                     },
                 });

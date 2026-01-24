@@ -6,21 +6,22 @@
 // ------------------------------------------------------------------------------
 
 using War3Net.Build.Script;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
     internal sealed class VariableDeclarationContext
     {
-        public VariableDeclarationContext(JassGlobalDeclarationSyntax globalDeclaration)
+        public VariableDeclarationContext(JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
         {
-            GlobalDeclaration = globalDeclaration;
-            IsArray = globalDeclaration.Declarator is JassArrayDeclaratorSyntax;
+            GlobalVariableDeclaration = globalVariableDeclaration;
+            IsArray = globalVariableDeclaration.Declarator is JassArrayDeclaratorSyntax;
 
-            Type = globalDeclaration.Declarator.Type.TypeName.Name;
+            Type = globalVariableDeclaration.Declarator.GetVariableType().GetToken().Text;
         }
 
-        public JassGlobalDeclarationSyntax GlobalDeclaration { get; }
+        public JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration { get; }
 
         public bool IsArray { get; }
 

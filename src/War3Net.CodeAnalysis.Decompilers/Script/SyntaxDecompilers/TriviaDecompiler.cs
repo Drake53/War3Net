@@ -1,10 +1,11 @@
 ﻿// ------------------------------------------------------------------------------
-// <copyright file="CommentDecompiler.cs" company="Drake53">
+// <copyright file="TriviaDecompiler.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 using War3Net.Build.Script;
@@ -15,10 +16,10 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileComment(
-            JassCommentSyntax comment,
+            JassSyntaxTrivia trivia,
             ref List<TriggerFunction> functions)
         {
-            if (comment.Comment.Length > 1 && comment.Comment.StartsWith(' '))
+            if (trivia.Text.Length > 3 && trivia.Text.StartsWith("// ", StringComparison.Ordinal))
             {
                 functions.Add(new TriggerFunction
                 {
@@ -30,7 +31,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         new TriggerFunctionParameter
                         {
                             Type = TriggerFunctionParameterType.String,
-                            Value = comment.Comment[1..],
+                            Value = trivia.Text[3..],
                         },
                     },
                 });

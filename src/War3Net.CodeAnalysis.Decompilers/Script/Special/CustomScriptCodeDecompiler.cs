@@ -12,21 +12,6 @@ namespace War3Net.CodeAnalysis.Decompilers
 {
     public partial class JassScriptDecompiler
     {
-        private TriggerFunction DecompileCustomScriptAction(IDeclarationLineSyntax declarationLine)
-        {
-            return DecompileCustomScriptAction(declarationLine.ToString());
-        }
-
-        private TriggerFunction DecompileCustomScriptAction(IGlobalLineSyntax globalLine)
-        {
-            return DecompileCustomScriptAction(globalLine.ToString());
-        }
-
-        private TriggerFunction DecompileCustomScriptAction(IStatementLineSyntax statementLine)
-        {
-            return DecompileCustomScriptAction(statementLine.ToString());
-        }
-
         private TriggerFunction DecompileCustomScriptAction(string customScriptCode)
         {
             return new TriggerFunction

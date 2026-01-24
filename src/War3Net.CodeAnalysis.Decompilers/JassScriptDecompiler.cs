@@ -67,16 +67,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                     yield return expectedFunction;
                 }
 
-                foreach (var statement in mainFunction.FunctionDeclaration.Body.Statements)
+                foreach (var statement in mainFunction.FunctionDeclaration.Statements)
                 {
-                    if (statement is JassCallStatementSyntax callStatement && callStatement.Arguments.Arguments.IsEmpty)
+                    if (statement is JassCallStatementSyntax callStatement && callStatement.ArgumentList.ArgumentList.Items.IsEmpty)
                     {
-                        if (string.Equals(callStatement.IdentifierName.Name, expectedFunctionName, StringComparison.Ordinal))
+                        if (string.Equals(callStatement.IdentifierName.Token.Text, expectedFunctionName, StringComparison.Ordinal))
                         {
                             continue;
                         }
 
-                        if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Name, out var candidateFunction) &&
+                        if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Token.Text, out var candidateFunction) &&
                             candidateFunction.IsActionsFunction &&
                             !candidateFunction.Handled)
                         {

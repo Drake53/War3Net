@@ -24,14 +24,14 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (!TryDecompileActionStatementList(loopStatement.Body, out var loopActions))
+            if (!TryDecompileActionStatements(loopStatement.Statements, out var loopActions))
             {
                 return false;
             }
 
-            functions.Add(DecompileCustomScriptAction(JassLoopCustomScriptAction.Value));
+            functions.Add(DecompileCustomScriptAction(loopStatement.LoopToken.ToString()));
             functions.AddRange(loopActions);
-            functions.Add(DecompileCustomScriptAction(JassEndLoopCustomScriptAction.Value));
+            functions.Add(DecompileCustomScriptAction(loopStatement.EndLoopToken.ToString()));
 
             return false;
         }

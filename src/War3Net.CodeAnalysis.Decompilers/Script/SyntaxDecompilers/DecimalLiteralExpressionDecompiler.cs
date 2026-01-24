@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileDecimalLiteralExpression(
-            JassDecimalLiteralExpressionSyntax decimalLiteralExpression,
+            JassLiteralExpressionSyntax decimalLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -28,7 +28,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = decimalLiteralExpression.ToString(),
+                    Value = decimalLiteralExpression.Token.Text,
                 };
 
                 return true;
@@ -39,10 +39,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileDecimalLiteralExpression(
-            JassDecimalLiteralExpressionSyntax decimalLiteralExpression,
+            JassLiteralExpressionSyntax decimalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = decimalLiteralExpression.ToString();
+            var value = decimalLiteralExpression.Token.Text;
 
             decompileOptions = new();
 
