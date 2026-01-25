@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -109,8 +111,11 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassBinaryExpressionSyntax BinaryExpression(JassExpressionSyntax left, JassSyntaxToken operatorToken, JassExpressionSyntax right)
         {
-            // Token validation
-            JassSyntaxFacts.GetBinaryExpressionKind(operatorToken.SyntaxKind);
+            var expressionKind = JassSyntaxFacts.GetBinaryExpressionKind(operatorToken.SyntaxKind);
+            if (expressionKind == JassSyntaxKind.None)
+            {
+                throw new ArgumentException($"'{operatorToken.SyntaxKind}' is not a valid operator kind for binary expressions.", nameof(operatorToken));
+            }
 
             return new JassBinaryExpressionSyntax(
                 left,

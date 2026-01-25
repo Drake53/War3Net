@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -34,8 +36,11 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassUnaryExpressionSyntax UnaryNotExpression(JassSyntaxToken operatorToken, JassExpressionSyntax expression)
         {
-            // Token validation
-            JassSyntaxFacts.GetUnaryExpressionKind(operatorToken.SyntaxKind);
+            var expressionKind = JassSyntaxFacts.GetUnaryExpressionKind(operatorToken.SyntaxKind);
+            if (expressionKind == JassSyntaxKind.None)
+            {
+                throw new ArgumentException($"'{operatorToken.SyntaxKind}' is not a valid operator kind for unary expressions.", nameof(operatorToken));
+            }
 
             return new JassUnaryExpressionSyntax(
                 operatorToken,
