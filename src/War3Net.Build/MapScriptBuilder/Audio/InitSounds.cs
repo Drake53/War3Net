@@ -31,7 +31,7 @@ namespace War3Net.Build
             var mapSounds = map.Sounds;
             if (mapSounds is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitSounds)}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitSounds}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
             }
 
             writer.WriteFunction(GeneratedFunctionName.InitSounds);
