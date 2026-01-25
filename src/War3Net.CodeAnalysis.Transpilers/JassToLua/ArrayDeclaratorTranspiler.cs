@@ -8,6 +8,7 @@
 using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -16,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaVariableDeclaratorSyntax Transpile(JassArrayDeclaratorSyntax arrayDeclarator)
         {
-            LuaExpressionSyntax expression = arrayDeclarator.Type.SyntaxKind switch
+            LuaExpressionSyntax expression = arrayDeclarator.Type.GetToken().SyntaxKind switch
             {
                 JassSyntaxKind.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", "0"),
                 JassSyntaxKind.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", "0.0"),
