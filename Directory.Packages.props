@@ -32,21 +32,21 @@
 		<PackageVersion Include="Veldrid.StartupUtilities" Version="4.8.0" />
 		<PackageVersion Include="Veldrid.Utilities" Version="4.8.0" />
 		<PackageVersion Include="War3Api.Object" Version="1.31.1-rc.11" />
-		<PackageVersion Include="War3Net.Build" Version="5.8.2" />
-		<PackageVersion Include="War3Net.Build.Core" Version="5.8.2" />
-		<PackageVersion Include="War3Net.CodeAnalysis" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="5.8.2" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="5.8.0" />
+		<PackageVersion Include="War3Net.Build" Version="6.0.0" />
+		<PackageVersion Include="War3Net.Build.Core" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="6.0.0" />
 		<PackageVersion Include="War3Net.CodeAnalysis.VJass" Version="0.1.0" />
-		<PackageVersion Include="War3Net.Common" Version="5.8.0" />
+		<PackageVersion Include="War3Net.Common" Version="6.0.0" />
 		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.2" />
 		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.2" />
-		<PackageVersion Include="War3Net.Drawing.Blp" Version="5.9.0" />
+		<PackageVersion Include="War3Net.Drawing.Blp" Version="6.0.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
-		<PackageVersion Include="War3Net.IO.Compression" Version="5.8.0" />
-		<PackageVersion Include="War3Net.IO.Mpq" Version="5.8.1" />
-		<PackageVersion Include="War3Net.IO.Slk" Version="5.8.1" />
+		<PackageVersion Include="War3Net.IO.Compression" Version="6.0.0" />
+		<PackageVersion Include="War3Net.IO.Mpq" Version="6.0.0" />
+		<PackageVersion Include="War3Net.IO.Slk" Version="6.0.0" />
 		<PackageVersion Include="War3Net.Modeling" Version="0.1.0" />
 	</ItemGroup>
 </Project>
