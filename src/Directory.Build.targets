@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="BeforeBuild">
+  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="BeforeBuild;GenerateNuspec">
     <ItemGroup>
       <ThisProjectPackageVersion Include="@(PackageVersion)" Condition="'%(PackageVersion.Identity)' == $(PackageId)" />
     </ItemGroup>
