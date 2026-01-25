@@ -67,7 +67,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 {
                     var comment = trimmed.TrimEnd();
 
-                    if (trimmed.Equals("//! beginusercode", StringComparison.Ordinal))
+                    if (comment.Equals("//! beginusercode", StringComparison.Ordinal))
                     {
                         if (_isUserCode)
                         {
@@ -77,7 +77,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                         _isUserCode = true;
                         continue;
                     }
-                    else if (trimmed.Equals("//! endusercode", StringComparison.Ordinal))
+                    else if (comment.Equals("//! endusercode", StringComparison.Ordinal))
                     {
                         if (!_isUserCode)
                         {
