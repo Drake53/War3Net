@@ -199,6 +199,28 @@ namespace War3Net.TestTools.UnitTesting
             return GetAssertFailedMessage((object?)expected, actual);
         }
 
+        public static void AreEqual(JassSyntaxNodeOrToken expected, JassSyntaxNodeOrToken actual)
+        {
+            if (expected.IsNode && actual.IsNode)
+            {
+                if (!expected.AsNode.IsEquivalentTo(actual.AsNode))
+                {
+                    Assert.Fail("Syntax nodes are not equal:\r\n" + GetAssertFailedMessage(expected.AsNode, actual.AsNode));
+                }
+            }
+            else if (expected.IsToken && actual.IsToken)
+            {
+                if (!expected.AsToken.IsEquivalentTo(actual.AsToken))
+                {
+                    Assert.Fail($"Syntax tokens are not equal:\r\nExpected: '{expected.AsToken.ToFullString()}'<{expected.AsToken.SyntaxKind}>\r\nActual: '{actual.AsToken.ToFullString()}'<{actual.AsToken.SyntaxKind}>");
+                }
+            }
+            else
+            {
+                Assert.Fail($"Syntax types are not equal:\r\nExpected: {(expected.IsNode ? "Node" : "Token")}\r\nActual: {(actual.IsNode ? "Node" : "Token")}");
+            }
+        }
+
         public static void ExpressionThrowsException(string expression)
         {
             var message = new BoxedString();

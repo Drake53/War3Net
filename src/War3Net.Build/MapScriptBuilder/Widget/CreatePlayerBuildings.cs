@@ -56,7 +56,7 @@ namespace War3Net.Build
             }
 
             return map.Units is not null
-                && map.Units.Units.Any(unit => CreatePlayerBuildingsConditionSingleUnit(map, unit));
+                && map.Units.Units.Any(unit => ShouldGenerateCreatePlayerBuildingsForUnit(map, unit));
         }
 
         protected internal virtual bool ShouldGenerateCreatePlayerBuildingsForUnit(Map map, UnitData unitData)

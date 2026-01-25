@@ -33,6 +33,11 @@ namespace War3Net.CodeAnalysis.Jass
             return JassParser.Instance.CompilationUnitParser.ParseOrThrow(compilationUnit);
         }
 
+        public static JassSyntaxNodeOrToken ParseCustomScriptAction(string customScriptAction)
+        {
+            throw new NotImplementedException();
+        }
+
         public static JassExpressionSyntax ParseExpression(string expression)
         {
             return JassParser.Instance.ExpressionParser.ParseOrThrow(expression);
@@ -116,6 +121,11 @@ namespace War3Net.CodeAnalysis.Jass
         public static bool TryParseParameterList(string parameterList, [NotNullWhen(true)] out JassParameterListOrEmptyParameterListSyntax? result)
         {
             return TryParse(parameterList, JassParser.Instance.ParameterListParser, out result);
+        }
+
+        public static bool TryParseScriptLine(string scriptLine, [NotNullWhen(true)] out JassSyntaxNodeOrToken? result)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool TryParseStatement(string statement, [NotNullWhen(true)] out JassStatementSyntax? result)
