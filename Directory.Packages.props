@@ -40,8 +40,8 @@
 		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="5.8.0" />
 		<PackageVersion Include="War3Net.CodeAnalysis.VJass" Version="0.1.0" />
 		<PackageVersion Include="War3Net.Common" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.1" />
-		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.1" />
+		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.2" />
+		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.2" />
 		<PackageVersion Include="War3Net.Drawing.Blp" Version="5.9.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
 		<PackageVersion Include="War3Net.IO.Compression" Version="5.8.0" />
