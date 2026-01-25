@@ -9,7 +9,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        private class NativeName
+        internal static class NativeName
         {
             internal const string AddWeatherEffect = "AddWeatherEffect";
             internal const string BlzCreateDeadDestructableWithSkin = "BlzCreateDeadDestructableWithSkin";

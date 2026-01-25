@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitCustomTriggers), DynamicDataSourceType.Method)]
         public void TestBodyInitCustomTriggers(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitCustomTriggers"];
-            var actual = testData.MapScriptBuilder.InitCustomTriggers(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitCustomTriggers,
+                writer => testData.MapScriptBuilder.GenerateInitCustomTriggers(testData.Map, writer));
         }
 
         [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomTriggers(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitCustomTriggers");
-            var actual = testData.MapScriptBuilder.InitCustomTriggersCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomTriggers);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitCustomTriggers(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (!testData.IsMeleeWithoutTrigger && testData.DeclaredFunctions.ContainsKey("InitCustomTriggers"))
+                if (!testData.IsMeleeWithoutTrigger && testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomTriggers))
                 {
                     yield return new object[] { testData };
                 }

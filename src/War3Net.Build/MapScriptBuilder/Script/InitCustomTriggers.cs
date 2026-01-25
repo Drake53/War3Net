@@ -6,47 +6,50 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitCustomTriggers(Map map)
+        protected internal virtual void GenerateInitCustomTriggers(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapTriggers = map.Triggers;
             if (mapTriggers is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitCustomTriggers)}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitCustomTriggers}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitCustomTriggers);
 
             foreach (var trigger in mapTriggers.TriggerItems)
             {
                 if (trigger is TriggerDefinition triggerDefinition &&
                     triggerDefinition.IsEnabled)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(triggerDefinition.GetInitTrigFunctionName()));
+                    writer.WriteCall(triggerDefinition.GetInitTrigFunctionName());
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomTriggers)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitCustomTriggersCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitCustomTriggers(Map map)
         {
             if (map is null)
             {

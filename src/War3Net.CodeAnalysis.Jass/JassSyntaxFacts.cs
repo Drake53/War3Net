@@ -9,13 +9,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace War3Net.CodeAnalysis.Jass
 {
-    public static class JassSyntaxFacts
+    public static partial class JassSyntaxFacts
     {
         public static bool IsWhitespaceCharacter(char ch)
         {
-            return char.IsWhiteSpace(ch)
-                && ch != JassSymbol.CarriageReturn
-                && ch != JassSymbol.LineFeed;
+            return ch == JassSymbol.SpaceChar
+                || ch == JassSymbol.TabChar;
+        }
+
+        public static bool IsNewLineCharacter(char ch)
+        {
+            return ch == JassSymbol.CarriageReturnChar
+                || ch == JassSymbol.LineFeedChar;
         }
 
         /// <summary>
@@ -76,6 +81,11 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             return IsIdentifierEndCharacter(name[^1]);
+        }
+
+        internal static bool IsNotReservedKeyword(string? name)
+        {
+            return !IsReservedKeyword(GetSyntaxKind(name));
         }
     }
 }

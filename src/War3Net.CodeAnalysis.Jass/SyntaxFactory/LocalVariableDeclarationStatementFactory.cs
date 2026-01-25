@@ -11,29 +11,172 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassSyntaxToken localToken, JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            ThrowHelper.ThrowIfInvalidToken(localToken, JassSyntaxKind.LocalKeyword);
+
+            return new JassLocalVariableDeclarationStatementSyntax(
+                localToken,
+                declarator);
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    type,
+                    identifierName));
+        }
+
         public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassVariableDeclaratorSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
                     type,
-                    ParseIdentifierName(name),
-                    null));
+                    ParseIdentifierName(name)));
         }
 
-        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, IExpressionSyntax value)
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, JassIdentifierNameSyntax identifierName)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassVariableDeclaratorSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, string name)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    type,
+                    identifierName,
+                    value));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    type,
+                    identifierName,
+                    EqualsValueClause(value)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
                     type,
                     ParseIdentifierName(name),
-                    new JassEqualsValueClauseSyntax(value)));
+                    value));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(JassTypeSyntax type, string name, JassExpressionSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    type,
+                    ParseIdentifierName(name),
+                    EqualsValueClause(value)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName,
+                    value));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    identifierName,
+                    EqualsValueClause(value)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, string name, JassEqualsValueClauseSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name),
+                    value));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalVariableDeclarationStatement(string type, string name, JassExpressionSyntax value)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                VariableDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name),
+                    EqualsValueClause(value)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(JassTypeSyntax type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                ArrayDeclarator(
+                    type,
+                    identifierName));
         }
 
         public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(JassTypeSyntax type, string name)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
-                new JassArrayDeclaratorSyntax(
-                    type, ParseIdentifierName(name)));
+                Token(JassSyntaxKind.LocalKeyword),
+                ArrayDeclarator(
+                    type,
+                    ParseIdentifierName(name)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(string type, JassIdentifierNameSyntax identifierName)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                ArrayDeclarator(
+                    ParseTypeName(type),
+                    identifierName));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalArrayDeclarationStatement(string type, string name)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                ArrayDeclarator(
+                    ParseTypeName(type),
+                    ParseIdentifierName(name)));
+        }
+
+        public static JassLocalVariableDeclarationStatementSyntax LocalDeclarationStatement(JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            return new JassLocalVariableDeclarationStatementSyntax(
+                Token(JassSyntaxKind.LocalKeyword),
+                declarator);
         }
     }
 }

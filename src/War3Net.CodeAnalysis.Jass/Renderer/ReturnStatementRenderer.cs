@@ -13,13 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassReturnStatementSyntax returnStatement)
         {
-            if (returnStatement.Value is null)
+            Render(returnStatement.ReturnToken);
+            if (returnStatement.Value is not null)
             {
-                Write(JassKeyword.Return);
-            }
-            else
-            {
-                Write($"{JassKeyword.Return} ");
+                WriteSpace();
                 Render(returnStatement.Value);
             }
         }

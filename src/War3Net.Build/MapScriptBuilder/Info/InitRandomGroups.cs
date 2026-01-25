@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="InitRandomGroups.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,101 +6,105 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitRandomGroups(Map map)
+        protected internal virtual void GenerateInitRandomGroups(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var randomUnitTables = map.Info?.RandomUnitTables;
             if (randomUnitTables is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitRandomGroups)}' cannot be generated without {nameof(MapInfo.RandomUnitTables)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitRandomGroups}' cannot be generated without {nameof(MapInfo.RandomUnitTables)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitRandomGroups);
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.CurrentSet));
-            statements.Add(JassEmptySyntax.Value);
+            writer.WriteLocal(JassKeyword.Integer, VariableName.CurrentSet);
+            writer.WriteLine();
 
             foreach (var unitTable in randomUnitTables)
             {
-                statements.Add(new JassCommentSyntax($" Group {unitTable.Index} - {unitTable.Name}"));
-                statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
+                writer.WriteComment($"Group {unitTable.Index} - {unitTable.Name}");
+                writer.WriteCall(FunctionName.RandomDistReset);
 
                 for (var i = 0; i < unitTable.UnitSets.Count; i++)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         FunctionName.RandomDistAddItem,
-                        SyntaxFactory.LiteralExpression(i),
-                        SyntaxFactory.LiteralExpression(unitTable.UnitSets[i].Chance)));
+                        JassLiteral.Int(i),
+                        JassLiteral.Int(unitTable.UnitSets[i].Chance));
                 }
 
-                statements.Add(SyntaxFactory.SetStatement(VariableName.CurrentSet, SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
-                statements.Add(JassEmptySyntax.Value);
+                writer.WriteSet(VariableName.CurrentSet, JassExpression.Invoke(FunctionName.RandomDistChoose));
+                writer.WriteLine();
 
                 var groupVarName = unitTable.GetVariableName();
-                var ifElseifBlocks = new List<(IExpressionSyntax Condition, IStatementSyntax[] Body)>();
                 for (var setIndex = 0; setIndex < unitTable.UnitSets.Count; setIndex++)
                 {
                     var set = unitTable.UnitSets[setIndex];
 
-                    var condition = SyntaxFactory.BinaryEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.CurrentSet), SyntaxFactory.LiteralExpression(setIndex));
-                    var bodyStatements = new List<IStatementSyntax>();
+                    var condition = JassExpression.ParenthesizedCompact(JassExpression.EqualCompact(
+                        VariableName.CurrentSet,
+                        JassLiteral.Int(setIndex)));
+
+                    if (setIndex == 0)
+                    {
+                        writer.WriteIf(condition);
+                    }
+                    else
+                    {
+                        writer.WriteElseIf(condition);
+                    }
 
                     for (var position = 0; position < unitTable.Types.Count; position++)
                     {
                         var id = set?.UnitIds[position] ?? 0;
                         var unitTypeExpression = RandomUnitProvider.IsRandomUnit(id, out var level)
-                            ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(level))
-                            : id == 0 ? SyntaxFactory.LiteralExpression(-1) : SyntaxFactory.FourCCLiteralExpression(id);
+                            ? JassExpression.Invoke(NativeName.ChooseRandomCreep, JassLiteral.Int(level))
+                            : id == 0 ? "-1" : JassLiteral.FourCC(id);
 
-                        bodyStatements.Add(SyntaxFactory.SetStatement(
-                            groupVarName,
-                            SyntaxFactory.LiteralExpression(position),
-                            unitTypeExpression));
+                        writer.WriteSet(
+                            JassExpression.ElementAccess(groupVarName, position),
+                            unitTypeExpression);
                     }
-
-                    ifElseifBlocks.Add((new JassParenthesizedExpressionSyntax(condition), bodyStatements.ToArray()));
                 }
 
-                var elseClauseStatements = new List<IStatementSyntax>();
+                writer.WriteElse();
+
                 for (var position = 0; position < unitTable.Types.Count; position++)
                 {
-                    elseClauseStatements.Add(SyntaxFactory.SetStatement(
-                        groupVarName,
-                        SyntaxFactory.LiteralExpression(position),
-                        SyntaxFactory.LiteralExpression(-1)));
+                    writer.WriteSet(
+                        JassExpression.ElementAccess(groupVarName, position),
+                        "-1");
                 }
 
-                statements.Add(SyntaxFactory.IfStatement(
-                    ifElseifBlocks.First().Condition,
-                    SyntaxFactory.StatementList(ifElseifBlocks.First().Body),
-                    ifElseifBlocks.Skip(1).Select(elseIf => new JassElseIfClauseSyntax(elseIf.Condition, SyntaxFactory.StatementList(elseIf.Body))),
-                    new JassElseClauseSyntax(SyntaxFactory.StatementList(elseClauseStatements))));
-
-                statements.Add(JassEmptySyntax.Value);
+                writer.WriteEndIf();
+                writer.WriteLine();
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitRandomGroups)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitRandomGroupsCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitRandomGroups(Map map)
         {
             if (map is null)
             {
@@ -108,7 +112,7 @@ namespace War3Net.Build
             }
 
             return map.Info?.RandomUnitTables is not null
-                && map.Info.RandomUnitTables.Any();
+                && map.Info.RandomUnitTables.Count > 0;
         }
     }
 }

@@ -6,49 +6,52 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax RunInitializationTriggers(Map map)
+        protected internal virtual void GenerateRunInitializationTriggers(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapTriggers = map.Triggers;
             if (mapTriggers is null)
             {
-                throw new ArgumentException($"Function '{nameof(RunInitializationTriggers)}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.RunInitializationTriggers}' cannot be generated without {nameof(MapTriggers)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.RunInitializationTriggers);
 
             foreach (var trigger in mapTriggers.TriggerItems)
             {
                 if (trigger is TriggerDefinition triggerDefinition &&
-                    RunInitializationTriggersConditionSingleTrigger(map, triggerDefinition))
+                    ShouldGenerateRunInitializationTriggersForTrigger(map, triggerDefinition))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.ConditionalTriggerExecute,
-                        SyntaxFactory.VariableReferenceExpression(triggerDefinition.GetVariableName())));
+                        triggerDefinition.GetVariableName());
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(RunInitializationTriggers)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool RunInitializationTriggersCondition(Map map)
+        protected internal virtual bool ShouldGenerateRunInitializationTriggers(Map map)
         {
             if (map is null)
             {
@@ -58,10 +61,10 @@ namespace War3Net.Build
             return map.Triggers is not null
                 && map.Triggers.TriggerItems.Any(trigger =>
                        trigger is TriggerDefinition triggerDefinition &&
-                       RunInitializationTriggersConditionSingleTrigger(map, triggerDefinition));
+                       ShouldGenerateRunInitializationTriggersForTrigger(map, triggerDefinition));
         }
 
-        protected internal virtual bool RunInitializationTriggersConditionSingleTrigger(Map map, TriggerDefinition triggerDefinition)
+        protected internal virtual bool ShouldGenerateRunInitializationTriggersForTrigger(Map map, TriggerDefinition triggerDefinition)
         {
             if (map is null)
             {

@@ -6,40 +6,43 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
 using War3Net.Build.Audio;
-using War3Net.Build.Providers;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitSounds(Map map)
+        protected internal virtual void GenerateInitSounds(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapSounds = map.Sounds;
             if (mapSounds is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitSounds)}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitSounds}' cannot be generated without {nameof(MapSounds)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitSounds);
 
             foreach (var sound in mapSounds.Sounds)
             {
                 if (sound.Flags.HasFlag(SoundFlags.Music))
                 {
-                    statements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteSet(
                         sound.Name,
-                        SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.FilePath))));
+                        JassLiteral.String(sound.FilePath));
                 }
                 else
                 {
@@ -48,115 +51,115 @@ namespace War3Net.Build
                         && sound.Channel != SoundChannel.Music
                         && sound.Channel != SoundChannel.UserInterface;
 
-                    statements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteSet(
                         sound.Name,
-                        SyntaxFactory.InvocationExpression(
+                        JassExpression.InvokeSpaced(
                             NativeName.CreateSound,
-                            SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.FilePath)),
-                            SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.Looping)),
-                            SyntaxFactory.LiteralExpression(is3DSound),
-                            SyntaxFactory.LiteralExpression(sound.Flags.HasFlag(SoundFlags.StopWhenOutOfRange)),
-                            SyntaxFactory.LiteralExpression(sound.FadeInRate),
-                            SyntaxFactory.LiteralExpression(sound.FadeOutRate),
-                            SyntaxFactory.LiteralExpression(EscapedStringProvider.GetEscapedString(sound.EaxSetting)))));
+                            JassLiteral.String(sound.FilePath),
+                            JassLiteral.Bool(sound.Flags.HasFlag(SoundFlags.Looping)),
+                            JassLiteral.Bool(is3DSound),
+                            JassLiteral.Bool(sound.Flags.HasFlag(SoundFlags.StopWhenOutOfRange)),
+                            JassLiteral.Int(sound.FadeInRate),
+                            JassLiteral.Int(sound.FadeOutRate),
+                            JassLiteral.String(sound.EaxSetting)));
 
                     if (!string.IsNullOrEmpty(sound.FacialAnimationLabel))
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundFacialAnimationLabel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.FacialAnimationLabel)));
+                            sound.Name,
+                            JassLiteral.String(sound.FacialAnimationLabel));
                     }
 
                     if (!string.IsNullOrEmpty(sound.FacialAnimationGroupLabel))
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundFacialAnimationGroupLabel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.FacialAnimationGroupLabel)));
+                            sound.Name,
+                            JassLiteral.String(sound.FacialAnimationGroupLabel));
                     }
 
                     if (!string.IsNullOrEmpty(sound.FacialAnimationSetFilepath))
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundFacialAnimationSetFilepath,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.FacialAnimationSetFilepath)));
+                            sound.Name,
+                            JassLiteral.String(sound.FacialAnimationSetFilepath));
                     }
 
                     if (sound.DialogueSpeakerNameKey > 0)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetDialogueSpeakerNameKey,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueSpeakerNameKey}")));
+                            sound.Name,
+                            JassLiteral.String($"TRIGSTR_{sound.DialogueSpeakerNameKey}"));
                     }
 
                     if (sound.DialogueTextKey > 0)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetDialogueTextKey,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression($"TRIGSTR_{sound.DialogueTextKey}")));
+                            sound.Name,
+                            JassLiteral.String($"TRIGSTR_{sound.DialogueTextKey}"));
                     }
 
                     if (sound.DistanceCutoff != 3000f)
                     {
                         var distanceCutoff = sound.DistanceCutoff == uint.MaxValue ? 3000f : sound.DistanceCutoff;
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundDistanceCutoff,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(distanceCutoff, precision: 1)));
+                            sound.Name,
+                            JassLiteral.Real(distanceCutoff));
                     }
 
                     if ((int)sound.Channel != -1)
                     {
                         var channel = sound.Channel == SoundChannel.Undefined ? SoundChannel.General : sound.Channel;
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundChannel,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression((int)channel)));
+                            sound.Name,
+                            JassLiteral.Int((int)channel));
                     }
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SetSoundVolume,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(sound.Volume == -1 ? 127 : sound.Volume)));
+                        sound.Name,
+                        JassLiteral.Int(sound.Volume == -1 ? 127 : sound.Volume));
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SetSoundPitch,
-                        SyntaxFactory.VariableReferenceExpression(sound.Name),
-                        SyntaxFactory.LiteralExpression(sound.Pitch == uint.MaxValue ? 1f : sound.Pitch, precision: 1)));
+                        sound.Name,
+                        JassLiteral.Real(sound.Pitch == uint.MaxValue ? 1f : sound.Pitch));
 
                     if (is3DSound)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundDistances,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.MinDistance == uint.MaxValue ? 0f : sound.MinDistance, precision: 1),
-                            SyntaxFactory.LiteralExpression(sound.MaxDistance == uint.MaxValue ? 10000f : sound.MaxDistance, precision: 1)));
+                            sound.Name,
+                            JassLiteral.Real(sound.MinDistance == uint.MaxValue ? 0f : sound.MinDistance),
+                            JassLiteral.Real(sound.MaxDistance == uint.MaxValue ? 10000f : sound.MaxDistance));
 
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundConeAngles,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.ConeAngleInside == uint.MaxValue ? 0f : sound.ConeAngleInside, precision: 1),
-                            SyntaxFactory.LiteralExpression(sound.ConeAngleOutside == uint.MaxValue ? 0f : sound.ConeAngleOutside, precision: 1),
-                            SyntaxFactory.LiteralExpression(sound.ConeOutsideVolume == -1 ? 127 : sound.ConeOutsideVolume)));
+                            sound.Name,
+                            JassLiteral.Real(sound.ConeAngleInside == uint.MaxValue ? 0f : sound.ConeAngleInside),
+                            JassLiteral.Real(sound.ConeAngleOutside == uint.MaxValue ? 0f : sound.ConeAngleOutside),
+                            JassLiteral.Int(sound.ConeOutsideVolume == -1 ? 127 : sound.ConeOutsideVolume));
 
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetSoundConeOrientation,
-                            SyntaxFactory.VariableReferenceExpression(sound.Name),
-                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.X == uint.MaxValue ? 0f : sound.ConeOrientation.X, precision: 1),
-                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.Y == uint.MaxValue ? 0f : sound.ConeOrientation.Y, precision: 1),
-                            SyntaxFactory.LiteralExpression(sound.ConeOrientation.Z == uint.MaxValue ? 0f : sound.ConeOrientation.Z, precision: 1)));
+                            sound.Name,
+                            JassLiteral.Real(sound.ConeOrientation.X == uint.MaxValue ? 0f : sound.ConeOrientation.X),
+                            JassLiteral.Real(sound.ConeOrientation.Y == uint.MaxValue ? 0f : sound.ConeOrientation.Y),
+                            JassLiteral.Real(sound.ConeOrientation.Z == uint.MaxValue ? 0f : sound.ConeOrientation.Z));
                     }
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitSounds)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitSoundsCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitSounds(Map map)
         {
             if (map is null)
             {

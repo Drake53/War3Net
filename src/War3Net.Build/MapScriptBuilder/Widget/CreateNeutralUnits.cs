@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreateNeutralUnits.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,40 +6,43 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateNeutralUnits(Map map)
+        protected internal virtual void GenerateCreateNeutralUnits(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
-
-            if (CreateNeutralHostileCondition(map))
+            if (writer is null)
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralHostile)));
+                throw new ArgumentNullException(nameof(writer));
             }
 
-            if (CreateNeutralPassiveCondition(map))
+            writer.WriteFunction(GeneratedFunctionName.CreateNeutralUnits);
+
+            if (ShouldGenerateCreateNeutralHostile(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralPassive)));
+                writer.WriteCall(GeneratedFunctionName.CreateNeutralHostile);
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateNeutralUnits)), statements);
+            if (ShouldGenerateCreateNeutralPassive(map))
+            {
+                writer.WriteCall(GeneratedFunctionName.CreateNeutralPassive);
+            }
+
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateNeutralUnitsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateNeutralUnits(Map map)
         {
             if (map is null)
             {

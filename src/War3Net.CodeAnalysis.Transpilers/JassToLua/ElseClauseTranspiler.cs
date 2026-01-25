@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -17,7 +19,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             var luaElseClause = new LuaElseClauseSyntax();
 
-            luaElseClause.Body.Statements.AddRange(Transpile(elseClause.Body));
+            luaElseClause.Body.Statements.AddRange(elseClause.Statements.Select(Transpile));
 
             return luaElseClause;
         }

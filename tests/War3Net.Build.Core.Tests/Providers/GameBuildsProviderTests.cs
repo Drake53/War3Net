@@ -66,7 +66,7 @@ namespace War3Net.Build.Core.Tests.Providers
 
             return mappings
 #if !ENABLE_FLAKY_TESTS
-                .Where(kvp => GameBuildsProvider.GetGameBuilds(kvp.Key).Any())
+                .Where(kvp => GameBuildsProvider.GetGameBuilds(kvp.Key).Count > 0)
 #endif
                 .Select(kvp => new object?[] { kvp.Key, kvp.Value });
         }

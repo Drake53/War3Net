@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitCustomPlayerSlots), DynamicDataSourceType.Method)]
         public void TestBodyInitCustomPlayerSlots(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitCustomPlayerSlots"];
-            var actual = testData.MapScriptBuilder.InitCustomPlayerSlots(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitCustomPlayerSlots,
+                writer => testData.MapScriptBuilder.GenerateInitCustomPlayerSlots(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomPlayerSlots(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitCustomPlayerSlots");
-            var actual = testData.MapScriptBuilder.InitCustomPlayerSlotsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomPlayerSlots);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitCustomPlayerSlots(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitCustomPlayerSlots"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomPlayerSlots))
                 {
                     yield return new object[] { testData };
                 }

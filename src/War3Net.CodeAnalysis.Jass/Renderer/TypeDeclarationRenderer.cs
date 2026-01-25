@@ -13,9 +13,12 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassTypeDeclarationSyntax typeDeclaration)
         {
-            Write($"{JassKeyword.Type} ");
+            Render(typeDeclaration.TypeToken);
+            WriteSpace();
             Render(typeDeclaration.IdentifierName);
-            Write($" {JassKeyword.Extends} ");
+            WriteSpace();
+            Render(typeDeclaration.ExtendsToken);
+            WriteSpace();
             Render(typeDeclaration.BaseType);
         }
     }

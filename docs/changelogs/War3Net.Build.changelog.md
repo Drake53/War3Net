@@ -1,5 +1,11 @@
 # War3Net.Build Changelog
 
+## v6.0.0
+### Breaking changes
+- MapScriptBuilder methods have been renamed and now write to an IndentedTextWriter instead of returning a syntax class.
+- TriggerRenderer and TriggerRendererContext now expect an IndentedTextWriter instead of JassRenderer/TextWriter.
+- MapScriptBuilder's C# api methods have been removed, you can now use the GenerateGlobals methods and manually transpile to C#.
+
 ## v1.5.0
 ### Changes
 - Support parsing and serializing .wtg files.

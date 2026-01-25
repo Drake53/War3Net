@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreateRegions), DynamicDataSourceType.Method)]
         public void TestBodyCreateRegions(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreateRegions"];
-            var actual = testData.MapScriptBuilder.CreateRegions(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreateRegions,
+                writer => testData.MapScriptBuilder.GenerateCreateRegions(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateRegions(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreateRegions");
-            var actual = testData.MapScriptBuilder.CreateRegionsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateRegions);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreateRegions(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("CreateRegions"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateRegions))
                 {
                     yield return new object[] { testData };
                 }

@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreateNeutralUnits), DynamicDataSourceType.Method)]
         public void TestBodyCreateNeutralUnits(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreateNeutralUnits"];
-            var actual = testData.MapScriptBuilder.CreateNeutralUnits(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreateNeutralUnits,
+                writer => testData.MapScriptBuilder.GenerateCreateNeutralUnits(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateNeutralUnits(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreateNeutralUnits");
-            var actual = testData.MapScriptBuilder.CreateNeutralUnitsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateNeutralUnits);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreateNeutralUnits(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("CreateNeutralUnits"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateNeutralUnits))
                 {
                     yield return new object[] { testData };
                 }

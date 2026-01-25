@@ -19,17 +19,19 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileHexadecimalLiteralExpression(
-            JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression,
+            JassLiteralExpressionSyntax hexadecimalLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
             if (string.Equals(expectedType, JassKeyword.Integer, StringComparison.Ordinal) ||
                 string.Equals(expectedType, JassKeyword.Real, StringComparison.Ordinal))
             {
+                var value = JassLiteral.ParseHex(hexadecimalLiteralExpression.Token.Text);
+
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = hexadecimalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture),
+                    Value = value.ToString(CultureInfo.InvariantCulture),
                 };
 
                 return true;
@@ -40,10 +42,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileHexadecimalLiteralExpression(
-            JassHexadecimalLiteralExpressionSyntax hexadecimalLiteralExpression,
+            JassLiteralExpressionSyntax hexadecimalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = hexadecimalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture);
+            var value = JassLiteral.ParseHex(hexadecimalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 

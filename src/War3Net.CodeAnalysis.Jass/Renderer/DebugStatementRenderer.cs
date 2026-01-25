@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassDebugStatementSyntax debugStatement)
         {
-            Write($"{JassKeyword.Debug} ");
+            Render(debugStatement.DebugToken);
+            WriteSpace();
             Render(debugStatement.Statement);
         }
     }

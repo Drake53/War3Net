@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitAllyPriorities), DynamicDataSourceType.Method)]
         public void TestBodyInitAllyPriorities(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitAllyPriorities"];
-            var actual = testData.MapScriptBuilder.InitAllyPriorities(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitAllyPriorities,
+                writer => testData.MapScriptBuilder.GenerateInitAllyPriorities(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitAllyPriorities(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitAllyPriorities");
-            var actual = testData.MapScriptBuilder.InitAllyPrioritiesCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitAllyPriorities);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitAllyPriorities(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitAllyPriorities"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitAllyPriorities))
                 {
                     yield return new object[] { testData };
                 }

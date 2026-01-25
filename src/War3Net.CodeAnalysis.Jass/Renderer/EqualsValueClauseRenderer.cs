@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassEqualsValueClauseSyntax equalsValueClause)
         {
-            Write($"{JassSymbol.EqualsSign} ");
+            Render(equalsValueClause.EqualsToken);
+            WriteSpace();
             Render(equalsValueClause.Expression);
         }
     }

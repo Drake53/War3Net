@@ -6,7 +6,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(PACK)'=='true'">
-    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
   </ItemGroup>
   <ItemGroup Condition="'$(PACK)'!='true'">
     <Content Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false">

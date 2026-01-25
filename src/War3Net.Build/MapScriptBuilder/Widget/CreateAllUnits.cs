@@ -6,58 +6,61 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateAllUnits(Map map)
+        protected internal virtual void GenerateCreateAllUnits(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
-
-            if (CreateNeutralPassiveBuildingsCondition(map))
+            if (writer is null)
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralPassiveBuildings)));
+                throw new ArgumentNullException(nameof(writer));
             }
 
-            if (CreatePlayerBuildingsCondition(map))
+            writer.WriteFunction(GeneratedFunctionName.CreateAllUnits);
+
+            if (ShouldGenerateCreateNeutralPassiveBuildings(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreatePlayerBuildings)));
+                writer.WriteCall(GeneratedFunctionName.CreateNeutralPassiveBuildings);
             }
 
-            if (CreateNeutralHostileCondition(map))
+            if (ShouldGenerateCreatePlayerBuildings(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralHostile)));
+                writer.WriteCall(GeneratedFunctionName.CreatePlayerBuildings);
             }
 
-            if (CreateNeutralPassiveCondition(map))
+            if (ShouldGenerateCreateNeutralHostile(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreateNeutralPassive)));
+                writer.WriteCall(GeneratedFunctionName.CreateNeutralHostile);
             }
 
-            if (CreatePlayerUnitsCondition(map))
+            if (ShouldGenerateCreateNeutralPassive(map))
             {
-                statements.Add(SyntaxFactory.CallStatement(nameof(CreatePlayerUnits)));
+                writer.WriteCall(GeneratedFunctionName.CreateNeutralPassive);
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllUnits)), statements);
+            if (ShouldGenerateCreatePlayerUnits(map))
+            {
+                writer.WriteCall(GeneratedFunctionName.CreatePlayerUnits);
+            }
+
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateAllUnitsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateAllUnits(Map map)
         {
             if (map is null)
             {
@@ -67,25 +70,21 @@ namespace War3Net.Build
             if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v28)
             {
                 return map.Units is not null
-                    && map.Units.Units.Any(unit => CreateAllUnitsConditionSingleUnit(map, unit));
+                    && map.Units.Units.Any(ShouldGenerateCreateAllUnitsForUnit);
             }
 
             return map.Info.FormatVersion >= MapInfoFormatVersion.v15;
         }
 
-        protected internal virtual bool CreateAllUnitsConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool ShouldGenerateCreateAllUnitsForUnit(UnitData unitData)
         {
-            if (map is null)
-            {
-                throw new ArgumentNullException(nameof(map));
-            }
-
             if (unitData is null)
             {
                 throw new ArgumentNullException(nameof(unitData));
             }
 
-            return unitData.IsUnit() && !unitData.IsPlayerStartLocation();
+            return unitData.IsUnit()
+                && !unitData.IsPlayerStartLocation();
         }
     }
 }

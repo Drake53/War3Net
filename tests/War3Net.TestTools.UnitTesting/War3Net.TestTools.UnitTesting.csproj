@@ -4,6 +4,10 @@
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DiffPlex" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\War3Net.Build.Core\War3Net.Build.Core.csproj" />
   </ItemGroup>
@@ -13,8 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="TestData\Script\**" />
-    <Content Remove="TestData\Script\**" />
+    <Compile Remove="TestData/Script/**" />
+    <Content Remove="TestData/Script/**" />
+    <Compile Remove="TestData/Transpilation/**" />
+    <Content Remove="TestData/Transpilation/**" />
   </ItemGroup>
 
 </Project>

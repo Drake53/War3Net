@@ -16,8 +16,12 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public ParameterSyntax Transpile(JassParameterSyntax parameter)
         {
-            return SyntaxFactory.Parameter(Transpile(parameter.IdentifierName))
-                .WithType(Transpile(parameter.Type));
+            return SyntaxFactory.Parameter(
+                default,
+                SyntaxFactory.TokenList(),
+                Transpile(parameter.Type),
+                Transpile(parameter.IdentifierName.Token),
+                null);
         }
     }
 }

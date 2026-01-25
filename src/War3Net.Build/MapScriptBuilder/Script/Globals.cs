@@ -5,49 +5,99 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using System;
 
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassGlobalDeclarationListSyntax Globals(Map map)
+        public virtual void GenerateGlobals(Map map, IndentedTextWriter writer)
         {
-            var globalDeclarationList = new List<IGlobalDeclarationSyntax>();
-            var generatedGlobals = new List<JassGlobalDeclarationSyntax>();
-
-            generatedGlobals.AddRange(Regions(map));
-            generatedGlobals.AddRange(Cameras(map));
-            generatedGlobals.AddRange(Sounds(map));
-            generatedGlobals.AddRange(Triggers(map));
-            generatedGlobals.AddRange(Units(map));
-            generatedGlobals.AddRange(Destructables(map));
-            generatedGlobals.AddRange(RandomUnitTables(map));
-
-            var userDefinedGlobals = new List<JassGlobalDeclarationSyntax>(Variables(map));
-
-            if (userDefinedGlobals.Any())
+            if (map is null)
             {
-                globalDeclarationList.Add(new JassCommentSyntax(" User-defined"));
-                globalDeclarationList.AddRange(userDefinedGlobals);
+                throw new ArgumentNullException(nameof(map));
+            }
 
-                if (generatedGlobals.Any())
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            var shouldGenerateUserDefinedVariables = ShouldGenerateUserDefinedVariables(map);
+            var shouldGenerateRegionVariables = ShouldGenerateRegionVariables(map);
+            var shouldGenerateCameraVariables = ShouldGenerateCameraVariables(map);
+            var shouldGenerateSoundVariables = ShouldGenerateSoundVariables(map);
+            var shouldGenerateTriggerVariables = ShouldGenerateTriggerVariables(map);
+            var shouldGenerateUnitVariables = ShouldGenerateUnitVariables(map);
+            var shouldGenerateDestructableVariables = ShouldGenerateDestructableVariables(map);
+            var shouldGenerateRandomUnitTables = ShouldGenerateRandomUnitTables(map);
+
+            writer.WriteLine(JassKeyword.Globals);
+            writer.Indent();
+
+            if (shouldGenerateUserDefinedVariables)
+            {
+                writer.WriteComment("User-defined");
+                GenerateUserDefinedVariables(map, writer);
+            }
+
+            if (shouldGenerateRegionVariables ||
+                shouldGenerateCameraVariables ||
+                shouldGenerateSoundVariables ||
+                shouldGenerateTriggerVariables ||
+                shouldGenerateUnitVariables ||
+                shouldGenerateDestructableVariables ||
+                shouldGenerateRandomUnitTables)
+            {
+                if (shouldGenerateUserDefinedVariables)
                 {
-                    globalDeclarationList.Add(JassEmptySyntax.Value);
+                    writer.WriteLine();
+                }
+
+                writer.WriteComment("Generated");
+
+                if (shouldGenerateRegionVariables)
+                {
+                    GenerateRegionVariables(map, writer);
+                }
+
+                if (shouldGenerateCameraVariables)
+                {
+                    GenerateCameraVariables(map, writer);
+                }
+
+                if (shouldGenerateSoundVariables)
+                {
+                    GenerateSoundVariables(map, writer);
+                }
+
+                if (shouldGenerateTriggerVariables)
+                {
+                    GenerateTriggerVariables(map, writer);
+                }
+
+                if (shouldGenerateUnitVariables)
+                {
+                    GenerateUnitVariables(map, writer);
+                }
+
+                if (shouldGenerateDestructableVariables)
+                {
+                    GenerateDestructableVariables(map, writer);
+                }
+
+                if (shouldGenerateRandomUnitTables)
+                {
+                    GenerateRandomUnitTables(map, writer);
                 }
             }
 
-            if (generatedGlobals.Any())
-            {
-                globalDeclarationList.Add(new JassCommentSyntax(" Generated"));
-                globalDeclarationList.AddRange(generatedGlobals);
-            }
-
-            return new JassGlobalDeclarationListSyntax(globalDeclarationList.ToImmutableArray());
+            writer.Unindent();
+            writer.WriteLine(JassKeyword.EndGlobals);
         }
     }
 }

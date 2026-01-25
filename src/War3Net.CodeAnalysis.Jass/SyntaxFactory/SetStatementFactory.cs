@@ -11,35 +11,122 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
-                ParseIdentifierName(name),
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
                 null,
-                new JassEqualsValueClauseSyntax(value));
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                null,
+                EqualsValueClause(value));
         }
 
         public static JassSetStatementSyntax SetStatement(string name, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
                 null,
                 value);
         }
 
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax indexer, IExpressionSyntax value)
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
-                indexer,
-                new JassEqualsValueClauseSyntax(value));
+                null,
+                EqualsValueClause(value));
         }
 
-        public static JassSetStatementSyntax SetStatement(string name, IExpressionSyntax indexer, JassEqualsValueClauseSyntax value)
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax elementAccessClause, JassEqualsValueClauseSyntax value)
         {
             return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                elementAccessClause,
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax elementAccessClause, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                elementAccessClause,
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax elementAccessExpression, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                ElementAccessClause(elementAccessExpression),
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassIdentifierNameSyntax identifierName, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                identifierName,
+                ElementAccessClause(elementAccessExpression),
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassElementAccessClauseSyntax elementAccessClause, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
                 ParseIdentifierName(name),
-                indexer,
+                elementAccessClause,
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassElementAccessClauseSyntax elementAccessClause, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                elementAccessClause,
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassEqualsValueClauseSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                ElementAccessClause(elementAccessExpression),
+                value);
+        }
+
+        public static JassSetStatementSyntax SetStatement(string name, JassExpressionSyntax elementAccessExpression, JassExpressionSyntax value)
+        {
+            return new JassSetStatementSyntax(
+                Token(JassSyntaxKind.SetKeyword),
+                ParseIdentifierName(name),
+                ElementAccessClause(elementAccessExpression),
+                EqualsValueClause(value));
+        }
+
+        public static JassSetStatementSyntax SetStatement(JassSyntaxToken setToken, JassIdentifierNameSyntax identifierName, JassElementAccessClauseSyntax? elementAccessClause, JassEqualsValueClauseSyntax value)
+        {
+            ThrowHelper.ThrowIfInvalidToken(setToken, JassSyntaxKind.SetKeyword);
+
+            return new JassSetStatementSyntax(
+                setToken,
+                identifierName,
+                elementAccessClause,
                 value);
         }
     }

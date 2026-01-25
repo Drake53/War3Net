@@ -5,32 +5,29 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {
     internal sealed class FunctionDeclarationContext
     {
-        public FunctionDeclarationContext(JassFunctionDeclarationSyntax functionDeclaration, IEnumerable<JassCommentSyntax> comments)
+        public FunctionDeclarationContext(JassFunctionDeclarationSyntax functionDeclaration)
         {
             FunctionDeclaration = functionDeclaration;
-            Comments = comments.ToImmutableList();
 
-            if (functionDeclaration.FunctionDeclarator.ParameterList.Parameters.IsEmpty)
+            if (functionDeclaration.FunctionDeclarator.ParameterList is JassEmptyParameterListSyntax)
             {
-                IsActionsFunction = functionDeclaration.FunctionDeclarator.ReturnType == JassTypeSyntax.Nothing;
-                IsConditionsFunction = functionDeclaration.FunctionDeclarator.ReturnType == JassTypeSyntax.Boolean;
+                var returnTypeToken = functionDeclaration.FunctionDeclarator.ReturnClause.ReturnType.GetToken();
+                IsActionsFunction = returnTypeToken.SyntaxKind == JassSyntaxKind.NothingKeyword;
+                IsConditionsFunction = returnTypeToken.SyntaxKind == JassSyntaxKind.BooleanKeyword;
             }
 
             Handled = false;
         }
 
         public JassFunctionDeclarationSyntax FunctionDeclaration { get; }
-
-        public ImmutableList<JassCommentSyntax> Comments { get; }
 
         public bool IsActionsFunction { get; }
 

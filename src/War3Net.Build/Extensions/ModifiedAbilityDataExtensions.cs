@@ -16,11 +16,30 @@ namespace War3Net.Build.Extensions
 {
     public static class ModifiedAbilityDataExtensions
     {
+        private static readonly Lazy<Dictionary<int, string>> _abilityOrderOnStrings = new(GetAbilityOrderOnStrings);
         private static readonly Lazy<Dictionary<int, string>> _abilityOrderOffStrings = new(GetAbilityOrderOffStrings);
+
+        public static bool TryGetOrderOnString(this ModifiedAbilityData abilityData, [NotNullWhen(true)] out string? orderOnString)
+        {
+            return _abilityOrderOnStrings.Value.TryGetValue(abilityData.AbilityId, out orderOnString);
+        }
 
         public static bool TryGetOrderOffString(this ModifiedAbilityData abilityData, [NotNullWhen(true)] out string? orderOffString)
         {
             return _abilityOrderOffStrings.Value.TryGetValue(abilityData.AbilityId, out orderOffString);
+        }
+
+        private static Dictionary<int, string> GetAbilityOrderOnStrings()
+        {
+            return new Dictionary<int, string>
+            {
+                { "Ahea".FromRawcode(), "healon" },
+                { "ACsa".FromRawcode(), "flamingarrows" },
+                { "ANth".FromRawcode(), "Thornyshield" },
+                { "AEim".FromRawcode(), "immolation" },
+                { "ANba".FromRawcode(), "blackarrowon" },
+                { "AHds".FromRawcode(), "divineshield" },
+            };
         }
 
         private static Dictionary<int, string> GetAbilityOrderOffStrings()

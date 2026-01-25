@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitGlobals), DynamicDataSourceType.Method)]
         public void TestBodyInitGlobals(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitGlobals"];
-            var actual = testData.MapScriptBuilder.InitGlobals(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitGlobals,
+                writer => testData.MapScriptBuilder.GenerateInitGlobals(testData.Map, writer));
         }
 
         [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitGlobals(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitGlobals");
-            var actual = testData.MapScriptBuilder.InitGlobalsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitGlobals);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitGlobals(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitGlobals"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitGlobals))
                 {
                     yield return new object[] { testData };
                 }

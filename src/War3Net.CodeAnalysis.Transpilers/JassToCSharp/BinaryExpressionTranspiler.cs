@@ -17,8 +17,11 @@ namespace War3Net.CodeAnalysis.Transpilers
         public ExpressionSyntax Transpile(JassBinaryExpressionSyntax binaryExpression)
         {
             return SyntaxFactory.BinaryExpression(
-                Transpile(binaryExpression.Operator),
+                TranspileBinaryExpressionKind(binaryExpression.SyntaxKind),
                 Transpile(binaryExpression.Left),
+                Transpile(
+                    TranspileBinaryOperatorKind(binaryExpression.OperatorToken.SyntaxKind),
+                    binaryExpression.OperatorToken),
                 Transpile(binaryExpression.Right));
         }
     }

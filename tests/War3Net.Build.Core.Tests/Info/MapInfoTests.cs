@@ -5,13 +5,17 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
+using War3Net.Build.Serialization.Json;
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests.Info
@@ -172,6 +176,36 @@ namespace War3Net.Build.Core.Tests.Info
             Assert.AreEqual(expectCustomAbilitySkin, mapInfo.MapFlags.HasFlag(MapFlags.CustomAbilitySkin));
             Assert.AreEqual(expectAccurateProbabilityForCalculations, mapInfo.MapFlags.HasFlag(MapFlags.AccurateProbabilityForCalculations));
             Assert.AreEqual(expectSupportedModes, mapInfo.SupportedModes);
+        }
+
+        [TestMethod]
+        public void TestJsonSerializeRegression()
+        {
+            var mapInfo = Build.MapFactory.Info();
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonMapInfoConverter());
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            var json = JsonSerializer.Serialize(mapInfo, options);
+            _ = JsonSerializer.Deserialize<MapInfo>(json, options);
+        }
+
+        [TestMethod]
+        public void TestJsonSerializeInvalidEditorVersion()
+        {
+            var mapInfo = Build.MapFactory.Info();
+            mapInfo.EditorVersion = (EditorVersion)123456;
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonMapInfoConverter());
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            var json = JsonSerializer.Serialize(mapInfo, options);
+            var result = JsonSerializer.Deserialize<MapInfo>(json, options);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(123456, (int)result.EditorVersion);
         }
 
         private static void TestParseMapInfoInternal(string mapInfoFilePath)

@@ -13,7 +13,8 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassExitStatementSyntax exitStatement)
         {
-            Write($"{JassKeyword.ExitWhen} ");
+            Render(exitStatement.ExitWhenToken);
+            WriteSpace();
             Render(exitStatement.Condition);
         }
     }

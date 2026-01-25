@@ -16,13 +16,12 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public IEnumerable<MemberDeclarationSyntax> Transpile(ITopLevelDeclarationSyntax declaration)
+        public IEnumerable<MemberDeclarationSyntax> Transpile(JassTopLevelDeclarationSyntax declaration)
         {
             return declaration switch
             {
                 JassTypeDeclarationSyntax typeDeclaration => new[] { Transpile(typeDeclaration) },
-                JassGlobalDeclarationListSyntax globalDeclarationList => Transpile(globalDeclarationList),
-                JassGlobalDeclarationSyntax globalDeclaration => new[] { Transpile(globalDeclaration) },
+                JassGlobalsDeclarationSyntax globalsDeclaration => Transpile(globalsDeclaration),
                 JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration => new[] { Transpile(nativeFunctionDeclaration) },
                 JassFunctionDeclarationSyntax functionDeclaration => new[] { Transpile(functionDeclaration) },
                 _ => Array.Empty<MemberDeclarationSyntax>(),

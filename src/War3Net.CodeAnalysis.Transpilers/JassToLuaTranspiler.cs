@@ -39,19 +39,25 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             foreach (var declaration in compilationUnit.Declarations)
             {
-                if (declaration is JassGlobalDeclarationListSyntax globalDeclarationList)
+                if (declaration is JassGlobalsDeclarationSyntax globalsDeclaration)
                 {
-                    foreach (var global in globalDeclarationList.Globals)
+                    foreach (var globalDeclaration in globalsDeclaration.GlobalDeclarations)
                     {
-                        if (global is JassGlobalDeclarationSyntax globalDeclaration)
+                        switch (globalDeclaration)
                         {
-                            RegisterVariableType(globalDeclaration.Declarator, false);
+                            case JassGlobalConstantDeclarationSyntax globalConstantDeclaration:
+                                RegisterVariableType(globalConstantDeclaration);
+                                break;
+
+                            case JassGlobalVariableDeclarationSyntax globalVariableDeclaration:
+                                RegisterVariableType(globalVariableDeclaration.Declarator, false);
+                                break;
                         }
                     }
                 }
                 else if (declaration is JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration)
                 {
-                    RegisterFunctionReturnType(nativeFunctionDeclaration.FunctionDeclarator);
+                    RegisterFunctionReturnType(nativeFunctionDeclaration);
                 }
                 else if (declaration is JassFunctionDeclarationSyntax functionDeclaration)
                 {
@@ -87,33 +93,43 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         internal void RegisterFunctionReturnType(JassFunctionDeclaratorSyntax functionDeclarator)
         {
-            _functionReturnTypes.Add(functionDeclarator.IdentifierName.Name, functionDeclarator.ReturnType);
+            _functionReturnTypes.Add(functionDeclarator.IdentifierName.Token.Text, functionDeclarator.ReturnClause.ReturnType);
         }
 
-        private void RegisterVariableType(IVariableDeclaratorSyntax declarator, bool isLocalDeclaration)
+        internal void RegisterFunctionReturnType(JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration)
+        {
+            _functionReturnTypes.Add(nativeFunctionDeclaration.IdentifierName.Token.Text, nativeFunctionDeclaration.ReturnClause.ReturnType);
+        }
+
+        private void RegisterVariableType(JassVariableOrArrayDeclaratorSyntax declarator, bool isLocalDeclaration)
         {
             switch (declarator)
             {
-                case JassArrayDeclaratorSyntax arrayDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(arrayDeclarator.IdentifierName.Name, arrayDeclarator.Type); break;
-                case JassVariableDeclaratorSyntax variableDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(variableDeclarator.IdentifierName.Name, variableDeclarator.Type); break;
+                case JassArrayDeclaratorSyntax arrayDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(arrayDeclarator.IdentifierName.Token.Text, arrayDeclarator.Type); break;
+                case JassVariableDeclaratorSyntax variableDeclarator: (isLocalDeclaration ? _localTypes : _globalTypes).Add(variableDeclarator.IdentifierName.Token.Text, variableDeclarator.Type); break;
             }
+        }
+
+        private void RegisterVariableType(JassGlobalConstantDeclarationSyntax globalConstantDeclaration)
+        {
+            _globalTypes.Add(globalConstantDeclaration.IdentifierName.Token.Text, globalConstantDeclaration.Type);
         }
 
         private void RegisterLocalVariableType(JassParameterSyntax parameter)
         {
-            _localTypes.Add(parameter.IdentifierName.Name, parameter.Type);
+            _localTypes.Add(parameter.IdentifierName.Token.Text, parameter.Type);
         }
 
         private JassTypeSyntax GetFunctionReturnType(JassIdentifierNameSyntax functionName)
         {
-            return _functionReturnTypes.TryGetValue(functionName.Name, out var type)
+            return _functionReturnTypes.TryGetValue(functionName.Token.Text, out var type)
                 ? type
                 : throw new KeyNotFoundException($"Function '{functionName}' could not be found.");
         }
 
         private JassTypeSyntax GetVariableType(JassIdentifierNameSyntax variableName)
         {
-            return (_localTypes.TryGetValue(variableName.Name, out var type) || _globalTypes.TryGetValue(variableName.Name, out type))
+            return (_localTypes.TryGetValue(variableName.Token.Text, out var type) || _globalTypes.TryGetValue(variableName.Token.Text, out type))
                 ? type
                 : throw new KeyNotFoundException($"Variable '{variableName}' could not be found.");
         }

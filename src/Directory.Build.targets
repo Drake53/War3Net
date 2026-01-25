@@ -14,4 +14,13 @@
       <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
   </Target>
+
+  <Target Name="SetPackageVersionFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <ThisProjectPackageVersion Include="@(PackageVersion)" Condition="'%(PackageVersion.Identity)' == $(PackageId)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <PackageVersion>%(ThisProjectPackageVersion.Version)</PackageVersion>
+    </PropertyGroup>
+  </Target>
 </Project>

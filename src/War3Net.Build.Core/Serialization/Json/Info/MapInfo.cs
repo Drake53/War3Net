@@ -34,7 +34,7 @@ namespace War3Net.Build.Info
             if (FormatVersion >= MapInfoFormatVersion.v18)
             {
                 MapVersion = jsonElement.GetInt32(nameof(MapVersion));
-                EditorVersion = (EditorVersion)jsonElement.GetInt32(nameof(EditorVersion));
+                EditorVersion = jsonElement.GetInt32Raw<EditorVersion>(nameof(EditorVersion));
 
                 if (FormatVersion >= MapInfoFormatVersion.v27)
                 {

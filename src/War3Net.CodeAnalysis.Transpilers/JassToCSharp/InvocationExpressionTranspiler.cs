@@ -17,8 +17,8 @@ namespace War3Net.CodeAnalysis.Transpilers
         public ExpressionSyntax Transpile(JassInvocationExpressionSyntax invocationExpression)
         {
             return SyntaxFactory.InvocationExpression(
-                SyntaxFactory.IdentifierName(Transpile(invocationExpression.IdentifierName)),
-                Transpile(invocationExpression.Arguments));
+                Transpile(invocationExpression.IdentifierName),
+                Transpile(invocationExpression.ArgumentList));
         }
     }
 }

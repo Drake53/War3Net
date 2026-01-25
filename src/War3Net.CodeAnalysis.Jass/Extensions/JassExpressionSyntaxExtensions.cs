@@ -1,0 +1,209 @@
+﻿// ------------------------------------------------------------------------------
+// <copyright file="JassExpressionSyntaxExtensions.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+
+using War3Net.CodeAnalysis.Jass.Syntax;
+
+namespace War3Net.CodeAnalysis.Jass.Extensions
+{
+    public static class JassExpressionSyntaxExtensions
+    {
+        public static JassExpressionSyntax Deparenthesize(this JassExpressionSyntax expression)
+        {
+            while (expression is JassParenthesizedExpressionSyntax parenthesizedExpression)
+            {
+                expression = parenthesizedExpression.Expression;
+            }
+
+            return expression;
+        }
+
+        public static bool TryGetBooleanExpressionValue(this JassExpressionSyntax expression, out bool value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression)
+            {
+                switch (literalExpression.Token.SyntaxKind)
+                {
+                    case JassSyntaxKind.TrueKeyword:
+                        value = true;
+                        return true;
+
+                    case JassSyntaxKind.FalseKeyword:
+                        value = false;
+                        return true;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetCharacterExpressionValue(this JassExpressionSyntax expression, out char value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression &&
+                literalExpression.Token.SyntaxKind == JassSyntaxKind.CharacterLiteralToken)
+            {
+                value = JassLiteral.ParseChar(literalExpression.Token.Text);
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetIdentifierNameValue(this JassExpressionSyntax expression, [NotNullWhen(true)] out string? value)
+        {
+            if (expression is JassIdentifierNameSyntax identifierName)
+            {
+                value = identifierName.Token.Text;
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
+
+        public static bool TryGetIntegerExpressionValue(this JassExpressionSyntax expression, out int value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression)
+            {
+                switch (literalExpression.Token.SyntaxKind)
+                {
+                    case JassSyntaxKind.DecimalLiteralToken:
+                        value = JassLiteral.ParseInt(literalExpression.Token.Text);
+                        return true;
+
+                    case JassSyntaxKind.HexadecimalLiteralToken:
+                        value = JassLiteral.ParseHex(literalExpression.Token.Text);
+                        return true;
+
+                    case JassSyntaxKind.OctalLiteralToken:
+                        value = JassLiteral.ParseOctal(literalExpression.Token.Text);
+                        return true;
+
+                    case JassSyntaxKind.FourCCLiteralToken:
+                        value = JassLiteral.ParseFourCC(literalExpression.Token.Text);
+                        return true;
+
+                    default:
+                        value = default;
+                        return false;
+                }
+            }
+            else if (expression is JassUnaryExpressionSyntax unaryExpression)
+            {
+                switch (unaryExpression.SyntaxKind)
+                {
+                    case JassSyntaxKind.UnaryPlusExpression:
+                        return unaryExpression.Expression.TryGetIntegerExpressionValue(out value);
+
+                    case JassSyntaxKind.UnaryMinusExpression:
+                        if (unaryExpression.Expression.TryGetIntegerExpressionValue(out var result))
+                        {
+                            value = -result;
+                            return true;
+                        }
+
+                        break;
+
+                    default:
+                        value = default;
+                        return false;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetPlayerIdExpressionValue(this JassExpressionSyntax expression, int maxPlayerSlots, out int value)
+        {
+            if (expression is JassIdentifierNameSyntax identifierName)
+            {
+                if (string.Equals(identifierName.Token.Text, "PLAYER_NEUTRAL_AGGRESSIVE", StringComparison.Ordinal))
+                {
+                    value = maxPlayerSlots;
+                    return true;
+                }
+                else if (string.Equals(identifierName.Token.Text, "PLAYER_NEUTRAL_PASSIVE", StringComparison.Ordinal))
+                {
+                    value = maxPlayerSlots + 3;
+                    return true;
+                }
+                else
+                {
+                    value = default;
+                    return false;
+                }
+            }
+            else
+            {
+                return expression.TryGetIntegerExpressionValue(out value);
+            }
+        }
+
+        public static bool TryGetRealExpressionValue(this JassExpressionSyntax expression, out float value)
+        {
+            if (expression.TryGetIntegerExpressionValue(out var intValue))
+            {
+                value = intValue;
+                return true;
+            }
+
+            if (expression is JassLiteralExpressionSyntax literalExpression &&
+                float.TryParse(literalExpression.Token.Text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
+            {
+                return true;
+            }
+
+            if (expression is JassUnaryExpressionSyntax unaryExpression &&
+                float.TryParse(unaryExpression.ToString(), NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
+            {
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static bool TryGetStringExpressionValue(this JassExpressionSyntax expression, out string? value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression)
+            {
+                switch (literalExpression.Token.SyntaxKind)
+                {
+                    case JassSyntaxKind.StringLiteralToken:
+                        value = JassLiteral.ParseString(literalExpression.Token.Text);
+                        return true;
+
+                    case JassSyntaxKind.NullKeyword:
+                        value = null;
+                        return true;
+                }
+            }
+
+            value = null;
+            return false;
+        }
+
+        public static bool TryGetNotNullStringExpressionValue(this JassExpressionSyntax expression, [NotNullWhen(true)] out string? value)
+        {
+            if (expression is JassLiteralExpressionSyntax literalExpression &&
+                literalExpression.Token.SyntaxKind == JassSyntaxKind.StringLiteralToken)
+            {
+                value = JassLiteral.ParseString(literalExpression.Token.Text);
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
+    }
+}

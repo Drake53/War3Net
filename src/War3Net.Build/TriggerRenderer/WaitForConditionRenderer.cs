@@ -6,8 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using War3Net.Build.Script;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -22,15 +22,17 @@ namespace War3Net.Build
             RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Parameters[0]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            context.Renderer.Render(SyntaxFactory.LoopStatement(
-                SyntaxFactory.ExitStatement(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.InvocationExpression(conditionFunctionName))),
-                SyntaxFactory.CallStatement(
-                    WellKnownNatives.TriggerSleepAction,
-                    SyntaxFactory.InvocationExpression(
-                        WellKnownFunctions.RMaxBJ,
-                        SyntaxFactory.VariableReferenceExpression("bj_WAIT_FOR_COND_MIN_INTERVAL"),
-                        GetParameter(function.Parameters[1], argumentTypes[1], 1, context)))));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteLoop();
+            context.Writer.WriteExitWhen(JassExpression.Parenthesized(JassExpression.Invoke(conditionFunctionName)));
+
+            context.Writer.WriteCallCompact(
+                WellKnownNatives.TriggerSleepAction,
+                JassExpression.Invoke(
+                    WellKnownFunctions.RMaxBJ,
+                    "bj_WAIT_FOR_COND_MIN_INTERVAL",
+                    GetParameter(function.Parameters[1], argumentTypes[1], 1, context.TrigFunctionIdentifierBuilder)));
+
+            context.Writer.WriteEndLoop();
         }
     }
 }

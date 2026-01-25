@@ -5,27 +5,119 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassInvocationExpressionSyntax : IExpressionSyntax, IInvocationSyntax
+    public class JassInvocationExpressionSyntax : JassExpressionSyntax
     {
-        public JassInvocationExpressionSyntax(JassIdentifierNameSyntax identifierName, JassArgumentListSyntax arguments)
+        internal JassInvocationExpressionSyntax(
+            JassIdentifierNameSyntax identifierName,
+            JassArgumentListSyntax argumentList)
         {
             IdentifierName = identifierName;
-            Arguments = arguments;
+            ArgumentList = argumentList;
         }
 
-        public JassIdentifierNameSyntax IdentifierName { get; init; }
+        public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public JassArgumentListSyntax Arguments { get; init; }
+        public JassArgumentListSyntax ArgumentList { get; }
 
-        public bool Equals(IExpressionSyntax? other)
+        public override JassSyntaxKind SyntaxKind => JassSyntaxKind.InvocationExpression;
+
+        public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassInvocationExpressionSyntax invocationExpression
-                && IdentifierName.Equals(invocationExpression.IdentifierName)
-                && Arguments.Equals(invocationExpression.Arguments);
+                && IdentifierName.IsEquivalentTo(invocationExpression.IdentifierName)
+                && ArgumentList.IsEquivalentTo(invocationExpression.ArgumentList);
         }
 
-        public override string ToString() => $"{IdentifierName}{JassSymbol.LeftParenthesis}{Arguments}{JassSymbol.RightParenthesis}";
+        public override void WriteTo(TextWriter writer)
+        {
+            IdentifierName.WriteTo(writer);
+            ArgumentList.WriteTo(writer);
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetChildNodes()
+        {
+            yield return IdentifierName;
+            yield return ArgumentList;
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetChildTokens()
+        {
+            yield break;
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
+        {
+            yield return IdentifierName;
+            yield return ArgumentList;
+        }
+
+        public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
+        {
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+
+            yield return ArgumentList;
+            foreach (var descendant in ArgumentList.GetDescendantNodes())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
+        {
+            foreach (var descendant in IdentifierName.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+
+            foreach (var descendant in ArgumentList.GetDescendantTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
+        {
+            yield return IdentifierName;
+            foreach (var descendant in IdentifierName.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+
+            yield return ArgumentList;
+            foreach (var descendant in ArgumentList.GetDescendantNodesAndTokens())
+            {
+                yield return descendant;
+            }
+        }
+
+        public override string ToString() => $"{IdentifierName}{ArgumentList}";
+
+        public override JassSyntaxToken GetFirstToken() => IdentifierName.GetFirstToken();
+
+        public override JassSyntaxToken GetLastToken() => ArgumentList.GetLastToken();
+
+        protected internal override JassInvocationExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
+        {
+            return new JassInvocationExpressionSyntax(
+                IdentifierName.ReplaceFirstToken(newToken),
+                ArgumentList);
+        }
+
+        protected internal override JassInvocationExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
+        {
+            return new JassInvocationExpressionSyntax(
+                IdentifierName,
+                ArgumentList.ReplaceLastToken(newToken));
+        }
     }
 }

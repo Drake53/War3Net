@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreateUnits.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -9,19 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual IEnumerable<IStatementSyntax> CreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, IExpressionSyntax playerNumber)
+        protected internal virtual void GenerateCreateUnits(Map map, IEnumerable<(UnitData Unit, int Id)> units, string playerNumberExpression, IndentedTextWriter writer)
         {
             if (map is null)
             {
@@ -33,26 +34,34 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(units));
             }
 
-            if (playerNumber is null)
+            if (playerNumberExpression is null)
             {
-                throw new ArgumentNullException(nameof(playerNumber));
+                throw new ArgumentNullException(nameof(playerNumberExpression));
             }
 
-            var statements = new List<IStatementSyntax>();
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Player), VariableName.Player, SyntaxFactory.InvocationExpression(NativeName.Player, playerNumber)));
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            writer.WriteLocal(
+                TypeName.Player,
+                VariableName.Player,
+                JassExpression.Invoke(NativeName.Player, playerNumberExpression));
+
             if (!ForceGenerateGlobalUnitVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Unit), VariableName.Unit));
+                writer.WriteLocal(TypeName.Unit, VariableName.Unit);
             }
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Integer, VariableName.UnitId));
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
+            writer.WriteLocal(JassKeyword.Integer, VariableName.UnitId);
+            writer.WriteLocal(TypeName.Trigger, VariableName.Trigger);
             if (UseLifeVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
+                writer.WriteLocal(JassKeyword.Real, VariableName.Life);
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            writer.WriteLine();
 
             foreach (var (unit, id) in units.OrderBy(pair => pair.Unit.CreationNumber))
             {
@@ -70,83 +79,84 @@ namespace War3Net.Build
                         case RandomUnitAny randomUnitAny:
                             if (unit.IsRandomBuilding())
                             {
-                                statements.Add(SyntaxFactory.SetStatement(
+                                writer.WriteSet(
                                     VariableName.UnitId,
-                                    SyntaxFactory.InvocationExpression(NativeName.ChooseRandomNPBuilding)));
+                                    JassExpression.InvokeSpaced(NativeName.ChooseRandomNPBuilding));
                             }
                             else
                             {
-                                statements.Add(SyntaxFactory.SetStatement(
+                                writer.WriteSet(
                                     VariableName.UnitId,
-                                    SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(randomUnitAny.Level))));
+                                    JassExpression.InvokeSpaced(NativeName.ChooseRandomCreep, JassLiteral.Int(randomUnitAny.Level)));
                             }
 
                             break;
 
                         case RandomUnitGlobalTable randomUnitGlobalTable:
-                            statements.Add(SyntaxFactory.SetStatement(
+                            writer.WriteSet(
                                 VariableName.UnitId,
-                                SyntaxFactory.ArrayReferenceExpression(randomUnitGlobalTable.GetVariableName(), SyntaxFactory.LiteralExpression(randomUnitGlobalTable.Column))));
+                                JassExpression.ElementAccess(randomUnitGlobalTable.GetVariableName(), randomUnitGlobalTable.Column));
 
                             break;
 
                         case RandomUnitCustomTable randomUnitCustomTable:
-                            statements.Add(SyntaxFactory.CallStatement(FunctionName.RandomDistReset));
+                            writer.WriteCall(FunctionName.RandomDistReset);
 
                             var summedChance = 0;
                             foreach (var randomUnit in randomUnitCustomTable.RandomUnits)
                             {
-                                statements.Add(SyntaxFactory.CallStatement(
+                                writer.WriteCall(
                                     FunctionName.RandomDistAddItem,
                                     RandomUnitProvider.IsRandomUnit(randomUnit.UnitId, out var level)
-                                        ? SyntaxFactory.InvocationExpression(NativeName.ChooseRandomCreep, SyntaxFactory.LiteralExpression(level))
-                                        : SyntaxFactory.FourCCLiteralExpression(randomUnit.UnitId),
-                                    SyntaxFactory.LiteralExpression(randomUnit.Chance)));
+                                        ? JassExpression.Invoke(NativeName.ChooseRandomCreep, JassLiteral.Int(level))
+                                        : JassLiteral.FourCC(randomUnit.UnitId),
+                                    JassLiteral.Int(randomUnit.Chance));
 
                                 summedChance += randomUnit.Chance;
                             }
 
                             if (summedChance < 100)
                             {
-                                statements.Add(SyntaxFactory.CallStatement(
+                                writer.WriteCall(
                                     FunctionName.RandomDistAddItem,
-                                    SyntaxFactory.LiteralExpression(-1),
-                                    SyntaxFactory.LiteralExpression(100 - summedChance)));
+                                    "-1",
+                                    JassLiteral.Int(100 - summedChance));
                             }
 
-                            statements.Add(SyntaxFactory.SetStatement(
+                            writer.WriteSet(
                                 VariableName.UnitId,
-                                SyntaxFactory.InvocationExpression(FunctionName.RandomDistChoose)));
+                                JassExpression.InvokeSpaced(FunctionName.RandomDistChoose));
 
                             break;
                     }
 
-                    var ifBodyStatements = new List<IStatementSyntax>();
-                    ifBodyStatements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteIf(JassExpression.Parenthesized(JassExpression.NotEqual(
+                        VariableName.UnitId,
+                        "-1")));
+
+                    writer.WriteSet(
                         unitVariableName,
-                        SyntaxFactory.InvocationExpression(
+                        JassExpression.InvokeSpaced(
                             NativeName.CreateUnit,
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Player),
-                            SyntaxFactory.VariableReferenceExpression(VariableName.UnitId),
-                            SyntaxFactory.LiteralExpression(unit.Position.X, precision: 1),
-                            SyntaxFactory.LiteralExpression(unit.Position.Y, precision: 1),
-                            SyntaxFactory.LiteralExpression(unit.Rotation * (180f / MathF.PI), precision: 3))));
+                            VariableName.Player,
+                            VariableName.UnitId,
+                            JassLiteral.Real(unit.Position.X),
+                            JassLiteral.Real(unit.Position.Y),
+                            JassLiteral.Real(unit.Rotation * W3MathF.Rad2Deg, 3)));
 
-                    ifBodyStatements.AddRange(GetCreateUnitStatements(map, unit, id));
+                    WriteCreateUnitStatements(map, unit, id, writer);
 
-                    statements.Add(SyntaxFactory.IfStatement(
-                        new JassParenthesizedExpressionSyntax(SyntaxFactory.BinaryNotEqualsExpression(SyntaxFactory.VariableReferenceExpression(VariableName.UnitId), SyntaxFactory.LiteralExpression(-1))),
-                        ifBodyStatements.ToArray()));
+                    writer.WriteEndIf();
                 }
                 else
                 {
-                    var args = new List<IExpressionSyntax>()
+                    var args = new List<string>
                     {
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Player),
-                        SyntaxFactory.FourCCLiteralExpression(unit.TypeId),
-                        SyntaxFactory.LiteralExpression(unit.Position.X, precision: 1),
-                        SyntaxFactory.LiteralExpression(unit.Position.Y, precision: 1),
-                        SyntaxFactory.LiteralExpression(unit.Rotation * (180f / MathF.PI), precision: 3),
+                        VariableName.Player,
+                        JassLiteral.FourCC(unit.TypeId),
+                        JassLiteral.Real(unit.Position.X),
+                        JassLiteral.Real(unit.Position.Y),
+                        JassLiteral.Real(unit.Rotation * W3MathF.Rad2Deg, 3),
                     };
 
                     var skinId = unit.SkinId == 0 ? unit.TypeId : unit.SkinId;
@@ -154,57 +164,57 @@ namespace War3Net.Build
                     var hasSkin = ForceGenerateUnitWithSkin || skinId != unit.TypeId;
                     if (hasSkin)
                     {
-                        args.Add(SyntaxFactory.FourCCLiteralExpression(skinId));
+                        args.Add(JassLiteral.FourCC(skinId));
                     }
 
-                    statements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteSet(
                         unitVariableName,
-                        SyntaxFactory.InvocationExpression(hasSkin ? NativeName.BlzCreateUnitWithSkin : NativeName.CreateUnit, args.ToArray())));
+                        JassExpression.InvokeSpaced(
+                            hasSkin ? NativeName.BlzCreateUnitWithSkin : NativeName.CreateUnit,
+                            args.ToArray()));
 
                     if (unit.HeroLevel > 1)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetHeroLevel,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.LiteralExpression(unit.HeroLevel),
-                            SyntaxFactory.LiteralExpression(false)));
+                            unitVariableName,
+                            JassLiteral.Int(unit.HeroLevel),
+                            JassKeyword.False);
                     }
 
                     if (unit.HeroStrength > 0)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetHeroStr,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.LiteralExpression(unit.HeroStrength),
-                            SyntaxFactory.LiteralExpression(true)));
+                            unitVariableName,
+                            JassLiteral.Int(unit.HeroStrength),
+                            JassKeyword.True);
                     }
 
                     if (unit.HeroAgility > 0)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetHeroAgi,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.LiteralExpression(unit.HeroAgility),
-                            SyntaxFactory.LiteralExpression(true)));
+                            unitVariableName,
+                            JassLiteral.Int(unit.HeroAgility),
+                            JassKeyword.True);
                     }
 
                     if (unit.HeroIntelligence > 0)
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetHeroInt,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.LiteralExpression(unit.HeroIntelligence),
-                            SyntaxFactory.LiteralExpression(true)));
+                            unitVariableName,
+                            JassLiteral.Int(unit.HeroIntelligence),
+                            JassKeyword.True);
                     }
 
-                    statements.AddRange(GetCreateUnitStatements(map, unit, id));
+                    WriteCreateUnitStatements(map, unit, id, writer);
                 }
             }
-
-            return statements;
         }
 
-        protected internal virtual IEnumerable<IStatementSyntax> GetCreateUnitStatements(Map map, UnitData unit, int id)
+        protected internal virtual void WriteCreateUnitStatements(Map map, UnitData unit, int id, IndentedTextWriter writer)
         {
             if (map is null)
             {
@@ -216,9 +226,10 @@ namespace War3Net.Build
                 throw new ArgumentNullException(nameof(unit));
             }
 
-            var randomItemTables = map.Info?.RandomItemTables;
-
-            var statements = new List<IStatementSyntax>();
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
 
             var unitVariableName = unit.GetVariableName();
             if (!ForceGenerateGlobalUnitVariable && (!TriggerVariableReferences.TryGetValue(unitVariableName, out var value) || !value))
@@ -228,53 +239,55 @@ namespace War3Net.Build
 
             if (unit.HP != -1)
             {
+                var lifePercentLiteral = JassLiteral.Real(unit.HP * 0.01f, 2);
+
                 if (UseLifeVariable)
                 {
-                    statements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteSet(
                         VariableName.Life,
-                        SyntaxFactory.InvocationExpression(
+                        JassExpression.InvokeSpaced(
                             NativeName.GetUnitState,
-                            SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                            SyntaxFactory.VariableReferenceExpression(UnitStateName.Life))));
+                            unitVariableName,
+                            UnitStateName.Life));
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SetUnitState,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
-                        SyntaxFactory.BinaryMultiplicationExpression(
-                            SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
-                            SyntaxFactory.VariableReferenceExpression(VariableName.Life))));
+                        unitVariableName,
+                        UnitStateName.Life,
+                        JassExpression.Multiply(
+                            lifePercentLiteral,
+                            VariableName.Life));
                 }
                 else
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SetUnitState,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitStateName.Life),
-                        SyntaxFactory.BinaryMultiplicationExpression(
-                            SyntaxFactory.LiteralExpression(unit.HP * 0.01f, precision: 2),
-                            SyntaxFactory.InvocationExpression(
+                        unitVariableName,
+                        UnitStateName.Life,
+                        JassExpression.Multiply(
+                            lifePercentLiteral,
+                            JassExpression.Invoke(
                                 NativeName.GetUnitState,
-                                SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                                SyntaxFactory.VariableReferenceExpression(UnitStateName.Life)))));
+                                unitVariableName,
+                                UnitStateName.Life)));
                 }
             }
 
             if (unit.MP != -1)
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetUnitState,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(UnitStateName.Mana),
-                    SyntaxFactory.LiteralExpression(unit.MP)));
+                    unitVariableName,
+                    UnitStateName.Mana,
+                    JassLiteral.Int(unit.MP));
             }
 
             if (unit.IsGoldMine())
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetResourceAmount,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.LiteralExpression(unit.GoldAmount)));
+                    unitVariableName,
+                    JassLiteral.Int(unit.GoldAmount));
             }
 
             var playerColorId = unit.CustomPlayerColorId;
@@ -285,19 +298,20 @@ namespace War3Net.Build
 
             if (playerColorId != -1)
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetUnitColor,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(playerColorId))));
+                    unitVariableName,
+                    JassExpression.Invoke(NativeName.ConvertPlayerColor, JassLiteral.Int(playerColorId)));
             }
 
             if (unit.TargetAcquisition != -1f)
             {
                 const float CampAcquisitionRange = 200f;
-                statements.Add(SyntaxFactory.CallStatement(
+                var acquisitionRange = unit.TargetAcquisition == -2f ? CampAcquisitionRange : unit.TargetAcquisition;
+                writer.WriteCall(
                     NativeName.SetUnitAcquireRange,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.LiteralExpression(unit.TargetAcquisition == -2f ? CampAcquisitionRange : unit.TargetAcquisition, precision: 1)));
+                    unitVariableName,
+                    JassLiteral.Real(acquisitionRange));
             }
 
             if (unit.WaygateDestinationRegionId != -1)
@@ -305,16 +319,16 @@ namespace War3Net.Build
                 var destinationRect = map.Regions?.Regions.Where(region => region.CreationNumber == unit.WaygateDestinationRegionId).SingleOrDefault();
                 if (destinationRect is not null)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.WaygateSetDestination,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.LiteralExpression(destinationRect.CenterX),
-                        SyntaxFactory.LiteralExpression(destinationRect.CenterY)));
+                        unitVariableName,
+                        JassLiteral.Real(destinationRect.CenterX, 0),
+                        JassLiteral.Real(destinationRect.CenterY, 0));
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.WaygateActivate,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.LiteralExpression(true)));
+                        unitVariableName,
+                        JassKeyword.True);
                 }
             }
 
@@ -322,64 +336,64 @@ namespace War3Net.Build
             {
                 for (var i = 0; i < ability.HeroAbilityLevel; i++)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.SelectHeroSkill,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
+                        unitVariableName,
+                        JassLiteral.FourCC(ability.AbilityId));
                 }
 
                 if (ability.IsAutocastActive)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.IssueImmediateOrderById,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.FourCCLiteralExpression(ability.AbilityId)));
+                        unitVariableName,
+                        JassLiteral.FourCC(ability.AbilityId));
                 }
 
                 if (ability.TryGetOrderOffString(out var orderOffString))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.IssueImmediateOrder,
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.LiteralExpression(orderOffString)));
+                        unitVariableName,
+                        JassLiteral.String(orderOffString));
                 }
             }
 
             foreach (var item in unit.InventoryData)
             {
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.UnitAddItemToSlotById,
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.FourCCLiteralExpression(item.ItemId),
-                    SyntaxFactory.LiteralExpression(item.Slot)));
+                    unitVariableName,
+                    JassLiteral.FourCC(item.ItemId),
+                    JassLiteral.Int(item.Slot));
             }
 
             if (unit.HasItemTable())
             {
-                statements.Add(SyntaxFactory.SetStatement(VariableName.Trigger, SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
+                writer.WriteSet(
+                    VariableName.Trigger,
+                    JassExpression.InvokeSpaced(NativeName.CreateTrigger));
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.TriggerRegisterUnitEvent,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                    SyntaxFactory.VariableReferenceExpression(UnitEventName.Death)));
+                    VariableName.Trigger,
+                    unitVariableName,
+                    UnitEventName.Death);
 
                 if (map.Info is null || map.Info.FormatVersion >= MapInfoFormatVersion.v24)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.TriggerRegisterUnitEvent,
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                        SyntaxFactory.VariableReferenceExpression(unitVariableName),
-                        SyntaxFactory.VariableReferenceExpression(UnitEventName.ChangeOwner)));
+                        VariableName.Trigger,
+                        unitVariableName,
+                        UnitEventName.ChangeOwner);
                 }
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.TriggerAddAction,
-                    SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                    SyntaxFactory.FunctionReferenceExpression(unit.GetDropItemsFunctionName(id))));
+                    VariableName.Trigger,
+                    JassExpression.FunctionRef(unit.GetDropItemsFunctionName(id)));
             }
-
-            return statements;
         }
     }
 }

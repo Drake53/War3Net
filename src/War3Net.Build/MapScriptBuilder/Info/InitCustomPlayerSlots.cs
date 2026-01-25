@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="InitCustomPlayerSlots.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,32 +6,36 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitCustomPlayerSlots(Map map)
+        protected internal virtual void GenerateInitCustomPlayerSlots(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapInfo = map.Info;
             if (mapInfo is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitCustomPlayerSlots)}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.InitCustomPlayerSlots}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.InitCustomPlayerSlots);
 
             var playerDataCount = mapInfo.Players.Count;
 
@@ -39,41 +43,44 @@ namespace War3Net.Build
             {
                 var playerData = mapInfo.Players[i];
 
-                statements.Add(JassEmptySyntax.Value);
-                statements.Add(new JassCommentSyntax($" Player {playerData.Id}"));
+                writer.WriteLine();
+                writer.WriteComment($"Player {playerData.Id}");
 
-                statements.Add(SyntaxFactory.CallStatement(
+                var playerExpr = JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerData.Id));
+                var playerColor = JassExpression.Invoke(NativeName.ConvertPlayerColor, JassLiteral.Int(playerData.Id));
+
+                writer.WriteCall(
                     NativeName.SetPlayerStartLocation,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.LiteralExpression(i)));
+                    playerExpr,
+                    JassLiteral.Int(i));
 
                 if (playerData.Flags.HasFlag(PlayerFlags.FixedStartPosition))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.ForcePlayerStartLocation,
-                        SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                        SyntaxFactory.LiteralExpression(i)));
+                        playerExpr,
+                        JassLiteral.Int(i));
                 }
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetPlayerColor,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.InvocationExpression(NativeName.ConvertPlayerColor, SyntaxFactory.LiteralExpression(playerData.Id))));
+                    playerExpr,
+                    playerColor);
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetPlayerRacePreference,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.VariableReferenceExpression(playerData.Race.GetVariableName())));
+                    playerExpr,
+                    playerData.Race.GetVariableName());
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetPlayerRaceSelectable,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.LiteralExpression(playerData.Flags.HasFlag(PlayerFlags.RaceSelectable) || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces))));
+                    playerExpr,
+                    JassLiteral.Bool(playerData.Flags.HasFlag(PlayerFlags.RaceSelectable) || !mapInfo.MapFlags.HasFlag(MapFlags.FixedPlayerSettingsForCustomForces)));
 
-                statements.Add(SyntaxFactory.CallStatement(
+                writer.WriteCall(
                     NativeName.SetPlayerController,
-                    SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                    SyntaxFactory.VariableReferenceExpression(playerData.Controller.GetVariableName())));
+                    playerExpr,
+                    playerData.Controller.GetVariableName());
 
                 if (playerData.Controller == PlayerController.Rescuable)
                 {
@@ -82,23 +89,23 @@ namespace War3Net.Build
                         var otherPlayerData = mapInfo.Players[j];
                         if (otherPlayerData.Controller == PlayerController.User)
                         {
-                            statements.Add(SyntaxFactory.CallStatement(
+                            writer.WriteCall(
                                 NativeName.SetPlayerAlliance,
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerData.Id)),
-                                SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(otherPlayerData.Id)),
-                                SyntaxFactory.VariableReferenceExpression(AllianceTypeName.Rescuable),
-                                SyntaxFactory.LiteralExpression(true)));
+                                playerExpr,
+                                JassExpression.Invoke(NativeName.Player, JassLiteral.Int(otherPlayerData.Id)),
+                                AllianceTypeName.Rescuable,
+                                JassKeyword.True);
                         }
                     }
                 }
             }
 
-            statements.Add(JassEmptySyntax.Value);
+            writer.WriteLine();
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitCustomPlayerSlots)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitCustomPlayerSlotsCondition(Map map)
+        protected internal virtual bool ShouldGenerateInitCustomPlayerSlots(Map map)
         {
             if (map is null)
             {

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreateNeutralPassiveBuildings.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -11,36 +11,43 @@ using System.Linq;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateNeutralPassiveBuildings(Map map)
+        protected internal virtual void GenerateCreateNeutralPassiveBuildings(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapUnits = map.Units;
             if (mapUnits is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateNeutralPassiveBuildings)}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateNeutralPassiveBuildings}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
             }
 
-            return SyntaxFactory.FunctionDeclaration(
-                SyntaxFactory.FunctionDeclarator(nameof(CreateNeutralPassiveBuildings)),
-                CreateUnits(
-                    map,
-                    mapUnits.Units.IncludeId().Where(pair => CreateNeutralPassiveBuildingsConditionSingleUnit(map, pair.Obj)),
-                    SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralPassive)));
+            writer.WriteFunction(GeneratedFunctionName.CreateNeutralPassiveBuildings);
+
+            GenerateCreateUnits(
+                map,
+                mapUnits.Units.IncludeId().Where(pair => ShouldGenerateCreateNeutralPassiveBuildingsForUnit(map, pair.Obj)),
+                GlobalVariableName.PlayerNeutralPassive,
+                writer);
+
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateNeutralPassiveBuildingsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateNeutralPassiveBuildings(Map map)
         {
             if (map is null)
             {
@@ -53,10 +60,10 @@ namespace War3Net.Build
             }
 
             return map.Units is not null
-                && map.Units.Units.Any(unit => CreateNeutralPassiveBuildingsConditionSingleUnit(map, unit));
+                && map.Units.Units.Any(unit => ShouldGenerateCreateNeutralPassiveBuildingsForUnit(map, unit));
         }
 
-        protected internal virtual bool CreateNeutralPassiveBuildingsConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool ShouldGenerateCreateNeutralPassiveBuildingsForUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

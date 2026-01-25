@@ -7,15 +7,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.Build
 {
@@ -97,224 +97,242 @@ namespace War3Net.Build
             UseWeatherEffectVariable = true;
         }
 
-        public virtual JassCompilationUnitSyntax Build(Map map)
+        public string Build(Map map)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            JassCommentSyntax commentLine1 = new("===========================================================================");
-            JassCommentSyntax commentLine2 = new("***************************************************************************");
-            JassCommentSyntax commentLine3 = new("*");
+            using var stringWriter = new StringWriter();
+            stringWriter.NewLine = JassSymbol.CarriageReturnLineFeed;
+            using var writer = new IndentedTextWriter(stringWriter);
 
-            List<ITopLevelDeclarationSyntax> declarations = new();
+            Build(map, writer);
 
-            void AppendBanner(string bannerText)
+            return stringWriter.ToString();
+        }
+
+        public virtual void Build(Map map, IndentedTextWriter writer)
+        {
+            if (map is null)
             {
-                declarations.Add(commentLine2);
-                declarations.Add(commentLine3);
-                declarations.Add(new JassCommentSyntax($"*  {bannerText}"));
-                declarations.Add(commentLine3);
-                declarations.Add(commentLine2);
-                declarations.Add(JassEmptySyntax.Value);
+                throw new ArgumentNullException(nameof(map));
             }
 
-            void AppendBannerAndFunction(string bannerText, Func<Map, JassFunctionDeclarationSyntax> function, Func<Map, bool> condition, bool includeCommentLine = false)
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            var commentLine1 = "//===========================================================================";
+            var commentLine2 = "//***************************************************************************";
+            var commentLine3 = "//*";
+
+            void WriteBanner(string bannerText)
+            {
+                writer.WriteLine(commentLine2);
+                writer.WriteLine(commentLine3);
+                writer.WriteLine($"{commentLine3}  {bannerText}");
+                writer.WriteLine(commentLine3);
+                writer.WriteLine(commentLine2);
+                writer.WriteLine();
+            }
+
+            void WriteBannerAndFunction(string bannerText, Action<Map, IndentedTextWriter> function, Func<Map, bool> condition, bool includeCommentLine = false)
             {
                 if (condition(map))
                 {
-                    AppendBanner(bannerText);
+                    WriteBanner(bannerText);
                     if (includeCommentLine)
                     {
-                        declarations.Add(commentLine1);
+                        writer.WriteLine(commentLine1);
                     }
 
-                    declarations.Add(function(map));
-                    declarations.Add(JassEmptySyntax.Value);
+                    function.Invoke(map, writer);
+                    writer.WriteLine();
                 }
             }
 
-            void AppendBannerAndFunctions(string bannerText, Func<Map, IEnumerable<ITopLevelDeclarationSyntax>> functions, Func<Map, bool> condition)
+            void WriteBannerAndFunctions(string bannerText, Action<Map, IndentedTextWriter> functions, Func<Map, bool> condition)
             {
                 if (condition(map))
                 {
-                    AppendBanner(bannerText);
-                    foreach (var function in functions(map))
-                    {
-                        declarations.Add(function);
-                        declarations.Add(JassEmptySyntax.Value);
-                    }
+                    WriteBanner(bannerText);
+                    functions.Invoke(map, writer);
                 }
             }
 
-            void AppendFunction(Func<Map, JassFunctionDeclarationSyntax> function, Func<Map, bool> condition)
+            void WriteFunction(Action<Map, IndentedTextWriter> function, Func<Map, bool> condition)
             {
                 if (condition(map))
                 {
-                    declarations.Add(commentLine1);
-                    declarations.Add(function(map));
-                    declarations.Add(JassEmptySyntax.Value);
+                    writer.WriteLine(commentLine1);
+                    function.Invoke(map, writer);
+                    writer.WriteLine();
                 }
             }
 
-            void AppendFunctionForIndex(int index, Func<Map, int, JassFunctionDeclarationSyntax> function, Func<Map, int, bool> condition)
+            void WriteFunctionForIndex(int index, Action<Map, int, IndentedTextWriter> function, Func<Map, int, bool> condition)
             {
                 if (condition(map, index))
                 {
-                    declarations.Add(commentLine1);
-                    declarations.Add(function(map, index));
-                    declarations.Add(JassEmptySyntax.Value);
+                    writer.WriteLine(commentLine1);
+                    function.Invoke(map, index, writer);
+                    writer.WriteLine();
                 }
             }
 
-            declarations.AddRange(GetMapScriptHeader(map));
-            declarations.Add(JassEmptySyntax.Value);
+            WriteMapScriptHeader(map, writer);
+            writer.WriteLine();
 
-            AppendBanner("Global Variables");
+            WriteBanner("Global Variables");
 
-            declarations.Add(Globals(map));
-            declarations.Add(JassEmptySyntax.Value);
+            GenerateGlobals(map, writer);
+            writer.WriteLine();
 
-            if (InitGlobalsCondition(map))
+            if (ShouldGenerateInitGlobals(map))
             {
-                declarations.Add(InitGlobals(map));
-                declarations.Add(JassEmptySyntax.Value);
+                GenerateInitGlobals(map, writer);
+                writer.WriteLine();
             }
 
-            AppendBanner("Custom Script Code");
-            AppendBannerAndFunction("Random Groups", InitRandomGroups, InitRandomGroupsCondition);
-            AppendBannerAndFunctions("Map Item Tables", MapItemTables, MapItemTablesCondition);
-            AppendBannerAndFunction("Items", CreateAllItems, CreateAllItemsCondition);
-            AppendBannerAndFunctions("Unit Item Tables", UnitItemTables, UnitItemTablesCondition);
-            AppendBannerAndFunctions("Destructable Item Tables", DestructableItemTables, DestructableItemTablesCondition);
-            AppendBannerAndFunction("Sounds", InitSounds, InitSoundsCondition);
-            AppendBannerAndFunction("Destructable Objects", CreateAllDestructables, CreateAllDestructablesCondition);
+            WriteBanner("Custom Script Code");
+            WriteBannerAndFunction("Random Groups", GenerateInitRandomGroups, ShouldGenerateInitRandomGroups);
+            WriteBannerAndFunctions("Map Item Tables", GenerateMapItemTables, ShouldGenerateMapItemTables);
+            WriteBannerAndFunction("Items", GenerateCreateAllItems, ShouldGenerateCreateAllItems);
+            WriteBannerAndFunctions("Unit Item Tables", GenerateUnitItemTables, ShouldGenerateUnitItemTables);
+            WriteBannerAndFunctions("Destructable Item Tables", GenerateDestructableItemTables, ShouldGenerateDestructableItemTables);
+            WriteBannerAndFunction("Sounds", GenerateInitSounds, ShouldGenerateInitSounds);
+            WriteBannerAndFunction("Destructable Objects", GenerateCreateAllDestructables, ShouldGenerateCreateAllDestructables);
 
-            if (CreateAllUnitsCondition(map))
+            if (ShouldGenerateCreateAllUnits(map))
             {
-                AppendBanner("Unit Creation");
+                WriteBanner("Unit Creation");
 
                 foreach (var i in Enumerable.Range(0, MaxPlayerSlots))
                 {
-                    AppendFunctionForIndex(i, CreateBuildingsForPlayer, CreateBuildingsForPlayerCondition);
-                    AppendFunctionForIndex(i, CreateUnitsForPlayer, CreateUnitsForPlayerCondition);
+                    WriteFunctionForIndex(i, GenerateCreateBuildingsForPlayer, ShouldGenerateCreateBuildingsForPlayer);
+                    WriteFunctionForIndex(i, GenerateCreateUnitsForPlayer, ShouldGenerateCreateUnitsForPlayer);
                 }
 
-                AppendFunction(CreateNeutralHostile, CreateNeutralHostileCondition);
-                AppendFunction(CreateNeutralPassiveBuildings, CreateNeutralPassiveBuildingsCondition);
-                AppendFunction(CreateNeutralPassive, CreateNeutralPassiveCondition);
-                AppendFunction(CreatePlayerBuildings, CreatePlayerBuildingsCondition);
-                AppendFunction(CreatePlayerUnits, CreatePlayerUnitsCondition);
-                AppendFunction(CreateNeutralUnits, CreateNeutralUnitsCondition);
-                AppendFunction(CreateAllUnits, (map) => true);
+                WriteFunction(GenerateCreateNeutralHostile, ShouldGenerateCreateNeutralHostile);
+                WriteFunction(GenerateCreateNeutralPassiveBuildings, ShouldGenerateCreateNeutralPassiveBuildings);
+                WriteFunction(GenerateCreateNeutralPassive, ShouldGenerateCreateNeutralPassive);
+                WriteFunction(GenerateCreatePlayerBuildings, ShouldGenerateCreatePlayerBuildings);
+                WriteFunction(GenerateCreatePlayerUnits, ShouldGenerateCreatePlayerUnits);
+                WriteFunction(GenerateCreateNeutralUnits, ShouldGenerateCreateNeutralUnits);
+                WriteFunction(GenerateCreateAllUnits, (map) => true);
             }
 
-            AppendBannerAndFunction("Regions", CreateRegions, CreateRegionsCondition);
-            AppendBannerAndFunction("Cameras", CreateCameras, CreateCamerasCondition);
+            WriteBannerAndFunction("Regions", GenerateCreateRegions, ShouldGenerateCreateRegions);
+            WriteBannerAndFunction("Cameras", GenerateCreateCameras, ShouldGenerateCreateCameras);
 
-            AppendBanner("Triggers");
+            WriteBanner("Triggers");
             if (map.Triggers is not null)
             {
                 foreach (var trigger in map.Triggers.TriggerItems)
                 {
                     if (trigger is TriggerDefinition triggerDefinition &&
-                        InitTrigCondition(map, triggerDefinition))
+                        ShouldRenderTrigger(map, triggerDefinition))
                     {
-                        declarations.Add(commentLine1);
-                        declarations.Add(InitTrig(map, triggerDefinition));
-                        declarations.Add(JassEmptySyntax.Value);
+                        var triggerRenderer = new TriggerRenderer(writer, TriggerData, map.Triggers.Variables, isLuaTrigger: false);
+                        triggerRenderer.RenderTrigger(triggerDefinition);
+                        writer.WriteLine();
                     }
                 }
 
-                AppendFunction(InitCustomTriggers, InitCustomTriggersCondition);
-                AppendFunction(RunInitializationTriggers, RunInitializationTriggersCondition);
+                WriteFunction(GenerateInitCustomTriggers, ShouldGenerateInitCustomTriggers);
+                WriteFunction(GenerateRunInitializationTriggers, ShouldGenerateRunInitializationTriggers);
             }
 
-            if (InitUpgradesCondition(map))
+            if (ShouldGenerateInitUpgrades(map))
             {
-                AppendBanner("Upgrades");
+                WriteBanner("Upgrades");
 
                 foreach (var i in Enumerable.Range(0, MaxPlayerSlots))
                 {
-                    if (InitUpgrades_PlayerCondition(map, i))
+                    if (ShouldGenerateInitUpgradesForPlayer(map, i))
                     {
-                        declarations.Add(InitUpgrades_Player(map, i));
-                        declarations.Add(JassEmptySyntax.Value);
+                        GenerateInitUpgradesForPlayer(map, i, writer);
+                        writer.WriteLine();
                     }
                 }
 
-                declarations.Add(InitUpgrades(map));
-                declarations.Add(JassEmptySyntax.Value);
+                GenerateInitUpgrades(map, writer);
+                writer.WriteLine();
             }
 
-            if (InitTechTreeCondition(map))
+            if (ShouldGenerateInitTechTree(map))
             {
-                AppendBanner("TechTree");
+                WriteBanner("TechTree");
 
                 foreach (var i in Enumerable.Range(0, MaxPlayerSlots))
                 {
-                    if (InitTechTree_PlayerCondition(map, i))
+                    if (ShouldGenerateInitTechTreeForPlayer(map, i))
                     {
-                        declarations.Add(InitTechTree_Player(map, i));
-                        declarations.Add(JassEmptySyntax.Value);
+                        GenerateInitTechTreeForPlayer(map, i, writer);
+                        writer.WriteLine();
                     }
                 }
 
-                declarations.Add(InitTechTree(map));
-                declarations.Add(JassEmptySyntax.Value);
+                GenerateInitTechTree(map, writer);
+                writer.WriteLine();
             }
 
-            AppendBanner("Players");
+            WriteBanner("Players");
 
-            if (InitCustomPlayerSlotsCondition(map))
+            if (ShouldGenerateInitCustomPlayerSlots(map))
             {
-                declarations.Add(InitCustomPlayerSlots(map));
-                declarations.Add(JassEmptySyntax.Value);
+                GenerateInitCustomPlayerSlots(map, writer);
+                writer.WriteLine();
             }
 
-            if (InitCustomTeamsCondition(map))
+            if (ShouldGenerateInitCustomTeams(map))
             {
-                declarations.Add(InitCustomTeams(map));
-                declarations.Add(JassEmptySyntax.Value);
+                GenerateInitCustomTeams(map, writer);
+                writer.WriteLine();
             }
 
-            if (InitAllyPrioritiesCondition(map))
+            if (ShouldGenerateInitAllyPriorities(map))
             {
                 var ids = Enumerable.Range(0, MaxPlayerSlots).ToArray();
                 if (map.Info.Players.Any(p => ids.Any(id => p.AllyLowPriorityFlags[id] || p.AllyHighPriorityFlags[id])))
                 {
-                    declarations.Add(InitAllyPriorities(map));
-                    declarations.Add(JassEmptySyntax.Value);
+                    GenerateInitAllyPriorities(map, writer);
+                    writer.WriteLine();
                 }
             }
 
-            AppendBannerAndFunction("Main Initialization", main, mainCondition, true);
-            AppendBannerAndFunction("Map Configuration", config, configCondition);
-
-            return SyntaxFactory.CompilationUnit(declarations);
+            WriteBannerAndFunction("Main Initialization", GenerateMain, ShouldGenerateMain, true);
+            WriteBannerAndFunction("Map Configuration", GenerateConfig, ShouldGenerateConfig);
         }
 
-        protected internal virtual IEnumerable<JassCommentSyntax> GetMapScriptHeader(Map map)
+        protected internal virtual void WriteMapScriptHeader(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapInfo = map.Info;
             var mapTriggerStrings = map.TriggerStrings;
 
-            yield return new JassCommentSyntax($"===========================================================================");
-            yield return new JassCommentSyntax($" ");
-            yield return new JassCommentSyntax($" {mapInfo.MapName.Localize(mapTriggerStrings)}");
-            yield return new JassCommentSyntax($" ");
-            yield return new JassCommentSyntax($"   Warcraft III map script");
-            yield return new JassCommentSyntax($"   Generated by {Assembly.GetExecutingAssembly().GetName().Name}");
-            yield return new JassCommentSyntax($"   Date: {DateTime.Now:ddd MMM dd HH:mm:ss yyyy}");
-            yield return new JassCommentSyntax($"   Map Author: {mapInfo.MapAuthor.Localize(mapTriggerStrings)}");
-            yield return new JassCommentSyntax($" ");
-            yield return new JassCommentSyntax($"===========================================================================");
+            writer.WriteLine("//===========================================================================");
+            writer.WriteLine("// ");
+            writer.WriteLine($"// {mapInfo.MapName.Localize(mapTriggerStrings)}");
+            writer.WriteLine("// ");
+            writer.WriteLine("//   Warcraft III map script");
+            writer.WriteLine($"//   Generated by {Assembly.GetExecutingAssembly().GetName().Name}");
+            writer.WriteLine($"//   Date: {DateTime.Now:ddd MMM dd HH:mm:ss yyyy}");
+            writer.WriteLine($"//   Map Author: {mapInfo.MapAuthor.Localize(mapTriggerStrings)}");
+            writer.WriteLine("// ");
+            writer.WriteLine("//===========================================================================");
         }
     }
 }

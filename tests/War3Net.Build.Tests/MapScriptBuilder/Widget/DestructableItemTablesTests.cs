@@ -18,7 +18,7 @@ namespace War3Net.Build.Tests
         public void TestConditionDestructableItemTables(MapScriptBuilderTestData testData)
         {
             var expected = testData.DeclaredFunctions.ContainsKey("DestructableItemTables");
-            var actual = testData.MapScriptBuilder.DestructableItemTablesCondition(testData.Map);
+            var actual = testData.MapScriptBuilder.ShouldGenerateDestructableItemTables(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }

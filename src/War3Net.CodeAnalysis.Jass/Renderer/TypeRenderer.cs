@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
+
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -13,7 +15,13 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassTypeSyntax type)
         {
-            Render(type.TypeName);
+            switch (type)
+            {
+                case JassIdentifierNameSyntax identifierName: Render(identifierName); break;
+                case JassPredefinedTypeSyntax predefinedType: Render(predefinedType); break;
+
+                default: throw new NotSupportedException();
+            }
         }
     }
 }

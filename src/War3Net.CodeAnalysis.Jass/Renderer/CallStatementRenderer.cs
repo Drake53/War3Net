@@ -13,11 +13,10 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassCallStatementSyntax callStatement)
         {
-            Write($"{JassKeyword.Call} ");
+            Render(callStatement.CallToken);
+            WriteSpace();
             Render(callStatement.IdentifierName);
-            Write(JassSymbol.LeftParenthesis);
-            Render(callStatement.Arguments);
-            Write(JassSymbol.RightParenthesis);
+            Render(callStatement.ArgumentList);
         }
     }
 }

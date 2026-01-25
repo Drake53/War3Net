@@ -23,18 +23,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitCustomTeams), DynamicDataSourceType.Method)]
         public void TestBodyInitCustomTeams(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitCustomTeams"];
-            var actual = testData.MapScriptBuilder.InitCustomTeams(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitCustomTeams,
+                writer => testData.MapScriptBuilder.GenerateInitCustomTeams(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitCustomTeams(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitCustomTeams");
-            var actual = testData.MapScriptBuilder.InitCustomTeamsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomTeams);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitCustomTeams(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -43,12 +43,12 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestInvokeConditionInitCustomTeams(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.TryGetValue("config", out var config) &&
-                config.Body.Statements.Any(statement =>
+            var expected = testData.DeclaredFunctions.TryGetValue(MapScriptBuilder.GeneratedFunctionName.Config, out var config) &&
+                config.Statements.Any(statement =>
                     statement is JassCallStatementSyntax callStatement &&
-                    string.Equals(callStatement.IdentifierName.Name, "InitCustomTeams", StringComparison.Ordinal));
+                    string.Equals(callStatement.IdentifierName.Token.Text, MapScriptBuilder.GeneratedFunctionName.InitCustomTeams, StringComparison.Ordinal));
 
-            var actual = testData.MapScriptBuilder.InitCustomTeamsInvokeCondition(testData.Map);
+            var actual = testData.MapScriptBuilder.ShouldCallInitCustomTeams(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -57,7 +57,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitCustomTeams"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitCustomTeams))
                 {
                     yield return new object[] { testData };
                 }

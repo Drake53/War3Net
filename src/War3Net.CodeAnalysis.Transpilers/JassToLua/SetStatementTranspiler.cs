@@ -16,10 +16,10 @@ namespace War3Net.CodeAnalysis.Transpilers
         public LuaStatementSyntax Transpile(JassSetStatementSyntax setStatement)
         {
             return new LuaAssignmentExpressionSyntax(
-                setStatement.Indexer is null
+                setStatement.ElementAccessClause is null
                     ? Transpile(setStatement.IdentifierName)
-                    : new LuaTableIndexAccessExpressionSyntax(Transpile(setStatement.IdentifierName), Transpile(setStatement.Indexer, out _)),
-                Transpile(setStatement.Value));
+                    : new LuaTableIndexAccessExpressionSyntax(Transpile(setStatement.IdentifierName), Transpile(setStatement.ElementAccessClause.Expression, out _)),
+                Transpile(setStatement.Value.Expression, out _));
         }
     }
 }

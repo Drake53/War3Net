@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
     public partial class JassScriptDecompiler
     {
         private bool TryDecompileOctalLiteralExpression(
-            JassOctalLiteralExpressionSyntax octalLiteralExpression,
+            JassLiteralExpressionSyntax octalLiteralExpression,
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = octalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture),
+                    Value = JassLiteral.ParseOctal(octalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture),
                 };
 
                 return true;
@@ -40,10 +40,10 @@ namespace War3Net.CodeAnalysis.Decompilers
         }
 
         private bool TryDecompileOctalLiteralExpression(
-            JassOctalLiteralExpressionSyntax octalLiteralExpression,
+            JassLiteralExpressionSyntax octalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = octalLiteralExpression.Value.ToString(CultureInfo.InvariantCulture);
+            var value = JassLiteral.ParseOctal(octalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 

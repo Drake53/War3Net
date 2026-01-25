@@ -5,33 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassTypeSyntax : IEquatable<JassTypeSyntax>
+    public abstract class JassTypeSyntax : JassExpressionSyntax
     {
-        public static readonly JassTypeSyntax Boolean = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Boolean));
-        public static readonly JassTypeSyntax Code = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Code));
-        public static readonly JassTypeSyntax Handle = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Handle));
-        public static readonly JassTypeSyntax Integer = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Integer));
-        public static readonly JassTypeSyntax Nothing = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Nothing));
-        public static readonly JassTypeSyntax Real = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.Real));
-        public static readonly JassTypeSyntax String = new JassTypeSyntax(new JassIdentifierNameSyntax(JassKeyword.String));
+        protected internal override abstract JassTypeSyntax ReplaceFirstToken(JassSyntaxToken newToken);
 
-        internal JassTypeSyntax(JassIdentifierNameSyntax typeName)
-        {
-            TypeName = typeName;
-        }
-
-        public JassIdentifierNameSyntax TypeName { get; init; }
-
-        public bool Equals(JassTypeSyntax? other)
-        {
-            return other is not null
-                && TypeName.Equals(other.TypeName);
-        }
-
-        public override string ToString() => TypeName.ToString();
+        protected internal override abstract JassTypeSyntax ReplaceLastToken(JassSyntaxToken newToken);
     }
 }

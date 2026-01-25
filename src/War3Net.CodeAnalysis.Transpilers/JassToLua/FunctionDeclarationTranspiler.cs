@@ -5,6 +5,8 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System.Linq;
+
 using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -19,7 +21,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             var functionExpression = new LuaFunctionExpressionSyntax();
             functionExpression.AddParameters(Transpile(functionDeclaration.FunctionDeclarator.ParameterList));
-            functionExpression.Body.Statements.AddRange(Transpile(functionDeclaration.Body));
+            functionExpression.Body.Statements.AddRange(functionDeclaration.Statements.Select(Transpile));
             functionExpression.RenderAsFunctionDefinition = true;
 
             ClearLocalTypes();

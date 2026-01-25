@@ -24,7 +24,7 @@ namespace War3Net.Build
             _diagnostics = emitResult.Diagnostics;
         }
 
-        internal CompileResult(bool success, IEnumerable<Diagnostic> diagnostics)
+        internal CompileResult(bool success, IEnumerable<Diagnostic>? diagnostics)
         {
             _success = success;
             _diagnostics = diagnostics?.ToImmutableArray() ?? ImmutableArray<Diagnostic>.Empty;

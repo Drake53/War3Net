@@ -7,27 +7,10 @@
 
 namespace War3Net.CodeAnalysis.Jass.Syntax
 {
-    public class JassGlobalDeclarationSyntax : IGlobalDeclarationSyntax, IGlobalLineSyntax
+    public abstract class JassGlobalDeclarationSyntax : JassSyntaxNode
     {
-        public JassGlobalDeclarationSyntax(IVariableDeclaratorSyntax declarator)
-        {
-            Declarator = declarator;
-        }
+        protected internal override abstract JassGlobalDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken);
 
-        public IVariableDeclaratorSyntax Declarator { get; init; }
-
-        public bool Equals(IGlobalDeclarationSyntax? other)
-        {
-            return other is JassGlobalDeclarationSyntax globalDeclaration
-                && Declarator.Equals(globalDeclaration.Declarator);
-        }
-
-        public bool Equals(IGlobalLineSyntax? other)
-        {
-            return other is JassGlobalDeclarationSyntax globalDeclaration
-                && Declarator.Equals(globalDeclaration.Declarator);
-        }
-
-        public override string ToString() => Declarator.ToString();
+        protected internal override abstract JassGlobalDeclarationSyntax ReplaceLastToken(JassSyntaxToken newToken);
     }
 }

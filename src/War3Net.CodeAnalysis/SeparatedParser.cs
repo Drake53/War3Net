@@ -30,8 +30,15 @@ namespace War3Net.CodeAnalysis
             ref PooledList<Expected<TToken>> expecteds,
             [MaybeNullWhen(false)] out SeparatedSyntaxList<TItem, TSeparator> result)
         {
+            var startLoc = state.Location;
             if (!_itemParser.TryParse(ref state, ref expecteds, out var firstResult))
             {
+                if (state.Location > startLoc)
+                {
+                    result = null;
+                    return false;
+                }
+
                 result = SeparatedSyntaxList<TItem, TSeparator>.Empty;
                 return true;
             }
@@ -72,6 +79,8 @@ namespace War3Net.CodeAnalysis
 
                 if (state.Location <= itemStartLoc)
                 {
+                    childExpecteds.Dispose();
+
                     throw new InvalidOperationException("Separated() used with a parser which consumed no input");
                 }
 

@@ -5,9 +5,11 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Transpilers
@@ -16,22 +18,28 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public StatementSyntax Transpile(JassSetStatementSyntax setStatement)
         {
-            if (setStatement.Indexer is null)
-            {
-                return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(Transpile(setStatement.IdentifierName)),
-                    Transpile(setStatement.Value.Expression)));
-            }
-            else
-            {
-                return SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.ElementAccessExpression(
-                        SyntaxFactory.IdentifierName(Transpile(setStatement.IdentifierName)),
-                        SyntaxFactory.BracketedArgumentList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(Transpile(setStatement.Indexer))))),
-                    Transpile(setStatement.Value.Expression)));
-            }
+            var leadingTrivia = MergeTrivia(setStatement.SetToken, setStatement.IdentifierName.GetLeadingTrivia());
+
+            ExpressionSyntax left = setStatement.ElementAccessClause is null
+                ? Transpile(leadingTrivia, setStatement.IdentifierName)
+                : SyntaxFactory.ElementAccessExpression(
+                    Transpile(leadingTrivia, setStatement.IdentifierName),
+                    Transpile(setStatement.ElementAccessClause));
+
+            var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression,
+                left,
+                Transpile(SyntaxKind.EqualsToken, setStatement.Value.EqualsToken),
+                Transpile(setStatement.Value.Expression));
+
+            var trailingTrivia = assignmentExpression.GetTrailingTrivia();
+
+            return SyntaxFactory.ExpressionStatement(
+                assignmentExpression.WithoutTrailingTrivia(),
+                SyntaxFactory.Token(
+                    SyntaxTriviaList.Empty,
+                    SyntaxKind.SemicolonToken,
+                    trailingTrivia));
         }
     }
 }

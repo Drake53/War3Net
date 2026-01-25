@@ -13,13 +13,11 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public void Render(JassFunctionDeclarationSyntax functionDeclaration)
         {
-            Write($"{JassKeyword.Function} ");
             Render(functionDeclaration.FunctionDeclarator);
-            WriteLine();
             Indent();
-            Render(functionDeclaration.Body);
+            Render(functionDeclaration.Statements);
             Outdent();
-            Write(JassKeyword.EndFunction);
+            Render(functionDeclaration.EndFunctionToken);
         }
     }
 }

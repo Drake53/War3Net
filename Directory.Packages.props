@@ -4,12 +4,14 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageVersion Include="BenchmarkDotNet" Version="0.13.2" />
+		<PackageVersion Include="DiffPlex" Version="1.7.0" />
 		<PackageVersion Include="DotNetZip" Version="1.16.0" />
 		<PackageVersion Include="JpegLibrary" Version="0.3.30" />
 		<PackageVersion Include="MessagePack" Version="2.2.60" />
 		<PackageVersion Include="MessagePackAnalyzer" Version="2.2.60" />
 		<PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
 		<PackageVersion Include="MSTest.TestAdapter" Version="2.2.10" />
 		<PackageVersion Include="MSTest.TestFramework" Version="2.2.10" />
 		<PackageVersion Include="NAudio" Version="1.10.0" />
@@ -30,21 +32,21 @@
 		<PackageVersion Include="Veldrid.StartupUtilities" Version="4.8.0" />
 		<PackageVersion Include="Veldrid.Utilities" Version="4.8.0" />
 		<PackageVersion Include="War3Api.Object" Version="1.31.1-rc.11" />
-		<PackageVersion Include="War3Net.Build" Version="5.8.2" />
-		<PackageVersion Include="War3Net.Build.Core" Version="5.8.2" />
-		<PackageVersion Include="War3Net.CodeAnalysis" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="5.8.2" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="5.8.0" />
+		<PackageVersion Include="War3Net.Build" Version="6.0.0" />
+		<PackageVersion Include="War3Net.Build.Core" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Decompilers" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Jass" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CodeAnalysis.Transpilers" Version="6.0.0" />
 		<PackageVersion Include="War3Net.CodeAnalysis.VJass" Version="0.1.0" />
-		<PackageVersion Include="War3Net.Common" Version="5.8.0" />
-		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.1" />
-		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.1" />
-		<PackageVersion Include="War3Net.Drawing.Blp" Version="5.9.0" />
+		<PackageVersion Include="War3Net.Common" Version="6.0.0" />
+		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.2" />
+		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.2" />
+		<PackageVersion Include="War3Net.Drawing.Blp" Version="6.0.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
-		<PackageVersion Include="War3Net.IO.Compression" Version="5.8.0" />
-		<PackageVersion Include="War3Net.IO.Mpq" Version="5.8.1" />
-		<PackageVersion Include="War3Net.IO.Slk" Version="5.8.1" />
+		<PackageVersion Include="War3Net.IO.Compression" Version="6.0.0" />
+		<PackageVersion Include="War3Net.IO.Mpq" Version="6.0.0" />
+		<PackageVersion Include="War3Net.IO.Slk" Version="6.0.0" />
 		<PackageVersion Include="War3Net.Modeling" Version="0.1.0" />
 	</ItemGroup>
 </Project>

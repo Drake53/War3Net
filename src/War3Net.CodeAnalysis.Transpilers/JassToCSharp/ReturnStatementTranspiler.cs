@@ -5,10 +5,12 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis.Transpilers.Extensions;
 
 namespace War3Net.CodeAnalysis.Transpilers
 {
@@ -16,9 +18,31 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public StatementSyntax Transpile(JassReturnStatementSyntax returnStatement)
         {
-            return returnStatement.Value is null
-                ? SyntaxFactory.ReturnStatement()
-                : SyntaxFactory.ReturnStatement(Transpile(returnStatement.Value));
+            var returnKeyword = Transpile(SyntaxKind.ReturnKeyword, returnStatement.ReturnToken);
+
+            ExpressionSyntax? expression;
+            SyntaxTriviaList trailingTrivia;
+
+            if (returnStatement.Value is null)
+            {
+                expression = null;
+                trailingTrivia = returnKeyword.TrailingTrivia;
+                returnKeyword = returnKeyword.WithoutTrailingTrivia();
+            }
+            else
+            {
+                expression = Transpile(returnStatement.Value);
+                trailingTrivia = expression.GetTrailingTrivia();
+                expression = expression.WithoutTrailingTrivia();
+            }
+
+            return SyntaxFactory.ReturnStatement(
+                returnKeyword,
+                expression,
+                SyntaxFactory.Token(
+                    SyntaxTriviaList.Empty,
+                    SyntaxKind.SemicolonToken,
+                    trailingTrivia));
         }
     }
 }

@@ -6,9 +6,8 @@
 // ------------------------------------------------------------------------------
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
@@ -21,22 +20,19 @@ namespace War3Net.Build
             RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Parameters[0]);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            context.Renderer.Render(new JassIfCustomScriptAction(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.InvocationExpression(conditionFunctionName))));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteIf(JassExpression.Parenthesized(JassExpression.Invoke(conditionFunctionName)));
 
             context.TrigFunctionIdentifierBuilder.Append(2);
             RenderTriggerAction(function.Parameters[1].Function, context);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            context.Renderer.Render(JassElseCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteElse();
 
             context.TrigFunctionIdentifierBuilder.Append(3);
             RenderTriggerAction(function.Parameters[2].Function, context);
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            context.Renderer.Render(JassEndIfCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteEndIf();
         }
 
         private void RenderIfThenElseMultiple(TriggerFunction function, TriggerRendererContext context)
@@ -44,8 +40,7 @@ namespace War3Net.Build
             var conditionFunctionName = $"{context.TrigFunctionIdentifierBuilder}C";
             RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, true, function.ChildFunctions);
 
-            context.Renderer.Render(new JassIfCustomScriptAction(SyntaxFactory.ParenthesizedExpression(SyntaxFactory.InvocationExpression(conditionFunctionName))));
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteIf(JassExpression.Parenthesized(JassExpression.Invoke(conditionFunctionName)));
 
             context.TrigFunctionIdentifierBuilder.Append("Func");
 
@@ -60,8 +55,7 @@ namespace War3Net.Build
                 }
             }
 
-            context.Renderer.Render(JassElseCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteElse();
 
             for (var i = 0; i < function.ChildFunctions.Count; i++)
             {
@@ -76,8 +70,7 @@ namespace War3Net.Build
 
             context.TrigFunctionIdentifierBuilder.Remove();
 
-            context.Renderer.Render(JassEndIfCustomScriptAction.Value);
-            context.Renderer.RenderNewLine();
+            context.Writer.WriteEndIf();
         }
     }
 }

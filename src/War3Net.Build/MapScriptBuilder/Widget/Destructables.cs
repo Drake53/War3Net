@@ -6,55 +6,66 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 using War3Net.Build.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Transpilers;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.Build.Widget;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        public virtual IEnumerable<MemberDeclarationSyntax> DestructablesApi(Map map, JassToCSharpTranspiler transpiler)
-        {
-            if (transpiler is null)
-            {
-                throw new ArgumentNullException(nameof(transpiler));
-            }
-
-            return Destructables(map).Select(destructable => transpiler.Transpile(destructable));
-        }
-
-        protected internal virtual IEnumerable<JassGlobalDeclarationSyntax> Destructables(Map map)
+        protected internal virtual void GenerateDestructableVariables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapDoodads = map.Doodads;
             if (mapDoodads is null)
             {
-                yield break;
+                return;
             }
 
-            foreach (var destructable in mapDoodads.Doodads.Where(destructable => CreateAllDestructablesConditionSingleDoodad(map, destructable)))
+            foreach (var destructable in mapDoodads.Doodads.Where(ShouldGenerateDestructableVariable))
             {
-                var destructableVariableName = destructable.GetVariableName();
-                if (ForceGenerateGlobalDestructableVariable || TriggerVariableReferences.ContainsKey(destructableVariableName))
-                {
-                    yield return SyntaxFactory.GlobalDeclaration(
-                        SyntaxFactory.ParseTypeName(TypeName.Destructable),
-                        destructableVariableName,
-                        JassNullLiteralExpressionSyntax.Value);
-                }
+                writer.WriteAlignedGlobal(
+                    TypeName.Destructable,
+                    destructable.GetVariableName(),
+                    JassKeyword.Null);
             }
+        }
+
+        protected internal virtual bool ShouldGenerateDestructableVariables(Map map)
+        {
+            if (map is null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            return map.Doodads is not null
+                && map.Doodads.Doodads.Any(ShouldGenerateDestructableVariable);
+        }
+
+        protected internal virtual bool ShouldGenerateDestructableVariable(DoodadData doodadData)
+        {
+            if (doodadData is null)
+            {
+                throw new ArgumentNullException(nameof(doodadData));
+            }
+
+            return ForceGenerateGlobalDestructableVariable
+                || (TriggerVariableReferences.TryGetValue(doodadData.GetVariableName(), out var value) && value)
+                || doodadData.HasItemTable();
         }
     }
 }

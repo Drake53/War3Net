@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataInitSounds), DynamicDataSourceType.Method)]
         public void TestBodyInitSounds(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["InitSounds"];
-            var actual = testData.MapScriptBuilder.InitSounds(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.InitSounds,
+                writer => testData.MapScriptBuilder.GenerateInitSounds(testData.Map, writer));
         }
 
         [FlakyTestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionInitSounds(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("InitSounds");
-            var actual = testData.MapScriptBuilder.InitSoundsCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitSounds);
+            var actual = testData.MapScriptBuilder.ShouldGenerateInitSounds(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("InitSounds"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.InitSounds))
                 {
                     yield return new object[] { testData };
                 }

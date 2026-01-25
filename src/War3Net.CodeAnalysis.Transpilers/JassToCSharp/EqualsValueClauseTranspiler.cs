@@ -16,7 +16,9 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public EqualsValueClauseSyntax Transpile(JassEqualsValueClauseSyntax equalsValueClause)
         {
-            return SyntaxFactory.EqualsValueClause(Transpile(equalsValueClause.Expression));
+            return SyntaxFactory.EqualsValueClause(
+                Transpile(SyntaxKind.EqualsToken, equalsValueClause.EqualsToken),
+                Transpile(equalsValueClause.Expression));
         }
     }
 }

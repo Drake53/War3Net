@@ -5,6 +5,7 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Info;
+using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.TestTools.UnitTesting;
 
@@ -48,6 +50,23 @@ namespace War3Net.Build.Tests
         private static IEnumerable<object[]> GetMapPaths()
         {
             return TestDataProvider.GetDynamicData("*", SearchOption.AllDirectories, "Maps");
+        }
+
+        private static void AssertFunctionGeneratedCorrectly(
+            MapScriptBuilderTestData testData,
+            string functionName,
+            Action<IndentedTextWriter> generateFunc)
+        {
+            using var stringWriter = new StringWriter();
+            stringWriter.NewLine = JassSymbol.CarriageReturnLineFeed;
+            using var writer = new IndentedTextWriter(stringWriter);
+
+            generateFunc.Invoke(writer);
+
+            var expected = testData.DeclaredFunctions[functionName];
+            var actual = JassSyntaxFactory.ParseTopLevelDeclaration(stringWriter.ToString());
+
+            SyntaxAssert.AreEqual(expected, actual);
         }
     }
 }

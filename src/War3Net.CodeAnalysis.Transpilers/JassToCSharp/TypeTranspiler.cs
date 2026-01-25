@@ -5,9 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -16,44 +13,96 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {
-        public TypeSyntax Transpile(JassTypeSyntax type)
+        public TypeSyntax Transpile(
+            JassTypeSyntax type)
         {
-            if (type.Equals(JassTypeSyntax.Boolean))
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => Transpile(identifierName),
+                JassPredefinedTypeSyntax predefinedType => Transpile(predefinedType),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.Code))
+        public TypeSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type)
+        {
+            return type switch
             {
-                return SyntaxFactory.ParseTypeName(typeof(Action).FullName!);
-            }
+                JassIdentifierNameSyntax identifierName => Transpile(leadingTrivia, identifierName),
+                JassPredefinedTypeSyntax predefinedType => Transpile(leadingTrivia, predefinedType),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.Handle))
+        public TypeSyntax Transpile(
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia)
+        {
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ObjectKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => Transpile(identifierName, trailingTrivia),
+                JassPredefinedTypeSyntax predefinedType => Transpile(predefinedType, trailingTrivia),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.Integer))
+        public TypeSyntax Transpile(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia)
+        {
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => Transpile(leadingTrivia, identifierName, trailingTrivia),
+                JassPredefinedTypeSyntax predefinedType => Transpile(leadingTrivia, predefinedType, trailingTrivia),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.Nothing))
+        public TypeSyntax TranspileAligned(
+            JassTypeSyntax type,
+            bool isArray)
+        {
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => TranspileAligned(identifierName, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(predefinedType, isArray),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.Real))
+        public TypeSyntax TranspileAligned(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            bool isArray)
+        {
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.FloatKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => TranspileAligned(leadingTrivia, identifierName, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(leadingTrivia, predefinedType, isArray),
+            };
+        }
 
-            if (type.Equals(JassTypeSyntax.String))
+        public TypeSyntax TranspileAligned(
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia,
+            bool isArray)
+        {
+            return type switch
             {
-                return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.StringKeyword));
-            }
+                JassIdentifierNameSyntax identifierName => TranspileAligned(identifierName, trailingTrivia, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(predefinedType, trailingTrivia, isArray),
+            };
+        }
 
-            return SyntaxFactory.ParseTypeName(Transpile(type.TypeName).Text);
+        public TypeSyntax TranspileAligned(
+            JassSyntaxTriviaList leadingTrivia,
+            JassTypeSyntax type,
+            JassSyntaxTriviaList trailingTrivia,
+            bool isArray)
+        {
+            return type switch
+            {
+                JassIdentifierNameSyntax identifierName => TranspileAligned(leadingTrivia, identifierName, trailingTrivia, isArray),
+                JassPredefinedTypeSyntax predefinedType => TranspileAligned(leadingTrivia, predefinedType, trailingTrivia, isArray),
+            };
         }
     }
 }

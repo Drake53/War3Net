@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="InitTechTreeForPlayer.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,33 +6,39 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.Common.Extensions;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax InitTechTree_Player(Map map, int playerId)
+        protected internal virtual void GenerateInitTechTreeForPlayer(Map map, int playerId, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            var functionName = GeneratedFunctionName.InitTechTreeForPlayer(playerId);
+
             var mapInfo = map.Info;
             if (mapInfo is null)
             {
-                throw new ArgumentException($"Function '{nameof(InitTechTree_Player) + playerId}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
+                throw new ArgumentException($"Function '{functionName}' cannot be generated without {nameof(MapInfo)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(functionName);
 
             foreach (var techData in mapInfo.TechData)
             {
@@ -40,27 +46,27 @@ namespace War3Net.Build
                 {
                     if (techData.Id.ToRawcode()[0] == 'A')
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetPlayerAbilityAvailable,
-                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                            SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                            SyntaxFactory.LiteralExpression(false)));
+                            JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerId)),
+                            JassLiteral.FourCC(techData.Id),
+                            JassKeyword.False);
                     }
                     else
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetPlayerTechMaxAllowed,
-                            SyntaxFactory.InvocationExpression(NativeName.Player, SyntaxFactory.LiteralExpression(playerId)),
-                            SyntaxFactory.FourCCLiteralExpression(techData.Id),
-                            SyntaxFactory.LiteralExpression(0)));
+                            JassExpression.Invoke(NativeName.Player, JassLiteral.Int(playerId)),
+                            JassLiteral.FourCC(techData.Id),
+                            JassLiteral.Int(0));
                     }
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(InitTechTree_Player) + playerId), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool InitTechTree_PlayerCondition(Map map, int playerId)
+        protected internal virtual bool ShouldGenerateInitTechTreeForPlayer(Map map, int playerId)
         {
             if (map is null)
             {

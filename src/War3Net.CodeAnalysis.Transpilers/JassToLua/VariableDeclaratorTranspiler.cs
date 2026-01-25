@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToLuaTranspiler
     {
-        public LuaLocalDeclarationStatementSyntax Transpile(IVariableDeclaratorSyntax declarator, bool isLocalDeclaration)
+        public LuaLocalDeclarationStatementSyntax Transpile(JassVariableOrArrayDeclaratorSyntax declarator, bool isLocalDeclaration)
         {
             RegisterVariableType(declarator, isLocalDeclaration);
 

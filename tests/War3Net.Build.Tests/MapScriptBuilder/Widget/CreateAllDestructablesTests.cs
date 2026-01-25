@@ -19,18 +19,18 @@ namespace War3Net.Build.Tests
         [DynamicData(nameof(GetTestDataCreateAllDestructables), DynamicDataSourceType.Method)]
         public void TestBodyCreateAllDestructables(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions["CreateAllDestructables"];
-            var actual = testData.MapScriptBuilder.CreateAllDestructables(testData.Map);
-
-            SyntaxAssert.AreEqual(expected, actual);
+            AssertFunctionGeneratedCorrectly(
+                testData,
+                MapScriptBuilder.GeneratedFunctionName.CreateAllDestructables,
+                writer => testData.MapScriptBuilder.GenerateCreateAllDestructables(testData.Map, writer));
         }
 
         [TestMethod]
         [DynamicData(nameof(GetUnobfuscatedTestData), DynamicDataSourceType.Method)]
         public void TestConditionCreateAllDestructables(MapScriptBuilderTestData testData)
         {
-            var expected = testData.DeclaredFunctions.ContainsKey("CreateAllDestructables");
-            var actual = testData.MapScriptBuilder.CreateAllDestructablesCondition(testData.Map);
+            var expected = testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateAllDestructables);
+            var actual = testData.MapScriptBuilder.ShouldGenerateCreateAllDestructables(testData.Map);
 
             Assert.AreEqual(expected, actual);
         }
@@ -39,7 +39,7 @@ namespace War3Net.Build.Tests
         {
             foreach (var testData in _testData)
             {
-                if (testData.DeclaredFunctions.ContainsKey("CreateAllDestructables"))
+                if (testData.DeclaredFunctions.ContainsKey(MapScriptBuilder.GeneratedFunctionName.CreateAllDestructables))
                 {
                     yield return new object[] { testData };
                 }

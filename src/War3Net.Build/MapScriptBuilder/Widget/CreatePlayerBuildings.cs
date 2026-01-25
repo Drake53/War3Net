@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreatePlayerBuildings.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -6,41 +6,44 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreatePlayerBuildings(Map map)
+        protected internal virtual void GenerateCreatePlayerBuildings(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            writer.WriteFunction(GeneratedFunctionName.CreatePlayerBuildings);
 
             for (var i = 0; i < MaxPlayerSlots; i++)
             {
-                if (CreateBuildingsForPlayerCondition(map, i))
+                if (ShouldGenerateCreateBuildingsForPlayer(map, i))
                 {
-                    statements.Add(SyntaxFactory.CallStatement(nameof(CreateBuildingsForPlayer) + i));
+                    writer.WriteCall(GeneratedFunctionName.CreateBuildingsForPlayer(i));
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreatePlayerBuildings)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreatePlayerBuildingsCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreatePlayerBuildings(Map map)
         {
             if (map is null)
             {
@@ -53,10 +56,10 @@ namespace War3Net.Build
             }
 
             return map.Units is not null
-                && map.Units.Units.Any(unit => CreatePlayerBuildingsConditionSingleUnit(map, unit));
+                && map.Units.Units.Any(unit => ShouldGenerateCreatePlayerBuildingsForUnit(map, unit));
         }
 
-        protected internal virtual bool CreatePlayerBuildingsConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool ShouldGenerateCreatePlayerBuildingsForUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

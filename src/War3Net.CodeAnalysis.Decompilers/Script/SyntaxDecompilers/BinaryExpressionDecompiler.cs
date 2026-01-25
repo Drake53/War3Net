@@ -98,8 +98,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else
                     {
-                        if (TryDecompileBinaryOperatorType(
-                            binaryExpression.Operator,
+                        if (TryDecompileBinaryOperator(
+                            binaryExpression.OperatorToken,
                             leftOptions[left].Type,
                             leftOptions[left].Parameter,
                             rightOptions[right].Parameter,

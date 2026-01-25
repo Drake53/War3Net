@@ -31,8 +31,8 @@ can_build_project() {
   # Get the dependencies - dotnet list outputs them with paths like ..\ProjectName\ProjectName.csproj
   # We need to extract just the project name from the filename
   local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | while read -r line; do
-    # Remove everything up to the last backslash, then remove .csproj extension
-    echo "$line" | sed 's/.*\\//' | sed 's/\.csproj$//'
+    # Remove everything up to the last slash (forward or back), then remove .csproj extension
+    echo "$line" | sed 's/.*[\\\/]//' | sed 's/\.csproj$//'
   done | tr '\n' ' ')
   
   for dep in $deps; do
@@ -72,7 +72,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     echo "$STILL_REMAINING" | tr ';' '\n' | while read -r p; do
       if [ -n "$p" ]; then
         echo "  - $(basename $(dirname "$p"))"
-        echo "    Dependencies: $(dotnet list "$p" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//' | tr '\n' ' ')"
+        echo "    Dependencies: $(dotnet list "$p" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*[\\\/]//' | sed 's/\.csproj.*//' | tr '\n' ' ')"
       fi
     done
     echo "Already built: $BUILT_PROJECTS"
@@ -159,10 +159,10 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
 
       # Build the project
-      dotnet build "$project" --configuration Release --no-restore --verbosity minimal
+      dotnet build "$project" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
 
       # Pack directly to artifacts with project name folder structure for proper NuGet feed
-      dotnet pack "$project" --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" -p:PACK=true --verbosity minimal
+      dotnet pack "$project" -p:PACK=true --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --verbosity minimal
     fi
 
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"

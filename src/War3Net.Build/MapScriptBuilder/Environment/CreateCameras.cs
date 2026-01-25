@@ -6,66 +6,67 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateCameras(Map map)
+        protected internal virtual void GenerateCreateCameras(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapCameras = map.Cameras;
             if (mapCameras is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateCameras)}' cannot be generated without {nameof(MapCameras)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateCameras}' cannot be generated without {nameof(MapCameras)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
-            statements.Add(JassEmptySyntax.Value);
-
-            var zero = SyntaxFactory.LiteralExpression(0f);
+            writer.WriteFunction(GeneratedFunctionName.CreateCameras);
+            writer.WriteLine();
 
             foreach (var camera in mapCameras.Cameras)
             {
                 var cameraName = camera.GetVariableName();
 
-                statements.Add(SyntaxFactory.SetStatement(cameraName, SyntaxFactory.InvocationExpression(NativeName.CreateCameraSetup)));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.ZOffset), SyntaxFactory.LiteralExpression(camera.ZOffset), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.Rotation), SyntaxFactory.LiteralExpression(camera.Rotation), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.AngleOfAttack), SyntaxFactory.LiteralExpression(camera.AngleOfAttack), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.TargetDistance), SyntaxFactory.LiteralExpression(camera.TargetDistance), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.Roll), SyntaxFactory.LiteralExpression(camera.Roll), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.FieldOfView), SyntaxFactory.LiteralExpression(camera.FieldOfView), zero));
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.FarZ), SyntaxFactory.LiteralExpression(camera.FarClippingPlane), zero));
+                writer.WriteSet(cameraName, JassExpression.InvokeSpaced(NativeName.CreateCameraSetup));
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.ZOffset, JassLiteral.Real(camera.ZOffset), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.Rotation, JassLiteral.Real(camera.Rotation), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.AngleOfAttack, JassLiteral.Real(camera.AngleOfAttack), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.TargetDistance, JassLiteral.Real(camera.TargetDistance), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.Roll, JassLiteral.Real(camera.Roll), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.FieldOfView, JassLiteral.Real(camera.FieldOfView), "0.0");
+                writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.FarZ, JassLiteral.Real(camera.FarClippingPlane), "0.0");
                 if (mapCameras.UseNewFormat)
                 {
-                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.NearZ), SyntaxFactory.LiteralExpression(camera.NearClippingPlane), zero));
-                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalPitch), SyntaxFactory.LiteralExpression(camera.LocalPitch), zero));
-                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalYaw), SyntaxFactory.LiteralExpression(camera.LocalYaw), zero));
-                    statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetField, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.VariableReferenceExpression(CameraFieldName.LocalRoll), SyntaxFactory.LiteralExpression(camera.LocalRoll), zero));
+                    writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.NearZ, JassLiteral.Real(camera.NearClippingPlane), "0.0");
+                    writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.LocalPitch, JassLiteral.Real(camera.LocalPitch), "0.0");
+                    writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.LocalYaw, JassLiteral.Real(camera.LocalYaw), "0.0");
+                    writer.WriteCall(NativeName.CameraSetupSetField, cameraName, CameraFieldName.LocalRoll, JassLiteral.Real(camera.LocalRoll), "0.0");
                 }
 
-                statements.Add(SyntaxFactory.CallStatement(NativeName.CameraSetupSetDestPosition, SyntaxFactory.VariableReferenceExpression(cameraName), SyntaxFactory.LiteralExpression(camera.TargetPosition.X), SyntaxFactory.LiteralExpression(camera.TargetPosition.Y), zero));
-                statements.Add(JassEmptySyntax.Value);
+                writer.WriteCall(NativeName.CameraSetupSetDestPosition, cameraName, JassLiteral.Real(camera.TargetPosition.X), JassLiteral.Real(camera.TargetPosition.Y), "0.0");
+                writer.WriteLine();
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateCameras)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateCamerasCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateCameras(Map map)
         {
             if (map is null)
             {
@@ -78,7 +79,7 @@ namespace War3Net.Build
             }
 
             return map.Cameras is not null
-                && map.Cameras.Cameras.Any();
+                && map.Cameras.Cameras.Count > 0;
         }
     }
 }

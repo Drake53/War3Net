@@ -15,12 +15,12 @@ namespace War3Net.CodeAnalysis.Jass
     {
         private bool TryRenameElseIfClause(JassElseIfClauseSyntax elseIfClause, [NotNullWhen(true)] out JassElseIfClauseSyntax? renamedElseIfClause)
         {
-            if (TryRenameExpression(elseIfClause.Condition, out var renamedCondition) |
-                TryRenameStatementList(elseIfClause.Body, out var renamedBody))
+            if (TryRenameElseIfClauseDeclarator(elseIfClause.ElseIfClauseDeclarator, out var renamedDeclarator) |
+                TryRenameStatementList(elseIfClause.Statements, out var renamedStatements))
             {
                 renamedElseIfClause = new JassElseIfClauseSyntax(
-                    renamedCondition ?? elseIfClause.Condition,
-                    renamedBody ?? elseIfClause.Body);
+                    renamedDeclarator ?? elseIfClause.ElseIfClauseDeclarator,
+                    renamedStatements ?? elseIfClause.Statements);
 
                 return true;
             }

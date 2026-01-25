@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="CreateNeutralHostile.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -10,36 +10,43 @@ using System.Linq;
 
 using War3Net.Build.Extensions;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateNeutralHostile(Map map)
+        protected internal virtual void GenerateCreateNeutralHostile(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapUnits = map.Units;
             if (mapUnits is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateNeutralHostile)}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateNeutralHostile}' cannot be generated without {nameof(MapUnits)}.", nameof(map));
             }
 
-            return SyntaxFactory.FunctionDeclaration(
-                SyntaxFactory.FunctionDeclarator(nameof(CreateNeutralHostile)),
-                CreateUnits(
-                    map,
-                    mapUnits.Units.IncludeId().Where(pair => CreateNeutralHostileConditionSingleUnit(map, pair.Obj)),
-                    SyntaxFactory.VariableReferenceExpression(GlobalVariableName.PlayerNeutralHostile)));
+            writer.WriteFunction(GeneratedFunctionName.CreateNeutralHostile);
+
+            GenerateCreateUnits(
+                map,
+                mapUnits.Units.IncludeId().Where(pair => ShouldGenerateCreateNeutralHostileForUnit(map, pair.Obj)),
+                GlobalVariableName.PlayerNeutralHostile,
+                writer);
+
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateNeutralHostileCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateNeutralHostile(Map map)
         {
             if (map is null)
             {
@@ -47,10 +54,10 @@ namespace War3Net.Build
             }
 
             return map.Units is not null
-                && map.Units.Units.Any(unit => CreateNeutralHostileConditionSingleUnit(map, unit));
+                && map.Units.Units.Any(unit => ShouldGenerateCreateNeutralHostileForUnit(map, unit));
         }
 
-        protected internal virtual bool CreateNeutralHostileConditionSingleUnit(Map map, UnitData unitData)
+        protected internal virtual bool ShouldGenerateCreateNeutralHostileForUnit(Map map, UnitData unitData)
         {
             if (map is null)
             {

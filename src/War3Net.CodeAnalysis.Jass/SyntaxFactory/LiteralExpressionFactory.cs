@@ -5,53 +5,84 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
+using System;
 using System.Globalization;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static IExpressionSyntax LiteralExpression(string? value)
+        public static JassSyntaxToken Literal(string? value)
         {
-            return value is null ? JassNullLiteralExpressionSyntax.Value : new JassStringLiteralExpressionSyntax(value);
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
         }
 
-        public static IExpressionSyntax LiteralExpression(int value)
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, string? value, JassSyntaxTriviaList trailingTrivia)
         {
-            if (value == 0)
-            {
-                return new JassOctalLiteralExpressionSyntax(0);
-            }
-
-            if (value < 0)
-            {
-                return UnaryMinusExpression(new JassDecimalLiteralExpressionSyntax(-value));
-            }
-
-            return new JassDecimalLiteralExpressionSyntax(value);
+            return value is null
+                ? Token(leadingTrivia, JassSyntaxKind.NullKeyword, trailingTrivia)
+                : Token(leadingTrivia, JassSyntaxKind.StringLiteralToken, $"\"{value}\"", trailingTrivia);
         }
 
-        public static IExpressionSyntax LiteralExpression(float value, int precision = 1)
+        public static JassSyntaxToken Literal(int value)
         {
-            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture).Split('.', 2);
-            if (precision == 0 && valueAsString.Length == 1)
-            {
-                valueAsString = new string[] { valueAsString[0], string.Empty };
-            }
-
-            if (valueAsString[0].StartsWith('-'))
-            {
-                return UnaryMinusExpression(new JassRealLiteralExpressionSyntax(valueAsString[0].TrimStart('-'), valueAsString[1]));
-            }
-
-            return new JassRealLiteralExpressionSyntax(valueAsString[0], valueAsString[1]);
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
         }
 
-        public static IExpressionSyntax LiteralExpression(bool value)
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, int value, JassSyntaxTriviaList trailingTrivia)
         {
-            return value ? JassBooleanLiteralExpressionSyntax.True : JassBooleanLiteralExpressionSyntax.False;
+            return Token(leadingTrivia, JassSyntaxKind.DecimalLiteralToken, value.ToString(CultureInfo.InvariantCulture), trailingTrivia);
+        }
+
+        public static JassSyntaxToken Literal(float value, int precision = 1)
+        {
+            return Literal(JassSyntaxTriviaList.Empty, value, precision, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, float value, int precision, JassSyntaxTriviaList trailingTrivia)
+        {
+            var valueAsString = value.ToString($"F{precision}", CultureInfo.InvariantCulture);
+            if (precision == 0)
+            {
+                valueAsString += JassSymbol.Dot;
+            }
+
+            return Token(leadingTrivia, JassSyntaxKind.RealLiteralToken, valueAsString, trailingTrivia);
+        }
+
+        public static JassSyntaxToken Literal(bool value)
+        {
+            return Literal(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken Literal(JassSyntaxTriviaList leadingTrivia, bool value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return value
+                ? Token(leadingTrivia, JassSyntaxKind.TrueKeyword, JassKeyword.True, trailingTrivia)
+                : Token(leadingTrivia, JassSyntaxKind.FalseKeyword, JassKeyword.False, trailingTrivia);
+        }
+
+        public static JassSyntaxToken FourCCLiteral(int value)
+        {
+            return FourCCLiteral(JassSyntaxTriviaList.Empty, value, JassSyntaxTriviaList.Empty);
+        }
+
+        public static JassSyntaxToken FourCCLiteral(JassSyntaxTriviaList leadingTrivia, int value, JassSyntaxTriviaList trailingTrivia)
+        {
+            return Token(leadingTrivia, JassSyntaxKind.FourCCLiteralToken, $"'{value.ToJassRawcode()}'", trailingTrivia);
+        }
+
+        public static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
+        {
+            if (!JassSyntaxFacts.IsLiteralExpressionToken(token.SyntaxKind))
+            {
+                throw new ArgumentException("Token kind must be a literal.", nameof(token));
+            }
+
+            return new JassLiteralExpressionSyntax(token);
         }
     }
 }

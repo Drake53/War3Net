@@ -9,41 +9,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-using SyntaxFactory = War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
+using War3Net.CodeAnalysis;
+using War3Net.CodeAnalysis.Jass;
+using War3Net.CodeAnalysis.Jass.Extensions;
 
 namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual JassFunctionDeclarationSyntax CreateAllDestructables(Map map)
+        protected internal virtual void GenerateCreateAllDestructables(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
                 throw new ArgumentNullException(nameof(map));
             }
 
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             var mapDoodads = map.Doodads;
             if (mapDoodads is null)
             {
-                throw new ArgumentException($"Function '{nameof(CreateAllDestructables)}' cannot be generated without {nameof(MapDoodads)}.", nameof(map));
+                throw new ArgumentException($"Function '{GeneratedFunctionName.CreateAllDestructables}' cannot be generated without {nameof(MapDoodads)}.", nameof(map));
             }
 
-            var statements = new List<IStatementSyntax>();
+            writer.WriteFunction(GeneratedFunctionName.CreateAllDestructables);
+
             if (!ForceGenerateGlobalDestructableVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Destructable), VariableName.Destructable));
+                writer.WriteLocal(TypeName.Destructable, VariableName.Destructable);
             }
 
-            statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(SyntaxFactory.ParseTypeName(TypeName.Trigger), VariableName.Trigger));
+            writer.WriteLocal(TypeName.Trigger, VariableName.Trigger);
 
             if (UseLifeVariable)
             {
-                statements.Add(SyntaxFactory.LocalVariableDeclarationStatement(JassTypeSyntax.Real, VariableName.Life));
+                writer.WriteLocal(JassKeyword.Real, VariableName.Life);
             }
 
             var createFunctions = new[]
@@ -58,7 +65,7 @@ namespace War3Net.Build
                 NativeName.BlzCreateDeadDestructableZWithSkin,
             };
 
-            foreach (var (destructable, id) in mapDoodads.Doodads.IncludeId().Where(pair => CreateAllDestructablesConditionSingleDoodad(map, pair.Obj)))
+            foreach (var (destructable, id) in mapDoodads.Doodads.Where(ShouldGenerateDestructableVariable).IncludeId())
             {
                 var destructableVariableName = destructable.GetVariableName();
                 if (!ForceGenerateGlobalDestructableVariable && (!TriggerVariableReferences.TryGetValue(destructableVariableName, out var value) || !value))
@@ -72,84 +79,88 @@ namespace War3Net.Build
                 var hasSkin = ForceGenerateUnitWithSkin || skinId != destructable.TypeId;
                 var createFunctionIndex = isDead ? 1 : 0;
 
-                var arguments = new List<IExpressionSyntax>();
-                arguments.Add(SyntaxFactory.FourCCLiteralExpression(destructable.TypeId));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.X));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.Y));
+                var arguments = new List<string>();
+                arguments.Add(JassLiteral.FourCC(destructable.TypeId));
+                arguments.Add(JassLiteral.Real(destructable.Position.X));
+                arguments.Add(JassLiteral.Real(destructable.Position.Y));
                 if (hasZ)
                 {
-                    arguments.Add(SyntaxFactory.LiteralExpression(destructable.Position.Z));
+                    arguments.Add(JassLiteral.Real(destructable.Position.Z));
                     createFunctionIndex += 2;
                 }
 
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Rotation * (180f / MathF.PI), precision: 3));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Scale.X, precision: 3));
-                arguments.Add(SyntaxFactory.LiteralExpression(destructable.Variation));
+                arguments.Add(JassLiteral.Real(destructable.Rotation * W3MathF.Rad2Deg, 3));
+                arguments.Add(JassLiteral.Real(destructable.Scale.X, 3));
+                arguments.Add(JassLiteral.Int(destructable.Variation));
                 if (hasSkin)
                 {
-                    arguments.Add(SyntaxFactory.FourCCLiteralExpression(destructable.SkinId));
+                    arguments.Add(JassLiteral.FourCC(destructable.SkinId));
                     createFunctionIndex += 4;
                 }
 
-                statements.Add(SyntaxFactory.SetStatement(
+                writer.WriteSet(
                     destructableVariableName,
-                    SyntaxFactory.InvocationExpression(createFunctions[createFunctionIndex], arguments.ToArray())));
+                    JassExpression.InvokeSpaced(
+                        createFunctions[createFunctionIndex],
+                        arguments.ToArray()));
 
                 if (!isDead && destructable.Life != 100)
                 {
+                    var lifePercentLiteral = JassLiteral.Real(destructable.Life * 0.01f, 2);
+
                     if (UseLifeVariable)
                     {
-                        statements.Add(SyntaxFactory.SetStatement(
+                        writer.WriteSet(
                             VariableName.Life,
-                            SyntaxFactory.InvocationExpression(
+                            JassExpression.InvokeSpaced(
                                 NativeName.GetDestructableLife,
-                                SyntaxFactory.VariableReferenceExpression(destructableVariableName))));
+                                destructableVariableName));
 
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetDestructableLife,
-                            SyntaxFactory.VariableReferenceExpression(destructableVariableName),
-                            SyntaxFactory.BinaryMultiplicationExpression(
-                                SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
-                                SyntaxFactory.VariableReferenceExpression(VariableName.Life))));
+                            destructableVariableName,
+                            JassExpression.Multiply(
+                                lifePercentLiteral,
+                                VariableName.Life));
                     }
                     else
                     {
-                        statements.Add(SyntaxFactory.CallStatement(
+                        writer.WriteCall(
                             NativeName.SetDestructableLife,
-                            SyntaxFactory.VariableReferenceExpression(destructableVariableName),
-                            SyntaxFactory.BinaryMultiplicationExpression(
-                                SyntaxFactory.LiteralExpression(destructable.Life * 0.01f, precision: 2),
-                                SyntaxFactory.InvocationExpression(NativeName.GetDestructableLife, SyntaxFactory.VariableReferenceExpression(destructableVariableName)))));
+                            destructableVariableName,
+                            JassExpression.Multiply(
+                                lifePercentLiteral,
+                                JassExpression.Invoke(NativeName.GetDestructableLife, destructableVariableName)));
                     }
                 }
 
                 if (destructable.HasItemTable())
                 {
-                    statements.Add(SyntaxFactory.SetStatement(
+                    writer.WriteSet(
                         VariableName.Trigger,
-                        SyntaxFactory.InvocationExpression(NativeName.CreateTrigger)));
+                        JassExpression.InvokeSpaced(NativeName.CreateTrigger));
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.TriggerRegisterDeathEvent,
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                        SyntaxFactory.VariableReferenceExpression(destructableVariableName)));
+                        VariableName.Trigger,
+                        destructableVariableName);
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.TriggerAddAction,
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                        SyntaxFactory.FunctionReferenceExpression(FunctionName.SaveDyingWidget)));
+                        VariableName.Trigger,
+                        JassExpression.FunctionRef(FunctionName.SaveDyingWidget));
 
-                    statements.Add(SyntaxFactory.CallStatement(
+                    writer.WriteCall(
                         NativeName.TriggerAddAction,
-                        SyntaxFactory.VariableReferenceExpression(VariableName.Trigger),
-                        SyntaxFactory.FunctionReferenceExpression(destructable.GetDropItemsFunctionName(id))));
+                        VariableName.Trigger,
+                        JassExpression.FunctionRef(destructable.GetDropItemsFunctionName(id)));
                 }
             }
 
-            return SyntaxFactory.FunctionDeclaration(SyntaxFactory.FunctionDeclarator(nameof(CreateAllDestructables)), statements);
+            writer.EndFunction();
         }
 
-        protected internal virtual bool CreateAllDestructablesCondition(Map map)
+        protected internal virtual bool ShouldGenerateCreateAllDestructables(Map map)
         {
             if (map is null)
             {
@@ -162,24 +173,7 @@ namespace War3Net.Build
             }
 
             return map.Doodads is not null
-                && map.Doodads.Doodads.Any(doodad => CreateAllDestructablesConditionSingleDoodad(map, doodad));
-        }
-
-        protected internal virtual bool CreateAllDestructablesConditionSingleDoodad(Map map, DoodadData doodadData)
-        {
-            if (map is null)
-            {
-                throw new ArgumentNullException(nameof(map));
-            }
-
-            if (doodadData is null)
-            {
-                throw new ArgumentNullException(nameof(doodadData));
-            }
-
-            return ForceGenerateGlobalDestructableVariable
-                || (TriggerVariableReferences.TryGetValue(doodadData.GetVariableName(), out var value) && value)
-                || doodadData.HasItemTable();
+                && map.Doodads.Doodads.Any(ShouldGenerateDestructableVariable);
         }
     }
 }
