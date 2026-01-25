@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Jass
             var text = JassSyntaxFacts.GetText(syntaxKind);
             if (text.Length == 0 && syntaxKind != JassSyntaxKind.EndOfFileToken)
             {
-                throw new InvalidEnumArgumentException(nameof(syntaxKind), (int)syntaxKind, typeof(JassSyntaxKind));
+                throw new ArgumentException($"'{syntaxKind}' does not have default text.", nameof(syntaxKind));
             }
 
             token = new JassSyntaxToken(JassSyntaxTriviaList.Empty, syntaxKind, text, JassSyntaxTriviaList.Empty);
@@ -55,7 +55,7 @@ namespace War3Net.CodeAnalysis.Jass
             var text = JassSyntaxFacts.GetText(syntaxKind);
             if (text.Length == 0 && syntaxKind != JassSyntaxKind.EndOfFileToken)
             {
-                throw new InvalidEnumArgumentException(nameof(syntaxKind), (int)syntaxKind, typeof(JassSyntaxKind));
+                throw new ArgumentException($"'{syntaxKind}' does not have default text.", nameof(syntaxKind));
             }
 
             return new JassSyntaxToken(leadingTrivia, syntaxKind, text, trailingTrivia);
