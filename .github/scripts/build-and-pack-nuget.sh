@@ -31,8 +31,8 @@ can_build_project() {
   # Get the dependencies - dotnet list outputs them with paths like ..\ProjectName\ProjectName.csproj
   # We need to extract just the project name from the filename
   local deps=$(dotnet list "$project" reference 2>/dev/null | grep '\.csproj$' | while read -r line; do
-    # Remove everything up to the last backslash, then remove .csproj extension
-    echo "$line" | sed 's/.*\\//' | sed 's/\.csproj$//'
+    # Remove everything up to the last slash (forward or back), then remove .csproj extension
+    echo "$line" | sed 's/.*[\\\/]//' | sed 's/\.csproj$//'
   done | tr '\n' ' ')
   
   for dep in $deps; do
@@ -72,7 +72,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     echo "$STILL_REMAINING" | tr ';' '\n' | while read -r p; do
       if [ -n "$p" ]; then
         echo "  - $(basename $(dirname "$p"))"
-        echo "    Dependencies: $(dotnet list "$p" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*\///' | sed 's/\.csproj.*//' | tr '\n' ' ')"
+        echo "    Dependencies: $(dotnet list "$p" reference 2>/dev/null | grep -E "^\s+.*\.csproj" | sed 's/.*[\\\/]//' | sed 's/\.csproj.*//' | tr '\n' ' ')"
       fi
     done
     echo "Already built: $BUILT_PROJECTS"
