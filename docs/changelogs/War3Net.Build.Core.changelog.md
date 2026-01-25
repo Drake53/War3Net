@@ -1,6 +1,8 @@
 # War3Net.Build.Core Changelog
 
 ## v6.0.0
+### Breaking changes
+- The EscapedStringProvider class has been moved to War3Net.CodeAnalysis.Jass.
 ### Changes
 - Added W3MathF class.
 ### Bugfixes

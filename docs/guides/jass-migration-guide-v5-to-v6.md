@@ -225,5 +225,7 @@ Other replacements:
 - Properties that used to be of type `JassParameterListSyntax` are now `JassParameterListOrEmptyParameterListSyntax`
 - The constructor of syntax node classes is now internal
 - Properties have been changed from `{ get; init; }` to `{ get; }`
+- `JassSymbol` now contains both `char` and `string` constants, existing `char` constants got the `Char` suffix
+- `JassSyntaxFacts.IsWhitespaceCharacter(char)` now only considers spaces and tabs to be whitespace (previously used `char.IsWhitespace` and excluded \r and \n)
 
 </details>
