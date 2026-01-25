@@ -15,7 +15,7 @@ namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {
-        protected internal virtual void GenerateGlobals(Map map, IndentedTextWriter writer)
+        public virtual void GenerateGlobals(Map map, IndentedTextWriter writer)
         {
             if (map is null)
             {
