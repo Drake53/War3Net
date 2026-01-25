@@ -97,14 +97,14 @@ namespace War3Net.Build
                 throw new ArgumentException("Function must be enabled and of type 'Condition'.", nameof(function));
             }
 
-            if (function.Name == "OrMultiple" || function.Name == "AndMultiple")
+            if (function.Name == TriggerConditionConstants.OrMultiple || function.Name == TriggerConditionConstants.AndMultiple)
             {
                 var conditionFunctionName = $"{context.TrigFunctionIdentifierBuilder}C";
-                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Name == "AndMultiple", function.ChildFunctions);
+                RenderConditionFunction(context.TrigFunctionIdentifierBuilder, conditionFunctionName, function.Name == TriggerConditionConstants.AndMultiple, function.ChildFunctions);
 
                 return JassExpression.Invoke(conditionFunctionName);
             }
-            else if (function.Name == "GetBooleanAnd" || function.Name == "GetBooleanOr")
+            else if (function.Name == TriggerConditionConstants.GetBooleanAnd || function.Name == TriggerConditionConstants.GetBooleanOr)
             {
                 context.TrigFunctionIdentifierBuilder.Append(1);
                 var conditionFunctionName1 = context.TrigFunctionIdentifierBuilder.ToString();
