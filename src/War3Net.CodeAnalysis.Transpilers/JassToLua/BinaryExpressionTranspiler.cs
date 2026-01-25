@@ -38,9 +38,9 @@ namespace War3Net.CodeAnalysis.Transpilers
                     break;
 
                 default:
-                    type = left.Equals(JassPredefinedTypeSyntax.String) || right.Equals(JassPredefinedTypeSyntax.String)
+                    type = left.IsEquivalentTo(JassPredefinedTypeSyntax.String) || right.IsEquivalentTo(JassPredefinedTypeSyntax.String)
                         ? JassPredefinedTypeSyntax.String
-                        : left.Equals(JassPredefinedTypeSyntax.Real) || right.Equals(JassPredefinedTypeSyntax.Real)
+                        : left.IsEquivalentTo(JassPredefinedTypeSyntax.Real) || right.IsEquivalentTo(JassPredefinedTypeSyntax.Real)
                             ? JassPredefinedTypeSyntax.Real
                             : left;
                     break;
@@ -48,10 +48,10 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             return expressionKind switch
             {
-                JassSyntaxKind.AddExpression => type.Equals(JassPredefinedTypeSyntax.String) ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
+                JassSyntaxKind.AddExpression => type.IsEquivalentTo(JassPredefinedTypeSyntax.String) ? LuaSyntaxNode.Tokens.Concatenation : LuaSyntaxNode.Tokens.Plus,
                 JassSyntaxKind.SubtractExpression => LuaSyntaxNode.Tokens.Sub,
                 JassSyntaxKind.MultiplyExpression => LuaSyntaxNode.Tokens.Multiply,
-                JassSyntaxKind.DivideExpression => type.Equals(JassPredefinedTypeSyntax.Integer) ? LuaSyntaxNode.Tokens.IntegerDiv : LuaSyntaxNode.Tokens.Div,
+                JassSyntaxKind.DivideExpression => type.IsEquivalentTo(JassPredefinedTypeSyntax.Integer) ? LuaSyntaxNode.Tokens.IntegerDiv : LuaSyntaxNode.Tokens.Div,
                 JassSyntaxKind.GreaterThanExpression => ">",
                 JassSyntaxKind.LessThanExpression => "<",
                 JassSyntaxKind.EqualsExpression => LuaSyntaxNode.Tokens.EqualsEquals,

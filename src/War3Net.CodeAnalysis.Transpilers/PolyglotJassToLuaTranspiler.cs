@@ -17,7 +17,7 @@ using War3Net.CodeAnalysis.Jass.Syntax;
 namespace War3Net.CodeAnalysis.Transpilers
 {
     /// <summary>
-    /// Special <see cref="JassToLuaTranspiler"/> that can handle lua code embedded in the jass code using //! beginusercode and //! endusercode.
+    /// Special <see cref="JassToLuaTranspiler"/> that can handle lua code embedded in the jass code using <c>//! beginusercode</c> and <c>//! endusercode</c>.
     /// </summary>
     public class PolyglotJassToLuaTranspiler
     {
@@ -38,195 +38,172 @@ namespace War3Net.CodeAnalysis.Transpilers
             _writer = writer;
 
             _isUserCode = false;
-            _scriptContext = JassScriptContext.Declarations;
+            _scriptContext = JassScriptContext.TopLevelDeclarations;
         }
 
         private enum JassScriptContext
         {
-            Declarations,
-            Globals,
-            Statements,
+            TopLevelDeclarations,
+            GlobalsBlock,
+            FunctionBody,
         }
 
         public void Transpile(string input)
         {
             using var reader = new StringReader(input);
 
+            var lineNumber = 0;
             while (true)
             {
+                lineNumber++;
                 var line = reader.ReadLine();
                 if (line is null)
                 {
                     break;
                 }
 
-                if (JassSyntaxFactory.TryParseComment(line, out var comment))
+                var trimmed = line.AsSpan().TrimStart();
+                if (trimmed.StartsWith("//"))
                 {
-                    if (string.Equals(comment.Comment, "! beginusercode", StringComparison.Ordinal))
+                    var comment = trimmed.TrimEnd();
+
+                    if (trimmed.Equals("//! beginusercode", StringComparison.Ordinal))
                     {
                         if (_isUserCode)
                         {
-                            throw new ArgumentException("Invalid: beginusercode", nameof(input));
+                            throw new ArgumentException("Unexpected //! beginusercode", nameof(input));
                         }
 
                         _isUserCode = true;
                         continue;
                     }
-                    else if (string.Equals(comment.Comment, "! endusercode", StringComparison.Ordinal))
+                    else if (trimmed.Equals("//! endusercode", StringComparison.Ordinal))
                     {
                         if (!_isUserCode)
                         {
-                            throw new ArgumentException("Invalid: endusercode", nameof(input));
+                            throw new ArgumentException("Unexpected //! endusercode", nameof(input));
                         }
 
                         _isUserCode = false;
                         continue;
                     }
+                    else if (_isUserCode)
+                    {
+                        _writer.WriteLine(line);
+                    }
+                    else if (!_transpiler.IgnoreComments)
+                    {
+                        _renderer.Render(new LuaShortCommentStatement(trimmed[2..].ToString()));
+                    }
                 }
-
-                if (_isUserCode)
+                else if (_isUserCode)
                 {
                     _writer.WriteLine(line);
                 }
+                else if (JassSyntaxFactory.TryParseScriptLine(line, out var scriptLine))
+                {
+                    try
+                    {
+                        Transpile(scriptLine.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException($"Failed to transpile JASS on line {lineNumber}: {line}", nameof(input), ex);
+                    }
+                }
                 else
                 {
-                    switch (_scriptContext)
-                    {
-                        case JassScriptContext.Declarations:
-                            Transpile(JassSyntaxFactory.ParseDeclarationLine(line));
-                            break;
-
-                        case JassScriptContext.Globals:
-                            Transpile(JassSyntaxFactory.ParseGlobalLine(line));
-                            break;
-
-                        case JassScriptContext.Statements:
-                            Transpile(JassSyntaxFactory.ParseStatementLine(line));
-                            break;
-                    }
+                    throw new ArgumentException($"Invalid JASS on line {lineNumber}: {line}", nameof(input));
                 }
             }
         }
 
-        private void Transpile(IDeclarationLineSyntax declarationLine)
+        private void Transpile(JassSyntaxNodeOrToken scriptLine)
         {
-            switch (declarationLine)
+            if (scriptLine.TryPickToken(out var token, out var node))
             {
-                case JassCommentSyntax comment:
-                    _renderer.Render((LuaShortCommentStatement)_transpiler.Transpile(comment));
+                Transpile(token);
+            }
+            else
+            {
+                Transpile(node);
+            }
+        }
+
+        private void Transpile(JassSyntaxToken token)
+        {
+            switch (token.SyntaxKind)
+            {
+                case JassSyntaxKind.ElseKeyword:
+                    _renderer.RenderElse();
                     break;
 
-                case JassEmptySyntax:
-                    if (!_transpiler.IgnoreEmptyDeclarations)
-                    {
-                        _writer.WriteLine();
-                    }
-
+                case JassSyntaxKind.EndFunctionKeyword:
+                    _renderer.RenderEnd();
+                    _transpiler.ClearLocalTypes();
+                    _scriptContext = JassScriptContext.TopLevelDeclarations;
                     break;
 
-                case JassTypeDeclarationSyntax:
+                case JassSyntaxKind.EndGlobalsKeyword:
+                    _scriptContext = JassScriptContext.TopLevelDeclarations;
                     break;
 
-                case JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration:
-                    _transpiler.RegisterFunctionReturnType(nativeFunctionDeclaration.FunctionDeclarator);
+                case JassSyntaxKind.EndIfKeyword:
+                    _renderer.RenderEnd();
                     break;
 
-                case JassGlobalsCustomScriptAction:
-                    _scriptContext = JassScriptContext.Globals;
+                case JassSyntaxKind.EndLoopKeyword:
+                    _renderer.RenderEnd();
                     break;
 
-                case JassFunctionCustomScriptAction functionCustomScriptAction:
-                    _renderer.RenderFunctionDeclarator(_transpiler.Transpile(functionCustomScriptAction.FunctionDeclarator));
-                    _scriptContext = JassScriptContext.Statements;
+                case JassSyntaxKind.GlobalsKeyword:
+                    _scriptContext = JassScriptContext.GlobalsBlock;
+                    break;
+
+                case JassSyntaxKind.LoopKeyword:
+                    _renderer.RenderLoop();
                     break;
             }
         }
 
-        private void Transpile(IGlobalLineSyntax globalLine)
+        private void Transpile(JassSyntaxNode node)
         {
-            switch (globalLine)
+            switch (node)
             {
-                case JassCommentSyntax comment:
-                    _renderer.Render((LuaShortCommentStatement)_transpiler.Transpile(comment));
-                    break;
-
-                case JassEmptySyntax:
-                    if (!_transpiler.IgnoreEmptyDeclarations)
-                    {
-                        _writer.WriteLine();
-                    }
-
-                    break;
-
                 case JassGlobalDeclarationSyntax globalDeclaration:
                     _renderer.Render((LuaLocalDeclarationStatementSyntax)_transpiler.Transpile(globalDeclaration));
                     break;
 
-                case JassEndGlobalsCustomScriptAction:
-                    _scriptContext = JassScriptContext.Declarations;
-                    break;
-            }
-        }
-
-        private void Transpile(IStatementLineSyntax statementLine)
-        {
-            switch (statementLine)
-            {
                 case JassCallStatementSyntax callStatement:
                     _renderer.Render((LuaExpressionStatementSyntax)_transpiler.Transpile(callStatement));
                     break;
 
-                case JassCommentSyntax comment:
-                    _renderer.Render((LuaShortCommentStatement)_transpiler.Transpile(comment));
-                    break;
-
-                case JassDebugCustomScriptAction:
+                case JassDebugStatementSyntax:
                     throw new NotSupportedException();
 
-                case JassElseCustomScriptAction:
-                    _renderer.RenderElse();
-                    break;
-
-                case JassElseIfCustomScriptAction elseIfCustomScriptAction:
-                    _renderer.RenderElseIf(_transpiler.Transpile(elseIfCustomScriptAction.Condition, out _));
-                    break;
-
-                case JassEmptySyntax:
-                    if (!_transpiler.IgnoreEmptyStatements)
-                    {
-                        _writer.WriteLine();
-                    }
-
-                    break;
-
-                case JassEndFunctionCustomScriptAction:
-                    _renderer.RenderEnd();
-                    _transpiler.ClearLocalTypes();
-                    _scriptContext = JassScriptContext.Declarations;
-                    break;
-
-                case JassEndIfCustomScriptAction:
-                    _renderer.RenderEnd();
-                    break;
-
-                case JassEndLoopCustomScriptAction:
-                    _renderer.RenderEnd();
+                case JassElseIfClauseDeclaratorSyntax elseIfClauseDeclarator:
+                    _renderer.RenderElseIf(_transpiler.Transpile(elseIfClauseDeclarator.Condition, out _));
                     break;
 
                 case JassExitStatementSyntax exitStatement:
                     _renderer.Render((LuaIfStatementSyntax)_transpiler.Transpile(exitStatement));
                     break;
 
-                case JassIfCustomScriptAction ifCustomScriptAction:
-                    _renderer.RenderIf(_transpiler.Transpile(ifCustomScriptAction.Condition, out _));
+                case JassFunctionDeclaratorSyntax functionDeclarator:
+                    _renderer.RenderFunctionDeclarator(_transpiler.Transpile(functionDeclarator));
+                    _scriptContext = JassScriptContext.FunctionBody;
+                    break;
+
+                case JassIfClauseDeclaratorSyntax ifClauseDeclarator:
+                    _renderer.RenderIf(_transpiler.Transpile(ifClauseDeclarator.Condition, out _));
                     break;
 
                 case JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement:
                     _renderer.Render((LuaLocalDeclarationStatementSyntax)_transpiler.Transpile(localVariableDeclarationStatement));
                     break;
 
-                case JassLoopCustomScriptAction:
-                    _renderer.RenderLoop();
+                case JassNativeFunctionDeclarationSyntax nativeFunctionDeclaration:
+                    _transpiler.RegisterFunctionReturnType(nativeFunctionDeclaration);
                     break;
 
                 case JassReturnStatementSyntax returnStatement:
@@ -235,6 +212,9 @@ namespace War3Net.CodeAnalysis.Transpilers
 
                 case JassSetStatementSyntax setStatement:
                     _renderer.Render((LuaExpressionStatementSyntax)_transpiler.Transpile(setStatement));
+                    break;
+
+                case JassTypeDeclarationSyntax:
                     break;
             }
         }
