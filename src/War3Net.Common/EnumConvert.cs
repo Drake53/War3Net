@@ -16,6 +16,16 @@ namespace War3Net.Common
     public static class EnumConvert<TEnum>
         where TEnum : struct, Enum
     {
+        public static TEnum FromByteRaw(byte value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(byte))
+            {
+                throw new InvalidOperationException($"FromByteRaw requires that enum of type {typeof(TEnum).Name} uses byte as its underlying type.");
+            }
+
+            return Unsafe.As<byte, TEnum>(ref value);
+        }
+
         public static TEnum FromByte(byte value, bool allowNoFlags = true)
         {
             if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(byte))
@@ -34,6 +44,16 @@ namespace War3Net.Common
             }
 
             return result;
+        }
+
+        public static TEnum FromSByteRaw(sbyte value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(sbyte))
+            {
+                throw new InvalidOperationException($"FromSByteRaw requires that enum of type {typeof(TEnum).Name} uses sbyte as its underlying type.");
+            }
+
+            return Unsafe.As<sbyte, TEnum>(ref value);
         }
 
         public static TEnum FromSByte(sbyte value, bool allowNoFlags = true)
@@ -56,6 +76,16 @@ namespace War3Net.Common
             return result;
         }
 
+        public static TEnum FromInt16Raw(short value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(short))
+            {
+                throw new InvalidOperationException($"FromInt16Raw requires that enum of type {typeof(TEnum).Name} uses short as its underlying type.");
+            }
+
+            return Unsafe.As<short, TEnum>(ref value);
+        }
+
         public static TEnum FromInt16(short value, bool allowNoFlags = true)
         {
             if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(short))
@@ -74,6 +104,16 @@ namespace War3Net.Common
             }
 
             return result;
+        }
+
+        public static TEnum FromUInt16Raw(ushort value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(ushort))
+            {
+                throw new InvalidOperationException($"FromUInt16Raw requires that enum of type {typeof(TEnum).Name} uses ushort as its underlying type.");
+            }
+
+            return Unsafe.As<ushort, TEnum>(ref value);
         }
 
         public static TEnum FromUInt16(ushort value, bool allowNoFlags = true)
@@ -96,6 +136,16 @@ namespace War3Net.Common
             return result;
         }
 
+        public static TEnum FromInt32Raw(int value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(int))
+            {
+                throw new InvalidOperationException($"FromInt32Raw requires that enum of type {typeof(TEnum).Name} uses int as its underlying type.");
+            }
+
+            return Unsafe.As<int, TEnum>(ref value);
+        }
+
         public static TEnum FromInt32(int value, bool allowNoFlags = true)
         {
             if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(int))
@@ -114,6 +164,16 @@ namespace War3Net.Common
             }
 
             return result;
+        }
+
+        public static TEnum FromUInt32Raw(uint value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(uint))
+            {
+                throw new InvalidOperationException($"FromUInt32Raw requires that enum of type {typeof(TEnum).Name} uses uint as its underlying type.");
+            }
+
+            return Unsafe.As<uint, TEnum>(ref value);
         }
 
         public static TEnum FromUInt32(uint value, bool allowNoFlags = true)
@@ -136,6 +196,16 @@ namespace War3Net.Common
             return result;
         }
 
+        public static TEnum FromInt64Raw(long value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(long))
+            {
+                throw new InvalidOperationException($"FromInt64Raw requires that enum of type {typeof(TEnum).Name} uses long as its underlying type.");
+            }
+
+            return Unsafe.As<long, TEnum>(ref value);
+        }
+
         public static TEnum FromInt64(long value, bool allowNoFlags = true)
         {
             if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(long))
@@ -154,6 +224,16 @@ namespace War3Net.Common
             }
 
             return result;
+        }
+
+        public static TEnum FromUInt64Raw(ulong value)
+        {
+            if (Enum.GetUnderlyingType(typeof(TEnum)) != typeof(ulong))
+            {
+                throw new InvalidOperationException($"FromUInt64Raw requires that enum of type {typeof(TEnum).Name} uses ulong as its underlying type.");
+            }
+
+            return Unsafe.As<ulong, TEnum>(ref value);
         }
 
         public static TEnum FromUInt64(ulong value, bool allowNoFlags = true)

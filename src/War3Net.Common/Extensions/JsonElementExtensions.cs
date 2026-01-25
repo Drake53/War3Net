@@ -20,11 +20,27 @@ namespace War3Net.Common.Extensions
                 : Enum.Parse<TEnum>(jsonElement.GetString());
         }
 
+        public static TEnum GetByteRaw<TEnum>(this JsonElement jsonElement)
+            where TEnum : struct, Enum
+        {
+            return jsonElement.ValueKind == JsonValueKind.Number
+                ? EnumConvert<TEnum>.FromByteRaw(jsonElement.GetByte())
+                : Enum.Parse<TEnum>(jsonElement.GetString());
+        }
+
         public static TEnum GetInt32<TEnum>(this JsonElement jsonElement)
             where TEnum : struct, Enum
         {
             return jsonElement.ValueKind == JsonValueKind.Number
                 ? EnumConvert<TEnum>.FromInt32(jsonElement.GetInt32())
+                : Enum.Parse<TEnum>(jsonElement.GetString());
+        }
+
+        public static TEnum GetInt32Raw<TEnum>(this JsonElement jsonElement)
+            where TEnum : struct, Enum
+        {
+            return jsonElement.ValueKind == JsonValueKind.Number
+                ? EnumConvert<TEnum>.FromInt32Raw(jsonElement.GetInt32())
                 : Enum.Parse<TEnum>(jsonElement.GetString());
         }
 
@@ -34,10 +50,22 @@ namespace War3Net.Common.Extensions
             return jsonElement.GetProperty(propertyName).GetByte<TEnum>();
         }
 
+        public static TEnum GetByteRaw<TEnum>(this JsonElement jsonElement, ReadOnlySpan<char> propertyName)
+            where TEnum : struct, Enum
+        {
+            return jsonElement.GetProperty(propertyName).GetByteRaw<TEnum>();
+        }
+
         public static TEnum GetInt32<TEnum>(this JsonElement jsonElement, ReadOnlySpan<char> propertyName)
             where TEnum : struct, Enum
         {
             return jsonElement.GetProperty(propertyName).GetInt32<TEnum>();
+        }
+
+        public static TEnum GetInt32Raw<TEnum>(this JsonElement jsonElement, ReadOnlySpan<char> propertyName)
+            where TEnum : struct, Enum
+        {
+            return jsonElement.GetProperty(propertyName).GetInt32Raw<TEnum>();
         }
 
         public static JsonElement.ArrayEnumerator EnumerateArray(this JsonElement jsonElement, ReadOnlySpan<char> propertyName) => jsonElement.GetProperty(propertyName).EnumerateArray();
