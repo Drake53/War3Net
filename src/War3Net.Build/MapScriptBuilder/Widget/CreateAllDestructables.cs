@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
@@ -88,7 +89,7 @@ namespace War3Net.Build
                     createFunctionIndex += 2;
                 }
 
-                arguments.Add(JassLiteral.Real(destructable.Rotation * Math.Rad2Deg, 3));
+                arguments.Add(JassLiteral.Real(destructable.Rotation * W3MathF.Rad2Deg, 3));
                 arguments.Add(JassLiteral.Real(destructable.Scale.X, 3));
                 arguments.Add(JassLiteral.Int(destructable.Variation));
                 if (hasSkin)

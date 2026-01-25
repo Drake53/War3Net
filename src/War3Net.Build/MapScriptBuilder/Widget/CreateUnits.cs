@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;
@@ -141,7 +142,7 @@ namespace War3Net.Build
                             VariableName.UnitId,
                             JassLiteral.Real(unit.Position.X),
                             JassLiteral.Real(unit.Position.Y),
-                            JassLiteral.Real(unit.Rotation * Math.Rad2Deg, 3)));
+                            JassLiteral.Real(unit.Rotation * W3MathF.Rad2Deg, 3)));
 
                     WriteCreateUnitStatements(map, unit, id, writer);
 
@@ -155,7 +156,7 @@ namespace War3Net.Build
                         JassLiteral.FourCC(unit.TypeId),
                         JassLiteral.Real(unit.Position.X),
                         JassLiteral.Real(unit.Position.Y),
-                        JassLiteral.Real(unit.Rotation * Math.Rad2Deg, 3),
+                        JassLiteral.Real(unit.Rotation * W3MathF.Rad2Deg, 3),
                     };
 
                     var skinId = unit.SkinId == 0 ? unit.TypeId : unit.SkinId;

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
+using War3Net.Build.Common;
 using War3Net.Build.Widget;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
@@ -183,7 +184,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         OwnerId = localPlayerVariableValue.Value,
                                         TypeId = unitId.InvertEndianness(),
                                         Position = new Vector3(x, y, 0f),
-                                        Rotation = face * (MathF.PI / 180f),
+                                        Rotation = face * W3MathF.Deg2Rad,
                                         Scale = Vector3.One,
                                         Flags = 2,
                                         GoldAmount = 12500,
@@ -217,7 +218,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                         OwnerId = localPlayerVariableValue.Value,
                                         TypeId = unitId.InvertEndianness(),
                                         Position = new Vector3(x, y, 0f),
-                                        Rotation = face * (MathF.PI / 180f),
+                                        Rotation = face * W3MathF.Deg2Rad,
                                         Scale = Vector3.One,
                                         SkinId = skinId.InvertEndianness(),
                                         Flags = 2,
