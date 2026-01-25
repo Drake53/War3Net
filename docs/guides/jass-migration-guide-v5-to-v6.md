@@ -31,10 +31,11 @@ Other new syntax node classes:
 | `JassParameterListOrEmptyParameterListSyntax` | Abstract base class for empty (`takes nothing`) and not-empty (`takes <parameters>`) lists |
 | `JassSyntaxNode`                              | Abstract base class for all new and existing syntax node classes                           |
 
-Other new classes:
+Other new types:
 
 | Type name               | Purpose                                                                        |
 |-------------------------|--------------------------------------------------------------------------------|
+| `JassSyntaxKind`        | Mainly used to tell the difference between literals and operators              |
 | `JassSyntaxNodeOrToken` | Can be used to model "custom script actions" (one full line of the map script) |
 | `JassSyntaxToken`       | Holds a token's text and trivia                                                |
 | `JassSyntaxTrivia`      | Contains trivia as text (whitespace, newlines, single line comments)           |
