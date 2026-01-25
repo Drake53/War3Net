@@ -52,7 +52,7 @@ namespace War3Net.CodeAnalysis.Jass
 
             if (!text.All(JassSyntaxFacts.IsWhitespaceCharacter))
             {
-                throw new ArgumentException("Text may only contain whitespace characters (excluding '\\r' and '\\n').", nameof(text));
+                throw new ArgumentException("Text may only contain ' ' and '\\t' characters.", nameof(text));
             }
 
             return new JassSyntaxTrivia(JassSyntaxKind.WhitespaceTrivia, text);
