@@ -11,6 +11,7 @@
 		<PackageVersion Include="MessagePackAnalyzer" Version="2.2.60" />
 		<PackageVersion Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+		<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
 		<PackageVersion Include="MSTest.TestAdapter" Version="2.2.10" />
 		<PackageVersion Include="MSTest.TestFramework" Version="2.2.10" />
 		<PackageVersion Include="NAudio" Version="1.10.0" />
