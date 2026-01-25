@@ -26,8 +26,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             if (string.Equals(expectedType, JassKeyword.Integer, StringComparison.Ordinal) ||
                 string.Equals(expectedType, JassKeyword.Real, StringComparison.Ordinal))
             {
-                var text = hexadecimalLiteralExpression.Token.Text.Replace(JassSymbol.Dollar, "0x", StringComparison.Ordinal);
-                var value = Convert.ToInt32(text[2..], 16);
+                var value = JassLiteral.ParseHex(hexadecimalLiteralExpression.Token.Text);
 
                 functionParameter = new TriggerFunctionParameter
                 {
@@ -46,8 +45,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassLiteralExpressionSyntax hexadecimalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var text = hexadecimalLiteralExpression.Token.Text.Replace(JassSymbol.Dollar, "0x", StringComparison.Ordinal);
-            var value = Convert.ToInt32(text[2..], 16).ToString(CultureInfo.InvariantCulture);
+            var value = JassLiteral.ParseHex(hexadecimalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 

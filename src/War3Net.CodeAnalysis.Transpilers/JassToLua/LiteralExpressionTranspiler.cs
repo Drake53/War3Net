@@ -61,7 +61,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         private LuaExpressionSyntax TranspileOctalLiteral(JassLiteralExpressionSyntax literalExpression, out JassTypeSyntax type)
         {
             type = JassPredefinedTypeSyntax.Integer;
-            var text = Convert.ToInt32(literalExpression.Token.Text, 8).ToString(CultureInfo.InvariantCulture);
+            var text = JassLiteral.ParseOctal(literalExpression.Token.Text).ToString(CultureInfo.InvariantCulture);
 
             return new LuaIdentifierLiteralExpressionSyntax(text);
         }
@@ -77,7 +77,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         private LuaExpressionSyntax TranspileFourCCLiteral(JassLiteralExpressionSyntax literalExpression, out JassTypeSyntax type)
         {
             type = JassPredefinedTypeSyntax.Integer;
-            var text = $"FourCC(\"{literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar)}\")";
+            var text = $"FourCC(\"{literalExpression.Token.Text[1..^1]}\")";
 
             return new LuaIdentifierLiteralExpressionSyntax(text);
         }
@@ -85,7 +85,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         private LuaExpressionSyntax TranspileCharacterLiteral(JassLiteralExpressionSyntax literalExpression, out JassTypeSyntax type)
         {
             type = JassPredefinedTypeSyntax.Integer;
-            var text = ((int)char.Parse(literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar))).ToString(CultureInfo.InvariantCulture);
+            var text = ((int)JassLiteral.ParseChar(literalExpression.Token.Text)).ToString(CultureInfo.InvariantCulture);
 
             return new LuaIdentifierLiteralExpressionSyntax(text);
         }
@@ -99,7 +99,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         private LuaExpressionSyntax TranspileStringLiteral(JassLiteralExpressionSyntax literalExpression, out JassTypeSyntax type)
         {
             type = JassPredefinedTypeSyntax.String;
-            var text = literalExpression.Token.Text
+            var text = JassLiteral.ParseString(literalExpression.Token.Text)
                 .Replace(JassSymbol.CarriageReturn, @"\r", StringComparison.Ordinal)
                 .Replace(JassSymbol.LineFeed, @"\n", StringComparison.Ordinal);
 

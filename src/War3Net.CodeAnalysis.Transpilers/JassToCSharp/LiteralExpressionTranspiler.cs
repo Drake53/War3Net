@@ -45,7 +45,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         private ExpressionSyntax TranspileDecimalLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var value = Convert.ToInt32(literalExpression.Token.Text, 10);
+            var value = JassLiteral.ParseInt(literalExpression.Token.Text);
             var text = value.ToString(CultureInfo.InvariantCulture);
 
             return SyntaxFactory.LiteralExpression(
@@ -59,7 +59,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         private ExpressionSyntax TranspileOctalLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var value = Convert.ToInt32(literalExpression.Token.Text, 8);
+            var value = JassLiteral.ParseOctal(literalExpression.Token.Text);
             var text = value.ToString(CultureInfo.InvariantCulture);
 
             return SyntaxFactory.LiteralExpression(
@@ -87,7 +87,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         private ExpressionSyntax TranspileFourCCLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var value = literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar).FromRawcode();
+            var value = JassLiteral.ParseFourCC(literalExpression.Token.Text);
             var text = value.ToString(CultureInfo.InvariantCulture);
 
             return SyntaxFactory.LiteralExpression(
@@ -101,7 +101,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         private ExpressionSyntax TranspileCharacterLiteral(JassLiteralExpressionSyntax literalExpression)
         {
-            var value = (int)char.Parse(literalExpression.Token.Text.Trim(JassSymbol.SingleQuoteChar));
+            var value = JassLiteral.ParseChar(literalExpression.Token.Text);
             var text = $"(int){literalExpression.Token.Text}";
 
             return SyntaxFactory.LiteralExpression(

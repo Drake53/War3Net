@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = ((int)characterLiteralExpression.Token.Text[1]).ToString(CultureInfo.InvariantCulture),
+                    Value = ((int)JassLiteral.ParseChar(characterLiteralExpression.Token.Text)).ToString(CultureInfo.InvariantCulture),
                 };
 
                 return true;
@@ -43,7 +43,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassLiteralExpressionSyntax characterLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = ((int)characterLiteralExpression.Token.Text[1]).ToString(CultureInfo.InvariantCulture);
+            var value = ((int)JassLiteral.ParseChar(characterLiteralExpression.Token.Text)).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 

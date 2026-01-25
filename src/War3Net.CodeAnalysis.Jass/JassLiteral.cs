@@ -8,6 +8,7 @@
 using System;
 using System.Globalization;
 
+using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.Common.Extensions;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -47,6 +48,55 @@ namespace War3Net.CodeAnalysis.Jass
         public static string FourCC(string value)
         {
             return $"{JassSymbol.SingleQuoteChar}{value}{JassSymbol.SingleQuoteChar}";
+        }
+
+        public static float ParseReal(string value)
+        {
+            return float.Parse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        }
+
+        public static char ParseChar(string value)
+        {
+            if (value[1] == '\\')
+            {
+                return value[2] switch
+                {
+                    'r' => '\r',
+                    'n' => '\n',
+                    't' => '\t',
+                    'b' => '\b',
+                    'f' => '\f',
+                    _ => value[2],
+                };
+            }
+
+            return value[1];
+        }
+
+        public static string ParseString(string value)
+        {
+            return value[1..^1];
+        }
+
+        public static int ParseInt(string value)
+        {
+            return int.Parse(value, NumberStyles.None, CultureInfo.InvariantCulture);
+        }
+
+        public static int ParseHex(string value)
+        {
+            var hexDigits = value.StartsWith(JassSymbol.DollarChar) ? value[1..] : value[2..];
+            return Convert.ToInt32(hexDigits, 16);
+        }
+
+        public static int ParseOctal(string value)
+        {
+            return Convert.ToInt32(value, 8);
+        }
+
+        public static int ParseFourCC(string value)
+        {
+            return value[1..^1].FromJassRawcode();
         }
     }
 }

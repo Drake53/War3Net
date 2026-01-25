@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             string expectedType,
             [NotNullWhen(true)] out TriggerFunctionParameter? functionParameter)
         {
-            var stringValue = stringLiteralExpression.Token.Text[1..^1];
+            var stringValue = JassLiteral.ParseString(stringLiteralExpression.Token.Text);
 
             if (TryDecompileTriggerFunctionParameterPreset($"`{stringValue}`", expectedType, out _, out functionParameter))
             {
@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassLiteralExpressionSyntax stringLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var stringValue = stringLiteralExpression.Token.Text[1..^1];
+            var stringValue = JassLiteral.ParseString(stringLiteralExpression.Token.Text);
             var value = Regex.Unescape(stringValue);
 
             decompileOptions = new();

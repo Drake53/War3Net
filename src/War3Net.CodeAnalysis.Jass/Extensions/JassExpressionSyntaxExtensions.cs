@@ -50,7 +50,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             if (expression is JassLiteralExpressionSyntax literalExpression &&
                 literalExpression.Token.SyntaxKind == JassSyntaxKind.CharacterLiteralToken)
             {
-                value = literalExpression.Token.Text[1];
+                value = JassLiteral.ParseChar(literalExpression.Token.Text);
                 return true;
             }
 
@@ -77,19 +77,19 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 switch (literalExpression.Token.SyntaxKind)
                 {
                     case JassSyntaxKind.DecimalLiteralToken:
-                        value = int.Parse(literalExpression.Token.Text, CultureInfo.InvariantCulture);
+                        value = JassLiteral.ParseInt(literalExpression.Token.Text);
                         return true;
 
                     case JassSyntaxKind.HexadecimalLiteralToken:
-                        value = Convert.ToInt32(literalExpression.Token.Text.StartsWith(JassSymbol.DollarChar) ? literalExpression.Token.Text[1..] : literalExpression.Token.Text[2..], 16);
+                        value = JassLiteral.ParseHex(literalExpression.Token.Text);
                         return true;
 
                     case JassSyntaxKind.OctalLiteralToken:
-                        value = Convert.ToInt32(literalExpression.Token.Text, 8);
+                        value = JassLiteral.ParseOctal(literalExpression.Token.Text);
                         return true;
 
                     case JassSyntaxKind.FourCCLiteralToken:
-                        value = literalExpression.Token.Text[1..^1].FromJassRawcode();
+                        value = JassLiteral.ParseFourCC(literalExpression.Token.Text);
                         return true;
 
                     default:
@@ -180,7 +180,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 switch (literalExpression.Token.SyntaxKind)
                 {
                     case JassSyntaxKind.StringLiteralToken:
-                        value = literalExpression.Token.Text[1..^1];
+                        value = JassLiteral.ParseString(literalExpression.Token.Text);
                         return true;
 
                     case JassSyntaxKind.NullKeyword:
@@ -198,7 +198,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             if (expression is JassLiteralExpressionSyntax literalExpression &&
                 literalExpression.Token.SyntaxKind == JassSyntaxKind.StringLiteralToken)
             {
-                value = literalExpression.Token.Text[1..^1];
+                value = JassLiteral.ParseString(literalExpression.Token.Text);
                 return true;
             }
 

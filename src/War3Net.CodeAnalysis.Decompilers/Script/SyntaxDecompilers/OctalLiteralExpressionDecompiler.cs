@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 functionParameter = new TriggerFunctionParameter
                 {
                     Type = TriggerFunctionParameterType.String,
-                    Value = Convert.ToInt32(octalLiteralExpression.Token.Text, 8).ToString(CultureInfo.InvariantCulture),
+                    Value = JassLiteral.ParseOctal(octalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture),
                 };
 
                 return true;
@@ -43,7 +43,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassLiteralExpressionSyntax octalLiteralExpression,
             [NotNullWhen(true)] out List<DecompileOption>? decompileOptions)
         {
-            var value = Convert.ToInt32(octalLiteralExpression.Token.Text, 8).ToString(CultureInfo.InvariantCulture);
+            var value = JassLiteral.ParseOctal(octalLiteralExpression.Token.Text).ToString(CultureInfo.InvariantCulture);
 
             decompileOptions = new();
 
