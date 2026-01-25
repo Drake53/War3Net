@@ -14,7 +14,7 @@ namespace War3Net.CodeAnalysis.Jass
         public void Render(JassUnaryExpressionSyntax unaryExpression)
         {
             Render(unaryExpression.OperatorToken);
-            if (unaryExpression.OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword)
+            if (unaryExpression.SyntaxKind == JassSyntaxKind.LogicalNotExpression)
             {
                 WriteSpace();
             }

@@ -99,12 +99,12 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
             }
             else if (expression is JassUnaryExpressionSyntax unaryExpression)
             {
-                switch (unaryExpression.OperatorToken.SyntaxKind)
+                switch (unaryExpression.SyntaxKind)
                 {
-                    case JassSyntaxKind.PlusToken:
+                    case JassSyntaxKind.UnaryPlusExpression:
                         return unaryExpression.Expression.TryGetIntegerExpressionValue(out value);
 
-                    case JassSyntaxKind.MinusToken:
+                    case JassSyntaxKind.UnaryMinusExpression:
                         if (unaryExpression.Expression.TryGetIntegerExpressionValue(out var result))
                         {
                             value = -result;
