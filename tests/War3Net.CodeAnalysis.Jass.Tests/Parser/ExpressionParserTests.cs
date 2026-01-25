@@ -203,7 +203,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
 
             yield return new object?[] { @"trueandfalseornull", IdentifierName(@"trueandfalseornull") };
 
-            var expr1 = BinaryAdditionExpression(
+            var expr1 = BinaryAddExpression(
                 LiteralExpression(Literal(50)),
                 LiteralExpression(Literal(60)));
 
@@ -214,9 +214,9 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"2 + 6 * 10",
-                BinaryAdditionExpression(
+                BinaryAddExpression(
                     LiteralExpression(Literal(2)),
-                    BinaryMultiplicationExpression(
+                    BinaryMultiplyExpression(
                         LiteralExpression(Literal(6)),
                         LiteralExpression(Literal(10)))),
             };
@@ -224,8 +224,8 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"(2 + 6) * 10",
-                BinaryMultiplicationExpression(
-                    ParenthesizedExpression(BinaryAdditionExpression(
+                BinaryMultiplyExpression(
+                    ParenthesizedExpression(BinaryAddExpression(
                         LiteralExpression(Literal(2)),
                         LiteralExpression(Literal(6)))),
                     LiteralExpression(Literal(10))),
@@ -234,7 +234,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
             yield return new object?[]
             {
                 @"(player_id) * 10",
-                BinaryMultiplicationExpression(
+                BinaryMultiplyExpression(
                     ParenthesizedExpression(IdentifierName(@"player_id")),
                     LiteralExpression(Literal(10))),
             };
@@ -253,7 +253,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Parser
                 BinaryEqualsExpression(
                     ElementAccessExpression(
                         @"FORCE_ALL_PLAYERS",
-                        ParenthesizedExpression(BinarySubtractionExpression(
+                        ParenthesizedExpression(BinarySubtractExpression(
                             IdentifierName(@"player_id"),
                             LiteralExpression(Literal(1))))),
                     InvocationExpression(

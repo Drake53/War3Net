@@ -11,7 +11,7 @@ namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFactory
     {
-        public static JassBinaryExpressionSyntax BinaryAdditionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryAddExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
                 right);
         }
 
-        public static JassBinaryExpressionSyntax BinarySubtractionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinarySubtractExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Jass
                 right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryMultiplicationExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryMultiplyExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Jass
                 right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryDivisionExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryDivideExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
@@ -75,7 +75,7 @@ namespace War3Net.CodeAnalysis.Jass
                 right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryGreaterOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryGreaterThanOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
@@ -83,7 +83,7 @@ namespace War3Net.CodeAnalysis.Jass
                 right);
         }
 
-        public static JassBinaryExpressionSyntax BinaryLessOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
+        public static JassBinaryExpressionSyntax BinaryLessThanOrEqualExpression(JassExpressionSyntax left, JassExpressionSyntax right)
         {
             return new JassBinaryExpressionSyntax(
                 left,
