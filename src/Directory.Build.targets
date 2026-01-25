@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="BeforeBuild;GenerateNuspec">
+  <Target Name="SetProjectVersionsFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="BeforeBuild">
     <ItemGroup>
       <ThisProjectPackageVersion Include="@(PackageVersion)" Condition="'%(PackageVersion.Identity)' == $(PackageId)" />
     </ItemGroup>
@@ -12,6 +12,15 @@
     <PropertyGroup Condition="'$(GenerateAssemblyInfo)' != 'false'">
       <FileVersion Condition="'$(FileVersion)' == ''">$(AssemblyVersion)</FileVersion>
       <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(PackageVersion)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="SetPackageVersionFromCentralPackageManagement" Condition="'$(ManagePackageVersionsCentrally)' == 'true'" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <ThisProjectPackageVersion Include="@(PackageVersion)" Condition="'%(PackageVersion.Identity)' == $(PackageId)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <PackageVersion>%(ThisProjectPackageVersion.Version)</PackageVersion>
     </PropertyGroup>
   </Target>
 </Project>
