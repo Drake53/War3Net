@@ -78,6 +78,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => Declarator.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitGlobalVariableDeclaration(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGlobalVariableDeclaration(this);
+
         protected internal override JassGlobalVariableDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassGlobalVariableDeclarationSyntax(Declarator.ReplaceFirstToken(newToken));

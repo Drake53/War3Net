@@ -105,6 +105,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => EndLoopToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitLoopStatement(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLoopStatement(this);
+
         protected internal override JassLoopStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassLoopStatementSyntax(

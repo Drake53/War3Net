@@ -78,6 +78,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => Token;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitPredefinedType(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPredefinedType(this);
+
         protected internal override JassPredefinedTypeSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassPredefinedTypeSyntax(newToken);

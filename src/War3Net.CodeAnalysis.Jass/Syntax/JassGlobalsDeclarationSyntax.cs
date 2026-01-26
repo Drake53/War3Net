@@ -105,6 +105,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => EndGlobalsToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitGlobalsDeclaration(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGlobalsDeclaration(this);
+
         protected internal override JassGlobalsDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassGlobalsDeclarationSyntax(

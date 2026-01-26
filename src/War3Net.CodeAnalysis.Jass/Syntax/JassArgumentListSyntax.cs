@@ -111,6 +111,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => CloseParenToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitArgumentList(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgumentList(this);
+
         protected internal override JassArgumentListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassArgumentListSyntax(

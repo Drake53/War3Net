@@ -102,6 +102,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => CloseBracketToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitElementAccessClause(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElementAccessClause(this);
+
         protected internal override JassElementAccessClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassElementAccessClauseSyntax(

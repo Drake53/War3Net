@@ -168,6 +168,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => EndIfToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitIfStatement(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIfStatement(this);
+
         protected internal override JassIfStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassIfStatementSyntax(

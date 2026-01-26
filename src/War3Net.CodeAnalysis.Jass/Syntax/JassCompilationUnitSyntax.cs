@@ -91,6 +91,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => EndOfFileToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
+
         protected internal override JassCompilationUnitSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             if (!Declarations.IsEmpty)

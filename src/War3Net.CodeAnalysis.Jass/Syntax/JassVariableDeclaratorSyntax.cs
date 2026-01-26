@@ -150,6 +150,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => ((JassSyntaxNode?)Value ?? IdentifierName).GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitVariableDeclarator(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableDeclarator(this);
+
         protected internal override JassVariableDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassVariableDeclaratorSyntax(

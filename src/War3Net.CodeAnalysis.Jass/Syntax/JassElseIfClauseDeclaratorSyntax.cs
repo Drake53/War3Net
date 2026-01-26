@@ -102,6 +102,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => ThenToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitElseIfClauseDeclarator(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElseIfClauseDeclarator(this);
+
         protected internal override JassElseIfClauseDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassElseIfClauseDeclaratorSyntax(

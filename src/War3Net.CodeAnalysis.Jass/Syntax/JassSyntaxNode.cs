@@ -42,6 +42,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public abstract JassSyntaxToken GetLastToken();
 
+        /// <summary>
+        /// Accepts the visitor by calling the appropriate Visit method.
+        /// </summary>
+        /// <param name="visitor">The visitor to accept.</param>
+        public abstract void Accept(IJassSyntaxVisitor visitor);
+
+        /// <summary>
+        /// Accepts the visitor by calling the appropriate Visit method and returns the result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="visitor">The visitor to accept.</param>
+        /// <returns>The result of visiting this node.</returns>
+        public abstract TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor);
+
         protected internal abstract JassSyntaxNode ReplaceFirstToken(JassSyntaxToken newToken);
 
         protected internal abstract JassSyntaxNode ReplaceLastToken(JassSyntaxToken newToken);

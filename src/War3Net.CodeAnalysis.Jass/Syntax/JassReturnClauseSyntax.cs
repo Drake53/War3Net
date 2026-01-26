@@ -91,6 +91,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => ReturnType.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitReturnClause(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitReturnClause(this);
+
         protected internal override JassReturnClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassReturnClauseSyntax(

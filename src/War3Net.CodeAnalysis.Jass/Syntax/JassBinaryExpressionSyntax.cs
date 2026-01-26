@@ -117,6 +117,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => Right.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitBinaryExpression(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBinaryExpression(this);
+
         protected internal override JassBinaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassBinaryExpressionSyntax(

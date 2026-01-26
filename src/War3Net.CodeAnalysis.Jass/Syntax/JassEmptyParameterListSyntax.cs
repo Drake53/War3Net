@@ -82,6 +82,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => NothingToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitEmptyParameterList(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEmptyParameterList(this);
+
         protected internal override JassEmptyParameterListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassEmptyParameterListSyntax(

@@ -91,6 +91,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitEqualsValueClause(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEqualsValueClause(this);
+
         protected internal override JassEqualsValueClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassEqualsValueClauseSyntax(

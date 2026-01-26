@@ -169,6 +169,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => ReturnClause.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitNativeFunctionDeclaration(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNativeFunctionDeclaration(this);
+
         protected internal override JassNativeFunctionDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             if (ConstantToken is not null)

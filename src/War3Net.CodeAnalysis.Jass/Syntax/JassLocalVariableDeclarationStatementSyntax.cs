@@ -91,6 +91,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => Declarator.GetLastToken();
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitLocalVariableDeclarationStatement(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLocalVariableDeclarationStatement(this);
+
         protected internal override JassLocalVariableDeclarationStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassLocalVariableDeclarationStatementSyntax(

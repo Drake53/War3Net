@@ -102,6 +102,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override JassSyntaxToken GetLastToken() => CloseParenToken;
 
+        public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitParenthesizedExpression(this);
+
+        public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParenthesizedExpression(this);
+
         protected internal override JassParenthesizedExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassParenthesizedExpressionSyntax(
