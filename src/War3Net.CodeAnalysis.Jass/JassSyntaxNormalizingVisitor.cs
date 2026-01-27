@@ -415,7 +415,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var returnToken = VisitToken(node.ReturnToken);
-            var expression = node.Expression is not null ? (JassExpressionSyntax)Visit(node.Expression) : null;
+            var expression = node.Expression is not null ? (JassExpressionSyntax?)Visit(node.Expression) : null;
             _nodes.RemoveAt(_nodes.Count - 1);
 
             return node.Update(returnToken, expression);
