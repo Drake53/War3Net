@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -116,6 +117,23 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitIfClause(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIfClause(this);
+
+        public JassIfClauseSyntax Update(
+            JassIfClauseDeclaratorSyntax ifClauseDeclarator,
+            ImmutableArray<JassStatementSyntax> statements)
+        {
+            if (ReferenceEquals(IfClauseDeclarator, ifClauseDeclarator) &&
+                Statements.SequenceEqual(statements))
+            {
+                return this;
+            }
+
+            return new JassIfClauseSyntax(ifClauseDeclarator, statements);
+        }
+
+        public JassIfClauseSyntax WithIfClauseDeclarator(JassIfClauseDeclaratorSyntax ifClauseDeclarator) => Update(ifClauseDeclarator, Statements);
+
+        public JassIfClauseSyntax WithStatements(ImmutableArray<JassStatementSyntax> statements) => Update(IfClauseDeclarator, statements);
 
         protected internal override JassIfClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -94,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitCompilationUnit(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCompilationUnit(this);
+
+        public JassCompilationUnitSyntax Update(
+            ImmutableArray<JassTopLevelDeclarationSyntax> declarations,
+            JassSyntaxToken endOfFileToken)
+        {
+            if (Declarations.SequenceEqual(declarations) &&
+                ReferenceEquals(EndOfFileToken, endOfFileToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(endOfFileToken, JassSyntaxKind.EndOfFileToken);
+
+            return new JassCompilationUnitSyntax(declarations, endOfFileToken);
+        }
+
+        public JassCompilationUnitSyntax WithDeclarations(ImmutableArray<JassTopLevelDeclarationSyntax> declarations) => Update(declarations, EndOfFileToken);
+
+        public JassCompilationUnitSyntax WithEndOfFileToken(JassSyntaxToken endOfFileToken) => Update(Declarations, endOfFileToken);
 
         protected internal override JassCompilationUnitSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

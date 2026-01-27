@@ -95,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFunctionReferenceExpression(this);
 
+        public JassFunctionReferenceExpressionSyntax Update(
+            JassSyntaxToken functionToken,
+            JassIdentifierNameSyntax identifierName)
+        {
+            if (ReferenceEquals(FunctionToken, functionToken) &&
+                ReferenceEquals(IdentifierName, identifierName))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(functionToken, JassSyntaxKind.FunctionKeyword);
+
+            return new JassFunctionReferenceExpressionSyntax(functionToken, identifierName);
+        }
+
+        public JassFunctionReferenceExpressionSyntax WithFunctionToken(JassSyntaxToken functionToken) => Update(functionToken, IdentifierName);
+
+        public JassFunctionReferenceExpressionSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(FunctionToken, identifierName);
+
         protected internal override JassFunctionReferenceExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassFunctionReferenceExpressionSyntax(

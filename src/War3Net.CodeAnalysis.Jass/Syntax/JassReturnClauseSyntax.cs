@@ -95,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitReturnClause(this);
 
+        public JassReturnClauseSyntax Update(
+            JassSyntaxToken returnsToken,
+            JassTypeSyntax returnType)
+        {
+            if (ReferenceEquals(ReturnsToken, returnsToken) &&
+                ReferenceEquals(ReturnType, returnType))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(returnsToken, JassSyntaxKind.ReturnsKeyword);
+
+            return new JassReturnClauseSyntax(returnsToken, returnType);
+        }
+
+        public JassReturnClauseSyntax WithReturnsToken(JassSyntaxToken returnsToken) => Update(returnsToken, ReturnType);
+
+        public JassReturnClauseSyntax WithReturnType(JassTypeSyntax returnType) => Update(ReturnsToken, returnType);
+
         protected internal override JassReturnClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassReturnClauseSyntax(

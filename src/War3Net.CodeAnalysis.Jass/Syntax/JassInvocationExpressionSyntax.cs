@@ -110,6 +110,23 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitInvocationExpression(this);
 
+        public JassInvocationExpressionSyntax Update(
+            JassIdentifierNameSyntax identifierName,
+            JassArgumentListSyntax argumentList)
+        {
+            if (ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ArgumentList, argumentList))
+            {
+                return this;
+            }
+
+            return new JassInvocationExpressionSyntax(identifierName, argumentList);
+        }
+
+        public JassInvocationExpressionSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(identifierName, ArgumentList);
+
+        public JassInvocationExpressionSyntax WithArgumentList(JassArgumentListSyntax argumentList) => Update(IdentifierName, argumentList);
+
         protected internal override JassInvocationExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassInvocationExpressionSyntax(

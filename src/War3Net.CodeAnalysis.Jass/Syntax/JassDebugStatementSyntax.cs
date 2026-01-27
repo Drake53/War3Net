@@ -95,6 +95,26 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitDebugStatement(this);
 
+        public JassDebugStatementSyntax Update(
+            JassSyntaxToken debugToken,
+            JassStatementSyntax statement)
+        {
+            if (ReferenceEquals(DebugToken, debugToken) &&
+                ReferenceEquals(Statement, statement))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(debugToken, JassSyntaxKind.DebugKeyword);
+            ThrowHelper.ThrowIfInvalidDebugStatement(statement);
+
+            return new JassDebugStatementSyntax(debugToken, statement);
+        }
+
+        public JassDebugStatementSyntax WithDebugToken(JassSyntaxToken debugToken) => Update(debugToken, Statement);
+
+        public JassDebugStatementSyntax WithStatement(JassStatementSyntax statement) => Update(DebugToken, statement);
+
         protected internal override JassDebugStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassDebugStatementSyntax(

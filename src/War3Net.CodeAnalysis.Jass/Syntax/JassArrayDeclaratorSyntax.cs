@@ -120,6 +120,29 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArrayDeclarator(this);
 
+        public JassArrayDeclaratorSyntax Update(
+            JassTypeSyntax type,
+            JassSyntaxToken arrayToken,
+            JassIdentifierNameSyntax identifierName)
+        {
+            if (ReferenceEquals(Type, type) &&
+                ReferenceEquals(ArrayToken, arrayToken) &&
+                ReferenceEquals(IdentifierName, identifierName))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(arrayToken, JassSyntaxKind.ArrayKeyword);
+
+            return new JassArrayDeclaratorSyntax(type, arrayToken, identifierName);
+        }
+
+        public JassArrayDeclaratorSyntax WithType(JassTypeSyntax type) => Update(type, ArrayToken, IdentifierName);
+
+        public JassArrayDeclaratorSyntax WithArrayToken(JassSyntaxToken arrayToken) => Update(Type, arrayToken, IdentifierName);
+
+        public JassArrayDeclaratorSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(Type, ArrayToken, identifierName);
+
         protected internal override JassArrayDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassArrayDeclaratorSyntax(

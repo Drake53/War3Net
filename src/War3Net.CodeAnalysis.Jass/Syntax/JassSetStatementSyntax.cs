@@ -166,6 +166,33 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitSetStatement(this);
 
+        public JassSetStatementSyntax Update(
+            JassSyntaxToken setToken,
+            JassIdentifierNameSyntax identifierName,
+            JassElementAccessClauseSyntax? elementAccessClause,
+            JassEqualsValueClauseSyntax value)
+        {
+            if (ReferenceEquals(SetToken, setToken) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ElementAccessClause, elementAccessClause) &&
+                ReferenceEquals(Value, value))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(setToken, JassSyntaxKind.SetKeyword);
+
+            return new JassSetStatementSyntax(setToken, identifierName, elementAccessClause, value);
+        }
+
+        public JassSetStatementSyntax WithSetToken(JassSyntaxToken setToken) => Update(setToken, IdentifierName, ElementAccessClause, Value);
+
+        public JassSetStatementSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(SetToken, identifierName, ElementAccessClause, Value);
+
+        public JassSetStatementSyntax WithElementAccessClause(JassElementAccessClauseSyntax? elementAccessClause) => Update(SetToken, IdentifierName, elementAccessClause, Value);
+
+        public JassSetStatementSyntax WithValue(JassEqualsValueClauseSyntax value) => Update(SetToken, IdentifierName, ElementAccessClause, value);
+
         protected internal override JassSetStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassSetStatementSyntax(

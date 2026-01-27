@@ -173,6 +173,38 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFunctionDeclarator(this);
 
+        public JassFunctionDeclaratorSyntax Update(
+            JassSyntaxToken? constantToken,
+            JassSyntaxToken functionToken,
+            JassIdentifierNameSyntax identifierName,
+            JassParameterListOrEmptyParameterListSyntax parameterList,
+            JassReturnClauseSyntax returnClause)
+        {
+            if (ReferenceEquals(ConstantToken, constantToken) &&
+                ReferenceEquals(FunctionToken, functionToken) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ParameterList, parameterList) &&
+                ReferenceEquals(ReturnClause, returnClause))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidOptionalToken(constantToken, JassSyntaxKind.ConstantKeyword);
+            ThrowHelper.ThrowIfInvalidToken(functionToken, JassSyntaxKind.FunctionKeyword);
+
+            return new JassFunctionDeclaratorSyntax(constantToken, functionToken, identifierName, parameterList, returnClause);
+        }
+
+        public JassFunctionDeclaratorSyntax WithConstantToken(JassSyntaxToken? constantToken) => Update(constantToken, FunctionToken, IdentifierName, ParameterList, ReturnClause);
+
+        public JassFunctionDeclaratorSyntax WithFunctionToken(JassSyntaxToken functionToken) => Update(ConstantToken, functionToken, IdentifierName, ParameterList, ReturnClause);
+
+        public JassFunctionDeclaratorSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(ConstantToken, FunctionToken, identifierName, ParameterList, ReturnClause);
+
+        public JassFunctionDeclaratorSyntax WithParameterList(JassParameterListOrEmptyParameterListSyntax parameterList) => Update(ConstantToken, FunctionToken, IdentifierName, parameterList, ReturnClause);
+
+        public JassFunctionDeclaratorSyntax WithReturnClause(JassReturnClauseSyntax returnClause) => Update(ConstantToken, FunctionToken, IdentifierName, ParameterList, returnClause);
+
         protected internal override JassFunctionDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             if (ConstantToken is not null)

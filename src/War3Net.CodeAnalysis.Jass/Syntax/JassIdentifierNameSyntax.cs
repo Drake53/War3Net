@@ -74,6 +74,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIdentifierName(this);
 
+        public JassIdentifierNameSyntax WithToken(JassSyntaxToken token)
+        {
+            if (ReferenceEquals(Token, token))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(token, JassSyntaxKind.IdentifierToken);
+
+            return new JassIdentifierNameSyntax(token);
+        }
+
         protected internal override JassIdentifierNameSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassIdentifierNameSyntax(newToken);

@@ -173,6 +173,38 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitNativeFunctionDeclaration(this);
 
+        public JassNativeFunctionDeclarationSyntax Update(
+            JassSyntaxToken? constantToken,
+            JassSyntaxToken nativeToken,
+            JassIdentifierNameSyntax identifierName,
+            JassParameterListOrEmptyParameterListSyntax parameterList,
+            JassReturnClauseSyntax returnClause)
+        {
+            if (ReferenceEquals(ConstantToken, constantToken) &&
+                ReferenceEquals(NativeToken, nativeToken) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ParameterList, parameterList) &&
+                ReferenceEquals(ReturnClause, returnClause))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidOptionalToken(nativeToken, JassSyntaxKind.ConstantKeyword);
+            ThrowHelper.ThrowIfInvalidToken(nativeToken, JassSyntaxKind.NativeKeyword);
+
+            return new JassNativeFunctionDeclarationSyntax(constantToken, nativeToken, identifierName, parameterList, returnClause);
+        }
+
+        public JassNativeFunctionDeclarationSyntax WithConstantToken(JassSyntaxToken? constantToken) => Update(constantToken, NativeToken, IdentifierName, ParameterList, ReturnClause);
+
+        public JassNativeFunctionDeclarationSyntax WithNativeToken(JassSyntaxToken nativeToken) => Update(ConstantToken, nativeToken, IdentifierName, ParameterList, ReturnClause);
+
+        public JassNativeFunctionDeclarationSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(ConstantToken, NativeToken, identifierName, ParameterList, ReturnClause);
+
+        public JassNativeFunctionDeclarationSyntax WithParameterList(JassParameterListOrEmptyParameterListSyntax parameterList) => Update(ConstantToken, NativeToken, IdentifierName, parameterList, ReturnClause);
+
+        public JassNativeFunctionDeclarationSyntax WithReturnClause(JassReturnClauseSyntax returnClause) => Update(ConstantToken, NativeToken, IdentifierName, ParameterList, returnClause);
+
         protected internal override JassNativeFunctionDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             if (ConstantToken is not null)

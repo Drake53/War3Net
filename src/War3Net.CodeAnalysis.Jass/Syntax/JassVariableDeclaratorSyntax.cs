@@ -154,6 +154,27 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitVariableDeclarator(this);
 
+        public JassVariableDeclaratorSyntax Update(
+            JassTypeSyntax type,
+            JassIdentifierNameSyntax identifierName,
+            JassEqualsValueClauseSyntax? value)
+        {
+            if (ReferenceEquals(Type, type) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(Value, value))
+            {
+                return this;
+            }
+
+            return new JassVariableDeclaratorSyntax(type, identifierName, value);
+        }
+
+        public JassVariableDeclaratorSyntax WithType(JassTypeSyntax type) => Update(type, IdentifierName, Value);
+
+        public JassVariableDeclaratorSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(Type, identifierName, Value);
+
+        public JassVariableDeclaratorSyntax WithValue(JassEqualsValueClauseSyntax? value) => Update(Type, IdentifierName, value);
+
         protected internal override JassVariableDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassVariableDeclaratorSyntax(

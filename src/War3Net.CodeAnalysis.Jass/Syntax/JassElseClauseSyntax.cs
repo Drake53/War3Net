@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -96,6 +97,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitElseClause(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElseClause(this);
+
+        public JassElseClauseSyntax Update(
+            JassSyntaxToken elseToken,
+            ImmutableArray<JassStatementSyntax> statements)
+        {
+            if (ReferenceEquals(ElseToken, elseToken) &&
+                Statements.SequenceEqual(statements))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(elseToken, JassSyntaxKind.ElseKeyword);
+
+            return new JassElseClauseSyntax(elseToken, statements);
+        }
+
+        public JassElseClauseSyntax WithElseToken(JassSyntaxToken elseToken) => Update(elseToken, Statements);
+
+        public JassElseClauseSyntax WithStatements(ImmutableArray<JassStatementSyntax> statements) => Update(ElseToken, statements);
 
         protected internal override JassElseClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

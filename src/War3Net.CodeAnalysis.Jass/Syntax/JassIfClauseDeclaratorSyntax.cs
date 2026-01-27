@@ -106,6 +106,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitIfClauseDeclarator(this);
 
+        public JassIfClauseDeclaratorSyntax Update(
+            JassSyntaxToken ifToken,
+            JassExpressionSyntax condition,
+            JassSyntaxToken thenToken)
+        {
+            if (ReferenceEquals(IfToken, ifToken) &&
+                ReferenceEquals(Condition, condition) &&
+                ReferenceEquals(ThenToken, thenToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(ifToken, JassSyntaxKind.IfKeyword);
+            ThrowHelper.ThrowIfInvalidToken(thenToken, JassSyntaxKind.ThenKeyword);
+
+            return new JassIfClauseDeclaratorSyntax(ifToken, condition, thenToken);
+        }
+
+        public JassIfClauseDeclaratorSyntax WithIfToken(JassSyntaxToken ifToken) => Update(ifToken, Condition, ThenToken);
+
+        public JassIfClauseDeclaratorSyntax WithCondition(JassExpressionSyntax condition) => Update(IfToken, condition, ThenToken);
+
+        public JassIfClauseDeclaratorSyntax WithThenToken(JassSyntaxToken thenToken) => Update(IfToken, Condition, thenToken);
+
         protected internal override JassIfClauseDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassIfClauseDeclaratorSyntax(

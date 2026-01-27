@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -108,6 +109,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitLoopStatement(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLoopStatement(this);
+
+        public JassLoopStatementSyntax Update(
+            JassSyntaxToken loopToken,
+            ImmutableArray<JassStatementSyntax> statements,
+            JassSyntaxToken endLoopToken)
+        {
+            if (ReferenceEquals(LoopToken, loopToken) &&
+                Statements.SequenceEqual(statements) &&
+                ReferenceEquals(EndLoopToken, endLoopToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(loopToken, JassSyntaxKind.LoopKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endLoopToken, JassSyntaxKind.EndLoopKeyword);
+
+            return new JassLoopStatementSyntax(loopToken, statements, endLoopToken);
+        }
+
+        public JassLoopStatementSyntax WithLoopToken(JassSyntaxToken loopToken) => Update(loopToken, Statements, EndLoopToken);
+
+        public JassLoopStatementSyntax WithStatements(ImmutableArray<JassStatementSyntax> statements) => Update(LoopToken, statements, EndLoopToken);
+
+        public JassLoopStatementSyntax WithEndLoopToken(JassSyntaxToken endLoopToken) => Update(LoopToken, Statements, endLoopToken);
 
         protected internal override JassLoopStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

@@ -120,6 +120,29 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitCallStatement(this);
 
+        public JassCallStatementSyntax Update(
+            JassSyntaxToken callToken,
+            JassIdentifierNameSyntax identifierName,
+            JassArgumentListSyntax argumentList)
+        {
+            if (ReferenceEquals(CallToken, callToken) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ArgumentList, argumentList))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(callToken, JassSyntaxKind.CallKeyword);
+
+            return new JassCallStatementSyntax(callToken, identifierName, argumentList);
+        }
+
+        public JassCallStatementSyntax WithCallToken(JassSyntaxToken callToken) => Update(callToken, IdentifierName, ArgumentList);
+
+        public JassCallStatementSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(CallToken, identifierName, ArgumentList);
+
+        public JassCallStatementSyntax WithArgumentList(JassArgumentListSyntax argumentList) => Update(CallToken, IdentifierName, argumentList);
+
         protected internal override JassCallStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassCallStatementSyntax(

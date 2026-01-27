@@ -86,6 +86,26 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEmptyParameterList(this);
 
+        public JassEmptyParameterListSyntax Update(
+            JassSyntaxToken takesToken,
+            JassSyntaxToken nothingToken)
+        {
+            if (ReferenceEquals(TakesToken, takesToken) &&
+                ReferenceEquals(NothingToken, nothingToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(takesToken, JassSyntaxKind.TakesKeyword);
+            ThrowHelper.ThrowIfInvalidToken(nothingToken, JassSyntaxKind.NothingKeyword);
+
+            return new JassEmptyParameterListSyntax(takesToken, nothingToken);
+        }
+
+        public JassEmptyParameterListSyntax WithTakesToken(JassSyntaxToken takesToken) => Update(takesToken, NothingToken);
+
+        public JassEmptyParameterListSyntax WithNothingToken(JassSyntaxToken nothingToken) => Update(TakesToken, nothingToken);
+
         protected internal override JassEmptyParameterListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassEmptyParameterListSyntax(

@@ -106,6 +106,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitElementAccessClause(this);
 
+        public JassElementAccessClauseSyntax Update(
+            JassSyntaxToken openBracketToken,
+            JassExpressionSyntax expression,
+            JassSyntaxToken closeBracketToken)
+        {
+            if (ReferenceEquals(OpenBracketToken, openBracketToken) &&
+                ReferenceEquals(Expression, expression) &&
+                ReferenceEquals(CloseBracketToken, closeBracketToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(openBracketToken, JassSyntaxKind.OpenBracketToken);
+            ThrowHelper.ThrowIfInvalidToken(closeBracketToken, JassSyntaxKind.CloseBracketToken);
+
+            return new JassElementAccessClauseSyntax(openBracketToken, expression, closeBracketToken);
+        }
+
+        public JassElementAccessClauseSyntax WithOpenBracketToken(JassSyntaxToken openBracketToken) => Update(openBracketToken, Expression, CloseBracketToken);
+
+        public JassElementAccessClauseSyntax WithExpression(JassExpressionSyntax expression) => Update(OpenBracketToken, expression, CloseBracketToken);
+
+        public JassElementAccessClauseSyntax WithCloseBracketToken(JassSyntaxToken closeBracketToken) => Update(OpenBracketToken, Expression, closeBracketToken);
+
         protected internal override JassElementAccessClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassElementAccessClauseSyntax(

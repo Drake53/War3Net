@@ -117,6 +117,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitReturnStatement(this);
 
+        public JassReturnStatementSyntax Update(
+            JassSyntaxToken returnToken,
+            JassExpressionSyntax? value)
+        {
+            if (ReferenceEquals(ReturnToken, returnToken) &&
+                ReferenceEquals(Value, value))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(returnToken, JassSyntaxKind.ReturnKeyword);
+
+            return new JassReturnStatementSyntax(returnToken, value);
+        }
+
+        public JassReturnStatementSyntax WithReturnToken(JassSyntaxToken returnToken) => Update(returnToken, Value);
+
+        public JassReturnStatementSyntax WithValue(JassExpressionSyntax? value) => Update(ReturnToken, value);
+
         protected internal override JassReturnStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassReturnStatementSyntax(

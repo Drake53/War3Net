@@ -82,6 +82,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitPredefinedType(this);
 
+        public JassPredefinedTypeSyntax WithToken(JassSyntaxToken token)
+        {
+            if (ReferenceEquals(Token, token))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidPredefinedTypeToken(token);
+
+            return new JassPredefinedTypeSyntax(token);
+        }
+
         protected internal override JassPredefinedTypeSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassPredefinedTypeSyntax(newToken);

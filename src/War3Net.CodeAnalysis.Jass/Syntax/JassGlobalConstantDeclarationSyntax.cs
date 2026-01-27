@@ -145,6 +145,33 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGlobalConstantDeclaration(this);
 
+        public JassGlobalConstantDeclarationSyntax Update(
+            JassSyntaxToken constantToken,
+            JassTypeSyntax type,
+            JassIdentifierNameSyntax identifierName,
+            JassEqualsValueClauseSyntax value)
+        {
+            if (ReferenceEquals(ConstantToken, constantToken) &&
+                ReferenceEquals(Type, type) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(Value, value))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(constantToken, JassSyntaxKind.ConstantKeyword);
+
+            return new JassGlobalConstantDeclarationSyntax(constantToken, type, identifierName, value);
+        }
+
+        public JassGlobalConstantDeclarationSyntax WithConstantToken(JassSyntaxToken constantToken) => Update(constantToken, Type, IdentifierName, Value);
+
+        public JassGlobalConstantDeclarationSyntax WithType(JassTypeSyntax type) => Update(ConstantToken, type, IdentifierName, Value);
+
+        public JassGlobalConstantDeclarationSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(ConstantToken, Type, identifierName, Value);
+
+        public JassGlobalConstantDeclarationSyntax WithValue(JassEqualsValueClauseSyntax value) => Update(ConstantToken, Type, IdentifierName, value);
+
         protected internal override JassGlobalConstantDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassGlobalConstantDeclarationSyntax(

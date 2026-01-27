@@ -131,6 +131,34 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitTypeDeclaration(this);
 
+        public JassTypeDeclarationSyntax Update(
+            JassSyntaxToken typeToken,
+            JassIdentifierNameSyntax identifierName,
+            JassSyntaxToken extendsToken,
+            JassTypeSyntax baseType)
+        {
+            if (ReferenceEquals(TypeToken, typeToken) &&
+                ReferenceEquals(IdentifierName, identifierName) &&
+                ReferenceEquals(ExtendsToken, extendsToken) &&
+                ReferenceEquals(BaseType, baseType))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(typeToken, JassSyntaxKind.TypeKeyword);
+            ThrowHelper.ThrowIfInvalidToken(extendsToken, JassSyntaxKind.ExtendsKeyword);
+
+            return new JassTypeDeclarationSyntax(typeToken, identifierName, extendsToken, baseType);
+        }
+
+        public JassTypeDeclarationSyntax WithTypeToken(JassSyntaxToken typeToken) => Update(typeToken, IdentifierName, ExtendsToken, BaseType);
+
+        public JassTypeDeclarationSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(TypeToken, identifierName, ExtendsToken, BaseType);
+
+        public JassTypeDeclarationSyntax WithExtendsToken(JassSyntaxToken extendsToken) => Update(TypeToken, IdentifierName, extendsToken, BaseType);
+
+        public JassTypeDeclarationSyntax WithBaseType(JassTypeSyntax baseType) => Update(TypeToken, IdentifierName, ExtendsToken, baseType);
+
         protected internal override JassTypeDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassTypeDeclarationSyntax(

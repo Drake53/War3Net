@@ -110,6 +110,23 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParameter(this);
 
+        public JassParameterSyntax Update(
+            JassTypeSyntax type,
+            JassIdentifierNameSyntax identifierName)
+        {
+            if (ReferenceEquals(Type, type) &&
+                ReferenceEquals(IdentifierName, identifierName))
+            {
+                return this;
+            }
+
+            return new JassParameterSyntax(type, identifierName);
+        }
+
+        public JassParameterSyntax WithType(JassTypeSyntax type) => Update(type, IdentifierName);
+
+        public JassParameterSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(Type, identifierName);
+
         protected internal override JassParameterSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassParameterSyntax(

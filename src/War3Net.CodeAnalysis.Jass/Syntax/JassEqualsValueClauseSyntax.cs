@@ -95,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitEqualsValueClause(this);
 
+        public JassEqualsValueClauseSyntax Update(
+            JassSyntaxToken equalsToken,
+            JassExpressionSyntax expression)
+        {
+            if (ReferenceEquals(EqualsToken, equalsToken) &&
+                ReferenceEquals(Expression, expression))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(equalsToken, JassSyntaxKind.EqualsToken);
+
+            return new JassEqualsValueClauseSyntax(equalsToken, expression);
+        }
+
+        public JassEqualsValueClauseSyntax WithEqualsToken(JassSyntaxToken equalsToken) => Update(equalsToken, Expression);
+
+        public JassEqualsValueClauseSyntax WithExpression(JassExpressionSyntax expression) => Update(EqualsToken, expression);
+
         protected internal override JassEqualsValueClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassEqualsValueClauseSyntax(

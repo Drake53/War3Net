@@ -106,6 +106,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitParenthesizedExpression(this);
 
+        public JassParenthesizedExpressionSyntax Update(
+            JassSyntaxToken openParenToken,
+            JassExpressionSyntax expression,
+            JassSyntaxToken closeParenToken)
+        {
+            if (ReferenceEquals(OpenParenToken, openParenToken) &&
+                ReferenceEquals(Expression, expression) &&
+                ReferenceEquals(CloseParenToken, closeParenToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(openParenToken, JassSyntaxKind.OpenParenToken);
+            ThrowHelper.ThrowIfInvalidToken(closeParenToken, JassSyntaxKind.CloseParenToken);
+
+            return new JassParenthesizedExpressionSyntax(openParenToken, expression, closeParenToken);
+        }
+
+        public JassParenthesizedExpressionSyntax WithOpenParenToken(JassSyntaxToken openParenToken) => Update(openParenToken, Expression, CloseParenToken);
+
+        public JassParenthesizedExpressionSyntax WithExpression(JassExpressionSyntax expression) => Update(OpenParenToken, expression, CloseParenToken);
+
+        public JassParenthesizedExpressionSyntax WithCloseParenToken(JassSyntaxToken closeParenToken) => Update(OpenParenToken, Expression, closeParenToken);
+
         protected internal override JassParenthesizedExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassParenthesizedExpressionSyntax(

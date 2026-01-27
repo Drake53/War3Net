@@ -121,6 +121,26 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitBinaryExpression(this);
 
+        public JassBinaryExpressionSyntax Update(JassExpressionSyntax left, JassSyntaxToken operatorToken, JassExpressionSyntax right)
+        {
+            if (ReferenceEquals(Left, left) &&
+                ReferenceEquals(OperatorToken, operatorToken) &&
+                ReferenceEquals(Right, right))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidBinaryOperatorToken(operatorToken);
+
+            return new JassBinaryExpressionSyntax(left, operatorToken, right);
+        }
+
+        public JassBinaryExpressionSyntax WithLeft(JassExpressionSyntax left) => Update(left, OperatorToken, Right);
+
+        public JassBinaryExpressionSyntax WithOperatorToken(JassSyntaxToken operatorToken) => Update(Left, operatorToken, Right);
+
+        public JassBinaryExpressionSyntax WithRight(JassExpressionSyntax right) => Update(Left, OperatorToken, right);
+
         protected internal override JassBinaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassBinaryExpressionSyntax(

@@ -115,6 +115,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitArgumentList(this);
 
+        public JassArgumentListSyntax Update(
+            JassSyntaxToken openParenToken,
+            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> argumentList,
+            JassSyntaxToken closeParenToken)
+        {
+            if (ReferenceEquals(OpenParenToken, openParenToken) &&
+                ReferenceEquals(ArgumentList, argumentList) &&
+                ReferenceEquals(CloseParenToken, closeParenToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(openParenToken, JassSyntaxKind.OpenParenToken);
+            ThrowHelper.ThrowIfInvalidToken(closeParenToken, JassSyntaxKind.CloseParenToken);
+
+            return new JassArgumentListSyntax(openParenToken, argumentList, closeParenToken);
+        }
+
+        public JassArgumentListSyntax WithOpenParenToken(JassSyntaxToken openParenToken) => Update(openParenToken, ArgumentList, CloseParenToken);
+
+        public JassArgumentListSyntax WithArgumentList(SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> argumentList) => Update(OpenParenToken, argumentList, CloseParenToken);
+
+        public JassArgumentListSyntax WithCloseParenToken(JassSyntaxToken closeParenToken) => Update(OpenParenToken, ArgumentList, closeParenToken);
+
         protected internal override JassArgumentListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassArgumentListSyntax(

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -108,6 +109,30 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitGlobalsDeclaration(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGlobalsDeclaration(this);
+
+        public JassGlobalsDeclarationSyntax Update(
+            JassSyntaxToken globalsToken,
+            ImmutableArray<JassGlobalDeclarationSyntax> globalDeclarations,
+            JassSyntaxToken endGlobalsToken)
+        {
+            if (ReferenceEquals(GlobalsToken, globalsToken) &&
+                GlobalDeclarations.SequenceEqual(globalDeclarations) &&
+                ReferenceEquals(EndGlobalsToken, endGlobalsToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(globalsToken, JassSyntaxKind.GlobalsKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endGlobalsToken, JassSyntaxKind.EndGlobalsKeyword);
+
+            return new JassGlobalsDeclarationSyntax(globalsToken, globalDeclarations, endGlobalsToken);
+        }
+
+        public JassGlobalsDeclarationSyntax WithGlobalsToken(JassSyntaxToken globalsToken) => Update(globalsToken, GlobalDeclarations, EndGlobalsToken);
+
+        public JassGlobalsDeclarationSyntax WithGlobalDeclarations(ImmutableArray<JassGlobalDeclarationSyntax> globalDeclarations) => Update(GlobalsToken, globalDeclarations, EndGlobalsToken);
+
+        public JassGlobalsDeclarationSyntax WithEndGlobalsToken(JassSyntaxToken endGlobalsToken) => Update(GlobalsToken, GlobalDeclarations, endGlobalsToken);
 
         protected internal override JassGlobalsDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

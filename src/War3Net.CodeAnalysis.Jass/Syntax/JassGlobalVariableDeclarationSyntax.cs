@@ -82,6 +82,16 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitGlobalVariableDeclaration(this);
 
+        public JassGlobalVariableDeclarationSyntax WithDeclarator(JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            if (ReferenceEquals(Declarator, declarator))
+            {
+                return this;
+            }
+
+            return new JassGlobalVariableDeclarationSyntax(declarator);
+        }
+
         protected internal override JassGlobalVariableDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassGlobalVariableDeclarationSyntax(Declarator.ReplaceFirstToken(newToken));

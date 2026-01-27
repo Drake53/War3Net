@@ -96,6 +96,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitUnaryExpression(this);
 
+        public JassUnaryExpressionSyntax Update(
+            JassSyntaxToken operatorToken,
+            JassExpressionSyntax expression)
+        {
+            if (ReferenceEquals(OperatorToken, operatorToken) &&
+                ReferenceEquals(Expression, expression))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidUnaryOperatorToken(operatorToken);
+
+            return new JassUnaryExpressionSyntax(operatorToken, expression);
+        }
+
+        public JassUnaryExpressionSyntax WithOperatorToken(JassSyntaxToken operatorToken) => Update(operatorToken, Expression);
+
+        public JassUnaryExpressionSyntax WithExpression(JassExpressionSyntax expression) => Update(OperatorToken, expression);
+
         protected internal override JassUnaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassUnaryExpressionSyntax(

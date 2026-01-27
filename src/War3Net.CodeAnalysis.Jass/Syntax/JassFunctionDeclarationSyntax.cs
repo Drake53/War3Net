@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
 
@@ -129,6 +130,29 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitFunctionDeclaration(this);
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitFunctionDeclaration(this);
+
+        public JassFunctionDeclarationSyntax Update(
+            JassFunctionDeclaratorSyntax functionDeclarator,
+            ImmutableArray<JassStatementSyntax> statements,
+            JassSyntaxToken endFunctionToken)
+        {
+            if (ReferenceEquals(FunctionDeclarator, functionDeclarator) &&
+                Statements.SequenceEqual(statements) &&
+                ReferenceEquals(EndFunctionToken, endFunctionToken))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(endFunctionToken, JassSyntaxKind.EndFunctionKeyword);
+
+            return new JassFunctionDeclarationSyntax(functionDeclarator, statements, endFunctionToken);
+        }
+
+        public JassFunctionDeclarationSyntax WithFunctionDeclarator(JassFunctionDeclaratorSyntax functionDeclarator) => Update(functionDeclarator, Statements, EndFunctionToken);
+
+        public JassFunctionDeclarationSyntax WithStatements(ImmutableArray<JassStatementSyntax> statements) => Update(FunctionDeclarator, statements, EndFunctionToken);
+
+        public JassFunctionDeclarationSyntax WithEndFunctionToken(JassSyntaxToken endFunctionToken) => Update(FunctionDeclarator, Statements, endFunctionToken);
 
         protected internal override JassFunctionDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {

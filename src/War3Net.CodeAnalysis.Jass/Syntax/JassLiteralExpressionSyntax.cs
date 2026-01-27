@@ -74,6 +74,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLiteralExpression(this);
 
+        public JassLiteralExpressionSyntax WithToken(JassSyntaxToken token)
+        {
+            if (ReferenceEquals(Token, token))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidLiteralToken(token);
+
+            return new JassLiteralExpressionSyntax(token);
+        }
+
         protected internal override JassLiteralExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassLiteralExpressionSyntax(newToken);

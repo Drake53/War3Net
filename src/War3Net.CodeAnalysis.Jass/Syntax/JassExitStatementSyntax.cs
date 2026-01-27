@@ -95,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitExitStatement(this);
 
+        public JassExitStatementSyntax Update(
+            JassSyntaxToken exitWhenToken,
+            JassExpressionSyntax condition)
+        {
+            if (ReferenceEquals(ExitWhenToken, exitWhenToken) &&
+                ReferenceEquals(Condition, condition))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(exitWhenToken, JassSyntaxKind.ExitWhenKeyword);
+
+            return new JassExitStatementSyntax(exitWhenToken, condition);
+        }
+
+        public JassExitStatementSyntax WithExitWhenToken(JassSyntaxToken exitWhenToken) => Update(exitWhenToken, Condition);
+
+        public JassExitStatementSyntax WithCondition(JassExpressionSyntax condition) => Update(ExitWhenToken, condition);
+
         protected internal override JassExitStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassExitStatementSyntax(

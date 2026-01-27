@@ -95,6 +95,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override TResult? Accept<TResult>(IJassSyntaxVisitor<TResult> visitor) where TResult : default => visitor.VisitLocalVariableDeclarationStatement(this);
 
+        public JassLocalVariableDeclarationStatementSyntax Update(
+            JassSyntaxToken localToken,
+            JassVariableOrArrayDeclaratorSyntax declarator)
+        {
+            if (ReferenceEquals(LocalToken, localToken) &&
+                ReferenceEquals(Declarator, declarator))
+            {
+                return this;
+            }
+
+            ThrowHelper.ThrowIfInvalidToken(localToken, JassSyntaxKind.LocalKeyword);
+
+            return new JassLocalVariableDeclarationStatementSyntax(localToken, declarator);
+        }
+
+        public JassLocalVariableDeclarationStatementSyntax WithLocalToken(JassSyntaxToken localToken) => Update(localToken, Declarator);
+
+        public JassLocalVariableDeclarationStatementSyntax WithDeclarator(JassVariableOrArrayDeclaratorSyntax declarator) => Update(LocalToken, declarator);
+
         protected internal override JassLocalVariableDeclarationStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassLocalVariableDeclarationStatementSyntax(
