@@ -32,7 +32,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
 
         public JassIfStatementSyntax ToIfStatement(JassSyntaxToken endIfToken)
         {
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(endIfToken, JassSyntaxKind.EndIfKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endIfToken, JassSyntaxKind.EndIfKeyword);
 
             EndCurrentClause();
 
@@ -56,7 +56,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
 
         public void BeginElseClause(JassSyntaxToken elseToken)
         {
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(elseToken, JassSyntaxKind.ElseKeyword);
+            ThrowHelper.ThrowIfInvalidToken(elseToken, JassSyntaxKind.ElseKeyword);
 
             EndCurrentClause();
             if (_elseClause is not null)

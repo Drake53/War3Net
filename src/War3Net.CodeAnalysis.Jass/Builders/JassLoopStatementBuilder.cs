@@ -16,14 +16,14 @@ namespace War3Net.CodeAnalysis.Jass.Builders
 
         public JassLoopStatementBuilder(JassSyntaxToken loopToken)
         {
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(loopToken, JassSyntaxKind.LoopKeyword);
+            ThrowHelper.ThrowIfInvalidToken(loopToken, JassSyntaxKind.LoopKeyword);
 
             _loopToken = loopToken;
         }
 
         public JassLoopStatementSyntax ToLoopStatement(JassSyntaxToken endLoopToken)
         {
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(endLoopToken, JassSyntaxKind.EndLoopKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endLoopToken, JassSyntaxKind.EndLoopKeyword);
 
             return new JassLoopStatementSyntax(
                 _loopToken,

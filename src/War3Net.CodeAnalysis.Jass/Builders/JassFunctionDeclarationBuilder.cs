@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
 
         public JassFunctionDeclarationSyntax ToFunctionDeclaration(JassSyntaxToken endFunctionToken)
         {
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(endFunctionToken, JassSyntaxKind.EndFunctionKeyword);
+            ThrowHelper.ThrowIfInvalidToken(endFunctionToken, JassSyntaxKind.EndFunctionKeyword);
 
             return new JassFunctionDeclarationSyntax(
                 _functionDeclarator,

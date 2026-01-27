@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Builders
                 throw new InvalidOperationException();
             }
 
-            JassSyntaxFactory.ThrowHelper.ThrowIfInvalidToken(endOfFileToken, JassSyntaxKind.EndOfFileToken);
+            ThrowHelper.ThrowIfInvalidToken(endOfFileToken, JassSyntaxKind.EndOfFileToken);
 
             return new JassCompilationUnitSyntax(
                 _declarationsBuilder.ToImmutable(),
