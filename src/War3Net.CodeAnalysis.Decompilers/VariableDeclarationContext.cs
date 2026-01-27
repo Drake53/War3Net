@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             GlobalVariableDeclaration = globalVariableDeclaration;
             IsArray = globalVariableDeclaration.Declarator is JassArrayDeclaratorSyntax;
 
-            Type = globalVariableDeclaration.Declarator.GetVariableType().GetToken().Text;
+            Type = globalVariableDeclaration.Declarator.Type.Token.Text;
         }
 
         public JassGlobalVariableDeclarationSyntax GlobalVariableDeclaration { get; }

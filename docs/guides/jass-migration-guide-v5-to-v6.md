@@ -2,7 +2,7 @@
 
 ## Overview
 
-War3Net.CodeAnalysis.Jass v6.0.0 introduced major breaking changes to make the library better suited for certain use cases.
+War3Net.CodeAnalysis.Jass v6 introduced major breaking changes to make the library better suited for certain use cases.
 
 New classes have been added for tokens and trivia, making it possible to model a JASS script with 100% accuracy.
 
@@ -140,11 +140,10 @@ Comments and empty lines are now handled by trivia:
 
 The following types have been removed:
 
-| Removed type                  | Alternative                                                         |
-|-------------------------------|---------------------------------------------------------------------|
-| `IInvocationSyntax`           | NO ALTERNATIVE                                                      |
-| `IVariableDeclaratorSyntax`   | Use `GetVariableType()` and `GetIdentifierName()` extension methods |
-| `JassDebugCustomScriptAction` | NO ALTERNATIVE                                                      |
+| Removed type                  | Alternative    |
+|-------------------------------|----------------|
+| `IInvocationSyntax`           | NO ALTERNATIVE |
+| `JassDebugCustomScriptAction` | NO ALTERNATIVE |
 
 The following types are no longer relevant:
 
@@ -198,13 +197,14 @@ If the containing type has been changed or renamed, the new type name is also li
 
 The following properties have been replaced:
 
-| Old property name                     | New property type and name                          | Old type                  |
-|---------------------------------------|-----------------------------------------------------|---------------------------|
-| `JassBinaryExpressionSyntax.Operator` | `JassSyntaxToken OperatorToken`                     | `BinaryOperatorType`      |
-| `JassElseClauseSyntax.Body`           | `ImmutableArray<JassStatementSyntax> Statements`    | `JassStatementListSyntax` |
-| `JassIdentifierNameSyntax.Name`       | `JassSyntaxToken Token`                             | `string`                  |
-| `JassSetStatementSyntax.Indexer`      | `JassElementAccessClauseSyntax ElementAccessClause` | `IExpressionSyntax`       |
-| `JassUnaryExpressionSyntax.Operator`  | `JassSyntaxToken OperatorToken`                     | `UnaryOperatorType`       |
+| Old property name                     | New property type and name                          | Old type                   |
+|---------------------------------------|-----------------------------------------------------|----------------------------|
+| `JassBinaryExpressionSyntax.Operator` | `JassSyntaxToken OperatorToken`                     | `BinaryOperatorType`       |
+| `JassElseClauseSyntax.Body`           | `ImmutableArray<JassStatementSyntax> Statements`    | `JassStatementListSyntax`  |
+| `JassIdentifierNameSyntax.Name`       | `JassSyntaxToken Token`                             | `string`                   |
+| `JassSetStatementSyntax.Indexer`      | `JassElementAccessClauseSyntax ElementAccessClause` | `IExpressionSyntax`        |
+| `JassTypeSyntax.TypeName`             | `JassSyntaxToken Token`                             | `JassIdentifierNameSyntax` |
+| `JassUnaryExpressionSyntax.Operator`  | `JassSyntaxToken OperatorToken`                     | `UnaryOperatorType`        |
 
 Other replacements:
 
@@ -214,7 +214,6 @@ Other replacements:
 | `JassBooleanLiteralExpressionSyntax.True`                | `JassSyntaxFactory.Literal(true)`                    |
 | `JassNativeFunctionDeclarationSyntax.FunctionDeclarator` | All declarator properties are now available directly |
 | `JassNullLiteralExpressionSyntax.Value`                  | `JassSyntaxFactory.Literal(null)`                    |
-| `JassTypeSyntax.TypeName`                                | `JassTypeSyntaxExtensions.GetToken()`                |
 
 </details>
 

@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         private bool TryRenameFunctionDeclaration(JassFunctionDeclarationSyntax functionDeclaration, [NotNullWhen(true)] out JassTopLevelDeclarationSyntax? renamedFunctionDeclaration)
         {
-            foreach (var parameter in functionDeclaration.FunctionDeclarator.ParameterList.GetParameters())
+            foreach (var parameter in functionDeclaration.FunctionDeclarator.ParameterList.Parameters)
             {
                 _localVariableNames.Add(parameter.IdentifierName.Token.Text);
             }

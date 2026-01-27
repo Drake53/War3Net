@@ -64,7 +64,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 var jassToLuaTranspiler = JassToLuaTranspiler ?? new JassToLuaTranspiler();
 
                 declaration = declaration.WithCSharpLuaTemplateAttribute(
-                    jassToLuaTranspiler.Transpile(globalVariableDeclaration.Declarator.GetIdentifierName().Token));
+                    jassToLuaTranspiler.Transpile(globalVariableDeclaration.Declarator.IdentifierName.Token));
             }
 
             return declaration;

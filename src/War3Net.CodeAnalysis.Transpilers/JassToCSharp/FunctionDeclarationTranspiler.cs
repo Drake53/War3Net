@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             var functionNameToken = Transpile(declarator.IdentifierName.Token);
             var discardTakesTokenLeadingTrivia = false;
-            if (IsSingleSpace(declarator.IdentifierName.Token.TrailingTrivia, declarator.ParameterList.GetTakesToken().LeadingTrivia))
+            if (IsSingleSpace(declarator.IdentifierName.Token.TrailingTrivia, declarator.ParameterList.TakesToken.LeadingTrivia))
             {
                 functionNameToken = functionNameToken.WithoutTrailingTrivia();
                 discardTakesTokenLeadingTrivia = true;
@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 Transpile(declarator.ParameterList, declarator.ReturnClause, discardTakesTokenLeadingTrivia),
                 default,
                 SyntaxFactory.Block(
-                    Transpile(SyntaxKind.OpenBraceToken, declarator.ReturnClause.ReturnType.GetToken()),
+                    Transpile(SyntaxKind.OpenBraceToken, declarator.ReturnClause.ReturnType.Token),
                     SyntaxFactory.List(functionDeclaration.Statements.Select(Transpile)),
                     Transpile(SyntaxKind.CloseBraceToken, functionDeclaration.EndFunctionToken)),
                 null);

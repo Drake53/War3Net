@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (functionDeclaration.FunctionDeclarator.ParameterList is JassEmptyParameterListSyntax)
             {
-                var returnTypeToken = functionDeclaration.FunctionDeclarator.ReturnClause.ReturnType.GetToken();
+                var returnTypeToken = functionDeclaration.FunctionDeclarator.ReturnClause.ReturnType.Token;
                 IsActionsFunction = returnTypeToken.SyntaxKind == JassSyntaxKind.NothingKeyword;
                 IsConditionsFunction = returnTypeToken.SyntaxKind == JassSyntaxKind.BooleanKeyword;
             }

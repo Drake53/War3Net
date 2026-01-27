@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaVariableDeclaratorSyntax Transpile(JassArrayDeclaratorSyntax arrayDeclarator)
         {
-            LuaExpressionSyntax expression = arrayDeclarator.Type.GetToken().SyntaxKind switch
+            LuaExpressionSyntax expression = arrayDeclarator.Type.Token.SyntaxKind switch
             {
                 JassSyntaxKind.IntegerKeyword => new LuaInvocationExpressionSyntax("__jarray", "0"),
                 JassSyntaxKind.RealKeyword => new LuaInvocationExpressionSyntax("__jarray", "0.0"),

@@ -25,9 +25,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Value = value;
         }
 
-        public JassTypeSyntax Type { get; }
+        public override JassTypeSyntax Type { get; }
 
-        public JassIdentifierNameSyntax IdentifierName { get; }
+        public override JassIdentifierNameSyntax IdentifierName { get; }
 
         public JassEqualsValueClauseSyntax? Value { get; }
 

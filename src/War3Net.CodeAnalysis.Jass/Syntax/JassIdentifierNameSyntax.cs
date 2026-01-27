@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             Token = token;
         }
 
-        public JassSyntaxToken Token { get; }
+        public override JassSyntaxToken Token { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.IdentifierName;
 

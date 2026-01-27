@@ -23,11 +23,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             IdentifierName = identifierName;
         }
 
-        public JassTypeSyntax Type { get; }
+        public override JassTypeSyntax Type { get; }
 
         public JassSyntaxToken ArrayToken { get; }
 
-        public JassIdentifierNameSyntax IdentifierName { get; }
+        public override JassIdentifierNameSyntax IdentifierName { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ArrayDeclarator;
 

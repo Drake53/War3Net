@@ -16,7 +16,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         private bool TryRenameLocalVariableDeclarationStatement(JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement, [NotNullWhen(true)] out JassStatementSyntax? renamedLocalVariableDeclarationStatement)
         {
-            _localVariableNames.Add(localVariableDeclarationStatement.Declarator.GetIdentifierName().Token.Text);
+            _localVariableNames.Add(localVariableDeclarationStatement.Declarator.IdentifierName.Token.Text);
 
             if (TryRenameVariableOrArrayDeclarator(localVariableDeclarationStatement.Declarator, out var renamedDeclarator))
             {

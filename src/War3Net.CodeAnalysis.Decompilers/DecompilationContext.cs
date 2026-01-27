@@ -62,7 +62,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     {
                         if (globalDeclaration is JassGlobalVariableDeclarationSyntax globalVariableDeclaration)
                         {
-                            variableDeclarationsBuilder.Add(globalVariableDeclaration.Declarator.GetIdentifierName().Token.Text, new VariableDeclarationContext(globalVariableDeclaration));
+                            variableDeclarationsBuilder.Add(globalVariableDeclaration.Declarator.IdentifierName.Token.Text, new VariableDeclarationContext(globalVariableDeclaration));
                         }
                     }
                 }

@@ -84,7 +84,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 });
             }
 
-            if (Context.VariableDeclarations.Any(declaration => declaration.Value.GlobalVariableDeclaration.Declarator.GetIdentifierName().Token.Text.StartsWith("udg_", StringComparison.Ordinal)))
+            if (Context.VariableDeclarations.Any(declaration => declaration.Value.GlobalVariableDeclaration.Declarator.IdentifierName.Token.Text.StartsWith("udg_", StringComparison.Ordinal)))
             {
                 var variablesCategoryId = categoryId++;
 
@@ -98,12 +98,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                 foreach (var declaration in Context.VariableDeclarations)
                 {
                     var globalVariableDeclaration = declaration.Value.GlobalVariableDeclaration;
-                    if (globalVariableDeclaration.Declarator.GetIdentifierName().Token.Text.StartsWith("udg_", StringComparison.Ordinal))
+                    if (globalVariableDeclaration.Declarator.IdentifierName.Token.Text.StartsWith("udg_", StringComparison.Ordinal))
                     {
                         var variableDefinition = new VariableDefinition
                         {
-                            Name = globalVariableDeclaration.Declarator.GetIdentifierName().Token.Text["udg_".Length..],
-                            Type = globalVariableDeclaration.Declarator.GetVariableType().GetToken().Text,
+                            Name = globalVariableDeclaration.Declarator.IdentifierName.Token.Text["udg_".Length..],
+                            Type = globalVariableDeclaration.Declarator.Type.Token.Text,
                             Unk = 1,
                             IsArray = declaration.Value.IsArray,
                             ArraySize = 1,

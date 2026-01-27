@@ -123,7 +123,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (statement is JassLocalVariableDeclarationStatementSyntax localVariableDeclarationStatement)
                 {
-                    var typeName = localVariableDeclarationStatement.Declarator.GetVariableType().GetToken().Text;
+                    var typeName = localVariableDeclarationStatement.Declarator.Type.Token.Text;
 
                     if (string.Equals(typeName, "player", StringComparison.Ordinal))
                     {

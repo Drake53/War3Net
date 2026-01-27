@@ -26,7 +26,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
             var functionNameToken = Transpile(nativeFunctionDeclaration.IdentifierName.Token);
             var discardTakesTokenLeadingTrivia = false;
-            if (IsSingleSpace(nativeFunctionDeclaration.IdentifierName.Token.TrailingTrivia, nativeFunctionDeclaration.ParameterList.GetTakesToken().LeadingTrivia))
+            if (IsSingleSpace(nativeFunctionDeclaration.IdentifierName.Token.TrailingTrivia, nativeFunctionDeclaration.ParameterList.TakesToken.LeadingTrivia))
             {
                 functionNameToken = functionNameToken.WithoutTrailingTrivia();
                 discardTakesTokenLeadingTrivia = true;
