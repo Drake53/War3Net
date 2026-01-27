@@ -189,7 +189,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 return this;
             }
 
-            ThrowHelper.ThrowIfInvalidOptionalToken(nativeToken, JassSyntaxKind.ConstantKeyword);
+            ThrowHelper.ThrowIfInvalidOptionalToken(constantToken, JassSyntaxKind.ConstantKeyword);
             ThrowHelper.ThrowIfInvalidToken(nativeToken, JassSyntaxKind.NativeKeyword);
 
             return new JassNativeFunctionDeclarationSyntax(constantToken, nativeToken, identifierName, parameterList, returnClause);
