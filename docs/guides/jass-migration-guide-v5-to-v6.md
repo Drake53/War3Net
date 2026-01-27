@@ -176,13 +176,14 @@ If the containing type has been changed or renamed, the new type name is also li
 
 | Old property name                            | New property name                                       |
 |----------------------------------------------|---------------------------------------------------------|
-| `JassArgumentListSyntax.Arguments`           | `ArgumentList`                                          |
 | `JassArrayReferenceExpressionSyntax.Indexer` | `JassElementAccessExpressionSyntax.ElementAccessClause` |
 | `JassCallStatementSyntax.Arguments`          | `ArgumentList`                                          |
+| `JassGlobalConstantDeclarationSyntax.Value`  | `EqualsValueClause`                                     |
 | `JassGlobalDeclarationListSyntax.Globals`    | `JassGlobalsDeclarationSyntax.GlobalDeclarations`       |
 | `JassInvocationExpressionSyntax.Arguments`   | `ArgumentList`                                          |
 | `JassParameterListSyntax.Empty`              | `JassEmptyParameterListSyntax.Value`                    |
-| `JassParameterListSyntax.Parameters`         | `ParameterList`                                         |
+| `JassReturnStatementSyntax.Value`            | `Expression`                                            |
+| `JassSetStatementSyntax.Value`               | `EqualsValueClause`                                     |
 | `JassTypeSyntax.Boolean`                     | `JassPredefinedTypeSyntax.Boolean`                      |
 | `JassTypeSyntax.Code`                        | `JassPredefinedTypeSyntax.Code`                         |
 | `JassTypeSyntax.Handle`                      | `JassPredefinedTypeSyntax.Handle`                       |
@@ -190,6 +191,7 @@ If the containing type has been changed or renamed, the new type name is also li
 | `JassTypeSyntax.Nothing`                     | `JassPredefinedTypeSyntax.Nothing`                      |
 | `JassTypeSyntax.Real`                        | `JassPredefinedTypeSyntax.Real`                         |
 | `JassTypeSyntax.String`                      | `JassPredefinedTypeSyntax.String`                       |
+| `JassVariableDeclaratorSyntax.Value`         | `EqualsValueClause`                                     |
 
 </details>
 

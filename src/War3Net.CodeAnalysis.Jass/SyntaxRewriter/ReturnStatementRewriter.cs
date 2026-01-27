@@ -17,11 +17,11 @@ namespace War3Net.CodeAnalysis.Jass
         protected virtual bool RewriteReturnStatement(JassReturnStatementSyntax returnStatement, out JassStatementSyntax result)
         {
             if (RewriteToken(returnStatement.ReturnToken, out var returnToken) |
-                RewriteExpression(returnStatement.Value, out var value))
+                RewriteExpression(returnStatement.Expression, out var expression))
             {
                 result = new JassReturnStatementSyntax(
                     returnToken,
-                    value);
+                    expression);
 
                 return true;
             }

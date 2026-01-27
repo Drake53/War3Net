@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Jass
             WriteSpace();
             Render(globalConstantDeclaration.IdentifierName);
             WriteSpace();
-            Render(globalConstantDeclaration.Value);
+            Render(globalConstantDeclaration.EqualsValueClause);
         }
     }
 }

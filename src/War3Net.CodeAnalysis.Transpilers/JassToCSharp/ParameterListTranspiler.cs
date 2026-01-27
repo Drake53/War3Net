@@ -49,8 +49,8 @@ namespace War3Net.CodeAnalysis.Transpilers
             return SyntaxFactory.ParameterList(
                 openParenToken,
                 SyntaxFactory.SeparatedList(
-                    parameterList.ParameterList.Items.Select(Transpile),
-                    parameterList.ParameterList.Separators.Select(Transpile)).WithoutTrivia(),
+                    parameterList.Parameters.Items.Select(Transpile),
+                    parameterList.Parameters.Separators.Select(Transpile)).WithoutTrivia(),
                 closeParenToken);
         }
 

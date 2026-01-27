@@ -57,8 +57,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             // Last statement must be "return true"
             if (statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
-                finalReturnStatement.Value is null ||
-                !finalReturnStatement.Value.TryGetBooleanExpressionValue(out var returnStatementValue) ||
+                finalReturnStatement.Expression is null ||
+                !finalReturnStatement.Expression.TryGetBooleanExpressionValue(out var returnStatementValue) ||
                 !returnStatementValue)
             {
                 conditionFunctions = null;
@@ -81,8 +81,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             // Last statement must be "return true" or "return false"
             if (statements[^1] is not JassReturnStatementSyntax finalReturnStatement ||
-                finalReturnStatement.Value is null ||
-                !finalReturnStatement.Value.TryGetBooleanExpressionValue(out var returnStatementValue))
+                finalReturnStatement.Expression is null ||
+                !finalReturnStatement.Expression.TryGetBooleanExpressionValue(out var returnStatementValue))
             {
                 conditionFunction = null;
                 return false;

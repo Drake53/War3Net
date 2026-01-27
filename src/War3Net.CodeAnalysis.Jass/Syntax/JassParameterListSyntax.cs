@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
@@ -18,42 +17,40 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassParameterListSyntax(
             JassSyntaxToken takesToken,
-            SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameterList)
+            SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameters)
         {
             TakesToken = takesToken;
-            ParameterList = parameterList;
+            Parameters = parameters;
         }
 
         public override JassSyntaxToken TakesToken { get; }
 
-        public SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> ParameterList { get; }
-
-        public override ImmutableArray<JassParameterSyntax> Parameters => ParameterList.Items;
+        public override SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> Parameters { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ParameterList;
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassParameterListSyntax parameterList
-                && ParameterList.IsEquivalentTo(parameterList.ParameterList);
+                && Parameters.IsEquivalentTo(parameterList.Parameters);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             TakesToken.WriteTo(writer);
-            ParameterList.WriteTo(writer);
+            Parameters.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            return ParameterList.Items;
+            return Parameters.Items;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
         {
             yield return TakesToken;
 
-            foreach (var child in ParameterList.Separators)
+            foreach (var child in Parameters.Separators)
             {
                 yield return child;
             }
@@ -63,7 +60,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return TakesToken;
 
-            foreach (var child in ParameterList.GetChildNodesAndTokens())
+            foreach (var child in Parameters.GetChildNodesAndTokens())
             {
                 yield return child;
             }
@@ -71,14 +68,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            return ParameterList.GetDescendantNodes();
+            return Parameters.GetDescendantNodes();
         }
 
         public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
         {
             yield return TakesToken;
 
-            foreach (var descendant in ParameterList.GetDescendantTokens())
+            foreach (var descendant in Parameters.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -88,17 +85,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return TakesToken;
 
-            foreach (var descendant in ParameterList.GetDescendantNodesAndTokens())
+            foreach (var descendant in Parameters.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
         }
 
-        public override string ToString() => $"{TakesToken} {ParameterList}";
+        public override string ToString() => $"{TakesToken} {Parameters}";
 
         public override JassSyntaxToken GetFirstToken() => TakesToken;
 
-        public override JassSyntaxToken GetLastToken() => ParameterList.Items[^1].GetLastToken();
+        public override JassSyntaxToken GetLastToken() => Parameters.Items[^1].GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitParameterList(this);
 
@@ -106,35 +103,35 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassParameterListSyntax Update(
             JassSyntaxToken takesToken,
-            SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameterList)
+            SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameters)
         {
             if (ReferenceEquals(TakesToken, takesToken) &&
-                ReferenceEquals(ParameterList, parameterList))
+                ReferenceEquals(Parameters, parameters))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidToken(takesToken, JassSyntaxKind.TakesKeyword);
 
-            return new JassParameterListSyntax(takesToken, parameterList);
+            return new JassParameterListSyntax(takesToken, parameters);
         }
 
-        public JassParameterListSyntax WithTakesToken(JassSyntaxToken takesToken) => Update(takesToken, ParameterList);
+        public JassParameterListSyntax WithTakesToken(JassSyntaxToken takesToken) => Update(takesToken, Parameters);
 
-        public JassParameterListSyntax WithParameterList(SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameterList) => Update(TakesToken, parameterList);
+        public JassParameterListSyntax WithParameters(SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> parameters) => Update(TakesToken, parameters);
 
         protected internal override JassParameterListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassParameterListSyntax(
                 newToken,
-                ParameterList);
+                Parameters);
         }
 
         protected internal override JassParameterListSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
             return new JassParameterListSyntax(
                 TakesToken,
-                ParameterList.ReplaceLastItem(ParameterList.Items[^1].ReplaceLastToken(newToken)));
+                Parameters.ReplaceLastItem(Parameters.Items[^1].ReplaceLastToken(newToken)));
         }
     }
 }

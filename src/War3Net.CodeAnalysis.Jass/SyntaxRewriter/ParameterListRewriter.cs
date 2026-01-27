@@ -17,11 +17,11 @@ namespace War3Net.CodeAnalysis.Jass
         protected virtual bool RewriteParameterList(JassParameterListSyntax parameterList, out JassParameterListOrEmptyParameterListSyntax result)
         {
             if (RewriteToken(parameterList.TakesToken, out var takesToken) |
-                RewriteSeparatedParameterList(parameterList.ParameterList, out var separatedParameterList))
+                RewriteSeparatedParameterList(parameterList.Parameters, out var parameters))
             {
                 result = new JassParameterListSyntax(
                     takesToken,
-                    separatedParameterList);
+                    parameters);
 
                 return true;
             }

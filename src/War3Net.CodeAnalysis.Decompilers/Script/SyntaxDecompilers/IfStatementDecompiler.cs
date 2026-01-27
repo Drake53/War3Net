@@ -84,8 +84,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                 ifStatement.ElseClause is null &&
                 ifStatement.IfClause.Statements.Length == 1 &&
                 ifStatement.IfClause.Statements[0] is JassReturnStatementSyntax returnStatement &&
-                returnStatement.Value is not null &&
-                returnStatement.Value.TryGetBooleanExpressionValue(out var returnStatementValue) &&
+                returnStatement.Expression is not null &&
+                returnStatement.Expression.TryGetBooleanExpressionValue(out var returnStatementValue) &&
                 returnStatementValue != returnValue)
             {
                 var conditionExpression = ifStatement.IfClause.IfClauseDeclarator.Condition.Deparenthesize();

@@ -17,13 +17,13 @@ namespace War3Net.CodeAnalysis.Jass
         {
             if (TryRenameVariableIdentifierName(setStatement.IdentifierName, out var renamedIdentifierName) |
                 TryRenameElementAccessClause(setStatement.ElementAccessClause, out var renamedElementAccessClause) |
-                TryRenameEqualsValueClause(setStatement.Value, out var renamedValue))
+                TryRenameEqualsValueClause(setStatement.EqualsValueClause, out var renamedEqualsValueClause))
             {
                 renamedSetStatement = new JassSetStatementSyntax(
                     setStatement.SetToken,
                     renamedIdentifierName ?? setStatement.IdentifierName,
                     renamedElementAccessClause ?? setStatement.ElementAccessClause,
-                    renamedValue ?? setStatement.Value);
+                    renamedEqualsValueClause ?? setStatement.EqualsValueClause);
 
                 return true;
             }

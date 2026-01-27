@@ -19,7 +19,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 setStatement.ElementAccessClause is null
                     ? Transpile(setStatement.IdentifierName)
                     : new LuaTableIndexAccessExpressionSyntax(Transpile(setStatement.IdentifierName), Transpile(setStatement.ElementAccessClause.Expression, out _)),
-                Transpile(setStatement.Value.Expression, out _));
+                Transpile(setStatement.EqualsValueClause.Expression, out _));
         }
     }
 }

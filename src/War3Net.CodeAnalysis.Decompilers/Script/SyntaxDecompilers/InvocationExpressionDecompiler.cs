@@ -44,8 +44,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
             if (string.Equals(invocationExpression.IdentifierName.Token.Text, "Condition", StringComparison.Ordinal))
             {
-                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
-                    invocationExpression.ArgumentList.ArgumentList.Items[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                if (invocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
+                    invocationExpression.ArgumentList.Arguments.Items[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
                     Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Token.Text, out var conditionFunctionDeclaration) &&
                     conditionFunctionDeclaration.IsConditionsFunction)
                 {

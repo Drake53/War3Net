@@ -24,7 +24,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return false;
             }
 
-            var action = actions.First(action => action.ArgumentTypes.Length == callStatement.ArgumentList.ArgumentList.Items.Length);
+            var action = actions.First(action => action.ArgumentTypes.Length == callStatement.ArgumentList.Arguments.Items.Length);
 
             if (TryDecompileForEachLoopActionFunction(callStatement, action.ArgumentTypes, out var loopActionFunction))
             {
@@ -39,9 +39,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 Name = action.FunctionName,
             };
 
-            for (var j = 0; j < callStatement.ArgumentList.ArgumentList.Items.Length; j++)
+            for (var j = 0; j < callStatement.ArgumentList.Arguments.Items.Length; j++)
             {
-                if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.ArgumentList.Items[j], action.ArgumentTypes[j], out var functionParameter))
+                if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.Arguments.Items[j], action.ArgumentTypes[j], out var functionParameter))
                 {
                     function.Parameters.Add(functionParameter);
                 }

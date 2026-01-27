@@ -15,11 +15,11 @@ namespace War3Net.CodeAnalysis.Jass
     {
         private bool TryRenameReturnStatement(JassReturnStatementSyntax returnStatement, [NotNullWhen(true)] out JassStatementSyntax? renamedReturnStatement)
         {
-            if (TryRenameExpression(returnStatement.Value, out var renamedValue))
+            if (TryRenameExpression(returnStatement.Expression, out var renamedExpression))
             {
                 renamedReturnStatement = new JassReturnStatementSyntax(
                     returnStatement.ReturnToken,
-                    renamedValue);
+                    renamedExpression);
 
                 return true;
             }

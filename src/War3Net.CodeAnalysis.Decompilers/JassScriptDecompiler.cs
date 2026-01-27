@@ -69,7 +69,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                 foreach (var statement in mainFunction.FunctionDeclaration.Statements)
                 {
-                    if (statement is JassCallStatementSyntax callStatement && callStatement.ArgumentList.ArgumentList.Items.IsEmpty)
+                    if (statement is JassCallStatementSyntax callStatement && callStatement.ArgumentList.Arguments.Items.IsEmpty)
                     {
                         if (string.Equals(callStatement.IdentifierName.Token.Text, expectedFunctionName, StringComparison.Ordinal))
                         {

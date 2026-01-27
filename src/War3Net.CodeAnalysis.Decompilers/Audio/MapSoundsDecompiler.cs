@@ -52,17 +52,17 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (setStatement.ElementAccessClause is null &&
                         setStatement.IdentifierName.Token.Text.StartsWith("gg_snd_", StringComparison.Ordinal))
                     {
-                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
                             string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateSound", StringComparison.Ordinal))
                         {
-                            if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 7 &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetNotNullStringExpressionValue(out var fileName) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetBooleanExpressionValue(out var looping) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetBooleanExpressionValue(out var is3D) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetBooleanExpressionValue(out var stopWhenOutOfRange) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[4].TryGetIntegerExpressionValue(out var fadeInRate) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[5].TryGetIntegerExpressionValue(out var fadeOutRate) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[6].TryGetNotNullStringExpressionValue(out var eaxSetting))
+                            if (invocationExpression.ArgumentList.Arguments.Items.Length == 7 &&
+                                invocationExpression.ArgumentList.Arguments.Items[0].TryGetNotNullStringExpressionValue(out var fileName) &&
+                                invocationExpression.ArgumentList.Arguments.Items[1].TryGetBooleanExpressionValue(out var looping) &&
+                                invocationExpression.ArgumentList.Arguments.Items[2].TryGetBooleanExpressionValue(out var is3D) &&
+                                invocationExpression.ArgumentList.Arguments.Items[3].TryGetBooleanExpressionValue(out var stopWhenOutOfRange) &&
+                                invocationExpression.ArgumentList.Arguments.Items[4].TryGetIntegerExpressionValue(out var fadeInRate) &&
+                                invocationExpression.ArgumentList.Arguments.Items[5].TryGetIntegerExpressionValue(out var fadeOutRate) &&
+                                invocationExpression.ArgumentList.Arguments.Items[6].TryGetNotNullStringExpressionValue(out var eaxSetting))
                             {
                                 var flags = (SoundFlags)0;
                                 if (looping)
@@ -110,7 +110,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
-                        else if (setStatement.Value.Expression.TryGetNotNullStringExpressionValue(out var musicFileName))
+                        else if (setStatement.EqualsValueClause.Expression.TryGetNotNullStringExpressionValue(out var musicFileName))
                         {
                             var flags = SoundFlags.Music;
 
@@ -150,9 +150,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundFacialAnimationLabel", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationLabel) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationLabel) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.FacialAnimationLabel = facialAnimationLabel;
@@ -165,9 +165,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundFacialAnimationGroupLabel", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationGroupLabel) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationGroupLabel) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.FacialAnimationGroupLabel = facialAnimationGroupLabel;
@@ -180,9 +180,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundFacialAnimationSetFilepath", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationSetFilepath) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetNotNullStringExpressionValue(out var facialAnimationSetFilepath) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.FacialAnimationSetFilepath = facialAnimationSetFilepath;
@@ -195,9 +195,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetDialogueSpeakerNameKey", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetNotNullStringExpressionValue(out var dialogueSpeakerNameKeyString) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetNotNullStringExpressionValue(out var dialogueSpeakerNameKeyString) &&
                             sounds.TryGetValue(variableName, out var sound) &&
                             dialogueSpeakerNameKeyString.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
                             int.TryParse(dialogueSpeakerNameKeyString["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueSpeakerNameKey))
@@ -212,9 +212,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetDialogueTextKey", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetNotNullStringExpressionValue(out var dialogueTextKeyString) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetNotNullStringExpressionValue(out var dialogueTextKeyString) &&
                             sounds.TryGetValue(variableName, out var sound) &&
                             dialogueTextKeyString.StartsWith("TRIGSTR_", StringComparison.Ordinal) &&
                             int.TryParse(dialogueTextKeyString["TRIGSTR_".Length..], NumberStyles.None, CultureInfo.InvariantCulture, out var dialogueTextKey))
@@ -233,9 +233,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundDistanceCutoff", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var cutoff) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var cutoff) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.DistanceCutoff = cutoff;
@@ -248,9 +248,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundChannel", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var channel) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var channel) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.Channel = (SoundChannel)channel;
@@ -263,9 +263,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundVolume", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var volume) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var volume) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.Volume = volume;
@@ -278,9 +278,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundPitch", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var pitch) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var pitch) &&
                             sounds.TryGetValue(variableName, out var sound))
                         {
                             sound.Pitch = pitch;
@@ -293,10 +293,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundDistances", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var minDist) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var maxDist) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var minDist) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var maxDist) &&
                             sounds.TryGetValue(variableName, out var sound) &&
                             sound.Flags.HasFlag(SoundFlags.Is3DSound))
                         {
@@ -311,11 +311,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundConeAngles", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var inside) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var outside) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetIntegerExpressionValue(out var outsideVolume) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var inside) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var outside) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetIntegerExpressionValue(out var outsideVolume) &&
                             sounds.TryGetValue(variableName, out var sound) &&
                             sound.Flags.HasFlag(SoundFlags.Is3DSound))
                         {
@@ -331,11 +331,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundConeOrientation", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var z) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var z) &&
                             sounds.TryGetValue(variableName, out var sound) &&
                             sound.Flags.HasFlag(SoundFlags.Is3DSound))
                         {

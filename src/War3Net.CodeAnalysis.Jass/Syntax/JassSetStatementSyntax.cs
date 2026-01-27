@@ -19,12 +19,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             JassSyntaxToken setToken,
             JassIdentifierNameSyntax identifierName,
             JassElementAccessClauseSyntax? elementAccessClause,
-            JassEqualsValueClauseSyntax value)
+            JassEqualsValueClauseSyntax equalsValueClause)
         {
             SetToken = setToken;
             IdentifierName = identifierName;
             ElementAccessClause = elementAccessClause;
-            Value = value;
+            EqualsValueClause = equalsValueClause;
         }
 
         public JassSyntaxToken SetToken { get; }
@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassElementAccessClauseSyntax? ElementAccessClause { get; }
 
-        public JassEqualsValueClauseSyntax Value { get; }
+        public JassEqualsValueClauseSyntax EqualsValueClause { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.SetStatement;
 
@@ -42,7 +42,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassSetStatementSyntax setStatement
                 && IdentifierName.IsEquivalentTo(setStatement.IdentifierName)
                 && ElementAccessClause.NullableEquivalentTo(setStatement.ElementAccessClause)
-                && Value.IsEquivalentTo(setStatement.Value);
+                && EqualsValueClause.IsEquivalentTo(setStatement.EqualsValueClause);
         }
 
         public override void WriteTo(TextWriter writer)
@@ -50,7 +50,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             SetToken.WriteTo(writer);
             IdentifierName.WriteTo(writer);
             ElementAccessClause?.WriteTo(writer);
-            Value.WriteTo(writer);
+            EqualsValueClause.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
@@ -62,7 +62,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return ElementAccessClause;
             }
 
-            yield return Value;
+            yield return EqualsValueClause;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -80,7 +80,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return ElementAccessClause;
             }
 
-            yield return Value;
+            yield return EqualsValueClause;
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
@@ -100,8 +100,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 }
             }
 
-            yield return Value;
-            foreach (var descendant in Value.GetDescendantNodes())
+            yield return EqualsValueClause;
+            foreach (var descendant in EqualsValueClause.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -124,7 +124,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 }
             }
 
-            foreach (var descendant in Value.GetDescendantTokens())
+            foreach (var descendant in EqualsValueClause.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -149,18 +149,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 }
             }
 
-            yield return Value;
-            foreach (var descendant in Value.GetDescendantNodesAndTokens())
+            yield return EqualsValueClause;
+            foreach (var descendant in EqualsValueClause.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
         }
 
-        public override string ToString() => $"{SetToken} {IdentifierName}{ElementAccessClause.Optional()} {Value}";
+        public override string ToString() => $"{SetToken} {IdentifierName}{ElementAccessClause.Optional()} {EqualsValueClause}";
 
         public override JassSyntaxToken GetFirstToken() => SetToken;
 
-        public override JassSyntaxToken GetLastToken() => Value.GetLastToken();
+        public override JassSyntaxToken GetLastToken() => EqualsValueClause.GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitSetStatement(this);
 
@@ -170,28 +170,28 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             JassSyntaxToken setToken,
             JassIdentifierNameSyntax identifierName,
             JassElementAccessClauseSyntax? elementAccessClause,
-            JassEqualsValueClauseSyntax value)
+            JassEqualsValueClauseSyntax equalsValueClause)
         {
             if (ReferenceEquals(SetToken, setToken) &&
                 ReferenceEquals(IdentifierName, identifierName) &&
                 ReferenceEquals(ElementAccessClause, elementAccessClause) &&
-                ReferenceEquals(Value, value))
+                ReferenceEquals(EqualsValueClause, equalsValueClause))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidToken(setToken, JassSyntaxKind.SetKeyword);
 
-            return new JassSetStatementSyntax(setToken, identifierName, elementAccessClause, value);
+            return new JassSetStatementSyntax(setToken, identifierName, elementAccessClause, equalsValueClause);
         }
 
-        public JassSetStatementSyntax WithSetToken(JassSyntaxToken setToken) => Update(setToken, IdentifierName, ElementAccessClause, Value);
+        public JassSetStatementSyntax WithSetToken(JassSyntaxToken setToken) => Update(setToken, IdentifierName, ElementAccessClause, EqualsValueClause);
 
-        public JassSetStatementSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(SetToken, identifierName, ElementAccessClause, Value);
+        public JassSetStatementSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(SetToken, identifierName, ElementAccessClause, EqualsValueClause);
 
-        public JassSetStatementSyntax WithElementAccessClause(JassElementAccessClauseSyntax? elementAccessClause) => Update(SetToken, IdentifierName, elementAccessClause, Value);
+        public JassSetStatementSyntax WithElementAccessClause(JassElementAccessClauseSyntax? elementAccessClause) => Update(SetToken, IdentifierName, elementAccessClause, EqualsValueClause);
 
-        public JassSetStatementSyntax WithValue(JassEqualsValueClauseSyntax value) => Update(SetToken, IdentifierName, ElementAccessClause, value);
+        public JassSetStatementSyntax WithEqualsValueClause(JassEqualsValueClauseSyntax equalsValueClause) => Update(SetToken, IdentifierName, ElementAccessClause, equalsValueClause);
 
         protected internal override JassSetStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
@@ -199,7 +199,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 newToken,
                 IdentifierName,
                 ElementAccessClause,
-                Value);
+                EqualsValueClause);
         }
 
         protected internal override JassSetStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
@@ -208,7 +208,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 SetToken,
                 IdentifierName,
                 ElementAccessClause,
-                Value.ReplaceLastToken(newToken));
+                EqualsValueClause.ReplaceLastToken(newToken));
         }
     }
 }

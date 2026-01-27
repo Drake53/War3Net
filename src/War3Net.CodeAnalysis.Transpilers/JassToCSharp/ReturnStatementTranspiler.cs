@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             ExpressionSyntax? expression;
             SyntaxTriviaList trailingTrivia;
 
-            if (returnStatement.Value is null)
+            if (returnStatement.Expression is null)
             {
                 expression = null;
                 trailingTrivia = returnKeyword.TrailingTrivia;
@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Transpilers
             }
             else
             {
-                expression = Transpile(returnStatement.Value);
+                expression = Transpile(returnStatement.Expression);
                 trailingTrivia = expression.GetTrailingTrivia();
                 expression = expression.WithoutTrailingTrivia();
             }

@@ -148,10 +148,10 @@ namespace War3Net.CodeAnalysis.Jass
             var constantToken = VisitToken(node.ConstantToken);
             var type = (JassTypeSyntax)Visit(node.Type)!;
             var identifierName = (JassIdentifierNameSyntax)VisitIdentifierName(node.IdentifierName);
-            var value = (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.Value);
+            var equalsValueClause = (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.EqualsValueClause);
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(constantToken, type, identifierName, value);
+            return node.Update(constantToken, type, identifierName, equalsValueClause);
         }
 
         /// <inheritdoc/>
@@ -196,10 +196,10 @@ namespace War3Net.CodeAnalysis.Jass
             _nodes.Add(node);
             var type = (JassTypeSyntax)Visit(node.Type)!;
             var identifierName = (JassIdentifierNameSyntax)VisitIdentifierName(node.IdentifierName);
-            var value = node.Value is not null ? (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.Value) : null;
+            var equalsValueClause = node.EqualsValueClause is not null ? (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.EqualsValueClause) : null;
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(type, identifierName, value);
+            return node.Update(type, identifierName, equalsValueClause);
         }
 
         /// <inheritdoc/>
@@ -218,10 +218,10 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var takesToken = VisitToken(node.TakesToken);
-            var parameterList = VisitSeparatedList(node.ParameterList, p => (JassParameterSyntax)VisitParameter(p));
+            var parameters = VisitSeparatedList(node.Parameters, p => (JassParameterSyntax)VisitParameter(p));
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(takesToken, parameterList);
+            return node.Update(takesToken, parameters);
         }
 
         /// <inheritdoc/>
@@ -262,11 +262,11 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var openParenToken = VisitToken(node.OpenParenToken);
-            var argumentList = VisitSeparatedList(node.ArgumentList, VisitExpression);
+            var arguments = VisitSeparatedList(node.Arguments, VisitExpression);
             var closeParenToken = VisitToken(node.CloseParenToken);
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(openParenToken, argumentList, closeParenToken);
+            return node.Update(openParenToken, arguments, closeParenToken);
         }
 
         /// <inheritdoc/>
@@ -415,10 +415,10 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var returnToken = VisitToken(node.ReturnToken);
-            var value = node.Value is not null ? (JassExpressionSyntax)Visit(node.Value) : null;
+            var expression = node.Expression is not null ? (JassExpressionSyntax)Visit(node.Expression) : null;
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(returnToken, value);
+            return node.Update(returnToken, expression);
         }
 
         /// <inheritdoc/>
@@ -428,10 +428,10 @@ namespace War3Net.CodeAnalysis.Jass
             var setToken = VisitToken(node.SetToken);
             var identifierName = (JassIdentifierNameSyntax)VisitIdentifierName(node.IdentifierName);
             var elementAccessClause = node.ElementAccessClause is not null ? (JassElementAccessClauseSyntax)VisitElementAccessClause(node.ElementAccessClause) : null;
-            var value = (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.Value);
+            var equalsValueClause = (JassEqualsValueClauseSyntax)VisitEqualsValueClause(node.EqualsValueClause);
             _nodes.RemoveAt(_nodes.Count - 1);
 
-            return node.Update(setToken, identifierName, elementAccessClause, value);
+            return node.Update(setToken, identifierName, elementAccessClause, equalsValueClause);
         }
 
         // Expressions

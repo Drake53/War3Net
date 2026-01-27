@@ -57,7 +57,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                     SyntaxFactory.VariableDeclarator(
                         Transpile(globalConstantDeclaration.IdentifierName.Token),
                         null,
-                        Transpile(globalConstantDeclaration.Value))));
+                        Transpile(globalConstantDeclaration.EqualsValueClause))));
 
             var declaration = SyntaxFactory.FieldDeclaration(
                 default,

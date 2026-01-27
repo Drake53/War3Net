@@ -55,16 +55,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                 else if (statement is JassSetStatementSyntax setStatement)
                 {
                     if (setStatement.ElementAccessClause is null &&
-                        setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
+                        setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
                     {
                         if (setStatement.IdentifierName.Token.Text.StartsWith("gg_rct_", StringComparison.Ordinal) &&
                             string.Equals(invocationExpression.IdentifierName.Token.Text, "Rect", StringComparison.Ordinal))
                         {
-                            if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 4 &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetRealExpressionValue(out var minx) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var miny) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var maxx) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var maxy))
+                            if (invocationExpression.ArgumentList.Arguments.Items.Length == 4 &&
+                                invocationExpression.ArgumentList.Arguments.Items[0].TryGetRealExpressionValue(out var minx) &&
+                                invocationExpression.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var miny) &&
+                                invocationExpression.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var maxx) &&
+                                invocationExpression.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var maxy))
                             {
                                 currentRegion = new Region
                                 {
@@ -94,9 +94,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                         else if (string.Equals(setStatement.IdentifierName.Token.Text, "we", StringComparison.Ordinal) &&
                                  string.Equals(invocationExpression.IdentifierName.Token.Text, "AddWeatherEffect", StringComparison.Ordinal))
                         {
-                            if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 2 &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var regionVariableName) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var weatherTypeValue) &&
+                            if (invocationExpression.ArgumentList.Arguments.Items.Length == 2 &&
+                                invocationExpression.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var regionVariableName) &&
+                                invocationExpression.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var weatherTypeValue) &&
                                 regions.TryGetValue(regionVariableName, out var region))
                             {
                                 region.WeatherType = (WeatherType)weatherTypeValue.InvertEndianness();
@@ -121,10 +121,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "SetSoundPosition", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var soundVariableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var soundVariableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y) &&
                             currentRegion is not null &&
                             currentRegion.CenterX == x &&
                             currentRegion.CenterY == y &&
@@ -141,10 +141,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "RegisterStackedSound", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var soundVariableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var rectWidth) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var rectHeight) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var soundVariableName) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var rectWidth) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var rectHeight) &&
                             currentRegion is not null &&
                             currentRegion.Width == rectWidth &&
                             currentRegion.Height == rectHeight &&

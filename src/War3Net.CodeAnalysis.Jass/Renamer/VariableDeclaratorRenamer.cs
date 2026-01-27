@@ -16,12 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
         private bool TryRenameVariableDeclarator(JassVariableDeclaratorSyntax variableDeclarator, [NotNullWhen(true)] out JassVariableOrArrayDeclaratorSyntax? renamedVariableDeclarator)
         {
             if (TryRenameVariableIdentifierName(variableDeclarator.IdentifierName, out var renamedIdentifierName) |
-                TryRenameEqualsValueClause(variableDeclarator.Value, out var renamedValue))
+                TryRenameEqualsValueClause(variableDeclarator.EqualsValueClause, out var renamedEqualsValueClause))
             {
                 renamedVariableDeclarator = new JassVariableDeclaratorSyntax(
                     variableDeclarator.Type,
                     renamedIdentifierName ?? variableDeclarator.IdentifierName,
-                    renamedValue ?? variableDeclarator.Value);
+                    renamedEqualsValueClause ?? variableDeclarator.EqualsValueClause);
 
                 return true;
             }

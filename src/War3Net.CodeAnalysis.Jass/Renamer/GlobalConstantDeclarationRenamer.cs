@@ -16,13 +16,13 @@ namespace War3Net.CodeAnalysis.Jass
         private bool TryRenameGlobalConstantDeclaration(JassGlobalConstantDeclarationSyntax globalConstantDeclaration, [NotNullWhen(true)] out JassGlobalDeclarationSyntax? renamedGlobalConstantDeclaration)
         {
             if (TryRenameVariableIdentifierName(globalConstantDeclaration.IdentifierName, out var renamedIdentifierName) |
-                TryRenameEqualsValueClause(globalConstantDeclaration.Value, out var renamedValue))
+                TryRenameEqualsValueClause(globalConstantDeclaration.EqualsValueClause, out var renamedEqualsValueClause))
             {
                 renamedGlobalConstantDeclaration = new JassGlobalConstantDeclarationSyntax(
                     globalConstantDeclaration.ConstantToken,
                     globalConstantDeclaration.Type,
                     renamedIdentifierName ?? globalConstantDeclaration.IdentifierName,
-                    renamedValue ?? globalConstantDeclaration.Value);
+                    renamedEqualsValueClause ?? globalConstantDeclaration.EqualsValueClause);
 
                 return false;
             }

@@ -33,7 +33,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 exitExpression.Left.TryGetIdentifierNameValue(out var exitLeftVariableName) &&
                 exitExpression.Right.TryGetIdentifierNameValue(out var exitRightVariableName) &&
                 loopStatement.Statements[^1] is JassSetStatementSyntax incrementStatement &&
-                incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&
+                incrementStatement.EqualsValueClause.Expression is JassBinaryExpressionSyntax incrementExpression &&
                 incrementExpression.SyntaxKind == JassSyntaxKind.AddExpression &&
                 incrementExpression.Left.TryGetIdentifierNameValue(out var incrementVariableName) &&
                 incrementExpression.Right.TryGetIntegerExpressionValue(out var incrementValue) &&
@@ -50,8 +50,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                 };
 
                 var loopBody = ImmutableArray.CreateRange(loopStatement.Statements, 1, loopStatement.Statements.Length - 2, statement => statement);
-                if (TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
-                    TryDecompileTriggerFunctionParameter(setIndexEndStatement.Value.Expression, JassKeyword.Integer, out var indexEndFunctionParameter) &&
+                if (TryDecompileTriggerFunctionParameter(setStatement.EqualsValueClause.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
+                    TryDecompileTriggerFunctionParameter(setIndexEndStatement.EqualsValueClause.Expression, JassKeyword.Integer, out var indexEndFunctionParameter) &&
                     TryDecompileActionStatements(loopBody, out var loopActionFunctions))
                 {
                     loopFunction.Parameters.Add(indexFunctionParameter);
@@ -103,13 +103,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                 exitStatement.Condition.Deparenthesize() is JassBinaryExpressionSyntax exitExpression &&
                 exitExpression.SyntaxKind == JassSyntaxKind.GreaterThanExpression &&
                 loopStatement.Statements[^1] is JassSetStatementSyntax incrementStatement &&
-                incrementStatement.Value.Expression is JassBinaryExpressionSyntax incrementExpression &&
+                incrementStatement.EqualsValueClause.Expression is JassBinaryExpressionSyntax incrementExpression &&
                 incrementExpression.SyntaxKind == JassSyntaxKind.AddExpression &&
                 incrementExpression.Right.TryGetIntegerExpressionValue(out var incrementValue) &&
                 incrementValue == 1 &&
                 TryDecompileTriggerFunctionParameterVariable(setStatement, out var variableFunctionParameter, out var variableType) &&
                 string.Equals(variableType, JassKeyword.Integer, StringComparison.Ordinal) &&
-                TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
+                TryDecompileTriggerFunctionParameter(setStatement.EqualsValueClause.Expression, JassKeyword.Integer, out var indexFunctionParameter) &&
                 TryDecompileTriggerFunctionParameter(exitExpression.Right, JassKeyword.Integer, out var indexEndFunctionParameter))
             {
                 if (setStatement.ElementAccessClause is null)

@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
@@ -30,7 +29,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassSyntaxToken NothingToken { get; }
 
-        public override ImmutableArray<JassParameterSyntax> Parameters => ImmutableArray<JassParameterSyntax>.Empty;
+        public override SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken> Parameters => SeparatedSyntaxList<JassParameterSyntax, JassSyntaxToken>.Empty;
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.EmptyParameterList;
 

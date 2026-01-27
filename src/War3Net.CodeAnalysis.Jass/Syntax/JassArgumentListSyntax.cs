@@ -22,17 +22,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         internal JassArgumentListSyntax(
             JassSyntaxToken openParenToken,
-            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> argumentList,
+            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> arguments,
             JassSyntaxToken closeParenToken)
         {
             OpenParenToken = openParenToken;
-            ArgumentList = argumentList;
+            Arguments = arguments;
             CloseParenToken = closeParenToken;
         }
 
         public JassSyntaxToken OpenParenToken { get; }
 
-        public SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> ArgumentList { get; }
+        public SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> Arguments { get; }
 
         public JassSyntaxToken CloseParenToken { get; }
 
@@ -41,25 +41,25 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassArgumentListSyntax argumentList
-                && ArgumentList.IsEquivalentTo(argumentList.ArgumentList);
+                && Arguments.IsEquivalentTo(argumentList.Arguments);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             OpenParenToken.WriteTo(writer);
-            ArgumentList.WriteTo(writer);
+            Arguments.WriteTo(writer);
             CloseParenToken.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            return ArgumentList.Items;
+            return Arguments.Items;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
         {
             yield return OpenParenToken;
-            foreach (var child in ArgumentList.Separators)
+            foreach (var child in Arguments.Separators)
             {
                 yield return child;
             }
@@ -70,7 +70,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return OpenParenToken;
-            foreach (var child in ArgumentList.GetChildNodesAndTokens())
+            foreach (var child in Arguments.GetChildNodesAndTokens())
             {
                 yield return child;
             }
@@ -80,13 +80,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            return ArgumentList.GetDescendantNodes();
+            return Arguments.GetDescendantNodes();
         }
 
         public override IEnumerable<JassSyntaxToken> GetDescendantTokens()
         {
             yield return OpenParenToken;
-            foreach (var descendant in ArgumentList.GetDescendantTokens())
+            foreach (var descendant in Arguments.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -97,7 +97,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNodeOrToken> GetDescendantNodesAndTokens()
         {
             yield return OpenParenToken;
-            foreach (var descendant in ArgumentList.GetDescendantNodesAndTokens())
+            foreach (var descendant in Arguments.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
@@ -105,7 +105,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return CloseParenToken;
         }
 
-        public override string ToString() => $"{OpenParenToken}{ArgumentList}{CloseParenToken}";
+        public override string ToString() => $"{OpenParenToken}{Arguments}{CloseParenToken}";
 
         public override JassSyntaxToken GetFirstToken() => OpenParenToken;
 
@@ -117,11 +117,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassArgumentListSyntax Update(
             JassSyntaxToken openParenToken,
-            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> argumentList,
+            SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> arguments,
             JassSyntaxToken closeParenToken)
         {
             if (ReferenceEquals(OpenParenToken, openParenToken) &&
-                ReferenceEquals(ArgumentList, argumentList) &&
+                ReferenceEquals(Arguments, arguments) &&
                 ReferenceEquals(CloseParenToken, closeParenToken))
             {
                 return this;
@@ -130,20 +130,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             ThrowHelper.ThrowIfInvalidToken(openParenToken, JassSyntaxKind.OpenParenToken);
             ThrowHelper.ThrowIfInvalidToken(closeParenToken, JassSyntaxKind.CloseParenToken);
 
-            return new JassArgumentListSyntax(openParenToken, argumentList, closeParenToken);
+            return new JassArgumentListSyntax(openParenToken, arguments, closeParenToken);
         }
 
-        public JassArgumentListSyntax WithOpenParenToken(JassSyntaxToken openParenToken) => Update(openParenToken, ArgumentList, CloseParenToken);
+        public JassArgumentListSyntax WithOpenParenToken(JassSyntaxToken openParenToken) => Update(openParenToken, Arguments, CloseParenToken);
 
-        public JassArgumentListSyntax WithArgumentList(SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> argumentList) => Update(OpenParenToken, argumentList, CloseParenToken);
+        public JassArgumentListSyntax WithArguments(SeparatedSyntaxList<JassExpressionSyntax, JassSyntaxToken> arguments) => Update(OpenParenToken, arguments, CloseParenToken);
 
-        public JassArgumentListSyntax WithCloseParenToken(JassSyntaxToken closeParenToken) => Update(OpenParenToken, ArgumentList, closeParenToken);
+        public JassArgumentListSyntax WithCloseParenToken(JassSyntaxToken closeParenToken) => Update(OpenParenToken, Arguments, closeParenToken);
 
         protected internal override JassArgumentListSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassArgumentListSyntax(
                 newToken,
-                ArgumentList,
+                Arguments,
                 CloseParenToken);
         }
 
@@ -151,7 +151,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return new JassArgumentListSyntax(
                 OpenParenToken,
-                ArgumentList,
+                Arguments,
                 newToken);
         }
     }

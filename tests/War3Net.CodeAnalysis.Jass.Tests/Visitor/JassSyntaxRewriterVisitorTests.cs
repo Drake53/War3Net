@@ -106,7 +106,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Visitor
 
                 if (FunctionMappings.TryGetValue(functionName, out var mapping))
                 {
-                    var args = node.ArgumentList.ArgumentList.Items;
+                    var args = node.ArgumentList.Arguments.Items;
 
                     if (args.Length == mapping.ExpectedArgCount)
                     {
@@ -126,7 +126,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Visitor
                         var newSeparators = new JassSyntaxToken[Math.Max(0, newArgs.Length - 1)];
 
                         // Preserve the original separators' trivia
-                        var originalSeparators = node.ArgumentList.ArgumentList.Separators;
+                        var originalSeparators = node.ArgumentList.Arguments.Separators;
                         for (var i = 0; i < newSeparators.Length; i++)
                         {
                             if (i < originalSeparators.Length)

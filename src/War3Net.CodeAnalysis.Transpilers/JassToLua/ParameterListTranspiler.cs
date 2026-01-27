@@ -27,7 +27,7 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         public IEnumerable<LuaIdentifierNameSyntax> Transpile(JassParameterListSyntax parameterList)
         {
-            return parameterList.ParameterList.Items.Select(Transpile);
+            return parameterList.Parameters.Items.Select(Transpile);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public IEnumerable<LuaExpressionSyntax> Transpile(JassArgumentListSyntax argumentList)
         {
-            return argumentList.ArgumentList.Items.Select(argument => Transpile(argument, out _));
+            return argumentList.Arguments.Items.Select(argument => Transpile(argument, out _));
         }
     }
 }

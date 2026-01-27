@@ -17,12 +17,12 @@ namespace War3Net.CodeAnalysis.Jass
         protected virtual bool RewriteArgumentList(JassArgumentListSyntax argumentList, out JassArgumentListSyntax result)
         {
             if (RewriteToken(argumentList.OpenParenToken, out var openParenToken) |
-                RewriteSeparatedArgumentList(argumentList.ArgumentList, out var separatedArgumentList) |
+                RewriteSeparatedArgumentList(argumentList.Arguments, out var arguments) |
                 RewriteToken(argumentList.CloseParenToken, out var closeParenToken))
             {
                 result = new JassArgumentListSyntax(
                     openParenToken,
-                    separatedArgumentList,
+                    arguments,
                     closeParenToken);
 
                 return true;

@@ -16,12 +16,12 @@ namespace War3Net.CodeAnalysis.Jass
             Render(parameterList.TakesToken);
             WriteSpace();
 
-            Render(parameterList.ParameterList.Items[0]);
-            for (var i = 1; i < parameterList.ParameterList.Items.Length; i++)
+            Render(parameterList.Parameters.Items[0]);
+            for (var i = 1; i < parameterList.Parameters.Items.Length; i++)
             {
-                Render(parameterList.ParameterList.Separators[i - 1]);
+                Render(parameterList.Parameters.Separators[i - 1]);
                 WriteSpace();
-                Render(parameterList.ParameterList.Items[i]);
+                Render(parameterList.Parameters.Items[i]);
             }
         }
     }

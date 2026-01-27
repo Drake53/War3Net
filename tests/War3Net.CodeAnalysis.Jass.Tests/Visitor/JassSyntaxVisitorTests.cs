@@ -203,7 +203,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Visitor
 
             public override string VisitInvocationExpression(JassInvocationExpressionSyntax node)
             {
-                var args = string.Join(", ", node.ArgumentList.ArgumentList.Items.Select(a => Visit(a) ?? "?"));
+                var args = string.Join(", ", node.ArgumentList.Arguments.Items.Select(a => Visit(a) ?? "?"));
                 return $"Call({node.IdentifierName.Token.Text}({args}))";
             }
         }

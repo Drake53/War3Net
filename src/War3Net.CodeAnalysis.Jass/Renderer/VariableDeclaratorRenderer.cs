@@ -17,10 +17,10 @@ namespace War3Net.CodeAnalysis.Jass
             WriteSpace();
             Render(variableDeclarator.IdentifierName);
 
-            if (variableDeclarator.Value is not null)
+            if (variableDeclarator.EqualsValueClause is not null)
             {
                 WriteSpace();
-                Render(variableDeclarator.Value);
+                Render(variableDeclarator.EqualsValueClause);
             }
         }
     }

@@ -21,8 +21,8 @@ namespace War3Net.CodeAnalysis.Transpilers
             return SyntaxFactory.ArgumentList(
                 Transpile(SyntaxKind.OpenParenToken, argumentList.OpenParenToken),
                 SyntaxFactory.SeparatedList(
-                    argumentList.ArgumentList.Items.Select(TranspileArgument),
-                    argumentList.ArgumentList.Separators.Select(Transpile)),
+                    argumentList.Arguments.Items.Select(TranspileArgument),
+                    argumentList.Arguments.Separators.Select(Transpile)),
                 Transpile(SyntaxKind.CloseParenToken, argumentList.CloseParenToken));
         }
     }

@@ -20,7 +20,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassReturnStatementSyntax returnStatement,
             ref List<TriggerFunction> functions)
         {
-            if (returnStatement.Value is null)
+            if (returnStatement.Expression is null)
             {
                 functions.Add(new TriggerFunction
                 {
@@ -39,7 +39,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             JassReturnStatementSyntax returnStatement,
             [NotNullWhen(true)] out TriggerFunction? function)
         {
-            var returnExpression = returnStatement.Value.Deparenthesize();
+            var returnExpression = returnStatement.Expression.Deparenthesize();
 
             return TryDecompileConditionExpression(returnExpression, out function);
         }

@@ -25,7 +25,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 if (string.Equals(invocationExpression.IdentifierName.Token.Text, "GetBooleanAnd", StringComparison.Ordinal) ||
                     string.Equals(invocationExpression.IdentifierName.Token.Text, "GetBooleanOr", StringComparison.Ordinal))
                 {
-                    if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 2)
+                    if (invocationExpression.ArgumentList.Arguments.Items.Length == 2)
                     {
                         var function = new TriggerFunction
                         {
@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                             Name = invocationExpression.IdentifierName.Token.Text,
                         };
 
-                        foreach (var argument in invocationExpression.ArgumentList.ArgumentList.Items)
+                        foreach (var argument in invocationExpression.ArgumentList.Arguments.Items)
                         {
                             if (TryDecompileConditionExpression(argument, out var conditionSubFunction))
                             {
@@ -63,7 +63,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
                 else
                 {
-                    if (invocationExpression.ArgumentList.ArgumentList.Items.IsEmpty &&
+                    if (invocationExpression.ArgumentList.Arguments.Items.IsEmpty &&
                         Context.FunctionDeclarations.TryGetValue(invocationExpression.IdentifierName.Token.Text, out var conditionsFunctionDeclaration) &&
                         conditionsFunctionDeclaration.IsConditionsFunction)
                     {

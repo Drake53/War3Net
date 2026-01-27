@@ -18,12 +18,12 @@ namespace War3Net.CodeAnalysis.Jass
         {
             if (RewriteType(variableDeclarator.Type, out var type) |
                 RewriteIdentifierName(variableDeclarator.IdentifierName, out var identifierName) |
-                RewriteEqualsValueClause(variableDeclarator.Value, out var value))
+                RewriteEqualsValueClause(variableDeclarator.EqualsValueClause, out var equalsValueClause))
             {
                 result = new JassVariableDeclaratorSyntax(
                     type,
                     identifierName,
-                    value);
+                    equalsValueClause);
 
                 return true;
             }

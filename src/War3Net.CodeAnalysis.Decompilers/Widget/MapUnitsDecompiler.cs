@@ -128,11 +128,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (string.Equals(typeName, "player", StringComparison.Ordinal))
                     {
                         if (localVariableDeclarationStatement.Declarator is JassVariableDeclaratorSyntax variableDeclarator &&
-                            variableDeclarator.Value is not null &&
-                            variableDeclarator.Value.Expression is JassInvocationExpressionSyntax playerInvocationExpression &&
+                            variableDeclarator.EqualsValueClause is not null &&
+                            variableDeclarator.EqualsValueClause.Expression is JassInvocationExpressionSyntax playerInvocationExpression &&
                             string.Equals(playerInvocationExpression.IdentifierName.Token.Text, "Player", StringComparison.Ordinal) &&
-                            playerInvocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
-                            playerInvocationExpression.ArgumentList.ArgumentList.Items[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId))
+                            playerInvocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
+                            playerInvocationExpression.ArgumentList.Arguments.Items[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId))
                         {
                             localPlayerVariableName = variableDeclarator.IdentifierName.Token.Text;
                             localPlayerVariableValue = playerId;
@@ -151,7 +151,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         // TODO
 
                         if (localVariableDeclarationStatement.Declarator is not JassVariableDeclaratorSyntax variableDeclarator ||
-                            variableDeclarator.Value is not null)
+                            variableDeclarator.EqualsValueClause is not null)
                         {
                             units = null;
                             return false;
@@ -167,16 +167,16 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (setStatement.ElementAccessClause is null)
                     {
-                        if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
+                        if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
                         {
                             if (string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateUnit", StringComparison.Ordinal))
                             {
-                                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 5 &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var playerVariableName) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var unitId) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var x) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var y) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[4].TryGetRealExpressionValue(out var face) &&
+                                if (invocationExpression.ArgumentList.Arguments.Items.Length == 5 &&
+                                    invocationExpression.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var playerVariableName) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var unitId) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var x) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var y) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[4].TryGetRealExpressionValue(out var face) &&
                                     string.Equals(playerVariableName, localPlayerVariableName, StringComparison.Ordinal))
                                 {
                                     var unit = new UnitData
@@ -204,13 +204,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                             }
                             else if (string.Equals(invocationExpression.IdentifierName.Token.Text, "BlzCreateUnitWithSkin", StringComparison.Ordinal))
                             {
-                                if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 6 &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var playerVariableName) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var unitId) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var x) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var y) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[4].TryGetRealExpressionValue(out var face) &&
-                                    invocationExpression.ArgumentList.ArgumentList.Items[5].TryGetIntegerExpressionValue(out var skinId) &&
+                                if (invocationExpression.ArgumentList.Arguments.Items.Length == 6 &&
+                                    invocationExpression.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var playerVariableName) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var unitId) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var x) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var y) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[4].TryGetRealExpressionValue(out var face) &&
+                                    invocationExpression.ArgumentList.Arguments.Items[5].TryGetIntegerExpressionValue(out var skinId) &&
                                     string.Equals(playerVariableName, localPlayerVariableName, StringComparison.Ordinal))
                                 {
                                     var unit = new UnitData
@@ -256,7 +256,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
-                        else if (setStatement.Value.Expression is JassElementAccessExpressionSyntax)
+                        else if (setStatement.EqualsValueClause.Expression is JassElementAccessExpressionSyntax)
                         {
                             // TODO
                             continue;
@@ -277,9 +277,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "SetResourceAmount", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var amount))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var amount))
                         {
                             result[^1].GoldAmount = amount;
                         }
@@ -291,12 +291,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetUnitColor", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1] is JassInvocationExpressionSyntax convertPlayerColorInvocationExpression &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1] is JassInvocationExpressionSyntax convertPlayerColorInvocationExpression &&
                             string.Equals(convertPlayerColorInvocationExpression.IdentifierName.Token.Text, "ConvertPlayerColor", StringComparison.Ordinal) &&
-                            convertPlayerColorInvocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
-                            convertPlayerColorInvocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var playerColorId))
+                            convertPlayerColorInvocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
+                            convertPlayerColorInvocationExpression.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var playerColorId))
                         {
                             result[^1].CustomPlayerColorId = playerColorId;
                         }
@@ -308,9 +308,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetUnitAcquireRange", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var acquireRange))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var acquireRange))
                         {
                             const float CampAcquireRange = 200f;
                             result[^1].TargetAcquisition = acquireRange == CampAcquireRange ? -2f : acquireRange;
@@ -323,13 +323,13 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetUnitState", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIdentifierNameValue(out var unitState))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIdentifierNameValue(out var unitState))
                         {
                             if (string.Equals(unitState, "UNIT_STATE_LIFE", StringComparison.Ordinal))
                             {
-                                if (callStatement.ArgumentList.ArgumentList.Items[2] is JassBinaryExpressionSyntax binaryExpression &&
+                                if (callStatement.ArgumentList.Arguments.Items[2] is JassBinaryExpressionSyntax binaryExpression &&
                                     binaryExpression.Left.TryGetRealExpressionValue(out var hp) &&
                                     binaryExpression.SyntaxKind == JassSyntaxKind.MultiplyExpression &&
                                     binaryExpression.Right is JassIdentifierNameSyntax)
@@ -344,7 +344,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                             }
                             else if (string.Equals(unitState, "UNIT_STATE_MANA", StringComparison.Ordinal))
                             {
-                                if (callStatement.ArgumentList.ArgumentList.Items[2].TryGetIntegerExpressionValue(out var mp))
+                                if (callStatement.ArgumentList.Arguments.Items[2].TryGetIntegerExpressionValue(out var mp))
                                 {
                                     result[^1].MP = mp;
                                 }
@@ -368,10 +368,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "UnitAddItemToSlotById", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetIntegerExpressionValue(out var slot))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var itemId) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetIntegerExpressionValue(out var slot))
                         {
                             result[^1].InventoryData.Add(new InventoryItemData
                             {
@@ -387,10 +387,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetHeroLevel", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var level) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetBooleanExpressionValue(out _))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var level) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetBooleanExpressionValue(out _))
                         {
                             result[^1].HeroLevel = level;
                         }
@@ -402,10 +402,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetHeroStr", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetBooleanExpressionValue(out _))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetBooleanExpressionValue(out _))
                         {
                             result[^1].HeroStrength = value;
                         }
@@ -417,10 +417,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetHeroAgi", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetBooleanExpressionValue(out _))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetBooleanExpressionValue(out _))
                         {
                             result[^1].HeroAgility = value;
                         }
@@ -432,10 +432,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "SetHeroInt", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassIdentifierNameSyntax &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var value) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetBooleanExpressionValue(out _))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassIdentifierNameSyntax &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var value) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetBooleanExpressionValue(out _))
                         {
                             result[^1].HeroIntelligence = value;
                         }
@@ -475,7 +475,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         // TODO
                         continue;
                     }
-                    else if (callStatement.ArgumentList.ArgumentList.Items.IsEmpty)
+                    else if (callStatement.ArgumentList.Arguments.Items.IsEmpty)
                     {
                         if (Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Token.Text, out var subFunction) &&
                             TryDecompileCreateUnitsFunction(subFunction.FunctionDeclaration, out var subFunctionResult))
@@ -530,14 +530,14 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (statement is JassSetStatementSyntax setStatement)
                 {
-                    if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression)
+                    if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
                     {
                         if (string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateItem", StringComparison.Ordinal))
                         {
-                            if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 3 &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y))
+                            if (invocationExpression.ArgumentList.Arguments.Items.Length == 3 &&
+                                invocationExpression.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
+                                invocationExpression.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                                invocationExpression.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y))
                             {
                                 var unit = new UnitData
                                 {
@@ -559,11 +559,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                         }
                         else if (string.Equals(invocationExpression.IdentifierName.Token.Text, "BlzCreateItemWithSkin", StringComparison.Ordinal))
                         {
-                            if (invocationExpression.ArgumentList.ArgumentList.Items.Length == 4 &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
-                                invocationExpression.ArgumentList.ArgumentList.Items[3].TryGetIntegerExpressionValue(out var skinId))
+                            if (invocationExpression.ArgumentList.Arguments.Items.Length == 4 &&
+                                invocationExpression.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var unitId) &&
+                                invocationExpression.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                                invocationExpression.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y) &&
+                                invocationExpression.ArgumentList.Arguments.Items[3].TryGetIntegerExpressionValue(out var skinId))
                             {
                                 var unit = new UnitData
                                 {
@@ -588,10 +588,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "CreateItem", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y))
                         {
                             var item = new UnitData
                             {
@@ -613,11 +613,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "BlzCreateItemWithSkin", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetIntegerExpressionValue(out var skinId))
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var itemId) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetIntegerExpressionValue(out var skinId))
                         {
                             var item = new UnitData
                             {
@@ -652,10 +652,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 if (statement is JassCallStatementSyntax callStatement &&
                     string.Equals(callStatement.IdentifierName.Token.Text, "DefineStartLocation", StringComparison.Ordinal))
                 {
-                    if (callStatement.ArgumentList.ArgumentList.Items.Length == 3 &&
-                        callStatement.ArgumentList.ArgumentList.Items[0].TryGetIntegerExpressionValue(out var index) &&
-                        callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                        callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y))
+                    if (callStatement.ArgumentList.Arguments.Items.Length == 3 &&
+                        callStatement.ArgumentList.Arguments.Items[0].TryGetIntegerExpressionValue(out var index) &&
+                        callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                        callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y))
                     {
                         result.Add(index, new Vector2(x, y));
                     }
@@ -688,12 +688,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "SetPlayerStartLocation", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0] is JassInvocationExpressionSyntax playerInvocationExpression &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0] is JassInvocationExpressionSyntax playerInvocationExpression &&
                             string.Equals(playerInvocationExpression.IdentifierName.Token.Text, "Player", StringComparison.Ordinal) &&
-                            playerInvocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
-                            playerInvocationExpression.ArgumentList.ArgumentList.Items[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var startLocationNumber) &&
+                            playerInvocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
+                            playerInvocationExpression.ArgumentList.Arguments.Items[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIntegerExpressionValue(out var startLocationNumber) &&
                             startLocationPositions.TryGetValue(startLocationNumber, out var startLocationPosition))
                         {
                             var unit = new UnitData

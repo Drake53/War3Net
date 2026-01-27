@@ -15,9 +15,9 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaStatementSyntax Transpile(JassReturnStatementSyntax returnStatement)
         {
-            return returnStatement.Value is null
+            return returnStatement.Expression is null
                 ? new LuaReturnStatementSyntax()
-                : new LuaReturnStatementSyntax(Transpile(returnStatement.Value, out _));
+                : new LuaReturnStatementSyntax(Transpile(returnStatement.Expression, out _));
         }
     }
 }

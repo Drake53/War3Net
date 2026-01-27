@@ -29,8 +29,8 @@ namespace War3Net.CodeAnalysis.Transpilers
             var assignmentExpression = SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
                 left,
-                Transpile(SyntaxKind.EqualsToken, setStatement.Value.EqualsToken),
-                Transpile(setStatement.Value.Expression));
+                Transpile(SyntaxKind.EqualsToken, setStatement.EqualsValueClause.EqualsToken),
+                Transpile(setStatement.EqualsValueClause.Expression));
 
             var trailingTrivia = assignmentExpression.GetTrailingTrivia();
 

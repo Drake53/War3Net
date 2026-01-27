@@ -33,9 +33,9 @@ namespace War3Net.CodeAnalysis.Transpilers
 
         public LuaVariableDeclaratorSyntax Transpile(JassVariableDeclaratorSyntax variableDeclarator)
         {
-            var expression = variableDeclarator.Value is null
+            var expression = variableDeclarator.EqualsValueClause is null
                 ? LuaIdentifierLiteralExpressionSyntax.Nil
-                : Transpile(variableDeclarator.Value);
+                : Transpile(variableDeclarator.EqualsValueClause);
 
             return new LuaVariableDeclaratorSyntax(Transpile(variableDeclarator.IdentifierName), expression);
         }

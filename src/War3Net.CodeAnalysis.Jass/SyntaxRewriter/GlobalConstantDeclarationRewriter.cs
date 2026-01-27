@@ -19,13 +19,13 @@ namespace War3Net.CodeAnalysis.Jass
             if (RewriteToken(globalConstantDeclaration.ConstantToken, out var constantToken) |
                 RewriteType(globalConstantDeclaration.Type, out var type) |
                 RewriteIdentifierName(globalConstantDeclaration.IdentifierName, out var identifierName) |
-                RewriteEqualsValueClause(globalConstantDeclaration.Value, out var value))
+                RewriteEqualsValueClause(globalConstantDeclaration.EqualsValueClause, out var equalsValueClause))
             {
                 result = new JassGlobalConstantDeclarationSyntax(
                     constantToken,
                     type,
                     identifierName,
-                    value);
+                    equalsValueClause);
 
                 return true;
             }

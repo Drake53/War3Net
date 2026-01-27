@@ -117,8 +117,8 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                         if (globalVariableDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
                         {
-                            if (variableDeclarator.Value is not null &&
-                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.Value.Expression, variableDefinition.Type, out var initialValue))
+                            if (variableDeclarator.EqualsValueClause is not null &&
+                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.EqualsValueClause.Expression, variableDefinition.Type, out var initialValue))
                             {
                                 variableDefinition.IsInitialized = true;
                                 variableDefinition.InitialValue = initialValue;
@@ -161,7 +161,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             variableDefinition.ArraySize = arraySize;
 
-                            if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.Value.Expression, variableDefinition.Type, out var initialValue))
+                            if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.EqualsValueClause.Expression, variableDefinition.Type, out var initialValue))
                             {
                                 variableDefinition.IsInitialized = true;
                                 variableDefinition.InitialValue = initialValue;
@@ -186,7 +186,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 foreach (var statement in initCustomTriggersFunction.Statements)
                 {
                     if (statement is JassCallStatementSyntax callStatement &&
-                        callStatement.ArgumentList.ArgumentList.Items.IsEmpty &&
+                        callStatement.ArgumentList.Arguments.Items.IsEmpty &&
                         Context.FunctionDeclarations.TryGetValue(callStatement.IdentifierName.Token.Text, out var initTrigFunction) &&
                         TryDecompileTriggerDefinition(initTrigFunction, out var trigger))
                     {
@@ -207,9 +207,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     foreach (var statement in runInitializationTriggersFunction.Statements)
                     {
                         if (statement is JassCallStatementSyntax callStatement &&
-                            callStatement.ArgumentList.ArgumentList.Items.Length == 1 &&
+                            callStatement.ArgumentList.Arguments.Items.Length == 1 &&
                             string.Equals(callStatement.IdentifierName.Token.Text, "ConditionalTriggerExecute", StringComparison.Ordinal) &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var triggerVariableName) &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var triggerVariableName) &&
                             triggerVariableName.StartsWith("gg_trg_", StringComparison.Ordinal) &&
                             triggers.TryGetValue(triggerVariableName["gg_trg_".Length..].Replace('_', ' '), out var triggerDefinition))
                         {
@@ -244,8 +244,8 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (statement is JassSetStatementSyntax setStatement)
                 {
-                    if (setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
-                        invocationExpression.ArgumentList.ArgumentList.Items.IsEmpty &&
+                    if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        invocationExpression.ArgumentList.Arguments.Items.IsEmpty &&
                         setStatement.ElementAccessClause is null &&
                         string.Equals(setStatement.IdentifierName.Token.Text, $"gg_trg_{triggerFunctionName}", StringComparison.Ordinal) &&
                         string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateTrigger", StringComparison.Ordinal))
@@ -268,9 +268,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "TriggerAddAction", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
                             string.Equals(variableName, triggerVariableName, StringComparison.Ordinal) &&
                             Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Token.Text, out var actionsFunctionDeclaration) &&
                             actionsFunctionDeclaration.IsActionsFunction)
@@ -297,12 +297,12 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "TriggerAddCondition", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1] is JassInvocationExpressionSyntax conditionInvocationExpression &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 2 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1] is JassInvocationExpressionSyntax conditionInvocationExpression &&
                             string.Equals(conditionInvocationExpression.IdentifierName.Token.Text, "Condition", StringComparison.Ordinal) &&
-                            conditionInvocationExpression.ArgumentList.ArgumentList.Items.Length == 1 &&
-                            conditionInvocationExpression.ArgumentList.ArgumentList.Items[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
+                            conditionInvocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
+                            conditionInvocationExpression.ArgumentList.Arguments.Items[0] is JassFunctionReferenceExpressionSyntax functionReferenceExpression &&
                             string.Equals(variableName, triggerVariableName, StringComparison.Ordinal) &&
                             Context.FunctionDeclarations.TryGetValue(functionReferenceExpression.IdentifierName.Token.Text, out var conditionsFunctionDeclaration) &&
                             conditionsFunctionDeclaration.IsConditionsFunction)
@@ -327,8 +327,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "DisableTrigger", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 1 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 1 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
                             string.Equals(variableName, triggerVariableName, StringComparison.Ordinal))
                         {
                             trigger.IsInitiallyOn = false;
@@ -343,8 +343,8 @@ namespace War3Net.CodeAnalysis.Decompilers
                     else
                     {
                         if (Context.TriggerData.TriggerData.TriggerEvents.TryGetValue(callStatement.IdentifierName.Token.Text, out var triggerEvent) &&
-                            callStatement.ArgumentList.ArgumentList.Items.Length == triggerEvent.ArgumentTypes.Length + 1 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var variableName) &&
+                            callStatement.ArgumentList.Arguments.Items.Length == triggerEvent.ArgumentTypes.Length + 1 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var variableName) &&
                             string.Equals(variableName, triggerVariableName, StringComparison.Ordinal))
                         {
                             var function = new TriggerFunction
@@ -354,9 +354,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 Name = callStatement.IdentifierName.Token.Text,
                             };
 
-                            for (var i = 1; i < callStatement.ArgumentList.ArgumentList.Items.Length; i++)
+                            for (var i = 1; i < callStatement.ArgumentList.Arguments.Items.Length; i++)
                             {
-                                if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.ArgumentList.Items[i], triggerEvent.ArgumentTypes[i - 1], out var functionParameter))
+                                if (TryDecompileTriggerFunctionParameter(callStatement.ArgumentList.Arguments.Items[i], triggerEvent.ArgumentTypes[i - 1], out var functionParameter))
                                 {
                                     function.Parameters.Add(functionParameter);
                                 }

@@ -23,7 +23,7 @@ namespace War3Net.CodeAnalysis.Jass
             }
 
             WriteSpace();
-            Render(setStatement.Value);
+            Render(setStatement.EqualsValueClause);
         }
     }
 }

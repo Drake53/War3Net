@@ -60,7 +60,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             VariableDeclaratorSyntax declarator;
 
-            if (variableDeclarator.Value is null)
+            if (variableDeclarator.EqualsValueClause is null)
             {
                 declarator = SyntaxFactory.VariableDeclarator(
                     Transpile(variableDeclarator.IdentifierName.Token).WithSpace(),
@@ -74,7 +74,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 declarator = SyntaxFactory.VariableDeclarator(
                     Transpile(variableDeclarator.IdentifierName.Token),
                     null,
-                    Transpile(variableDeclarator.Value));
+                    Transpile(variableDeclarator.EqualsValueClause));
             }
 
             var typeNode = isGlobalDeclaration

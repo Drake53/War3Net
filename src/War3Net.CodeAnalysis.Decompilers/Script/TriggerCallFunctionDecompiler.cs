@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             TriggerData.TriggerCall triggerCall,
             [NotNullWhen(true)] out TriggerFunction? callFunction)
         {
-            if (triggerCall.ArgumentTypes.Length == invocationExpression.ArgumentList.ArgumentList.Items.Length)
+            if (triggerCall.ArgumentTypes.Length == invocationExpression.ArgumentList.Arguments.Items.Length)
             {
                 var function = new TriggerFunction
                 {
@@ -43,9 +43,9 @@ namespace War3Net.CodeAnalysis.Decompilers
                     Name = invocationExpression.IdentifierName.Token.Text,
                 };
 
-                for (var i = 0; i < invocationExpression.ArgumentList.ArgumentList.Items.Length; i++)
+                for (var i = 0; i < invocationExpression.ArgumentList.Arguments.Items.Length; i++)
                 {
-                    if (TryDecompileTriggerFunctionParameter(invocationExpression.ArgumentList.ArgumentList.Items[i], triggerCall.ArgumentTypes[i], out var functionParameter))
+                    if (TryDecompileTriggerFunctionParameter(invocationExpression.ArgumentList.Arguments.Items[i], triggerCall.ArgumentTypes[i], out var functionParameter))
                     {
                         function.Parameters.Add(functionParameter);
                     }

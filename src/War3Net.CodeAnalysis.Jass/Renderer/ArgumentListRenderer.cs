@@ -15,14 +15,14 @@ namespace War3Net.CodeAnalysis.Jass
         {
             Render(argumentList.OpenParenToken);
 
-            if (!argumentList.ArgumentList.Items.IsEmpty)
+            if (!argumentList.Arguments.Items.IsEmpty)
             {
-                Render(argumentList.ArgumentList.Items[0]);
-                for (var i = 1; i < argumentList.ArgumentList.Items.Length; i++)
+                Render(argumentList.Arguments.Items[0]);
+                for (var i = 1; i < argumentList.Arguments.Items.Length; i++)
                 {
-                    Render(argumentList.ArgumentList.Separators[i - 1]);
+                    Render(argumentList.Arguments.Separators[i - 1]);
                     WriteSpace();
-                    Render(argumentList.ArgumentList.Items[i]);
+                    Render(argumentList.Arguments.Items[i]);
                 }
             }
 

@@ -21,35 +21,35 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         internal JassReturnStatementSyntax(
             JassSyntaxToken returnToken,
-            JassExpressionSyntax? value)
+            JassExpressionSyntax? expression)
         {
             ReturnToken = returnToken;
-            Value = value;
+            Expression = expression;
         }
 
         public JassSyntaxToken ReturnToken { get; }
 
-        public JassExpressionSyntax? Value { get; }
+        public JassExpressionSyntax? Expression { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.ReturnStatement;
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassReturnStatementSyntax returnStatement
-                && Value.NullableEquivalentTo(returnStatement.Value);
+                && Expression.NullableEquivalentTo(returnStatement.Expression);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             ReturnToken.WriteTo(writer);
-            Value?.WriteTo(writer);
+            Expression?.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            if (Value is not null)
+            if (Expression is not null)
             {
-                yield return Value;
+                yield return Expression;
             }
         }
 
@@ -62,18 +62,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return ReturnToken;
 
-            if (Value is not null)
+            if (Expression is not null)
             {
-                yield return Value;
+                yield return Expression;
             }
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            if (Value is not null)
+            if (Expression is not null)
             {
-                yield return Value;
-                foreach (var descendant in Value.GetDescendantNodes())
+                yield return Expression;
+                foreach (var descendant in Expression.GetDescendantNodes())
                 {
                     yield return descendant;
                 }
@@ -84,9 +84,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return ReturnToken;
 
-            if (Value is not null)
+            if (Expression is not null)
             {
-                foreach (var descendant in Value.GetDescendantTokens())
+                foreach (var descendant in Expression.GetDescendantTokens())
                 {
                     yield return descendant;
                 }
@@ -97,21 +97,21 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return ReturnToken;
 
-            if (Value is not null)
+            if (Expression is not null)
             {
-                yield return Value;
-                foreach (var descendant in Value.GetDescendantNodesAndTokens())
+                yield return Expression;
+                foreach (var descendant in Expression.GetDescendantNodesAndTokens())
                 {
                     yield return descendant;
                 }
             }
         }
 
-        public override string ToString() => $"{ReturnToken}{Value.OptionalPrefixed()}";
+        public override string ToString() => $"{ReturnToken}{Expression.OptionalPrefixed()}";
 
         public override JassSyntaxToken GetFirstToken() => ReturnToken;
 
-        public override JassSyntaxToken GetLastToken() => Value?.GetLastToken() ?? ReturnToken;
+        public override JassSyntaxToken GetLastToken() => Expression?.GetLastToken() ?? ReturnToken;
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitReturnStatement(this);
 
@@ -119,37 +119,37 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassReturnStatementSyntax Update(
             JassSyntaxToken returnToken,
-            JassExpressionSyntax? value)
+            JassExpressionSyntax? expression)
         {
             if (ReferenceEquals(ReturnToken, returnToken) &&
-                ReferenceEquals(Value, value))
+                ReferenceEquals(Expression, expression))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidToken(returnToken, JassSyntaxKind.ReturnKeyword);
 
-            return new JassReturnStatementSyntax(returnToken, value);
+            return new JassReturnStatementSyntax(returnToken, expression);
         }
 
-        public JassReturnStatementSyntax WithReturnToken(JassSyntaxToken returnToken) => Update(returnToken, Value);
+        public JassReturnStatementSyntax WithReturnToken(JassSyntaxToken returnToken) => Update(returnToken, Expression);
 
-        public JassReturnStatementSyntax WithValue(JassExpressionSyntax? value) => Update(ReturnToken, value);
+        public JassReturnStatementSyntax WithExpression(JassExpressionSyntax? expression) => Update(ReturnToken, expression);
 
         protected internal override JassReturnStatementSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassReturnStatementSyntax(
                 newToken,
-                Value);
+                Expression);
         }
 
         protected internal override JassReturnStatementSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
-            if (Value is not null)
+            if (Expression is not null)
             {
                 return new JassReturnStatementSyntax(
                     ReturnToken,
-                    Value.ReplaceLastToken(newToken));
+                    Expression.ReplaceLastToken(newToken));
             }
 
             return new JassReturnStatementSyntax(

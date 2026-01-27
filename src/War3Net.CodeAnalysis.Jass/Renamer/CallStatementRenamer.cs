@@ -19,8 +19,8 @@ namespace War3Net.CodeAnalysis.Jass
             if (RenameExecuteFuncArgument &&
                 string.Equals(callStatement.IdentifierName.Token.Text, "ExecuteFunc", StringComparison.Ordinal))
             {
-                if (callStatement.ArgumentList.ArgumentList.Items.Length == 1 &&
-                    callStatement.ArgumentList.ArgumentList.Items[0] is JassLiteralExpressionSyntax stringLiteralExpression &&
+                if (callStatement.ArgumentList.Arguments.Items.Length == 1 &&
+                    callStatement.ArgumentList.Arguments.Items[0] is JassLiteralExpressionSyntax stringLiteralExpression &&
                     stringLiteralExpression.Token.SyntaxKind == JassSyntaxKind.StringLiteralToken &&
                     TryRenameFunctionIdentifierToken(stringLiteralExpression.Token, out var renamedToken))
                 {

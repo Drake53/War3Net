@@ -17,12 +17,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             JassSyntaxToken constantToken,
             JassTypeSyntax type,
             JassIdentifierNameSyntax identifierName,
-            JassEqualsValueClauseSyntax value)
+            JassEqualsValueClauseSyntax equalsValueClause)
         {
             ConstantToken = constantToken;
             Type = type;
             IdentifierName = identifierName;
-            Value = value;
+            EqualsValueClause = equalsValueClause;
         }
 
         public JassSyntaxToken ConstantToken { get; }
@@ -31,7 +31,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassIdentifierNameSyntax IdentifierName { get; }
 
-        public JassEqualsValueClauseSyntax Value { get; }
+        public JassEqualsValueClauseSyntax EqualsValueClause { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.GlobalConstantDeclaration;
 
@@ -40,7 +40,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassGlobalConstantDeclarationSyntax globalConstantDeclaration
                 && Type.IsEquivalentTo(globalConstantDeclaration.Type)
                 && IdentifierName.IsEquivalentTo(globalConstantDeclaration.IdentifierName)
-                && Value.IsEquivalentTo(globalConstantDeclaration.Value);
+                && EqualsValueClause.IsEquivalentTo(globalConstantDeclaration.EqualsValueClause);
         }
 
         public override void WriteTo(TextWriter writer)
@@ -48,14 +48,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             ConstantToken.WriteTo(writer);
             Type.WriteTo(writer);
             IdentifierName.WriteTo(writer);
-            Value.WriteTo(writer);
+            EqualsValueClause.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
             yield return Type;
             yield return IdentifierName;
-            yield return Value;
+            yield return EqualsValueClause;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -68,7 +68,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return ConstantToken;
             yield return Type;
             yield return IdentifierName;
-            yield return Value;
+            yield return EqualsValueClause;
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
@@ -85,8 +85,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            yield return Value;
-            foreach (var descendant in Value.GetDescendantNodes())
+            yield return EqualsValueClause;
+            foreach (var descendant in EqualsValueClause.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -106,7 +106,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            foreach (var descendant in Value.GetDescendantTokens())
+            foreach (var descendant in EqualsValueClause.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -128,18 +128,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            yield return Value;
-            foreach (var descendant in Value.GetDescendantNodesAndTokens())
+            yield return EqualsValueClause;
+            foreach (var descendant in EqualsValueClause.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
         }
 
-        public override string ToString() => $"{ConstantToken} {Type} {IdentifierName} {Value}";
+        public override string ToString() => $"{ConstantToken} {Type} {IdentifierName} {EqualsValueClause}";
 
         public override JassSyntaxToken GetFirstToken() => ConstantToken;
 
-        public override JassSyntaxToken GetLastToken() => Value.GetLastToken();
+        public override JassSyntaxToken GetLastToken() => EqualsValueClause.GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitGlobalConstantDeclaration(this);
 
@@ -149,28 +149,28 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             JassSyntaxToken constantToken,
             JassTypeSyntax type,
             JassIdentifierNameSyntax identifierName,
-            JassEqualsValueClauseSyntax value)
+            JassEqualsValueClauseSyntax equalsValueClause)
         {
             if (ReferenceEquals(ConstantToken, constantToken) &&
                 ReferenceEquals(Type, type) &&
                 ReferenceEquals(IdentifierName, identifierName) &&
-                ReferenceEquals(Value, value))
+                ReferenceEquals(EqualsValueClause, equalsValueClause))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidToken(constantToken, JassSyntaxKind.ConstantKeyword);
 
-            return new JassGlobalConstantDeclarationSyntax(constantToken, type, identifierName, value);
+            return new JassGlobalConstantDeclarationSyntax(constantToken, type, identifierName, equalsValueClause);
         }
 
-        public JassGlobalConstantDeclarationSyntax WithConstantToken(JassSyntaxToken constantToken) => Update(constantToken, Type, IdentifierName, Value);
+        public JassGlobalConstantDeclarationSyntax WithConstantToken(JassSyntaxToken constantToken) => Update(constantToken, Type, IdentifierName, EqualsValueClause);
 
-        public JassGlobalConstantDeclarationSyntax WithType(JassTypeSyntax type) => Update(ConstantToken, type, IdentifierName, Value);
+        public JassGlobalConstantDeclarationSyntax WithType(JassTypeSyntax type) => Update(ConstantToken, type, IdentifierName, EqualsValueClause);
 
-        public JassGlobalConstantDeclarationSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(ConstantToken, Type, identifierName, Value);
+        public JassGlobalConstantDeclarationSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(ConstantToken, Type, identifierName, EqualsValueClause);
 
-        public JassGlobalConstantDeclarationSyntax WithValue(JassEqualsValueClauseSyntax value) => Update(ConstantToken, Type, IdentifierName, value);
+        public JassGlobalConstantDeclarationSyntax WithEqualsValueClause(JassEqualsValueClauseSyntax equalsValueClause) => Update(ConstantToken, Type, IdentifierName, equalsValueClause);
 
         protected internal override JassGlobalConstantDeclarationSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
@@ -178,7 +178,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 newToken,
                 Type,
                 IdentifierName,
-                Value);
+                EqualsValueClause);
         }
 
         protected internal override JassGlobalConstantDeclarationSyntax ReplaceLastToken(JassSyntaxToken newToken)
@@ -187,7 +187,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 ConstantToken,
                 Type,
                 IdentifierName,
-                Value.ReplaceLastToken(newToken));
+                EqualsValueClause.ReplaceLastToken(newToken));
         }
     }
 }

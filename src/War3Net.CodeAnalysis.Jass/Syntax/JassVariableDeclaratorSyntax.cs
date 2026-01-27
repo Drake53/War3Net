@@ -18,18 +18,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         internal JassVariableDeclaratorSyntax(
             JassTypeSyntax type,
             JassIdentifierNameSyntax identifierName,
-            JassEqualsValueClauseSyntax? value)
+            JassEqualsValueClauseSyntax? equalsValueClause)
         {
             Type = type;
             IdentifierName = identifierName;
-            Value = value;
+            EqualsValueClause = equalsValueClause;
         }
 
         public override JassTypeSyntax Type { get; }
 
         public override JassIdentifierNameSyntax IdentifierName { get; }
 
-        public JassEqualsValueClauseSyntax? Value { get; }
+        public JassEqualsValueClauseSyntax? EqualsValueClause { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.VariableDeclarator;
 
@@ -38,14 +38,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             return other is JassVariableDeclaratorSyntax variableDeclarator
                 && Type.IsEquivalentTo(variableDeclarator.Type)
                 && IdentifierName.IsEquivalentTo(variableDeclarator.IdentifierName)
-                && Value.NullableEquivalentTo(variableDeclarator.Value);
+                && EqualsValueClause.NullableEquivalentTo(variableDeclarator.EqualsValueClause);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             Type.WriteTo(writer);
             IdentifierName.WriteTo(writer);
-            Value?.WriteTo(writer);
+            EqualsValueClause?.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
@@ -53,9 +53,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return Type;
             yield return IdentifierName;
 
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
-                yield return Value;
+                yield return EqualsValueClause;
             }
         }
 
@@ -69,9 +69,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return Type;
             yield return IdentifierName;
 
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
-                yield return Value;
+                yield return EqualsValueClause;
             }
         }
 
@@ -89,10 +89,10 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
-                yield return Value;
-                foreach (var descendant in Value.GetDescendantNodes())
+                yield return EqualsValueClause;
+                foreach (var descendant in EqualsValueClause.GetDescendantNodes())
                 {
                     yield return descendant;
                 }
@@ -111,9 +111,9 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
-                foreach (var descendant in Value.GetDescendantTokens())
+                foreach (var descendant in EqualsValueClause.GetDescendantTokens())
                 {
                     yield return descendant;
                 }
@@ -134,21 +134,21 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
                 yield return descendant;
             }
 
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
-                yield return Value;
-                foreach (var descendant in Value.GetDescendantNodesAndTokens())
+                yield return EqualsValueClause;
+                foreach (var descendant in EqualsValueClause.GetDescendantNodesAndTokens())
                 {
                     yield return descendant;
                 }
             }
         }
 
-        public override string ToString() => $"{Type} {IdentifierName}{Value.OptionalPrefixed()}";
+        public override string ToString() => $"{Type} {IdentifierName}{EqualsValueClause.OptionalPrefixed()}";
 
         public override JassSyntaxToken GetFirstToken() => Type.GetFirstToken();
 
-        public override JassSyntaxToken GetLastToken() => ((JassSyntaxNode?)Value ?? IdentifierName).GetLastToken();
+        public override JassSyntaxToken GetLastToken() => ((JassSyntaxNode?)EqualsValueClause ?? IdentifierName).GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitVariableDeclarator(this);
 
@@ -157,40 +157,40 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public JassVariableDeclaratorSyntax Update(
             JassTypeSyntax type,
             JassIdentifierNameSyntax identifierName,
-            JassEqualsValueClauseSyntax? value)
+            JassEqualsValueClauseSyntax? equalsValueClause)
         {
             if (ReferenceEquals(Type, type) &&
                 ReferenceEquals(IdentifierName, identifierName) &&
-                ReferenceEquals(Value, value))
+                ReferenceEquals(EqualsValueClause, equalsValueClause))
             {
                 return this;
             }
 
-            return new JassVariableDeclaratorSyntax(type, identifierName, value);
+            return new JassVariableDeclaratorSyntax(type, identifierName, equalsValueClause);
         }
 
-        public JassVariableDeclaratorSyntax WithType(JassTypeSyntax type) => Update(type, IdentifierName, Value);
+        public JassVariableDeclaratorSyntax WithType(JassTypeSyntax type) => Update(type, IdentifierName, EqualsValueClause);
 
-        public JassVariableDeclaratorSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(Type, identifierName, Value);
+        public JassVariableDeclaratorSyntax WithIdentifierName(JassIdentifierNameSyntax identifierName) => Update(Type, identifierName, EqualsValueClause);
 
-        public JassVariableDeclaratorSyntax WithValue(JassEqualsValueClauseSyntax? value) => Update(Type, IdentifierName, value);
+        public JassVariableDeclaratorSyntax WithEqualsValueClause(JassEqualsValueClauseSyntax? equalsValueClause) => Update(Type, IdentifierName, equalsValueClause);
 
         protected internal override JassVariableDeclaratorSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassVariableDeclaratorSyntax(
                 Type.ReplaceFirstToken(newToken),
                 IdentifierName,
-                Value);
+                EqualsValueClause);
         }
 
         protected internal override JassVariableDeclaratorSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
-            if (Value is not null)
+            if (EqualsValueClause is not null)
             {
                 return new JassVariableDeclaratorSyntax(
                     Type,
                     IdentifierName,
-                    Value.ReplaceLastToken(newToken));
+                    EqualsValueClause.ReplaceLastToken(newToken));
             }
 
             return new JassVariableDeclaratorSyntax(

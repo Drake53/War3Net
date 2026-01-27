@@ -49,10 +49,10 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (setStatement.ElementAccessClause is null &&
                         setStatement.IdentifierName.Token.Text.StartsWith("gg_cam_", StringComparison.Ordinal) &&
-                        setStatement.Value.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
                         string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateCameraSetup", StringComparison.Ordinal))
                     {
-                        if (invocationExpression.ArgumentList.ArgumentList.Items.IsEmpty)
+                        if (invocationExpression.ArgumentList.Arguments.Items.IsEmpty)
                         {
                             cameras.Add(setStatement.IdentifierName.Token.Text, new Camera
                             {
@@ -75,11 +75,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (string.Equals(callStatement.IdentifierName.Token.Text, "CameraSetupSetField", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIdentifierNameValue(out var cameraField) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var value) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var duration) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetIdentifierNameValue(out var cameraField) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var value) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var duration) &&
                             duration == 0f &&
                             cameras.TryGetValue(cameraVariableName, out var camera))
                         {
@@ -128,11 +128,11 @@ namespace War3Net.CodeAnalysis.Decompilers
                     }
                     else if (string.Equals(callStatement.IdentifierName.Token.Text, "CameraSetupSetDestPosition", StringComparison.Ordinal))
                     {
-                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 4 &&
-                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
-                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetRealExpressionValue(out var x) &&
-                            callStatement.ArgumentList.ArgumentList.Items[2].TryGetRealExpressionValue(out var y) &&
-                            callStatement.ArgumentList.ArgumentList.Items[3].TryGetRealExpressionValue(out var duration) &&
+                        if (callStatement.ArgumentList.Arguments.Items.Length == 4 &&
+                            callStatement.ArgumentList.Arguments.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
+                            callStatement.ArgumentList.Arguments.Items[1].TryGetRealExpressionValue(out var x) &&
+                            callStatement.ArgumentList.Arguments.Items[2].TryGetRealExpressionValue(out var y) &&
+                            callStatement.ArgumentList.Arguments.Items[3].TryGetRealExpressionValue(out var duration) &&
                             duration == 0f &&
                             cameras.TryGetValue(cameraVariableName, out var camera))
                         {

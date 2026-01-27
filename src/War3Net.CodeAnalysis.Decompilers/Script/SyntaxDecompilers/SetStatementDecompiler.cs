@@ -35,7 +35,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
             else if (TryDecompileTriggerFunctionParameterVariable(setStatement, out var variableFunctionParameter, out var variableType) &&
-                     TryDecompileTriggerFunctionParameter(setStatement.Value.Expression, variableType, out var valueFunctionParameter))
+                     TryDecompileTriggerFunctionParameter(setStatement.EqualsValueClause.Expression, variableType, out var valueFunctionParameter))
             {
                 var function = new TriggerFunction
                 {

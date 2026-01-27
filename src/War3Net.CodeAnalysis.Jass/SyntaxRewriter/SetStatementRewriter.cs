@@ -19,13 +19,13 @@ namespace War3Net.CodeAnalysis.Jass
             if (RewriteToken(setStatement.SetToken, out var setToken) |
                 RewriteIdentifierName(setStatement.IdentifierName, out var identifierName) |
                 RewriteElementAccessClause(setStatement.ElementAccessClause, out var elementAccessClause) |
-                RewriteEqualsValueClause(setStatement.Value, out var value))
+                RewriteEqualsValueClause(setStatement.EqualsValueClause, out var equalsValueClause))
             {
                 result = new JassSetStatementSyntax(
                     setToken,
                     identifierName,
                     elementAccessClause,
-                    value);
+                    equalsValueClause);
 
                 return true;
             }
