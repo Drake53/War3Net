@@ -5,9 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -16,10 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassPredefinedTypeSyntax PredefinedType(JassSyntaxToken keyword)
         {
-            if (!JassSyntaxFacts.IsPredefinedTypeKeyword(keyword.SyntaxKind))
-            {
-                throw new ArgumentException($"The token's syntax kind must be one of: [ {string.Join(", ", JassSyntaxFacts.GetPredefinedTypeKeywordKinds().Select(predefinedType => $"'{predefinedType}'"))} ].", nameof(keyword));
-            }
+            ThrowHelper.ThrowIfInvalidPredefinedTypeToken(keyword);
 
             return new JassPredefinedTypeSyntax(keyword);
         }

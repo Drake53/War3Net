@@ -36,11 +36,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassUnaryExpressionSyntax UnaryNotExpression(JassSyntaxToken operatorToken, JassExpressionSyntax expression)
         {
-            var expressionKind = JassSyntaxFacts.GetUnaryExpressionKind(operatorToken.SyntaxKind);
-            if (expressionKind == JassSyntaxKind.None)
-            {
-                throw new ArgumentException($"'{operatorToken.SyntaxKind}' is not a valid operator kind for unary expressions.", nameof(operatorToken));
-            }
+            ThrowHelper.ThrowIfInvalidUnaryOperatorToken(operatorToken);
 
             return new JassUnaryExpressionSyntax(
                 operatorToken,

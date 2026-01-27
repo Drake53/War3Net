@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -15,10 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassIdentifierNameSyntax IdentifierName(JassSyntaxToken identifier)
         {
-            if (identifier.SyntaxKind != JassSyntaxKind.IdentifierToken)
-            {
-                throw new ArgumentException("The token's syntax kind must be 'IdentifierToken'.", nameof(identifier));
-            }
+            ThrowHelper.ThrowIfInvalidToken(identifier, JassSyntaxKind.IdentifierToken);
 
             return new JassIdentifierNameSyntax(identifier);
         }
@@ -35,10 +30,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassSyntaxToken Identifier(JassSyntaxTriviaList leadingTrivia, string text, JassSyntaxTriviaList trailingTrivia)
         {
-            if (!JassSyntaxFacts.IsValidIdentifier(text))
-            {
-                throw new ArgumentException($"'{text}' is not a valid identifier.", nameof(text));
-            }
+            ThrowHelper.ThrowIfInvalidIdentifier(text);
 
             return new JassSyntaxToken(leadingTrivia, JassSyntaxKind.IdentifierToken, text, trailingTrivia);
         }

@@ -149,5 +149,15 @@ namespace War3Net.CodeAnalysis.Jass
                 throw new ArgumentException($"'{statement.SyntaxKind}' is not a valid statement kind for debug statements.", paramName);
             }
         }
+
+        public static void ThrowIfInvalidIdentifier(
+            string text,
+            [CallerArgumentExpression(nameof(text))] string? paramName = null)
+        {
+            if (!JassSyntaxFacts.IsValidIdentifier(text))
+            {
+                throw new ArgumentException($"'{text}' is not a valid identifier.", paramName);
+            }
+        }
     }
 }

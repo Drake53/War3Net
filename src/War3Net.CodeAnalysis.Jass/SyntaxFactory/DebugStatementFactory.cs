@@ -5,8 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass
@@ -15,11 +13,7 @@ namespace War3Net.CodeAnalysis.Jass
     {
         public static JassDebugStatementSyntax DebugStatement(JassStatementSyntax statement)
         {
-            var statementKind = JassSyntaxFacts.GetDebugStatementKind(statement.SyntaxKind);
-            if (statementKind == JassSyntaxKind.None)
-            {
-                throw new ArgumentException($"'{statement.SyntaxKind}' is not a valid statement kind for debug statements.", nameof(statement));
-            }
+            ThrowHelper.ThrowIfInvalidDebugStatement(statement);
 
             return new JassDebugStatementSyntax(
                 Token(JassSyntaxKind.DebugKeyword),
@@ -29,12 +23,7 @@ namespace War3Net.CodeAnalysis.Jass
         public static JassDebugStatementSyntax DebugStatement(JassSyntaxToken debugToken, JassStatementSyntax statement)
         {
             ThrowHelper.ThrowIfInvalidToken(debugToken, JassSyntaxKind.DebugKeyword);
-
-            var statementKind = JassSyntaxFacts.GetDebugStatementKind(statement.SyntaxKind);
-            if (statementKind == JassSyntaxKind.None)
-            {
-                throw new ArgumentException($"'{statement.SyntaxKind}' is not a valid statement kind for debug statements.", nameof(statement));
-            }
+            ThrowHelper.ThrowIfInvalidDebugStatement(statement);
 
             return new JassDebugStatementSyntax(
                 debugToken,

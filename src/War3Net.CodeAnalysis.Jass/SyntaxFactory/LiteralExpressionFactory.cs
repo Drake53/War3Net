@@ -5,7 +5,6 @@
 // </copyright>
 // ------------------------------------------------------------------------------
 
-using System;
 using System.Globalization;
 
 using War3Net.CodeAnalysis.Jass.Extensions;
@@ -77,10 +76,7 @@ namespace War3Net.CodeAnalysis.Jass
 
         public static JassExpressionSyntax LiteralExpression(JassSyntaxToken token)
         {
-            if (!JassSyntaxFacts.IsLiteralExpressionToken(token.SyntaxKind))
-            {
-                throw new ArgumentException("Token kind must be a literal.", nameof(token));
-            }
+            ThrowHelper.ThrowIfInvalidLiteralToken(token);
 
             return new JassLiteralExpressionSyntax(token);
         }
