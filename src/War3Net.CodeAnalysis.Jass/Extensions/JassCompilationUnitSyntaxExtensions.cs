@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="JassCompilationUnitSyntaxExtensions.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -13,7 +13,7 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
     {
         public static JassCompilationUnitSyntax NormalizeWhitespace(this JassCompilationUnitSyntax compilationUnit)
         {
-            return new JassSyntaxNormalizer().NormalizeWhitespace(compilationUnit);
+            return new JassSyntaxNormalizingVisitor().NormalizeWhitespace(compilationUnit);
         }
     }
 }
