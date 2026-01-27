@@ -34,7 +34,7 @@ namespace War3Net.CodeAnalysis.Jass
                 expression);
         }
 
-        public static JassUnaryExpressionSyntax UnaryNotExpression(JassSyntaxToken operatorToken, JassExpressionSyntax expression)
+        public static JassUnaryExpressionSyntax UnaryExpression(JassSyntaxToken operatorToken, JassExpressionSyntax expression)
         {
             ThrowHelper.ThrowIfInvalidUnaryOperatorToken(operatorToken);
 
