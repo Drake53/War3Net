@@ -105,7 +105,7 @@ Avoid doing multiple things in a single pull request like fixing bugs, adding ne
 
 ### License
 
-War3Net is licenced under the [MIT](LICENSE) license.
+War3Net is licensed under the [MIT](LICENSE) license.
 Projects from NuGet packages and submodules may have a different license.
 
 
