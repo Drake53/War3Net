@@ -3,6 +3,9 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
+[![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
 ---
 
@@ -53,12 +56,12 @@ Some of the above packages are based on code from other repositories:
 
 ### Contributing
 
-[![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
+Please open an issue before creating a pull request.
+
+Pull requests should be small and atomic to make them easier to review.
+Avoid doing multiple things in a single pull request like fixing bugs, adding new features, and refactoring code.
 
 ### License
-
-[![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
 War3Net is licenced under the [MIT](LICENSE) license.
 Projects from NuGet packages and submodules may have a different license.
