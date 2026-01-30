@@ -1,8 +1,11 @@
-# War3Net
-## A .NET implementation of Warcraft III related libraries
+# War3Net Modding Library
+## The complete .NET toolkit for Warcraft III modding
 
 [![GitHub stars](https://img.shields.io/github/stars/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
+[![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
 
 ---
 
@@ -10,7 +13,10 @@
   •
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
-  <a href="#projects">Projects</a> •
+  <a href="#vision--principles">Vision</a> •
+  <a href="#built-with-war3net">Built with War3Net</a> •
+  <a href="#packages">Packages</a> •
+  <a href="#roadmap">Roadmap</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#license">License</a>
   </b>
@@ -21,47 +27,87 @@
 
 ### What is War3Net?
 
-War3Net is a collection of libraries for Warcraft III modding.
+Your one-stop .NET toolkit for all things Warcraft III. From low-level file formats like MPQ and BLP to high-level map building in C# and working with JASS scripts—War3Net has you covered.
 
-### Projects
+Stop reinventing the wheel. Start building.
 
-| Project                           | Summary                                                                                                   | NuGet                         |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| [War3Net.Build]                   | Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.  | [![VBuild]][PBuild]           |
-| [War3Net.Build.Core]              | Parsers and serializers for war3map files.                                                                | [![VBuildCore]][PBuildCore]   |
-| [War3Net.CodeAnalysis]            | Helper methods for Pidgin parsers.                                                                        | [![VCode]][PCode]             |
-| [War3Net.CodeAnalysis.CSharp]     | *deprecated*                                                                                              | [![VCodeCSharp]][PCodeCSharp] |
-| [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
-| [War3Net.CodeAnalysis.Jass]       | War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.                       | [![VCodeJass]][PCodeJass]     |
-| [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
-| [War3Net.Common]                  | Contains some methods used by several other War3Net projects.                                             | [![VCommon]][PCommon]         |
-| [War3Net.Drawing.Blp]             | War3Net.Drawing.Blp is a library for reading and writing files with the ".blp" extension.                 | [![VBlp]][PBlp]               |
-| [War3Net.IO.Casc]                 | Class library for opening CASC archives.                                                                  | *Coming soon*                 |
-| [War3Net.IO.Compression]          | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
-| [War3Net.IO.Mpq]                  | Class library for opening and creating MPQ files.                                                         | [![VMpq]][PMpq]               |
-| [War3Net.IO.Slk]                  | Library for opening and creating files in SLK format.                                                     | [![VSlk]][PSlk]               |
-| [War3Net.Modeling]                | Read and write .mdl and .mdx files.                                                                       | *Coming soon*                 |
-| [War3Net.Rendering]               | Renders Warcraft III models using [Veldrid].                                                              | *Coming soon*                 |
-| [War3Net.Replay]                  | Parse replay (.w3g) files.                                                                                | *Coming soon*                 |
-| [War3Net.Runtime]                 | Uses [NLua] to run JASS and lua map scripts.                                                              | *Coming soon*                 |
-| [War3Net.Runtime.Core]            | C# implementation of Warcraft III's backend code.                                                         | *Coming soon*                 |
-| [War3Net.Runtime.Api.Blizzard]    | The Blizzard.j API implemented in C#.                                                                     | *Coming soon*                 |
-| [War3Net.Runtime.Api.Common]      | API for [War3Net.Runtime.Core], similar to [War3Api.Common].                                              | *Coming soon*                 |
+### Vision & Principles
 
-Some of the above projects are based on code from other repositories:
+War3Net aims to be the definitive .NET foundation for Warcraft III tooling—built on three core principles:
+
+- **Completeness** — Every file format. Every game version. RoC through Reforged.
+- **Correctness** — Byte-for-byte accuracy with Blizzard's implementations. No guesswork.
+- **Compatibility** — .NET 5+ for broad OS support, including Windows 7/8.
+
+### Built with War3Net
+
+> **Disclaimer:** Projects listed here are independent and not affiliated with, endorsed by, or maintained by the creator of War3Net. Use them at your own discretion.
+
+| Project | Description |
+| ------- | ----------- |
+| [Project name](https://github.com/Drake53/War3Net) | This is a placeholder, serving as an example of how to insert the name, url, and description of your project |
+
+*Using War3Net in your project? Open a PR to add it here!*
+
+### Packages
+
+Main packages:
+
+| Package | Description | Downloads |
+| ------- | ----------- | --------- |
+| **[War3Net.Build]** | Build complete Warcraft III maps programmatically, including script generation and asset packaging. | [![War3Net.Build downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build) |
+| **[War3Net.CodeAnalysis.Jass]** | Work with JASS code: parse existing scripts, transpile to C#/Lua, or generate new code. | [![War3Net.CodeAnalysis.Jass downloads](https://img.shields.io/nuget/dt/War3Net.CodeAnalysis.Jass.svg)](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass) |
+
+Full list of current and planned packages:
+
+| Package                            | Summary                                                          | NuGet                         |
+| ---------------------------------- | ---------------------------------------------------------------- | ----------------------------- |
+| [War3Net.Build]                    | Generate map scripts and MPQ archives from C#/vJass source code. | [![VBuild]][PBuild]           |
+| [War3Net.Build.Core]               | Parsers and serializers for war3map files.                       | [![VBuildCore]][PBuildCore]   |
+| [War3Net.CodeAnalysis]             | Helper methods for Pidgin parsers.                               | [![VCode]][PCode]             |
+| [War3Net.CodeAnalysis.Decompilers] | Regenerate war3map files from a Warcraft III map script.         | [![VCodeDecomp]][PCodeDecomp] |
+| [War3Net.CodeAnalysis.Jass]        | Parse and render JASS source files.                              | [![VCodeJass]][PCodeJass]     |
+| [War3Net.CodeAnalysis.Transpilers] | Transpile JASS to C# or Lua.                                     | [![VCodeTrans]][PCodeTrans]   |
+| [War3Net.Common]                   | Shared utilities for War3Net packages.                           | [![VCommon]][PCommon]         |
+| [War3Net.Drawing.Blp]              | Read and write BLP texture files.                                | [![VBlp]][PBlp]               |
+| [War3Net.IO.Casc]                  | Read CASC archives.                                              | *Coming soon™*                |
+| [War3Net.IO.Compression]           | Compression algorithms for MPQ archives.                         | [![VCompress]][PCompress]     |
+| [War3Net.IO.Mpq]                   | Read and write MPQ archives.                                     | [![VMpq]][PMpq]               |
+| [War3Net.IO.Slk]                   | Read and write SLK data files.                                   | [![VSlk]][PSlk]               |
+| [War3Net.Modeling]                 | Read and write .mdl and .mdx files.                              | *Coming soon™*                |
+| [War3Net.Rendering]                | Render Warcraft III models using [Veldrid].                      | *Coming soon™*                |
+| [War3Net.Replay]                   | Parse replay (.w3g) files.                                       | *Coming soon™*                |
+| [War3Net.Runtime]                  | Execute JASS and Lua map scripts using [NLua].                   | *Coming soon™*                |
+| [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
+| [War3Net.Runtime.Api.Blizzard]     | Blizzard.j API implemented in C#.                                | *Coming soon™*                |
+| [War3Net.Runtime.Api.Common]       | API for [War3Net.Runtime.Core], similar to [War3Api.Common].     | *Coming soon™*                |
+
+Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
 - *[War3Net.IO.Compression] and [War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
+### Roadmap
+
+Two major initiatives are in progress:
+
+**JASS Language Suite** — Bringing modern IDE tooling to JASS.
+- Fault-tolerant parsing, semantic analysis, and LSP support
+- End goals: Intelligent script adaptation across game versions • VSCode extension
+
+**Warcraft III Runtime** — Run maps without the game.
+- Native JASS VM, C# natives, headless rendering
+- End goals: Automated C# map testing • Full game emulation
+
 ### Contributing
 
-[![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
+Please open an issue before creating a pull request.
+
+Pull requests should be small and atomic to make them easier to review.
+Avoid doing multiple things in a single pull request like fixing bugs, adding new features, and refactoring code.
 
 ### License
 
-[![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
-
-War3Net is licenced under the [MIT](LICENSE) license.
+War3Net is licensed under the [MIT](LICENSE) license.
 Projects from NuGet packages and submodules may have a different license.
 
 
@@ -77,7 +123,6 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.Build]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build
 [War3Net.Build.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build.Core
 [War3Net.CodeAnalysis]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis
-[War3Net.CodeAnalysis.CSharp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.CSharp
 [War3Net.CodeAnalysis.Decompilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Decompilers
 [War3Net.CodeAnalysis.Jass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass
 [War3Net.CodeAnalysis.Transpilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Transpilers
@@ -98,7 +143,6 @@ Projects from NuGet packages and submodules may have a different license.
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
 [PBuildCore]: https://www.nuget.org/packages/War3Net.Build.Core
 [PCode]: https://www.nuget.org/packages/War3Net.CodeAnalysis
-[PCodeCSharp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.CSharp 
 [PCodeDecomp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Decompilers
 [PCodeJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass
 [PCodeTrans]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Transpilers
@@ -118,8 +162,7 @@ Projects from NuGet packages and submodules may have a different license.
 
 [VBuild]: https://img.shields.io/nuget/v/War3Net.Build.svg
 [VBuildCore]: https://img.shields.io/nuget/v/War3Net.Build.Core.svg
-[VCode]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.svg 
-[VCodeCSharp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.CSharp.svg 
+[VCode]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.svg
 [VCodeDecomp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Decompilers.svg
 [VCodeJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Jass.svg
 [VCodeTrans]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Transpilers.svg
