@@ -13,7 +13,10 @@
   •
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
+  <a href="#vision--principles">Vision</a> •
+  <a href="#built-with-war3net">Built with War3Net</a> •
   <a href="#packages">Packages</a> •
+  <a href="#roadmap">Roadmap</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#license">License</a>
   </b>
@@ -24,7 +27,27 @@
 
 ### What is War3Net?
 
-War3Net is a collection of libraries for Warcraft III modding.
+Your one-stop .NET toolkit for all things Warcraft III. From low-level file formats like MPQ and BLP to high-level map building in C# and working with JASS scripts—War3Net has you covered.
+
+Stop reinventing the wheel. Start building.
+
+### Vision & Principles
+
+War3Net aims to be the definitive .NET foundation for Warcraft III tooling—built on three core principles:
+
+- **Completeness** — Every file format. Every game version. Classic through Reforged.
+- **Correctness** — Byte-for-byte accuracy with Blizzard's implementations. No guesswork.
+- **Compatibility** — .NET 5+ for broad OS support (including Windows 7/8). All game versions from RoC to Reforged.
+
+### Built with War3Net
+
+> **Disclaimer:** Projects listed here are independent and not affiliated with, endorsed by, or maintained by the creator of War3Net. Use them at your own discretion.
+
+| Project | Description |
+| ------- | ----------- |
+| [Project name](https://github.com/Drake53/War3Net) | This is a placeholder, serving as an example of how to insert the name, url, and description of your project |
+
+*Using War3Net in your project? Open a PR to add it here!*
 
 ### Packages
 
@@ -60,6 +83,18 @@ Full list of current and planned packages:
 Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
 - *[War3Net.IO.Compression] and [War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
+
+### Roadmap
+
+Two major initiatives are in progress:
+
+**JASS Language Suite** — Bringing modern IDE tooling to JASS.
+- Fault-tolerant parsing, semantic analysis, and LSP support
+- End goals: Intelligent script adaptation across game versions • VSCode extension
+
+**Warcraft III Runtime** — Run maps without the game.
+- Native JASS VM, C# natives, headless rendering
+- End goals: Automated C# map testing • Full game emulation
 
 ### Contributing
 
