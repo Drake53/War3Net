@@ -10,6 +10,10 @@
 ---
 
 <p align="center">
+  <img src="assets/images/war3net-banner.png" alt="War3Net Banner">
+</p>
+
+<p align="center">
   •
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
