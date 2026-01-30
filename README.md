@@ -30,7 +30,6 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.Build]                   | Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.  | [![VBuild]][PBuild]           |
 | [War3Net.Build.Core]              | Parsers and serializers for war3map files.                                                                | [![VBuildCore]][PBuildCore]   |
 | [War3Net.CodeAnalysis]            | Helper methods for Pidgin parsers.                                                                        | [![VCode]][PCode]             |
-| [War3Net.CodeAnalysis.CSharp]     | *deprecated*                                                                                              | [![VCodeCSharp]][PCodeCSharp] |
 | [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
 | [War3Net.CodeAnalysis.Jass]       | War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.                       | [![VCodeJass]][PCodeJass]     |
 | [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
@@ -98,7 +97,6 @@ Projects from NuGet packages and submodules may have a different license.
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
 [PBuildCore]: https://www.nuget.org/packages/War3Net.Build.Core
 [PCode]: https://www.nuget.org/packages/War3Net.CodeAnalysis
-[PCodeCSharp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.CSharp 
 [PCodeDecomp]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Decompilers
 [PCodeJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass
 [PCodeTrans]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Transpilers
@@ -118,8 +116,7 @@ Projects from NuGet packages and submodules may have a different license.
 
 [VBuild]: https://img.shields.io/nuget/v/War3Net.Build.svg
 [VBuildCore]: https://img.shields.io/nuget/v/War3Net.Build.Core.svg
-[VCode]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.svg 
-[VCodeCSharp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.CSharp.svg 
+[VCode]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.svg
 [VCodeDecomp]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Decompilers.svg
 [VCodeJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Jass.svg
 [VCodeTrans]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Transpilers.svg
