@@ -1,5 +1,5 @@
-# War3Net
-## A .NET implementation of Warcraft III related libraries
+# War3Net Modding Library
+## The complete .NET toolkit for Warcraft III modding
 
 [![GitHub stars](https://img.shields.io/github/stars/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/network/members)
