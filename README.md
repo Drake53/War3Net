@@ -6,6 +6,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
+[![NuGet downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build)
 
 ---
 
