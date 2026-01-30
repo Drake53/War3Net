@@ -55,8 +55,8 @@ Main packages:
 
 | Package | Description | Downloads |
 | ------- | ----------- | --------- |
-| **[War3Net.Build]** | Build complete Warcraft III maps programmatically, including script generation and asset packaging | [![War3Net.Build downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build) |
-| **[War3Net.CodeAnalysis.Jass]** | Work with JASS code: parse existing scripts, transpile to C#/Lua, or generate new code | [![War3Net.CodeAnalysis.Jass downloads](https://img.shields.io/nuget/dt/War3Net.CodeAnalysis.Jass.svg)](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass) |
+| **[War3Net.Build]** | Build complete Warcraft III maps programmatically, including script generation and asset packaging. | [![War3Net.Build downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build) |
+| **[War3Net.CodeAnalysis.Jass]** | Work with JASS code: parse existing scripts, transpile to C#/Lua, or generate new code. | [![War3Net.CodeAnalysis.Jass downloads](https://img.shields.io/nuget/dt/War3Net.CodeAnalysis.Jass.svg)](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass) |
 
 Full list of current and planned packages:
 
@@ -75,11 +75,11 @@ Full list of current and planned packages:
 | [War3Net.IO.Mpq]                   | Read and write MPQ archives.                                     | [![VMpq]][PMpq]               |
 | [War3Net.IO.Slk]                   | Read and write SLK data files.                                   | [![VSlk]][PSlk]               |
 | [War3Net.Modeling]                 | Read and write .mdl and .mdx files.                              | *Coming soon™*                |
-| [War3Net.Rendering]                | Renders Warcraft III models using [Veldrid].                     | *Coming soon™*                |
+| [War3Net.Rendering]                | Render Warcraft III models using [Veldrid].                      | *Coming soon™*                |
 | [War3Net.Replay]                   | Parse replay (.w3g) files.                                       | *Coming soon™*                |
 | [War3Net.Runtime]                  | Execute JASS and Lua map scripts using [NLua].                   | *Coming soon™*                |
 | [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
-| [War3Net.Runtime.Api.Blizzard]     | The Blizzard.j API implemented in C#.                            | *Coming soon™*                |
+| [War3Net.Runtime.Api.Blizzard]     | Blizzard.j API implemented in C#.                                | *Coming soon™*                |
 | [War3Net.Runtime.Api.Common]       | API for [War3Net.Runtime.Core], similar to [War3Api.Common].     | *Coming soon™*                |
 
 Some of the above packages are based on code from other repositories:
