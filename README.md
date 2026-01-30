@@ -6,7 +6,6 @@
 [![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
-[![NuGet downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build)
 
 ---
 
@@ -54,8 +53,10 @@ War3Net aims to be the definitive .NET foundation for Warcraft III tooling—bui
 
 Main packages:
 
-- **[War3Net.Build]** — Build complete Warcraft III maps programmatically, including script generation and asset packaging
-- **[War3Net.CodeAnalysis.Jass]** — Work with JASS code: parse existing scripts, transpile to C#/Lua, or generate new code
+| Package | Description | Downloads |
+| ------- | ----------- | --------- |
+| **[War3Net.Build]** | Build complete Warcraft III maps programmatically, including script generation and asset packaging | [![War3Net.Build downloads](https://img.shields.io/nuget/dt/War3Net.Build.svg)](https://www.nuget.org/packages/War3Net.Build) |
+| **[War3Net.CodeAnalysis.Jass]** | Work with JASS code: parse existing scripts, transpile to C#/Lua, or generate new code | [![War3Net.CodeAnalysis.Jass downloads](https://img.shields.io/nuget/dt/War3Net.CodeAnalysis.Jass.svg)](https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass) |
 
 Full list of current and planned packages:
 
