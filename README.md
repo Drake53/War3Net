@@ -27,7 +27,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 
 | Package                           | Summary                                                                                                   | NuGet                         |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| [War3Net.Build]                   | Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.  | [![VBuild]][PBuild]           |
+| [War3Net.Build]                   | Generate Warcraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files. | [![VBuild]][PBuild]           |
 | [War3Net.Build.Core]              | Parsers and serializers for war3map files.                                                                | [![VBuildCore]][PBuildCore]   |
 | [War3Net.CodeAnalysis]            | Helper methods for Pidgin parsers.                                                                        | [![VCode]][PCode]             |
 | [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
