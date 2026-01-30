@@ -38,17 +38,17 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
 | [War3Net.Common]                  | Contains some methods used by several other War3Net packages.                                             | [![VCommon]][PCommon]         |
 | [War3Net.Drawing.Blp]             | War3Net.Drawing.Blp is a library for reading and writing files with the ".blp" extension.                 | [![VBlp]][PBlp]               |
-| [War3Net.IO.Casc]                 | Class library for opening CASC archives.                                                                  | *Coming soon*                 |
+| [War3Net.IO.Casc]                 | Class library for opening CASC archives.                                                                  | *Coming soon™*                |
 | [War3Net.IO.Compression]          | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
 | [War3Net.IO.Mpq]                  | Class library for opening and creating MPQ files.                                                         | [![VMpq]][PMpq]               |
 | [War3Net.IO.Slk]                  | Library for opening and creating files in SLK format.                                                     | [![VSlk]][PSlk]               |
-| [War3Net.Modeling]                | Read and write .mdl and .mdx files.                                                                       | *Coming soon*                 |
-| [War3Net.Rendering]               | Renders Warcraft III models using [Veldrid].                                                              | *Coming soon*                 |
-| [War3Net.Replay]                  | Parse replay (.w3g) files.                                                                                | *Coming soon*                 |
-| [War3Net.Runtime]                 | Uses [NLua] to run JASS and lua map scripts.                                                              | *Coming soon*                 |
-| [War3Net.Runtime.Core]            | C# implementation of Warcraft III's backend code.                                                         | *Coming soon*                 |
-| [War3Net.Runtime.Api.Blizzard]    | The Blizzard.j API implemented in C#.                                                                     | *Coming soon*                 |
-| [War3Net.Runtime.Api.Common]      | API for [War3Net.Runtime.Core], similar to [War3Api.Common].                                              | *Coming soon*                 |
+| [War3Net.Modeling]                | Read and write .mdl and .mdx files.                                                                       | *Coming soon™*                |
+| [War3Net.Rendering]               | Renders Warcraft III models using [Veldrid].                                                              | *Coming soon™*                |
+| [War3Net.Replay]                  | Parse replay (.w3g) files.                                                                                | *Coming soon™*                |
+| [War3Net.Runtime]                 | Uses [NLua] to run JASS and lua map scripts.                                                              | *Coming soon™*                |
+| [War3Net.Runtime.Core]            | C# implementation of Warcraft III's backend code.                                                         | *Coming soon™*                |
+| [War3Net.Runtime.Api.Blizzard]    | The Blizzard.j API implemented in C#.                                                                     | *Coming soon™*                |
+| [War3Net.Runtime.Api.Common]      | API for [War3Net.Runtime.Core], similar to [War3Api.Common].                                              | *Coming soon™*                |
 
 Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
