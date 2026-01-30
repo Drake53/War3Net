@@ -79,7 +79,6 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.Build]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build
 [War3Net.Build.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Build.Core
 [War3Net.CodeAnalysis]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis
-[War3Net.CodeAnalysis.CSharp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.CSharp
 [War3Net.CodeAnalysis.Decompilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Decompilers
 [War3Net.CodeAnalysis.Jass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass
 [War3Net.CodeAnalysis.Transpilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Transpilers
