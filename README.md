@@ -35,9 +35,9 @@ Stop reinventing the wheel. Start building.
 
 War3Net aims to be the definitive .NET foundation for Warcraft III tooling—built on three core principles:
 
-- **Completeness** — Every file format. Every game version. Classic through Reforged.
+- **Completeness** — Every file format. Every game version. RoC through Reforged.
 - **Correctness** — Byte-for-byte accuracy with Blizzard's implementations. No guesswork.
-- **Compatibility** — .NET 5+ for broad OS support (including Windows 7/8). All game versions from RoC to Reforged.
+- **Compatibility** — .NET 5+ for broad OS support, including Windows 7/8.
 
 ### Built with War3Net
 
