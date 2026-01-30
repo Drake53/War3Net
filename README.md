@@ -10,7 +10,7 @@
   •
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
-  <a href="#projects">Projects</a> •
+  <a href="#packages">Packages</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#license">License</a>
   </b>
@@ -23,9 +23,9 @@
 
 War3Net is a collection of libraries for Warcraft III modding.
 
-### Projects
+### Packages
 
-| Project                           | Summary                                                                                                   | NuGet                         |
+| Package                           | Summary                                                                                                   | NuGet                         |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | [War3Net.Build]                   | Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.  | [![VBuild]][PBuild]           |
 | [War3Net.Build.Core]              | Parsers and serializers for war3map files.                                                                | [![VBuildCore]][PBuildCore]   |
@@ -33,7 +33,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.CodeAnalysis.Decompilers]| Regenerate war3map files from a Warcraft III map script.                                                  | [![VCodeDecomp]][PCodeDecomp] |
 | [War3Net.CodeAnalysis.Jass]       | War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.                       | [![VCodeJass]][PCodeJass]     |
 | [War3Net.CodeAnalysis.Transpilers]| Transpiles JASS source code to C# or lua.                                                                 | [![VCodeTrans]][PCodeTrans]   |
-| [War3Net.Common]                  | Contains some methods used by several other War3Net projects.                                             | [![VCommon]][PCommon]         |
+| [War3Net.Common]                  | Contains some methods used by several other War3Net packages.                                             | [![VCommon]][PCommon]         |
 | [War3Net.Drawing.Blp]             | War3Net.Drawing.Blp is a library for reading and writing files with the ".blp" extension.                 | [![VBlp]][PBlp]               |
 | [War3Net.IO.Casc]                 | Class library for opening CASC archives.                                                                  | *Coming soon*                 |
 | [War3Net.IO.Compression]          | Decompression and compression algorithms for compression methods commonly used in MPQ archives.           | [![VCompress]][PCompress]     |
@@ -47,7 +47,7 @@ War3Net is a collection of libraries for Warcraft III modding.
 | [War3Net.Runtime.Api.Blizzard]    | The Blizzard.j API implemented in C#.                                                                     | *Coming soon*                 |
 | [War3Net.Runtime.Api.Common]      | API for [War3Net.Runtime.Core], similar to [War3Api.Common].                                              | *Coming soon*                 |
 
-Some of the above projects are based on code from other repositories:
+Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
 - *[War3Net.IO.Compression] and [War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
