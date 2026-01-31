@@ -1,0 +1,53 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Minimalistic toolbox with glowing seam behind III locks -->
+  <defs>
+    <!-- Brighter gold gradient matching banner -->
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F5E6A3"/>
+      <stop offset="20%" stop-color="#E8C252"/>
+      <stop offset="50%" stop-color="#C9A227"/>
+      <stop offset="80%" stop-color="#9A7B0A"/>
+      <stop offset="100%" stop-color="#6B5506"/>
+    </linearGradient>
+
+    <!-- Glow gradient for left seam - fades toward edge -->
+    <linearGradient id="seamGlowLeft" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#39FF14" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#39FF14" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#39FF14" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <!-- Glow gradient for right seam - fades toward edge -->
+    <linearGradient id="seamGlowRight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#39FF14" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#39FF14" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#39FF14" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Handle - simple arch -->
+  <path d="M48 32 Q48 18 64 18 Q80 18 80 32" stroke="#1E3122" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M50 32 Q50 24 64 24 Q78 24 78 32" stroke="#0F1F18" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- Toolbox body - flat color, no border -->
+  <path d="M8 48 L24 32 L104 32 L120 48 L120 102 L8 102 Z" fill="#1E3122"/>
+
+  <!-- Base seam - subtle green line across full width -->
+  <rect x="8" y="66" width="112" height="4" fill="#39FF14" opacity="0.35"/>
+
+  <!-- Enhanced glow on left side (outside locks) -->
+  <rect x="8" y="66" width="29" height="4" fill="url(#seamGlowLeft)"/>
+
+  <!-- Enhanced glow on right side (outside locks) -->
+  <rect x="91" y="66" width="29" height="4" fill="url(#seamGlowRight)"/>
+
+  <!-- Gold III locks - closer together, matching banner spacing -->
+  <rect x="37" y="50" width="14" height="36" rx="2" fill="url(#gold)"/>
+  <rect x="57" y="50" width="14" height="36" rx="2" fill="url(#gold)"/>
+  <rect x="77" y="50" width="14" height="36" rx="2" fill="url(#gold)"/>
+
+  <!-- Subtle highlights on locks -->
+  <rect x="39" y="52" width="3" height="31" rx="1" fill="#FFF8DC" opacity="0.3"/>
+  <rect x="59" y="52" width="3" height="31" rx="1" fill="#FFF8DC" opacity="0.3"/>
+  <rect x="79" y="52" width="3" height="31" rx="1" fill="#FFF8DC" opacity="0.3"/>
+</svg>

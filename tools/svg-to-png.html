@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to PNG Converter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+        .container {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .drop-zone {
+            border: 3px dashed #4a5568;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #1a1a2e;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #667eea;
+            background: #1f2937;
+        }
+        .drop-zone p {
+            margin: 0;
+            font-size: 16px;
+            color: #9ca3af;
+        }
+        .options {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .option-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        select {
+            background: #1a1a2e;
+            color: #fff;
+            cursor: pointer;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background: #5a67d8;
+        }
+        button:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+        }
+        .preview-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .preview-box {
+            text-align: center;
+        }
+        .preview-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+        .preview {
+            background: repeating-conic-gradient(#3f3f46 0% 25%, #52525b 0% 50%) 50% / 20px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .preview img, .preview svg {
+            max-width: 100%;
+            max-height: 100%;
+            image-rendering: pixelated;
+        }
+        #svgPreview {
+            width: 256px;
+            height: 256px;
+        }
+        #pngPreview {
+            width: 256px;
+            height: 256px;
+        }
+        .hidden {
+            display: none;
+        }
+        .file-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG to PNG Converter</h1>
+
+    <div class="container">
+        <div class="drop-zone" id="dropZone">
+            <p>Drop SVG file here or click to select</p>
+            <input type="file" id="fileInput" accept=".svg" style="display: none;">
+        </div>
+        <div class="file-info hidden" id="fileInfo"></div>
+    </div>
+
+    <div class="container">
+        <div class="options">
+            <div class="option-group">
+                <label for="sizeSelect">Output Size</label>
+                <select id="sizeSelect">
+                    <option value="128">128 × 128 px</option>
+                    <option value="256" selected>256 × 256 px</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label>&nbsp;</label>
+                <button id="downloadBtn" disabled>Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="preview-container">
+            <div class="preview-box">
+                <h3>SVG Input</h3>
+                <div class="preview" id="svgPreview"></div>
+            </div>
+            <div class="preview-box">
+                <h3>PNG Output</h3>
+                <div class="preview" id="pngPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const sizeSelect = document.getElementById('sizeSelect');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const svgPreview = document.getElementById('svgPreview');
+        const pngPreview = document.getElementById('pngPreview');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Disable image smoothing for nearest neighbor scaling
+        ctx.imageSmoothingEnabled = false;
+
+        let currentSvgData = null;
+        let currentFileName = 'image';
+
+        // Drop zone events
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'image/svg+xml') {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        sizeSelect.addEventListener('change', () => {
+            if (currentSvgData) {
+                renderPng();
+            }
+        });
+
+        downloadBtn.addEventListener('click', downloadPng);
+
+        function handleFile(file) {
+            currentFileName = file.name.replace('.svg', '');
+            fileInfo.textContent = `Loaded: ${file.name}`;
+            fileInfo.classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentSvgData = e.target.result;
+
+                // Show SVG preview
+                svgPreview.innerHTML = currentSvgData;
+                const svgElement = svgPreview.querySelector('svg');
+                if (svgElement) {
+                    svgElement.style.width = '100%';
+                    svgElement.style.height = '100%';
+                }
+
+                renderPng();
+                downloadBtn.disabled = false;
+            };
+            reader.readAsText(file);
+        }
+
+        function renderPng() {
+            const size = parseInt(sizeSelect.value);
+            canvas.width = size;
+            canvas.height = size;
+
+            // Clear canvas (transparent)
+            ctx.clearRect(0, 0, size, size);
+
+            // Ensure nearest neighbor interpolation
+            ctx.imageSmoothingEnabled = false;
+
+            // Parse SVG and set explicit dimensions to match output size
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(currentSvgData, 'image/svg+xml');
+            const svgElement = svgDoc.documentElement;
+
+            // Set width and height to exact target size
+            svgElement.setAttribute('width', size);
+            svgElement.setAttribute('height', size);
+
+            // Add shape-rendering for crisp edges
+            svgElement.setAttribute('shape-rendering', 'crispEdges');
+
+            // Serialize back to string
+            const serializer = new XMLSerializer();
+            const modifiedSvgData = serializer.serializeToString(svgElement);
+
+            const img = new Image();
+            const svgBlob = new Blob([modifiedSvgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+
+                // Show PNG preview
+                const pngDataUrl = canvas.toDataURL('image/png');
+                pngPreview.innerHTML = `<img src="${pngDataUrl}" alt="PNG Preview">`;
+            };
+
+            img.src = url;
+        }
+
+        function downloadPng() {
+            const size = parseInt(sizeSelect.value);
+            const pngDataUrl = canvas.toDataURL('image/png');
+
+            const link = document.createElement('a');
+            link.download = `${currentFileName}-${size}x${size}.png`;
+            link.href = pngDataUrl;
+            link.click();
+        }
+    </script>
+</body>
+</html>

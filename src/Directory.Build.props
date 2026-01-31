@@ -33,7 +33,13 @@
     
     <PackageReleaseNotes>https://github.com/Drake53/War3Net/tree/master/docs/changelogs</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/Drake53/War3Net</PackageProjectUrl>
+
+    <PackageIcon>war3net-icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <None Include="$(MSBuildThisFileDirectory)../assets/images/war3net-icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
