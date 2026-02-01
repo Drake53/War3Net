@@ -1,42 +1,128 @@
-## War3Net.Drawing.Blp
-### Based on code from [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
+# War3Net.Drawing.Blp
 
-[![NuGet downloads](https://img.shields.io/nuget/dt/War3Net.Drawing.Blp.svg)](https://www.nuget.org/packages/War3Net.Drawing.Blp)
-[![NuGet version](https://img.shields.io/nuget/v/War3Net.Drawing.Blp.svg)](https://www.nuget.org/packages/War3Net.Drawing.Blp)
+## About
 
-## Description
+War3Net.Drawing.Blp is a .NET library for reading and writing BLP texture files, an image format used by Blizzard games including Warcraft III and World of Warcraft. It is part of the [War3Net](https://github.com/Drake53/War3Net) modding library.
 
-War3Net.Drawing.Blp is a library for reading files with the ".blp" extension.
+## Key features
 
-The BLP file format is used to store images/textures. There exist three formats of the file type: BLP0, BLP1, and BLP2.
-- BLP0 is used in Warcraft III beta, and is currently not supported by this library.
-- BLP1 is used in Warcraft III Reign of Chaos and The Frozen Throne.
-- BLP2 is used in World of Warcraft.
+* Read BLP1 files (Warcraft III: Reign of Chaos and The Frozen Throne)
+* Read BLP2 files (World of Warcraft)
+* Encode images to BLP1 format with JPEG compression
+* Support for multiple compression types (JPEG, palettized, DXT1/DXT3/DXT5)
+* Extract pixel data in BGRA or RGBA format
+* Access all mipmap levels within a BLP file
+* Automatic mipmap generation when encoding
+* Windows-specific `BitmapSource` conversion (WPF)
 
-## Examples
+## How to Use
 
-```C#
-using (var fileStream = File.OpenRead(inputImagePath))
+### Read a BLP file and extract pixel data
+
+```csharp
+using War3Net.Drawing.Blp;
+
+// Open and read the BLP file
+using var stream = File.OpenRead("texture.blp");
+using var blpFile = new BlpFile(stream);
+
+// Get image dimensions
+int width = blpFile.Width;
+int height = blpFile.Height;
+
+// Extract pixel data (BGRA format by default)
+byte[] pixels = blpFile.GetPixels(mipMapLevel: 0, out int w, out int h);
+```
+
+### Extract pixel data in RGBA format
+
+```csharp
+using War3Net.Drawing.Blp;
+
+using var stream = File.OpenRead("texture.blp");
+using var blpFile = new BlpFile(stream);
+
+// Get pixels in RGBA order instead of BGRA
+byte[] rgbaPixels = blpFile.GetPixels(mipMapLevel: 0, out int w, out int h, bgra: false);
+```
+
+### Access mipmap levels
+
+```csharp
+using War3Net.Drawing.Blp;
+
+using var stream = File.OpenRead("texture.blp");
+using var blpFile = new BlpFile(stream);
+
+// Get the number of available mipmaps
+int mipMapCount = blpFile.MipMapCount;
+
+// Extract a specific mipmap level (0 = largest, higher = smaller)
+for (int level = 0; level < mipMapCount; level++)
 {
-    var blpFile = new BlpFile(fileStream);
-    var bitmap = blpFile.GetSKBitmap();
-
-    return bitmap;
+    byte[] mipMapPixels = blpFile.GetPixels(level, out int mipWidth, out int mipHeight);
+    // Process mipmap...
 }
 ```
 
-## Dependencies
+### Encode an image to BLP1 format
 
-War3Net.Drawing.Blp depends on [SkiaSharp](https://github.com/mono/SkiaSharp) to decode images.
-Depending on the target framework, additional methods are available to get the image in a different bitmap type (SKBitmap, Bitmap, BitmapSource).
+```csharp
+using War3Net.Drawing.Blp;
 
-- [![dotnet framework 4.6](https://img.shields.io/badge/.NET%20framework-v4.6-brightgreen.svg)](https://github.com/microsoft/dotnet/blob/master/Documentation/compatibility/README.md#net-framework-46)
-    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
+// Prepare BGRA pixel data (4 bytes per pixel)
+int width = 256;
+int height = 256;
+byte[] bgraPixels = new byte[width * height * 4];
+// ... populate pixel data ...
 
-- [![dotnet standard 1.3](https://img.shields.io/badge/.NET%20standard-v1.3-brightgreen.svg)](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard1.3.md)
-    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
-    [![NETStandard.Library](https://img.shields.io/badge/NETStandard.Library-v1.6.1-blue.svg)](https://www.nuget.org/packages/NETStandard.Library/)
+// Configure encoding options
+var options = new Blp1EncodingOptions
+{
+    GenerateMipmaps = true,
+    JpegQuality = 85,
+};
 
-- [![dotnet standard 2.0](https://img.shields.io/badge/.NET%20standard-v2.0-brightgreen.svg)](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)
-    [![SkiaSharp](https://img.shields.io/badge/SkiaSharp-v1.68.0-blue.svg)](https://www.nuget.org/packages/SkiaSharp)
-    [![System.Drawing.Common](https://img.shields.io/badge/System.Drawing.Common-v4.5.1-blue.svg)](https://www.nuget.org/packages/System.Drawing.Common)
+// Encode to BLP1
+var encoder = new BlpEncoder(options);
+using var outputStream = File.Create("output.blp");
+encoder.Encode(outputStream, width, height, bgraPixels);
+```
+
+### Convert to BitmapSource (Windows WPF)
+
+```csharp
+using War3Net.Drawing.Blp;
+using System.Windows.Media.Imaging;
+
+using var stream = File.OpenRead("texture.blp");
+using var blpFile = new BlpFile(stream);
+
+// Get a WPF BitmapSource (Windows only)
+BitmapSource bitmap = blpFile.GetBitmapSource(mipMapLevel: 0);
+```
+
+## Main Types
+
+The main types provided by this library are:
+
+* `War3Net.Drawing.Blp.BlpFile` - Reads and decodes BLP image files
+* `War3Net.Drawing.Blp.BlpEncoder` - Encodes images to BLP1 format with JPEG compression
+* `War3Net.Drawing.Blp.Blp1EncodingOptions` - Configuration options for BLP1 encoding
+* `War3Net.Drawing.Blp.FileFormatVersion` - BLP format version identifiers (BLP0, BLP1, BLP2)
+
+## Related Packages
+
+* [War3Net.Build](https://www.nuget.org/packages/War3Net.Build) - Generate JASS map scripts and compile maps
+* [War3Net.IO.Mpq](https://www.nuget.org/packages/War3Net.IO.Mpq) - Read and write MPQ archives
+
+## Feedback and contributing
+
+War3Net.Drawing.Blp is released as open source under the [MIT license](https://github.com/Drake53/War3Net/blob/master/LICENSE). Bug reports and contributions are welcome at [the GitHub repository](https://github.com/Drake53/War3Net).
+
+* [File an issue](https://github.com/Drake53/War3Net/issues)
+* [Submit a pull request](https://github.com/Drake53/War3Net/pulls)
+
+## Disclaimer
+
+This README was generated with the assistance of AI and may contain inaccuracies. Please verify the information and consult the source code for authoritative details.
