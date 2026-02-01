@@ -82,9 +82,9 @@ Full list of current and planned packages:
 | [War3Net.Rendering]                | Render Warcraft III models using [Veldrid].                      | *Coming soon™*                |
 | [War3Net.Replay]                   | Parse replay (.w3g) files.                                       | *Coming soon™*                |
 | [War3Net.Runtime]                  | Execute JASS and Lua map scripts using [NLua].                   | *Coming soon™*                |
-| [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
 | [War3Net.Runtime.Api.Blizzard]     | Blizzard.j API implemented in C#.                                | *Coming soon™*                |
 | [War3Net.Runtime.Api.Common]       | API for [War3Net.Runtime.Core], similar to [War3Api.Common].     | *Coming soon™*                |
+| [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
 
 Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
