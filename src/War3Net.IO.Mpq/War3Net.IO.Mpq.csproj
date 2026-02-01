@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Library for opening and creating files in MPQ format.</Description>
-    <PackageTags>mpq;warcraft3</PackageTags>
+    <Description>Read and write MPQ archives.</Description>
+    <PackageTags>modding;mpq;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

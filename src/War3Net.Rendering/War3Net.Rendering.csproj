@@ -6,6 +6,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>Render Warcraft III models using Veldrid.</Description>
+    <PackageTags>modding;rendering;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Pfim" />
     <PackageReference Include="Veldrid" />

@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Library for handling Warcraft III models (.mdl and .mdx files).</Description>
-    <PackageTags>mdl;mdx;warcraft3</PackageTags>
+    <Description>Read and write .mdl and .mdx files.</Description>
+    <PackageTags>mdl;mdx;modding;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

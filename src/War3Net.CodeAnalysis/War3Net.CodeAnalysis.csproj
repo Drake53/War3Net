@@ -5,8 +5,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Description>War3Net.CodeAnalysis contains additional parsers for the Pidgin parsing library.</Description>
-		<PackageTags>parser;warcraft3</PackageTags>
+		<Description>Helper methods for Pidgin parsers.</Description>
+		<PackageTags>modding;parser;syntax;warcraft3;wc3</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>

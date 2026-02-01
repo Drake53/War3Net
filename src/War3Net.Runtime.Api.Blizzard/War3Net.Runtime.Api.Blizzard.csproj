@@ -5,6 +5,11 @@
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>Blizzard.j API implemented in C#.</Description>
+    <PackageTags>api;blizzard;modding;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>
