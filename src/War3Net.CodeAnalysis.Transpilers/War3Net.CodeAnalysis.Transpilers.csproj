@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Transpiles JASS source code to C# or lua.</Description>
-    <PackageTags>jass;csharp;lua;warcraft3</PackageTags>
+    <Description>Transpile JASS to C# or Lua.</Description>
+    <PackageTags>csharp;jass;lua;modding;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

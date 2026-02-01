@@ -5,8 +5,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Description>War3Net.CodeAnalysis.VJass is a library for parsing vJASS source files.</Description>
-		<PackageTags>jass;vjass;warcraft3</PackageTags>
+		<Description>Parse and render vJASS source files.</Description>
+		<PackageTags>jass;modding;parser;vjass;warcraft3;wc3</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">

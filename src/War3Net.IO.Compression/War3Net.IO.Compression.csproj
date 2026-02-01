@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Decompression and compression algorithms for compression methods commonly used in MPQ archives.</Description>
-    <PackageTags>compression;huffman;adpcm;pklib;zlib;bzip2;warcraft3</PackageTags>
+    <Description>Compression algorithms for MPQ archives.</Description>
+    <PackageTags>adpcm;bzip2;compression;huffman;modding;pklib;warcraft3;wc3;zlib</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,11 @@
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>Read CASC archives.</Description>
+    <PackageTags>casc;modding;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>

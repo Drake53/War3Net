@@ -4,6 +4,11 @@
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>Parse replay (.w3g) files.</Description>
+    <PackageTags>modding;replay;w3g;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MessagePack" />
     <PackageReference Include="MessagePackAnalyzer" />

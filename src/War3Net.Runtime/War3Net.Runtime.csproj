@@ -5,6 +5,11 @@
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>Execute JASS and Lua map scripts using NLua.</Description>
+    <PackageTags>jass;lua;modding;runtime;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NLua" />
   </ItemGroup>
