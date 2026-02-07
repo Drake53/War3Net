@@ -64,7 +64,9 @@ namespace War3Net.CodeAnalysis.Text
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Start, End);
+            return HashCode.Combine(
+                Start.GetHashCode(),
+                End.GetHashCode());
         }
 
         /// <inheritdoc/>
