@@ -49,6 +49,7 @@ War3Net aims to be the definitive .NET foundation for Warcraft III tooling—bui
 
 | Project | Description |
 | ------- | ----------- |
+| [Maya WarTex](https://github.com/wiselencave/maya-wartex) | Autodesk Maya plug-in for BLP texture loading via [War3Net.Drawing.Blp](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp). |
 | [Project name](https://github.com/Drake53/War3Net) | This is a placeholder, serving as an example of how to insert the name, url, and description of your project |
 
 *Using War3Net in your project? Open a PR to add it here!*
