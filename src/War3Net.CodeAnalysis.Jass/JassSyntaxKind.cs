@@ -245,6 +245,7 @@ namespace War3Net.CodeAnalysis.Jass
         NewLineTrivia = 8539,
         WhitespaceTrivia = 8540,
         SingleLineCommentTrivia = 8541,
+        SkippedTokensTrivia = 8563,
 
         /// <summary>Represents <see cref="JassIdentifierNameSyntax"/>.</summary>
         IdentifierName = 8616,

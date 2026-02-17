@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // <copyright file="JassSyntaxToken.cs" company="Drake53">
 // Licensed under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -36,6 +36,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             TrailingTrivia = trailingTrivia;
         }
 
+        internal JassSyntaxToken(
+            JassSyntaxTriviaList leadingTrivia,
+            JassSyntaxKind syntaxKind,
+            string text,
+            JassSyntaxTriviaList trailingTrivia,
+            bool isMissing)
+        {
+            LeadingTrivia = leadingTrivia;
+            SyntaxKind = syntaxKind;
+            Text = text;
+            TrailingTrivia = trailingTrivia;
+            IsMissing = isMissing;
+        }
+
         public JassSyntaxTriviaList LeadingTrivia { get; }
 
         public JassSyntaxKind SyntaxKind { get; }
@@ -43,6 +57,12 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public string Text { get; }
 
         public JassSyntaxTriviaList TrailingTrivia { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this token was synthesized by the parser
+        /// as a placeholder for a missing token. Missing tokens have empty <see cref="Text"/>.
+        /// </summary>
+        public bool IsMissing { get; }
 
         public bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxToken? other)
         {

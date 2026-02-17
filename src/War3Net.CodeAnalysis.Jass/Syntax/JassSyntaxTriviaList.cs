@@ -15,6 +15,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public static readonly JassSyntaxTriviaList Empty = new(ImmutableArray<JassSyntaxTrivia>.Empty);
         public static readonly JassSyntaxTriviaList SingleSpace = new(ImmutableArray.Create(JassSyntaxTrivia.SingleSpace));
         public static readonly JassSyntaxTriviaList NewLine = new(ImmutableArray.Create(JassSyntaxTrivia.NewLine));
+        public static readonly JassSyntaxTriviaList CarriageReturn = new(ImmutableArray.Create(JassSyntaxTrivia.CarriageReturn));
+        public static readonly JassSyntaxTriviaList LineFeed = new(ImmutableArray.Create(JassSyntaxTrivia.LineFeed));
 
         internal JassSyntaxTriviaList(
             ImmutableArray<JassSyntaxTrivia> trivia)

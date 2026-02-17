@@ -83,6 +83,18 @@ namespace War3Net.CodeAnalysis.Jass
             return IsIdentifierEndCharacter(name[^1]);
         }
 
+        public static bool IsValidEscapeCharacter(char ch)
+        {
+            return ch is '\\' or '"' or '\'' or 'n' or 'r' or 't' or 'b' or 'f';
+        }
+
+        public static bool IsHexDigit(char ch)
+        {
+            return (ch >= '0' && ch <= '9')
+                || (ch >= 'a' && ch <= 'f')
+                || (ch >= 'A' && ch <= 'F');
+        }
+
         internal static bool IsNotReservedKeyword(string? name)
         {
             return !IsReservedKeyword(GetSyntaxKind(name));
