@@ -9,8 +9,6 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using War3Net.TestTools.UnitTesting;
-
 namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests

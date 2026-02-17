@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Decompilers
 {

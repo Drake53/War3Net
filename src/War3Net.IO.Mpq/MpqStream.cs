@@ -9,7 +9,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Text;
 
 using War3Net.Common.Extensions;
