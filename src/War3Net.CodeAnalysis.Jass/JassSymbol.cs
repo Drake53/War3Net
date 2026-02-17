@@ -32,6 +32,7 @@ namespace War3Net.CodeAnalysis.Jass
         public const char OpenBracketChar = '[';
         public const char CloseBracketChar = ']';
         public const char XChar = 'x';
+        public const char XCharUpper = 'X';
         public const char SpaceChar = ' ';
         public const char TabChar = '\t';
 

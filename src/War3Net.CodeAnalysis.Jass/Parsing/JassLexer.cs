@@ -100,6 +100,11 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                 {
                     return JassSyntaxTriviaList.LineFeed;
                 }
+
+                if (ReferenceEquals(trivia, JassSyntaxTrivia.CarriageReturn))
+                {
+                    return JassSyntaxTriviaList.CarriageReturn;
+                }
             }
 
             return new JassSyntaxTriviaList(builder.ToImmutable());
