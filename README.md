@@ -64,7 +64,7 @@ Full list of current and planned packages:
 | ---------------------------------- | ---------------------------------------------------------------- | ----------------------------- |
 | [War3Net.Build]                    | Generate map scripts and MPQ archives from C#/vJass source code. | [![VBuild]][PBuild]           |
 | [War3Net.Build.Core]               | Parsers and serializers for war3map files.                       | [![VBuildCore]][PBuildCore]   |
-| [War3Net.CodeAnalysis]             | Helper methods for Pidgin parsers.                               | [![VCode]][PCode]             |
+| [War3Net.CodeAnalysis]             | Shared classes for JASS/vJASS packages.                          | [![VCode]][PCode]             |
 | [War3Net.CodeAnalysis.Decompilers] | Regenerate war3map files from a Warcraft III map script.         | [![VCodeDecomp]][PCodeDecomp] |
 | [War3Net.CodeAnalysis.Jass]        | Parse and render JASS source files.                              | [![VCodeJass]][PCodeJass]     |
 | [War3Net.CodeAnalysis.Transpilers] | Transpile JASS to C# or Lua.                                     | [![VCodeTrans]][PCodeTrans]   |

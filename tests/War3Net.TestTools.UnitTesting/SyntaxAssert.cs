@@ -10,8 +10,6 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Pidgin;
-
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
@@ -224,7 +222,7 @@ namespace War3Net.TestTools.UnitTesting
         public static void ExpressionThrowsException(string expression)
         {
             var message = new BoxedString();
-            Assert.ThrowsException<ParseException>(() => message.String = GetExpressionDisplayString(JassSyntaxFactory.ParseExpression(expression)), "\r\n{0}", message);
+            Assert.ThrowsException<JassParseException>(() => message.String = GetExpressionDisplayString(JassSyntaxFactory.ParseExpression(expression)), "\r\n{0}", message);
         }
 
         private static string GetExpressionDisplayString(JassExpressionSyntax? expression)

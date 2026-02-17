@@ -5,12 +5,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Description>War3Net.CodeAnalysis contains additional parsers for the Pidgin parsing library.</Description>
+		<Description>Shared classes for JASS/vJASS packages.</Description>
 		<PackageTags>parser;warcraft3</PackageTags>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Pidgin" />
-	</ItemGroup>
 
 </Project>

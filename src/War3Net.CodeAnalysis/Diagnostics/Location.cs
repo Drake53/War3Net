@@ -66,23 +66,6 @@ namespace War3Net.CodeAnalysis.Diagnostics
             return new Location(sourceSpan, LinePositionSpan.Default, filePath);
         }
 
-        /// <summary>
-        /// Creates a location from Pidgin error position information.
-        /// </summary>
-        /// <param name="errorOffset">The absolute offset in the input.</param>
-        /// <param name="line">The 1-based line number from Pidgin.</param>
-        /// <param name="col">The 1-based column number from Pidgin.</param>
-        /// <param name="filePath">The optional file path.</param>
-        /// <returns>A new <see cref="Location"/>.</returns>
-        public static Location FromPidginError(int errorOffset, int line, int col, string? filePath = null)
-        {
-            // Pidgin uses 1-based lines/cols; convert to 0-based
-            var linePosition = new LinePosition(Math.Max(0, line - 1), Math.Max(0, col - 1));
-            var lineSpan = new LinePositionSpan(linePosition, linePosition);
-            var sourceSpan = new TextSpan(errorOffset, 0); // Point location (zero length)
-            return new Location(sourceSpan, lineSpan, filePath);
-        }
-
         /// <inheritdoc/>
         public bool Equals(Location? other)
         {
