@@ -161,7 +161,7 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Visitor
 
             public override int? VisitUnaryExpression(JassUnaryExpressionSyntax node)
             {
-                var operand = Visit(node.Expression);
+                var operand = Visit(node.Operand);
                 if (operand == null) return null;
 
                 return node.OperatorToken.SyntaxKind switch

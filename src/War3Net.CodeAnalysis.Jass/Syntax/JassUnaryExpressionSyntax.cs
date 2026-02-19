@@ -15,15 +15,15 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassUnaryExpressionSyntax(
             JassSyntaxToken operatorToken,
-            JassExpressionSyntax expression)
+            JassExpressionSyntax operand)
         {
             OperatorToken = operatorToken;
-            Expression = expression;
+            Operand = operand;
         }
 
         public JassSyntaxToken OperatorToken { get; }
 
-        public JassExpressionSyntax Expression { get; }
+        public JassExpressionSyntax Operand { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxFacts.GetUnaryExpressionKind(OperatorToken.SyntaxKind);
 
@@ -31,18 +31,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return other is JassUnaryExpressionSyntax unaryExpression
                 && OperatorToken.IsEquivalentTo(unaryExpression.OperatorToken)
-                && Expression.IsEquivalentTo(unaryExpression.Expression);
+                && Operand.IsEquivalentTo(unaryExpression.Operand);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             OperatorToken.WriteTo(writer);
-            Expression.WriteTo(writer);
+            Operand.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            yield return Expression;
+            yield return Operand;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -53,13 +53,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return OperatorToken;
-            yield return Expression;
+            yield return Operand;
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodes())
+            yield return Operand;
+            foreach (var descendant in Operand.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -69,7 +69,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return OperatorToken;
 
-            foreach (var descendant in Expression.GetDescendantTokens())
+            foreach (var descendant in Operand.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -79,18 +79,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return OperatorToken;
 
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            yield return Operand;
+            foreach (var descendant in Operand.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
         }
 
-        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? JassSymbol.Space : string.Empty)}{Expression}";
+        public override string ToString() => $"{OperatorToken}{(OperatorToken.SyntaxKind == JassSyntaxKind.NotKeyword ? JassSymbol.Space : string.Empty)}{Operand}";
 
         public override JassSyntaxToken GetFirstToken() => OperatorToken;
 
-        public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
+        public override JassSyntaxToken GetLastToken() => Operand.GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitUnaryExpression(this);
 
@@ -98,35 +98,35 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassUnaryExpressionSyntax Update(
             JassSyntaxToken operatorToken,
-            JassExpressionSyntax expression)
+            JassExpressionSyntax operand)
         {
             if (ReferenceEquals(OperatorToken, operatorToken) &&
-                ReferenceEquals(Expression, expression))
+                ReferenceEquals(Operand, operand))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidUnaryOperatorToken(operatorToken);
 
-            return new JassUnaryExpressionSyntax(operatorToken, expression);
+            return new JassUnaryExpressionSyntax(operatorToken, operand);
         }
 
-        public JassUnaryExpressionSyntax WithOperatorToken(JassSyntaxToken operatorToken) => Update(operatorToken, Expression);
+        public JassUnaryExpressionSyntax WithOperatorToken(JassSyntaxToken operatorToken) => Update(operatorToken, Operand);
 
-        public JassUnaryExpressionSyntax WithExpression(JassExpressionSyntax expression) => Update(OperatorToken, expression);
+        public JassUnaryExpressionSyntax WithOperand(JassExpressionSyntax operand) => Update(OperatorToken, operand);
 
         protected internal override JassUnaryExpressionSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassUnaryExpressionSyntax(
                 newToken,
-                Expression);
+                Operand);
         }
 
         protected internal override JassUnaryExpressionSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
             return new JassUnaryExpressionSyntax(
                 OperatorToken,
-                Expression.ReplaceLastToken(newToken));
+                Operand.ReplaceLastToken(newToken));
         }
     }
 }

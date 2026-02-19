@@ -54,7 +54,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 else if (statement is JassSetStatementSyntax setStatement)
                 {
                     if (setStatement.ElementAccessClause is null &&
-                        setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
+                        setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression)
                     {
                         if (setStatement.IdentifierName.Token.Text.StartsWith("gg_rct_", StringComparison.Ordinal) &&
                             string.Equals(invocationExpression.IdentifierName.Token.Text, "Rect", StringComparison.Ordinal))

@@ -15,7 +15,7 @@ namespace War3Net.CodeAnalysis.Transpilers
     {
         public LuaExpressionSyntax Transpile(JassEqualsValueClauseSyntax equalsValueClause)
         {
-            return Transpile(equalsValueClause.Expression, out _);
+            return Transpile(equalsValueClause.Value, out _);
         }
     }
 }

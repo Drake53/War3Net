@@ -30,7 +30,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 SyntaxKind.SimpleAssignmentExpression,
                 left,
                 Transpile(SyntaxKind.EqualsToken, setStatement.EqualsValueClause.EqualsToken),
-                Transpile(setStatement.EqualsValueClause.Expression));
+                Transpile(setStatement.EqualsValueClause.Value));
 
             var trailingTrivia = assignmentExpression.GetTrailingTrivia();
 

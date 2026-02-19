@@ -125,7 +125,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     return true;
                 }
-                else if (TryDecompileTriggerFunctionParameter(setStatement.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
+                else if (TryDecompileTriggerFunctionParameter(setStatement.ElementAccessClause.Argument, JassKeyword.Integer, out var arrayIndexer))
                 {
                     functionParameter.ArrayIndexer = arrayIndexer;
 

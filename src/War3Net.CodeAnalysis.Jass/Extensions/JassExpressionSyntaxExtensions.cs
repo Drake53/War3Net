@@ -102,10 +102,10 @@ namespace War3Net.CodeAnalysis.Jass.Extensions
                 switch (unaryExpression.SyntaxKind)
                 {
                     case JassSyntaxKind.UnaryPlusExpression:
-                        return unaryExpression.Expression.TryGetIntegerExpressionValue(out value);
+                        return unaryExpression.Operand.TryGetIntegerExpressionValue(out value);
 
                     case JassSyntaxKind.UnaryMinusExpression:
-                        if (unaryExpression.Expression.TryGetIntegerExpressionValue(out var result))
+                        if (unaryExpression.Operand.TryGetIntegerExpressionValue(out var result))
                         {
                             value = -result;
                             return true;

@@ -15,33 +15,33 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassEqualsValueClauseSyntax(
             JassSyntaxToken equalsToken,
-            JassExpressionSyntax expression)
+            JassExpressionSyntax value)
         {
             EqualsToken = equalsToken;
-            Expression = expression;
+            Value = value;
         }
 
         public JassSyntaxToken EqualsToken { get; }
 
-        public JassExpressionSyntax Expression { get; }
+        public JassExpressionSyntax Value { get; }
 
         public override JassSyntaxKind SyntaxKind => JassSyntaxKind.EqualsValueClause;
 
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassEqualsValueClauseSyntax equalsValueClause
-                && Expression.IsEquivalentTo(equalsValueClause.Expression);
+                && Value.IsEquivalentTo(equalsValueClause.Value);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             EqualsToken.WriteTo(writer);
-            Expression.WriteTo(writer);
+            Value.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            yield return Expression;
+            yield return Value;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -52,13 +52,13 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return EqualsToken;
-            yield return Expression;
+            yield return Value;
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodes())
+            yield return Value;
+            foreach (var descendant in Value.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -68,7 +68,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return EqualsToken;
 
-            foreach (var descendant in Expression.GetDescendantTokens())
+            foreach (var descendant in Value.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -78,18 +78,18 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return EqualsToken;
 
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            yield return Value;
+            foreach (var descendant in Value.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
         }
 
-        public override string ToString() => $"{EqualsToken} {Expression}";
+        public override string ToString() => $"{EqualsToken} {Value}";
 
         public override JassSyntaxToken GetFirstToken() => EqualsToken;
 
-        public override JassSyntaxToken GetLastToken() => Expression.GetLastToken();
+        public override JassSyntaxToken GetLastToken() => Value.GetLastToken();
 
         public override void Accept(IJassSyntaxVisitor visitor) => visitor.VisitEqualsValueClause(this);
 
@@ -97,35 +97,35 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassEqualsValueClauseSyntax Update(
             JassSyntaxToken equalsToken,
-            JassExpressionSyntax expression)
+            JassExpressionSyntax value)
         {
             if (ReferenceEquals(EqualsToken, equalsToken) &&
-                ReferenceEquals(Expression, expression))
+                ReferenceEquals(Value, value))
             {
                 return this;
             }
 
             ThrowHelper.ThrowIfInvalidToken(equalsToken, JassSyntaxKind.EqualsToken);
 
-            return new JassEqualsValueClauseSyntax(equalsToken, expression);
+            return new JassEqualsValueClauseSyntax(equalsToken, value);
         }
 
-        public JassEqualsValueClauseSyntax WithEqualsToken(JassSyntaxToken equalsToken) => Update(equalsToken, Expression);
+        public JassEqualsValueClauseSyntax WithEqualsToken(JassSyntaxToken equalsToken) => Update(equalsToken, Value);
 
-        public JassEqualsValueClauseSyntax WithExpression(JassExpressionSyntax expression) => Update(EqualsToken, expression);
+        public JassEqualsValueClauseSyntax WithValue(JassExpressionSyntax value) => Update(EqualsToken, value);
 
         protected internal override JassEqualsValueClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassEqualsValueClauseSyntax(
                 newToken,
-                Expression);
+                Value);
         }
 
         protected internal override JassEqualsValueClauseSyntax ReplaceLastToken(JassSyntaxToken newToken)
         {
             return new JassEqualsValueClauseSyntax(
                 EqualsToken,
-                Expression.ReplaceLastToken(newToken));
+                Value.ReplaceLastToken(newToken));
         }
     }
 }

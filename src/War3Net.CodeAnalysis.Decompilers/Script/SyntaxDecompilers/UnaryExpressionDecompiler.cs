@@ -29,7 +29,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (string.Equals(expectedType, JassKeyword.Integer, StringComparison.Ordinal) ||
                         string.Equals(expectedType, JassKeyword.Real, StringComparison.Ordinal))
                     {
-                        if (TryDecompileTriggerFunctionParameter(unaryExpression.Expression, expectedType, out functionParameter))
+                        if (TryDecompileTriggerFunctionParameter(unaryExpression.Operand, expectedType, out functionParameter))
                         {
                             functionParameter.Value = unaryExpression.OperatorToken.Text + functionParameter.Value;
                             return true;

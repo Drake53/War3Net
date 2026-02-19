@@ -251,7 +251,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var equalsToken = VisitToken(node.EqualsToken);
-            var expression = (JassExpressionSyntax)Visit(node.Expression)!;
+            var expression = (JassExpressionSyntax)Visit(node.Value)!;
             _nodes.RemoveAt(_nodes.Count - 1);
 
             return node.Update(equalsToken, expression);
@@ -274,7 +274,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var openBracketToken = VisitToken(node.OpenBracketToken);
-            var expression = (JassExpressionSyntax)Visit(node.Expression)!;
+            var expression = (JassExpressionSyntax)Visit(node.Argument)!;
             var closeBracketToken = VisitToken(node.CloseBracketToken);
             _nodes.RemoveAt(_nodes.Count - 1);
 
@@ -518,7 +518,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             _nodes.Add(node);
             var operatorToken = VisitToken(node.OperatorToken);
-            var expression = (JassExpressionSyntax)Visit(node.Expression)!;
+            var expression = (JassExpressionSyntax)Visit(node.Operand)!;
             _nodes.RemoveAt(_nodes.Count - 1);
 
             return node.Update(operatorToken, expression);

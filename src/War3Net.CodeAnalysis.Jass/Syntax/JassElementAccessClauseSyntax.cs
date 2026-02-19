@@ -15,17 +15,17 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
     {
         internal JassElementAccessClauseSyntax(
             JassSyntaxToken openBracketToken,
-            JassExpressionSyntax expression,
+            JassExpressionSyntax argument,
             JassSyntaxToken closeBracketToken)
         {
             OpenBracketToken = openBracketToken;
-            Expression = expression;
+            Argument = argument;
             CloseBracketToken = closeBracketToken;
         }
 
         public JassSyntaxToken OpenBracketToken { get; }
 
-        public JassExpressionSyntax Expression { get; }
+        public JassExpressionSyntax Argument { get; }
 
         public JassSyntaxToken CloseBracketToken { get; }
 
@@ -34,19 +34,19 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override bool IsEquivalentTo([NotNullWhen(true)] JassSyntaxNode? other)
         {
             return other is JassElementAccessClauseSyntax elementAccessClause
-                && Expression.IsEquivalentTo(elementAccessClause.Expression);
+                && Argument.IsEquivalentTo(elementAccessClause.Argument);
         }
 
         public override void WriteTo(TextWriter writer)
         {
             OpenBracketToken.WriteTo(writer);
-            Expression.WriteTo(writer);
+            Argument.WriteTo(writer);
             CloseBracketToken.WriteTo(writer);
         }
 
         public override IEnumerable<JassSyntaxNode> GetChildNodes()
         {
-            yield return Expression;
+            yield return Argument;
         }
 
         public override IEnumerable<JassSyntaxToken> GetChildTokens()
@@ -58,14 +58,14 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         public override IEnumerable<JassSyntaxNodeOrToken> GetChildNodesAndTokens()
         {
             yield return OpenBracketToken;
-            yield return Expression;
+            yield return Argument;
             yield return CloseBracketToken;
         }
 
         public override IEnumerable<JassSyntaxNode> GetDescendantNodes()
         {
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodes())
+            yield return Argument;
+            foreach (var descendant in Argument.GetDescendantNodes())
             {
                 yield return descendant;
             }
@@ -75,7 +75,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return OpenBracketToken;
 
-            foreach (var descendant in Expression.GetDescendantTokens())
+            foreach (var descendant in Argument.GetDescendantTokens())
             {
                 yield return descendant;
             }
@@ -87,8 +87,8 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             yield return OpenBracketToken;
 
-            yield return Expression;
-            foreach (var descendant in Expression.GetDescendantNodesAndTokens())
+            yield return Argument;
+            foreach (var descendant in Argument.GetDescendantNodesAndTokens())
             {
                 yield return descendant;
             }
@@ -96,7 +96,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             yield return CloseBracketToken;
         }
 
-        public override string ToString() => $"{OpenBracketToken}{Expression}{CloseBracketToken}";
+        public override string ToString() => $"{OpenBracketToken}{Argument}{CloseBracketToken}";
 
         public override JassSyntaxToken GetFirstToken() => OpenBracketToken;
 
@@ -108,11 +108,11 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
 
         public JassElementAccessClauseSyntax Update(
             JassSyntaxToken openBracketToken,
-            JassExpressionSyntax expression,
+            JassExpressionSyntax argument,
             JassSyntaxToken closeBracketToken)
         {
             if (ReferenceEquals(OpenBracketToken, openBracketToken) &&
-                ReferenceEquals(Expression, expression) &&
+                ReferenceEquals(Argument, argument) &&
                 ReferenceEquals(CloseBracketToken, closeBracketToken))
             {
                 return this;
@@ -121,20 +121,20 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
             ThrowHelper.ThrowIfInvalidToken(openBracketToken, JassSyntaxKind.OpenBracketToken);
             ThrowHelper.ThrowIfInvalidToken(closeBracketToken, JassSyntaxKind.CloseBracketToken);
 
-            return new JassElementAccessClauseSyntax(openBracketToken, expression, closeBracketToken);
+            return new JassElementAccessClauseSyntax(openBracketToken, argument, closeBracketToken);
         }
 
-        public JassElementAccessClauseSyntax WithOpenBracketToken(JassSyntaxToken openBracketToken) => Update(openBracketToken, Expression, CloseBracketToken);
+        public JassElementAccessClauseSyntax WithOpenBracketToken(JassSyntaxToken openBracketToken) => Update(openBracketToken, Argument, CloseBracketToken);
 
-        public JassElementAccessClauseSyntax WithExpression(JassExpressionSyntax expression) => Update(OpenBracketToken, expression, CloseBracketToken);
+        public JassElementAccessClauseSyntax WithArgument(JassExpressionSyntax argument) => Update(OpenBracketToken, argument, CloseBracketToken);
 
-        public JassElementAccessClauseSyntax WithCloseBracketToken(JassSyntaxToken closeBracketToken) => Update(OpenBracketToken, Expression, closeBracketToken);
+        public JassElementAccessClauseSyntax WithCloseBracketToken(JassSyntaxToken closeBracketToken) => Update(OpenBracketToken, Argument, closeBracketToken);
 
         protected internal override JassElementAccessClauseSyntax ReplaceFirstToken(JassSyntaxToken newToken)
         {
             return new JassElementAccessClauseSyntax(
                 newToken,
-                Expression,
+                Argument,
                 CloseBracketToken);
         }
 
@@ -142,7 +142,7 @@ namespace War3Net.CodeAnalysis.Jass.Syntax
         {
             return new JassElementAccessClauseSyntax(
                 OpenBracketToken,
-                Expression,
+                Argument,
                 newToken);
         }
     }

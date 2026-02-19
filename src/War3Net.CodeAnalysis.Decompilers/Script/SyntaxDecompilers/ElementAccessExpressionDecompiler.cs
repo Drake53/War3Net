@@ -39,7 +39,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 }
             }
 
-            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
+            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Argument, JassKeyword.Integer, out var arrayIndexer))
             {
                 return TryDecompileVariableDeclarationReference(
                     elementAccessExpression.IdentifierName.Token.Text,
@@ -76,7 +76,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 return true;
             }
 
-            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Expression, JassKeyword.Integer, out var arrayIndexer))
+            if (TryDecompileTriggerFunctionParameter(elementAccessExpression.ElementAccessClause.Argument, JassKeyword.Integer, out var arrayIndexer))
             {
                 return TryDecompileVariableDeclarationReference(
                     elementAccessExpression.IdentifierName.Token.Text,

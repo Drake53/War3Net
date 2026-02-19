@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.EqualsValueClause(
                 Transpile(SyntaxKind.EqualsToken, equalsValueClause.EqualsToken),
-                Transpile(equalsValueClause.Expression));
+                Transpile(equalsValueClause.Value));
         }
     }
 }

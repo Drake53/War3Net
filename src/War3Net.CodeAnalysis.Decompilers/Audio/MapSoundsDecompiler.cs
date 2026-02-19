@@ -51,7 +51,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (setStatement.ElementAccessClause is null &&
                         setStatement.IdentifierName.Token.Text.StartsWith("gg_snd_", StringComparison.Ordinal))
                     {
-                        if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        if (setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression &&
                             string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateSound", StringComparison.Ordinal))
                         {
                             if (invocationExpression.ArgumentList.Arguments.Items.Length == 7 &&
@@ -109,7 +109,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
-                        else if (setStatement.EqualsValueClause.Expression.TryGetNotNullStringExpressionValue(out var musicFileName))
+                        else if (setStatement.EqualsValueClause.Value.TryGetNotNullStringExpressionValue(out var musicFileName))
                         {
                             var flags = SoundFlags.Music;
 

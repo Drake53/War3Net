@@ -21,7 +21,7 @@ namespace War3Net.CodeAnalysis.Transpilers
                 Transpile(
                     TranspileUnaryOperatorKind(unaryExpression.OperatorToken.SyntaxKind),
                     unaryExpression.OperatorToken),
-                Transpile(unaryExpression.Expression));
+                Transpile(unaryExpression.Operand));
         }
     }
 }

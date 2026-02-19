@@ -17,7 +17,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         public LuaExpressionSyntax Transpile(JassUnaryExpressionSyntax unaryExpression, out JassTypeSyntax type)
         {
             return new LuaPrefixUnaryExpressionSyntax(
-                Transpile(unaryExpression.Expression, out type),
+                Transpile(unaryExpression.Operand, out type),
                 TranspileUnaryExpressionKind(unaryExpression.SyntaxKind));
         }
 

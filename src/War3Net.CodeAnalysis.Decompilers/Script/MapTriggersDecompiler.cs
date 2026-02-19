@@ -118,7 +118,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                         if (globalVariableDeclaration.Declarator is JassVariableDeclaratorSyntax variableDeclarator)
                         {
                             if (variableDeclarator.EqualsValueClause is not null &&
-                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.EqualsValueClause.Expression, variableDefinition.Type, out var initialValue))
+                                TryDecompileVariableDefinitionInitialValue(variableDeclarator.EqualsValueClause.Value, variableDefinition.Type, out var initialValue))
                             {
                                 variableDefinition.IsInitialized = true;
                                 variableDefinition.InitialValue = initialValue;
@@ -152,7 +152,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                             exitStatement.Condition.Deparenthesize() is JassBinaryExpressionSyntax binaryExpression &&
                             binaryExpression.Right.TryGetIntegerExpressionValue(out var arraySize) &&
                             setVariableStatement.ElementAccessClause is not null &&
-                            setVariableStatement.ElementAccessClause.Expression.TryGetIdentifierNameValue(out var indexVariableName) &&
+                            setVariableStatement.ElementAccessClause.Argument.TryGetIdentifierNameValue(out var indexVariableName) &&
                             string.Equals(indexVariableName, "i", StringComparison.Ordinal))
                         {
                             var variableName = setVariableStatement.IdentifierName.Token.Text["udg_".Length..];
@@ -161,7 +161,7 @@ namespace War3Net.CodeAnalysis.Decompilers
 
                             variableDefinition.ArraySize = arraySize;
 
-                            if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.EqualsValueClause.Expression, variableDefinition.Type, out var initialValue))
+                            if (TryDecompileVariableDefinitionInitialValue(setVariableStatement.EqualsValueClause.Value, variableDefinition.Type, out var initialValue))
                             {
                                 variableDefinition.IsInitialized = true;
                                 variableDefinition.InitialValue = initialValue;
@@ -244,7 +244,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (statement is JassSetStatementSyntax setStatement)
                 {
-                    if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                    if (setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression &&
                         invocationExpression.ArgumentList.Arguments.Items.IsEmpty &&
                         setStatement.ElementAccessClause is null &&
                         string.Equals(setStatement.IdentifierName.Token.Text, $"gg_trg_{triggerFunctionName}", StringComparison.Ordinal) &&

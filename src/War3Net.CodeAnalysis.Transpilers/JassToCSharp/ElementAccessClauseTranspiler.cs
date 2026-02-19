@@ -18,7 +18,7 @@ namespace War3Net.CodeAnalysis.Transpilers
         {
             return SyntaxFactory.BracketedArgumentList(
                 Transpile(SyntaxKind.OpenBracketToken, elementAccessClause.OpenBracketToken),
-                SyntaxFactory.SingletonSeparatedList(TranspileArgument(elementAccessClause.Expression)),
+                SyntaxFactory.SingletonSeparatedList(TranspileArgument(elementAccessClause.Argument)),
                 Transpile(SyntaxKind.CloseBracketToken, elementAccessClause.CloseBracketToken));
         }
     }

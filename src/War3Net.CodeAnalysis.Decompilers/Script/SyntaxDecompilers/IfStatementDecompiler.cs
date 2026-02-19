@@ -95,7 +95,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     if (conditionExpression is JassUnaryExpressionSyntax unaryExpression &&
                         unaryExpression.SyntaxKind == JassSyntaxKind.LogicalNotExpression)
                     {
-                        conditionExpression = unaryExpression.Expression.Deparenthesize();
+                        conditionExpression = unaryExpression.Operand.Deparenthesize();
                     }
                     else
                     {

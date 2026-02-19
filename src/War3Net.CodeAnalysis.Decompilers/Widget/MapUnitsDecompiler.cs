@@ -129,7 +129,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                     {
                         if (localVariableDeclarationStatement.Declarator is JassVariableDeclaratorSyntax variableDeclarator &&
                             variableDeclarator.EqualsValueClause is not null &&
-                            variableDeclarator.EqualsValueClause.Expression is JassInvocationExpressionSyntax playerInvocationExpression &&
+                            variableDeclarator.EqualsValueClause.Value is JassInvocationExpressionSyntax playerInvocationExpression &&
                             string.Equals(playerInvocationExpression.IdentifierName.Token.Text, "Player", StringComparison.Ordinal) &&
                             playerInvocationExpression.ArgumentList.Arguments.Items.Length == 1 &&
                             playerInvocationExpression.ArgumentList.Arguments.Items[0].TryGetPlayerIdExpressionValue(Context.MaxPlayerSlots, out var playerId))
@@ -167,7 +167,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (setStatement.ElementAccessClause is null)
                     {
-                        if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
+                        if (setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression)
                         {
                             if (string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateUnit", StringComparison.Ordinal))
                             {
@@ -256,7 +256,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                                 return false;
                             }
                         }
-                        else if (setStatement.EqualsValueClause.Expression is JassElementAccessExpressionSyntax)
+                        else if (setStatement.EqualsValueClause.Value is JassElementAccessExpressionSyntax)
                         {
                             // TODO
                             continue;
@@ -530,7 +530,7 @@ namespace War3Net.CodeAnalysis.Decompilers
             {
                 if (statement is JassSetStatementSyntax setStatement)
                 {
-                    if (setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression)
+                    if (setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression)
                     {
                         if (string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateItem", StringComparison.Ordinal))
                         {

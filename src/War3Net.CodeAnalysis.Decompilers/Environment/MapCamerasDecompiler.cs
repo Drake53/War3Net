@@ -48,7 +48,7 @@ namespace War3Net.CodeAnalysis.Decompilers
                 {
                     if (setStatement.ElementAccessClause is null &&
                         setStatement.IdentifierName.Token.Text.StartsWith("gg_cam_", StringComparison.Ordinal) &&
-                        setStatement.EqualsValueClause.Expression is JassInvocationExpressionSyntax invocationExpression &&
+                        setStatement.EqualsValueClause.Value is JassInvocationExpressionSyntax invocationExpression &&
                         string.Equals(invocationExpression.IdentifierName.Token.Text, "CreateCameraSetup", StringComparison.Ordinal))
                     {
                         if (invocationExpression.ArgumentList.Arguments.Items.IsEmpty)
