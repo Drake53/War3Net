@@ -430,20 +430,11 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
 
             while (_position < _source.Length && _source[_position] != JassSymbol.DoubleQuoteChar)
             {
-                if (JassSyntaxFacts.IsNewLineCharacter(_source[_position]))
-                {
-                    _diagnostics.Report(
-                        JassSyntaxDiagnostics.UnterminatedString,
-                        Location.Create(new TextSpan(start, _position - start), _filePath));
-
-                    return (JassSyntaxKind.StringLiteralToken, _source[start.._position]);
-                }
-
                 if (_source[_position] == '\\')
                 {
                     var escapeStart = _position;
                     _position++;
-                    if (_position < _source.Length && !JassSyntaxFacts.IsNewLineCharacter(_source[_position]))
+                    if (_position < _source.Length)
                     {
                         if (!JassSyntaxFacts.IsValidEscapeCharacter(_source[_position]))
                         {
