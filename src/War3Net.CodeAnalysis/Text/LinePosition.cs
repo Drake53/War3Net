@@ -88,6 +88,6 @@ namespace War3Net.CodeAnalysis.Text
         }
 
         /// <inheritdoc/>
-        public override string ToString() => $"({Line},{Character})";
+        public override string ToString() => $"({Line + 1},{Character + 1})";
     }
 }

@@ -93,13 +93,7 @@ namespace War3Net.CodeAnalysis.Diagnostics
         /// <inheritdoc/>
         public override string ToString()
         {
-            // Display as 1-based line/column for user-friendly output
-            var line = LineSpan.Start.Line + 1;
-            var col = LineSpan.Start.Character + 1;
-
-            return FilePath is not null
-                ? $"{FilePath}({line},{col})"
-                : $"({line},{col})";
+            return $"{FilePath ?? "?"}{LineSpan.Start}";
         }
     }
 }

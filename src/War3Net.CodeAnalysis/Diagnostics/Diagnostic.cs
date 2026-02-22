@@ -169,9 +169,7 @@ namespace War3Net.CodeAnalysis.Diagnostics
                 _ => "hidden",
             };
 
-            return Location.FilePath is not null
-                ? $"{Location}: {severityText} {Id}: {GetMessage()}"
-                : $"{severityText} {Id}: {GetMessage()}";
+            return $"{Location}: {severityText} {Id}: {GetMessage()}";
         }
     }
 }
