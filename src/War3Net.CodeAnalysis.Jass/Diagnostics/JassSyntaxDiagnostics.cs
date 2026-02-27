@@ -1,0 +1,174 @@
+// ------------------------------------------------------------------------------
+// <copyright file="JassSyntaxDiagnostics.cs" company="Drake53">
+// Licensed under the MIT license.
+// See the LICENSE file in the project root for more information.
+// </copyright>
+// ------------------------------------------------------------------------------
+
+using War3Net.CodeAnalysis.Diagnostics;
+
+namespace War3Net.CodeAnalysis.Jass.Diagnostics
+{
+    /// <summary>
+    /// Contains predefined diagnostic descriptors for JASS parsing and analysis.
+    /// </summary>
+    public static class JassSyntaxDiagnostics
+    {
+        private const string SyntaxCategory = "Syntax";
+        private const string HelpLinkBase = "https://github.com/Drake53/War3Net/tree/master/docs/jass-diagnostics/";
+
+        /// <summary>
+        /// <c>JASS1001</c>: An identifier was expected but not found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor IdentifierExpected = DiagnosticDescriptor.Create(
+            id: "JASS1001",
+            title: "Identifier expected",
+            messageFormat: "Identifier expected",
+            category: SyntaxCategory,
+            description: "An identifier was expected but not found.",
+            helpLinkUri: HelpLinkBase + "JASS1001.md");
+
+        /// <summary>
+        /// <c>JASS1003</c>: A specific symbol or keyword was expected but not found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor SyntaxError = DiagnosticDescriptor.Create(
+            id: "JASS1003",
+            title: "Syntax error",
+            messageFormat: "Syntax error, '{0}' expected",
+            category: SyntaxCategory,
+            description: "A specific symbol or keyword was expected but not found.",
+            helpLinkUri: HelpLinkBase + "JASS1003.md");
+
+        /// <summary>
+        /// <c>JASS1009</c>: Unrecognized escape sequence in string, character, or FourCC literal.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidEscapeSequence = DiagnosticDescriptor.Create(
+            id: "JASS1009",
+            title: "Invalid escape sequence",
+            messageFormat: "Invalid escape sequence '{0}'",
+            category: SyntaxCategory,
+            description: "Unrecognized escape sequence in string, character, or FourCC literal.",
+            helpLinkUri: HelpLinkBase + "JASS1009.md");
+
+        /// <summary>
+        /// <c>JASS1010</c>: Single-quoted literal is missing closing quote.
+        /// </summary>
+        public static readonly DiagnosticDescriptor UnterminatedSingleQuotedLiteral = DiagnosticDescriptor.Create(
+            id: "JASS1010",
+            title: "Unterminated single-quoted literal",
+            messageFormat: "Unterminated single-quoted literal",
+            category: SyntaxCategory,
+            description: "Single-quoted literal is missing closing quote.",
+            helpLinkUri: HelpLinkBase + "JASS1010.md");
+
+        /// <summary>
+        /// <c>JASS1012</c>: Single-quoted literal has an invalid number of characters.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidSingleQuotedStringLength = DiagnosticDescriptor.Create(
+            id: "JASS1012",
+            title: "Invalid single-quoted literal length",
+            messageFormat: "Single-quoted literal '{0}' must contain exactly 1 or 4 characters",
+            category: SyntaxCategory,
+            description: "Single-quoted literal has an invalid number of characters. Must be exactly 1 (character) or 4 (FourCC).",
+            helpLinkUri: HelpLinkBase + "JASS1012.md");
+
+        /// <summary>
+        /// <c>JASS1013</c>: A numeric literal is malformed or contains invalid digits.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidNumber = DiagnosticDescriptor.Create(
+            id: "JASS1013",
+            title: "Invalid number",
+            messageFormat: "Invalid number '{0}'",
+            category: SyntaxCategory,
+            description: "A numeric literal is malformed or contains invalid digits.",
+            helpLinkUri: HelpLinkBase + "JASS1013.md");
+
+        /// <summary>
+        /// <c>JASS1039</c>: String literal is missing closing quote.
+        /// </summary>
+        public static readonly DiagnosticDescriptor UnterminatedString = DiagnosticDescriptor.Create(
+            id: "JASS1039",
+            title: "Unterminated string",
+            messageFormat: "Unterminated string literal",
+            category: SyntaxCategory,
+            description: "String literal is missing closing quote.",
+            helpLinkUri: HelpLinkBase + "JASS1039.md");
+
+        /// <summary>
+        /// <c>JASS1041</c>: An identifier was expected but a keyword was found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor IdentifierExpectedKeyword = DiagnosticDescriptor.Create(
+            id: "JASS1041",
+            title: "Identifier expected; keyword found",
+            messageFormat: "Identifier expected; '{0}' is a keyword",
+            category: SyntaxCategory,
+            description: "An identifier was expected but a keyword was found instead.",
+            helpLinkUri: HelpLinkBase + "JASS1041.md");
+
+        /// <summary>
+        /// <c>JASS1056</c>: An invalid character was encountered.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidCharacter = DiagnosticDescriptor.Create(
+            id: "JASS1056",
+            title: "Invalid character",
+            messageFormat: "Invalid character '{0}'",
+            category: SyntaxCategory,
+            description: "An invalid character was encountered that is not valid in JASS.",
+            helpLinkUri: HelpLinkBase + "JASS1056.md");
+
+        /// <summary>
+        /// <c>JASS1073</c>: Unexpected token encountered.
+        /// </summary>
+        public static readonly DiagnosticDescriptor UnexpectedToken = DiagnosticDescriptor.Create(
+            id: "JASS1073",
+            title: "Unexpected token",
+            messageFormat: "Unexpected token '{0}'",
+            category: SyntaxCategory,
+            description: "An unexpected token was encountered that does not belong in this context.",
+            helpLinkUri: HelpLinkBase + "JASS1073.md");
+
+        /// <summary>
+        /// <c>JASS1513</c>: A block is missing its closing keyword (<c>endfunction</c>, <c>endglobals</c>, <c>endif</c>, or <c>endloop</c>).
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingClosingKeyword = DiagnosticDescriptor.Create(
+            id: "JASS1513",
+            title: "Missing closing keyword",
+            messageFormat: "'{0}' expected",
+            category: SyntaxCategory,
+            description: "A block is missing its closing keyword (endfunction, endglobals, endif, or endloop).",
+            helpLinkUri: HelpLinkBase + "JASS1513.md");
+
+        /// <summary>
+        /// <c>JASS1514</c>: If or elseif clause is missing <c>then</c> keyword.
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingThen = DiagnosticDescriptor.Create(
+            id: "JASS1514",
+            title: "Missing then",
+            messageFormat: "Missing 'then' after condition",
+            category: SyntaxCategory,
+            description: "If or elseif clause is missing 'then' keyword.",
+            helpLinkUri: HelpLinkBase + "JASS1514.md");
+
+        /// <summary>
+        /// <c>JASS1525</c>: Expression expected but not found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingExpression = DiagnosticDescriptor.Create(
+            id: "JASS1525",
+            title: "Missing expression",
+            messageFormat: "Invalid expression term '{0}'",
+            category: SyntaxCategory,
+            description: "An expression was expected but an invalid term was found.",
+            helpLinkUri: HelpLinkBase + "JASS1525.md");
+
+        /// <summary>
+        /// <c>JASS8641</c>: Else or elseif clause without matching if.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ElseWithoutIf = DiagnosticDescriptor.Create(
+            id: "JASS8641",
+            title: "Else without if",
+            messageFormat: "'{0}' without matching 'if'",
+            category: SyntaxCategory,
+            description: "Else or elseif clause without matching if.",
+            helpLinkUri: HelpLinkBase + "JASS8641.md");
+    }
+}
