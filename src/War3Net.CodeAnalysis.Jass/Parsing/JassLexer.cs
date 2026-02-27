@@ -141,8 +141,13 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                         return ScanRealLiteralFromDot();
                     }
 
+                    _diagnostics.Report(
+                        JassSyntaxDiagnostics.InvalidNumber,
+                        CreateLocation(_position, 1),
+                        JassSymbol.Dot);
+
                     _position++;
-                    return (JassSyntaxKind.None, JassSymbol.Dot);
+                    return (JassSyntaxKind.RealLiteralToken, JassSymbol.Dot);
 
                 case JassSymbol.OpenParenChar:
                     _position++;
@@ -197,6 +202,11 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                         return (JassSyntaxKind.ExclamationEqualsToken, JassSymbol.ExclamationEquals);
                     }
 
+                    _diagnostics.Report(
+                        JassSyntaxDiagnostics.InvalidCharacter,
+                        CreateLocation(_position, 1),
+                        "!");
+
                     _position++;
                     return (JassSyntaxKind.None, "!");
 
@@ -221,6 +231,11 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                     return (JassSyntaxKind.GreaterThanToken, JassSymbol.GreaterThan);
 
                 default:
+                    _diagnostics.Report(
+                        JassSyntaxDiagnostics.InvalidCharacter,
+                        CreateLocation(_position, 1),
+                        ch.ToString());
+
                     _position++;
                     return (JassSyntaxKind.None, ch.ToString());
             }
@@ -263,20 +278,25 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                     }
 
                     var text = _source[start.._position];
+                    if (_position - start == 2)
+                    {
+                        _diagnostics.Report(
+                            JassSyntaxDiagnostics.InvalidNumber,
+                            CreateLocation(start, 2),
+                            text);
+                    }
+
                     return (JassSyntaxKind.HexadecimalLiteralToken, text);
                 }
 
                 if (next >= '0' && next <= '9')
                 {
-                    _position++;
-                    var isOctal = true;
+                    _position += 2;
+                    var hasNonOctalDigit = next >= '8';
+
                     while (_position < _source.Length && _source[_position] >= '0' && _source[_position] <= '9')
                     {
-                        if (_source[_position] > '7')
-                        {
-                            isOctal = false;
-                        }
-
+                        hasNonOctalDigit |= _source[_position] >= '8';
                         _position++;
                     }
 
@@ -292,11 +312,11 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                     }
 
                     var octalText = _source[start.._position];
-                    if (!isOctal)
+                    if (hasNonOctalDigit)
                     {
                         _diagnostics.Report(
-                            JassSyntaxDiagnostics.InvalidOctalLiteral,
-                            Location.Create(new TextSpan(start, _position - start), _filePath),
+                            JassSyntaxDiagnostics.InvalidNumber,
+                            CreateLocation(start, _position - start),
                             octalText);
                     }
 
@@ -337,8 +357,8 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
             if (_position - start == 1)
             {
                 _diagnostics.Report(
-                    JassSyntaxDiagnostics.InvalidHexadecimalLiteral,
-                    Location.Create(new TextSpan(start, 1), _filePath),
+                    JassSyntaxDiagnostics.InvalidNumber,
+                    CreateLocation(start, 1),
                     text);
             }
 
@@ -366,11 +386,6 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
             var charCount = 0;
             while (_position < _source.Length && _source[_position] != JassSymbol.SingleQuoteChar)
             {
-                if (JassSyntaxFacts.IsNewLineCharacter(_source[_position]))
-                {
-                    break;
-                }
-
                 if (_source[_position] == '\\' && _position + 1 < _source.Length)
                 {
                     var escapeStart = _position;
@@ -379,7 +394,7 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                     {
                         _diagnostics.Report(
                             JassSyntaxDiagnostics.InvalidEscapeSequence,
-                            Location.Create(new TextSpan(escapeStart, 2), _filePath),
+                            CreateLocation(escapeStart, 2),
                             $"\\{_source[_position]}");
                     }
                 }
@@ -388,15 +403,17 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                 charCount++;
             }
 
+            var unterminated = false;
             if (_position < _source.Length && _source[_position] == JassSymbol.SingleQuoteChar)
             {
                 _position++;
             }
             else
             {
+                unterminated = true;
                 _diagnostics.Report(
-                    JassSyntaxDiagnostics.UnterminatedCharacterLiteral,
-                    Location.Create(new TextSpan(start, _position - start), _filePath));
+                    JassSyntaxDiagnostics.UnterminatedSingleQuotedLiteral,
+                    CreateLocation(start, _position - start));
             }
 
             var text = _source[start.._position];
@@ -406,18 +423,12 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                 return (JassSyntaxKind.FourCCLiteralToken, text);
             }
 
-            if (charCount == 0)
+            if (!unterminated && charCount != 1)
             {
                 _diagnostics.Report(
-                    JassSyntaxDiagnostics.EmptyCharacterLiteral,
-                    Location.Create(new TextSpan(start, _position - start), _filePath));
-            }
-            else if (charCount != 1 && charCount != 4)
-            {
-                _diagnostics.Report(
-                    JassSyntaxDiagnostics.InvalidFourCCLiteral,
-                    Location.Create(new TextSpan(start, _position - start), _filePath),
-                    charCount);
+                    JassSyntaxDiagnostics.InvalidSingleQuotedStringLength,
+                    CreateLocation(start, _position - start),
+                    text);
             }
 
             return (JassSyntaxKind.CharacterLiteralToken, text);
@@ -440,7 +451,7 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                         {
                             _diagnostics.Report(
                                 JassSyntaxDiagnostics.InvalidEscapeSequence,
-                                Location.Create(new TextSpan(escapeStart, 2), _filePath),
+                                CreateLocation(escapeStart, 2),
                                 $"\\{_source[_position]}");
                         }
 
@@ -461,7 +472,7 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
             {
                 _diagnostics.Report(
                     JassSyntaxDiagnostics.UnterminatedString,
-                    Location.Create(new TextSpan(start, _position - start), _filePath));
+                    CreateLocation(start, _position - start));
             }
 
             return (JassSyntaxKind.StringLiteralToken, _source[start.._position]);
@@ -553,6 +564,12 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
             }
 
             builder.Add(new JassSyntaxTrivia(JassSyntaxKind.SingleLineCommentTrivia, _source[start.._position]));
+        }
+
+        private Location CreateLocation(int start, int length)
+        {
+            var span = new TextSpan(start, length);
+            return Location.Create(span, _filePath);
         }
 
         internal readonly struct LexerResult
