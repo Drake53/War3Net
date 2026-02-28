@@ -84,6 +84,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1013.md");
 
         /// <summary>
+        /// <c>JASS1025</c>: Single-line comment or end-of-line expected after a construct.
+        /// </summary>
+        public static readonly DiagnosticDescriptor EndOfLineExpected = DiagnosticDescriptor.Create(
+            id: "JASS1025",
+            title: "End-of-line expected",
+            messageFormat: "Single-line comment or end-of-line expected",
+            category: SyntaxCategory,
+            description: "Single-line comment or end-of-line expected after a construct.",
+            helpLinkUri: HelpLinkBase + "JASS1025.md");
+
+        /// <summary>
         /// <c>JASS1039</c>: String literal is missing closing quote.
         /// </summary>
         public static readonly DiagnosticDescriptor UnterminatedString = DiagnosticDescriptor.Create(
@@ -93,6 +104,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SyntaxCategory,
             description: "String literal is missing closing quote.",
             helpLinkUri: HelpLinkBase + "JASS1039.md");
+
+        /// <summary>
+        /// <c>JASS1040</c>: Construct must appear as the first token on a line.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ConstructMustAppearOnOwnLine = DiagnosticDescriptor.Create(
+            id: "JASS1040",
+            title: "Construct must appear on its own line",
+            messageFormat: "'{0}' must appear as the first token on a line",
+            category: SyntaxCategory,
+            description: "Construct must appear as the first token on a line.",
+            helpLinkUri: HelpLinkBase + "JASS1040.md");
 
         /// <summary>
         /// <c>JASS1041</c>: An identifier was expected but a keyword was found.

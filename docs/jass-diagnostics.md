@@ -27,7 +27,9 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS1010 | Single-quoted literal is missing closing quote | `Unterminated single-quoted literal` | CS1010 `Newline in constant` |
 | JASS1012 | Single-quoted literal has an invalid number of characters | `Single-quoted literal '{0}' must contain exactly 1 or 4 characters` | CS1012 `Too many characters in character literal` |
 | JASS1013 | A numeric literal is malformed or contains invalid digits | `Invalid number '{0}'` | CS1013 `Invalid number` |
+| JASS1025 | Single-line comment or end-of-line expected after a construct | `Single-line comment or end-of-line expected` | CS1025 `Single-line comment or end-of-line expected` |
 | JASS1039 | String literal is missing closing quote | `Unterminated string literal` | CS1039 `Unterminated string literal` |
+| JASS1040 | Construct must appear as the first token on a line | `'{0}' must appear as the first token on a line` | CS1040 `Preprocessor directives must appear as the first non-whitespace character on a line` |
 | JASS1041 | An identifier was expected but a keyword was found | `Identifier expected; '{0}' is a keyword` | CS1041 `Identifier expected; '{0}' is a keyword` |
 | JASS1056 | An invalid character was encountered | `Invalid character '{0}'` | CS1056 `Unexpected character '{0}'` |
 | JASS1073 | Unexpected token encountered | `Unexpected token '{0}'` | CS1073 `Unexpected token '{0}'` |
