@@ -72,7 +72,7 @@ namespace War3Net.CodeAnalysis.Diagnostics
             return other is not null
                 && SourceSpan.Equals(other.SourceSpan)
                 && LineSpan.Equals(other.LineSpan)
-                && FilePath == other.FilePath;
+                && string.Equals(FilePath, other.FilePath, StringComparison.Ordinal);
         }
 
         /// <inheritdoc/>
