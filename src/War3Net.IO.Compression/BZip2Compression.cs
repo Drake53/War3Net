@@ -7,6 +7,8 @@
 
 using System.IO;
 
+using ICSharpCode.SharpZipLib.BZip2;
+
 namespace War3Net.IO.Compression
 {
     /// <summary>
@@ -36,12 +38,7 @@ namespace War3Net.IO.Compression
         {
             using (var output = new MemoryStream((int)expectedLength))
             {
-#if true
-                using var bZip2InputStream = new Ionic.BZip2.BZip2InputStream(data, true);
-                bZip2InputStream.CopyTo(output);
-#else
-                ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(data, output, false);
-#endif
+                BZip2.Decompress(data, output, false);
                 return output.ToArray();
             }
         }

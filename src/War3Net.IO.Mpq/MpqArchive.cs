@@ -16,6 +16,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using War3Net.Common.Providers;
+using War3Net.IO.Compression;
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
@@ -231,13 +232,13 @@ namespace War3Net.IO.Mpq
                         throw new Exception();
                     }
 
-                    var crc32 = 0;
+                    var crc32 = 0U;
                     if (attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32) && allowMultiple)
                     {
                         if (mpqFile.MpqStream.CanSeek && mpqFile.MpqStream.CanRead)
                         {
                             mpqFile.MpqStream.Position = 0;
-                            crc32 = new Ionic.Crc.CRC32().GetCrc32(mpqFile.MpqStream);
+                            crc32 = Crc32Checksum.Compute(mpqFile.MpqStream);
                         }
                     }
 

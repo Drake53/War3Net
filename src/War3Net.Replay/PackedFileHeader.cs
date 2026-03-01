@@ -9,6 +9,7 @@ using System;
 using System.IO;
 
 using War3Net.Common.Extensions;
+using War3Net.IO.Compression;
 
 namespace War3Net.Replay
 {
@@ -120,7 +121,7 @@ namespace War3Net.Replay
             crcWriter.Write(0U);
 
             crcStream.Position = 0;
-            var crc = new Ionic.Crc.CRC32().GetCrc32(crcStream);
+            var crc = Crc32Checksum.Compute(crcStream);
             if (crc != header._checksum)
             {
                 throw new InvalidDataException("CRC failed");

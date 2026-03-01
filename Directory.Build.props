@@ -26,11 +26,11 @@
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)War3Net.ruleset</CodeAnalysisRuleSet>
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <TfmGroupDotNet>net5.0</TfmGroupDotNet>
-    <TfmGroupDotNetWindows>net5.0;net5.0-windows</TfmGroupDotNetWindows>
+    <TfmGroupDotNet>net6.0</TfmGroupDotNet>
+    <TfmGroupDotNetWindows>net6.0;net6.0-windows</TfmGroupDotNetWindows>
   </PropertyGroup>
 </Project>
