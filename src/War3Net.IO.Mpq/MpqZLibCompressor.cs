@@ -7,8 +7,7 @@
 
 using System;
 using System.IO;
-
-using Ionic.Zlib;
+using System.IO.Compression;
 
 using War3Net.IO.Compression;
 
@@ -27,7 +26,7 @@ namespace War3Net.IO.Mpq
 
         private MpqZLibCompressor()
         {
-            _compressionLevel = CompressionLevel.BestCompression;
+            _compressionLevel = CompressionLevel.Optimal;
         }
 
         public static MpqZLibCompressor Default => _defaultInstance.Value;

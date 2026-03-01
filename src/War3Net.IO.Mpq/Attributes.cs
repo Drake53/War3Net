@@ -32,7 +32,7 @@ namespace War3Net.IO.Mpq
 
         public AttributesFlags Flags { get; set; }
 
-        public List<int> Crc32s { get; init; } = new();
+        public List<uint> Crc32s { get; init; } = new();
 
         public List<DateTime> DateTimes { get; init; } = new();
 
@@ -82,7 +82,7 @@ namespace War3Net.IO.Mpq
                 {
                     for (nint i = 0; i < fileCount; i++)
                     {
-                        Crc32s.Add(reader.ReadInt32());
+                        Crc32s.Add(reader.ReadUInt32());
                     }
                 }
 
