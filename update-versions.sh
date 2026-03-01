@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-# Script to update package versions in Directory.Build.props based on semver
+# Script to update package versions in Directory.Packages.props based on semver
 # Usage: ./update-versions.sh "package1:breaking,package2:feature,package3:fix"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_PROPS_FILE="$SCRIPT_DIR/Directory.Build.props"
+PACKAGES_PROPS_FILE="$SCRIPT_DIR/Directory.Packages.props"
 
-# Check if Directory.Build.props exists
-if [ ! -f "$BUILD_PROPS_FILE" ]; then
-    echo "Error: Directory.Build.props not found at $BUILD_PROPS_FILE"
+# Check if Directory.Packages.props exists
+if [ ! -f "$PACKAGES_PROPS_FILE" ]; then
+    echo "Error: Directory.Packages.props not found at $PACKAGES_PROPS_FILE"
     exit 1
 fi
 
@@ -45,44 +45,30 @@ increment_version() {
     echo "$major.$minor.$patch"
 }
 
-# Function to get version property name for a package
-get_version_property() {
-    local package_id=$1
-
-    # Convert package ID to version property format by removing dots and adding Version suffix
-    # War3Net.Build.Core -> War3NetBuildCoreVersion
-    # War3Net.CSharpLua -> War3NetCSharpLuaVersion
-    local property_name=$(echo "$package_id" | sed 's/\.//g')
-    property_name="${property_name}Version"
-    echo "$property_name"
-}
-
 # Function to get current version for a package
 get_current_version() {
     local package_id=$1
-    local version_property=$(get_version_property "$package_id")
 
-    # Extract version from Directory.Build.props
-    local version=$(grep "<$version_property>" "$BUILD_PROPS_FILE" | sed "s/.*<$version_property>\(.*\)<\/$version_property>.*/\1/")
+    # Extract Version attribute from <PackageVersion Include="..." Version="..." />
+    local version=$(grep "Include=\"$package_id\"" "$PACKAGES_PROPS_FILE" | sed 's/.*Version="\([^"]*\)".*/\1/')
 
     if [ -z "$version" ]; then
-        echo "Error: Could not find version for property '$version_property' (package: $package_id)"
+        echo "Error: Could not find version for package '$package_id' in Directory.Packages.props"
         exit 1
     fi
 
     echo "$version"
 }
 
-# Function to update version in Directory.Build.props
+# Function to update version in Directory.Packages.props
 update_version_in_props() {
     local package_id=$1
     local new_version=$2
-    local version_property=$(get_version_property "$package_id")
 
-    # Update the version in Directory.Build.props using sed
-    sed -i "s|<$version_property>.*</$version_property>|<$version_property>$new_version</$version_property>|" "$BUILD_PROPS_FILE"
+    # Update the Version attribute for the matching PackageVersion entry
+    sed -i "s|\(Include=\"$package_id\" Version=\"\)[^\"]*\(\"\)|\1$new_version\2|" "$PACKAGES_PROPS_FILE"
 
-    echo "Updated $package_id ($version_property) to $new_version"
+    echo "Updated $package_id to $new_version"
 }
 
 # Caches to avoid repeated expensive operations
@@ -300,4 +286,4 @@ update_versions_recursive
 
 echo ""
 echo "=== Version Update Complete ==="
-echo "All version updates have been applied to Directory.Build.props"
+echo "All version updates have been applied to Directory.Packages.props"
