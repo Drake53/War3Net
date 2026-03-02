@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqArchiveBuilderExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using War3Net.Build.Info;

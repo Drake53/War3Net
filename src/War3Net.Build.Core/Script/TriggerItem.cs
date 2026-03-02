@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="TriggerItem.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     public abstract partial class TriggerItem
     {

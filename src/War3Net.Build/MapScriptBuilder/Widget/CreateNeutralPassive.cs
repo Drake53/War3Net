@@ -1,10 +1,3 @@
-// ------------------------------------------------------------------------------
-// <copyright file="CreateNeutralPassive.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
 using System;
 using System.Linq;
 using War3Net.Build.Extensions;

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="GamePatch.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#pragma warning disable CA1707 // Identifiers should not contain underscores
+﻿#pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1602 // Enumeration items should be documented
 

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ActionBlockType.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     // http://w3g.deepnode.de/files/w3g_actions.txt
     public enum ActionBlockType

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqKnownFile.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using War3Net.IO.Mpq.Extensions;
+﻿using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq
 {

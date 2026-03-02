@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ParticleEmitter2.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Numerics;
+﻿using System.Numerics;
 using War3Net.Modeling.Enums;
 
 namespace War3Net.Modeling.DataStructures

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="Utf8JsonWriterExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 using War3Net.Build.Audio;
 using War3Net.Build.Common;

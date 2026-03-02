@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="TestDataProvider.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-// #define ENABLE_WEB_CAPABILITIES
+﻿// #define ENABLE_WEB_CAPABILITIES
 
 using System;
 using System.Collections.Generic;

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqLocale.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#pragma warning disable CA1028 // Enum Storage should be Int32
+﻿#pragma warning disable CA1028 // Enum Storage should be Int32
 
 namespace War3Net.IO.Mpq
 {

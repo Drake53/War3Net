@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="VJassKeyword.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#pragma warning disable CA1720, SA1600
+﻿#pragma warning disable CA1720, SA1600
 
 namespace War3Net.CodeAnalysis.VJass
 {
