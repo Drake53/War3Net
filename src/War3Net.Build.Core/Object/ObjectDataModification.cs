@@ -1,7 +1,4 @@
-﻿using System;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Object
+﻿namespace War3Net.Build.Object
 {
     public abstract partial class ObjectDataModification
     {

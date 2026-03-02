@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace War3Net.Rendering.DataStructures
+﻿namespace War3Net.Rendering.DataStructures
 {
     public struct Vertex
     {

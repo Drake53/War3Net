@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-
-namespace War3Net.CodeAnalysis.VJass.Syntax
+﻿namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassSyntaxToken
     {

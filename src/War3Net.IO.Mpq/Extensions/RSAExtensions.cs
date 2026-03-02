@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-
-namespace War3Net.IO.Mpq.Extensions
+﻿namespace War3Net.IO.Mpq.Extensions
 {
     internal static class RSAExtensions
     {

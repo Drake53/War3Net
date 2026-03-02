@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {

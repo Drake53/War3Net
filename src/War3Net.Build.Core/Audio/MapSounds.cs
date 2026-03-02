@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Audio
+﻿namespace War3Net.Build.Audio
 {
     public sealed partial class MapSounds
     {

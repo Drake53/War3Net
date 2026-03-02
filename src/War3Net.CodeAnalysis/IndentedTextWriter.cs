@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-namespace War3Net.CodeAnalysis
+﻿namespace War3Net.CodeAnalysis
 {
     public sealed class IndentedTextWriter : TextWriter
     {

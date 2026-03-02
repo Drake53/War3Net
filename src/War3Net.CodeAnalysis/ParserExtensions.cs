@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Pidgin;
-
-namespace War3Net.CodeAnalysis
+﻿namespace War3Net.CodeAnalysis
 {
     public static class ParserExtensions
     {

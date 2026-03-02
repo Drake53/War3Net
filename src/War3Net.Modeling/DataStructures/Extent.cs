@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace War3Net.Modeling.DataStructures
+﻿namespace War3Net.Modeling.DataStructures
 {
     public struct Extent
     {

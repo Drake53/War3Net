@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Common.Providers;
-
-namespace War3Net.IO.Slk
+﻿namespace War3Net.IO.Slk
 {
     public sealed class SylkSerializer
     {

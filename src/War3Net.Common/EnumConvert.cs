@@ -1,9 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Common
+﻿namespace War3Net.Common
 {
     public static class EnumConvert<TEnum>
         where TEnum : struct, Enum

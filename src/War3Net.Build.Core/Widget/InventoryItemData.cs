@@ -1,6 +1,4 @@
-﻿using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     public sealed partial class InventoryItemData
     {

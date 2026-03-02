@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Text;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     public sealed class SlotRecord
     {

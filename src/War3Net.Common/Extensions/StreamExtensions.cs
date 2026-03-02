@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace War3Net.Common.Extensions
+﻿namespace War3Net.Common.Extensions
 {
     /// <summary>
     /// Provides extension methods for the <see cref="Stream"/> class.

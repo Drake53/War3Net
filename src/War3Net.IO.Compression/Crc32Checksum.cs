@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.IO.Hashing;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     public static class Crc32Checksum
     {

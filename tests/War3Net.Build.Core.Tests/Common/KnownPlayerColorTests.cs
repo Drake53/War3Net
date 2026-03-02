@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Common;
-using War3Net.Build.Extensions;
-
-namespace War3Net.Build.Core.Tests.Common
+﻿namespace War3Net.Build.Core.Tests.Common
 {
     [TestClass]
     public class KnownPlayerColorTests

@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using War3Net.Build.Extensions;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     public sealed partial class MapCameras
     {

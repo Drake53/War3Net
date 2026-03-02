@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace War3Net.Build.Common
+﻿namespace War3Net.Build.Common
 {
     public sealed partial class Bitmask32
     {

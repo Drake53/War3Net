@@ -1,11 +1,5 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using War3Net.Build.Extensions;
-using War3Net.Build.Serialization.Json;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
+﻿using BinaryReaderExtensions = War3Net.Build.Extensions.BinaryReaderExtensions;
+using BinaryWriterExtensions = War3Net.Build.Extensions.BinaryWriterExtensions;
 
 namespace War3Net.Build.Core.Tests
 {

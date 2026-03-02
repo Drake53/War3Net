@@ -1,6 +1,4 @@
-﻿using War3Net.Build.Environment;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class CameraExtensions
     {

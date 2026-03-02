@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-namespace War3Net.IO.Mpq.Extensions
+﻿namespace War3Net.IO.Mpq.Extensions
 {
     internal static class StringExtensions
     {

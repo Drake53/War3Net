@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Audio;
-
-namespace War3Net.Build.Core.Tests.Audio
+﻿namespace War3Net.Build.Core.Tests.Audio
 {
     [TestClass]
     public class MapSoundsTests

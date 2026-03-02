@@ -3,8 +3,6 @@
 #pragma warning disable SA1310 // Field names should not contain underscore
 #pragma warning disable SA1401 // Fields should be private
 
-using War3Net.Runtime.Enums;
-
 namespace War3Net.Runtime.Api.Common.Enums
 {
     public static class TargetFlagApi

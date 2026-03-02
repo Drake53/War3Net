@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using War3Net.Build.Common;
-using War3Net.Build.Environment;
-
-namespace War3Net.Build.Providers
+﻿namespace War3Net.Build.Providers
 {
     public static class TerrainTypeProvider
     {

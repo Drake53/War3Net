@@ -1,7 +1,4 @@
-﻿using War3Net.Build.Widget;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class UnitDataExtensions
     {

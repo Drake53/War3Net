@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Object;
-
-namespace War3Net.Build.Core.Tests.Object
+﻿namespace War3Net.Build.Core.Tests.Object
 {
     [TestClass]
     public class ItemObjectDataTests

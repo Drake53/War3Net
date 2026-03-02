@@ -1,6 +1,4 @@
-﻿using War3Net.IO.Mpq.Extensions;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public sealed class MpqKnownFile : MpqFile
     {

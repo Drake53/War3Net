@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Drawing;
-
-namespace War3Net.Build.Common
+﻿namespace War3Net.Build.Common
 {
     public static class PlayerColor
     {

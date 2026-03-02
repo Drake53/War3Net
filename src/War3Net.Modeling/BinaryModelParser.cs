@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using War3Net.Common.Extensions;
-using War3Net.Modeling.DataStructures;
-using War3Net.Modeling.Enums;
-
-namespace War3Net.Modeling
+﻿namespace War3Net.Modeling
 {
     public static class BinaryModelParser
     {

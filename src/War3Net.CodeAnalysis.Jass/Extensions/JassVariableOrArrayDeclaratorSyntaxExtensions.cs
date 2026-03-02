@@ -1,7 +1,4 @@
-﻿using System;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class JassVariableOrArrayDeclaratorSyntaxExtensions
     {

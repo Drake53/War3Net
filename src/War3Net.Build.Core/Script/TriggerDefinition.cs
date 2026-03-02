@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     public sealed partial class TriggerDefinition : TriggerItem
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Build.Core.Tests
+﻿namespace War3Net.Build.Core.Tests
 {
     public static class TestDataFileProvider
     {

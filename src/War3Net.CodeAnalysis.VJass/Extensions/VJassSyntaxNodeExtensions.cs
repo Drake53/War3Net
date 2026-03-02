@@ -1,6 +1,4 @@
-﻿using War3Net.CodeAnalysis.VJass.Syntax;
-
-namespace War3Net.CodeAnalysis.VJass.Extensions
+﻿namespace War3Net.CodeAnalysis.VJass.Extensions
 {
     internal static class VJassSyntaxNodeExtensions
     {

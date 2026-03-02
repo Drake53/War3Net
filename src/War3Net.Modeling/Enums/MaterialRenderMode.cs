@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Modeling.Enums
+﻿namespace War3Net.Modeling.Enums
 {
     [Flags]
     public enum MaterialRenderMode

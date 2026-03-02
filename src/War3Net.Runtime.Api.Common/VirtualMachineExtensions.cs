@@ -1,8 +1,4 @@
-﻿using System;
-using System.Reflection;
-using War3Net.Build.Common;
-
-namespace War3Net.Runtime.Api.Common
+﻿namespace War3Net.Runtime.Api.Common
 {
     public static class VirtualMachineExtensions
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using War3Net.Build.Extensions;
-using War3Net.CodeAnalysis;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {

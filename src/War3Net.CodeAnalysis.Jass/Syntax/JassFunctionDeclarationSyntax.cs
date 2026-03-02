@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using War3Net.CodeAnalysis.Jass.Extensions;
-
-namespace War3Net.CodeAnalysis.Jass.Syntax
+﻿namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     public class JassFunctionDeclarationSyntax : JassTopLevelDeclarationSyntax
     {

@@ -1,16 +1,4 @@
-﻿using System.Numerics;
-using System.Text.Json;
-using War3Net.Build.Audio;
-using War3Net.Build.Common;
-using War3Net.Build.Configuration;
-using War3Net.Build.Environment;
-using War3Net.Build.Import;
-using War3Net.Build.Info;
-using War3Net.Build.Object;
-using War3Net.Build.Script;
-using War3Net.Build.Widget;
-using Color = System.Drawing.Color;
-using Point = System.Drawing.Point;
+﻿using Region = War3Net.Build.Environment.Region;
 
 namespace War3Net.Build.Extensions
 {

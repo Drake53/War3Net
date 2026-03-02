@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     [Flags]
     public enum PathingType : byte

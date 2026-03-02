@@ -1,6 +1,4 @@
-﻿using War3Net.CodeAnalysis;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public class TriggerRendererContext
     {

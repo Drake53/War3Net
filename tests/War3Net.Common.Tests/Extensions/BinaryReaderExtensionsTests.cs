@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Common.Tests.Extensions
+﻿namespace War3Net.Common.Tests.Extensions
 {
     [TestClass]
     public sealed class BinaryReaderExtensionsTests

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Text;
-
-namespace War3Net.Common.Extensions
+﻿namespace War3Net.Common.Extensions
 {
     public static class BinaryReaderExtensions
     {

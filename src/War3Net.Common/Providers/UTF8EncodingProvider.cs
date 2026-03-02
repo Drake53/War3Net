@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace War3Net.Common.Providers
+﻿namespace War3Net.Common.Providers
 {
     public static class UTF8EncodingProvider
     {

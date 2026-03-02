@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Import;
-
-namespace War3Net.Build.Core.Tests.Import
+﻿namespace War3Net.Build.Core.Tests.Import
 {
     [TestClass]
     public class ImportedFilesTests

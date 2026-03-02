@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using War3Net.Common.Providers;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// An entry in a <see cref="HashTable"/>.

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using War3Net.Modeling.DataStructures;
-
-namespace War3Net.Rendering.DataStructures
+﻿namespace War3Net.Rendering.DataStructures
 {
     public sealed class NodeData
     {

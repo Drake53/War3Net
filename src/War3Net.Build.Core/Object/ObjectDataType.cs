@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Object
+﻿namespace War3Net.Build.Object
 {
     public enum ObjectDataType
     {

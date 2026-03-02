@@ -1,10 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using War3Net.Build.Extensions;
-using War3Net.Build.Serialization.Json;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Audio
+﻿namespace War3Net.Build.Audio
 {
     [JsonConverter(typeof(JsonMapSoundsConverter))]
     public sealed partial class MapSounds

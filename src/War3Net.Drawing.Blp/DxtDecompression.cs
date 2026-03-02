@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Drawing.Blp
+﻿namespace War3Net.Drawing.Blp
 {
     /// <summary>
     ///

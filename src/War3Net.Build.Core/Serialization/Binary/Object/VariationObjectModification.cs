@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Build.Extensions;
-
-namespace War3Net.Build.Object
+﻿namespace War3Net.Build.Object
 {
     public sealed partial class VariationObjectModification
     {

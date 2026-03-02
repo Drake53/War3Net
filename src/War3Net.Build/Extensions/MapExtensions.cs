@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using CSharpLua;
-using War3Net.Build.Info;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Transpilers;
-using War3Net.Common.Providers;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class MapExtensions
     {

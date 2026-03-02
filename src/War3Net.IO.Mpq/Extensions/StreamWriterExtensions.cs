@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace War3Net.IO.Mpq.Extensions
+﻿namespace War3Net.IO.Mpq.Extensions
 {
     public static class StreamWriterExtensions
     {

@@ -1,7 +1,4 @@
-﻿using Veldrid;
-using War3Net.Modeling.Enums;
-
-namespace War3Net.Rendering.Factories
+﻿namespace War3Net.Rendering.Factories
 {
     public struct SimplePipelineDescription
     {

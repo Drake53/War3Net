@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
-namespace War3Net.CodeAnalysis.Transpilers.Extensions
+﻿namespace War3Net.CodeAnalysis.Transpilers.Extensions
 {
     public static class SeparatedSyntaxListExtensions
     {

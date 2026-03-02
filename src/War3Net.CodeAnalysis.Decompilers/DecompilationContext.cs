@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using War3Net.Build;
-using War3Net.Build.Info;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Decompilers
+﻿namespace War3Net.CodeAnalysis.Decompilers
 {
     internal sealed class DecompilationContext
     {

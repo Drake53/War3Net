@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     // https://github.com/stijnherfst/HiveWE/wiki/war3map.wtg-Triggers
     // http://www.wc3c.net/tools/specs/index.html

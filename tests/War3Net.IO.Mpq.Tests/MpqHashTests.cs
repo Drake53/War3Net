@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace War3Net.IO.Mpq.Tests
+﻿namespace War3Net.IO.Mpq.Tests
 {
     [TestClass]
     public class MpqHashTests

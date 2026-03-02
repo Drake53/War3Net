@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using War3Net.Common.Extensions;
-using War3Net.Replay.Action;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     public /*abstract*/ class ActionBlock
     {

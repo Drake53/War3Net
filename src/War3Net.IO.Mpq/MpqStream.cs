@@ -1,14 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Text;
-using War3Net.Common.Extensions;
-using War3Net.Common.Providers;
-using War3Net.IO.Compression;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// A Stream based class for reading a file from an <see cref="MpqArchive"/>.

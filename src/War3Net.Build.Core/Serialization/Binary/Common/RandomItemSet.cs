@@ -1,9 +1,4 @@
-﻿using System.IO;
-using War3Net.Build.Extensions;
-using War3Net.Build.Info;
-using War3Net.Build.Widget;
-
-namespace War3Net.Build.Common
+﻿namespace War3Net.Build.Common
 {
     public sealed partial class RandomItemSet
     {

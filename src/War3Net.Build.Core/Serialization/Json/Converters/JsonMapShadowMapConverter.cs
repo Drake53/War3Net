@@ -1,10 +1,4 @@
-﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using War3Net.Build.Environment;
-using War3Net.Build.Extensions;
-
-namespace War3Net.Build.Serialization.Json
+﻿namespace War3Net.Build.Serialization.Json
 {
     internal sealed class JsonMapShadowMapConverter : JsonConverterFactory
     {

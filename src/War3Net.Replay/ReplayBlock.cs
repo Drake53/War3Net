@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     public abstract class ReplayBlock
     {

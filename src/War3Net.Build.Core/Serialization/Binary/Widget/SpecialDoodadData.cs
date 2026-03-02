@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.IO;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     public sealed partial class SpecialDoodadData
     {

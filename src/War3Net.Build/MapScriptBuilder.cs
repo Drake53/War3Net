@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using War3Net.Build.Extensions;
-using War3Net.Build.Info;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis;
-using War3Net.CodeAnalysis.Jass;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {

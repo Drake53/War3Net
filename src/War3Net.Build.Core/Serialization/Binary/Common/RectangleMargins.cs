@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace War3Net.Build.Common
+﻿namespace War3Net.Build.Common
 {
     public sealed partial class RectangleMargins
     {

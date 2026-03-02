@@ -1,8 +1,4 @@
 ﻿#if !WINDOWS
-using System;
-using System.Runtime.CompilerServices;
-using JpegLibrary;
-
 namespace War3Net.Drawing.Blp
 {
     internal sealed class JpegBlockOutputWriter8Bit : JpegBlockOutputWriter

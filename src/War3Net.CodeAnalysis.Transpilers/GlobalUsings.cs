@@ -13,4 +13,3 @@ global using War3Net.CodeAnalysis.Jass;
 global using War3Net.CodeAnalysis.Jass.Extensions;
 global using War3Net.CodeAnalysis.Jass.Syntax;
 global using War3Net.CodeAnalysis.Transpilers.Extensions;
-global using War3Net.Common.Extensions;

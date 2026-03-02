@@ -1,9 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.IO;
-using System.Text;
-using War3Net.CodeAnalysis.VJass.Syntax;
-
-namespace War3Net.CodeAnalysis.VJass.Extensions
+﻿namespace War3Net.CodeAnalysis.VJass.Extensions
 {
     public static class ImmutableArrayExtensions
     {

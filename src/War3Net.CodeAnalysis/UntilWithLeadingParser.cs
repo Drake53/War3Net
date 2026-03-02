@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Pidgin;
-
-namespace War3Net.CodeAnalysis
+﻿namespace War3Net.CodeAnalysis
 {
     internal sealed class UntilWithLeadingParser<TToken, TLeading, TOpen, TItem, TClose, TResult> : Parser<TToken, TResult>
         where TResult : class

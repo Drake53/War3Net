@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Configuration
+﻿namespace War3Net.Build.Configuration
 {
     [Flags]
     public enum GameConfigurationPlayerInfoFlags

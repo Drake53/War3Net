@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.IO;
-
-namespace War3Net.CodeAnalysis.VJass.Syntax
+﻿namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassSyntaxTriviaList
     {

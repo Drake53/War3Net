@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Build.Extensions;
-
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     public sealed partial class TechData
     {

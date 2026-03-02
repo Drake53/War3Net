@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Object
+﻿namespace War3Net.Build.Object
 {
     public sealed partial class LevelObjectModification
     {

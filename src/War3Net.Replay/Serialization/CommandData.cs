@@ -1,6 +1,4 @@
-﻿using MessagePack;
-
-namespace War3Net.Replay.Serialization
+﻿namespace War3Net.Replay.Serialization
 {
     [MessagePackObject]
     public struct CommandData

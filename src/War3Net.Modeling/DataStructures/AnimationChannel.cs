@@ -1,6 +1,4 @@
-﻿using War3Net.Modeling.Enums;
-
-namespace War3Net.Modeling.DataStructures
+﻿namespace War3Net.Modeling.DataStructures
 {
     public struct AnimationChannel<T>
         where T : struct

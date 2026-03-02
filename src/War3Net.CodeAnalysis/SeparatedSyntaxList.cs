@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Text;
-
-namespace War3Net.CodeAnalysis
+﻿namespace War3Net.CodeAnalysis
 {
     public class SeparatedSyntaxList<TItem, TSeparator>
     {

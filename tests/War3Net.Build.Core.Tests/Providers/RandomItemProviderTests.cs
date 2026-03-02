@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Providers;
-using War3Net.Build.Widget;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Core.Tests.Providers
+﻿namespace War3Net.Build.Core.Tests.Providers
 {
     [TestClass]
     public class RandomItemProviderTests

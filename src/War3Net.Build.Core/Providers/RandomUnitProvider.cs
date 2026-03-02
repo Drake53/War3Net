@@ -1,6 +1,4 @@
-﻿using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Providers
+﻿namespace War3Net.Build.Providers
 {
     public static class RandomUnitProvider
     {

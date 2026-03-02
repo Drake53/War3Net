@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Widget;
-
-namespace War3Net.Build.Core.Tests.Widget
+﻿namespace War3Net.Build.Core.Tests.Widget
 {
     [TestClass]
     public class MapDoodadsTests

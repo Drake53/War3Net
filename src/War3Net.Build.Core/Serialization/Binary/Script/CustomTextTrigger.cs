@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Text;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     public sealed partial class CustomTextTrigger
     {

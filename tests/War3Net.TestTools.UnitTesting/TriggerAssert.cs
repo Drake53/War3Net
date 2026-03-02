@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass;
-
-namespace War3Net.TestTools.UnitTesting
+﻿namespace War3Net.TestTools.UnitTesting
 {
     public static class TriggerAssert
     {

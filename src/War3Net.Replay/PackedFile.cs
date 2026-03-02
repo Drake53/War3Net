@@ -1,9 +1,4 @@
-﻿using System.IO;
-using System.Text;
-using War3Net.Common.Extensions;
-using War3Net.IO.Compression;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     public sealed class PackedFile
     {

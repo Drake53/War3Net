@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Emit;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public sealed class CompileResult
     {

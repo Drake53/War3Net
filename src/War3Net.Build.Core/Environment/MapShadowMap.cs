@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     public sealed partial class MapShadowMap
     {

@@ -1,9 +1,4 @@
-﻿using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build;
-using War3Net.Build.Audio;
-
-namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
+﻿namespace War3Net.CodeAnalysis.Decompilers.Tests.Audio
 {
     [TestClass]
     public class MapSoundsDecompilerTests

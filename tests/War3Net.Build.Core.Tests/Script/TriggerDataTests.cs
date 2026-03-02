@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Extensions;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Build.Core.Tests.Script
+﻿namespace War3Net.Build.Core.Tests.Script
 {
     [TestClass]
     public class TriggerDataTests

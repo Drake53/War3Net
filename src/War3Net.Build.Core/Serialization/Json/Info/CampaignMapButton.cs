@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     public sealed partial class CampaignMapButton
     {

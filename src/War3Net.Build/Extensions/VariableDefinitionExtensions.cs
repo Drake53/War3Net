@@ -1,8 +1,4 @@
-﻿using System;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class VariableDefinitionExtensions
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     public sealed class ReplayHeader
     {

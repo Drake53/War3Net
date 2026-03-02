@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace War3Net.Runtime.Enums.Event
+﻿namespace War3Net.Runtime.Enums.Event
 {
     public sealed class PlayerEvent : EventId
     {
