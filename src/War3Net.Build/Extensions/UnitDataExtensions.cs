@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using War3Net.Build.Object;
-using War3Net.Build.Resources;
-using War3Net.Build.Widget;
-using War3Net.Common.Extensions;
-using War3Net.IO.Slk;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class UnitDataExtensions
     {

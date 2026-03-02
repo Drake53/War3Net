@@ -1,10 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Numerics;
-using System.Text;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class StringExtensions
     {

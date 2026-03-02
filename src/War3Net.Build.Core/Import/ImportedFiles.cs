@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Import
+﻿namespace War3Net.Build.Import
 {
     public sealed partial class ImportedFiles
     {

@@ -1,13 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Numerics;
-using War3Net.Build.Common;
-using War3Net.Build.Environment;
-using War3Net.Build.Info;
-using War3Net.Build.Providers;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public static partial class MapFactory
     {

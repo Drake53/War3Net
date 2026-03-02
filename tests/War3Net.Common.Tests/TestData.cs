@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace War3Net.Common.Tests
+﻿namespace War3Net.Common.Tests
 {
     internal static class TestData
     {

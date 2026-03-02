@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public class TrigFunctionIdentifierBuilder
     {

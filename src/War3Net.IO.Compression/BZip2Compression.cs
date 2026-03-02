@@ -1,7 +1,4 @@
-﻿using System.IO;
-using ICSharpCode.SharpZipLib.BZip2;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// Provides methods to decompress BZip2 compressed data.

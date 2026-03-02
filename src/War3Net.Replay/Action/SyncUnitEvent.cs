@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Text;
-
-namespace War3Net.Replay.Action
+﻿namespace War3Net.Replay.Action
 {
     public sealed class SyncUnitEvent : GamecacheSyncEvent
     {

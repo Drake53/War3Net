@@ -1,0 +1,15 @@
+﻿global using System;
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.ComponentModel;
+global using System.Diagnostics.CodeAnalysis;
+global using System.IO;
+global using System.IO.Compression;
+global using System.IO.MemoryMappedFiles;
+global using System.Linq;
+global using System.Security.Cryptography;
+global using System.Text;
+global using War3Net.Common.Extensions;
+global using War3Net.Common.Providers;
+global using War3Net.IO.Compression;
+global using War3Net.IO.Mpq.Extensions;

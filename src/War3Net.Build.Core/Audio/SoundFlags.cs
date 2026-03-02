@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Audio
+﻿namespace War3Net.Build.Audio
 {
     [Flags]
     public enum SoundFlags

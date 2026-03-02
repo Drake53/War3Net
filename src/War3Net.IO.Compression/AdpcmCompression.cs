@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// An IMA ADPCM decompress for analog audio files.

@@ -1,15 +1,5 @@
 ﻿// #define ENABLE_WEB_CAPABILITIES
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using War3Net.IO.Mpq;
-
 namespace War3Net.TestTools.UnitTesting
 {
     public static class TestDataProvider

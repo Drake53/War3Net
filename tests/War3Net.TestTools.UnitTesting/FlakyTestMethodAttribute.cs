@@ -1,10 +1,4 @@
-﻿using System;
-
-#if ENABLE_FLAKY_TESTS
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
-namespace War3Net.TestTools.UnitTesting
+﻿namespace War3Net.TestTools.UnitTesting
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class FlakyTestMethodAttribute

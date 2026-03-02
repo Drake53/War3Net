@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.CodeAnalysis.VJass.Syntax;
-
-namespace War3Net.CodeAnalysis.VJass.Extensions
+﻿namespace War3Net.CodeAnalysis.VJass.Extensions
 {
     public static class SeparatedSyntaxListExtensions
     {

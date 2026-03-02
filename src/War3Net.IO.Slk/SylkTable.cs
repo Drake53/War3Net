@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace War3Net.IO.Slk
+﻿namespace War3Net.IO.Slk
 {
     public sealed class SylkTable : IEnumerable<object[]>
     {

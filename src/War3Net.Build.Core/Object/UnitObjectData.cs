@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Object
+﻿namespace War3Net.Build.Object
 {
     public sealed partial class UnitObjectData
     {

@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Extensions;
-using War3Net.Build.Info;
-using War3Net.Build.Providers;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build.Core.Tests.Providers
+﻿namespace War3Net.Build.Core.Tests.Providers
 {
     [TestClass]
     public class GameBuildsProviderTests

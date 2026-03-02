@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class JassExpressionSyntaxExtensions
     {

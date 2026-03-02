@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     internal sealed class StormBuffer
     {

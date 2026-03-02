@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace War3Net.Build.Audio
+﻿namespace War3Net.Build.Audio
 {
     public sealed partial class Sound
     {

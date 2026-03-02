@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Build.Script;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     // Unlike BinaryWriterExtensions, the extension method names here cannot simply be 'Write", because StreamWriter contains a Write(object) method.
     public static class StreamWriterExtensions

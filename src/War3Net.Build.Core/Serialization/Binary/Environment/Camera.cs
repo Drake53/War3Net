@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Numerics;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     public sealed partial class Camera
     {

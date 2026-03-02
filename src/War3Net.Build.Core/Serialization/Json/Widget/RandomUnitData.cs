@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     public abstract partial class RandomUnitData
     {

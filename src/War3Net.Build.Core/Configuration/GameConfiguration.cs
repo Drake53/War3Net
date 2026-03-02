@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace War3Net.Build.Configuration
+﻿namespace War3Net.Build.Configuration
 {
     public sealed partial class GameConfiguration
     {

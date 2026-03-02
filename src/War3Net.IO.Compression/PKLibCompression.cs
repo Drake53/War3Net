@@ -1,8 +1,5 @@
 ﻿#pragma warning disable CA1810 // Initialize reference type static fields inline
 
-using System;
-using System.IO;
-
 namespace War3Net.IO.Compression
 {
     /// <summary>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// Provides methods to decompress Huffman compressed data.

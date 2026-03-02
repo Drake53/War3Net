@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using War3Net.Build.Info;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.Build.Tests
+﻿namespace War3Net.Build.Tests
 {
     public class MapScriptBuilderTestData
     {

@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using War3Net.Build.Common;
-using War3Net.Build.Info;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class ForceDataExtensions
     {

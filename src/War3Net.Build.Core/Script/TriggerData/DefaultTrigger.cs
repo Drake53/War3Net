@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     public sealed partial class TriggerData
     {

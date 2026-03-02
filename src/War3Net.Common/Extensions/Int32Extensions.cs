@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-
-namespace War3Net.Common.Extensions
+﻿namespace War3Net.Common.Extensions
 {
     public static class Int32Extensions
     {

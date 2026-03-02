@@ -1,10 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using War3Net.CodeAnalysis.VJass.Extensions;
-
-namespace War3Net.CodeAnalysis.VJass.Syntax
+﻿namespace War3Net.CodeAnalysis.VJass.Syntax
 {
     public class VJassMethodDeclarationSyntax : VJassMemberDeclarationSyntax
     {

@@ -1,6 +1,4 @@
-﻿using System;
-using War3Net.Runtime.Enums;
-using Player_ = War3Net.Runtime.Core.Player;
+﻿using Player_ = War3Net.Runtime.Core.Player;
 
 namespace War3Net.Runtime.Api.Common.Core
 {

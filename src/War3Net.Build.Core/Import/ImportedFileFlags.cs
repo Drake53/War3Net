@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Import
+﻿namespace War3Net.Build.Import
 {
     [Flags]
     public enum ImportedFileFlags : byte

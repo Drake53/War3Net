@@ -1,6 +1,4 @@
-﻿using Veldrid;
-
-namespace War3Net.Rendering.DataStructures
+﻿namespace War3Net.Rendering.DataStructures
 {
     public class CachedShaderSet
     {

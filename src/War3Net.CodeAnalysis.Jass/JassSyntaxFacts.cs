@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     public static partial class JassSyntaxFacts
     {

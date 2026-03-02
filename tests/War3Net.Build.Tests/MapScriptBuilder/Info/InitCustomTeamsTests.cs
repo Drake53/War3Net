@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Build.Tests
+﻿namespace War3Net.Build.Tests
 {
     public partial class MapScriptBuilderTests
     {

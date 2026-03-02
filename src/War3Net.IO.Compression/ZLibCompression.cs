@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using War3Net.Common.Extensions;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// Provides methods to compress and decompress using ZLib.

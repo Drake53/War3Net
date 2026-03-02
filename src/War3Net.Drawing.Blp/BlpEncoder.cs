@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using JpegLibrary;
-
-namespace War3Net.Drawing.Blp
+﻿namespace War3Net.Drawing.Blp
 {
     /// <summary>
     /// Encoder for creating BLP1 files with JPEG compression and BGRA channels.

@@ -1,12 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using War3Net.Common.Extensions;
-#if WINDOWS
+﻿#if WINDOWS
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-#else
-using JpegLibrary;
 #endif
 
 namespace War3Net.Drawing.Blp

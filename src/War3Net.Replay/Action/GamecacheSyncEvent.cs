@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Text;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Replay.Action
+﻿namespace War3Net.Replay.Action
 {
     public abstract class GamecacheSyncEvent : ActionBlock
     {

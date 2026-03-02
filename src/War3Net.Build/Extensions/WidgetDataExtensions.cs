@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using War3Net.Build.Widget;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class WidgetDataExtensions
     {

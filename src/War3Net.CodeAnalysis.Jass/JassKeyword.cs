@@ -1,8 +1,5 @@
 ﻿#pragma warning disable CA1720, SA1600
 
-using System;
-using System.Collections.Generic;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassKeyword

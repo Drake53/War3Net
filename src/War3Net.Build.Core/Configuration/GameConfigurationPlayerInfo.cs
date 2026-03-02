@@ -1,6 +1,4 @@
-﻿using War3Net.Build.Common;
-
-namespace War3Net.Build.Configuration
+﻿namespace War3Net.Build.Configuration
 {
     public sealed partial class GameConfigurationPlayerInfo
     {

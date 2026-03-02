@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.Json;
-
-namespace War3Net.Common.Extensions
+﻿namespace War3Net.Common.Extensions
 {
     public static class JsonElementExtensions
     {

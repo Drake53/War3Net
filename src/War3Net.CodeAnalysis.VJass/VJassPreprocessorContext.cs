@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using War3Net.CodeAnalysis.VJass.Syntax;
-
-namespace War3Net.CodeAnalysis.VJass
+﻿namespace War3Net.CodeAnalysis.VJass
 {
     public class VJassPreprocessorContext
     {

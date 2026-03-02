@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     [Flags]
     public enum MapFlags

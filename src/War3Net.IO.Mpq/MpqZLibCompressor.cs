@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using War3Net.IO.Compression;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public class MpqZLibCompressor : IMpqCompressor
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public static class MpqLocaleProvider
     {

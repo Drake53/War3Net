@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using War3Net.Common.Extensions;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public sealed class Attributes
     {

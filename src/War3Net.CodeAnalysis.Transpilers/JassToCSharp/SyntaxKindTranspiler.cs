@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-using War3Net.CodeAnalysis.Jass;
-
-namespace War3Net.CodeAnalysis.Transpilers
+﻿namespace War3Net.CodeAnalysis.Transpilers
 {
     public partial class JassToCSharpTranspiler
     {

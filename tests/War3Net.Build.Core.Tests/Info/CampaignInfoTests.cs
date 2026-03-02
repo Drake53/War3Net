@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Info;
-
-namespace War3Net.Build.Core.Tests.Info
+﻿namespace War3Net.Build.Core.Tests.Info
 {
     [TestClass]
     public class CampaignInfoTests

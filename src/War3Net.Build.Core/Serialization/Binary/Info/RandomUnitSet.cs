@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     public sealed partial class RandomUnitSet
     {

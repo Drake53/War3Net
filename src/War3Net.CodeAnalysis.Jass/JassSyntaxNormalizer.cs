@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     internal sealed partial class JassSyntaxNormalizer : JassSyntaxRewriter
     {

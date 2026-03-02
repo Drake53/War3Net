@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using War3Net.Common.Providers;
-using War3Net.IO.Compression;
-using War3Net.IO.Mpq.Extensions;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// Represents a MoPaQ file, that is used to archive files.

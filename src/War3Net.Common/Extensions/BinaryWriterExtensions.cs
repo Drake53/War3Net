@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-
-namespace War3Net.Common.Extensions
+﻿namespace War3Net.Common.Extensions
 {
     public static class BinaryWriterExtensions
     {

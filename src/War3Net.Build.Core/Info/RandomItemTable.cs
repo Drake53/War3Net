@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using War3Net.Build.Common;
-
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     public sealed partial class RandomItemTable
     {

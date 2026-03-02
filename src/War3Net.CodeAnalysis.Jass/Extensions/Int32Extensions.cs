@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class Int32Extensions
     {

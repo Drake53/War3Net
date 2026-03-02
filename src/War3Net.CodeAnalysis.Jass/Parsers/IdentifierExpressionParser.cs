@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Pidgin;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Parsers
+﻿namespace War3Net.CodeAnalysis.Jass.Parsers
 {
     internal sealed class IdentifierExpressionParser : Parser<char, JassExpressionSyntax>
     {

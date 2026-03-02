@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using War3Net.Build.Script;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class TriggerStringsExtensions
     {

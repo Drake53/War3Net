@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using War3Net.Build.Extensions;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Configuration
+﻿namespace War3Net.Build.Configuration
 {
     public sealed partial class GameConfiguration
     {

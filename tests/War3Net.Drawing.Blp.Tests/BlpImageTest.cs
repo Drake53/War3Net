@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Drawing.Blp.Tests
+﻿namespace War3Net.Drawing.Blp.Tests
 {
     [TestClass]
     public class BlpImageTest

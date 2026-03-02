@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     [Flags]
     public enum DoodadState : byte

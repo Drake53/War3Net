@@ -1,12 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using War3Net.Build.Environment;
-using War3Net.Build.Extensions;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Build.Core.Tests.MapFactory
+﻿namespace War3Net.Build.Core.Tests.MapFactory
 {
     [TestClass]
     public class PreviewIconsTests

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Builders
+﻿namespace War3Net.CodeAnalysis.Jass.Builders
 {
     public abstract class JassSyntaxBuilder
     {

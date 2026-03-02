@@ -1,8 +1,4 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
-using War3Net.Build.Script;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class TriggerItemExtensions
     {

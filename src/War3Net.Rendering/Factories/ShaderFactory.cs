@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Veldrid;
-using Veldrid.SPIRV;
-using War3Net.Rendering.DataStructures;
-
-namespace War3Net.Rendering.Factories
+﻿namespace War3Net.Rendering.Factories
 {
     public static class ShaderFactory
     {

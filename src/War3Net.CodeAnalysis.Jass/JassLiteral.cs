@@ -1,9 +1,4 @@
-﻿using System;
-using System.Globalization;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.Common.Extensions;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     public static class JassLiteral
     {

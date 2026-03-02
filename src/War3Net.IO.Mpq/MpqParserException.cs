@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// Represents errors that occur when parsing an <see cref="MpqArchive"/>.

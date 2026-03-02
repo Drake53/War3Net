@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Build.Extensions;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     public sealed partial class RandomUnitCustomTable : RandomUnitData
     {

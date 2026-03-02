@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace War3Net.CodeAnalysis.Jass.Tests
+﻿namespace War3Net.CodeAnalysis.Jass.Tests
 {
     [TestClass]
     public class JassLiteralTests

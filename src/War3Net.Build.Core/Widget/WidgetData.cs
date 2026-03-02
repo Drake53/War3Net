@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using War3Net.Build.Common;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     public abstract class WidgetData
     {

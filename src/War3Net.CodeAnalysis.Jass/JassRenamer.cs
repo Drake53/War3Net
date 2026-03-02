@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     public partial class JassRenamer
     {

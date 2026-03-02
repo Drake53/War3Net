@@ -1,6 +1,4 @@
-﻿using War3Net.Common.Extensions;
-
-namespace War3Net.Modeling
+﻿namespace War3Net.Modeling
 {
     // https://www.hiveworkshop.com/threads/mdx-specifications.240487/
     internal static class BinaryConstants

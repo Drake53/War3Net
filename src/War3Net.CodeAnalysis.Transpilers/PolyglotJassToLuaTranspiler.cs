@@ -1,11 +1,4 @@
-﻿using System;
-using System.IO;
-using CSharpLua;
-using CSharpLua.LuaAst;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Transpilers
+﻿namespace War3Net.CodeAnalysis.Transpilers
 {
     /// <summary>
     /// Special <see cref="JassToLuaTranspiler"/> that can handle lua code embedded in the jass code using <c>//! beginusercode</c> and <c>//! endusercode</c>.

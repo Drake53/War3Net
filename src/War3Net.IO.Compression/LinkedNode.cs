@@ -1,8 +1,6 @@
 ﻿#pragma warning disable SA1600
 #pragma warning disable SA1611
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace War3Net.IO.Compression
 {
     /// <summary>

@@ -1,12 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
-using War3Net.Build.Info;
-using War3Net.Build.Script;
-using War3Net.Common.Providers;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class MpqArchiveBuilderExtensions
     {

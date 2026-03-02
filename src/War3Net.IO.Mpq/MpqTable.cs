@@ -1,7 +1,4 @@
-﻿using System.IO;
-using War3Net.Common.Providers;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// A table in an <see cref="MpqArchive"/>.

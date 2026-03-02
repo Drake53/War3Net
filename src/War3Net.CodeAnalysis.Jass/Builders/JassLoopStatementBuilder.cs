@@ -1,7 +1,4 @@
-﻿using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Builders
+﻿namespace War3Net.CodeAnalysis.Jass.Builders
 {
     public class JassLoopStatementBuilder : JassStatementListSyntaxBuilder
     {

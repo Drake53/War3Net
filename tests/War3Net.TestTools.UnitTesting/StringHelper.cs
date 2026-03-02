@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace War3Net.TestTools.UnitTesting
+﻿namespace War3Net.TestTools.UnitTesting
 {
     internal static class StringHelper
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using War3Net.Build.Common;
-using War3Net.Build.Info;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {

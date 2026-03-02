@@ -1,8 +1,6 @@
 ﻿#pragma warning disable CA1008
 #pragma warning disable SA1300
 
-using System.ComponentModel;
-
 namespace War3Net.Build.Environment
 {
     /// <summary>

@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using Veldrid;
-using War3Net.Modeling.DataStructures;
-using War3Net.Modeling.Enums;
-using War3Net.Rendering.DataStructures;
-using War3Net.Rendering.Factories;
-
-namespace War3Net.Rendering
+﻿namespace War3Net.Rendering
 {
     public sealed class ModelInstance
     {

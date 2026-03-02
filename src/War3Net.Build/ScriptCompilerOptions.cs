@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using War3Net.Build.Audio;
-using War3Net.Build.Common;
-using War3Net.Build.Environment;
-using War3Net.Build.Info;
-using War3Net.Build.Object;
-using War3Net.Build.Script;
-using War3Net.Build.Widget;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     [Obsolete]
     public sealed class ScriptCompilerOptions

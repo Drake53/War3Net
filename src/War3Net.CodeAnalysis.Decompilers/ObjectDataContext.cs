@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using War3Net.Build;
-
-namespace War3Net.CodeAnalysis.Decompilers
+﻿namespace War3Net.CodeAnalysis.Decompilers
 {
     internal sealed class ObjectDataContext
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using Pidgin;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using static Pidgin.Parser;
+﻿using static Pidgin.Parser;
 
 namespace War3Net.CodeAnalysis.Jass
 {

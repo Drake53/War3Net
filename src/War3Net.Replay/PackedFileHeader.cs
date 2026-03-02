@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using War3Net.Common.Extensions;
-using War3Net.IO.Compression;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     // Header for replays, saved games, and gamecache.
     public sealed class PackedFileHeader

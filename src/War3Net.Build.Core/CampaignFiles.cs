@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     [Flags]
     public enum CampaignFiles

@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using System.Text;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class ImmutableArrayExtensions
     {

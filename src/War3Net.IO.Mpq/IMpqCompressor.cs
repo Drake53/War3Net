@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public interface IMpqCompressor
     {

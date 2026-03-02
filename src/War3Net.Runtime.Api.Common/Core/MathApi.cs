@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace War3Net.Runtime.Api.Common.Core
+﻿namespace War3Net.Runtime.Api.Common.Core
 {
     public static class MathApi
     {

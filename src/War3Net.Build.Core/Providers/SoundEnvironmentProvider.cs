@@ -1,7 +1,4 @@
-﻿using War3Net.Build.Audio;
-using War3Net.Build.Common;
-
-namespace War3Net.Build.Providers
+﻿namespace War3Net.Build.Providers
 {
     public static class SoundEnvironmentProvider
     {

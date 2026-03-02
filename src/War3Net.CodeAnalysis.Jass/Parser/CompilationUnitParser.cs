@@ -1,8 +1,4 @@
-﻿using System.Collections.Immutable;
-using Pidgin;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using static Pidgin.Parser<char>;
+﻿using static Pidgin.Parser<char>;
 
 namespace War3Net.CodeAnalysis.Jass
 {

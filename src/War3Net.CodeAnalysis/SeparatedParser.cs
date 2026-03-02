@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Pidgin;
-
-namespace War3Net.CodeAnalysis
+﻿namespace War3Net.CodeAnalysis
 {
     internal sealed class SeparatedParser<TToken, TItem, TSeparator> : Parser<TToken, SeparatedSyntaxList<TItem, TSeparator>>
     {

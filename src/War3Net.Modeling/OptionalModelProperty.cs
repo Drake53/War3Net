@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using War3Net.Common.Extensions;
-using War3Net.Modeling.DataStructures;
-
-namespace War3Net.Modeling
+﻿namespace War3Net.Modeling
 {
     internal sealed class OptionalModelProperty
     {

@@ -1,15 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using War3Net.Build.Audio;
-using War3Net.Build.Environment;
-using War3Net.Build.Import;
-using War3Net.Build.Info;
-using War3Net.Build.Object;
-using War3Net.Build.Script;
-using War3Net.Build.Widget;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class MpqArchiveExtensions
     {
