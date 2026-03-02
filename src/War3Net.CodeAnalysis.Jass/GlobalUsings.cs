@@ -1,0 +1,17 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Collections.Immutable;
+global using System.ComponentModel;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
+global using System.IO;
+global using System.Linq;
+global using System.Numerics;
+global using System.Runtime.CompilerServices;
+global using System.Text;
+global using Pidgin;
+global using Pidgin.Expression;
+global using War3Net.CodeAnalysis.Jass.Extensions;
+global using War3Net.CodeAnalysis.Jass.Parsers;
+global using War3Net.CodeAnalysis.Jass.Syntax;
+global using War3Net.Common.Extensions;

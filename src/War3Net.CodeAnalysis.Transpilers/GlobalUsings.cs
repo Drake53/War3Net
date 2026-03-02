@@ -1,0 +1,16 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.IO;
+global using System.Linq;
+global using System.Reflection;
+global using CSharpLua;
+global using CSharpLua.LuaAst;
+global using Microsoft.CodeAnalysis;
+global using Microsoft.CodeAnalysis.CSharp;
+global using Microsoft.CodeAnalysis.CSharp.Syntax;
+global using War3Net.CodeAnalysis.Jass;
+global using War3Net.CodeAnalysis.Jass.Extensions;
+global using War3Net.CodeAnalysis.Jass.Syntax;
+global using War3Net.CodeAnalysis.Transpilers.Extensions;
+global using War3Net.Common.Extensions;

@@ -1,0 +1,10 @@
+global using System;
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.Linq;
+global using System.Text;
+global using MessagePack;
+global using War3Net.Common.Extensions;
+global using War3Net.IO.Compression;
+global using War3Net.Replay.Action;
