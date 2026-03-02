@@ -141,9 +141,9 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.Rendering]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Rendering
 [War3Net.Replay]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Replay
 [War3Net.Runtime]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime
-[War3Net.Runtime.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Core
 [War3Net.Runtime.Api.Blizzard]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Blizzard
 [War3Net.Runtime.Api.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Common
+[War3Net.Runtime.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Core
 
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
 [PBuildCore]: https://www.nuget.org/packages/War3Net.Build.Core
@@ -161,9 +161,9 @@ Projects from NuGet packages and submodules may have a different license.
 [PRender]: https://www.nuget.org/packages/War3Net.Rendering
 [PReplay]: https://www.nuget.org/packages/War3Net.Replay
 [PRuntime]: https://www.nuget.org/packages/War3Net.Runtime
-[PRuntimeCore]: https://www.nuget.org/packages/War3Net.Runtime.Core
 [PBlizzardApi]: https://www.nuget.org/packages/War3Net.Runtime.Api.Blizzard
 [PCommonApi]: https://www.nuget.org/packages/War3Net.Runtime.Api.Common
+[PRuntimeCore]: https://www.nuget.org/packages/War3Net.Runtime.Core
 
 [VBuild]: https://img.shields.io/nuget/v/War3Net.Build.svg
 [VBuildCore]: https://img.shields.io/nuget/v/War3Net.Build.Core.svg
@@ -181,6 +181,6 @@ Projects from NuGet packages and submodules may have a different license.
 [VRender]: https://img.shields.io/nuget/v/War3Net.Rendering.svg
 [VReplay]: https://img.shields.io/nuget/v/War3Net.Replay.svg
 [VRuntime]: https://img.shields.io/nuget/v/War3Net.Runtime.svg
-[VRuntimeCore]: https://img.shields.io/nuget/v/War3Net.Runtime.Core.svg
 [VBlizzardApi]: https://img.shields.io/nuget/v/War3Net.Runtime.Api.Blizzard.svg
 [VCommonApi]: https://img.shields.io/nuget/v/War3Net.Runtime.Api.Common.svg
+[VRuntimeCore]: https://img.shields.io/nuget/v/War3Net.Runtime.Core.svg
