@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.IO.Mpq.Tests

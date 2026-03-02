@@ -2,9 +2,7 @@
 using System.IO;
 using System.Text;
 using Pfim;
-
 using Veldrid;
-
 using War3Net.Drawing.Blp;
 
 namespace War3Net.Rendering

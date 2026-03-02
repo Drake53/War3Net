@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Configuration;
 
 namespace War3Net.Build.Core.Tests.Configuration

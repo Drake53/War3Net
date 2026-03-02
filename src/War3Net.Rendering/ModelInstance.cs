@@ -6,7 +6,6 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Veldrid;
-
 using War3Net.Modeling.DataStructures;
 using War3Net.Modeling.Enums;
 using War3Net.Rendering.DataStructures;

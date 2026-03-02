@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build;
 
 namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment

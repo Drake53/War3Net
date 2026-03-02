@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-
 using War3Net.TestTools.UnitTesting;
 
 namespace War3Net.Drawing.Blp.Tests

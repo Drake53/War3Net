@@ -3,7 +3,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Serialization.Json;
 using War3Net.Common.Providers;

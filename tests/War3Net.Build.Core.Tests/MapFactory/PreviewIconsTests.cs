@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
 using War3Net.TestTools.UnitTesting;

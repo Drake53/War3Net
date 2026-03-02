@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Common;
 using War3Net.Build.Extensions;
 

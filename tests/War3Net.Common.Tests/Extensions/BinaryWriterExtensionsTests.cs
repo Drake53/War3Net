@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Common.Extensions;
 
 namespace War3Net.Common.Tests.Extensions

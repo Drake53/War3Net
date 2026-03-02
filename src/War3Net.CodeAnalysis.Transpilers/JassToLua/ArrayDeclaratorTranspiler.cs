@@ -1,5 +1,4 @@
 ﻿using CSharpLua.LuaAst;
-
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;

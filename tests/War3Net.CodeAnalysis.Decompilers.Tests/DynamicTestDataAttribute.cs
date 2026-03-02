@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build;
 using War3Net.Build.Info;
 using War3Net.Build.Script;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Script;
 using War3Net.TestTools.UnitTesting;
 

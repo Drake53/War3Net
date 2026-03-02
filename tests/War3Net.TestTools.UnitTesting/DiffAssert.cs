@@ -5,7 +5,6 @@ using System.Text;
 using DiffPlex;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace War3Net.TestTools.UnitTesting

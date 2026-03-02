@@ -2,9 +2,7 @@
 using System.IO;
 using System.Linq;
 using CSharpLua;
-
 using Microsoft.CodeAnalysis;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;
 using War3Net.IO.Mpq;

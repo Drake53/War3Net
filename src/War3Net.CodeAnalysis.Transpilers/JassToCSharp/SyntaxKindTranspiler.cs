@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
-
 using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.CodeAnalysis.Transpilers

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using CSharpLua;
-
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Transpilers;

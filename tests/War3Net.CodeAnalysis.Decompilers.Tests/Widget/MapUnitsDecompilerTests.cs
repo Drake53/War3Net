@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build;
 using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;

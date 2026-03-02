@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
 

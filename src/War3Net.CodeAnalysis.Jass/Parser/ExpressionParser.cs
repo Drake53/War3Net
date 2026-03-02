@@ -1,6 +1,5 @@
 ﻿using Pidgin;
 using Pidgin.Expression;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Parsers;
 using War3Net.CodeAnalysis.Jass.Syntax;

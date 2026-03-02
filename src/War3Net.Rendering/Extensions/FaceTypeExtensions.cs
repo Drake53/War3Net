@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using Veldrid;
-
 using War3Net.Modeling.Enums;
 
 namespace War3Net.Rendering.Extensions

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.IO.Mpq.Extensions;
 using War3Net.TestTools.UnitTesting;
 
