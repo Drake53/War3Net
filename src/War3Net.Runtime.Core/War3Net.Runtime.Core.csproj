@@ -17,15 +17,14 @@
     <PackageReference Include="Serilog.Sinks.File" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
     <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.Build.Core" />
-    <!-- TODO: packageref -->
-    <ProjectReference Include="..\War3Net.Rendering\War3Net.Rendering.csproj" />
+    <PackageReference Include="War3Net.Rendering" />
   </ItemGroup>
 
 </Project>

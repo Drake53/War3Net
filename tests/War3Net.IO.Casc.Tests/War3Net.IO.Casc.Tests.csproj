@@ -8,12 +8,12 @@
     <ProjectReference Include="..\..\src\War3Net.IO.Casc\War3Net.IO.Casc.csproj" />
   </ItemGroup>
 
-  <!--<ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <!--<ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\..\src\War3Net.IO.Casc\War3Net.IO.Casc.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.IO.Casc" Version="$(War3NetIOCascVersion)" />
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.IO.Casc" />
   </ItemGroup>-->
 
 </Project>

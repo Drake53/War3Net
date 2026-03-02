@@ -6,9 +6,12 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- TODO: PackageReference instead of ProjectReference -->
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.Runtime" />
   </ItemGroup>
 
 </Project>

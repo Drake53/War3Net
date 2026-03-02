@@ -4,12 +4,12 @@
     <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
     <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.Decompilers\War3Net.CodeAnalysis.Decompilers.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.Build" />
     <PackageReference Include="War3Net.CodeAnalysis.Decompilers" />
   </ItemGroup>

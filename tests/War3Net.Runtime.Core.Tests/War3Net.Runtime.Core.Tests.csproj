@@ -5,15 +5,14 @@
     <TargetFrameworks>net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\..\src\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
     <ProjectReference Include="..\..\submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: PackageReference instead of ProjectReference -->
-    <ProjectReference Include="..\..\src\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
+  <ItemGroup Condition="'$(PACK)'=='true'">
     <PackageReference Include="War3Net.CSharpLua.CoreSystem" />
+    <PackageReference Include="War3Net.Runtime.Core" />
   </ItemGroup>
 
 </Project>

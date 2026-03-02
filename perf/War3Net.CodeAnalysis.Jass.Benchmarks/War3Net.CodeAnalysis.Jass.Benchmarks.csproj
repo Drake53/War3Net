@@ -5,8 +5,12 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.CodeAnalysis.Jass" />
   </ItemGroup>
 
 </Project>

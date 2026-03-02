@@ -5,13 +5,12 @@
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- todo: packagereferences -->
-    <ProjectReference Include="..\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.Runtime.Core" />
   </ItemGroup>
 
 </Project>
