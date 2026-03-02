@@ -1,19 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="BlpEncoderRoundtripTest.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-
-using War3Net.TestTools.UnitTesting;
+﻿using Image = SixLabors.ImageSharp.Image;
 
 namespace War3Net.Drawing.Blp.Tests
 {

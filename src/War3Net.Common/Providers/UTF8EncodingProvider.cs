@@ -1,14 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="UTF8EncodingProvider.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Text;
-
-namespace War3Net.Common.Providers
+﻿namespace War3Net.Common.Providers
 {
     public static class UTF8EncodingProvider
     {

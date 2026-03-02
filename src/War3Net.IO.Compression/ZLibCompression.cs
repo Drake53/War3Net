@@ -1,18 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ZLibCompression.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-using Ionic.Zlib;
-
-using War3Net.Common.Extensions;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// Provides methods to compress and decompress using ZLib.
@@ -28,7 +14,7 @@ namespace War3Net.IO.Compression
         /// <returns>A <see cref="Stream"/> containing the compressed data.</returns>
         public static Stream Compress(Stream inputStream, int bytesToCompress, bool leaveOpen)
         {
-            return Compress(inputStream, bytesToCompress, CompressionLevel.BestCompression, leaveOpen);
+            return Compress(inputStream, bytesToCompress, CompressionLevel.Optimal, leaveOpen);
         }
 
         /// <summary>
@@ -45,7 +31,7 @@ namespace War3Net.IO.Compression
 
             var outputStream = new MemoryStream();
 
-            using (var deflater = new ZlibStream(outputStream, CompressionMode.Compress, compressionLevel, true))
+            using (var deflater = new ZLibStream(outputStream, compressionLevel, true))
             {
                 inputStream.CopyTo(deflater, bytesToCompress, StreamExtensions.DefaultBufferSize);
             }
@@ -86,7 +72,7 @@ namespace War3Net.IO.Compression
         /// <returns>Byte array containing the decompressed data.</returns>
         public static byte[] Decompress(Stream data, uint expectedLength, bool throwOnLessBytesThanExpected = true)
         {
-            using var inflater = new ZlibStream(data, CompressionMode.Decompress, true);
+            using var inflater = new ZLibStream(data, CompressionMode.Decompress, true);
 
             if (throwOnLessBytesThanExpected)
             {

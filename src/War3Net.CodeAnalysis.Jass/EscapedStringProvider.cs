@@ -1,14 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="EscapedStringProvider.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
-namespace War3Net.CodeAnalysis.Jass
+﻿namespace War3Net.CodeAnalysis.Jass
 {
     // Based on https://referencesource.microsoft.com/#System/regex/system/text/regularexpressions/RegexParser.cs,845bf727ea7a0421
     public static class EscapedStringProvider

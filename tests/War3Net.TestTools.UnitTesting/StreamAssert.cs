@@ -1,19 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="StreamAssert.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#define BUFFER_STREAM_DATA
-
-using System.IO;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-#if DEBUG
-using System.Collections.Generic;
-#endif
+﻿#define BUFFER_STREAM_DATA
 
 namespace War3Net.TestTools.UnitTesting
 {

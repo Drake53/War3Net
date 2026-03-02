@@ -1,18 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="DynamicTestDataAttribute.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace War3Net.Build.Core.Tests
+﻿namespace War3Net.Build.Core.Tests
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class DynamicTestDataAttribute : Attribute, ITestDataSource

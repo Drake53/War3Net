@@ -1,22 +1,5 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ParseTestHelper.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.Build.Extensions;
-using War3Net.Build.Serialization.Json;
-using War3Net.Common.Providers;
-using War3Net.IO.Mpq;
-using War3Net.TestTools.UnitTesting;
+﻿using BinaryReaderExtensions = War3Net.Build.Extensions.BinaryReaderExtensions;
+using BinaryWriterExtensions = War3Net.Build.Extensions.BinaryWriterExtensions;
 
 namespace War3Net.Build.Core.Tests
 {

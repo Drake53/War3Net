@@ -1,18 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="SyntaxNodeExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace War3Net.CodeAnalysis.Transpilers.Extensions
+﻿namespace War3Net.CodeAnalysis.Transpilers.Extensions
 {
     public static class SyntaxNodeExtensions
     {

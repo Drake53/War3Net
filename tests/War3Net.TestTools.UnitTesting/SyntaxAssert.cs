@@ -1,19 +1,3 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="SyntaxAssert.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.TestTools.UnitTesting
 {
     public static class SyntaxAssert

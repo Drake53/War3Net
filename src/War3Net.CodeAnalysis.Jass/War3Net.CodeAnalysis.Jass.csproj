@@ -5,8 +5,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Description>War3Net.CodeAnalysis.Jass is a library for parsing and rendering JASS source files.</Description>
-		<PackageTags>jass;warcraft3</PackageTags>
+		<Description>Parse and render JASS source files.</Description>
+		<PackageTags>jass;modding;parser;warcraft3;wc3</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(PACK)'!='true'">

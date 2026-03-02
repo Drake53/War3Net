@@ -1,13 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="Camera.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Numerics;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     public sealed partial class Camera
     {

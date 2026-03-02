@@ -1,19 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapEnvironment.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-using War3Net.Build.Common;
-using War3Net.Build.Providers;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Environment
+﻿namespace War3Net.Build.Environment
 {
     public sealed partial class MapEnvironment
     {

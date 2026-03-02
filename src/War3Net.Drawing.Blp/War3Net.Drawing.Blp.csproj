@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>War3Net.Drawing.Blp is a library for reading and writing files with the ".blp" extension.</Description>
-    <PackageTags>blp;warcraft3</PackageTags>
+    <Description>Read and write BLP texture files.</Description>
+    <PackageTags>blp;modding;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))">

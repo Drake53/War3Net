@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
-
-// https://github.com/mellinoe/veldrid-samples/blob/master/src/AnimatedMesh/Application/BoneAnimInfo.cs
+﻿// https://github.com/mellinoe/veldrid-samples/blob/master/src/AnimatedMesh/Application/BoneAnimInfo.cs
 namespace War3Net.Rendering
 {
     public unsafe struct NodeAnimInfo

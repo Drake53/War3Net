@@ -1,24 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqArchive.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-
-using War3Net.Common.Providers;
-using War3Net.IO.Mpq.Extensions;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// Represents a MoPaQ file, that is used to archive files.
@@ -231,13 +211,13 @@ namespace War3Net.IO.Mpq
                         throw new Exception();
                     }
 
-                    var crc32 = 0;
+                    var crc32 = 0U;
                     if (attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32) && allowMultiple)
                     {
                         if (mpqFile.MpqStream.CanSeek && mpqFile.MpqStream.CanRead)
                         {
                             mpqFile.MpqStream.Position = 0;
-                            crc32 = new Ionic.Crc.CRC32().GetCrc32(mpqFile.MpqStream);
+                            crc32 = Crc32Checksum.Compute(mpqFile.MpqStream);
                         }
                     }
 

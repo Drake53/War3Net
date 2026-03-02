@@ -1,14 +1,5 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapCustomTextTriggersSubVersion.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#pragma warning disable CA1008
+﻿#pragma warning disable CA1008
 #pragma warning disable SA1300
-
-using System.ComponentModel;
 
 namespace War3Net.Build.Script
 {

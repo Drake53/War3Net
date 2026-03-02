@@ -1,17 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="JpegBufferInputReader.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-using JpegLibrary;
-
-namespace War3Net.Drawing.Blp
+﻿namespace War3Net.Drawing.Blp
 {
     /// <summary>
     /// Input reader for JPEG encoding from a byte buffer.

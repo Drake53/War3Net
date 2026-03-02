@@ -1,13 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="BZip2Compression.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
-
-namespace War3Net.IO.Compression
+﻿namespace War3Net.IO.Compression
 {
     /// <summary>
     /// Provides methods to decompress BZip2 compressed data.
@@ -36,12 +27,7 @@ namespace War3Net.IO.Compression
         {
             using (var output = new MemoryStream((int)expectedLength))
             {
-#if true
-                using var bZip2InputStream = new Ionic.BZip2.BZip2InputStream(data, true);
-                bZip2InputStream.CopyTo(output);
-#else
-                ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(data, output, false);
-#endif
+                BZip2.Decompress(data, output, false);
                 return output.ToArray();
             }
         }

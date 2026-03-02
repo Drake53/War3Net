@@ -1,22 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="Campaign.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-
-using War3Net.Build.Extensions;
-using War3Net.Build.Import;
-using War3Net.Build.Info;
-using War3Net.Build.Object;
-using War3Net.Build.Script;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public sealed class Campaign
     {

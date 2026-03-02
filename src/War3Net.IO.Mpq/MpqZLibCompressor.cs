@@ -1,18 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqZLibCompressor.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-using Ionic.Zlib;
-
-using War3Net.IO.Compression;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public class MpqZLibCompressor : IMpqCompressor
     {
@@ -27,7 +13,7 @@ namespace War3Net.IO.Mpq
 
         private MpqZLibCompressor()
         {
-            _compressionLevel = CompressionLevel.BestCompression;
+            _compressionLevel = CompressionLevel.Optimal;
         }
 
         public static MpqZLibCompressor Default => _defaultInstance.Value;

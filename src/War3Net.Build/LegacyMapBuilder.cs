@@ -1,23 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="LegacyMapBuilder.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-using System.Linq;
-
-using CSharpLua;
-
-using Microsoft.CodeAnalysis;
-
-using War3Net.Build.Extensions;
-using War3Net.Build.Info;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     [Obsolete]
     public sealed class LegacyMapBuilder

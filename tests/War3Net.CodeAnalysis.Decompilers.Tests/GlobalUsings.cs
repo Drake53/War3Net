@@ -1,0 +1,14 @@
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.IO;
+global using System.Linq;
+global using System.Reflection;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using War3Net.Build;
+global using War3Net.Build.Audio;
+global using War3Net.Build.Extensions;
+global using War3Net.Build.Info;
+global using War3Net.Build.Script;
+global using War3Net.Common.Extensions;
+global using War3Net.TestTools.UnitTesting;

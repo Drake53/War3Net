@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Generate Wacraft III map script and MPQ archive, by reading from C#/vJass source code and war3map files.</Description>
-    <PackageTags>warcraft3</PackageTags>
+    <Description>Generate map scripts and MPQ archives from C#/vJass source code.</Description>
+    <PackageTags>jass;map;modding;mpq;vjass;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">

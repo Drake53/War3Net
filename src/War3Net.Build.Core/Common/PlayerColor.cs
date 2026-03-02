@@ -1,14 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="PlayerColor.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.ComponentModel;
-using System.Drawing;
-
-namespace War3Net.Build.Common
+﻿namespace War3Net.Build.Common
 {
     public static class PlayerColor
     {

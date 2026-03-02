@@ -1,23 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapScriptBuilderTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.Build.Info;
-using War3Net.CodeAnalysis;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.Build.Tests
+﻿namespace War3Net.Build.Tests
 {
     [TestClass]
     public partial class MapScriptBuilderTests

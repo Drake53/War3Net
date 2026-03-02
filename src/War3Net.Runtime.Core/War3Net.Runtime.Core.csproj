@@ -3,11 +3,12 @@
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
+    <RootNamespace>War3Net.Runtime</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Drake53</Authors>
-    <RootNamespace>War3Net.Runtime</RootNamespace>
+    <Description>C# implementation of Warcraft III's backend code.</Description>
+    <PackageTags>modding;runtime;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

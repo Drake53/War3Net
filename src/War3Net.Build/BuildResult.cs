@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="BuildResult.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-
-using Microsoft.CodeAnalysis;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public sealed class BuildResult
     {

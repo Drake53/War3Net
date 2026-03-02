@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="JassCompilationUnitBuilder.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Immutable;
-
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.CodeAnalysis.Jass.Builders
+﻿namespace War3Net.CodeAnalysis.Jass.Builders
 {
     public class JassCompilationUnitBuilder : JassSyntaxBuilder
     {

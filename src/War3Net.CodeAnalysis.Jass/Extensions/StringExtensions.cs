@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="StringExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Globalization;
-using System.IO;
-using System.Numerics;
-using System.Text;
-
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class StringExtensions
     {

@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapCamerasDecompilerTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Globalization;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.Build;
-
-namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
+﻿namespace War3Net.CodeAnalysis.Decompilers.Tests.Environment
 {
     [TestClass]
     public class MapCamerasDecompilerTests

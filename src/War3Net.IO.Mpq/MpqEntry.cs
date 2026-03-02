@@ -1,18 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqEntry.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-
-using War3Net.Common.Providers;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// An entry in a <see cref="BlockTable"/>, which corresponds to a single file in the <see cref="MpqArchive"/>.

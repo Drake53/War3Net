@@ -1,38 +1,23 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
-  "settings":
-  {
-    "orderingRules":
-    {
-      "blankLinesBetweenUsingGroups": "require",
+  "settings": {
+    "documentationRules": {
+      "documentInternalElements": false,
+      "fileNamingConvention": "metadata"
+    },
+    "indentation": {
+      "indentationSize": 4,
+      "tabSize": 4,
+      "useTabs": false
+    },
+    "layoutRules": {
+      "allowConsecutiveUsings": false,
+      "newlineAtEndOfFile": "omit"
+    },
+    "orderingRules": {
+      "blankLinesBetweenUsingGroups": "omit",
       "systemUsingDirectivesFirst": true,
       "usingDirectivesPlacement": "outsideNamespace"
-    },
-
-    "layoutRules":
-    {
-      "newlineAtEndOfFile": "omit",
-      "allowConsecutiveUsings": false
-    },
-
-    "documentationRules":
-    {
-      "xmlHeader": true,
-      "companyName": "Drake53",
-      "headerDecoration": "------------------------------------------------------------------------------",
-      "copyrightText": "Licensed under the {licenseName} license.\nSee the {licenseFile} file in the project root for more information.",
-      "variables":
-      {
-        "licenseName": "MIT",
-        "licenseFile": "LICENSE"
-      },
-      "documentInternalElements": false
-    },
-
-    "indentation":
-    {
-      "indentationSize": 4,
-      "useTabs": false
     }
   }
 }

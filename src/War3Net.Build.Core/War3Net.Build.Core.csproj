@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <Description>Parsers and serializers for war3map files.</Description>
-    <PackageTags>warcraft3</PackageTags>
+    <PackageTags>modding;parser;serializer;war3map;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">

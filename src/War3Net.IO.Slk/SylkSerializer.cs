@@ -1,15 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="SylkSerializer.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
-
-using War3Net.Common.Providers;
-
-namespace War3Net.IO.Slk
+﻿namespace War3Net.IO.Slk
 {
     public sealed class SylkSerializer
     {

@@ -1,19 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="PipelineFactory.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-
-using Veldrid;
-
-using War3Net.Modeling.Enums;
-using War3Net.Rendering.DataStructures;
-using War3Net.Rendering.Extensions;
-
-namespace War3Net.Rendering.Factories
+﻿namespace War3Net.Rendering.Factories
 {
     public static class PipelineFactory
     {

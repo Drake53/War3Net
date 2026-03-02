@@ -1,15 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="RSAExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Linq;
-using System.Security.Cryptography;
-
-namespace War3Net.IO.Mpq.Extensions
+﻿namespace War3Net.IO.Mpq.Extensions
 {
     internal static class RSAExtensions
     {

@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <Description>Regenerate war3map files from a Warcraft III map script.</Description>
-    <PackageTags>jass;warcraft3</PackageTags>
+    <PackageTags>decompiler;jass;modding;war3map;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">

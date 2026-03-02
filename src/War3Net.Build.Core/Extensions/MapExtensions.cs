@@ -1,24 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
-using System.Text;
-
-using War3Net.Build.Audio;
-using War3Net.Build.Environment;
-using War3Net.Build.Import;
-using War3Net.Build.Info;
-using War3Net.Build.Object;
-using War3Net.Build.Script;
-using War3Net.Build.Widget;
-using War3Net.Common.Providers;
-using War3Net.IO.Mpq;
-
-namespace War3Net.Build.Extensions
+﻿namespace War3Net.Build.Extensions
 {
     public static class MapExtensions
     {

@@ -1,14 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="JassSyntaxNodeOrToken.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace War3Net.CodeAnalysis.Jass.Syntax
+﻿namespace War3Net.CodeAnalysis.Jass.Syntax
 {
     // Based on https://github.com/mcintyre321/OneOf/blob/master/OneOf/OneOfT1.generated.cs
     public readonly struct JassSyntaxNodeOrToken

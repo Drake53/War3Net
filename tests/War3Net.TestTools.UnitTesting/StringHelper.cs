@@ -1,14 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="StringHelper.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace War3Net.TestTools.UnitTesting
+﻿namespace War3Net.TestTools.UnitTesting
 {
     internal static class StringHelper
     {

@@ -1,20 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="InitTechTreeForPlayer.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Linq;
-
-using War3Net.Build.Info;
-using War3Net.CodeAnalysis;
-using War3Net.CodeAnalysis.Jass;
-using War3Net.CodeAnalysis.Jass.Extensions;
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {

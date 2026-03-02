@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Library for opening and creating files in SLK format.</Description>
-    <PackageTags>slk;warcraft3</PackageTags>
+    <Description>Read and write SLK data files.</Description>
+    <PackageTags>modding;slk;sylk;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(PACK)'!='true'">

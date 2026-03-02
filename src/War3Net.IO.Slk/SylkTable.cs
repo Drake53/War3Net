@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="SylkTable.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace War3Net.IO.Slk
+﻿namespace War3Net.IO.Slk
 {
     public sealed class SylkTable : IEnumerable<object[]>
     {

@@ -10,6 +10,10 @@
 ---
 
 <p align="center">
+  <img src="assets/images/war3net-banner.png" alt="War3Net Banner">
+</p>
+
+<p align="center">
   •
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
@@ -37,7 +41,7 @@ War3Net aims to be the definitive .NET foundation for Warcraft III tooling—bui
 
 - **Completeness** — Every file format. Every game version. RoC through Reforged.
 - **Correctness** — Byte-for-byte accuracy with Blizzard's implementations. No guesswork.
-- **Compatibility** — .NET 5+ for broad OS support, including Windows 7/8.
+- **Compatibility** — .NET 6+ for broad OS support, including Windows 7/8.
 
 ### Built with War3Net
 
@@ -45,6 +49,7 @@ War3Net aims to be the definitive .NET foundation for Warcraft III tooling—bui
 
 | Project | Description |
 | ------- | ----------- |
+| [Maya WarTex](https://github.com/wiselencave/maya-wartex) | Autodesk Maya plug-in for BLP texture loading via [War3Net.Drawing.Blp](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp). |
 | [Project name](https://github.com/Drake53/War3Net) | This is a placeholder, serving as an example of how to insert the name, url, and description of your project |
 
 *Using War3Net in your project? Open a PR to add it here!*
@@ -78,9 +83,9 @@ Full list of current and planned packages:
 | [War3Net.Rendering]                | Render Warcraft III models using [Veldrid].                      | *Coming soon™*                |
 | [War3Net.Replay]                   | Parse replay (.w3g) files.                                       | *Coming soon™*                |
 | [War3Net.Runtime]                  | Execute JASS and Lua map scripts using [NLua].                   | *Coming soon™*                |
-| [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
 | [War3Net.Runtime.Api.Blizzard]     | Blizzard.j API implemented in C#.                                | *Coming soon™*                |
 | [War3Net.Runtime.Api.Common]       | API for [War3Net.Runtime.Core], similar to [War3Api.Common].     | *Coming soon™*                |
+| [War3Net.Runtime.Core]             | C# implementation of Warcraft III's backend code.                | *Coming soon™*                |
 
 Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)

@@ -1,15 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="JsonStringVersionConverter.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace War3Net.Build.Serialization.Json
+﻿namespace War3Net.Build.Serialization.Json
 {
     internal sealed class JsonStringVersionConverter : JsonConverterFactory
     {

@@ -1,23 +1,8 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqArchiveExtensions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-
-using Ionic.Crc;
-
-namespace War3Net.IO.Mpq.Extensions
+﻿namespace War3Net.IO.Mpq.Extensions
 {
     public static class MpqArchiveExtensions
     {
-        private static readonly int _signatureCrc32 = new CRC32().GetCrc32(new MemoryStream(new byte[72]));
+        private static readonly uint _signatureCrc32 = Crc32Checksum.Compute(new MemoryStream(new byte[72]));
         private static readonly string[] _defaultPublicKeys = GetKnownBlizzardPublicKeys().ToArray();
 
         /// <exception cref="ArgumentException">Thrown when the <see cref="MpqArchive"/> does not contain an <see cref="Attributes"/> file.</exception>
@@ -60,7 +45,7 @@ namespace War3Net.IO.Mpq.Extensions
                     else
                     {
                         using var mpqEntryStream = archive.OpenFile(mpqEntry);
-                        if (actualCrc32 != new CRC32().GetCrc32(mpqEntryStream))
+                        if (actualCrc32 != Crc32Checksum.Compute(mpqEntryStream))
                         {
                             return false;
                         }

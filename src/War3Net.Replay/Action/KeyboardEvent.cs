@@ -1,14 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="KeyboardEvent.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
-using System.Text;
-
-namespace War3Net.Replay.Action
+﻿namespace War3Net.Replay.Action
 {
     public sealed class KeyboardEventBlock : ActionBlock
     {

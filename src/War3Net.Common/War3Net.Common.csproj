@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Contains some methods used by several other War3Net projects.</Description>
-    <PackageTags>warcraft3</PackageTags>
+    <Description>Shared utilities for War3Net packages.</Description>
+    <PackageTags>modding;utilities;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,19 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="Environment.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.ComponentModel;
-using System.Linq;
-
-using War3Net.Build.Environment;
-using War3Net.Build.Info;
-using War3Net.Build.Providers;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public static partial class MapFactory
     {

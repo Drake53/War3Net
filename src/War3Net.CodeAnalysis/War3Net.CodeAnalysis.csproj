@@ -6,7 +6,7 @@
 
 	<PropertyGroup>
 		<Description>Shared classes for JASS/vJASS packages.</Description>
-		<PackageTags>parser;warcraft3</PackageTags>
+		<PackageTags>modding;parser;syntax;warcraft3;wc3</PackageTags>
 	</PropertyGroup>
 
 </Project>

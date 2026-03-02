@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="EnumConvert.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-
-using War3Net.Common.Extensions;
-
-namespace War3Net.Common
+﻿namespace War3Net.Common
 {
     public static class EnumConvert<TEnum>
         where TEnum : struct, Enum

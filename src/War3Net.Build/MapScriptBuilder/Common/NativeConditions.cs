@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="NativeConditions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-
-using War3Net.Build.Common;
-using War3Net.Build.Info;
-
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class MapScriptBuilder
     {

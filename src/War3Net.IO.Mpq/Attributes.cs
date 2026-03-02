@@ -1,17 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="Attributes.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-using War3Net.Common.Extensions;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     public sealed class Attributes
     {
@@ -32,7 +19,7 @@ namespace War3Net.IO.Mpq
 
         public AttributesFlags Flags { get; set; }
 
-        public List<int> Crc32s { get; init; } = new();
+        public List<uint> Crc32s { get; init; } = new();
 
         public List<DateTime> DateTimes { get; init; } = new();
 
@@ -82,7 +69,7 @@ namespace War3Net.IO.Mpq
                 {
                     for (nint i = 0; i < fileCount; i++)
                     {
-                        Crc32s.Add(reader.ReadInt32());
+                        Crc32s.Add(reader.ReadUInt32());
                     }
                 }
 

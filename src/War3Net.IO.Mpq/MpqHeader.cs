@@ -1,15 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqHeader.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-using System.Text;
-
-namespace War3Net.IO.Mpq
+﻿namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// The header of an <see cref="MpqArchive"/>.

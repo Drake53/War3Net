@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="VJassPreprocessorContext.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-
-using War3Net.CodeAnalysis.VJass.Syntax;
-
-namespace War3Net.CodeAnalysis.VJass
+﻿namespace War3Net.CodeAnalysis.VJass
 {
     public class VJassPreprocessorContext
     {

@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="GraphicsProvider.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-using Veldrid;
-
-namespace War3Net.Rendering
+﻿namespace War3Net.Rendering
 {
     public static class GraphicsProvider
     {

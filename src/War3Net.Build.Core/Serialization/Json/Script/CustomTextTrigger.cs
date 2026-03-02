@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="CustomTextTrigger.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Text;
-using System.Text.Json;
-
-using War3Net.Common.Extensions;
-
-namespace War3Net.Build.Script
+﻿namespace War3Net.Build.Script
 {
     public sealed partial class CustomTextTrigger
     {

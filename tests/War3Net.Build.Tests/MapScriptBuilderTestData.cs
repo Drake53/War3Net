@@ -1,18 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapScriptBuilderTestData.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Immutable;
-
-using War3Net.Build.Info;
-using War3Net.Build.Script;
-using War3Net.CodeAnalysis.Jass.Syntax;
-
-namespace War3Net.Build.Tests
+﻿namespace War3Net.Build.Tests
 {
     public class MapScriptBuilderTestData
     {

@@ -1,19 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="JassToCSharpTranspilerTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-using System.IO;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.CodeAnalysis.Jass;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.CodeAnalysis.Transpilers.Tests
+﻿namespace War3Net.CodeAnalysis.Transpilers.Tests
 {
     [TestClass]
     public class JassToCSharpTranspilerTests

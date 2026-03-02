@@ -1,16 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="PackedFileHeader.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-using War3Net.Common.Extensions;
-
-namespace War3Net.Replay
+﻿namespace War3Net.Replay
 {
     // Header for replays, saved games, and gamecache.
     public sealed class PackedFileHeader
@@ -120,7 +108,7 @@ namespace War3Net.Replay
             crcWriter.Write(0U);
 
             crcStream.Position = 0;
-            var crc = new Ionic.Crc.CRC32().GetCrc32(crcStream);
+            var crc = Crc32Checksum.Compute(crcStream);
             if (crc != header._checksum)
             {
                 throw new InvalidDataException("CRC failed");

@@ -5,6 +5,11 @@
     <TargetFrameworks>$(TfmGroupDotNetWindows)</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>API for War3Net.Runtime.Core, similar to War3Api.Common.</Description>
+    <PackageTags>api;common;modding;warcraft3;wc3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Runtime.Core\War3Net.Runtime.Core.csproj" />
   </ItemGroup>

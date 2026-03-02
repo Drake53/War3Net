@@ -1,19 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapTriggersDecompilerTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Linq;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using War3Net.Build;
-using War3Net.Build.Script;
-using War3Net.TestTools.UnitTesting;
-
-namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
+﻿namespace War3Net.CodeAnalysis.Decompilers.Tests.Script
 {
     [TestClass]
     public class MapTriggersDecompilerTests
