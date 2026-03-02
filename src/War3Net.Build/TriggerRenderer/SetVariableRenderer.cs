@@ -30,7 +30,7 @@ namespace War3Net.Build
             {
                 variableName = JassExpression.ElementAccess(
                     variableName,
-                    GetParameter(variableParameter.ArrayIndexer, "integer", 0, context.TrigFunctionIdentifierBuilder));
+                    GetParameter(variableParameter.ArrayIndexer, JassKeyword.Integer, 0, context.TrigFunctionIdentifierBuilder));
             }
 
             context.Writer.WriteSet(
