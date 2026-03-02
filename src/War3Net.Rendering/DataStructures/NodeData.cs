@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Numerics;
-
 using War3Net.Modeling.DataStructures;
 
 namespace War3Net.Rendering.DataStructures

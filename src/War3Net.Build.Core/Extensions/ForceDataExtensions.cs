@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Linq;
-
 using War3Net.Build.Common;
 using War3Net.Build.Info;
 

@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-
 using CSharpLua;
 
 namespace War3Net.Build.Extensions

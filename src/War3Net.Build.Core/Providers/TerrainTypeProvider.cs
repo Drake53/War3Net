@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using War3Net.Build.Common;
 using War3Net.Build.Environment;
 

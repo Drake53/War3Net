@@ -9,7 +9,6 @@
 
 using System.IO;
 using System.Text;
-
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
 using War3Net.Build.Configuration;

@@ -7,7 +7,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-
 using Pidgin;
 
 namespace War3Net.CodeAnalysis

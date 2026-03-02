@@ -7,7 +7,6 @@
 
 using System.IO;
 using System.Text;
-
 using War3Net.Build.Info;
 using War3Net.Build.Script;
 using War3Net.Common.Extensions;

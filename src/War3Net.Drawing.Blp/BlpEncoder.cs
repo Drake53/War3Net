@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using System.Text;
-
 using JpegLibrary;
 
 namespace War3Net.Drawing.Blp

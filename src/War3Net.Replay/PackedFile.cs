@@ -7,7 +7,6 @@
 
 using System.IO;
 using System.Text;
-
 using War3Net.Common.Extensions;
 using War3Net.IO.Compression;
 

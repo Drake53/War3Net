@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using War3Net.Build.Object;
 using War3Net.Build.Resources;
 using War3Net.Build.Widget;

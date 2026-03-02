@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq

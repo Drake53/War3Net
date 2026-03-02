@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass.Syntax;

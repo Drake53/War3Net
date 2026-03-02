@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.TestTools.UnitTesting;

@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using War3Net.Build.Info;
 using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;

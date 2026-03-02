@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using War3Net.Build.Extensions;
 using War3Net.IO.Mpq;
 

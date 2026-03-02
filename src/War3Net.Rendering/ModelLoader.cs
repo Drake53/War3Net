@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using War3Net.Modeling;
 using War3Net.Rendering.DataStructures;
 using War3Net.Rendering.Extensions;

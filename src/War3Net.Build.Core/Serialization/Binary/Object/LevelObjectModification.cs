@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-
 using War3Net.Build.Extensions;
 
 namespace War3Net.Build.Object

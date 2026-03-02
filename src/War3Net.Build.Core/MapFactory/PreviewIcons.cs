@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using War3Net.Build.Environment;
 using War3Net.Build.Info;
 using War3Net.Build.Providers;

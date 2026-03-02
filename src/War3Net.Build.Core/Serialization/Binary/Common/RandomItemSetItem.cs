@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-
 using War3Net.Build.Info;
 using War3Net.Build.Widget;
 

@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-
 using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq

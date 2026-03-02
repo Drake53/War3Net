@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-
 using War3Net.IO.Compression;
 
 namespace War3Net.IO.Mpq.Extensions

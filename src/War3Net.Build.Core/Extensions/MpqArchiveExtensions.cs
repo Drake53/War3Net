@@ -7,7 +7,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;

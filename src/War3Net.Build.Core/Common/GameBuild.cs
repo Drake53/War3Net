@@ -7,7 +7,6 @@
 
 using System;
 using System.Text.Json.Serialization;
-
 using War3Net.Build.Info;
 
 namespace War3Net.Build.Common

@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace War3Net.Build.Core.Tests

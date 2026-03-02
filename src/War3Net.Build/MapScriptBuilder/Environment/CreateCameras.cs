@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-
 using War3Net.Build.Environment;
 using War3Net.Build.Extensions;
 using War3Net.Build.Info;

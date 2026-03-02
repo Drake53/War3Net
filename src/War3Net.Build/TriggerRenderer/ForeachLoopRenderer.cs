@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Linq;
-
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Immutable;
-
 using War3Net.CodeAnalysis.Jass;
 
 namespace War3Net.Build.Script

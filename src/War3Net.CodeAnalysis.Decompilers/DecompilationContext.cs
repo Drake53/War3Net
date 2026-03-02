@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-
 using War3Net.Build;
 using War3Net.Build.Info;
 using War3Net.Build.Script;

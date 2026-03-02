@@ -11,7 +11,6 @@
 #pragma warning disable SA1401 // Fields should be private
 
 using System;
-
 using War3Net.Runtime.Enums.Event;
 
 namespace War3Net.Runtime.Api.Common.Enums.Event

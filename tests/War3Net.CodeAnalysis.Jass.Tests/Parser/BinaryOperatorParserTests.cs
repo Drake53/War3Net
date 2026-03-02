@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace War3Net.CodeAnalysis.Jass.Tests.Parser

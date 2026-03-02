@@ -7,7 +7,6 @@
 
 using System.ComponentModel;
 using System.IO;
-
 using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;
 

@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-
 using War3Net.Rendering.DataStructures;
 
 namespace War3Net.Rendering

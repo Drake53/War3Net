@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.TestTools.UnitTesting;

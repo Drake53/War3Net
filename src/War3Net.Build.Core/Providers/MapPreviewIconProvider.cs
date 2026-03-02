@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-
 using War3Net.Build.Common;
 using War3Net.Build.Environment;
 using War3Net.Common.Extensions;

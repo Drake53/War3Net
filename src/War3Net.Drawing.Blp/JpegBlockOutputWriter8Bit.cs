@@ -8,7 +8,6 @@
 #if !WINDOWS
 using System;
 using System.Runtime.CompilerServices;
-
 using JpegLibrary;
 
 namespace War3Net.Drawing.Blp

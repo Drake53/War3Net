@@ -15,7 +15,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using War3Net.IO.Mpq;
 
 namespace War3Net.TestTools.UnitTesting

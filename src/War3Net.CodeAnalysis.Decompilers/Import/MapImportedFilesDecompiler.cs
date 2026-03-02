@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
 using War3Net.Build.Audio;
 using War3Net.Build.Environment;
 using War3Net.Build.Import;

@@ -9,7 +9,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
-
 using War3Net.Build.Common;
 using War3Net.Build.Environment;
 using War3Net.Build.Info;

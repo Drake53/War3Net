@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-
 using War3Net.Build.Common;
 
 namespace War3Net.Build.Info

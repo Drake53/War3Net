@@ -7,7 +7,6 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass

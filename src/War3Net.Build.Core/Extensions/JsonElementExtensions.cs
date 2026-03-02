@@ -8,7 +8,6 @@
 using System;
 using System.Numerics;
 using System.Text.Json;
-
 using War3Net.Build.Audio;
 using War3Net.Build.Common;
 using War3Net.Build.Configuration;
@@ -19,7 +18,6 @@ using War3Net.Build.Object;
 using War3Net.Build.Script;
 using War3Net.Build.Widget;
 using War3Net.Common.Extensions;
-
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 

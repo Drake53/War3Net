@@ -7,7 +7,6 @@
 
 using System;
 using System.Globalization;
-
 using CSharpLua.LuaAst;
 
 using War3Net.CodeAnalysis.Jass;

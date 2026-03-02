@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Immutable;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 

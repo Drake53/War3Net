@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-
 using ICSharpCode.SharpZipLib.BZip2;
 
 namespace War3Net.IO.Compression

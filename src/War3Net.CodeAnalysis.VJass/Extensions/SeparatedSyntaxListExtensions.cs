@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.IO;
-
 using War3Net.CodeAnalysis.VJass.Syntax;
 
 namespace War3Net.CodeAnalysis.VJass.Extensions

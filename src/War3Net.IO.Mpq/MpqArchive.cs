@@ -14,7 +14,6 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
 using War3Net.Common.Providers;
 using War3Net.IO.Compression;
 using War3Net.IO.Mpq.Extensions;

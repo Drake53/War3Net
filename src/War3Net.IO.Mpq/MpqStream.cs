@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
-
 using War3Net.Common.Extensions;
 using War3Net.Common.Providers;
 using War3Net.IO.Compression;

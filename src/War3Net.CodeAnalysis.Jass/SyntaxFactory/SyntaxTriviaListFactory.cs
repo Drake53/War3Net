@@ -8,7 +8,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;

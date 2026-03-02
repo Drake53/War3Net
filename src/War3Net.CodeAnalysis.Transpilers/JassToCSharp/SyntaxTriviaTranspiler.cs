@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Linq;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 

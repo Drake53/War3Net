@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis;
 using War3Net.CodeAnalysis.Jass;

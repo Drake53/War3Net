@@ -8,9 +8,7 @@
 #define BUFFER_STREAM_DATA
 
 using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 #if DEBUG
 using System.Collections.Generic;
 #endif

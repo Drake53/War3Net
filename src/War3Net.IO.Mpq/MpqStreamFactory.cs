@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
-
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq

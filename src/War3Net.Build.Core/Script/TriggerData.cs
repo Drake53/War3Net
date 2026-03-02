@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using War3Net.Build.Resources;
 using War3Net.Common.Extensions;
 

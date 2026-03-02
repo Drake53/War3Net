@@ -6,7 +6,6 @@
 // ------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Providers;

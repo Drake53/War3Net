@@ -8,7 +8,6 @@
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
-
 using War3Net.CodeAnalysis.VJass.Syntax;
 
 namespace War3Net.CodeAnalysis.VJass.Extensions

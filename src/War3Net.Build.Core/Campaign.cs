@@ -8,7 +8,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Import;
 using War3Net.Build.Info;

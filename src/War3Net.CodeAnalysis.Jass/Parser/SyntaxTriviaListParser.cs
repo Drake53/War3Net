@@ -7,11 +7,9 @@
 
 using System.Collections.Immutable;
 using System.Linq;
-
 using Pidgin;
 
 using War3Net.CodeAnalysis.Jass.Syntax;
-
 using static Pidgin.Parser;
 using static Pidgin.Parser<char>;
 

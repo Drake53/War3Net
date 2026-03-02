@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using War3Net.Build.Common;

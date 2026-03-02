@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-
 using CSharpLua;
 using CSharpLua.LuaAst;
 

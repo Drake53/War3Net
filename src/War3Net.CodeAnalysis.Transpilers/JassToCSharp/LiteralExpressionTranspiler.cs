@@ -7,7 +7,6 @@
 
 using System;
 using System.Globalization;
-
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

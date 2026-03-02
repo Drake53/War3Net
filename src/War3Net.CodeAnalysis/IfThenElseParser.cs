@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-
 using Pidgin;
 
 namespace War3Net.CodeAnalysis

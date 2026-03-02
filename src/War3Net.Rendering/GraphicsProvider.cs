@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-
 using Veldrid;
 
 namespace War3Net.Rendering

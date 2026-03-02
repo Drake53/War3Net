@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using War3Net.CodeAnalysis.Jass.Syntax;
 
 namespace War3Net.CodeAnalysis.Jass

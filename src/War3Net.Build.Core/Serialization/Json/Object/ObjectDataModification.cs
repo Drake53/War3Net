@@ -8,7 +8,6 @@
 using System;
 using System.ComponentModel;
 using System.Text.Json;
-
 using War3Net.Common.Extensions;
 
 namespace War3Net.Build.Object

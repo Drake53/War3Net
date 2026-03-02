@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Import;
 

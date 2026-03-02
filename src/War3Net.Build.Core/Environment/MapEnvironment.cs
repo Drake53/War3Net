@@ -8,7 +8,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
 using War3Net.Build.Common;
 using War3Net.Build.Providers;
 using War3Net.Common.Extensions;

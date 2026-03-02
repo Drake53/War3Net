@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Serialization.Json;
 using War3Net.IO.Mpq;

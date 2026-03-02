@@ -7,7 +7,6 @@
 
 using System;
 using System.Linq;
-
 using War3Net.Build.Extensions;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis;
