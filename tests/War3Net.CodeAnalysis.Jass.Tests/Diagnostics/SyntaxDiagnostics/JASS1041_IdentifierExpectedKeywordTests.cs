@@ -73,6 +73,7 @@ function foo takes nothing returns
 globals
     integer x = 0x1FG2
 [|endglobals|]",
+                true,
             };
         }
     }
