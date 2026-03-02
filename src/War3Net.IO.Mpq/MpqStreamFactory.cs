@@ -1,15 +1,7 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqStreamFactory.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
-
 using War3Net.IO.Mpq.Extensions;
 
 namespace War3Net.IO.Mpq

@@ -1,4 +1,4 @@
-
+﻿
     public static @event                 udg_event = default;
     public static int                    udg_integer = default;
     public static bool                   udg_boolean = default;

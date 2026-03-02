@@ -1,16 +1,8 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ActionBlock.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
 using War3Net.Common.Extensions;
 using War3Net.Replay.Action;
 

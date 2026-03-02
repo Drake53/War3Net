@@ -1,14 +1,6 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MpqFile.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
-
 using War3Net.Common.Extensions;
 using War3Net.IO.Mpq.Extensions;
 

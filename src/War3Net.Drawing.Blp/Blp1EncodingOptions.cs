@@ -1,11 +1,4 @@
-// ------------------------------------------------------------------------------
-// <copyright file="Blp1EncodingOptions.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-namespace War3Net.Drawing.Blp
+﻿namespace War3Net.Drawing.Blp
 {
     /// <summary>
     /// Options for encoding a BLP1 file with JPEG compression.

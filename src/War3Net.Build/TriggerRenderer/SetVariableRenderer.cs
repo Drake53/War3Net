@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="SetVariableRenderer.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-
+﻿using System;
 using War3Net.Build.Script;
 using War3Net.CodeAnalysis.Jass;
 using War3Net.CodeAnalysis.Jass.Extensions;

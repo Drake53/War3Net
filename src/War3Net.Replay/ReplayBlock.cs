@@ -1,12 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ReplayBlock.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.IO;
-
+﻿using System.IO;
 using War3Net.Common.Extensions;
 
 namespace War3Net.Replay

@@ -1,14 +1,5 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="MapUnitsDecompilerTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Linq;
-
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.Build;
 using War3Net.Build.Extensions;
 using War3Net.Common.Extensions;

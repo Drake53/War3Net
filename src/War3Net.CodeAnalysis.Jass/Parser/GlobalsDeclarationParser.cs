@@ -1,14 +1,5 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="GlobalsDeclarationParser.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Immutable;
-
+﻿using System.Collections.Immutable;
 using Pidgin;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 

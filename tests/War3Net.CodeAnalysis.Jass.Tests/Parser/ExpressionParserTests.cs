@@ -1,18 +1,8 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="ExpressionParserTests.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.CodeAnalysis.Jass.Syntax;
 using War3Net.TestTools.UnitTesting;
-
 using static War3Net.CodeAnalysis.Jass.JassSyntaxFactory;
 
 namespace War3Net.CodeAnalysis.Jass.Tests.Parser

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="VJassGlobalVariableDeclarationSyntax.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace War3Net.CodeAnalysis.VJass.Syntax

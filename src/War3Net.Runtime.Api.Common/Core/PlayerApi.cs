@@ -1,14 +1,5 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="PlayerApi.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-
+﻿using System;
 using War3Net.Runtime.Enums;
-
 using Player_ = War3Net.Runtime.Core.Player;
 
 namespace War3Net.Runtime.Api.Common.Core

@@ -1,11 +1,4 @@
-﻿// ------------------------------------------------------------------------------
-// <copyright file="PKLibCompression.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-#pragma warning disable CA1810 // Initialize reference type static fields inline
+﻿#pragma warning disable CA1810 // Initialize reference type static fields inline
 
 using System;
 using System.IO;
