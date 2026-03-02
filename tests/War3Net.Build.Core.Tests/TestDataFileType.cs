@@ -1,4 +1,4 @@
-namespace War3Net.Build.Core.Tests
+﻿namespace War3Net.Build.Core.Tests
 {
     public enum TestDataFileType
     {

@@ -1,4 +1,4 @@
-namespace War3Net.Build.Info
+﻿namespace War3Net.Build.Info
 {
     public enum CampaignBackgroundVersion
     {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using War3Net.Build.Script;
 
 namespace War3Net.Build

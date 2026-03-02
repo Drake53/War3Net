@@ -1,4 +1,4 @@
-namespace War3Net.Build
+﻿namespace War3Net.Build
 {
     public partial class TriggerRenderer
     {

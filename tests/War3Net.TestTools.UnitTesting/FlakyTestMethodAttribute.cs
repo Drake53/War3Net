@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 #if ENABLE_FLAKY_TESTS
 using Microsoft.VisualStudio.TestTools.UnitTesting;

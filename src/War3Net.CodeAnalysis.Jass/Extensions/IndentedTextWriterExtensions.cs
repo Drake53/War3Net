@@ -1,4 +1,4 @@
-namespace War3Net.CodeAnalysis.Jass.Extensions
+﻿namespace War3Net.CodeAnalysis.Jass.Extensions
 {
     public static class IndentedTextWriterExtensions
     {

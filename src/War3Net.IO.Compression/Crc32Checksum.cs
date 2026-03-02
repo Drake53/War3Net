@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.IO.Hashing;
 
 namespace War3Net.IO.Compression

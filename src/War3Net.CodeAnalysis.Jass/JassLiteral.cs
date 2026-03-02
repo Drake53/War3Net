@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using War3Net.CodeAnalysis.Jass.Extensions;
 using War3Net.Common.Extensions;

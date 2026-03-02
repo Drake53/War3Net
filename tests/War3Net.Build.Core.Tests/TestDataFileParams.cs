@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using War3Net.Build.Audio;
 using War3Net.Build.Configuration;
 using War3Net.Build.Environment;

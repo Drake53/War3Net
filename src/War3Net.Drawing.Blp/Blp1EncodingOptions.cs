@@ -1,4 +1,4 @@
-namespace War3Net.Drawing.Blp
+﻿namespace War3Net.Drawing.Blp
 {
     /// <summary>
     /// Options for encoding a BLP1 file with JPEG compression.
