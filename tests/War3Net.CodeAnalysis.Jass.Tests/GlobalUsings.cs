@@ -1,5 +1,14 @@
-﻿global using System.Collections.Generic;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Collections.Immutable;
+global using System.Diagnostics;
+global using System.IO;
+global using System.Linq;
+global using System.Text;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using War3Net.CodeAnalysis.Diagnostics;
+global using War3Net.CodeAnalysis.Jass.Diagnostics;
 global using War3Net.CodeAnalysis.Jass.Extensions;
 global using War3Net.CodeAnalysis.Jass.Syntax;
+global using War3Net.CodeAnalysis.Text;
 global using War3Net.TestTools.UnitTesting;

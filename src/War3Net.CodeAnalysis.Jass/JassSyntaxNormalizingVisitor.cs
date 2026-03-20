@@ -1,15 +1,3 @@
-// ------------------------------------------------------------------------------
-// <copyright file="JassSyntaxNormalizingVisitor.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-using System.Collections.Immutable;
-
-using War3Net.CodeAnalysis.Jass.Syntax;
-
 namespace War3Net.CodeAnalysis.Jass
 {
     /// <summary>
@@ -926,7 +914,7 @@ namespace War3Net.CodeAnalysis.Jass
         {
             const int maxCachedDepth = 4;
             var cache = new JassSyntaxTrivia[maxCachedDepth];
-            var sb = new System.Text.StringBuilder(indentationString);
+            var sb = new StringBuilder(indentationString);
             for (var i = 0; i < maxCachedDepth; i++)
             {
                 cache[i] = JassSyntaxFactory.WhitespaceTrivia(sb.ToString());

@@ -1,7 +1,11 @@
 ﻿global using System;
+global using System.Collections;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
-global using System.Diagnostics.CodeAnalysis;
+global using System.Globalization;
 global using System.IO;
+global using System.Linq;
 global using System.Text;
-global using Pidgin;
+global using War3Net.CodeAnalysis.Diagnostics;
+global using War3Net.CodeAnalysis.Symbols;
+global using War3Net.CodeAnalysis.Text;

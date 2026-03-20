@@ -1,18 +1,3 @@
-// ------------------------------------------------------------------------------
-// <copyright file="JassLexer.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Immutable;
-
-using War3Net.CodeAnalysis.Diagnostics;
-using War3Net.CodeAnalysis.Jass.Diagnostics;
-using War3Net.CodeAnalysis.Jass.Syntax;
-using War3Net.CodeAnalysis.Text;
-
 namespace War3Net.CodeAnalysis.Jass.Parsing
 {
     internal sealed class JassLexer

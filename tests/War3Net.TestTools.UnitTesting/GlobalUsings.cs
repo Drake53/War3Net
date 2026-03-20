@@ -1,5 +1,6 @@
 ﻿global using System;
 global using System.Collections.Generic;
+global using System.Diagnostics;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using System.IO;
@@ -13,7 +14,6 @@ global using DiffPlex;
 global using DiffPlex.DiffBuilder;
 global using DiffPlex.DiffBuilder.Model;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using Pidgin;
 global using War3Net.Build.Script;
 global using War3Net.CodeAnalysis.Jass;
 global using War3Net.CodeAnalysis.Jass.Extensions;

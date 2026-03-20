@@ -1,15 +1,3 @@
-// ------------------------------------------------------------------------------
-// <copyright file="ParseResult.cs" company="Drake53">
-// Licensed under the MIT license.
-// See the LICENSE file in the project root for more information.
-// </copyright>
-// ------------------------------------------------------------------------------
-
-using System.Collections.Immutable;
-using System.Linq;
-
-using War3Net.CodeAnalysis.Diagnostics;
-
 namespace War3Net.CodeAnalysis
 {
     /// <summary>
