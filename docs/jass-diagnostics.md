@@ -48,19 +48,29 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS0023 | Unary operator used with incompatible type | `Operator '{0}' cannot be applied to operand of type '{1}'` | CS0023 `Operator '{0}' cannot be applied to operand of type '{1}'` |
 | JASS0029 | Expression type doesn't match expected type | `Cannot implicitly convert type '{0}' to '{1}'` | CS0029 `Cannot implicitly convert type '{0}' to '{1}'` |
 | JASS0100 | Function has multiple parameters with same name | `Parameter '{0}' is already defined` | CS0100 `The parameter name '{0}' is a duplicate` |
+| JASS0101 | Symbol with same name already declared | `'{0}' is already declared` | CS0101 `The namespace '{1}' already contains a definition for '{0}'` |
 | JASS0103 | Reference to a name that is not declared | `The name '{0}' does not exist in the current context` | CS0103 `The name '{0}' does not exist in the current context` |
+| JASS0118 | Symbol used as wrong kind | `'{0}' is a {1} but is used like a {2}` | CS0118 `'{0}' is a {1} but is used like a {2}` |
 | JASS0127 | Return with value in function returning nothing | `Cannot return a value from function returning 'nothing'` | CS0127 `Since '{0}' returns void, a return keyword must not be followed by an object expression` |
 | JASS0128 | Local variable with same name already declared | `Local variable '{0}' is already declared in this function` | CS0128 `A local variable or function named '{0}' is already defined in this scope` |
 | JASS0131 | Attempting to assign to a constant variable | `Cannot assign to constant '{0}'` | CS0131 `The left-hand side of an assignment must be a variable, property or indexer` |
 | JASS0133 | Constant initialized with non-constant expression | `Constant initializer must be a constant expression` | CS0133 `The expression being assigned to '{0}' must be constant` |
 | JASS0139 | `exitwhen` statement used outside of a loop | `'exitwhen' must be inside a 'loop' statement` | CS0139 `No enclosing loop out of which to break or continue` |
+| JASS0146 | Circular type extension | `Circular base type dependency involving '{0}' and '{1}'` | CS0146 `Circular base type dependency involving '{0}' and '{1}'` |
 | JASS0161 | Non-void function path doesn't return a value | `Not all code paths return a value in function '{0}'` | CS0161 `'{0}': not all code paths return a value` |
 | JASS0163 | Code after a root-level return statement is unreachable | `Unreachable code detected` | — |
 | JASS0246 | Reference to type that is not declared | `Undefined type '{0}'` | CS0246 `The type or namespace name '{0}' could not be found` |
+| JASS0509 | Type extends a primitive type that cannot be extended | `'{0}' cannot extend primitive type '{1}'` | CS0509 `'{0}': cannot derive from sealed type '{1}'` |
+| JASS0645 | Identifier does not conform to JASS naming rules | `'{0}' is not a valid identifier` | — |
 | JASS0841 | Symbol referenced before it is declared | `'{0}' must be declared before it is used` | CS0841 `Cannot use local variable '{0}' before it is declared` |
 | JASS1501 | Function called with incorrect number of arguments | `Function '{0}' expects {1} argument(s), but {2} were provided` | CS1501 `No overload for method '{0}' takes {1} arguments` |
 | JASS1503 | Function argument type doesn't match parameter type | `Argument {0}: cannot convert from '{1}' to '{2}'` | CS1503 `Argument {0}: cannot convert from '{1}' to '{2}'` |
+| JASS1547 | Keyword `nothing` cannot be used in this context | `Keyword 'nothing' cannot be used in this context` | CS1547 `Keyword 'void' cannot be used in this context` |
 | JASS1958 | `code` type used in array declaration | `Type 'code' cannot be used for arrays` | — |
+| JASS2901 | Constant function cannot modify global variable | `Constant function cannot modify global variable '{0}'` | PUR001 `Method mutates a field` |
+| JASS2902 | Constant function calls non-constant function | `Constant function cannot call non-constant function '{0}'` | PUR002 `Method calls a non-pure method` |
+| JASS8185 | Local variable declaration must appear at the start of the function body | `Local variable declaration must appear at the start of the function body` | CS8185 `A declaration is not allowed in this context.` |
+| JASS8803 | Top-level declaration order violation | `A {0} may not follow a {1}` | CS8803 `Top-level statements must precede namespace and type declarations.` |
 
 ## Warning Diagnostics
 

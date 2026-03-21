@@ -75,6 +75,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0100.md");
 
         /// <summary>
+        /// <c>JASS0101</c>: A symbol with the same name has already been declared.
+        /// </summary>
+        public static readonly DiagnosticDescriptor DuplicateDeclaration = DiagnosticDescriptor.Create(
+            id: "JASS0101",
+            title: "Duplicate declaration",
+            messageFormat: "'{0}' is already declared",
+            category: SemanticCategory,
+            description: "A symbol with the same name has already been declared.",
+            helpLinkUri: HelpLinkBase + "JASS0101.md");
+
+        /// <summary>
         /// <c>JASS0103</c>: A name was referenced that has not been declared.
         /// </summary>
         public static readonly DiagnosticDescriptor UndefinedName = DiagnosticDescriptor.Create(
@@ -84,6 +95,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SemanticCategory,
             description: "A name was referenced that has not been declared.",
             helpLinkUri: HelpLinkBase + "JASS0103.md");
+
+        /// <summary>
+        /// <c>JASS0118</c>: A symbol is used as a different kind than what it was declared as.
+        /// </summary>
+        public static readonly DiagnosticDescriptor WrongSymbolKind = DiagnosticDescriptor.Create(
+            id: "JASS0118",
+            title: "Wrong symbol kind",
+            messageFormat: "'{0}' is a {1} but is used like a {2}",
+            category: SemanticCategory,
+            description: "A symbol is used as a different kind than what it was declared as.",
+            helpLinkUri: HelpLinkBase + "JASS0118.md");
 
         /// <summary>
         /// <c>JASS0127</c>: A return statement with a value was found in a function that returns nothing.
@@ -141,6 +163,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0139.md");
 
         /// <summary>
+        /// <c>JASS0146</c>: A circular type extension chain was detected.
+        /// </summary>
+        public static readonly DiagnosticDescriptor CircularTypeExtension = DiagnosticDescriptor.Create(
+            id: "JASS0146",
+            title: "Circular type extension",
+            messageFormat: "Circular base type dependency involving '{0}' and '{1}'",
+            category: SemanticCategory,
+            description: "A circular type extension chain was detected.",
+            helpLinkUri: HelpLinkBase + "JASS0146.md");
+
+        /// <summary>
         /// <c>JASS0161</c>: A function that returns a value must have a return statement on all code paths.
         /// </summary>
         public static readonly DiagnosticDescriptor MissingReturn = DiagnosticDescriptor.Create(
@@ -173,6 +206,28 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SemanticCategory,
             description: "A type was referenced that has not been declared.",
             helpLinkUri: HelpLinkBase + "JASS0246.md");
+
+        /// <summary>
+        /// <c>JASS0509</c>: A type declaration attempted to extend a primitive type that cannot be extended.
+        /// </summary>
+        public static readonly DiagnosticDescriptor CannotExtendPrimitiveType = DiagnosticDescriptor.Create(
+            id: "JASS0509",
+            title: "Cannot extend primitive type",
+            messageFormat: "'{0}' cannot extend primitive type '{1}'",
+            category: SemanticCategory,
+            description: "A type declaration attempted to extend a primitive type that cannot be extended.",
+            helpLinkUri: HelpLinkBase + "JASS0509.md");
+
+        /// <summary>
+        /// <c>JASS0645</c>: An identifier does not conform to JASS naming rules.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidIdentifier = DiagnosticDescriptor.Create(
+            id: "JASS0645",
+            title: "Invalid identifier",
+            messageFormat: "'{0}' is not a valid identifier",
+            category: SemanticCategory,
+            description: "An identifier does not conform to JASS naming rules.",
+            helpLinkUri: HelpLinkBase + "JASS0645.md");
 
         /// <summary>
         /// <c>JASS0841</c>: A symbol was referenced before it was declared.
@@ -208,6 +263,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1503.md");
 
         /// <summary>
+        /// <c>JASS1547</c>: Keyword <c>nothing</c> cannot be used in this context.
+        /// </summary>
+        public static readonly DiagnosticDescriptor NothingNotAllowed = DiagnosticDescriptor.Create(
+            id: "JASS1547",
+            title: "Keyword 'nothing' cannot be used in this context",
+            messageFormat: "Keyword 'nothing' cannot be used in this context",
+            category: SemanticCategory,
+            description: "Keyword 'nothing' cannot be used in this context.",
+            helpLinkUri: HelpLinkBase + "JASS1547.md");
+
+        /// <summary>
         /// <c>JASS1958</c>: The code type cannot be used as the element type of an array.
         /// </summary>
         public static readonly DiagnosticDescriptor CodeTypeNotAllowed = DiagnosticDescriptor.Create(
@@ -217,5 +283,49 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SemanticCategory,
             description: "The code type cannot be used as the element type of an array.",
             helpLinkUri: HelpLinkBase + "JASS1958.md");
+
+        /// <summary>
+        /// <c>JASS2901</c>: A constant function cannot modify global variables.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ConstantFunctionModifiesGlobal = DiagnosticDescriptor.Create(
+            id: "JASS2901",
+            title: "Constant function cannot modify global variable",
+            messageFormat: "Constant function cannot modify global variable '{0}'",
+            category: SemanticCategory,
+            description: "A constant function cannot modify global variables.",
+            helpLinkUri: HelpLinkBase + "JASS2901.md");
+
+        /// <summary>
+        /// <c>JASS2902</c>: A constant function can only call other constant functions.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ConstantFunctionCallsNonConstant = DiagnosticDescriptor.Create(
+            id: "JASS2902",
+            title: "Constant function calls non-constant function",
+            messageFormat: "Constant function cannot call non-constant function '{0}'",
+            category: SemanticCategory,
+            description: "A constant function can only call other constant functions.",
+            helpLinkUri: HelpLinkBase + "JASS2902.md");
+
+        /// <summary>
+        /// <c>JASS8185</c>: A local variable declaration must appear at the start of the function body.
+        /// </summary>
+        public static readonly DiagnosticDescriptor LocalDeclarationMustAppearFirst = DiagnosticDescriptor.Create(
+            id: "JASS8185",
+            title: "Local declaration must appear first",
+            messageFormat: "Local variable declaration must appear at the start of the function body",
+            category: SemanticCategory,
+            description: "JASS requires all local variable declarations to appear at the beginning of a function body, before any other statement type.",
+            helpLinkUri: HelpLinkBase + "JASS8185.md");
+
+        /// <summary>
+        /// <c>JASS8803</c>: A top-level declaration appears after a declaration kind that must come later.
+        /// </summary>
+        public static readonly DiagnosticDescriptor DeclarationOrderViolation = DiagnosticDescriptor.Create(
+            id: "JASS8803",
+            title: "Declaration order violation",
+            messageFormat: "A {0} may not follow a {1}",
+            category: SemanticCategory,
+            description: "Top-level declarations must follow the order: type, globals, native, function.",
+            helpLinkUri: HelpLinkBase + "JASS8803.md");
     }
 }
