@@ -4,10 +4,14 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetConstantInitializerNotConstantTests), DynamicDataSourceType.Method)]
-        public void TestConstantInitializerNotConstantDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestConstantInitializerNotConstantDiagnostic(
+            string referenceCode,
+            string markedCode,
+            bool hasCascadingErrors = false)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassSemanticDiagnostics.ConstantInitializerNotConstant.Id,
+                referenceCode,
                 markedCode,
                 hasCascadingErrors);
         }
@@ -19,8 +23,8 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
                 @"
 function GetValue takes nothing returns integer
     return 42
-endfunction
-
+endfunction",
+                @"
 globals
     constant integer VALUE = [|GetValue()|]
 endglobals",
@@ -28,6 +32,7 @@ endglobals",
 
             yield return new object[]
             {
+                string.Empty,
                 @"
 globals
     integer baseValue = 10
@@ -38,8 +43,8 @@ endglobals",
             yield return new object[]
             {
                 @"
-native GetRandomInt takes integer lowBound, integer highBound returns integer
-
+native GetRandomInt takes integer lowBound, integer highBound returns integer",
+                @"
 globals
     constant integer VALUE = [|GetRandomInt(0, 100)|]
 endglobals",

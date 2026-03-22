@@ -67,10 +67,10 @@ endfunction",
             yield return new object[]
             {
                 @"
+native TakeInt takes integer i returns nothing
+
 function DoNothing takes nothing returns nothing
 endfunction
-
-native TakeInt takes integer i returns nothing
 
 function main takes nothing returns nothing
     call TakeInt([|DoNothing()|])

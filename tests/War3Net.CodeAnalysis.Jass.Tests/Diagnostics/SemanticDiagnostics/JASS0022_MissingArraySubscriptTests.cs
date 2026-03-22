@@ -41,11 +41,11 @@ endfunction",
             yield return new object[]
             {
                 @"
-native TakeInt takes integer i returns nothing
-
 globals
     integer array myArray
 endglobals
+
+native TakeInt takes integer i returns nothing
 
 function main takes nothing returns nothing
     call TakeInt([|myArray|])
