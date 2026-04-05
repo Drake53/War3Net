@@ -13,6 +13,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Visible="false" />
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory).config/analyzers/IDE.globalconfig" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="README.md" />

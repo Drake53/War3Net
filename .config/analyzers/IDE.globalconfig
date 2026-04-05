@@ -1,0 +1,367 @@
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options
+
+is_global = true
+
+# Configure rule severity
+dotnet_diagnostic.IDE0001.severity = error
+dotnet_diagnostic.IDE0002.severity = error
+dotnet_diagnostic.IDE0003.severity = error
+dotnet_diagnostic.IDE0004.severity = error
+dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0007.severity = error
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0009.severity = none
+dotnet_diagnostic.IDE0010.severity = suggestion
+dotnet_diagnostic.IDE0011.severity = error
+dotnet_diagnostic.IDE0016.severity = error
+dotnet_diagnostic.IDE0017.severity = warning
+dotnet_diagnostic.IDE0018.severity = error
+dotnet_diagnostic.IDE0019.severity = error
+dotnet_diagnostic.IDE0020.severity = error
+dotnet_diagnostic.IDE0021.severity = error
+dotnet_diagnostic.IDE0022.severity = none
+dotnet_diagnostic.IDE0023.severity = warning
+dotnet_diagnostic.IDE0024.severity = warning
+dotnet_diagnostic.IDE0025.severity = error
+dotnet_diagnostic.IDE0026.severity = error
+dotnet_diagnostic.IDE0027.severity = error
+dotnet_diagnostic.IDE0028.severity = warning
+dotnet_diagnostic.IDE0029.severity = error
+dotnet_diagnostic.IDE0030.severity = error
+dotnet_diagnostic.IDE0031.severity = error
+dotnet_diagnostic.IDE0032.severity = warning
+dotnet_diagnostic.IDE0033.severity = error
+dotnet_diagnostic.IDE0034.severity = error
+dotnet_diagnostic.IDE0035.severity = error
+dotnet_diagnostic.IDE0036.severity = error
+dotnet_diagnostic.IDE0037.severity = none
+dotnet_diagnostic.IDE0038.severity = error
+dotnet_diagnostic.IDE0039.severity = error
+dotnet_diagnostic.IDE0040.severity = error
+dotnet_diagnostic.IDE0041.severity = error
+dotnet_diagnostic.IDE0042.severity = none
+dotnet_diagnostic.IDE0044.severity = error
+dotnet_diagnostic.IDE0045.severity = silent
+dotnet_diagnostic.IDE0046.severity = silent
+dotnet_diagnostic.IDE0047.severity = error
+dotnet_diagnostic.IDE0048.severity = error
+dotnet_diagnostic.IDE0049.severity = error
+dotnet_diagnostic.IDE0050.severity = none
+dotnet_diagnostic.IDE0051.severity = error
+dotnet_diagnostic.IDE0052.severity = error
+dotnet_diagnostic.IDE0053.severity = warning
+dotnet_diagnostic.IDE0054.severity = error
+dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0056.severity = error
+dotnet_diagnostic.IDE0057.severity = error
+dotnet_diagnostic.IDE0058.severity = error
+dotnet_diagnostic.IDE0059.severity = error
+dotnet_diagnostic.IDE0060.severity = error
+dotnet_diagnostic.IDE0061.severity = error
+dotnet_diagnostic.IDE0062.severity = error
+dotnet_diagnostic.IDE0063.severity = warning
+dotnet_diagnostic.IDE0064.severity = error
+dotnet_diagnostic.IDE0065.severity = error
+dotnet_diagnostic.IDE0066.severity = warning
+dotnet_diagnostic.IDE0070.severity = error
+dotnet_diagnostic.IDE0071.severity = error
+dotnet_diagnostic.IDE0072.severity = suggestion
+dotnet_diagnostic.IDE0073.severity = none
+dotnet_diagnostic.IDE0074.severity = error
+dotnet_diagnostic.IDE0075.severity = error
+dotnet_diagnostic.IDE0076.severity = error
+dotnet_diagnostic.IDE0077.severity = error
+dotnet_diagnostic.IDE0078.severity = none
+dotnet_diagnostic.IDE0079.severity = error
+dotnet_diagnostic.IDE0080.severity = error
+dotnet_diagnostic.IDE0082.severity = error
+dotnet_diagnostic.IDE0083.severity = error
+dotnet_diagnostic.IDE0090.severity = error
+dotnet_diagnostic.IDE0100.severity = error
+dotnet_diagnostic.IDE0110.severity = error
+dotnet_diagnostic.IDE0130.severity = error
+dotnet_diagnostic.IDE0150.severity = error
+dotnet_diagnostic.IDE0160.severity = error
+dotnet_diagnostic.IDE0161.severity = none
+dotnet_diagnostic.IDE0170.severity = error
+dotnet_diagnostic.IDE0180.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+dotnet_diagnostic.IDE1005.severity = error
+dotnet_diagnostic.IDE1006.severity = none
+
+# IDE0003 and IDE0009
+dotnet_style_qualification_for_field = false
+dotnet_style_qualification_for_property = false
+dotnet_style_qualification_for_method = false
+dotnet_style_qualification_for_event = false
+
+# IDE0007 and IDE0008
+csharp_style_var_for_built_in_types = true
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_elsewhere = true
+
+# IDE0011
+csharp_prefer_braces = true
+
+# IDE0016
+csharp_style_throw_expression = true
+
+# IDE0017
+dotnet_style_object_initializer = false
+
+# IDE0018
+csharp_style_inlined_variable_declaration = true
+
+# IDE0019
+csharp_style_pattern_matching_over_as_with_null_check = true
+
+# IDE0020 and IDE0038
+csharp_style_pattern_matching_over_is_with_cast_check = true
+
+# IDE0021
+csharp_style_expression_bodied_constructors = false
+
+# IDE0022
+csharp_style_expression_bodied_methods = false
+
+# IDE0023 and IDE0024
+csharp_style_expression_bodied_operators = false
+
+# IDE0025
+csharp_style_expression_bodied_properties = when_on_single_line
+
+# IDE0026
+csharp_style_expression_bodied_indexers = when_on_single_line
+
+# IDE0027
+csharp_style_expression_bodied_accessors = when_on_single_line
+
+# IDE0028
+dotnet_style_collection_initializer = false
+
+# IDE0029 and IDE0030
+dotnet_style_coalesce_expression = true
+
+# IDE0031
+dotnet_style_null_propagation = true
+
+# IDE0032
+dotnet_style_prefer_auto_properties = false
+
+# IDE0033
+dotnet_style_explicit_tuple_names = true
+
+# IDE0034
+csharp_prefer_simple_default_expression = true
+
+# IDE0036
+csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
+
+# IDE0037
+dotnet_style_prefer_inferred_tuple_names = true
+dotnet_style_prefer_inferred_anonymous_type_member_names = true
+
+# IDE0039
+csharp_style_prefer_local_over_anonymous_function = true
+
+# IDE0040
+dotnet_style_require_accessibility_modifiers = always
+
+# IDE0041
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true
+
+# IDE0042
+csharp_style_deconstructed_variable_declaration = true
+
+# IDE0044
+dotnet_style_readonly_field = true
+
+# IDE0045
+dotnet_style_prefer_conditional_expression_over_assignment = true
+
+# IDE0046
+dotnet_style_prefer_conditional_expression_over_return = true
+
+# IDE0047 and IDE0048
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_other_operators = always_for_clarity
+
+# IDE0049
+dotnet_style_predefined_type_for_locals_parameters_members = true
+dotnet_style_predefined_type_for_member_access = true
+
+# IDE0053
+csharp_style_expression_bodied_lambdas = false
+
+# IDE0054 and IDE0074
+dotnet_style_prefer_compound_assignment = true
+
+# IDE0055
+# Indentation options
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = one_less_than_current
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents_when_block = true
+# New-line options
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+# Spacing options
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = ignore
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+csharp_space_after_dot = false
+csharp_space_before_dot = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_around_declaration_statements = ignore
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_square_brackets = false
+# Using directive options
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+# Wrap options
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = true
+
+# IDE0056
+csharp_style_prefer_index_operator = true
+
+# IDE0057
+csharp_style_prefer_range_operator = true
+
+# IDE0058
+csharp_style_unused_value_expression_statement_preference = discard_variable
+
+# IDE0059
+csharp_style_unused_value_assignment_preference = discard_variable
+
+# IDE0060
+dotnet_code_quality_unused_parameters = all
+
+# IDE0061
+csharp_style_expression_bodied_local_functions = false
+
+# IDE0062
+csharp_prefer_static_local_function = true
+
+# IDE0063
+csharp_prefer_simple_using_statement = false
+
+# IDE0065
+csharp_using_directive_placement = outside_namespace
+
+# IDE0066
+csharp_style_prefer_switch_expression = true
+
+# IDE0071
+dotnet_style_prefer_simplified_interpolation = false
+
+# IDE0073
+file_header_template = unset
+
+# IDE0075
+dotnet_style_prefer_simplified_boolean_expressions = true
+
+# IDE0078
+csharp_style_prefer_pattern_matching = false
+
+# IDE0079
+dotnet_remove_unnecessary_suppression_exclusions = none
+
+# IDE0083
+csharp_style_prefer_not_pattern = true
+
+# IDE0090
+csharp_style_implicit_object_creation_when_type_is_apparent = true
+
+# IDE0130
+dotnet_style_namespace_match_folder = true
+
+# IDE0150
+csharp_style_prefer_null_check_over_type_check = true
+
+# IDE0160 and IDE0161
+csharp_style_namespace_declarations = block_scoped
+
+# IDE0170
+csharp_style_prefer_extended_property_pattern = true
+
+# IDE0180
+csharp_style_prefer_tuple_swap = false
+
+# IDE0290
+csharp_style_prefer_primary_constructors = false
+
+# IDE1005
+csharp_style_conditional_delegate_call = true
+
+# Naming rules
+
+dotnet_naming_rule.interface_should_be_begins_with_i.severity = warning
+dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
+dotnet_naming_rule.interface_should_be_begins_with_i.style = begins_with_i
+
+dotnet_naming_rule.types_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = warning
+dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
+dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
+
+dotnet_naming_rule.class_should_be_pascal_case.severity = warning
+dotnet_naming_rule.class_should_be_pascal_case.symbols = class
+dotnet_naming_rule.class_should_be_pascal_case.style = pascal_case
+
+# Symbol specifications
+
+dotnet_naming_symbols.class.applicable_kinds = class
+dotnet_naming_symbols.class.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.class.required_modifiers = 
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.interface.required_modifiers = 
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
+dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.types.required_modifiers = 
+
+dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
+dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.non_field_members.required_modifiers = 
+
+# Naming styles
+
+dotnet_naming_style.pascal_case.required_prefix = 
+dotnet_naming_style.pascal_case.required_suffix = 
+dotnet_naming_style.pascal_case.word_separator = 
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_style.begins_with_i.required_prefix = I
+dotnet_naming_style.begins_with_i.required_suffix = 
+dotnet_naming_style.begins_with_i.word_separator = 
+dotnet_naming_style.begins_with_i.capitalization = pascal_case
