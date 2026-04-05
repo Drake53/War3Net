@@ -13,7 +13,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Visible="false" />
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory).config/analyzers/CA.globalconfig" />
     <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory).config/analyzers/IDE.globalconfig" />
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory).config/analyzers/SA.globalconfig" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="README.md" />
@@ -25,7 +27,6 @@
     <AnalysisLevel>5</AnalysisLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)War3Net.ruleset</CodeAnalysisRuleSet>
     <DefaultItemExcludes>$(DefaultItemExcludes);README.md</DefaultItemExcludes>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
