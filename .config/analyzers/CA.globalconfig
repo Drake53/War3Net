@@ -66,3 +66,6 @@ dotnet_diagnostic.CA2238.severity = warning
 dotnet_diagnostic.CA2240.severity = warning
 dotnet_diagnostic.CA2241.severity = warning
 dotnet_diagnostic.CA2242.severity = warning
+
+# Configure rule options
+dotnet_code_quality.CA1062.exclude_extension_method_this_parameter = true

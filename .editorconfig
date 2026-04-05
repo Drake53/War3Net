@@ -3,8 +3,6 @@
 # C# files
 [*.cs]
 
-#### Core EditorConfig Options ####
-
 # Indentation and spacing
 indent_size = 4
 indent_style = space
@@ -14,6 +12,3 @@ trim_trailing_whitespace = true
 # New line preferences
 end_of_line = crlf
 insert_final_newline = false
-
-# Parameter preferences
-dotnet_code_quality.CA1062.exclude_extension_method_this_parameter = true
