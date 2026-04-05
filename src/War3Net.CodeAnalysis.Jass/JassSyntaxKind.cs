@@ -223,6 +223,7 @@
         /// <summary>Represents the end of a file.</summary>
         EndOfFileToken = 8496,
 
+        BadToken = 8507,
         IdentifierToken = 8508,
 
         RealLiteralToken = 8509,

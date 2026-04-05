@@ -193,7 +193,7 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                         "!");
 
                     _position++;
-                    return (JassSyntaxKind.None, "!");
+                    return (JassSyntaxKind.BadToken, "!");
 
                 case JassSymbol.LessThanChar:
                     if (_position + 1 < _source.Length && _source[_position + 1] == JassSymbol.EqualsChar)
@@ -222,7 +222,7 @@ namespace War3Net.CodeAnalysis.Jass.Parsing
                         ch.ToString());
 
                     _position++;
-                    return (JassSyntaxKind.None, ch.ToString());
+                    return (JassSyntaxKind.BadToken, ch.ToString());
             }
         }
 
