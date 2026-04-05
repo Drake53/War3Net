@@ -1,0 +1,12 @@
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
+
+is_global = true
+
+# Configure rule severity
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1639.severity = none
+dotnet_diagnostic.SX1101.severity = warning
+dotnet_diagnostic.SX1309.severity = warning
+dotnet_diagnostic.SX1309S.severity = warning
