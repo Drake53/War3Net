@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <TargetFrameworks>net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net$(NETCoreAppMaximumVersion);net$(NETCoreAppMaximumVersion)-windows</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net$(NETCoreAppMaximumVersion)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
