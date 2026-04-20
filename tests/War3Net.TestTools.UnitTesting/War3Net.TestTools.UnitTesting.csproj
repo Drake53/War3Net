@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
