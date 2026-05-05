@@ -22,7 +22,7 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
 | JASS1001 | An identifier was expected but not found | `Identifier expected` | CS1001 `Identifier expected` |
-| JASS1003 | A specific symbol or keyword was expected but not found | `Syntax error, '{0}' expected` | CS1003 `Syntax error, '{0}' expected` |
+| JASS1003 | A specific symbol or keyword was expected but not found | `Syntax error, {0} expected` | CS1003 `Syntax error, '{0}' expected` |
 | JASS1009 | Unrecognized escape sequence in string/single-quoted literal | `Invalid escape sequence '{0}'` | CS1009 `Unrecognized escape sequence` |
 | JASS1010 | Single-quoted literal is missing closing quote | `Unterminated single-quoted literal` | CS1010 `Newline in constant` |
 | JASS1012 | Single-quoted literal has an invalid number of characters | `Single-quoted literal '{0}' must contain exactly 1 or 4 characters` | CS1012 `Too many characters in character literal` |
