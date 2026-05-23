@@ -2,6 +2,7 @@
 {
     public static class SyntaxAssert
     {
+        [StackTraceHidden]
         public static void AreEqual(JassCompilationUnitSyntax? expected, JassCompilationUnitSyntax? actual)
         {
             if (!expected.NullableEquivalentTo(actual))
@@ -10,14 +11,16 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(JassSyntaxNode? expected, JassSyntaxNode? actual)
         {
-           if (!expected.NullableEquivalentTo(actual))
-           {
-               Assert.Fail("Syntax nodes are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
-           }
+            if (!expected.NullableEquivalentTo(actual))
+            {
+                Assert.Fail("Syntax nodes are not equal:\r\n" + GetAssertFailedMessage(expected, actual));
+            }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(JassExpressionSyntax? expected, JassExpressionSyntax? actual)
         {
             if (!expected.NullableEquivalentTo(actual))
@@ -26,6 +29,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
             if (!expected.NullableEquivalentTo(actual))
@@ -34,6 +38,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(JassStatementSyntax? expected, JassStatementSyntax? actual)
         {
             if (!expected.NullableEquivalentTo(actual))
@@ -42,6 +47,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreNotEqual(JassCompilationUnitSyntax? expected, JassCompilationUnitSyntax? actual)
         {
             if (expected.NullableEquivalentTo(actual))
@@ -50,14 +56,16 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreNotEqual(JassSyntaxNode? expected, JassSyntaxNode? actual)
         {
-           if (expected.NullableEquivalentTo(actual))
-           {
-               Assert.Fail($"Syntax nodes are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
-           }
+            if (expected.NullableEquivalentTo(actual))
+            {
+                Assert.Fail($"Syntax nodes are equal:\r\n'{expected?.ToString()}'<{expected?.GetType().Name ?? "null"}>.");
+            }
         }
 
+        [StackTraceHidden]
         public static void AreNotEqual(JassTopLevelDeclarationSyntax? expected, JassTopLevelDeclarationSyntax? actual)
         {
             if (expected.NullableEquivalentTo(actual))
@@ -66,6 +74,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreNotEqual(JassExpressionSyntax? expected, JassExpressionSyntax? actual)
         {
             if (expected.NullableEquivalentTo(actual))
@@ -74,6 +83,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreNotEqual(JassStatementSyntax? expected, JassStatementSyntax? actual)
         {
             if (expected.NullableEquivalentTo(actual))

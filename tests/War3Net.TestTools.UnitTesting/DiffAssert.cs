@@ -13,6 +13,7 @@
         /// </summary>
         /// <param name="expected">The expected string.</param>
         /// <param name="actual">The actual string.</param>
+        [StackTraceHidden]
         public static void AreEqual(string expected, string actual)
         {
             if (string.Equals(expected, actual, StringComparison.Ordinal))
@@ -30,6 +31,7 @@
         /// <param name="expected">The expected string.</param>
         /// <param name="actual">The actual string.</param>
         /// <param name="message">Additional message to include in the assertion failure.</param>
+        [StackTraceHidden]
         public static void AreEqual(string expected, string actual, string message)
         {
             if (string.Equals(expected, actual, StringComparison.Ordinal))
@@ -47,6 +49,7 @@
         /// </summary>
         /// <param name="expected">The expected string.</param>
         /// <param name="actual">The actual string.</param>
+        [StackTraceHidden]
         public static void AreEqualIgnoreLineEndings(string expected, string actual)
         {
             var normalizedExpected = NormalizeLineEndings(expected);
@@ -68,6 +71,7 @@
         /// <param name="expected">The expected string.</param>
         /// <param name="actual">The actual string.</param>
         /// <param name="message">Additional message to include in the assertion failure.</param>
+        [StackTraceHidden]
         public static void AreEqualIgnoreLineEndings(string expected, string actual, string message)
         {
             var normalizedExpected = NormalizeLineEndings(expected);

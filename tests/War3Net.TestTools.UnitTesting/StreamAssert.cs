@@ -4,6 +4,7 @@ namespace War3Net.TestTools.UnitTesting
 {
     public static class StreamAssert
     {
+        [StackTraceHidden]
         public static void AreEqual(Stream expected, Stream actual, string message)
         {
             var expectedSize = expected.Length;
@@ -12,6 +13,7 @@ namespace War3Net.TestTools.UnitTesting
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize, message);
         }
 
+        [StackTraceHidden]
         public static void AreEqual(Stream expected, Stream actual, bool resetPositions = false, bool allowPadding = false)
         {
             var expectedSize = expected.Length;
@@ -43,6 +45,7 @@ namespace War3Net.TestTools.UnitTesting
             AreEqual(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
+        [StackTraceHidden]
         public static void AreEqualText(Stream expected, Stream actual, bool resetPositions = false)
         {
             var expectedSize = expected.Length;
@@ -63,16 +66,19 @@ namespace War3Net.TestTools.UnitTesting
             AreEqualText(expected, actual, expectedSize > actualSize ? expectedSize : actualSize);
         }
 
+        [StackTraceHidden]
         public static void AreEqual(Stream expected, Stream actual, long lengthToCheck)
         {
             Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, false, out var message), message);
         }
 
+        [StackTraceHidden]
         public static void AreEqual(Stream expected, Stream actual, long lengthToCheck, string message)
         {
             Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, false, out var errorMessage), message + errorMessage);
         }
 
+        [StackTraceHidden]
         public static void AreEqualText(Stream expected, Stream actual, long lengthToCheck)
         {
             Assert.IsTrue(AreStreamsEqual(expected, actual, lengthToCheck, true, out var message), message);

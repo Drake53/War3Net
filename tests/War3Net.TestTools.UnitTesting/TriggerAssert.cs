@@ -2,6 +2,7 @@
 {
     public static class TriggerAssert
     {
+        [StackTraceHidden]
         public static void AreEqual(TriggerDefinition expectedTriggerDefinition, TriggerDefinition actualTriggerDefinition)
         {
             Assert.AreEqual(expectedTriggerDefinition.IsComment, actualTriggerDefinition.IsComment);
@@ -26,6 +27,7 @@
             AreEqual(expectedActions, actualActions);
         }
 
+        [StackTraceHidden]
         public static void AreEqual(TriggerFunctionParameter expectedFunctionParameter, TriggerFunctionParameter actualFunctionParameter)
         {
             Assert.AreEqual(expectedFunctionParameter.Type, actualFunctionParameter.Type);
@@ -48,6 +50,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(TriggerFunction expectedFunction, TriggerFunction actualFunction)
         {
             Assert.AreEqual(expectedFunction.Type, actualFunction.Type);
@@ -103,6 +106,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(List<TriggerFunctionParameter> expected, List<TriggerFunctionParameter> actual)
         {
             Assert.AreEqual(expected.Count, actual.Count);
@@ -112,6 +116,7 @@
             }
         }
 
+        [StackTraceHidden]
         public static void AreEqual(List<TriggerFunction> expected, List<TriggerFunction> actual)
         {
             var expectedFunctions = expected.Where(triggerFunction => triggerFunction.IsEnabled).OrderBy(triggerFunction => triggerFunction.Branch).ToList();
