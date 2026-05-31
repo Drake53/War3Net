@@ -53,6 +53,20 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0023.md");
 
         /// <summary>
+        /// <c>JASS0028</c>: An entry point function has the wrong signature.
+        /// </summary>
+        /// <remarks>
+        /// Only reported for <c>war3map.j</c>.
+        /// </remarks>
+        public static readonly DiagnosticDescriptor EntryPointWrongSignature = DiagnosticDescriptor.Create(
+            id: "JASS0028",
+            title: "Entry point has wrong signature",
+            messageFormat: "Entry point function '{0}' must take nothing and return nothing",
+            category: SemanticCategory,
+            description: "The map script entry point functions 'main' and 'config' must take nothing and return nothing.",
+            helpLinkUri: HelpLinkBase + "JASS0028.md");
+
+        /// <summary>
         /// <c>JASS0029</c>: The expression type does not match the expected type.
         /// </summary>
         public static readonly DiagnosticDescriptor TypeMismatch = DiagnosticDescriptor.Create(
@@ -274,6 +288,20 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1547.md");
 
         /// <summary>
+        /// <c>JASS1558</c>: A symbol named like an entry point exists but is not suitable.
+        /// </summary>
+        /// <remarks>
+        /// Only reported for <c>war3map.j</c>.
+        /// </remarks>
+        public static readonly DiagnosticDescriptor UnsuitableEntryPoint = DiagnosticDescriptor.Create(
+            id: "JASS1558",
+            title: "Unsuitable entry point function",
+            messageFormat: "'{0}' is not a suitable entry point function",
+            category: SemanticCategory,
+            description: "The map script entry point functions 'main' and 'config' must be ordinary (non-native, non-constant) functions.",
+            helpLinkUri: HelpLinkBase + "JASS1558.md");
+
+        /// <summary>
         /// <c>JASS1958</c>: The code type cannot be used as the element type of an array.
         /// </summary>
         public static readonly DiagnosticDescriptor CodeTypeNotAllowed = DiagnosticDescriptor.Create(
@@ -305,6 +333,20 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SemanticCategory,
             description: "A constant function can only call other constant functions.",
             helpLinkUri: HelpLinkBase + "JASS2902.md");
+
+        /// <summary>
+        /// <c>JASS5001</c>: The map script is missing a required entry point function.
+        /// </summary>
+        /// <remarks>
+        /// Only reported for <c>war3map.j</c>.
+        /// </remarks>
+        public static readonly DiagnosticDescriptor MissingEntryPoint = DiagnosticDescriptor.Create(
+            id: "JASS5001",
+            title: "Missing entry point function",
+            messageFormat: "Map script is missing entry point function '{0}'",
+            category: SemanticCategory,
+            description: "A Warcraft III map script must contain both 'main' and 'config' entry point functions.",
+            helpLinkUri: HelpLinkBase + "JASS5001.md");
 
         /// <summary>
         /// <c>JASS8185</c>: A local variable declaration must appear at the start of the function body.

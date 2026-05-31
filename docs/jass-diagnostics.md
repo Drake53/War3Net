@@ -46,6 +46,7 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS0021 | Attempted to index a non-array variable | `'{0}' is not an array` | CS0021 `Cannot apply indexing with [] to an expression of type '{0}'` |
 | JASS0022 | Expected array index | `Array '{0}' must be accessed with subscript` | — |
 | JASS0023 | Unary operator used with incompatible type | `Operator '{0}' cannot be applied to operand of type '{1}'` | CS0023 `Operator '{0}' cannot be applied to operand of type '{1}'` |
+| JASS0028 | Entry point function `main`/`config` declared with wrong signature | `Entry point function '{0}' must take nothing and return nothing` | CS0028 `'{0}' has the wrong signature to be an entry point` |
 | JASS0029 | Expression type doesn't match expected type | `Cannot implicitly convert type '{0}' to '{1}'` | CS0029 `Cannot implicitly convert type '{0}' to '{1}'` |
 | JASS0100 | Function has multiple parameters with same name | `Parameter '{0}' is already defined` | CS0100 `The parameter name '{0}' is a duplicate` |
 | JASS0101 | Symbol with same name already declared | `'{0}' is already declared` | CS0101 `The namespace '{1}' already contains a definition for '{0}'` |
@@ -66,9 +67,11 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS1501 | Function called with incorrect number of arguments | `Function '{0}' expects {1} argument(s), but {2} were provided` | CS1501 `No overload for method '{0}' takes {1} arguments` |
 | JASS1503 | Function argument type doesn't match parameter type | `Argument {0}: cannot convert from '{1}' to '{2}'` | CS1503 `Argument {0}: cannot convert from '{1}' to '{2}'` |
 | JASS1547 | Keyword `nothing` cannot be used in this context | `Keyword 'nothing' cannot be used in this context` | CS1547 `Keyword 'void' cannot be used in this context` |
+| JASS1558 | A symbol named `main`/`config` exists but is unsuitable as an entry point | `'{0}' is not a suitable entry point function` | CS1558 `'{0}' does not have a suitable static 'Main' method` |
 | JASS1958 | `code` type used in array declaration | `Type 'code' cannot be used for arrays` | — |
 | JASS2901 | Constant function cannot modify global variable | `Constant function cannot modify global variable '{0}'` | PUR001 `Method mutates a field` |
 | JASS2902 | Constant function calls non-constant function | `Constant function cannot call non-constant function '{0}'` | PUR002 `Method calls a non-pure method` |
+| JASS5001 | Map script is missing a required entry point function | `Map script is missing entry point function '{0}'` | CS5001 `Program does not contain a static 'Main' method suitable for an entry point` |
 | JASS8185 | Local variable declaration must appear at the start of the function body | `Local variable declaration must appear at the start of the function body` | CS8185 `A declaration is not allowed in this context.` |
 | JASS8803 | Top-level declaration order violation | `A {0} may not follow a {1}` | CS8803 `Top-level statements must precede namespace and type declarations.` |
 
