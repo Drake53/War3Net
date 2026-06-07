@@ -53,6 +53,53 @@ function foo takes nothing returns nothing
     [|endloop|]
 endfunction",
             };
+
+            yield return new object[]
+            {
+                "[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+endfunction
+[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+globals
+    integer x = 5
+endglobals
+[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+[|endglobals|]
+function foo takes nothing returns nothing
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+globals
+    integer x = 5
+endglobals
+[|endglobals|]",
+            };
+
+            yield return new object?[]
+            {
+                @"
+function foo takes nothing returns nothing
+    [|endglobals|]
+endfunction",
+            };
         }
     }
 }

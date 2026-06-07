@@ -124,6 +124,27 @@ function foo takes nothing returns nothing
     endloop
 [|endfunction|]",
             };
+
+            yield return new object?[]
+            {
+                @"
+function foo takes nothing returns nothing
+    call Bar()
+[|globals|]
+    integer x = 5
+endglobals",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    [|globals|]
+        integer x = 5
+    endglobals
+endfunction",
+                true,
+            };
         }
     }
 }

@@ -64,6 +64,18 @@ globals
     [|UnknownType|] array myArray
 endglobals",
             };
+
+            yield return new object[]
+            {
+                @"
+type mytype extends [|unknowntype|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+type mytype extends [|handl|]",
+            };
         }
     }
 }

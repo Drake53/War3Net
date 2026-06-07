@@ -163,6 +163,13 @@ function foo takes nothing
             {
                 "type myunit [|handle|]",
             };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing [|x|] [|returns|] nothing
+endfunction",
+            };
         }
     }
 }

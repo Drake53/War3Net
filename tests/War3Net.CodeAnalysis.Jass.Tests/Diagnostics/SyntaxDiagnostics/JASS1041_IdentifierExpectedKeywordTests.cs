@@ -62,6 +62,13 @@ globals
 [|endglobals|]",
                 true,
             };
+
+            yield return new object[]
+            {
+                @"
+type [|integer|] extends handle",
+                true,
+            };
         }
     }
 }

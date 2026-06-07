@@ -64,6 +64,50 @@ function foo takes nothing returns nothing
 endfunction",
                 true,
             };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    if true then
+        call A()
+    else
+        call B()
+    [|else|]
+        call C()
+    endif
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    if true then
+        call A()
+    else
+        call B()
+    [|elseif|] false then
+        call C()
+    endif
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    if true then
+        call A()
+    else
+        call B()
+    [|elseif|] false then
+        call C()
+    elseif true then
+        call D()
+    endif
+endfunction",
+            };
         }
     }
 }
