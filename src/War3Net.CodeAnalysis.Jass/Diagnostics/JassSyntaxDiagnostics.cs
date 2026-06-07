@@ -36,7 +36,7 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
         public static readonly DiagnosticDescriptor SyntaxError = DiagnosticDescriptor.Create(
             id: "JASS1003",
             title: "Syntax error",
-            messageFormat: "Syntax error, '{0}' expected",
+            messageFormat: "Syntax error, {0} expected",
             category: SyntaxCategory,
             description: "A specific symbol or keyword was expected but not found.",
             helpLinkUri: HelpLinkBase + "JASS1003.md");
