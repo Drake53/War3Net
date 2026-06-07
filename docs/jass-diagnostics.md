@@ -21,12 +21,14 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
+| JASS0201 | Statement expected but not found | `Statement expected` | — |
 | JASS1001 | An identifier was expected but not found | `Identifier expected` | CS1001 `Identifier expected` |
 | JASS1003 | A specific symbol or keyword was expected but not found | `Syntax error, {0} expected` | CS1003 `Syntax error, '{0}' expected` |
 | JASS1009 | Unrecognized escape sequence in string/single-quoted literal | `Invalid escape sequence '{0}'` | CS1009 `Unrecognized escape sequence` |
 | JASS1010 | Single-quoted literal is missing closing quote | `Unterminated single-quoted literal` | CS1010 `Newline in constant` |
 | JASS1012 | Single-quoted literal has an invalid number of characters | `Single-quoted literal '{0}' must contain exactly 1 or 4 characters` | CS1012 `Too many characters in character literal` |
 | JASS1013 | A numeric literal is malformed or contains invalid digits | `Invalid number '{0}'` | CS1013 `Invalid number` |
+| JASS1022 | Declaration expected but not found | `Declaration expected` | — |
 | JASS1025 | Single-line comment or end-of-line expected after a construct | `Single-line comment or end-of-line expected` | CS1025 `Single-line comment or end-of-line expected` |
 | JASS1039 | String literal is missing closing quote | `Unterminated string literal` | CS1039 `Unterminated string literal` |
 | JASS1040 | Construct must appear as the first token on a line | `'{0}' must appear as the first token on a line` | CS1040 `Preprocessor directives must appear as the first non-whitespace character on a line` |
@@ -35,7 +37,9 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS1073 | Unexpected token encountered | `Unexpected token '{0}'` | CS1073 `Unexpected token '{0}'` |
 | JASS1513 | A block is missing its closing keyword | `'{0}' expected` | CS1513 `} expected` |
 | JASS1514 | If/elseif clause is missing `then` keyword | `Missing 'then' after condition` | CS1514 `{ expected` |
+| JASS1519 | Statement appears outside any function | `Statement not allowed at this location` | CS1519 `Invalid token '{0}' in class, record, struct, or interface member declaration` |
 | JASS1525 | Invalid expression term | `Invalid expression term '{0}'` | CS1525 `Invalid expression term '{0}'` |
+| JASS1733 | Expression expected at end of input | `Expression expected` | CS1733 `Expected expression` |
 | JASS8641 | Else or elseif clause without matching if | `'{0}' without matching 'if'` | CS8641 `'else' cannot start a statement.` |
 
 ### Semantic Errors

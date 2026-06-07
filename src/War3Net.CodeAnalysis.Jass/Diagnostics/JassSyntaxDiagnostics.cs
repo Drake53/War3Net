@@ -9,6 +9,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
         private const string HelpLinkBase = "https://github.com/Drake53/War3Net/tree/master/docs/jass-diagnostics/";
 
         /// <summary>
+        /// <c>JASS0201</c>: Statement expected but not found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingStatement = DiagnosticDescriptor.Create(
+            id: "JASS0201",
+            title: "Missing statement",
+            messageFormat: "Statement expected",
+            category: SyntaxCategory,
+            description: "Statement expected but not found.",
+            helpLinkUri: HelpLinkBase + "JASS0201.md");
+
+        /// <summary>
         /// <c>JASS1001</c>: An identifier was expected but not found.
         /// </summary>
         public static readonly DiagnosticDescriptor IdentifierExpected = DiagnosticDescriptor.Create(
@@ -73,6 +84,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SyntaxCategory,
             description: "A numeric literal is malformed or contains invalid digits.",
             helpLinkUri: HelpLinkBase + "JASS1013.md");
+
+        /// <summary>
+        /// <c>JASS1022</c>: Declaration expected but not found.
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingDeclaration = DiagnosticDescriptor.Create(
+            id: "JASS1022",
+            title: "Missing declaration",
+            messageFormat: "Declaration expected",
+            category: SyntaxCategory,
+            description: "Declaration expected but not found.",
+            helpLinkUri: HelpLinkBase + "JASS1022.md");
 
         /// <summary>
         /// <c>JASS1025</c>: Single-line comment or end-of-line expected after a construct.
@@ -163,6 +185,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1514.md");
 
         /// <summary>
+        /// <c>JASS1519</c>: Statement appears in invalid location.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidStatementLocation = DiagnosticDescriptor.Create(
+            id: "JASS1519",
+            title: "Invalid statement location",
+            messageFormat: "Statement not allowed at this location",
+            category: SyntaxCategory,
+            description: "Statement appears in invalid location.",
+            helpLinkUri: HelpLinkBase + "JASS1519.md");
+
+        /// <summary>
         /// <c>JASS1525</c>: Expression expected but not found.
         /// </summary>
         public static readonly DiagnosticDescriptor MissingExpression = DiagnosticDescriptor.Create(
@@ -172,6 +205,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SyntaxCategory,
             description: "An expression was expected but an invalid term was found.",
             helpLinkUri: HelpLinkBase + "JASS1525.md");
+
+        /// <summary>
+        /// <c>JASS1733</c>: Expression expected at end of input.
+        /// </summary>
+        public static readonly DiagnosticDescriptor MissingExpressionAtEnd = DiagnosticDescriptor.Create(
+            id: "JASS1733",
+            title: "Expression expected",
+            messageFormat: "Expression expected",
+            category: SyntaxCategory,
+            description: "An expression was expected but the end of input was reached.",
+            helpLinkUri: HelpLinkBase + "JASS1733.md");
 
         /// <summary>
         /// <c>JASS8641</c>: Else or elseif clause without matching if.
