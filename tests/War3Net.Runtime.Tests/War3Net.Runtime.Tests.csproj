@@ -6,12 +6,7 @@
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net$(NETCoreAppMaximumVersion)</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- TODO: PackageReference instead of ProjectReference -->
+  <ItemGroup>
     <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 

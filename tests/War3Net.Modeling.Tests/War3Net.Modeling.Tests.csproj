@@ -6,14 +6,9 @@
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net$(NETCoreAppMaximumVersion)</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup>
     <ProjectReference Include="..\..\src\War3Net.Drawing.Blp\War3Net.Drawing.Blp.csproj" />
     <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Drawing.Blp" />
-    <PackageReference Include="War3Net.Modeling" />
   </ItemGroup>
 
 </Project>

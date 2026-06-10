@@ -9,12 +9,8 @@
     <PackageReference Include="DiffPlex" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup>
     <ProjectReference Include="..\..\src\War3Net.Build.Core\War3Net.Build.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build.Core" />
   </ItemGroup>
 
   <ItemGroup>
