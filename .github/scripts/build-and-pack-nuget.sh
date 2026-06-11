@@ -105,7 +105,9 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     echo "  (none)"
   fi
 
-  # Build and pack projects that are ready
+  # Determine which projects in this iteration need building.
+  PROJECTS_TO_PACK=""
+
   while IFS= read -r project; do
     if [ -z "$project" ]; then continue; fi
     PROJECT_NAME=$(basename $(dirname "$project"))
@@ -166,20 +168,31 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     fi
 
     if [ "$SHOULD_BUILD" = true ]; then
-      echo "Building $PROJECT_NAME..."
-
-      # Restore with local feed for dependencies from previous iterations
-      dotnet restore "$project" -p:PACK=true -p:Configuration=Release --verbosity minimal --force --no-cache
-
-      # Build the project
-      dotnet build "$project" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
-
-      # Pack directly to artifacts with project name folder structure for proper NuGet feed
-      dotnet pack "$project" -p:PACK=true --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --verbosity minimal
+      PROJECTS_TO_PACK="${PROJECTS_TO_PACK}${project};"
     fi
 
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
   done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
+
+  # Restore, build, and pack via a temporary solution filter.
+  if [ -n "$PROJECTS_TO_PACK" ]; then
+    SOLUTION_DIR=$(dirname "$SOLUTION")
+    SOLUTION_FILE=$(basename "$(jq -r '.solution.path' "$SOLUTION")")
+    ITER_SLNF="$SOLUTION_DIR/.iter-$ITERATION.slnf"
+    echo "$PROJECTS_TO_PACK" | tr ';' '\n' | grep -v '^$' \
+      | jq -R -s --arg sol "$SOLUTION_FILE" \
+          'split("\n") | map(select(length > 0)) | {solution: {path: $sol, projects: .}}' \
+      > "$ITER_SLNF"
+
+    COUNT=$(echo "$PROJECTS_TO_PACK" | tr ';' '\n' | grep -cv '^$')
+    dotnet restore "$ITER_SLNF" -p:PACK=true -p:Configuration=Release --verbosity minimal --force
+
+    dotnet build "$ITER_SLNF" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
+
+    dotnet pack "$ITER_SLNF" -p:PACK=true --configuration Release --no-build --output ./artifacts --verbosity minimal
+
+    rm -f "$ITER_SLNF"
+  fi
 
   # Clear NuGet cache for local packages to ensure newly built packages are available
   dotnet nuget locals temp -c
@@ -192,7 +205,7 @@ if [ $ITERATION -eq $MAX_ITERATIONS ]; then
   exit 1
 fi
 
-PACKAGE_COUNT=$(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)
+PACKAGE_COUNT=$(ls ./artifacts/*.nupkg 2>/dev/null | wc -l)
 
 echo ""
 echo "=== Build Summary ==="

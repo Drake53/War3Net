@@ -7,13 +7,13 @@ set -e
 MOCK_MODE=false
 [[ "$1" == "--mock" ]] && MOCK_MODE=true
 
-if ! ls ./artifacts/*/*.nupkg 1> /dev/null 2>&1; then
+if ! ls ./artifacts/*.nupkg 1> /dev/null 2>&1; then
     echo "No packages found to upload"
     exit 1
 fi
 
 echo "=== Found packages to upload ==="
-ls ./artifacts/*/*.nupkg | while read -r pkg; do
+ls ./artifacts/*.nupkg | while read -r pkg; do
     echo "$(basename "$pkg")"
 done
 echo "=================================="
@@ -22,7 +22,7 @@ UPLOADED_COUNT=0
 CONFLICT_COUNT=0
 FAILED_COUNT=0
 
-for package in ./artifacts/*/*.nupkg; do
+for package in ./artifacts/*.nupkg; do
     PACKAGE_NAME=$(basename "$package")
     echo "Attempting to push: $PACKAGE_NAME"
 
