@@ -2,7 +2,20 @@
 set -e
 
 # Script to build and pack NuGet packages in dependency order
-# Usage: ./build-and-pack-nuget.sh [--skip-version-check]
+# Usage: ./build-and-pack-nuget.sh <solution> [--skip-version-check]
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <solution> [--skip-version-check]"
+  exit 1
+fi
+
+SOLUTION="$1"
+shift
+
+if [ ! -f "$SOLUTION" ]; then
+  echo "ERROR: Solution not found: $SOLUTION"
+  exit 1
+fi
 
 SKIP_VERSION_CHECK=false
 [[ "$1" == "--skip-version-check" ]] && SKIP_VERSION_CHECK=true
@@ -15,7 +28,7 @@ mkdir -p ./artifacts
 
 # Get all packable projects from the solution filter
 # Extract project paths from the solution filter and convert Windows paths to Unix paths
-PROJECTS=$(jq -r '.solution.projects[]' War3NetPublish.slnf | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
+PROJECTS=$(jq -r '.solution.projects[]' "$SOLUTION" | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
 
 echo "=== Found projects to publish ==="
 echo "$PROJECTS" | tr ';' '\n'

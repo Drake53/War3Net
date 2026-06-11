@@ -36,7 +36,7 @@ jobs:
     - name: Build and pack in dependency order
       run: |
         chmod +x .github/scripts/build-and-pack-nuget.sh
-        .github/scripts/build-and-pack-nuget.sh
+        .github/scripts/build-and-pack-nuget.sh War3NetPublish.slnf
 
     - name: Set release date
       run: |
