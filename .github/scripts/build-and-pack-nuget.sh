@@ -156,7 +156,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       echo "Building $PROJECT_NAME..."
 
       # Restore with local feed for dependencies from previous iterations
-      dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
+      dotnet restore "$project" -p:PACK=true -p:Configuration=Release --verbosity minimal --force --no-cache
 
       # Build the project
       dotnet build "$project" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
