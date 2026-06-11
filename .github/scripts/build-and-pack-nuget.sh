@@ -47,7 +47,7 @@ can_build_project() {
     # Remove everything up to the last slash (forward or back), then remove .csproj extension
     echo "$line" | sed 's/.*[\\\/]//' | sed 's/\.csproj$//'
   done | tr '\n' ' ')
-  
+
   for dep in $deps; do
     if ! echo "$BUILT_PROJECTS" | grep -q ";$dep;"; then
       return 1
@@ -63,10 +63,10 @@ MAX_ITERATIONS=20
 
 while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
   ITERATION=$((ITERATION + 1))
-  
+
   PROJECTS_TO_BUILD=""
   STILL_REMAINING=""
-  
+
   # Process each project using semicolon as delimiter
   while IFS= read -r project; do
     if [ -n "$project" ]; then
@@ -77,7 +77,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       fi
     fi
   done < <(echo "$REMAINING_PROJECTS" | tr ';' '\n')
-  
+
   if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
     echo ""
     echo "ERROR: Circular dependency detected or unable to resolve dependencies"
@@ -91,7 +91,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     echo "Already built: $BUILT_PROJECTS"
     exit 1
   fi
-  
+
   echo ""
   echo "Projects to build in iteration $ITERATION:"
   if [ -n "$PROJECTS_TO_BUILD" ]; then
@@ -104,7 +104,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
   else
     echo "  (none)"
   fi
-  
+
   # Build and pack projects that are ready
   while IFS= read -r project; do
     if [ -z "$project" ]; then continue; fi
@@ -180,10 +180,10 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
 
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
   done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
-  
+
   # Clear NuGet cache for local packages to ensure newly built packages are available
   dotnet nuget locals temp -c
-  
+
   REMAINING_PROJECTS="$STILL_REMAINING"
 done
 
