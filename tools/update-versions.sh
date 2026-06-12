@@ -2,10 +2,12 @@
 set -e
 
 # Script to update package versions in Directory.Packages.props based on semver
-# Usage: ./update-versions.sh "package1:breaking,package2:feature,package3:fix"
+# Usage: ./tools/update-versions.sh "package1:breaking,package2:feature,package3:fix"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES_PROPS_FILE="$SCRIPT_DIR/Directory.Packages.props"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PACKAGES_PROPS_FILE="$REPO_ROOT/Directory.Packages.props"
+
+cd "$REPO_ROOT"
 
 # Check if Directory.Packages.props exists
 if [ ! -f "$PACKAGES_PROPS_FILE" ]; then
@@ -69,6 +71,88 @@ update_version_in_props() {
     sed -i "s|\(Include=\"$package_id\" Version=\"\)[^\"]*\(\"\)|\1$new_version\2|" "$PACKAGES_PROPS_FILE"
 
     echo "Updated $package_id to $new_version"
+}
+
+# Set of versions already published to NuGet.org by ANY publishable package.
+# Keyed by exact version string; pending (unpublished) versions are deliberately absent,
+# so multiple packages bumped before the same release may share a version.
+declare -A published_versions
+SKIP_NUGET_CHECK=false
+
+# Fetch all published versions of a package from the NuGet.org flat-container API.
+# Prints one version per line; 404 (never published) prints nothing.
+fetch_published_versions() {
+    local package_id=$1
+    local url="https://api.nuget.org/v3-flatcontainer/${package_id,,}/index.json"
+
+    local response http_code body
+    response=$(curl -sS --max-time 30 --retry 3 -w $'\n%{http_code}' "$url") || {
+        echo "Error: Failed to reach NuGet.org for '$package_id' ($url)." >&2
+        echo "Re-run with --skip-nuget-check to bypass (risk: may assign an already-published version)." >&2
+        exit 1
+    }
+    http_code=${response##*$'\n'}
+    body=${response%$'\n'*}
+
+    case "$http_code" in
+        200)
+            # Response shape: {"versions":["1.0.0","1.0.1",...]} (pretty-printed, multi-line)
+            echo "$body" | tr -d ' \n\r\t' | sed 's/.*\[//; s/\].*//' | tr ',' '\n' | tr -d '"'
+            ;;
+        404)
+            ;; # Package never published: nothing is taken.
+        *)
+            echo "Error: NuGet.org returned HTTP $http_code for '$package_id' ($url)." >&2
+            echo "Re-run with --skip-nuget-check to bypass (risk: may assign an already-published version)." >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Populate published_versions from every publishable package in War3NetPublish.slnf.
+# Must be called from the main shell (not inside $(...)), so the array persists.
+load_published_versions() {
+    if [ "$SKIP_NUGET_CHECK" = true ]; then
+        echo "WARNING: Skipping NuGet.org published-version check (--skip-nuget-check)." >&2
+        return
+    fi
+
+    echo "=== Fetching published versions from NuGet.org ==="
+    local project_path package_id versions v count
+    while IFS= read -r project_path; do
+        [ -n "$project_path" ] || continue
+        package_id=$(get_project_package_id "$project_path")
+        if [ -z "$package_id" ]; then
+            echo "Error: Could not resolve PackageId for '$project_path'." >&2
+            echo "Hint: ensure git submodules are initialized (git submodule update --init)." >&2
+            exit 1
+        fi
+        versions=$(fetch_published_versions "$package_id") || exit 1
+        count=0
+        while IFS= read -r v; do
+            if [ -n "$v" ]; then
+                published_versions["$v"]=1
+                count=$((count + 1))
+            fi
+        done <<< "$versions"
+        echo "  $package_id: $count published version(s)"
+    done <<< "$(get_all_projects)"
+    echo "  Total distinct taken versions: ${#published_versions[@]}"
+}
+
+# Given a candidate version, patch-increment past any already-published version,
+# so no version is ever reused across the package family (keeps release tags unique).
+find_available_version() {
+    local version=$1
+    local skipped=()
+    while [ -n "${published_versions[$version]+x}" ]; do
+        skipped+=("$version")
+        version=$(increment_version "$version" "fix")
+    done
+    if [ ${#skipped[@]} -gt 0 ]; then
+        echo "  Skipping already-published version(s): ${skipped[*]} -> using $version" >&2
+    fi
+    echo "$version"
 }
 
 # Caches to avoid repeated expensive operations
@@ -140,7 +224,7 @@ get_project_dependencies() {
 
 # Get all packable projects from solution filter
 get_all_projects() {
-    grep '\.csproj"' War3NetPublish.slnf | sed 's/.*"\(.*\)".*/\1/' | sed 's/\\/\//g'
+    grep '\.csproj"' "$REPO_ROOT/War3NetPublish.slnf" | sed 's/.*"\(.*\)".*/\1/' | sed 's/\\/\//g'
 }
 
 # Find projects that depend on a given project
@@ -248,6 +332,9 @@ update_versions_recursive() {
     local bump_list=$(determine_version_bumps)
 
     echo ""
+    load_published_versions
+
+    echo ""
     echo "=== Applying version updates ==="
 
     # Apply all version bumps
@@ -257,8 +344,10 @@ update_versions_recursive() {
             local package_id="${PARTS[0]}"
             local change_type="${PARTS[1]}"
 
-            local current_version=$(get_current_version "$package_id")
-            local new_version=$(increment_version "$current_version" "$change_type")
+            local current_version new_version
+            current_version=$(get_current_version "$package_id") || exit 1
+            new_version=$(increment_version "$current_version" "$change_type") || exit 1
+            new_version=$(find_available_version "$new_version")
 
             update_version_in_props "$package_id" "$new_version"
         fi
@@ -266,17 +355,28 @@ update_versions_recursive() {
 }
 
 # Parse command line arguments
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 \"package1:change_type,package2:change_type,...\""
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    echo "Usage: $0 \"package1:change_type,package2:change_type,...\" [--skip-nuget-check]"
     echo ""
     echo "Change types: breaking, feature, fix"
     echo "Example: $0 \"War3Net.Common:feature,War3Net.IO.Mpq:fix\""
+    echo ""
+    echo "Options:"
+    echo "  --skip-nuget-check  Do not query NuGet.org for already-published versions."
+    echo "                      Only use offline; risks assigning a version that was"
+    echo "                      already published by another package (breaks release tagging)."
     echo ""
     echo "Note: Use actual NuGet package IDs (e.g., War3Net.CSharpLua, not CSharp.lua)"
     exit 1
 fi
 
 DIRECT_UPDATES="$1"
+if [ "${2:-}" == "--skip-nuget-check" ]; then
+    SKIP_NUGET_CHECK=true
+elif [ -n "${2:-}" ]; then
+    echo "Error: Unknown option '$2'"
+    exit 1
+fi
 
 echo "=== War3Net Version Update Script ==="
 echo "Processing updates: $DIRECT_UPDATES"
