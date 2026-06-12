@@ -9,8 +9,12 @@
     <PackageTags>casc;modding;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.IO.Compression" />
   </ItemGroup>
 
 </Project>

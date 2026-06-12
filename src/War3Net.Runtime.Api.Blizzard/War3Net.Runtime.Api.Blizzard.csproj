@@ -10,13 +10,12 @@
     <PackageTags>api;blizzard;modding;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(PACK)'!='true'">
     <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <!-- todo: packagereferences -->
-    <ProjectReference Include="..\War3Net.Runtime.Api.Common\War3Net.Runtime.Api.Common.csproj" />
+  <ItemGroup Condition="'$(PACK)'=='true'">
+    <PackageReference Include="War3Net.Runtime.Api.Common" />
   </ItemGroup>
 
 </Project>

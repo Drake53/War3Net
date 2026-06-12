@@ -2,7 +2,20 @@
 set -e
 
 # Script to build and pack NuGet packages in dependency order
-# Usage: ./build-and-pack-nuget.sh [--skip-version-check]
+# Usage: ./build-and-pack-nuget.sh <solution> [--skip-version-check]
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <solution> [--skip-version-check]"
+  exit 1
+fi
+
+SOLUTION="$1"
+shift
+
+if [ ! -f "$SOLUTION" ]; then
+  echo "ERROR: Solution not found: $SOLUTION"
+  exit 1
+fi
 
 SKIP_VERSION_CHECK=false
 [[ "$1" == "--skip-version-check" ]] && SKIP_VERSION_CHECK=true
@@ -13,9 +26,12 @@ VERSION_EXTRACTION_FAILURES=0
 # Create artifacts directory for local NuGet feed
 mkdir -p ./artifacts
 
+# Manifest of packages actually packed for release (publish flow only)
+RELEASE_MANIFEST=./artifacts/release-manifest.txt
+
 # Get all packable projects from the solution filter
 # Extract project paths from the solution filter and convert Windows paths to Unix paths
-PROJECTS=$(jq -r '.solution.projects[]' War3NetPublish.slnf | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
+PROJECTS=$(jq -r '.solution.projects[]' "$SOLUTION" | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
 
 echo "=== Found projects to publish ==="
 echo "$PROJECTS" | tr ';' '\n'
@@ -34,7 +50,7 @@ can_build_project() {
     # Remove everything up to the last slash (forward or back), then remove .csproj extension
     echo "$line" | sed 's/.*[\\\/]//' | sed 's/\.csproj$//'
   done | tr '\n' ' ')
-  
+
   for dep in $deps; do
     if ! echo "$BUILT_PROJECTS" | grep -q ";$dep;"; then
       return 1
@@ -50,10 +66,10 @@ MAX_ITERATIONS=20
 
 while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
   ITERATION=$((ITERATION + 1))
-  
+
   PROJECTS_TO_BUILD=""
   STILL_REMAINING=""
-  
+
   # Process each project using semicolon as delimiter
   while IFS= read -r project; do
     if [ -n "$project" ]; then
@@ -64,7 +80,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       fi
     fi
   done < <(echo "$REMAINING_PROJECTS" | tr ';' '\n')
-  
+
   if [ -z "$PROJECTS_TO_BUILD" ] && [ -n "$STILL_REMAINING" ]; then
     echo ""
     echo "ERROR: Circular dependency detected or unable to resolve dependencies"
@@ -78,7 +94,7 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     echo "Already built: $BUILT_PROJECTS"
     exit 1
   fi
-  
+
   echo ""
   echo "Projects to build in iteration $ITERATION:"
   if [ -n "$PROJECTS_TO_BUILD" ]; then
@@ -91,8 +107,10 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
   else
     echo "  (none)"
   fi
-  
-  # Build and pack projects that are ready
+
+  # Determine which projects in this iteration need building.
+  PROJECTS_TO_PACK=""
+
   while IFS= read -r project; do
     if [ -z "$project" ]; then continue; fi
     PROJECT_NAME=$(basename $(dirname "$project"))
@@ -153,24 +171,38 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
     fi
 
     if [ "$SHOULD_BUILD" = true ]; then
-      echo "Building $PROJECT_NAME..."
-
-      # Restore with local feed for dependencies from previous iterations
-      dotnet restore "$project" -p:Configuration=Release --verbosity minimal --force --no-cache
-
-      # Build the project
-      dotnet build "$project" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
-
-      # Pack directly to artifacts with project name folder structure for proper NuGet feed
-      dotnet pack "$project" -p:PACK=true --configuration Release --no-build --output "./artifacts/${PROJECT_NAME}" --verbosity minimal
+      PROJECTS_TO_PACK="${PROJECTS_TO_PACK}${project};"
+      if [ "$SKIP_VERSION_CHECK" = false ]; then
+        echo "$PACKAGE_ID $VERSION" >> "$RELEASE_MANIFEST"
+      fi
     fi
 
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
   done < <(echo "$PROJECTS_TO_BUILD" | tr ';' '\n')
-  
+
+  # Restore, build, and pack via a temporary solution filter.
+  if [ -n "$PROJECTS_TO_PACK" ]; then
+    SOLUTION_DIR=$(dirname "$SOLUTION")
+    SOLUTION_FILE=$(basename "$(jq -r '.solution.path' "$SOLUTION")")
+    ITER_SLNF="$SOLUTION_DIR/.iter-$ITERATION.slnf"
+    echo "$PROJECTS_TO_PACK" | tr ';' '\n' | grep -v '^$' \
+      | jq -R -s --arg sol "$SOLUTION_FILE" \
+          'split("\n") | map(select(length > 0)) | {solution: {path: $sol, projects: .}}' \
+      > "$ITER_SLNF"
+
+    COUNT=$(echo "$PROJECTS_TO_PACK" | tr ';' '\n' | grep -cv '^$')
+    dotnet restore "$ITER_SLNF" -p:PACK=true -p:Configuration=Release --verbosity minimal --force
+
+    dotnet build "$ITER_SLNF" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
+
+    dotnet pack "$ITER_SLNF" -p:PACK=true --configuration Release --no-build --output ./artifacts --verbosity minimal
+
+    rm -f "$ITER_SLNF"
+  fi
+
   # Clear NuGet cache for local packages to ensure newly built packages are available
   dotnet nuget locals temp -c
-  
+
   REMAINING_PROJECTS="$STILL_REMAINING"
 done
 
@@ -179,7 +211,7 @@ if [ $ITERATION -eq $MAX_ITERATIONS ]; then
   exit 1
 fi
 
-PACKAGE_COUNT=$(ls ./artifacts/*/*.nupkg 2>/dev/null | wc -l)
+PACKAGE_COUNT=$(ls ./artifacts/*.nupkg 2>/dev/null | wc -l)
 
 echo ""
 echo "=== Build Summary ==="

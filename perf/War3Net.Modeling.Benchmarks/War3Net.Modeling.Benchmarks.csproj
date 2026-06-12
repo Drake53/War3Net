@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Modeling\War3Net.Modeling.csproj" />
     <ProjectReference Include="..\..\submodules\FastMDX\FastMDX\FastMDX.csproj" />
   </ItemGroup>

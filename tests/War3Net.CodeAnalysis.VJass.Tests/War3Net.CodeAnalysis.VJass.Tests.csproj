@@ -4,12 +4,8 @@
     <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup>
     <ProjectReference Include="..\..\src\War3Net.CodeAnalysis.VJass\War3Net.CodeAnalysis.VJass.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.CodeAnalysis.VJass" />
   </ItemGroup>
 
 </Project>

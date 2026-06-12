@@ -4,14 +4,9 @@
     <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemGroup>
     <ProjectReference Include="..\..\src\War3Net.Build\War3Net.Build.csproj" />
     <ProjectReference Include="..\..\submodules\CSharp.lua\CSharp.lua.CoreSystem\CSharp.lua.CoreSystem.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="War3Net.Build" />
-    <PackageReference Include="War3Net.CSharpLua.CoreSystem" />
   </ItemGroup>
 
 </Project>

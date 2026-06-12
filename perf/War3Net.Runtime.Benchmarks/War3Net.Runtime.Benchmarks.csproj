@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- TODO: PackageReference instead of ProjectReference -->
     <ProjectReference Include="..\..\src\War3Net.Runtime\War3Net.Runtime.csproj" />
   </ItemGroup>
 
