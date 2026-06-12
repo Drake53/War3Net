@@ -38,16 +38,47 @@ jobs:
         chmod +x .github/scripts/build-and-pack-nuget.sh
         .github/scripts/build-and-pack-nuget.sh War3NetPublish.slnf
 
-    - name: Set release date
+    - name: Determine release version and notes
       run: |
-        echo "RELEASE_DATE=$(date +%Y-%m-%d)" >> $GITHUB_ENV
-        echo "RELEASE_TAG=v$(date +%Y.%-m.%-d)" >> $GITHUB_ENV
+        MANIFEST=./artifacts/release-manifest.txt
+        if [ ! -s "$MANIFEST" ]; then
+          echo "ERROR: $MANIFEST is missing or empty; nothing to release."
+          exit 1
+        fi
+
+        echo "=== Release manifest ==="
+        cat "$MANIFEST"
+
+        # Tag with the highest version being published. Mapping '-' to '~' makes
+        # sort -V order semver prereleases below their release (6.1.0-rc.1 < 6.1.0).
+        RELEASE_VERSION=$(awk '{print $2}' "$MANIFEST" | sed 's/-/~/' | sort -V | tail -n1 | sed 's/~/-/')
+        RELEASE_TAG="v$RELEASE_VERSION"
+
+        if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" >/dev/null; then
+          echo "ERROR: Tag $RELEASE_TAG already exists."
+          echo "This usually means a previous release with this tag was created but its NuGet push failed,"
+          echo "or a pending version bump duplicated an already-tagged version."
+          echo "Either delete the stale tag/release, or bump the affected package(s) again."
+          exit 1
+        fi
+
+        {
+          echo "## Packages published in this release"
+          echo ""
+          sort "$MANIFEST" | while read -r id ver; do
+            echo "- [$id $ver](https://www.nuget.org/packages/$id/$ver)"
+          done
+        } > ./artifacts/release-notes.md
+
+        echo "RELEASE_TAG=$RELEASE_TAG" >> "$GITHUB_ENV"
+        echo "Release tag: $RELEASE_TAG"
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2.3.2
       with:
-        name: War3Net Release ${{ env.RELEASE_DATE }}
+        name: War3Net ${{ env.RELEASE_TAG }}
         tag_name: ${{ env.RELEASE_TAG }}
+        body_path: ./artifacts/release-notes.md
         files: |
           ./artifacts/Packages.zip
         draft: ${{ github.ref_name != 'master' }}

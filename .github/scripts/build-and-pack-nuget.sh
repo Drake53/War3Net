@@ -26,6 +26,9 @@ VERSION_EXTRACTION_FAILURES=0
 # Create artifacts directory for local NuGet feed
 mkdir -p ./artifacts
 
+# Manifest of packages actually packed for release (publish flow only)
+RELEASE_MANIFEST=./artifacts/release-manifest.txt
+
 # Get all packable projects from the solution filter
 # Extract project paths from the solution filter and convert Windows paths to Unix paths
 PROJECTS=$(jq -r '.solution.projects[]' "$SOLUTION" | sed 's/\\/\//g' | grep -v "Tests" | tr '\n' ';')
@@ -169,6 +172,9 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
 
     if [ "$SHOULD_BUILD" = true ]; then
       PROJECTS_TO_PACK="${PROJECTS_TO_PACK}${project};"
+      if [ "$SKIP_VERSION_CHECK" = false ]; then
+        echo "$PACKAGE_ID $VERSION" >> "$RELEASE_MANIFEST"
+      fi
     fi
 
     BUILT_PROJECTS="${BUILT_PROJECTS}${PROJECT_NAME};"
