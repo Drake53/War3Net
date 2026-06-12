@@ -74,7 +74,7 @@ jobs:
         echo "Release tag: $RELEASE_TAG"
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2.3.2
+      uses: softprops/action-gh-release@v3.0.0
       with:
         name: War3Net ${{ env.RELEASE_TAG }}
         tag_name: ${{ env.RELEASE_TAG }}
