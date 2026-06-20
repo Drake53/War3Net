@@ -111,6 +111,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0103.md");
 
         /// <summary>
+        /// <c>JASS0110</c>: The evaluation of a constant value involves a circular definition.
+        /// </summary>
+        public static readonly DiagnosticDescriptor CircularConstantDefinition = DiagnosticDescriptor.Create(
+            id: "JASS0110",
+            title: "Circular constant definition",
+            messageFormat: "The evaluation of the constant value for '{0}' involves a circular definition",
+            category: SemanticCategory,
+            description: "The evaluation of a constant value involves a circular definition.",
+            helpLinkUri: HelpLinkBase + "JASS0110.md");
+
+        /// <summary>
         /// <c>JASS0118</c>: A symbol is used as a different kind than what it was declared as.
         /// </summary>
         public static readonly DiagnosticDescriptor WrongSymbolKind = DiagnosticDescriptor.Create(
@@ -120,6 +131,28 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SemanticCategory,
             description: "A symbol is used as a different kind than what it was declared as.",
             helpLinkUri: HelpLinkBase + "JASS0118.md");
+
+        /// <summary>
+        /// <c>JASS0123</c>: A function used as a 'code' value must not take any parameters.
+        /// </summary>
+        public static readonly DiagnosticDescriptor CodeReferenceMustTakeNothing = DiagnosticDescriptor.Create(
+            id: "JASS0123",
+            title: "Code reference must take nothing",
+            messageFormat: "Function '{0}' used as 'code' must take nothing",
+            category: SemanticCategory,
+            description: "A function used as a 'code' value must not take any parameters.",
+            helpLinkUri: HelpLinkBase + "JASS0123.md");
+
+        /// <summary>
+        /// <c>JASS0126</c>: A return statement without a value was found in a function that returns a value.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ReturnValueRequired = DiagnosticDescriptor.Create(
+            id: "JASS0126",
+            title: "Return value required",
+            messageFormat: "A return value of type '{0}' is required",
+            category: SemanticCategory,
+            description: "A return statement without a value was found in a function that returns a value.",
+            helpLinkUri: HelpLinkBase + "JASS0126.md");
 
         /// <summary>
         /// <c>JASS0127</c>: A return statement with a value was found in a function that returns nothing.

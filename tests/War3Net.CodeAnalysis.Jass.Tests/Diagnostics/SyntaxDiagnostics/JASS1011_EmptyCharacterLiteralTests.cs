@@ -3,31 +3,32 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     public partial class JassSyntaxDiagnosticsTests
     {
         [TestMethod]
-        [DynamicData(nameof(GetInvalidSingleQuotedStringLengthTests), DynamicDataSourceType.Method)]
-        public void TestInvalidSingleQuotedStringLengthDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        [DynamicData(nameof(GetEmptyCharacterLiteralTests), DynamicDataSourceType.Method)]
+        public void TestEmptyCharacterLiteralDiagnostic(string markedCode, bool hasCascadingErrors = false)
         {
             DiagnosticAssert.ReportsDiagnostic(
-                JassSyntaxDiagnostics.InvalidSingleQuotedStringLength.Id,
+                JassSyntaxDiagnostics.EmptySingleQuotedLiteral.Id,
                 markedCode,
                 hasCascadingErrors);
         }
 
-        private static IEnumerable<object?[]> GetInvalidSingleQuotedStringLengthTests()
+        private static IEnumerable<object?[]> GetEmptyCharacterLiteralTests()
         {
             yield return new object[]
             {
                 @"
 globals
-    integer id = [|'Ah'|]
+    integer x = [|''|]
 endglobals",
             };
 
             yield return new object[]
             {
                 @"
-globals
-    integer id = [|'foobar'|]
-endglobals",
+function foo takes nothing returns nothing
+    local integer x
+    set x = [|''|]
+endfunction",
             };
         }
     }

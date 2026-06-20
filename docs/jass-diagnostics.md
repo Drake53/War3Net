@@ -22,10 +22,12 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
 | JASS0201 | Statement expected but not found | `Statement expected` | — |
+| JASS0623 | Array declaration has an initializer | `Array declarations cannot have an initializer` | — |
 | JASS1001 | An identifier was expected but not found | `Identifier expected` | CS1001 `Identifier expected` |
 | JASS1003 | A specific symbol or keyword was expected but not found | `Syntax error, {0} expected` | CS1003 `Syntax error, '{0}' expected` |
 | JASS1009 | Unrecognized escape sequence in string/single-quoted literal | `Invalid escape sequence '{0}'` | CS1009 `Unrecognized escape sequence` |
 | JASS1010 | Single-quoted literal is missing closing quote | `Unterminated single-quoted literal` | CS1010 `Newline in constant` |
+| JASS1011 | Single-quoted literal contains no characters | `Empty single-quoted literal` | CS1011 `Empty character literal` |
 | JASS1012 | Single-quoted literal has an invalid number of characters | `Single-quoted literal '{0}' must contain exactly 1 or 4 characters` | CS1012 `Too many characters in character literal` |
 | JASS1013 | A numeric literal is malformed or contains invalid digits | `Invalid number '{0}'` | CS1013 `Invalid number` |
 | JASS1022 | Declaration expected but not found | `Declaration expected` | — |
@@ -55,7 +57,10 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS0100 | Function has multiple parameters with same name | `Parameter '{0}' is already defined` | CS0100 `The parameter name '{0}' is a duplicate` |
 | JASS0101 | Symbol with same name already declared | `'{0}' is already declared` | CS0101 `The namespace '{1}' already contains a definition for '{0}'` |
 | JASS0103 | Reference to a name that is not declared | `The name '{0}' does not exist in the current context` | CS0103 `The name '{0}' does not exist in the current context` |
+| JASS0110 | Constant initializer references the constant being defined | `The evaluation of the constant value for '{0}' involves a circular definition` | CS0110 `The evaluation of the constant value for '{0}' involves a circular definition` |
 | JASS0118 | Symbol used as wrong kind | `'{0}' is a {1} but is used like a {2}` | CS0118 `'{0}' is a {1} but is used like a {2}` |
+| JASS0123 | Function used as `code` takes parameters | `Function '{0}' used as 'code' must take nothing` | CS0123 `No overload for '{0}' matches delegate '{1}'` |
+| JASS0126 | Return without value in function returning a value | `A return value of type '{0}' is required` | CS0126 `An object of a type convertible to '{0}' is required` |
 | JASS0127 | Return with value in function returning nothing | `Cannot return a value from function returning 'nothing'` | CS0127 `Since '{0}' returns void, a return keyword must not be followed by an object expression` |
 | JASS0128 | Local variable with same name already declared | `Local variable '{0}' is already declared in this function` | CS0128 `A local variable or function named '{0}' is already defined in this scope` |
 | JASS0131 | Attempting to assign to a constant variable | `Cannot assign to constant '{0}'` | CS0131 `The left-hand side of an assignment must be a variable, property or indexer` |

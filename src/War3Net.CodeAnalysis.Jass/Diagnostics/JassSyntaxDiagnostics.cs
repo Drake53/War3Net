@@ -20,6 +20,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0201.md");
 
         /// <summary>
+        /// <c>JASS0623</c>: Array declarations cannot have an initializer.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ArrayInitializerNotAllowed = DiagnosticDescriptor.Create(
+            id: "JASS0623",
+            title: "Array initializer not allowed",
+            messageFormat: "Array declarations cannot have an initializer",
+            category: SyntaxCategory,
+            description: "Array declarations cannot have an initializer.",
+            helpLinkUri: HelpLinkBase + "JASS0623.md");
+
+        /// <summary>
         /// <c>JASS1001</c>: An identifier was expected but not found.
         /// </summary>
         public static readonly DiagnosticDescriptor IdentifierExpected = DiagnosticDescriptor.Create(
@@ -62,6 +73,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             category: SyntaxCategory,
             description: "Single-quoted literal is missing closing quote.",
             helpLinkUri: HelpLinkBase + "JASS1010.md");
+
+        /// <summary>
+        /// <c>JASS1011</c>: Single-quoted literal contains no characters.
+        /// </summary>
+        public static readonly DiagnosticDescriptor EmptySingleQuotedLiteral = DiagnosticDescriptor.Create(
+            id: "JASS1011",
+            title: "Empty single-quoted literal",
+            messageFormat: "Empty single-quoted literal",
+            category: SyntaxCategory,
+            description: "Single-quoted literal contains no characters. Must contain exactly 1 (character) or 4 (FourCC) characters.",
+            helpLinkUri: HelpLinkBase + "JASS1011.md");
 
         /// <summary>
         /// <c>JASS1012</c>: Single-quoted literal has an invalid number of characters.
