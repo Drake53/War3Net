@@ -4,16 +4,16 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     public partial class JassSyntaxDiagnosticsTests
     {
         [TestMethod]
-        [DynamicData(nameof(GetElseWithoutIfTests), DynamicDataSourceType.Method)]
-        public void TestElseWithoutIfDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        [DynamicData(nameof(GetUnmatchedBlockKeywordTests), DynamicDataSourceType.Method)]
+        public void TestUnmatchedBlockKeywordDiagnostic(string markedCode, bool hasCascadingErrors = false)
         {
             DiagnosticAssert.ReportsDiagnostic(
-                JassSyntaxDiagnostics.ElseWithoutIf.Id,
+                JassSyntaxDiagnostics.UnmatchedBlockKeyword.Id,
                 markedCode,
                 hasCascadingErrors);
         }
 
-        private static IEnumerable<object?[]> GetElseWithoutIfTests()
+        private static IEnumerable<object?[]> GetUnmatchedBlockKeywordTests()
         {
             yield return new object[]
             {
@@ -106,6 +106,93 @@ function foo takes nothing returns nothing
     elseif true then
         call D()
     endif
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    call Bar()
+    [|endif|]
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    if true then
+        call Bar()
+    endif
+    [|endif|]
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    call Bar()
+    [|endloop|]
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    loop
+        exitwhen true
+    endloop
+    [|endloop|]
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                "[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+endfunction
+[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+globals
+    integer x = 5
+endglobals
+[|endfunction|]",
+            };
+
+            yield return new object[]
+            {
+                @"
+[|endglobals|]
+function foo takes nothing returns nothing
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+globals
+    integer x = 5
+endglobals
+[|endglobals|]",
+            };
+
+            yield return new object?[]
+            {
+                @"
+function foo takes nothing returns nothing
+    [|endglobals|]
 endfunction",
             };
         }

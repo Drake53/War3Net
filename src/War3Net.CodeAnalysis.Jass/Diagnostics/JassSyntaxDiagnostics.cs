@@ -229,6 +229,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1525.md");
 
         /// <summary>
+        /// <c>JASS1627</c>: The <c>debug</c> keyword is applied to a statement that does not support it.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InvalidDebugStatement = DiagnosticDescriptor.Create(
+            id: "JASS1627",
+            title: "Invalid debug statement",
+            messageFormat: "'debug' can only be applied to 'call', 'set', 'if', or 'loop' statements",
+            category: SyntaxCategory,
+            description: "The 'debug' keyword can only be applied to 'call', 'set', 'if', or 'loop' statements.",
+            helpLinkUri: HelpLinkBase + "JASS1627.md");
+
+        /// <summary>
         /// <c>JASS1733</c>: Expression expected at end of input.
         /// </summary>
         public static readonly DiagnosticDescriptor MissingExpressionAtEnd = DiagnosticDescriptor.Create(
@@ -240,14 +251,15 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS1733.md");
 
         /// <summary>
-        /// <c>JASS8641</c>: Else or elseif clause without matching if.
+        /// <c>JASS8641</c>: A block-delimiter keyword (<c>else</c>, <c>elseif</c>, <c>endif</c>, <c>endloop</c>,
+        /// <c>endfunction</c>, or <c>endglobals</c>) has no matching opening keyword.
         /// </summary>
-        public static readonly DiagnosticDescriptor ElseWithoutIf = DiagnosticDescriptor.Create(
+        public static readonly DiagnosticDescriptor UnmatchedBlockKeyword = DiagnosticDescriptor.Create(
             id: "JASS8641",
-            title: "Else without if",
-            messageFormat: "'{0}' without matching 'if'",
+            title: "Unmatched block keyword",
+            messageFormat: "'{0}' without matching '{1}'",
             category: SyntaxCategory,
-            description: "Else or elseif clause without matching if.",
+            description: "A block-delimiter keyword (else, elseif, endif, endloop, endfunction, or endglobals) has no matching opening keyword.",
             helpLinkUri: HelpLinkBase + "JASS8641.md");
     }
 }

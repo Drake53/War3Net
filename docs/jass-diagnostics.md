@@ -41,8 +41,9 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS1514 | If/elseif clause is missing `then` keyword | `Missing 'then' after condition` | CS1514 `{ expected` |
 | JASS1519 | Statement appears outside any function | `Statement not allowed at this location` | CS1519 `Invalid token '{0}' in class, record, struct, or interface member declaration` |
 | JASS1525 | Invalid expression term | `Invalid expression term '{0}'` | CS1525 `Invalid expression term '{0}'` |
+| JASS1627 | The `debug` keyword is applied to a statement that does not support it | `'debug' can only be applied to 'call', 'set', 'if', or 'loop' statements` | — |
 | JASS1733 | Expression expected at end of input | `Expression expected` | CS1733 `Expected expression` |
-| JASS8641 | Else or elseif clause without matching if | `'{0}' without matching 'if'` | CS8641 `'else' cannot start a statement.` |
+| JASS8641 | Block-delimiter keyword (`else`, `elseif`, `endif`, `endloop`, `endfunction`, `endglobals`) has no matching opening keyword | `'{0}' without matching '{1}'` | CS8641 `'else' cannot start a statement.` |
 
 ### Semantic Errors
 
