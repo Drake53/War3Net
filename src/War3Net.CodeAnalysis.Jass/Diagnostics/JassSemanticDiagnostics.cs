@@ -255,6 +255,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JASS0246.md");
 
         /// <summary>
+        /// <c>JASS0266</c>: An expression type cannot be implicitly converted to the expected type, but an explicit conversion exists.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ExplicitConversionExists = DiagnosticDescriptor.Create(
+            id: "JASS0266",
+            title: "Explicit conversion exists",
+            messageFormat: "Cannot implicitly convert type '{0}' to '{1}'; an explicit conversion exists ({2})",
+            category: SemanticCategory,
+            description: "An expression type cannot be implicitly converted to the expected type, but an explicit conversion exists.",
+            helpLinkUri: HelpLinkBase + "JASS0266.md");
+
+        /// <summary>
         /// <c>JASS0509</c>: A type declaration attempted to extend a primitive type that cannot be extended.
         /// </summary>
         public static readonly DiagnosticDescriptor CannotExtendPrimitiveType = DiagnosticDescriptor.Create(

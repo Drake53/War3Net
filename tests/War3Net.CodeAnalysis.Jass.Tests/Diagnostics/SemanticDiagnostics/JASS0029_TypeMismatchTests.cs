@@ -143,14 +143,6 @@ endfunction",
             yield return new object[]
             {
                 @"
-function foo takes nothing returns integer
-    return [|3.14|]
-endfunction",
-            };
-
-            yield return new object[]
-            {
-                @"
 type unit extends handle
 type item extends handle
 

@@ -71,6 +71,7 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS0161 | Non-void function path doesn't return a value | `Not all code paths return a value in function '{0}'` | CS0161 `'{0}': not all code paths return a value` |
 | JASS0163 | Code after a root-level return statement is unreachable | `Unreachable code detected` | — |
 | JASS0246 | Reference to type that is not declared | `Undefined type '{0}'` | CS0246 `The type or namespace name '{0}' could not be found` |
+| JASS0266 | Implicit conversion not allowed but an explicit conversion exists | `Cannot implicitly convert type '{0}' to '{1}'; an explicit conversion exists ({2})` | CS0266 `Cannot implicitly convert type '{0}' to '{1}'. An explicit conversion exists (are you missing a cast?)` |
 | JASS0509 | Type extends a primitive type that cannot be extended | `'{0}' cannot extend primitive type '{1}'` | CS0509 `'{0}': cannot derive from sealed type '{1}'` |
 | JASS0645 | Identifier does not conform to JASS naming rules | `'{0}' is not a valid identifier` | — |
 | JASS0841 | Symbol referenced before it is declared | `'{0}' must be declared before it is used` | CS0841 `Cannot use local variable '{0}' before it is declared` |
