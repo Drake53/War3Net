@@ -15,7 +15,7 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | `"BestPractice"`  | Info     | Idiomatic and efficient code suggestions                           |
 | `"Compatibility"` | Info     | Cross-version and desync concerns                                  |
 
-## Error Diagnostics
+## Compiler Diagnostics
 
 ### Syntax Errors
 
@@ -86,7 +86,7 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 | JASS8185 | Local variable declaration must appear at the start of the function body | `Local variable declaration must appear at the start of the function body` | CS8185 `A declaration is not allowed in this context.` |
 | JASS8803 | Top-level declaration order violation | `A {0} may not follow a {1}` | CS8803 `Top-level statements must precede namespace and type declarations.` |
 
-## Warning Diagnostics
+## Code Quality Diagnostics
 
 ### Code Quality Warnings
 
@@ -100,8 +100,6 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
-
-## Info Diagnostics
 
 ### Best Practice Suggestions
 
