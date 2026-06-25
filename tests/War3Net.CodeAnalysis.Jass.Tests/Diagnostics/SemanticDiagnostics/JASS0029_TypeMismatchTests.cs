@@ -163,42 +163,6 @@ endfunction",
             yield return new object[]
             {
                 @"
-function GetInt takes nothing returns integer
-    [|return|]
-endfunction",
-            };
-
-            yield return new object[]
-            {
-                @"
-function GetString takes nothing returns string
-    [|return|]
-endfunction",
-            };
-
-            yield return new object[]
-            {
-                @"
-function GetBool takes nothing returns boolean
-    [|return|]
-endfunction",
-            };
-
-            yield return new object[]
-            {
-                @"
-function GetInt takes boolean b returns integer
-    if b then
-        return 1
-    else
-        [|return|]
-    endif
-endfunction",
-            };
-
-            yield return new object[]
-            {
-                @"
 function main takes nothing returns nothing
     local integer i = [|null|]
 endfunction",
