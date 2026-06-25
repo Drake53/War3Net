@@ -92,9 +92,9 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
-| JASS0020 | Constant expression evaluating to zero used as divisor | `Division by constant zero` | CS0020 `Division by constant zero` |
-| JASS0162 | Code is unreachable due to unconditional exit, exhaustive branching, or constant conditions | `Unreachable code detected` | CS0162 `Unreachable code detected` |
-| JASS2000 | Handle created but never destroyed/removed | `{0} may leak; call {1} when done` | CA2000 `Dispose objects before losing scope` |
+| JCA0020 | Constant expression evaluating to zero used as divisor | `Division by constant zero` | CS0020 `Division by constant zero` |
+| JCA0162 | Code is unreachable due to unconditional exit, exhaustive branching, or constant conditions | `Unreachable code detected` | CS0162 `Unreachable code detected` |
+| JCA2000 | Handle created but never destroyed/removed | `{0} may leak; call {1} when done` | CA2000 `Dispose objects before losing scope` |
 
 ### Style Warnings
 
