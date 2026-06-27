@@ -64,7 +64,6 @@ function main takes nothing returns nothing
         exitwhen false
     endloop
 endfunction",
-                true,
             };
 
             yield return new object[]
@@ -77,7 +76,6 @@ function main takes nothing returns nothing
         endif
     endloop
 endfunction",
-                true,
             };
 
             yield return new object[]
@@ -94,6 +92,51 @@ function main takes nothing returns nothing
             endif
         endloop
         set i = i + 1
+    endloop
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function main takes nothing returns nothing
+    local integer i = 20
+    local integer j = 0
+    [|loop|]
+        if false then
+            loop
+                set j = j + 3
+                if j > i then
+                    return
+                endif
+            endloop
+            set i = i + 1
+        endif
+    endloop
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function main takes nothing returns nothing
+    if false then
+        [|loop|]
+        endloop
+    endif
+endfunction",
+            };
+
+            yield return new object[]
+            {
+                @"
+function main takes nothing returns nothing
+    [|loop|]
+        [|loop|]
+            if false then
+                return
+            endif
+        endloop
     endloop
 endfunction",
             };

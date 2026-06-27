@@ -20,10 +20,27 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
                 @"
 function foo takes nothing returns nothing
     [|else|]
+endfunction",
+                true,
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    [|elseif|] true then
+endfunction",
+                true,
+            };
+
+            yield return new object[]
+            {
+                @"
+function foo takes nothing returns nothing
+    [|else|]
         call Bar()
     endif
 endfunction",
-                true,
             };
 
             yield return new object[]
@@ -37,7 +54,6 @@ function foo takes nothing returns nothing
         call B()
     endif
 endfunction",
-                true,
             };
 
             yield return new object[]
@@ -48,7 +64,6 @@ function foo takes nothing returns nothing
         call Bar()
     endif
 endfunction",
-                true,
             };
 
             yield return new object[]
@@ -62,7 +77,6 @@ function foo takes nothing returns nothing
         call B()
     endif
 endfunction",
-                true,
             };
 
             yield return new object[]
