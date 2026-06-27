@@ -33,6 +33,18 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             helpLinkUri: HelpLinkBase + "JCA0162.md");
 
         /// <summary>
+        /// <c>JCA1000</c>: A constant function returns <c>nothing</c>.
+        /// </summary>
+        public static readonly DiagnosticDescriptor ConstantFunctionReturnsNothing = DiagnosticDescriptor.Create(
+            id: "JCA1000",
+            title: "Constant function returns nothing",
+            messageFormat: "Constant function should not return nothing",
+            category: CodeQualityCategory,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "A constant function returns 'nothing', so it produces no value and can have no useful effect.",
+            helpLinkUri: HelpLinkBase + "JCA1000.md");
+
+        /// <summary>
         /// <c>JCA2000</c>: A handle was created but never destroyed or removed within the function.
         /// </summary>
         public static readonly DiagnosticDescriptor HandleLeak = DiagnosticDescriptor.Create(
@@ -43,5 +55,17 @@ namespace War3Net.CodeAnalysis.Jass.Diagnostics
             defaultSeverity: DiagnosticSeverity.Warning,
             description: "A handle was created but never destroyed or removed within the function.",
             helpLinkUri: HelpLinkBase + "JCA2000.md");
+
+        /// <summary>
+        /// <c>JCA2190</c>: A loop has no <c>exitwhen</c> or <c>return</c> statement.
+        /// </summary>
+        public static readonly DiagnosticDescriptor InfiniteLoop = DiagnosticDescriptor.Create(
+            id: "JCA2190",
+            title: "Infinite loop",
+            messageFormat: "Loop may be infinite; no exit condition found",
+            category: CodeQualityCategory,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            description: "A loop has no 'exitwhen' or 'return' statement.",
+            helpLinkUri: HelpLinkBase + "JCA2190.md");
     }
 }

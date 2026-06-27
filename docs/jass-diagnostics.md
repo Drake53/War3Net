@@ -6,14 +6,14 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 
 ### Categories
 
-| Category          | Severity | Description                                                        |
-|-------------------|----------|--------------------------------------------------------------------|
-| `"Syntax"`        | Error    | Parse and lexical errors                                           |
-| `"Semantic"`      | Error    | Type and symbol errors                                             |
-| `"CodeQuality"`   | Warning  | Dead code, unused symbols, null safety, complexity, resource leaks |
-| `"Style"`         | Warning  | Formatting and naming                                              |
-| `"BestPractice"`  | Info     | Idiomatic and efficient code suggestions                           |
-| `"Compatibility"` | Info     | Cross-version and desync concerns                                  |
+| Category          | Description                                                        |
+|-------------------|--------------------------------------------------------------------|
+| `"Syntax"`        | Parse and lexical errors                                           |
+| `"Semantic"`      | Type and symbol errors                                             |
+| `"CodeQuality"`   | Dead code, unused symbols, null safety, complexity, resource leaks |
+| `"Style"`         | Formatting and naming                                              |
+| `"BestPractice"`  | Idiomatic and efficient code suggestions                           |
+| `"Compatibility"` | Cross-version and desync concerns                                  |
 
 ## Compiler Diagnostics
 
@@ -88,28 +88,34 @@ This document lists all implemented and planned diagnostics. Diagnostic IDs matc
 
 ## Code Quality Diagnostics
 
-### Code Quality Warnings
+### Code Quality
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
 | JCA0020 | Constant expression evaluating to zero used as divisor | `Division by constant zero` | CS0020 `Division by constant zero` |
 | JCA0162 | Code is unreachable due to unconditional exit, exhaustive branching, or constant conditions | `Unreachable code detected` | CS0162 `Unreachable code detected` |
+| JCA1000 | Constant function returns `nothing` | `Constant function should not return nothing` | AA1000 `Static Methods Should Not Be Void` |
 | JCA2000 | Handle created but never destroyed/removed | `{0} may leak; call {1} when done` | CA2000 `Dispose objects before losing scope` |
+| JCA2190 | Loop has no `exitwhen` or `return` statement | `Loop may be infinite; no exit condition found` | S2190 `Loops should not be infinite` |
 
-### Style Warnings
+### Style
+
+| ID | Description | Message | C# Equivalent |
+|----|-------------|---------|---------------|
+| JCA1027 | Indentation does not match the expected indentation style | `Inconsistent indentation; expected '{0}' but found '{1}'` | SA1027 `The code contains a tab or space character which is not consistent with the current project settings.` |
+| JCA1028 | Line has trailing whitespace | `Trailing whitespace` | SA1028 `A line of code ends with a space, tab, or other whitespace characters before the end of line character(s).` |
+
+### Best Practice
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
 
-### Best Practice Suggestions
+### Compatibility
 
 | ID | Description | Message | C# Equivalent |
 |----|-------------|---------|---------------|
-
-### Compatibility Suggestions
-
-| ID | Description | Message | C# Equivalent |
-|----|-------------|---------|---------------|
+| JCA1507 | ExecuteFunc called with string that doesn't match any function name | `No function named '{0}' found` | CA1507 `Use 'nameof' in place of string` |
+| JCA2234 | Audio file path uses an unsupported format | `Audio file argument may use unsupported format '{0}'` | CA2234 `Pass System.Uri objects instead of strings` |
 
 ## Individual Diagnostic Documentation
 
