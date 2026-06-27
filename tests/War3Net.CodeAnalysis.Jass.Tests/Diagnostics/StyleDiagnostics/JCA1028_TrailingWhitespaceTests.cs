@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetTrailingWhitespaceTests), DynamicDataSourceType.Method)]
-        public void TestTrailingWhitespaceDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestTrailingWhitespaceDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassStyleDiagnostics.TrailingWhitespace.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetTrailingWhitespaceTests()

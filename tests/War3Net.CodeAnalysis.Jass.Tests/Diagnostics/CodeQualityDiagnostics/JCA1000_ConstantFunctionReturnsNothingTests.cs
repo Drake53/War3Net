@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetConstantFunctionReturnsNothingTests), DynamicDataSourceType.Method)]
-        public void TestConstantFunctionReturnsNothingDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestConstantFunctionReturnsNothingDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCodeQualityDiagnostics.ConstantFunctionReturnsNothing.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetConstantFunctionReturnsNothingTests()

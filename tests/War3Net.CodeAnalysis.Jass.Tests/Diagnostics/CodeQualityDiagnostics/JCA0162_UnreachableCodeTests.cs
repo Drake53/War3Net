@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetUnreachableCodeTests), DynamicDataSourceType.Method)]
-        public void TestUnreachableCodeDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestUnreachableCodeDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCodeQualityDiagnostics.UnreachableCode.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetUnreachableCodeTests()

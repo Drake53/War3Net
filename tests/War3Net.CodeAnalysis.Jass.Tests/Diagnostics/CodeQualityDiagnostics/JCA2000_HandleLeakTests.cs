@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetBoolExprLeakTests), DynamicDataSourceType.Method)]
-        public void TestBoolExprLeakDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestBoolExprLeakDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCodeQualityDiagnostics.HandleLeak.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetBoolExprLeakTests()

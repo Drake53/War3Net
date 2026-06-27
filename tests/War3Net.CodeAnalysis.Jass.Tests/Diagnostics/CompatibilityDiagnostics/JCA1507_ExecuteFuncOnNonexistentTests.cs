@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetExecuteFuncOnNonexistentTests), DynamicDataSourceType.Method)]
-        public void TestExecuteFuncOnNonexistentDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestExecuteFuncOnNonexistentDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCompatibilityDiagnostics.ExecuteFuncOnNonexistent.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetExecuteFuncOnNonexistentTests()

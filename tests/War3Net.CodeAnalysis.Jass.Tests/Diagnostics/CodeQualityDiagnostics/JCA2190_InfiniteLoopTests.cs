@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetInfiniteLoopTests), DynamicDataSourceType.Method)]
-        public void TestInfiniteLoopDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestInfiniteLoopDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCodeQualityDiagnostics.InfiniteLoop.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetInfiniteLoopTests()

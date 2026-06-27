@@ -13,13 +13,12 @@ native I2S takes integer i returns string
 
         [TestMethod]
         [DynamicData(nameof(GetUnsupportedAudioFormatTests), DynamicDataSourceType.Method)]
-        public void TestUnsupportedAudioFormatDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestUnsupportedAudioFormatDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCompatibilityDiagnostics.UnsupportedAudioFormat.Id,
                 NativesReferenceCode,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetUnsupportedAudioFormatTests()

@@ -5,12 +5,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetDivisionByZeroTests), DynamicDataSourceType.Method)]
-        public void TestDivisionByZeroDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestDivisionByZeroDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassCodeQualityDiagnostics.DivisionByZero.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetDivisionByZeroTests()

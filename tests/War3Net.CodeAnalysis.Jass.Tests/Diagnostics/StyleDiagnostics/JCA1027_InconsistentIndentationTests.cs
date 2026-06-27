@@ -4,12 +4,11 @@ namespace War3Net.CodeAnalysis.Jass.Tests.Diagnostics
     {
         [TestMethod]
         [DynamicData(nameof(GetInconsistentIndentationTests), DynamicDataSourceType.Method)]
-        public void TestInconsistentIndentationDiagnostic(string markedCode, bool hasCascadingErrors = false)
+        public void TestInconsistentIndentationDiagnostic(string markedCode)
         {
             DiagnosticAssert.ReportsDiagnostic(
                 JassStyleDiagnostics.InconsistentIndentation.Id,
-                markedCode,
-                hasCascadingErrors);
+                markedCode);
         }
 
         private static IEnumerable<object?[]> GetInconsistentIndentationTests()
