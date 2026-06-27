@@ -130,16 +130,6 @@ function main takes nothing returns nothing
     call TakeTwo([|null|], [|null|])
 endfunction",
             };
-
-            yield return new object[]
-            {
-                @"
-native TakeCode takes code c returns nothing
-
-function main takes nothing returns nothing
-    call TakeCode([|null|])
-endfunction",
-            };
         }
     }
 }

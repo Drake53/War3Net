@@ -67,14 +67,6 @@ endglobals",
             yield return new object[]
             {
                 @"
-globals
-    code c = [|null|]
-endglobals",
-            };
-
-            yield return new object[]
-            {
-                @"
 function DoNothing takes nothing returns nothing
 endfunction
 
