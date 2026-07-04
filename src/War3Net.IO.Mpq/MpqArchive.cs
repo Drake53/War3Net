@@ -386,6 +386,11 @@
             }
         }
 
+        /// <summary>
+        /// Gets the size of the <see cref="BlockTable"/>, i.e. the exclusive upper bound for <see cref="this[int]"/>.
+        /// </summary>
+        public int Count => (int)_blockTable.Size;
+
         internal Stream BaseStream => _baseStream;
 
         internal MemoryMappedFile? MemoryMappedFile => _memoryMappedFile;
@@ -403,7 +408,12 @@
 
         internal BlockTable BlockTable => _blockTable;
 
-        internal MpqEntry this[int index] => _blockTable[index];
+        /// <summary>
+        /// Gets the <see cref="MpqEntry"/> at the given position in the <see cref="BlockTable"/>.
+        /// </summary>
+        /// <param name="index">The zero-based index of the <see cref="MpqEntry"/> in the <see cref="BlockTable"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="index"/> is not a valid index in the <see cref="BlockTable"/>.</exception>
+        public MpqEntry this[int index] => _blockTable[index];
 
         /// <summary>
         /// Opens an existing <see cref="MpqArchive"/> for reading.
