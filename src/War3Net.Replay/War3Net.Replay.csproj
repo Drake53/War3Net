@@ -14,11 +14,11 @@
     <PackageReference Include="MessagePackAnalyzer" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(PUBLISH)'!='true'">
     <ProjectReference Include="..\War3Net.IO.Compression\War3Net.IO.Compression.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(PUBLISH)'=='true'">
     <PackageReference Include="War3Net.IO.Compression" />
   </ItemGroup>
 

@@ -191,11 +191,11 @@ while [ -n "$REMAINING_PROJECTS" ] && [ $ITERATION -lt $MAX_ITERATIONS ]; do
       > "$ITER_SLNF"
 
     COUNT=$(echo "$PROJECTS_TO_PACK" | tr ';' '\n' | grep -cv '^$')
-    dotnet restore "$ITER_SLNF" -p:PACK=true -p:Configuration=Release --verbosity minimal --force
+    dotnet restore "$ITER_SLNF" -p:PUBLISH=true -p:Configuration=Release --verbosity minimal --force
 
-    dotnet build "$ITER_SLNF" -p:PACK=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
+    dotnet build "$ITER_SLNF" -p:PUBLISH=true -p:WarningLevel=0 -p:RunAnalyzers=false -p:SuppressTfmSupportBuildWarnings=true --configuration Release --no-restore --verbosity minimal
 
-    dotnet pack "$ITER_SLNF" -p:PACK=true --configuration Release --no-build --output ./artifacts --verbosity minimal
+    dotnet pack "$ITER_SLNF" -p:PUBLISH=true --configuration Release --no-build --output ./artifacts --verbosity minimal
 
     rm -f "$ITER_SLNF"
   fi

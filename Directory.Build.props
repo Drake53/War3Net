@@ -1,14 +1,14 @@
 <Project>
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(PUBLISH)'!='true'">
     <PackageReference Include="StyleCop.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(PUBLISH)'=='true'">
     <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
   </ItemGroup>
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(PUBLISH)'!='true'">
     <Content Include="$(MSBuildThisFileDirectory)LICENSE" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -22,7 +22,7 @@
     <None Remove="$(MSBuildThisFileDirectory)LICENSE" />
     <None Remove="$(MSBuildThisFileDirectory)stylecop.json" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(PACK)'!='true'">
+  <PropertyGroup Condition="'$(PUBLISH)'!='true'">
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AnalysisLevel>5</AnalysisLevel>
   </PropertyGroup>
