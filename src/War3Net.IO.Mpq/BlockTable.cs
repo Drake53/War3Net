@@ -59,7 +59,7 @@
         /// <summary>
         /// Gets the capacity of the <see cref="BlockTable"/>.
         /// </summary>
-        public override uint Size => (uint)_entries.Count;
+        public override int Size => _entries.Count;
 
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="BlockTable"/>.

@@ -366,7 +366,14 @@
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, createOptions.BlockSize, _archiveFollowsHeader);
+                _mpqHeader = new MpqHeader(
+                    (uint)_headerOffset,
+                    (uint)(endOfStream - fileOffset),
+                    (uint)_hashTable.Size,
+                    (uint)_blockTable.Size,
+                    createOptions.BlockSize,
+                    _archiveFollowsHeader);
+
                 _mpqHeader.WriteTo(writer);
 
                 if (wantGenerateSignature)
@@ -389,7 +396,7 @@
         /// <summary>
         /// Gets the size of the <see cref="BlockTable"/>, i.e. the exclusive upper bound for <see cref="this[int]"/>.
         /// </summary>
-        public int Count => (int)_blockTable.Size;
+        public int Count => _blockTable.Size;
 
         internal Stream BaseStream => _baseStream;
 
@@ -807,7 +814,7 @@
                 }
             }
 
-            for (var i = 0; i < (int)_blockTable.Size; i++)
+            for (var i = 0; i < _blockTable.Size; i++)
             {
                 var mpqEntry = _blockTable[i];
                 if (!addedEntries.Contains(mpqEntry))
