@@ -759,6 +759,25 @@
             }
         }
 
+        /// <summary>
+        /// Enumerates the <see cref="HashTable"/>'s live entries (i.e. excluding empty and deleted entries).
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="MpqHash"/>'s corresponding <see cref="MpqEntry"/> can be retrieved through <see cref="this[int]"/>,
+        /// using <see cref="MpqHash.BlockIndex"/> as the index.
+        /// </remarks>
+        public IEnumerable<MpqHash> EnumerateHashes()
+        {
+            for (var i = 0; i < _hashTable.Size; i++)
+            {
+                var hash = _hashTable[i];
+                if (!hash.IsEmpty && !hash.IsDeleted)
+                {
+                    yield return hash;
+                }
+            }
+        }
+
         // TODO: set hashCollisions values (currently they're always set to 0)
         public IEnumerable<MpqFile> GetMpqFiles()
         {
