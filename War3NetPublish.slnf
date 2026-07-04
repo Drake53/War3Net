@@ -1,6 +1,6 @@
 {
   "solution": {
-    "path": "War3Net.sln",
+    "path": "War3Net.slnx",
     "projects": [
       "src\\War3Net.Build.Core\\War3Net.Build.Core.csproj",
       "src\\War3Net.Build\\War3Net.Build.csproj",
