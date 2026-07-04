@@ -9,12 +9,12 @@
     <PackageTags>decompiler;jass;modding;war3map;warcraft3;wc3</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(PACK)'!='true'">
+  <ItemGroup Condition="'$(PUBLISH)'!='true'">
     <ProjectReference Include="..\War3Net.Build.Core\War3Net.Build.Core.csproj" />
     <ProjectReference Include="..\War3Net.CodeAnalysis.Jass\War3Net.CodeAnalysis.Jass.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(PACK)'=='true'">
+  <ItemGroup Condition="'$(PUBLISH)'=='true'">
     <PackageReference Include="War3Net.Build.Core" />
     <PackageReference Include="War3Net.CodeAnalysis.Jass" />
   </ItemGroup>

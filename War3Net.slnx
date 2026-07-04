@@ -1,0 +1,64 @@
+<Solution>
+  <Folder Name="/build/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/perf/">
+    <Project Path="perf/War3Net.CodeAnalysis.Jass.Benchmarks/War3Net.CodeAnalysis.Jass.Benchmarks.csproj" />
+    <Project Path="perf/War3Net.Drawing.Blp.Benchmarks/War3Net.Drawing.Blp.Benchmarks.csproj" />
+    <Project Path="perf/War3Net.Modeling.Benchmarks/War3Net.Modeling.Benchmarks.csproj" />
+    <Project Path="perf/War3Net.Runtime.Benchmarks/War3Net.Runtime.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/War3Net.Build.Core/War3Net.Build.Core.csproj" />
+    <Project Path="src/War3Net.Build/War3Net.Build.csproj" />
+    <Project Path="src/War3Net.CodeAnalysis.Decompilers/War3Net.CodeAnalysis.Decompilers.csproj" />
+    <Project Path="src/War3Net.CodeAnalysis.Jass/War3Net.CodeAnalysis.Jass.csproj" />
+    <Project Path="src/War3Net.CodeAnalysis.Transpilers/War3Net.CodeAnalysis.Transpilers.csproj" />
+    <Project Path="src/War3Net.CodeAnalysis.VJass/War3Net.CodeAnalysis.VJass.csproj" />
+    <Project Path="src/War3Net.CodeAnalysis/War3Net.CodeAnalysis.csproj" />
+    <Project Path="src/War3Net.Common/War3Net.Common.csproj" />
+    <Project Path="src/War3Net.Drawing.Blp/War3Net.Drawing.Blp.csproj" />
+    <Project Path="src/War3Net.IO.Casc/War3Net.IO.Casc.csproj" />
+    <Project Path="src/War3Net.IO.Compression/War3Net.IO.Compression.csproj" />
+    <Project Path="src/War3Net.IO.Mpq/War3Net.IO.Mpq.csproj" />
+    <Project Path="src/War3Net.IO.Slk/War3Net.IO.Slk.csproj" />
+    <Project Path="src/War3Net.Modeling/War3Net.Modeling.csproj" />
+    <Project Path="src/War3Net.Rendering/War3Net.Rendering.csproj" />
+    <Project Path="src/War3Net.Replay/War3Net.Replay.csproj" />
+    <Project Path="src/War3Net.Runtime.Api.Blizzard/War3Net.Runtime.Api.Blizzard.csproj" />
+    <Project Path="src/War3Net.Runtime.Api.Common/War3Net.Runtime.Api.Common.csproj" />
+    <Project Path="src/War3Net.Runtime.Core/War3Net.Runtime.Core.csproj" />
+    <Project Path="src/War3Net.Runtime/War3Net.Runtime.csproj" />
+  </Folder>
+  <Folder Name="/submodules/">
+    <Project Path="submodules/CSharp.lua/CSharp.lua.CoreSystem/CSharp.lua.CoreSystem.csproj" />
+    <Project Path="submodules/CSharp.lua/CSharp.lua/CSharp.lua.csproj" />
+    <Project Path="submodules/FastMDX/FastMDX/FastMDX.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/War3Net.Build.Core.Tests/War3Net.Build.Core.Tests.csproj" />
+    <Project Path="tests/War3Net.Build.Tests/War3Net.Build.Tests.csproj" />
+    <Project Path="tests/War3Net.CodeAnalysis.Decompilers.Tests/War3Net.CodeAnalysis.Decompilers.Tests.csproj" />
+    <Project Path="tests/War3Net.CodeAnalysis.Jass.Tests/War3Net.CodeAnalysis.Jass.Tests.csproj" />
+    <Project Path="tests/War3Net.CodeAnalysis.Tests/War3Net.CodeAnalysis.Tests.csproj" />
+    <Project Path="tests/War3Net.CodeAnalysis.Transpilers.Tests/War3Net.CodeAnalysis.Transpilers.Tests.csproj" />
+    <Project Path="tests/War3Net.CodeAnalysis.VJass.Tests/War3Net.CodeAnalysis.VJass.Tests.csproj" />
+    <Project Path="tests/War3Net.Common.Tests/War3Net.Common.Tests.csproj" />
+    <Project Path="tests/War3Net.Drawing.Blp.Tests/War3Net.Drawing.Blp.Tests.csproj" />
+    <Project Path="tests/War3Net.IO.Casc.Tests/War3Net.IO.Casc.Tests.csproj" />
+    <Project Path="tests/War3Net.IO.Compression.Tests/War3Net.IO.Compression.Tests.csproj" />
+    <Project Path="tests/War3Net.IO.Mpq.Tests/War3Net.IO.Mpq.Tests.csproj" />
+    <Project Path="tests/War3Net.IO.Slk.Tests/War3Net.IO.Slk.Tests.csproj" />
+    <Project Path="tests/War3Net.Modeling.Tests/War3Net.Modeling.Tests.csproj" />
+    <Project Path="tests/War3Net.Rendering.Tests/War3Net.Rendering.Tests.csproj" />
+    <Project Path="tests/War3Net.Replay.Tests/War3Net.Replay.Tests.csproj" />
+    <Project Path="tests/War3Net.Runtime.Api.Blizzard.Tests/War3Net.Runtime.Api.Blizzard.Tests.csproj" />
+    <Project Path="tests/War3Net.Runtime.Api.Common.Tests/War3Net.Runtime.Api.Common.Tests.csproj" />
+    <Project Path="tests/War3Net.Runtime.Core.Tests/War3Net.Runtime.Core.Tests.csproj" />
+    <Project Path="tests/War3Net.Runtime.Tests/War3Net.Runtime.Tests.csproj" />
+    <Project Path="tests/War3Net.TestTools.UnitTesting/War3Net.TestTools.UnitTesting.csproj" />
+  </Folder>
+</Solution>

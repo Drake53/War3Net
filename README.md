@@ -6,6 +6,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/pulls)
 [![GitHub license](https://img.shields.io/github/license/Drake53/War3Net.svg)](https://github.com/Drake53/War3Net/blob/master/LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/Drake53/War3Net)](https://github.com/Drake53/War3Net/releases)
 
 ---
 
@@ -18,8 +19,11 @@
   <b>
   <a href="#what-is-war3net">What is War3Net?</a> •
   <a href="#vision--principles">Vision</a> •
-  <a href="#built-with-war3net">Built with War3Net</a> •
+  <a href="#components">Components</a> •
   <a href="#packages">Packages</a> •
+  <a href="#command-line-tool">Command-Line Tool</a> •
+  <a href="#vscode-extension">VS Code Extension</a> •
+  <a href="#built-with-war3net">Built with War3Net</a> •
   <a href="#roadmap">Roadmap</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#license">License</a>
@@ -43,16 +47,21 @@ War3Net aims to be the definitive .NET foundation for Warcraft III tooling—bui
 - **Correctness** — Byte-for-byte accuracy with Blizzard's implementations. No guesswork.
 - **Compatibility** — .NET 6+ for broad OS support, including Windows 7/8.
 
-### Built with War3Net
+### Components
 
-> **Disclaimer:** Projects listed here are independent and not affiliated with, endorsed by, or maintained by the creator of War3Net. Use them at your own discretion.
+Three major components are included in War3Net:
 
-| Project | Description |
-| ------- | ----------- |
-| [Maya WarTex](https://github.com/wiselencave/maya-wartex) | Autodesk Maya plug-in for BLP texture loading via [War3Net.Drawing.Blp](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp). |
-| [Project name](https://github.com/Drake53/War3Net) | This is a placeholder, serving as an example of how to insert the name, url, and description of your project |
+- **[NuGet packages](#packages)** — A collection of NuGet packages, each covering a Warcraft III file format or a related concern (MPQ, BLP, JASS, map building, and more). These are the foundation everything else is built on.
+- **[Command-line tool](#command-line-tool)** — `w3n`, a single CLI that exposes the modules' functionality for scripting, CI, or terminal use.
+- **[VS Code extension](#vscode-extension)** — War3Net Toolkit, which brings those same file formats into the editor, built on top of the CLI.
 
-*Using War3Net in your project? Open a PR to add it here!*
+### Command-Line Tool
+
+*Coming soon™*
+
+### VS Code Extension
+
+*Coming soon™*
 
 ### Packages
 
@@ -91,13 +100,27 @@ Some of the above packages are based on code from other repositories:
 - *[War3Net.Drawing.Blp]:* [SereniaBLPLib](https://github.com/WoW-Tools/SereniaBLPLib)
 - *[War3Net.IO.Compression] and [War3Net.IO.Mpq]:* [MpqTool](https://github.com/hazzik/MpqTool)
 
+### Built with War3Net
+
+> **Disclaimer:** Projects listed here are independent and not affiliated with, endorsed by, or maintained by the creator of War3Net. Use them at your own discretion.
+
+| Project | Description |
+| ------- | ----------- |
+| [Maya WarTex](https://github.com/wiselencave/maya-wartex) | Autodesk Maya plug-in for BLP texture loading via [War3Net.Drawing.Blp](https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp). |
+
+*Using War3Net in your project? Open a PR to add it here!*
+
 ### Roadmap
 
-Two major initiatives are in progress:
+Three major initiatives are in progress:
+
+**War3Net CLI** — Exposing War3Net's functionality to users outside of the .NET ecosystem.
+- `w3n` CLI exposing commands for MPQ, BLP, MDX, JASS, and more
+- End goals: Full War3Net functionality covered by the CLI • VSCode extension
 
 **JASS Language Suite** — Bringing modern IDE tooling to JASS.
-- Fault-tolerant parsing, semantic analysis, and LSP support
-- End goals: Intelligent script adaptation across game versions • VSCode extension
+- Fault-tolerant parsing, semantic analysis, LSP support, and a debugger
+- End goals: Intelligent script adaptation across game versions • Integration in the CLI and extension
 
 **Warcraft III Runtime** — Run maps without the game.
 - Native JASS VM, C# natives, headless rendering

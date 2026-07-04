@@ -1,5 +1,12 @@
 # War3Net.Build.Core Changelog
 
+## v6.0.2
+### Breaking changes
+- Updated target framework from .NET 5.0 to .NET 6.0.
+
+## v6.0.1
+No functional changes; package readme and metadata updated for nuget.org presentation.
+
 ## v6.0.0
 ### Breaking changes
 - The EscapedStringProvider class has been moved to War3Net.CodeAnalysis.Jass.
