@@ -26,7 +26,7 @@
             }
 
             _mask = GenerateMask(size);
-            size = Size;
+            size = _mask + 1;
 
             _hashes = new MpqHash[size];
             for (var i = 0; i < size; i++)
@@ -103,7 +103,7 @@
         /// <summary>
         /// Gets the capacity of the <see cref="HashTable"/>.
         /// </summary>
-        public override uint Size => _mask + 1;
+        public override int Size => _hashes.Length;
 
         /// <summary>
         /// Gets the mask for this <see cref="HashTable"/>.
@@ -207,7 +207,7 @@
                 var startIndex = (int)index - (int)hashCollisions;
                 if (startIndex < 0)
                 {
-                    startIndex += (int)Size;
+                    startIndex += Size;
                 }
 
                 for (var i = 0; i < hashCollisions; i++)

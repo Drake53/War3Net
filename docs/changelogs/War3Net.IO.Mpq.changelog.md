@@ -1,5 +1,10 @@
 # War3Net.IO.Mpq Changelog
 
+## v6.0.3
+### Changes
+- Added `Count` and `EnumerateHashes()` to `MpqArchive`.
+- Changed `MpqArchive[int]` from internal to public.
+
 ## v6.0.2
 ### Breaking changes
 - `Attributes.Crc32s` changed from `List<int>` to `List<uint>`, matching the actual unsigned nature of CRC32 values.

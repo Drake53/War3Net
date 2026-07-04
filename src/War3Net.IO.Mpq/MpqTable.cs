@@ -20,7 +20,7 @@
         /// <summary>
         /// Gets the capacity of the <see cref="MpqTable"/>.
         /// </summary>
-        public abstract uint Size { get; }
+        public abstract int Size { get; }
 
         /// <summary>
         /// Gets the key used to encrypt and decrypt the <see cref="MpqTable"/>.
@@ -106,7 +106,7 @@
 
                 using (var reader = new BinaryReader(memoryStream))
                 {
-                    data = reader.ReadBytes((int)Size * EntrySize);
+                    data = reader.ReadBytes(Size * EntrySize);
                     Encrypt(data);
                 }
             }

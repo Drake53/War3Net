@@ -1,5 +1,9 @@
 # War3Net.Build.Core Changelog
 
+## v6.0.3
+### Changes
+- Updated War3Net.IO.Mpq from v6.0.2 to v6.0.3.
+
 ## v6.0.2
 ### Breaking changes
 - Updated target framework from .NET 5.0 to .NET 6.0.

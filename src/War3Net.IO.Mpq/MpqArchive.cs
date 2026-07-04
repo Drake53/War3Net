@@ -366,7 +366,14 @@
 
                 writer.Seek((int)_headerOffset, SeekOrigin.Begin);
 
-                _mpqHeader = new MpqHeader((uint)_headerOffset, (uint)(endOfStream - fileOffset), _hashTable.Size, _blockTable.Size, createOptions.BlockSize, _archiveFollowsHeader);
+                _mpqHeader = new MpqHeader(
+                    (uint)_headerOffset,
+                    (uint)(endOfStream - fileOffset),
+                    (uint)_hashTable.Size,
+                    (uint)_blockTable.Size,
+                    createOptions.BlockSize,
+                    _archiveFollowsHeader);
+
                 _mpqHeader.WriteTo(writer);
 
                 if (wantGenerateSignature)
@@ -386,6 +393,11 @@
             }
         }
 
+        /// <summary>
+        /// Gets the size of the <see cref="BlockTable"/>, i.e. the exclusive upper bound for <see cref="this[int]"/>.
+        /// </summary>
+        public int Count => _blockTable.Size;
+
         internal Stream BaseStream => _baseStream;
 
         internal MemoryMappedFile? MemoryMappedFile => _memoryMappedFile;
@@ -403,7 +415,12 @@
 
         internal BlockTable BlockTable => _blockTable;
 
-        internal MpqEntry this[int index] => _blockTable[index];
+        /// <summary>
+        /// Gets the <see cref="MpqEntry"/> at the given position in the <see cref="BlockTable"/>.
+        /// </summary>
+        /// <param name="index">The zero-based index of the <see cref="MpqEntry"/> in the <see cref="BlockTable"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="index"/> is not a valid index in the <see cref="BlockTable"/>.</exception>
+        public MpqEntry this[int index] => _blockTable[index];
 
         /// <summary>
         /// Opens an existing <see cref="MpqArchive"/> for reading.
@@ -749,6 +766,25 @@
             }
         }
 
+        /// <summary>
+        /// Enumerates the <see cref="HashTable"/>'s live entries (i.e. excluding empty and deleted entries).
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="MpqHash"/>'s corresponding <see cref="MpqEntry"/> can be retrieved through <see cref="this[int]"/>,
+        /// using <see cref="MpqHash.BlockIndex"/> as the index.
+        /// </remarks>
+        public IEnumerable<MpqHash> EnumerateHashes()
+        {
+            for (var i = 0; i < _hashTable.Size; i++)
+            {
+                var hash = _hashTable[i];
+                if (!hash.IsEmpty && !hash.IsDeleted)
+                {
+                    yield return hash;
+                }
+            }
+        }
+
         // TODO: set hashCollisions values (currently they're always set to 0)
         public IEnumerable<MpqFile> GetMpqFiles()
         {
@@ -778,7 +814,7 @@
                 }
             }
 
-            for (var i = 0; i < (int)_blockTable.Size; i++)
+            for (var i = 0; i < _blockTable.Size; i++)
             {
                 var mpqEntry = _blockTable[i];
                 if (!addedEntries.Contains(mpqEntry))
