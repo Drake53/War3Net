@@ -32,7 +32,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <TfmGroupDotNet>net6.0</TfmGroupDotNet>
-    <TfmGroupDotNetWindows>net6.0;net6.0-windows</TfmGroupDotNetWindows>
+    <TfmGroupDotNet>net6.0;net10.0</TfmGroupDotNet>
+    <TfmGroupDotNetWindows>net6.0;net6.0-windows;net10.0;net10.0-windows</TfmGroupDotNetWindows>
   </PropertyGroup>
 </Project>
