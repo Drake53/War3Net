@@ -13,6 +13,7 @@
       "src\\War3Net.IO.Compression\\War3Net.IO.Compression.csproj",
       "src\\War3Net.IO.Mpq\\War3Net.IO.Mpq.csproj",
       "src\\War3Net.IO.Slk\\War3Net.IO.Slk.csproj",
+      "src\\War3Net.Tools.Cli\\War3Net.Tools.Cli.csproj",
       "submodules\\CSharp.lua\\CSharp.lua.CoreSystem\\CSharp.lua.CoreSystem.csproj",
       "submodules\\CSharp.lua\\CSharp.lua\\CSharp.lua.csproj",
       "submodules\\FastMDX\\FastMDX\\FastMDX.csproj",
@@ -26,7 +27,8 @@
       "tests\\War3Net.IO.Compression.Tests\\War3Net.IO.Compression.Tests.csproj",
       "tests\\War3Net.IO.Mpq.Tests\\War3Net.IO.Mpq.Tests.csproj",
       "tests\\War3Net.IO.Slk.Tests\\War3Net.IO.Slk.Tests.csproj",
-      "tests\\War3Net.TestTools.UnitTesting\\War3Net.TestTools.UnitTesting.csproj"
+      "tests\\War3Net.TestTools.UnitTesting\\War3Net.TestTools.UnitTesting.csproj",
+      "tests\\War3Net.Tools.Cli.Tests\\War3Net.Tools.Cli.Tests.csproj"
     ]
   }
 }

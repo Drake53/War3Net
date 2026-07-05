@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(TfmGroupDotNet)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>w3n</AssemblyName>
+    <PackageId>War3Net.Tools.Cli</PackageId>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Command-line tool exposing War3Net's functionality.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PUBLISH)'!='true'">
+    <ProjectReference Include="..\War3Net.IO.Mpq\War3Net.IO.Mpq.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PUBLISH)'=='true'">
+    <PackageReference Include="War3Net.IO.Mpq" />
+  </ItemGroup>
+
+</Project>

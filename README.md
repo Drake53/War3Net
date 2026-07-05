@@ -57,7 +57,18 @@ Three major components are included in War3Net:
 
 ### Command-Line Tool
 
-*Coming soon™*
+**`w3n`** ([War3Net.Tools.Cli]) exposes War3Net's functionality as a single command-line tool.
+It can be built and installed from source using the [installation script](tools/install-cli.sh).
+The CLI exposes one subcommand for every available module:
+
+| CLI Command | Available since |
+| ----------- | --------------- |
+| `w3n blp`   | *Coming soon™*  |
+| `w3n jass`  | *Coming soon™*  |
+| `w3n mdx`   | *Coming soon™*  |
+| `w3n mpq`   | v6.0.3          |
+
+For a list of available options, use `w3n --help` or `w3n mpq --help`.
 
 ### VS Code Extension
 
@@ -115,7 +126,7 @@ Some of the above packages are based on code from other repositories:
 Three major initiatives are in progress:
 
 **War3Net CLI** — Exposing War3Net's functionality to users outside of the .NET ecosystem.
-- `w3n` CLI exposing commands for MPQ, BLP, MDX, JASS, and more
+- `w3n` CLI exposing commands for MPQ, BLP, TGA, MDX, JASS, SLK, and more
 - End goals: Full War3Net functionality covered by the CLI • VSCode extension
 
 **JASS Language Suite** — Bringing modern IDE tooling to JASS.
@@ -167,6 +178,7 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.Runtime.Core]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Core
 [War3Net.Runtime.Api.Blizzard]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Blizzard
 [War3Net.Runtime.Api.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime.Api.Common
+[War3Net.Tools.Cli]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Tools.Cli
 
 [PBuild]: https://www.nuget.org/packages/War3Net.Build
 [PBuildCore]: https://www.nuget.org/packages/War3Net.Build.Core

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net$(NETCoreAppMaximumVersion)</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\War3Net.Tools.Cli\War3Net.Tools.Cli.csproj" />
+  </ItemGroup>
+
+</Project>

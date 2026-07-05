@@ -32,6 +32,7 @@
     <Project Path="src/War3Net.Runtime.Api.Common/War3Net.Runtime.Api.Common.csproj" />
     <Project Path="src/War3Net.Runtime.Core/War3Net.Runtime.Core.csproj" />
     <Project Path="src/War3Net.Runtime/War3Net.Runtime.csproj" />
+    <Project Path="src/War3Net.Tools.Cli/War3Net.Tools.Cli.csproj" />
   </Folder>
   <Folder Name="/submodules/">
     <Project Path="submodules/CSharp.lua/CSharp.lua.CoreSystem/CSharp.lua.CoreSystem.csproj" />
@@ -60,5 +61,6 @@
     <Project Path="tests/War3Net.Runtime.Core.Tests/War3Net.Runtime.Core.Tests.csproj" />
     <Project Path="tests/War3Net.Runtime.Tests/War3Net.Runtime.Tests.csproj" />
     <Project Path="tests/War3Net.TestTools.UnitTesting/War3Net.TestTools.UnitTesting.csproj" />
+    <Project Path="tests/War3Net.Tools.Cli.Tests/War3Net.Tools.Cli.Tests.csproj" />
   </Folder>
 </Solution>
