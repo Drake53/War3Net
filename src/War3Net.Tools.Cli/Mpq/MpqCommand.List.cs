@@ -8,11 +8,9 @@ namespace War3Net.Tools.Cli.Mpq
             var formatOptions = new[] { "text", "json", "jsonl" };
 
             var command = new Command("list", "List the files in an MPQ archive.");
-            var archiveArgument = new Argument<string>("archive");
+            var archiveArgument = new Argument<string>("archive").AcceptLegalFilePathsOnly();
             var detailOption = StringOption("--detail", null, detailOptions, "summary", "Level of detail to include for each entry.");
             var formatOption = StringOption("--format", null, formatOptions, "text", "Output format.");
-            detailOption.Validators.AddOneOfValidation(detailOptions);
-            formatOption.Validators.AddOneOfValidation(formatOptions);
 
             command.Arguments.Add(archiveArgument);
             command.Options.Add(detailOption);

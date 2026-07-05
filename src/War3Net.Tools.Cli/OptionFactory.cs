@@ -60,12 +60,9 @@ namespace War3Net.Tools.Cli
                 ? new Option<string>(name)
                 : new Option<string>(name, alias);
 
-            var allowedValuesEnumeration = allowedValues.Length == 2
-                ? $"{allowedValues[0]} and {allowedValues[1]}"
-                : $"{string.Join(", ", allowedValues.SkipLast(1))}, and {allowedValues[^1]}";
-
-            option.Description = description + $" Allowed values are {allowedValuesEnumeration}.";
+            option.Description = description;
             option.DefaultValueFactory = _ => defaultValue;
+            _ = option.AcceptOnlyFromAmong(allowedValues);
 
             return option;
         }
