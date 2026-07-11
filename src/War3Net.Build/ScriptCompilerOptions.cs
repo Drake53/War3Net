@@ -57,7 +57,7 @@
         public string? ExcludeDecompilePackages { get; set; }
 
         /// <summary>
-        /// <see cref="CSharpLua.Compiler.IsExportMetadata"/>.
+        /// <see cref="Compiler.IsExportMetadata"/>.
         /// </summary>
         public bool ExportMetadata { get; set; }
 
