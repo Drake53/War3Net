@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)../.config/analyzers/CA.tests.globalconfig" />
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)../.config/analyzers/SA.tests.globalconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="TestData\**" />
     <Content Include="TestData\**">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

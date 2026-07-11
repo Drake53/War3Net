@@ -1,0 +1,8 @@
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-quality-rule-options
+
+is_global = true
+global_level = 100
+
+# Configure rule severity
+dotnet_diagnostic.CA1707.severity = none
