@@ -130,6 +130,17 @@ Three major initiatives are in progress:
 - Native JASS VM, C# natives, headless rendering
 - End goals: Automated C# map testing • Full game emulation
 
+#### Current Status
+
+Several file format libraries are being created or reworked, building the foundation for the goals set above:
+- **War3Net.Drawing.Jpeg** - BLP image files contain JPEG data using a non-standard BGRA channel layout. The BLP library currently relies on separate cross-platform and windows-specific implementations to handle this. The dual-implementation was made to preserve performance on windows, because the cross-platform implementation performs significantly worse. The goal is to create a single, custom, cross-platform solution that has roughly the same performance as the windows-specific implementation, allowing the BLP library to be simplified: no `-windows` specific target (which bleeds through to all other projects that depend on it), no platform-specific code paths, and no dependency on an external submodule.
+- **War3Net.Modeling.Mdx** - just like JPEG, War3Net currently relies on an external submodule to handle .mdx model files. The goal is to write a custom parser that supports the latest Reforged model file format versions, and use modern .NET language features to increase the performance.
+- **War3Net.Documents.Sylk** - the current SLK library only supports a limited subset of the file format's features, which causes parsing to fail if a .slk file uses any features not supported by the library. A complete rewrite will be done, focusing on an intuitive API and better performance. The package ID will also be changed to be consistent with other packages and to remove it from the `IO` sub-namespace, which is a bad fit for this library.
+- **War3Net.CodeAnalysis.Jass** - the v6 release already reworked this library to make it more similar to C#'s Roslyn. Next up is reworking the parser using a custom implementation that no longer relies on the Pidgin parser combinator library. This external library requires .NET 7+ in its latest version, making it a bad fit for War3Net's compatibility principle. Benchmarks have also shown that the new implementation performs better than the old parser combinator-based implementation.
+- **War3Net.IO.Casc** - one of this library's biggest gaps to date is finally being closed. While a competing library exists in the .NET ecosystem, its author has still not responded to a question from 2021 asking about a license. So while the competing library is open source, the lack of a license effectively makes it "all rights reserved", and thus unusable. A custom CASC implementation will be created from scratch.
+
+All of the above systems are already mostly in place, thanks to AI coding assistants significantly speeding up development and lowering the barrier to writing libraries that require a lot of boilerplate and/or research to implement. **However**, code quality and maintainability are valued more than quickly pushing out slop code. As a result, the bottleneck has shifted from writing code to reviewing code, so it may still take some time before these new libraries and changes are made available. Thank you for your patience.
+
 ### Contributing
 
 Please open an issue before creating a pull request.
