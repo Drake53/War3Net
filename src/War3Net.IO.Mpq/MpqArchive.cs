@@ -605,10 +605,10 @@
                 for (var i = 0; i < hashTable.Size; i++)
                 {
                     var hash = hashTable[i];
-                    if (!hash.IsEmpty && !hash.IsDeleted && hash.BlockIndex > BlockTable.MaxSize)
+                    if (!hash.IsEmpty && !hash.IsDeleted && hash.BlockIndex > MpqTable.MaxSize)
                     {
                         // TODO: don't force neutral locale if another MpqHash exists with the same Name1 and Name2, and that has the neutral locale
-                        hashTable[i] = new MpqHash(hash.Name, MpqLocale.Neutral /*hash.Locale & (MpqLocale)0x00000FFF*/, hash.BlockIndex & (BlockTable.MaxSize - 1), hash.Mask);
+                        hashTable[i] = new MpqHash(hash.Name, MpqLocale.Neutral /*hash.Locale & (MpqLocale)0x00000FFF*/, hash.BlockIndex & (MpqTable.MaxSize - 1), hash.Mask);
                     }
                 }
 

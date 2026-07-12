@@ -60,7 +60,7 @@
             options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new JsonStringVersionConverter());
 
-            return JsonSerializer.Deserialize<List<GameBuild>>(Resources.War3Resources.GameBuilds, options) ?? new();
+            return JsonSerializer.Deserialize<List<GameBuild>>(War3Resources.GameBuilds, options) ?? new();
         }
     }
 }

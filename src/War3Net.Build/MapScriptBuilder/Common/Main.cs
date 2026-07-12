@@ -246,7 +246,7 @@
 
             if (UseCSharpLua)
             {
-                writer.WriteCall(CSharpLua.LuaSyntaxGenerator.kManifestFuncName);
+                writer.WriteCall(LuaSyntaxGenerator.kManifestFuncName);
             }
 
             writer.WriteLine();

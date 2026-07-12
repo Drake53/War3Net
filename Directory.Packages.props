@@ -3,7 +3,7 @@
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="BenchmarkDotNet" Version="0.13.2" />
+		<PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
 		<PackageVersion Include="DiffPlex" Version="1.7.0" />
 		<PackageVersion Include="JpegLibrary" Version="0.3.30" />
 		<PackageVersion Include="MessagePack" Version="2.2.60" />
@@ -23,7 +23,7 @@
 		<PackageVersion Include="Serilog.Sinks.File" Version="4.1.0" />
 		<PackageVersion Include="SharpZipLib" Version="1.4.2" />
 		<PackageVersion Include="SixLabors.ImageSharp" Version="3.1.11" />
-		<PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.435" />
+		<PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
 		<PackageVersion Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
 		<PackageVersion Include="System.Text.Json" Version="8.0.4" />
@@ -43,11 +43,15 @@
 		<PackageVersion Include="War3Net.Common" Version="6.0.2" />
 		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.3" />
 		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.3" />
+		<PackageVersion Include="War3Net.Documents.Sylk" Version="0.1.0" />
 		<PackageVersion Include="War3Net.Drawing.Blp" Version="6.0.2" />
+		<PackageVersion Include="War3Net.Drawing.Jpeg" Version="0.1.0" />
+		<PackageVersion Include="War3Net.Drawing.Tga" Version="0.1.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
 		<PackageVersion Include="War3Net.IO.Compression" Version="6.0.2" />
 		<PackageVersion Include="War3Net.IO.Mpq" Version="6.0.3" />
 		<PackageVersion Include="War3Net.IO.Slk" Version="6.0.2" />
 		<PackageVersion Include="War3Net.Modeling" Version="0.1.0" />
+		<PackageVersion Include="War3Net.Modeling.Mdx" Version="0.1.0" />
 	</ItemGroup>
 </Project>

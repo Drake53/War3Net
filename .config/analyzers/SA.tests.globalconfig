@@ -1,0 +1,7 @@
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/tree/master/documentation
+
+is_global = true
+global_level = 100
+
+# Configure rule severity
+dotnet_diagnostic.SA1600.severity = none

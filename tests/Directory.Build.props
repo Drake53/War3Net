@@ -6,6 +6,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <DefineConstants Condition="'$(ENABLE_FLAKY_TESTS)' == 'true'">$(DefineConstants);ENABLE_FLAKY_TESTS</DefineConstants>
+    <DefineConstants Condition="'$(ENABLE_ONLINE_TESTS)' == 'true'">$(DefineConstants);ENABLE_ONLINE_TESTS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,11 @@
 
   <ItemGroup Condition="'$(MSBuildProjectName)' != 'War3Net.TestTools.UnitTesting'">
     <ProjectReference Include="..\War3Net.TestTools.UnitTesting\War3Net.TestTools.UnitTesting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)../.config/analyzers/CA.tests.globalconfig" />
+    <GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)../.config/analyzers/SA.tests.globalconfig" />
   </ItemGroup>
 
   <ItemGroup>
