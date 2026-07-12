@@ -43,11 +43,15 @@
 		<PackageVersion Include="War3Net.Common" Version="6.0.2" />
 		<PackageVersion Include="War3Net.CSharpLua" Version="2.0.3" />
 		<PackageVersion Include="War3Net.CSharpLua.CoreSystem" Version="2.0.3" />
+		<PackageVersion Include="War3Net.Documents.Sylk" Version="0.1.0" />
 		<PackageVersion Include="War3Net.Drawing.Blp" Version="6.0.2" />
+		<PackageVersion Include="War3Net.Drawing.Jpeg" Version="0.1.0" />
+		<PackageVersion Include="War3Net.Drawing.Tga" Version="0.1.0" />
 		<PackageVersion Include="War3Net.IO.Casc" Version="0.1.0" />
 		<PackageVersion Include="War3Net.IO.Compression" Version="6.0.2" />
 		<PackageVersion Include="War3Net.IO.Mpq" Version="6.0.3" />
 		<PackageVersion Include="War3Net.IO.Slk" Version="6.0.2" />
 		<PackageVersion Include="War3Net.Modeling" Version="0.1.0" />
+		<PackageVersion Include="War3Net.Modeling.Mdx" Version="0.1.0" />
 	</ItemGroup>
 </Project>

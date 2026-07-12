@@ -83,12 +83,16 @@ Full list of current and planned packages:
 | [War3Net.CodeAnalysis.Jass]        | Parse and render JASS source files.                              | [![VCodeJass]][PCodeJass]     |
 | [War3Net.CodeAnalysis.Transpilers] | Transpile JASS to C# or Lua.                                     | [![VCodeTrans]][PCodeTrans]   |
 | [War3Net.Common]                   | Shared utilities for War3Net packages.                           | [![VCommon]][PCommon]         |
+| [War3Net.Documents.Sylk]           | Read and write SYLK files.                                       | *Coming soon™*                |
 | [War3Net.Drawing.Blp]              | Read and write BLP texture files.                                | [![VBlp]][PBlp]               |
+| [War3Net.Drawing.Jpeg]             | Read and write JPEG files.                                       | *Coming soon™*                |
+| [War3Net.Drawing.Tga]              | Read and write TGA files.                                        | *Coming soon™*                |
 | [War3Net.IO.Casc]                  | Read CASC archives.                                              | *Coming soon™*                |
 | [War3Net.IO.Compression]           | Compression algorithms for MPQ archives.                         | [![VCompress]][PCompress]     |
 | [War3Net.IO.Mpq]                   | Read and write MPQ archives.                                     | [![VMpq]][PMpq]               |
 | [War3Net.IO.Slk]                   | Read and write SLK data files.                                   | [![VSlk]][PSlk]               |
 | [War3Net.Modeling]                 | Read and write .mdl and .mdx files.                              | *Coming soon™*                |
+| [War3Net.Modeling.Mdx]             | Read and write .mdx files.                                       | *Coming soon™*                |
 | [War3Net.Rendering]                | Render Warcraft III models using [Veldrid].                      | *Coming soon™*                |
 | [War3Net.Replay]                   | Parse replay (.w3g) files.                                       | *Coming soon™*                |
 | [War3Net.Runtime]                  | Execute JASS and Lua map scripts using [NLua].                   | *Coming soon™*                |
@@ -155,12 +159,16 @@ Projects from NuGet packages and submodules may have a different license.
 [War3Net.CodeAnalysis.Jass]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Jass
 [War3Net.CodeAnalysis.Transpilers]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.CodeAnalysis.Transpilers
 [War3Net.Common]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Common
+[War3Net.Documents.Sylk]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Documents.Sylk
 [War3Net.Drawing.Blp]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Blp
+[War3Net.Drawing.Jpeg]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Jpeg
+[War3Net.Drawing.Tga]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Drawing.Tga
 [War3Net.IO.Casc]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Casc
 [War3Net.IO.Compression]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Compression
 [War3Net.IO.Mpq]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Mpq
 [War3Net.IO.Slk]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.IO.Slk
 [War3Net.Modeling]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Modeling
+[War3Net.Modeling.Mdx]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Modeling.Mdx
 [War3Net.Rendering]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Rendering
 [War3Net.Replay]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Replay
 [War3Net.Runtime]: https://github.com/Drake53/War3Net/tree/master/src/War3Net.Runtime
@@ -175,12 +183,16 @@ Projects from NuGet packages and submodules may have a different license.
 [PCodeJass]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Jass
 [PCodeTrans]: https://www.nuget.org/packages/War3Net.CodeAnalysis.Transpilers
 [PCommon]: https://www.nuget.org/packages/War3Net.Common
+[PSylk]: https://www.nuget.org/packages/War3Net.Documents.Sylk
 [PBlp]: https://www.nuget.org/packages/War3Net.Drawing.Blp
+[PJpeg]: https://www.nuget.org/packages/War3Net.Drawing.Jpeg
+[PTga]: https://www.nuget.org/packages/War3Net.Drawing.Tga
 [PCasc]: https://www.nuget.org/packages/War3Net.IO.Casc
 [PCompress]: https://www.nuget.org/packages/War3Net.IO.Compression
 [PMpq]: https://www.nuget.org/packages/War3Net.IO.Mpq
 [PSlk]: https://www.nuget.org/packages/War3Net.IO.Slk
 [PModel]: https://www.nuget.org/packages/War3Net.Modeling
+[PModelMdx]: https://www.nuget.org/packages/War3Net.Modeling.Mdx
 [PRender]: https://www.nuget.org/packages/War3Net.Rendering
 [PReplay]: https://www.nuget.org/packages/War3Net.Replay
 [PRuntime]: https://www.nuget.org/packages/War3Net.Runtime
@@ -195,12 +207,16 @@ Projects from NuGet packages and submodules may have a different license.
 [VCodeJass]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Jass.svg
 [VCodeTrans]: https://img.shields.io/nuget/v/War3Net.CodeAnalysis.Transpilers.svg
 [VCommon]: https://img.shields.io/nuget/v/War3Net.Common.svg
+[VSylk]: https://img.shields.io/nuget/v/War3Net.Documents.Sylk.svg
 [VBlp]: https://img.shields.io/nuget/v/War3Net.Drawing.Blp.svg
+[VJpeg]: https://img.shields.io/nuget/v/War3Net.Drawing.Jpeg.svg
+[VTga]: https://img.shields.io/nuget/v/War3Net.Drawing.Tga.svg
 [VCasc]: https://img.shields.io/nuget/v/War3Net.IO.Casc.svg
 [VCompress]: https://img.shields.io/nuget/v/War3Net.IO.Compression.svg
 [VMpq]: https://img.shields.io/nuget/v/War3Net.IO.Mpq.svg
 [VSlk]: https://img.shields.io/nuget/v/War3Net.IO.Slk.svg
 [VModel]: https://img.shields.io/nuget/v/War3Net.Modeling.svg
+[VModelMdx]: https://img.shields.io/nuget/v/War3Net.Modeling.Mdx.svg
 [VRender]: https://img.shields.io/nuget/v/War3Net.Rendering.svg
 [VReplay]: https://img.shields.io/nuget/v/War3Net.Replay.svg
 [VRuntime]: https://img.shields.io/nuget/v/War3Net.Runtime.svg
