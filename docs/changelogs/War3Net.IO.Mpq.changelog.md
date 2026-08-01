@@ -4,7 +4,9 @@ All notable changes to the `War3Net.IO.Mpq` package, newest version first.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v6.0.3 - 2026-07-04
+## [Unreleased]
+
+## [v6.0.3] - 2026-07-04
 
 ### Added
 
@@ -14,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Changed `MpqArchive[int]` from internal to public.
 
-## v6.0.2 - 2026-03-01
+## [v6.0.2] - 2026-03-01
 
 ### Breaking Changes
 
@@ -25,21 +27,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Replaced the vulnerable `DotNetZip` dependency with `System.IO.Compression` and an internal CRC32 implementation.
 
-## v6.0.1 - 2026-02-01
+## [v6.0.1] - 2026-02-01
 
 _No functional changes; package readme and metadata updated for nuget.org presentation._
 
-## v6.0.0 - 2026-01-25
+## [v6.0.0] - 2026-01-25
 
 _No functional changes; version bumped to align with the rest of War3Net's v6.0.0 release._
 
-## v5.8.1 - 2025-09-12
+## [v5.8.1] - 2025-09-12
 
 ### Fixed
 
 - Fixed `MpqStream` not disposing its underlying stream, so `using` statements around an `MpqStream` now properly release the base stream.
 
-## v5.8.0 - 2025-09-06
+## [v5.8.0] - 2025-09-06
 
 ### Added
 
@@ -223,3 +225,11 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 - `MpqEntry.Filename` is now correctly null if no `MpqHash` references the entry.
 - Orphaned `MpqEntries` no longer use deleted `MpqHashes`.
 - Improved `MpqHeader` exception messages.
+
+[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
+[v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3
+[v6.0.2]: https://github.com/Drake53/War3Net/releases/tag/v2026.3.1
+[v6.0.1]: https://github.com/Drake53/War3Net/releases/tag/v2026.2.1
+[v6.0.0]: https://github.com/Drake53/War3Net/releases/tag/v2026.1.25
+[v5.8.1]: https://github.com/Drake53/War3Net/releases/tag/v2025.9.12
+[v5.8.0]: https://github.com/Drake53/War3Net/releases/tag/v2025.9.6
