@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+_No unreleased changes._
+
 ## [v6.0.3] - 2026-07-04
+
+### Added
+
+- Added .NET 10.0 target framework; the package now targets both .NET 6.0 and .NET 10.0.
 
 ### Changed
 
@@ -120,7 +126,9 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 ## v1.3.6 - 2020-08-09
 
-_Initial version._
+### Added
+
+- Initial release. Useful files were moved out of the `War3Net.Build` package into this new package, to reduce dependencies.
 
 [Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
 [v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3

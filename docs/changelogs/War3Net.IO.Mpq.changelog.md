@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+_No unreleased changes._
+
 ## [v6.0.3] - 2026-07-04
 
 ### Added
 
 - Added `Count` and `EnumerateHashes()` to `MpqArchive`.
+- Added .NET 10.0 target framework; the package now targets both .NET 6.0 and .NET 10.0.
 
 ### Changed
 
@@ -23,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `Attributes.Crc32s` changed from `List<int>` to `List<uint>`, matching the actual unsigned nature of CRC32 values.
 - Updated target framework from .NET 5.0 to .NET 6.0.
 
-### Changed
+### Security
 
 - Replaced the vulnerable `DotNetZip` dependency with `System.IO.Compression` and an internal CRC32 implementation.
 

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added .NET 10.0 target framework; the package now targets both .NET 6.0 and .NET 10.0.
+
 ## [v6.0.2] - 2026-03-01
 
 ### Breaking Changes
