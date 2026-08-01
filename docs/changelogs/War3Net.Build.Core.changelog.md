@@ -4,23 +4,23 @@ All notable changes to the `War3Net.Build.Core` package, newest version first.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v6.0.3
+## v6.0.3 - 2026-07-04
 
 ### Changed
 
 - Updated `War3Net.IO.Mpq` from v6.0.2 to v6.0.3.
 
-## v6.0.2
+## v6.0.2 - 2026-03-01
 
 ### Breaking Changes
 
 - Updated target framework from .NET 5.0 to .NET 6.0.
 
-## v6.0.1
+## v6.0.1 - 2026-02-01
 
 _No functional changes; package readme and metadata updated for nuget.org presentation._
 
-## v6.0.0
+## v6.0.0 - 2026-01-25
 
 ### Breaking Changes
 
@@ -34,19 +34,19 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Fixed exception when deserializing `MapInfo.EditorVersion` as JSON string.
 
-## v1.5.3
+## v1.5.3 - 2020-10-29
 
 ### Added
 
 - Add `UseNewFormat` property to `MapCustomTextTriggers`.
 
-## v1.5.2
+## v1.5.2 - 2020-10-29
 
 ### Added
 
 - Support parsing and serializing `.wct` files.
 
-## v1.5.1
+## v1.5.1 - 2020-10-28
 
 ### Added
 
@@ -56,7 +56,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Fix `MapTriggers` serializer for old format could serialize `TriggerItemType.RootCategory` items.
 
-## v1.5.0
+## v1.5.0 - 2020-10-27
 
 ### Added
 
@@ -68,7 +68,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Update target framework from .NET Standard to .NET Core.
 
-## v1.4.0
+## v1.4.0 - 2020-09-14
 
 ### Breaking Changes
 
@@ -106,7 +106,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Fix string interpolation uses incorrect format string.
 
-## v1.3.7
+## v1.3.7 - 2020-08-22
 
 ### Added
 
@@ -116,6 +116,6 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Preplaced units are now assigned to a global variable.
 
-## v1.3.6
+## v1.3.6 - 2020-08-09
 
 _Initial version._

@@ -4,7 +4,7 @@ All notable changes to the `War3Net.IO.Mpq` package, newest version first.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v6.0.3
+## v6.0.3 - 2026-07-04
 
 ### Added
 
@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Changed `MpqArchive[int]` from internal to public.
 
-## v6.0.2
+## v6.0.2 - 2026-03-01
 
 ### Breaking Changes
 
@@ -25,21 +25,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Replaced the vulnerable `DotNetZip` dependency with `System.IO.Compression` and an internal CRC32 implementation.
 
-## v6.0.1
+## v6.0.1 - 2026-02-01
 
 _No functional changes; package readme and metadata updated for nuget.org presentation._
 
-## v6.0.0
+## v6.0.0 - 2026-01-25
 
 _No functional changes; version bumped to align with the rest of War3Net's v6.0.0 release._
 
-## v5.8.1
+## v5.8.1 - 2025-09-12
 
 ### Fixed
 
 - Fixed `MpqStream` not disposing its underlying stream, so `using` statements around an `MpqStream` now properly release the base stream.
 
-## v5.8.0
+## v5.8.0 - 2025-09-06
 
 ### Added
 
@@ -53,13 +53,13 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 - Fixed an encrypted single-unit `MpqStream` not being decrypted correctly because the check used the uncompressed size instead of the compressed size.
 - Fixed `MpqFileFlags.BlockOffsetAdjustedKey` handling not being applied correctly in some cases.
 
-## v5.5.2
+## v5.5.2 - 2022-10-25
 
 ### Changed
 
 - Improved parallel read performance by using `MemoryMappedFile` for archive access.
 
-## v5.5.0
+## v5.5.0 - 2022-08-20
 
 ### Changed
 
@@ -70,7 +70,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - Fixed a typo affecting behavior in the Mpq read path.
 
-## v5.4.5
+## v5.4.5 - 2022-05-27
 
 ### Changed
 
@@ -82,13 +82,13 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - `MpqStream` with the `SingleUnit` flag no longer buffers data eagerly in its constructor, and now validates `CanRead` and throws on read/seek (instead of in the constructor) when block positions are invalid, avoiding premature exceptions when opening certain archives.
 
-## v5.2.1
+## v5.2.1 - 2021-07-23
 
 ### Fixed
 
 - Fixed incorrect hash table size calculation when creating an archive, which could produce a hash table larger than `MpqTable.MaxSize` or ignore the configured `HashTableSize` (fixes #14).
 
-## v5.2.0
+## v5.2.0 - 2021-04-27
 
 ### Added
 
@@ -100,7 +100,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - Doubled `MpqTable.MaxSize`.
 
-## v5.1.3
+## v5.1.3 - 2021-02-14
 
 ### Changed
 
@@ -114,19 +114,19 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - Minor nullable-reference and encoding-usage cleanups in `MpqStream`.
 
-## v5.1.2
+## v5.1.2 - 2021-01-09
 
 ### Changed
 
 - `MpqArchiveBuilder` is no longer sealed.
 
-## v5.1.1
+## v5.1.1 - 2021-01-01
 
 ### Changed
 
 - Minor fixes across `BlockTable`, `HashTable`, `MpqArchive`, `MpqArchiveBuilder`, and `MpqArchiveCreateOptions`.
 
-## v5.1.0
+## v5.1.0 - 2020-12-25
 
 ### Changed
 
@@ -138,7 +138,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 - Fixed encryption seed calculation.
 - Various other minor MPQ fixes (`FileProvider`, `MpqEntry`, `MpqStream`, `StormBuffer`).
 
-## v5.0.0
+## v5.0.0 - 2020-12-14
 
 ### Breaking Changes
 
@@ -155,7 +155,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - `MpqFile` now implements `IComparable`, `IComparable<MpqFile>`, and `IEquatable<MpqFile>`, backed by new `MpqFileComparer`, replacing the old `IsSameAs` method.
 
-## v1.2.2
+## v1.2.2 - 2020-11-12
 
 ### Added
 
@@ -165,13 +165,13 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - `MpqFile.MpqStream` property is now public.
 
-## v1.2.1
+## v1.2.1 - 2020-11-12
 
 ### Added
 
 - Added `MpqArchiveBuilder.RemoveFile(ulong)` overload, alongside the existing `RemoveFile(string)`.
 
-## v1.2.0
+## v1.2.0 - 2020-11-11
 
 ### Added
 
@@ -181,7 +181,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - `MpqArchive.HashTableSize` property is now public.
 
-## v1.1.0
+## v1.1.0 - 2020-09-14
 
 ### Breaking Changes
 
@@ -200,13 +200,13 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - Fixed `MpqFile.OpenRead` to properly close the underlying `MpqStream` after copying its contents.
 
-## v1.0.1
+## v1.0.1 - 2020-08-10
 
 ### Fixed
 
 - Various MPQ library bugfixes in `MpqArchive`, `MpqHeader`, and `StormBuffer`.
 
-## v1.0.0
+## v1.0.0 - 2020-07-10
 
 ### Added
 

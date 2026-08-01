@@ -4,23 +4,23 @@ All notable changes to the `War3Net.Build` package, newest version first.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v6.0.3
+## v6.0.3 - 2026-07-04
 
 ### Changed
 
 - Updated `War3Net.Build.Core` from v6.0.2 to v6.0.3.
 
-## v6.0.2
+## v6.0.2 - 2026-03-01
 
 ### Breaking Changes
 
 - Updated target framework from .NET 5.0 to .NET 6.0.
 
-## v6.0.1
+## v6.0.1 - 2026-02-01
 
 _No functional changes; package readme and metadata updated for nuget.org presentation._
 
-## v6.0.0
+## v6.0.0 - 2026-01-25
 
 ### Breaking Changes
 
@@ -28,7 +28,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 - `TriggerRenderer` and `TriggerRendererContext` now expect an `IndentedTextWriter` instead of `JassRenderer`/`TextWriter`.
 - `MapScriptBuilder`'s C# api methods have been removed, you can now use the `GenerateGlobals` methods and manually transpile to C#.
 
-## v1.5.0
+## v1.5.0 - 2020-10-27
 
 ### Added
 
@@ -40,7 +40,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Update target framework from .NET Standard to .NET Core.
 
-## v1.4.0
+## v1.4.0 - 2020-09-14
 
 ### Breaking Changes
 
@@ -60,13 +60,13 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Fix parse error in `war3mapUnits.doo` when random data mode is -1.
 
-## v1.3.10
+## v1.3.10 - 2020-08-30
 
 ### Added
 
 - Add event `OnArchiveBuilding` to `MapBuilder`.
 
-## v1.3.9
+## v1.3.9 - 2020-08-22
 
 ### Fixed
 
@@ -78,7 +78,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Fix string interpolation uses incorrect format string.
 
-## v1.3.7
+## v1.3.7 - 2020-08-22
 
 ### Added
 
@@ -88,7 +88,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Preplaced units are now assigned to a global variable.
 
-## v1.3.6
+## v1.3.6 - 2020-08-09
 
 ### Added
 
@@ -98,7 +98,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Created new project `War3Net.Build.Core`, and moved useful files there to reduce dependencies.
 
-## v1.3.5
+## v1.3.5 - 2020-07-11
 
 ### Added
 
@@ -113,7 +113,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Changed/added some exception messages.
 
-## v1.3.4
+## v1.3.4 - 2020-06-01
 
 ### Added
 
@@ -123,7 +123,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Updated `War3Net.CodeAnalysis.Jass`, `CSharpLua`, and `War3Api` packages.
 
-## v1.3.3
+## v1.3.3 - 2020-05-09
 
 ### Added
 
@@ -133,14 +133,14 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Added default value and property for `ObjectData` format version, so its value is not stuck at 0, which is invalid.
 
-## v1.3.2
+## v1.3.2 - 2020-04-25
 
 ### Added
 
 - Added setter indexer to `ObjectDataModification`.
 - Added property `MapObjectData` to `ScriptCompilerOptions`.
 
-## v1.3.1
+## v1.3.1 - 2020-04-21
 
 ### Changed
 
@@ -150,7 +150,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Can now run `MapBuilder`'s `Build` method multiple times, without needing to restart the application.
 
-## v1.3.0
+## v1.3.0 - 2020-04-12
 
 ### Added
 
@@ -165,14 +165,14 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - `CreateAllDestructables` can now generate the dead and withZ variants of `CreateDestructable`.
 
-## v1.2.0
+## v1.2.0 - 2020-03-08
 
 ### Added
 
 - Support `war3map.mmp` files.
 - Support water tinting color.
 
-## v1.1.4
+## v1.1.4 - 2020-03-04
 
 ### Added
 
@@ -183,26 +183,26 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Update `CSharpLua` to v1.5.10, and `War3Api` to v1.32.2.
 
-## v1.1.3
+## v1.1.3 - 2020-03-01
 
 ### Fixed
 
 - Fix `MapSounds` reforged file format was not parsed correctly.
 
-## v1.1.2
+## v1.1.2 - 2020-02-10
 
 ### Fixed
 
 - Fix `MapRegions` containing regions without sound generates invalid syntax.
 
-## v1.1.1
+## v1.1.1 - 2020-02-09
 
 ### Fixed
 
 - Replace `Regex.Escape`, which escapes too many characters (e.g. `.`).
 - Update `CSharpLua` to v1.5.9, which has some more bug fixes.
 
-## v1.1.0
+## v1.1.0 - 2020-02-08
 
 ### Breaking Changes
 
@@ -241,7 +241,7 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 - Can now parse and serialize `war3map.w3s` file format version 2. Meaning of the added data not yet known, nor stored in the `MapSounds` object.
 - Added overload for `PlayerData.Create` method, making it easier to create a copy of an existing playerData object.
 
-## v1.0.0
+## v1.0.0 - 2020-01-28
 
 ### Breaking Changes
 
