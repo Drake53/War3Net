@@ -36,6 +36,226 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 - `TriggerRenderer` and `TriggerRendererContext` now expect an `IndentedTextWriter` instead of `JassRenderer`/`TextWriter`.
 - `MapScriptBuilder`'s C# api methods have been removed, you can now use the `GenerateGlobals` methods and manually transpile to C#.
 
+## v5.8.2 - 2025-09-27
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.8.1 to v5.8.2.
+
+## [v5.8.1] - 2025-09-12
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.8.0 to v5.8.1.
+
+## [v5.8.0] - 2025-09-06
+
+### Added
+
+- Added support for Linux/WSL, including case-insensitive path handling (#69).
+- Backported general improvements from the vJASS branch (#71).
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.7.1 to v5.8.0, and `War3Net.CodeAnalysis.Transpilers` from v5.6.1 to v5.8.0.
+
+## v5.7.1 - 2023-01-19
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.7.0 to v5.7.1.
+
+## v5.7.0 - 2023-01-08
+
+### Breaking Changes
+
+- Followed the `War3Net.Build.Core` v5.7.0 merge of the separate map and campaign classes that held identical data.
+
+### Added
+
+- Added `CampaignExtensions.GetInfoFile`, `GetImportedFilesFile`, `SetImportedFilesFile`, and `LocalizeInfo`, matching the methods already available on `MapExtensions`.
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.6.1 to v5.7.0.
+
+## v5.6.1 - 2023-01-07
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.6.0 to v5.6.1.
+
+## v5.6.0.1 - 2022-12-28
+
+### Fixed
+
+- Fixed a `NullReferenceException` in `MapScriptBuilder`.
+
+## v5.6.0 - 2022-12-20
+
+### Breaking Changes
+
+- Renamed the format version enum members for consistency, following `War3Net.Build.Core` v5.6.0.
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.5.7 to v5.6.0, and `War3Net.CodeAnalysis.Transpilers` from v5.5.5 to v5.6.0.
+
+### Fixed
+
+- Fixed the `MapScriptBuilder` check for whether 24 players are supported.
+
+## v5.5.7 - 2022-12-14
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.5.6 to v5.5.7.
+
+## v5.5.6 - 2022-11-30
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.5.5 to v5.5.6.
+
+## v5.5.5 - 2022-11-13
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.5.3 to v5.5.5.
+
+## v5.5.3 - 2022-10-29
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.5.2 to v5.5.3.
+
+## v5.5.2 - 2022-10-25
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.5.0 to v5.5.2.
+
+## v5.5.0 - 2022-08-20
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.4.5 to v5.5.0.
+
+## v5.4.5 - 2022-05-27
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.4.2 to v5.4.5, and `War3Net.CodeAnalysis.Transpilers` from v5.4.1 to v5.4.5.
+- Adapted to the `GamePatchVersionProvider` to `GameBuildsProvider` replacement in `War3Net.Build.Core` v5.4.5.
+
+## v5.4.2 - 2022-04-24
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v5.4.1 to v5.4.2.
+
+### Fixed
+
+- `UnitDataExtensions` no longer uses `ValueAsBool`/`ValueAsChar`, which produced incorrect values for some object data types.
+
+## v5.4.1 - 2022-02-13
+
+### Breaking Changes
+
+- `MapBuilder` has been moved to `War3Net.Build.Core`.
+
+### Changed
+
+- Updated `War3Net.Build.Core` and `War3Net.CodeAnalysis.Transpilers` from v5.4.0 to v5.4.1.
+
+## v5.4.0 - 2022-02-13
+
+### Added
+
+- Added `TriggerRenderer`, for rendering `MapTriggers` back to a script, including support for Lua triggers.
+- `MapScriptBuilder` now detects units referenced by triggers, and generates destructable global variables.
+- `MapScriptBuilder` now uses the newly identified sound properties, and generates enemy priority flags for `PlayerData`.
+
+### Changed
+
+- `RenderAction`/`RenderCondition` take a `TriggerFunctionParameter` instead of a `TriggerFunction`.
+- `UnitDataExtensions.IsBuilding` now checks the unit object data.
+- Updated `War3Net.Build.Core` from v5.3.0 to v5.4.0, and `War3Net.CodeAnalysis.Transpilers` from v5.2.8 to v5.4.0.
+
+### Fixed
+
+- Fixed `MapScriptBuilder` global and widget variable generation, and a trigger naming bug.
+
+## v5.3.0 - 2022-01-16
+
+### Added
+
+- `MapScriptBuilder` now generates trigger functions, `InitGlobals`, and user-defined global variables, and handles the `InitCustomTeams` special case where the function is generated but never invoked.
+- Added support for decompiling `MapImportedFiles`, and constants for `war3map.j` and `war3map.lua`.
+
+### Changed
+
+- Added null checks for `MapInfo` and `MapEnvironment` throughout.
+- Updated `War3Net.Build.Core` from v5.2.2 to v5.3.0.
+
+### Fixed
+
+- Fixed `MapScriptBuilder` handling of sounds with the `Music` flag, unit creation functions, `CreateNeutralPassive`, unit method conditions, and the `SetGamePlacement` argument in the `config` function.
+- Fixed `MapExtensions.SetFile` for script files.
+- `CreateCameras` now checks the new file format.
+
+## v5.0.4 - 2021-04-09
+
+### Added
+
+- `MapScriptBuilder` now generates the tech tree and upgrades.
+
+## v5.0.3 - 2021-04-08
+
+### Changed
+
+- Updated `War3Net.CodeAnalysis.Transpilers` from v5.2.7 to v5.2.8.
+
+## v5.0.2 - 2021-04-07
+
+### Fixed
+
+- Fixed the `war3mapUnits.doo` case being unreachable because the switch was case-sensitive.
+
+## v5.0.1 - 2021-04-06
+
+### Changed
+
+- Updated `War3Net.CodeAnalysis.Transpilers` from v5.2.6 to v5.2.7.
+
+## v5.0.0 - 2021-03-06
+
+### Breaking Changes
+
+- Removed the old `MapBuilder` and the obsolete script builder classes; map scripts are now generated through `MapScriptBuilder` and the new `MapBuilder`, with `LegacyMapBuilder` re-implemented on top of it.
+- Removed the `War3Api` dependency, and replaced the `War3Net.CodeAnalysis.Jass` dependency with `War3Net.CodeAnalysis.Transpilers` (v5.2.6).
+- Updated target framework from .NET Core 3.1 to .NET 5.0.
+
+### Added
+
+- Added extension methods to get and set campaign/map files, and more constants.
+- Added support for the new package decompile options, `ScriptCompilerOptions.LobbyMusic`, and setting `compiler.IsExportMetadata`.
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v1.5.3 to v5.2.2.
+
+### Fixed
+
+- Fixed `LegacyMapBuilder` using `TopDirectoryOnly` when adding asset files, so files in subfolders are now included.
+- Fixed being unable to set a map's `Info`/`Environment` through the `SetFile` extension method when they were null.
+
+## v1.7.0 - 2020-11-12
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v1.5.0 to v1.5.3.
+
 ## v1.5.0 - 2020-10-27
 
 ### Added
@@ -266,8 +486,53 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 - `MapUnits` and `MapDoodads` `IEnumerable` constructor now sets the `.doo` header to its default value.
 - Sounds paths in `war3map.w3s` files are now correctly escaped.
 
+## v0.2.1 - 2019-10-21
+
+### Added
+
+- Added `ScriptCompilerOptions(IEnumerable<string>)` constructor.
+
+### Changed
+
+- The CSharp.lua CoreSystem libraries are no longer imported into the compilation automatically; `ScriptCompilerOptions.Libraries` is used as-is.
+
+## v0.2.0 - 2019-10-21
+
+### Added
+
+- Added `TerrainType` enum.
+
+### Changed
+
+- Updated the `War3Net.CSharpLua` dependency from v1.1.2 to the floating v1.2.* range.
+
+## v0.1.2 - 2019-10-16
+
+### Changed
+
+- Updated the `War3Net.CSharpLua` package version.
+
+## v0.1.1 - 2019-10-16
+
+### Fixed
+
+- Fixed the dependency on the CSharp.lua project not being declared correctly when packing.
+
+## v0.1.0 - 2019-10-15
+
+### Added
+
+- Initial release, for building a Warcraft III map file from source:
+  - `MapBuilder`, for assembling a map from its data files and assets, including loading assets from MPQ archives.
+  - `ScriptCompiler` and `ScriptCompilerOptions`, for compiling a map script from JASS, Lua, or C#, with support for importing custom Lua libraries and compiling C# in debug mode.
+  - `FunctionBuilder` classes, for generating the `main` and `config` functions.
+  - Parsing and serialization for the `war3map.w3i` file, with methods to manipulate player and force settings.
+  - `Tileset` enum, provider classes for light and sound environments, and `FileProvider` with locale support.
+
 [Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
 [v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/Drake53/War3Net/releases/tag/v2026.3.1
 [v6.0.1]: https://github.com/Drake53/War3Net/releases/tag/v2026.2.1
 [v6.0.0]: https://github.com/Drake53/War3Net/releases/tag/v2026.1.25
+[v5.8.1]: https://github.com/Drake53/War3Net/releases/tag/v2025.9.12
+[v5.8.0]: https://github.com/Drake53/War3Net/releases/tag/v2025.9.6

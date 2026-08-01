@@ -82,7 +82,6 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 ### Changed
 
 - `ZLibCompression.Decompress` now throws an `ArgumentException` when the decompressed data is shorter than `expectedLength`, instead of silently returning a zero-padded array. Pass `throwOnLessBytesThanExpected: false` to get an array resized to the number of bytes actually read.
-- Sealed the internal `LinkedNode` class.
 - Updated `War3Net.Common` from v5.5.0 to v5.5.2.
 
 ## v5.5.0 - 2022-08-20
@@ -115,7 +114,6 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 ### Changed
 
-- Removed obsolete `NETCOREAPP3_0` conditional compilation from `LinkedNode`.
 - Updated `War3Net.Common` from v5.0.0 to v5.0.1.
 
 ## v5.0.0 - 2020-12-14

@@ -73,7 +73,6 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 ### Changed
 
-- Sealed the internal `JpegBlockOutputWriter8Bit` class.
 - Updated `War3Net.Common` from v5.5.0 to v5.5.2.
 
 ## v5.5.0 - 2022-08-20

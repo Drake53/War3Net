@@ -60,9 +60,7 @@ _No functional changes; version bumped to align with the rest of War3Net's v5.5.
 
 ## v5.5.2 - 2022-10-25
 
-### Changed
-
-- Sealed the internal `IfThenElseParser` and `UntilWithLeadingParser` classes.
+_No functional changes; version bumped to align with the rest of War3Net's v5.5.2 release._
 
 ## v5.5.0 - 2022-08-20
 

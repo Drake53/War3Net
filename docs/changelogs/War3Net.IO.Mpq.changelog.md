@@ -58,24 +58,61 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 - Fixed an encrypted single-unit `MpqStream` not being decrypted correctly because the check used the uncompressed size instead of the compressed size.
 - Fixed `MpqFileFlags.BlockOffsetAdjustedKey` handling not being applied correctly in some cases.
 
+## v5.6.1 - 2023-01-07
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.6.0 to v5.6.1.
+
+## v5.6.0 - 2022-12-20
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.5.5 to v5.6.0.
+
+## v5.5.5 - 2022-11-13
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.5.3 to v5.5.5.
+
+## v5.5.3 - 2022-10-29
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.5.2 to v5.5.3.
+
 ## v5.5.2 - 2022-10-25
+
+### Added
+
+- Added `UserData` class, exposing the `"(user data)"` filename constant.
 
 ### Changed
 
 - Improved parallel read performance by using `MemoryMappedFile` for archive access.
+- `MpqHeader.Parse` gained an optional `leaveOpen` parameter.
+- Updated `War3Net.IO.Compression` from v5.5.0 to v5.5.2.
 
 ## v5.5.0 - 2022-08-20
 
 ### Changed
 
-- `MpqStream` now uses the `CopyTo` extension method internally.
-- `MpqHeader.Parse` gained an optional `leaveOpen` parameter.
+- Updated `War3Net.IO.Compression` from v5.4.5 to v5.5.0.
+
+## v5.4.5 - 2022-05-27
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.4.0 to v5.4.5.
 
 ### Fixed
 
-- Fixed a typo affecting behavior in the Mpq read path.
+- The CRC32 of a file is no longer computed when its `MpqStream` cannot be read or seeked, which threw when saving an archive with the `Crc32` attributes flag set.
+- Fixed `MpqFile` comparing `MpqStream.FilePosition` against the relative file offset instead of the absolute one when deciding whether a file's encrypted block offsets need to be recalculated.
+- `MpqStream` is now marked as unreadable when the file is encrypted but no encryption seed could be determined, instead of producing garbage data.
 
-## v5.4.5 - 2022-05-27
+## v5.4.3 - 2022-03-20
 
 ### Changed
 
@@ -86,6 +123,16 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 ### Fixed
 
 - `MpqStream` with the `SingleUnit` flag no longer buffers data eagerly in its constructor, and now validates `CanRead` and throws on read/seek (instead of in the constructor) when block positions are invalid, avoiding premature exceptions when opening certain archives.
+
+## v5.4.0 - 2022-02-13
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v5.1.0 to v5.4.0.
+
+## v5.3.0 - 2022-01-16
+
+_No functional changes; version bumped to align with the rest of War3Net's v5.3.0 release._
 
 ## v5.2.1 - 2021-07-23
 
@@ -114,10 +161,6 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 ### Removed
 
 - Removed obsolete `FileProvider.FileExists`, `FileProvider.GetFile`, and `FileProvider.EnumerateFiles` methods.
-
-### Fixed
-
-- Minor nullable-reference and encoding-usage cleanups in `MpqStream`.
 
 ## v5.1.2 - 2021-01-09
 
@@ -186,6 +229,16 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 
 - `MpqArchive.HashTableSize` property is now public.
 
+## v1.1.1 - 2020-10-27
+
+### Breaking Changes
+
+- Updated target framework from .NET Standard 2.1 to .NET Core 3.1.
+
+### Changed
+
+- Updated `War3Net.IO.Compression` from v1.0.0 to v1.0.1.
+
 ## v1.1.0 - 2020-09-14
 
 ### Breaking Changes
@@ -228,6 +281,17 @@ _No functional changes; version bumped to align with the rest of War3Net's v6.0.
 - `MpqEntry.Filename` is now correctly null if no `MpqHash` references the entry.
 - Orphaned `MpqEntries` no longer use deleted `MpqHashes`.
 - Improved `MpqHeader` exception messages.
+
+## v0.1.0 - 2019-10-15
+
+### Added
+
+- Initial release, based on Foole's MPQ library (itself based on StormLib), with support for reading and creating MPQ archives:
+  - `MpqArchive` for opening, creating, repairing, and restoring archives, and for replacing individual files.
+  - `MpqFile`, `MpqEntry`, `MpqHash`, and `MpqStream` for working with the files inside an archive, including compression and encryption.
+  - `MpqHeader`, `HashTable`, `BlockTable`, and `ListFile` for the archive's internal structures.
+  - `MpqLocale`, `MpqLocaleProvider`, and `MpqFileFlags` for file metadata.
+  - `MpqParserException`, thrown when an archive cannot be parsed.
 
 [Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
 [v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3
