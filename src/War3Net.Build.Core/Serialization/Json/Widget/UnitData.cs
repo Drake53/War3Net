@@ -82,11 +82,9 @@
 
             if (formatVersion >= MapWidgetsFormatVersion.v12)
             {
-                Unk4 = new byte[12];
-                for (var i = 0; i < 12; i++)
-                {
-                    Unk4[i] = jsonElement.GetByte(nameof(Unk4));
-                }
+                Unk4 = jsonElement.GetInt32(nameof(Unk4));
+                Unk5 = jsonElement.GetInt32(nameof(Unk5));
+                Unk6 = jsonElement.GetInt32(nameof(Unk6));
             }
         }
 
@@ -178,10 +176,9 @@
 
             if (formatVersion >= MapWidgetsFormatVersion.v12)
             {
-                foreach (var b in Unk4)
-                {
-                    writer.WriteNumber(nameof(Unk4), b);
-                }
+                writer.WriteNumber(nameof(Unk4), Unk4);
+                writer.WriteNumber(nameof(Unk5), Unk5);
+                writer.WriteNumber(nameof(Unk6), Unk6);
             }
 
             writer.WriteEndObject();

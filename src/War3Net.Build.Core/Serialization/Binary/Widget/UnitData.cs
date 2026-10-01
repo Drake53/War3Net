@@ -83,7 +83,9 @@
 
             if (formatVersion >= MapWidgetsFormatVersion.v12)
             {
-                Unk4 = reader.ReadBytes(12);
+                Unk4 = reader.ReadInt32();
+                Unk5 = reader.ReadInt32();
+                Unk6 = reader.ReadInt32();
             }
         }
 
@@ -166,6 +168,8 @@
             if (formatVersion >= MapWidgetsFormatVersion.v12)
             {
                 writer.Write(Unk4);
+                writer.Write(Unk5);
+                writer.Write(Unk6);
             }
         }
     }
