@@ -201,6 +201,68 @@
                     yield return TerrainType.J_WhiteMarble;
                     yield break;
 
+                case Tileset.Misc:
+                    yield return TerrainType.M_AlphaTile;
+                    yield return TerrainType.M_CharredEarth;
+                    yield return TerrainType.M_ScorchedEarth;
+                    yield break;
+
+                case Tileset.LordaeronCapital:
+                    yield return TerrainType.e_Dirt;
+                    yield return TerrainType.e_RoughDirt;
+                    yield return TerrainType.e_SlabBricks;
+                    yield return TerrainType.e_RoundTiles;
+                    yield return TerrainType.e_BlueMarble;
+                    yield return TerrainType.e_Grass;
+                    yield return TerrainType.e_RedMarble;
+                    yield return TerrainType.e_SquareTiles;
+                    yield return TerrainType.e_BrickTiles;
+                    yield return TerrainType.e_CobbleTiles;
+                    yield return TerrainType.e_GrassTrim;
+                    yield return TerrainType.e_WhiteMarble;
+                    yield return TerrainType.e_DiamondTiles;
+                    yield break;
+
+                case Tileset.Undercity:
+                    yield return TerrainType.u_Dirt;
+                    yield return TerrainType.u_RoughDirt;
+                    yield return TerrainType.u_Brick;
+                    yield return TerrainType.u_GlyphBricks;
+                    yield return TerrainType.u_BrokenMarble;
+                    yield return TerrainType.u_SewerBricks;
+                    yield return TerrainType.u_CircularTiles;
+                    yield return TerrainType.u_NaxBricks;
+                    yield return TerrainType.u_NaxMetal;
+                    yield break;
+
+                case Tileset.CityscapeRuins:
+                    yield return TerrainType.P_Dirt;
+                    yield return TerrainType.P_RoughDirt;
+                    yield return TerrainType.P_BlackMarble;
+                    yield return TerrainType.P_Brick;
+                    yield return TerrainType.P_SquareTiles;
+                    yield return TerrainType.P_RoundTiles;
+                    yield return TerrainType.P_Grass;
+                    yield return TerrainType.P_GrassTrim;
+                    yield return TerrainType.P_WhiteMarble;
+                    yield break;
+
+                case Tileset.LordaeronCapitalRuins:
+                    yield return TerrainType.R_Dirt;
+                    yield return TerrainType.R_RoughDirt;
+                    yield return TerrainType.R_SlabBricks;
+                    yield return TerrainType.R_RoundTiles;
+                    yield return TerrainType.R_BlueMarble;
+                    yield return TerrainType.R_Grass;
+                    yield return TerrainType.R_RedMarble;
+                    yield return TerrainType.R_SquareTiles;
+                    yield return TerrainType.R_BrickTiles;
+                    yield return TerrainType.R_CobbleTiles;
+                    yield return TerrainType.R_GrassTrim;
+                    yield return TerrainType.R_WhiteMarble;
+                    yield return TerrainType.R_DiamondTiles;
+                    yield break;
+
                 default:
                     yield break;
             }
@@ -316,6 +378,30 @@
                     yield return CliffType.J_SquareTiles;
                     yield break;
 
+                case Tileset.Misc:
+                    yield return CliffType.M_AlphaTile;
+                    yield break;
+
+                case Tileset.Undercity:
+                    yield return CliffType.u_Dirt;
+                    yield return CliffType.u_Brick;
+                    yield break;
+
+                case Tileset.LordaeronCapital:
+                    yield return CliffType.e_BrickTiles;
+                    yield return CliffType.e_RoundTiles;
+                    yield break;
+
+                case Tileset.CityscapeRuins:
+                    yield return CliffType.P_Dirt;
+                    yield return CliffType.P_SquareTiles;
+                    yield break;
+
+                case Tileset.LordaeronCapitalRuins:
+                    yield return CliffType.R_BrickTiles;
+                    yield return CliffType.R_RoundTiles;
+                    yield break;
+
                 default:
                     yield break;
             }
@@ -329,17 +415,22 @@
                 Tileset.Barrens => TerrainType.B_Dirt,
                 Tileset.BlackCitadel => TerrainType.K_Dirt,
                 Tileset.Cityscape => TerrainType.Y_Dirt,
+                Tileset.CityscapeRuins => TerrainType.P_Dirt,
                 Tileset.Dalaran => TerrainType.X_Dirt,
                 Tileset.DalaranRuins => TerrainType.J_Dirt,
                 Tileset.Dungeon => TerrainType.D_Dirt,
                 Tileset.Felwood => TerrainType.C_Dirt,
                 Tileset.IcecrownGlacier => TerrainType.I_Dirt,
+                Tileset.LordaeronCapital => TerrainType.e_Dirt,
+                Tileset.LordaeronCapitalRuins => TerrainType.R_Dirt,
                 Tileset.LordaeronFall => TerrainType.F_Dirt,
                 Tileset.LordaeronSummer => TerrainType.L_Dirt,
                 Tileset.LordaeronWinter => TerrainType.W_Dirt,
+                Tileset.Misc => TerrainType.M_AlphaTile,
                 Tileset.Northrend => TerrainType.N_Dirt,
                 Tileset.Outland => TerrainType.O_Dirt,
                 Tileset.SunkenRuins => TerrainType.Z_Dirt,
+                Tileset.Undercity => TerrainType.u_Dirt,
                 Tileset.Underground => TerrainType.G_Dirt,
                 Tileset.Village => TerrainType.V_Dirt,
                 Tileset.VillageFall => TerrainType.Q_Dirt,

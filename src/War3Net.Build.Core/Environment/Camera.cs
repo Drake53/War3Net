@@ -33,7 +33,19 @@
 
         public float LocalRoll { get; set; }
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float DofDistance { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float DofScale { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float PosAbsoluteZ { get; set; }
+
         public string Name { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int CameraType { get; set; }
 
         public override string ToString() => Name;
     }

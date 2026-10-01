@@ -5,5 +5,6 @@
     {
         VariableDifficultyLevels = 1 << 0,
         RequiresExpansion = 1 << 1,
+        UseMapMinimap = 1 << 2,
     }
 }

@@ -50,6 +50,24 @@
 
         public Color FogColor { get; set; }
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogHeightStart { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogHeightEnd { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogLinearStart { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogLinearEnd { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogMaxOpacity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int FogDrawFogOverSky { get; set; }
+
         public CampaignRace Race { get; set; }
 
         public CampaignBackgroundVersion BackgroundVersion { get; set; }

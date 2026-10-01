@@ -50,5 +50,8 @@ namespace War3Net.Build.Info
 
         /// <summary>Introduced in patch 2.0.3.</summary>
         v33 = 33,
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        v39 = 39,
     }
 }

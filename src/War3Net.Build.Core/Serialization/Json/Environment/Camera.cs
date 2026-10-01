@@ -29,9 +29,21 @@
                 LocalPitch = jsonElement.GetSingle(nameof(LocalPitch));
                 LocalYaw = jsonElement.GetSingle(nameof(LocalYaw));
                 LocalRoll = jsonElement.GetSingle(nameof(LocalRoll));
+
+                if (formatVersion >= MapCamerasFormatVersion.v3)
+                {
+                    DofDistance = jsonElement.GetSingle(nameof(DofDistance));
+                    DofScale = jsonElement.GetSingle(nameof(DofScale));
+                    PosAbsoluteZ = jsonElement.GetSingle(nameof(PosAbsoluteZ));
+                }
             }
 
             Name = jsonElement.GetString(nameof(Name));
+
+            if (formatVersion >= MapCamerasFormatVersion.v3)
+            {
+                CameraType = jsonElement.GetInt32(nameof(CameraType));
+            }
         }
 
         internal void ReadFrom(ref Utf8JsonReader reader, MapCamerasFormatVersion formatVersion, bool useNewFormat)
@@ -58,9 +70,21 @@
                 writer.WriteNumber(nameof(LocalPitch), LocalPitch);
                 writer.WriteNumber(nameof(LocalYaw), LocalYaw);
                 writer.WriteNumber(nameof(LocalRoll), LocalRoll);
+
+                if (formatVersion >= MapCamerasFormatVersion.v3)
+                {
+                    writer.WriteNumber(nameof(DofDistance), DofDistance);
+                    writer.WriteNumber(nameof(DofScale), DofScale);
+                    writer.WriteNumber(nameof(PosAbsoluteZ), PosAbsoluteZ);
+                }
             }
 
             writer.WriteString(nameof(Name), Name);
+
+            if (formatVersion >= MapCamerasFormatVersion.v3)
+            {
+                writer.WriteNumber(nameof(CameraType), CameraType);
+            }
 
             writer.WriteEndObject();
         }

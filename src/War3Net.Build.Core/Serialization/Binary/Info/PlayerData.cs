@@ -12,6 +12,11 @@
             Id = reader.ReadInt32();
             Controller = reader.ReadInt32<PlayerController>();
             Race = reader.ReadInt32<PlayerRace>();
+            if (formatVersion >= MapInfoFormatVersion.v39)
+            {
+                RaceHud = (PlayerRaceHud)reader.ReadInt32();
+            }
+
             Flags = reader.ReadInt32<PlayerFlags>();
             Name = reader.ReadChars();
             StartPosition = new Vector2(reader.ReadSingle(), reader.ReadSingle());
@@ -35,6 +40,11 @@
             writer.Write(Id);
             writer.Write((int)Controller);
             writer.Write((int)Race);
+            if (formatVersion >= MapInfoFormatVersion.v39)
+            {
+                writer.Write((int)RaceHud);
+            }
+
             writer.Write((int)Flags);
             writer.WriteString(Name);
             writer.Write(StartPosition.X);

@@ -99,6 +99,8 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomItemSet.WriteTo(writer, options, formatVersion);
 
+        public static void Write(this Utf8JsonWriter writer, DoodadLightData doodadLightData, JsonSerializerOptions options) => doodadLightData.WriteTo(writer, options);
+
         public static void Write(this Utf8JsonWriter writer, RandomItemSet randomItemSet, JsonSerializerOptions options, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat) => randomItemSet.WriteTo(writer, options, formatVersion, subVersion, useNewFormat);
 
         public static void Write(this Utf8JsonWriter writer, RandomItemSetItem randomItemSetItem, JsonSerializerOptions options, MapInfoFormatVersion formatVersion) => randomItemSetItem.WriteTo(writer, options, formatVersion);

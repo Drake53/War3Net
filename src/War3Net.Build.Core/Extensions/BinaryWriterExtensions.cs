@@ -84,6 +84,8 @@ namespace War3Net.Build.Extensions
 
         public static void Write(this BinaryWriter writer, DoodadObjectData doodadObjectData) => doodadObjectData.WriteTo(writer);
 
+        public static void Write(this BinaryWriter writer, DoodadLightData doodadLightData) => doodadLightData.WriteTo(writer);
+
         public static void Write(this BinaryWriter writer, ItemObjectData itemObjectData) => itemObjectData.WriteTo(writer);
 
         public static void Write(this BinaryWriter writer, UnitObjectData unitObjectData) => unitObjectData.WriteTo(writer);

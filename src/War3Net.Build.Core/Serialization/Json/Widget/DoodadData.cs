@@ -21,6 +21,11 @@
             Scale = jsonElement.GetVector3(nameof(Scale));
             SkinId = useNewFormat ? jsonElement.GetInt32(nameof(SkinId)) : TypeId;
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                GroupId = jsonElement.GetUInt32(nameof(GroupId));
+            }
+
             if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 State = jsonElement.GetByte<DoodadState>(nameof(State));
@@ -28,7 +33,7 @@
 
             Life = jsonElement.GetByte(nameof(Life));
 
-            if (formatVersion == MapWidgetsFormatVersion.v8)
+            if (formatVersion >= MapWidgetsFormatVersion.v8)
             {
                 MapItemTableId = jsonElement.GetInt32(nameof(MapItemTableId));
 
@@ -38,7 +43,22 @@
                 }
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v13)
+            {
+                Unk1 = jsonElement.GetInt32(nameof(Unk1));
+            }
+
             CreationNumber = jsonElement.GetInt32(nameof(CreationNumber));
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                Roll = jsonElement.GetSingle(nameof(Roll));
+                Pitch = jsonElement.GetSingle(nameof(Pitch));
+                foreach (var element in jsonElement.EnumerateArray(nameof(DoodadLights)))
+                {
+                    DoodadLights.Add(element.GetMapDoodadLightData());
+                }
+            }
         }
 
         internal void ReadFrom(ref Utf8JsonReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
@@ -61,6 +81,11 @@
                 writer.WriteNumber(nameof(SkinId), SkinId);
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.WriteNumber(nameof(GroupId), GroupId);
+            }
+
             if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 writer.WriteObject(nameof(State), State, options);
@@ -68,7 +93,7 @@
 
             writer.WriteNumber(nameof(Life), Life);
 
-            if (formatVersion == MapWidgetsFormatVersion.v8)
+            if (formatVersion >= MapWidgetsFormatVersion.v8)
             {
                 writer.WriteNumber(nameof(MapItemTableId), MapItemTableId);
 
@@ -81,7 +106,25 @@
                 writer.WriteEndArray();
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v13)
+            {
+                writer.WriteNumber(nameof(Unk1), Unk1);
+            }
+
             writer.WriteNumber(nameof(CreationNumber), CreationNumber);
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.WriteNumber(nameof(Roll), Roll);
+                writer.WriteNumber(nameof(Pitch), Pitch);
+                writer.WriteStartArray(nameof(DoodadLights));
+                foreach (var light in DoodadLights)
+                {
+                    writer.Write(light, options);
+                }
+
+                writer.WriteEndArray();
+            }
 
             writer.WriteEndObject();
         }

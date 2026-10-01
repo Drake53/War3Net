@@ -146,6 +146,10 @@
                     {
                         continue;
                     }
+                    else if (string.Equals(callStatement.IdentifierName.Token.Text, "AddCameraBlocker", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
                     else
                     {
                         mapRegions = null;

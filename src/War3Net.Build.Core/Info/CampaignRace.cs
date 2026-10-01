@@ -6,5 +6,6 @@
         Orc = 1,
         Undead = 2,
         NightElf = 3,
+        Forsaken = 4,
     }
 }

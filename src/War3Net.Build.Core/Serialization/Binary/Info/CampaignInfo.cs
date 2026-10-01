@@ -29,6 +29,16 @@
             FogColor = reader.ReadColorBgra();
             Race = reader.ReadInt32<CampaignRace>();
 
+            if (FormatVersion >= CampaignInfoFormatVersion.v3)
+            {
+                FogHeightStart = reader.ReadSingle();
+                FogHeightEnd = reader.ReadSingle();
+                FogLinearStart = reader.ReadSingle();
+                FogLinearEnd = reader.ReadSingle();
+                FogMaxOpacity = reader.ReadSingle();
+                FogDrawFogOverSky = reader.ReadInt32();
+            }
+
             if (FormatVersion >= CampaignInfoFormatVersion.v2)
             {
                 BackgroundVersion = reader.ReadInt32<CampaignBackgroundVersion>();
@@ -68,6 +78,16 @@
             writer.Write(FogDensity);
             writer.Write(FogColor.ToBgra());
             writer.Write((int)Race);
+
+            if (FormatVersion >= CampaignInfoFormatVersion.v3)
+            {
+                writer.Write(FogHeightStart);
+                writer.Write(FogHeightEnd);
+                writer.Write(FogLinearStart);
+                writer.Write(FogLinearEnd);
+                writer.Write(FogMaxOpacity);
+                writer.Write(FogDrawFogOverSky);
+            }
 
             if (FormatVersion >= CampaignInfoFormatVersion.v2)
             {

@@ -130,6 +130,8 @@ namespace War3Net.Build.Extensions
 
         public static DoodadData ReadMapDoodadData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, out bool useNewFormat) => new DoodadData(reader, formatVersion, subVersion, out useNewFormat);
 
+        public static DoodadLightData ReadMapDoodadLightData(this BinaryReader reader) => new DoodadLightData(reader);
+
         public static SpecialDoodadData ReadMapSpecialDoodadData(this BinaryReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, SpecialDoodadVersion specialDoodadVersion) => new SpecialDoodadData(reader, formatVersion, subVersion, specialDoodadVersion);
 
         public static MapUnits ReadMapUnits(this BinaryReader reader) => new MapUnits(reader);

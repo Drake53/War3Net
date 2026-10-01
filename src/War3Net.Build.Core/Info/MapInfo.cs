@@ -104,29 +104,74 @@
 
         public Color WaterTintingColor { get; set; }
 
-        // Lua (1.31)
+        /// <summary>Introduced in patch 1.31.</summary>
         public ScriptLanguage ScriptLanguage { get; set; }
 
-        // Reforged (1.32)
+        /// <summary>Introduced in patch 1.32.</summary>
         public SupportedModes SupportedModes { get; set; }
 
-        // Reforged (1.32)
+        /// <summary>Introduced in patch 1.32.</summary>
         public GameDataVersion GameDataVersion { get; set; }
 
-        /// <summary>
-        /// Reforged (2.0.3)
-        /// </summary>
+        /// <summary>Introduced in patch 2.0.3.</summary>
         public int ForceDefaultCameraZoom { get; set; }
 
-        /// <summary>
-        /// Reforged (2.0.3)
-        /// </summary>
+        /// <summary>Introduced in patch 2.0.3.</summary>
         public int ForceMaxCameraZoom { get; set; }
 
-        /// <summary>
-        /// Reforged (2.0.3)
-        /// </summary>
+        /// <summary>Introduced in patch 2.0.3.</summary>
         public int ForceMinCameraZoom { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogHeightStart { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogHeightEnd { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogLinearStart { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogLinearEnd { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public float FogMaxOpacity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int FogDrawFogOverSky { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterMinOpacity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterMaxOpacity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterReflectivity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterEmissivity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterEdgeSoftness { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterWavesVertexDisplacement { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterWavesNormalMapStrength { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public Color HDWaterOverrideColor { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int HDWaterEnvmapReflectivity { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public PlayerRaceHud RaceHud { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public Color AlphaTileMinimapColor { get; set; }
 
         public List<PlayerData> Players { get; init; } = new();
 

@@ -21,6 +21,11 @@
             Scale = jsonElement.GetVector3(nameof(Scale));
             SkinId = useNewFormat ? jsonElement.GetInt32(nameof(SkinId)) : TypeId;
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                GroupId = jsonElement.GetUInt32(nameof(GroupId));
+            }
+
             Flags = jsonElement.GetByte(nameof(Flags));
             OwnerId = jsonElement.GetInt32(nameof(OwnerId));
             Unk1 = jsonElement.GetByte(nameof(Unk1));
@@ -28,7 +33,7 @@
             HP = jsonElement.GetInt32(nameof(HP));
             MP = jsonElement.GetInt32(nameof(MP));
 
-            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
+            if (formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 MapItemTableId = jsonElement.GetInt32(nameof(MapItemTableId));
             }
@@ -42,7 +47,7 @@
             TargetAcquisition = jsonElement.GetSingle(nameof(TargetAcquisition));
 
             HeroLevel = jsonElement.GetInt32(nameof(HeroLevel));
-            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
+            if ((formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 HeroStrength = jsonElement.GetInt32(nameof(HeroStrength));
                 HeroAgility = jsonElement.GetInt32(nameof(HeroAgility));
@@ -74,6 +79,13 @@
                 WaygateDestinationRegionId = jsonElement.GetInt32(nameof(WaygateDestinationRegionId));
                 CreationNumber = jsonElement.GetInt32(nameof(CreationNumber));
             }
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                Unk4 = jsonElement.GetInt32(nameof(Unk4));
+                Unk5 = jsonElement.GetInt32(nameof(Unk5));
+                Unk6 = jsonElement.GetInt32(nameof(Unk6));
+            }
         }
 
         internal void ReadFrom(ref Utf8JsonReader reader, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
@@ -96,6 +108,11 @@
                 writer.WriteNumber(nameof(SkinId), SkinId);
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.WriteNumber(nameof(GroupId), GroupId);
+            }
+
             writer.WriteNumber(nameof(Flags), Flags);
             writer.WriteNumber(nameof(OwnerId), OwnerId);
             writer.WriteNumber(nameof(Unk1), Unk1);
@@ -103,7 +120,7 @@
             writer.WriteNumber(nameof(HP), HP);
             writer.WriteNumber(nameof(MP), MP);
 
-            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
+            if (formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 writer.WriteNumber(nameof(MapItemTableId), MapItemTableId);
             }
@@ -120,7 +137,7 @@
             writer.WriteNumber(nameof(TargetAcquisition), TargetAcquisition);
 
             writer.WriteNumber(nameof(HeroLevel), HeroLevel);
-            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
+            if ((formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 writer.WriteNumber(nameof(HeroStrength), HeroStrength);
                 writer.WriteNumber(nameof(HeroAgility), HeroAgility);
@@ -155,6 +172,13 @@
                 writer.WriteNumber(nameof(CustomPlayerColorId), CustomPlayerColorId);
                 writer.WriteNumber(nameof(WaygateDestinationRegionId), WaygateDestinationRegionId);
                 writer.WriteNumber(nameof(CreationNumber), CreationNumber);
+            }
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.WriteNumber(nameof(Unk4), Unk4);
+                writer.WriteNumber(nameof(Unk5), Unk5);
+                writer.WriteNumber(nameof(Unk6), Unk6);
             }
 
             writer.WriteEndObject();

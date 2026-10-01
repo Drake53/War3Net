@@ -19,6 +19,11 @@
             useNewFormat = reader.PeekChar() >= 0x20;
             SkinId = useNewFormat ? reader.ReadInt32() : TypeId;
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                GroupId = reader.ReadUInt32();
+            }
+
             Flags = reader.ReadByte();
             OwnerId = reader.ReadInt32();
             Unk1 = reader.ReadByte();
@@ -26,7 +31,7 @@
             HP = reader.ReadInt32();
             MP = reader.ReadInt32();
 
-            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
+            if (formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 MapItemTableId = reader.ReadInt32();
             }
@@ -41,7 +46,7 @@
             TargetAcquisition = reader.ReadSingle();
 
             HeroLevel = reader.ReadInt32();
-            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
+            if ((formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 HeroStrength = reader.ReadInt32();
                 HeroAgility = reader.ReadInt32();
@@ -75,6 +80,13 @@
                 WaygateDestinationRegionId = reader.ReadInt32();
                 CreationNumber = reader.ReadInt32();
             }
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                Unk4 = reader.ReadInt32();
+                Unk5 = reader.ReadInt32();
+                Unk6 = reader.ReadInt32();
+            }
         }
 
         internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
@@ -94,6 +106,11 @@
                 writer.Write(SkinId);
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.Write(GroupId);
+            }
+
             writer.Write(Flags);
             writer.Write(OwnerId);
             writer.Write(Unk1);
@@ -101,7 +118,7 @@
             writer.Write(HP);
             writer.Write(MP);
 
-            if (formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
+            if (formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11)
             {
                 writer.Write(MapItemTableId);
             }
@@ -116,7 +133,7 @@
             writer.Write(TargetAcquisition);
 
             writer.Write(HeroLevel);
-            if ((formatVersion == MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
+            if ((formatVersion >= MapWidgetsFormatVersion.v8 && subVersion == MapWidgetsSubVersion.v11) || subVersion == MapWidgetsSubVersion.v10)
             {
                 writer.Write(HeroStrength);
                 writer.Write(HeroAgility);
@@ -146,6 +163,13 @@
                 writer.Write(CustomPlayerColorId);
                 writer.Write(WaygateDestinationRegionId);
                 writer.Write(CreationNumber);
+            }
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.Write(Unk4);
+                writer.Write(Unk5);
+                writer.Write(Unk6);
             }
         }
     }

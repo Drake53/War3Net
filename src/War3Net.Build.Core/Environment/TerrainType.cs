@@ -961,5 +961,260 @@ namespace War3Net.Build.Environment
         /// Dalaran Ruins - Square Tiles Cliff ('cJc1').
         /// </summary>
         J_SquareTilesCliff = ('c' << 0) | ('J' << 8) | ('c' << 16) | ('1' << 24),
+
+        /// ========================== \\\
+        /// <see cref="Tileset.Misc"/> \\\
+        /// ========================== \\\
+
+        /// <summary>
+        /// Misc - Alpha Tile ('Maph').
+        /// </summary>
+        M_AlphaTile = ('M' << 0) | ('a' << 8) | ('p' << 16) | ('h' << 24),
+
+        /// <summary>
+        /// Misc - Charred Earth ('Mcha').
+        /// </summary>
+        M_CharredEarth = ('M' << 0) | ('c' << 8) | ('h' << 16) | ('a' << 24),
+
+        /// <summary>
+        /// Misc - Scorched Earth ('Msco').
+        /// </summary>
+        M_ScorchedEarth = ('M' << 0) | ('s' << 8) | ('c' << 16) | ('o' << 24),
+
+        /// ====================================== \\\
+        /// <see cref="Tileset.LordaeronCapital"/> \\\
+        /// ====================================== \\\
+
+        /// <summary>
+        /// Lordaeron Capital - Dirt ('eC13').
+        /// </summary>
+        e_Dirt = ('e' << 0) | ('C' << 8) | ('1' << 16) | ('3' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Rough Dirt ('eCt3').
+        /// </summary>
+        e_RoughDirt = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('3' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Slab Bricks ('eC12').
+        /// </summary>
+        e_SlabBricks = ('e' << 0) | ('C' << 8) | ('1' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Round Tiles ('eCt2').
+        /// </summary>
+        e_RoundTiles = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Blue Marble ('eCt4').
+        /// </summary>
+        e_BlueMarble = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('4' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Grass ('eCt5').
+        /// </summary>
+        e_Grass = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('5' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Red Marble ('eCt6').
+        /// </summary>
+        e_RedMarble = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('6' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Square Tiles ('eCt7').
+        /// </summary>
+        e_SquareTiles = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('7' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Brick Tiles ('eCt1').
+        /// </summary>
+        e_BrickTiles = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('1' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Cobble Tiles ('eCt8').
+        /// </summary>
+        e_CobbleTiles = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('8' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Grass Trim ('eCt9').
+        /// </summary>
+        e_GrassTrim = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('9' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - White Marble ('eCt0').
+        /// </summary>
+        e_WhiteMarble = ('e' << 0) | ('C' << 8) | ('t' << 16) | ('0' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Diamond Tiles ('eC11').
+        /// </summary>
+        e_DiamondTiles = ('e' << 0) | ('C' << 8) | ('1' << 16) | ('1' << 24),
+
+        /// =============================== \\\
+        /// <see cref="Tileset.Undercity"/> \\\
+        /// =============================== \\\
+
+        /// <summary>
+        /// Undercity - Dirt ('uCc1').
+        /// </summary>
+        u_Dirt = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('1' << 24),
+
+        /// <summary>
+        /// Undercity - Rough Dirt ('uCc3').
+        /// </summary>
+        u_RoughDirt = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('3' << 24),
+
+        /// <summary>
+        /// Undercity - Brick ('uCc2').
+        /// </summary>
+        u_Brick = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Undercity - Glyph Bricks ('uCc4').
+        /// </summary>
+        u_GlyphBricks = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('4' << 24),
+
+        /// <summary>
+        /// Undercity - Broken Marble ('uCc5').
+        /// </summary>
+        u_BrokenMarble = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('5' << 24),
+
+        /// <summary>
+        /// Undercity - Sewer Bricks ('uCc6').
+        /// </summary>
+        u_SewerBricks = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('6' << 24),
+
+        /// <summary>
+        /// Undercity - Circular Tiles ('uCc7').
+        /// </summary>
+        u_CircularTiles = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('7' << 24),
+
+        /// <summary>
+        /// Undercity - Nax Bricks ('uCc8').
+        /// </summary>
+        u_NaxBricks = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('8' << 24),
+
+        /// <summary>
+        /// Undercity - Nax Metal ('uCc9').
+        /// </summary>
+        u_NaxMetal = ('u' << 0) | ('C' << 8) | ('c' << 16) | ('9' << 24),
+
+        /// ==================================== \\\
+        /// <see cref="Tileset.CityscapeRuins"/> \\\
+        /// ==================================== \\\
+
+        /// <summary>
+        /// Cityscape Ruins - Dirt ('Pdrt').
+        /// </summary>
+        P_Dirt = ('P' << 0) | ('d' << 8) | ('r' << 16) | ('t' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Rough Dirt ('Pdtr').
+        /// </summary>
+        P_RoughDirt = ('P' << 0) | ('d' << 8) | ('t' << 16) | ('r' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Black Marble ('Pblm').
+        /// </summary>
+        P_BlackMarble = ('P' << 0) | ('b' << 8) | ('l' << 16) | ('m' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Brick ('Pbtl').
+        /// </summary>
+        P_Brick = ('P' << 0) | ('b' << 8) | ('t' << 16) | ('l' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Square Tiles ('Psqd').
+        /// </summary>
+        P_SquareTiles = ('P' << 0) | ('s' << 8) | ('q' << 16) | ('d' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Round Tiles ('Prtl').
+        /// </summary>
+        P_RoundTiles = ('P' << 0) | ('r' << 8) | ('t' << 16) | ('l' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Grass ('Pgsb').
+        /// </summary>
+        P_Grass = ('P' << 0) | ('g' << 8) | ('s' << 16) | ('b' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Grass Trim ('Phdg').
+        /// </summary>
+        P_GrassTrim = ('P' << 0) | ('h' << 8) | ('d' << 16) | ('g' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - White Marble ('Pwmb').
+        /// </summary>
+        P_WhiteMarble = ('P' << 0) | ('w' << 8) | ('m' << 16) | ('b' << 24),
+
+        /// =========================================== \\\
+        /// <see cref="Tileset.LordaeronCapitalRuins"/> \\\
+        /// =========================================== \\\
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Dirt ('RC13').
+        /// </summary>
+        R_Dirt = ('R' << 0) | ('C' << 8) | ('1' << 16) | ('3' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Rough Dirt ('RCt3').
+        /// </summary>
+        R_RoughDirt = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('3' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Slab Bricks ('RC12').
+        /// </summary>
+        R_SlabBricks = ('R' << 0) | ('C' << 8) | ('1' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Round Tiles ('RCt2').
+        /// </summary>
+        R_RoundTiles = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('2' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Blue Marble ('RCt4').
+        /// </summary>
+        R_BlueMarble = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('4' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Grass ('RCt5').
+        /// </summary>
+        R_Grass = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('5' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Red Marble ('RCt6').
+        /// </summary>
+        R_RedMarble = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('6' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Square Tiles ('RCt7').
+        /// </summary>
+        R_SquareTiles = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('7' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Brick Tiles ('RCt1').
+        /// </summary>
+        R_BrickTiles = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('1' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Cobble Tiles ('RCt8').
+        /// </summary>
+        R_CobbleTiles = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('8' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Grass Trim ('RCt9').
+        /// </summary>
+        R_GrassTrim = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('9' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - White Marble ('RCt0').
+        /// </summary>
+        R_WhiteMarble = ('R' << 0) | ('C' << 8) | ('t' << 16) | ('0' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Diamond Tiles ('RC11').
+        /// </summary>
+        R_DiamondTiles = ('R' << 0) | ('C' << 8) | ('1' << 16) | ('1' << 24),
     }
 }

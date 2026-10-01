@@ -8,5 +8,8 @@
 
         /// <summary>Reforged graphics.</summary>
         HD = 1 << 1,
+
+        /// <summary>Definitive Edition graphics.</summary>
+        DE = 1 << 2,
     }
 }

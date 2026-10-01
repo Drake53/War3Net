@@ -31,6 +31,9 @@
         ForceDefaultCameraZoom = 1 << 20,
         ForceMaxCameraZoom = 1 << 21,
         ForceMinCameraZoom = 1 << 22,
+        HasWaterColorHD = 1 << 23,
+        HasAlphaTileDefaultMinimapColor = 1 << 24,
+        DynamicMinimap = 1 << 25,
 
         Flag30 = 1 << 29,
         Flag31 = 1 << 30,

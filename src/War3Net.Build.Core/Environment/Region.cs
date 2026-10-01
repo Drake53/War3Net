@@ -27,6 +27,12 @@
 
         public Color Color { get; set; }
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int CameraBlocker { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public Color AlphaTileMinimapColor { get; set; }
+
         public float Width => Right - Left;
 
         public float Height => Top - Bottom;

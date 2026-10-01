@@ -17,6 +17,18 @@
 
         public byte Unk2 { get; set; }
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public uint GroupId { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int Unk4 { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int Unk5 { get; set; }
+
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public int Unk6 { get; set; }
+
         /// <summary>
         /// Set to -1 to use the default value.
         /// </summary>

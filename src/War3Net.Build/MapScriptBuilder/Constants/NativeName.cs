@@ -5,6 +5,7 @@
         internal static class NativeName
         {
             internal const string AddWeatherEffect = "AddWeatherEffect";
+            internal const string BlzCameraSetupSetCameraType = "BlzCameraSetupSetCameraType";
             internal const string BlzCreateDeadDestructableWithSkin = "BlzCreateDeadDestructableWithSkin";
             internal const string BlzCreateDeadDestructableZWithSkin = "BlzCreateDeadDestructableZWithSkin";
             internal const string BlzCreateDestructableWithSkin = "BlzCreateDestructableWithSkin";

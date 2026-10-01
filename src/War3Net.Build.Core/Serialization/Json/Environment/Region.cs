@@ -23,6 +23,12 @@
             WeatherType = jsonElement.GetInt32<WeatherType>(nameof(WeatherType));
             AmbientSound = jsonElement.GetString(nameof(AmbientSound));
             Color = jsonElement.GetColor(nameof(Color));
+
+            if (formatVersion >= MapRegionsFormatVersion.v7)
+            {
+                CameraBlocker = jsonElement.GetInt32(nameof(CameraBlocker));
+                AlphaTileMinimapColor = jsonElement.GetColor(nameof(AlphaTileMinimapColor));
+            }
         }
 
         internal void ReadFrom(ref Utf8JsonReader reader, MapRegionsFormatVersion formatVersion)
@@ -43,6 +49,12 @@
             writer.WriteObject(nameof(WeatherType), WeatherType, options);
             writer.WriteString(nameof(AmbientSound), AmbientSound);
             writer.Write(nameof(Color), Color);
+
+            if (formatVersion >= MapRegionsFormatVersion.v7)
+            {
+                writer.WriteNumber(nameof(CameraBlocker), CameraBlocker);
+                writer.Write(nameof(AlphaTileMinimapColor), AlphaTileMinimapColor);
+            }
 
             writer.WriteEndObject();
         }

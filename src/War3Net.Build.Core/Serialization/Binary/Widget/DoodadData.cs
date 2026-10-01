@@ -19,6 +19,11 @@
             useNewFormat = reader.PeekChar() >= 0x20;
             SkinId = useNewFormat ? reader.ReadInt32() : TypeId;
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                GroupId = reader.ReadUInt32();
+            }
+
             if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 State = reader.ReadByte<DoodadState>();
@@ -26,7 +31,7 @@
 
             Life = reader.ReadByte();
 
-            if (formatVersion == MapWidgetsFormatVersion.v8)
+            if (formatVersion >= MapWidgetsFormatVersion.v8)
             {
                 MapItemTableId = reader.ReadInt32();
 
@@ -37,7 +42,23 @@
                 }
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v13)
+            {
+                Unk1 = reader.ReadInt32();
+            }
+
             CreationNumber = reader.ReadInt32();
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                Roll = reader.ReadSingle();
+                Pitch = reader.ReadSingle();
+                var lightCount = reader.ReadUInt32();
+                for (uint i = 0; i < lightCount; i++)
+                {
+                    DoodadLights.Add(reader.ReadMapDoodadLightData());
+                }
+            }
         }
 
         internal void WriteTo(BinaryWriter writer, MapWidgetsFormatVersion formatVersion, MapWidgetsSubVersion subVersion, bool useNewFormat)
@@ -57,6 +78,11 @@
                 writer.Write(SkinId);
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.Write(GroupId);
+            }
+
             if (formatVersion > MapWidgetsFormatVersion.v6)
             {
                 writer.Write((byte)State);
@@ -64,7 +90,7 @@
 
             writer.Write(Life);
 
-            if (formatVersion == MapWidgetsFormatVersion.v8)
+            if (formatVersion >= MapWidgetsFormatVersion.v8)
             {
                 writer.Write(MapItemTableId);
 
@@ -75,7 +101,23 @@
                 }
             }
 
+            if (formatVersion >= MapWidgetsFormatVersion.v13)
+            {
+                writer.Write(Unk1);
+            }
+
             writer.Write(CreationNumber);
+
+            if (formatVersion >= MapWidgetsFormatVersion.v12)
+            {
+                writer.Write(Roll);
+                writer.Write(Pitch);
+                writer.Write(DoodadLights.Count);
+                foreach (var light in DoodadLights)
+                {
+                    writer.Write(light);
+                }
+            }
         }
     }
 }

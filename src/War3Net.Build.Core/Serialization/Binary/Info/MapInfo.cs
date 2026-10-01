@@ -56,6 +56,11 @@
             if (FormatVersion >= MapInfoFormatVersion.v23)
             {
                 LoadingScreenBackgroundNumber = reader.ReadInt32();
+                if (FormatVersion >= MapInfoFormatVersion.v39)
+                {
+                    RaceHud = (PlayerRaceHud)reader.ReadInt32();
+                }
+
                 LoadingScreenPath = reader.ReadChars();
             }
             else if (FormatVersion >= MapInfoFormatVersion.v18)
@@ -108,6 +113,16 @@
                     FogDensity = reader.ReadSingle();
                     FogColor = reader.ReadColorBgra();
 
+                    if (FormatVersion >= MapInfoFormatVersion.v39)
+                    {
+                        FogHeightStart = reader.ReadSingle();
+                        FogHeightEnd = reader.ReadSingle();
+                        FogLinearStart = reader.ReadSingle();
+                        FogLinearEnd = reader.ReadSingle();
+                        FogMaxOpacity = reader.ReadSingle();
+                        FogDrawFogOverSky = reader.ReadInt32();
+                    }
+
                     if (FormatVersion >= MapInfoFormatVersion.v25)
                     {
                         GlobalWeather = reader.ReadInt32<WeatherType>();
@@ -138,6 +153,21 @@
                 if (FormatVersion >= MapInfoFormatVersion.v33)
                 {
                     ForceMinCameraZoom = reader.ReadInt32();
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v39)
+                {
+                    HDWaterMinOpacity = reader.ReadInt32();
+                    HDWaterMaxOpacity = reader.ReadInt32();
+                    HDWaterReflectivity = reader.ReadInt32();
+                    HDWaterEmissivity = reader.ReadInt32();
+                    HDWaterEdgeSoftness = reader.ReadInt32();
+                    HDWaterWavesVertexDisplacement = reader.ReadInt32();
+                    HDWaterWavesNormalMapStrength = reader.ReadInt32();
+                    HDWaterOverrideColor = reader.ReadColorBgra();
+                    HDWaterEnvmapReflectivity = reader.ReadInt32();
+
+                    AlphaTileMinimapColor = reader.ReadColorBgra();
                 }
             }
 
@@ -274,6 +304,11 @@
             if (FormatVersion >= MapInfoFormatVersion.v23)
             {
                 writer.Write(LoadingScreenBackgroundNumber);
+                if (FormatVersion >= MapInfoFormatVersion.v39)
+                {
+                    writer.Write((int)RaceHud);
+                }
+
                 writer.WriteString(LoadingScreenPath);
             }
             else if (FormatVersion >= MapInfoFormatVersion.v18)
@@ -326,6 +361,16 @@
                     writer.Write(FogDensity);
                     writer.Write(FogColor.ToBgra());
 
+                    if (FormatVersion >= MapInfoFormatVersion.v39)
+                    {
+                        writer.Write(FogHeightStart);
+                        writer.Write(FogHeightEnd);
+                        writer.Write(FogLinearStart);
+                        writer.Write(FogLinearEnd);
+                        writer.Write(FogMaxOpacity);
+                        writer.Write(FogDrawFogOverSky);
+                    }
+
                     if (FormatVersion >= MapInfoFormatVersion.v25)
                     {
                         writer.Write((int)GlobalWeather);
@@ -357,6 +402,21 @@
                 if (FormatVersion >= MapInfoFormatVersion.v33)
                 {
                     writer.Write(ForceMinCameraZoom);
+                }
+
+                if (FormatVersion >= MapInfoFormatVersion.v39)
+                {
+                    writer.Write(HDWaterMinOpacity);
+                    writer.Write(HDWaterMaxOpacity);
+                    writer.Write(HDWaterReflectivity);
+                    writer.Write(HDWaterEmissivity);
+                    writer.Write(HDWaterEdgeSoftness);
+                    writer.Write(HDWaterWavesVertexDisplacement);
+                    writer.Write(HDWaterWavesNormalMapStrength);
+                    writer.Write(HDWaterOverrideColor.ToBgra());
+                    writer.Write(HDWaterEnvmapReflectivity);
+
+                    writer.Write(AlphaTileMinimapColor.ToBgra());
                 }
             }
 

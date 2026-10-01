@@ -35,6 +35,16 @@
             FogColor = jsonElement.GetColor(nameof(FogColor));
             Race = jsonElement.GetInt32<CampaignRace>(nameof(Race));
 
+            if (FormatVersion >= CampaignInfoFormatVersion.v3)
+            {
+                FogHeightStart = jsonElement.GetSingle(nameof(FogHeightStart));
+                FogHeightEnd = jsonElement.GetSingle(nameof(FogHeightEnd));
+                FogLinearStart = jsonElement.GetSingle(nameof(FogLinearStart));
+                FogLinearEnd = jsonElement.GetSingle(nameof(FogLinearEnd));
+                FogMaxOpacity = jsonElement.GetSingle(nameof(FogMaxOpacity));
+                FogDrawFogOverSky = jsonElement.GetInt32(nameof(FogDrawFogOverSky));
+            }
+
             if (FormatVersion >= CampaignInfoFormatVersion.v2)
             {
                 BackgroundVersion = jsonElement.GetInt32<CampaignBackgroundVersion>(nameof(BackgroundVersion));
@@ -79,6 +89,16 @@
             writer.WriteNumber(nameof(FogDensity), FogDensity);
             writer.Write(nameof(FogColor), FogColor);
             writer.WriteObject(nameof(Race), Race, options);
+
+            if (FormatVersion >= CampaignInfoFormatVersion.v3)
+            {
+                writer.WriteNumber(nameof(FogHeightStart), FogHeightStart);
+                writer.WriteNumber(nameof(FogHeightEnd), FogHeightEnd);
+                writer.WriteNumber(nameof(FogLinearStart), FogLinearStart);
+                writer.WriteNumber(nameof(FogLinearEnd), FogLinearEnd);
+                writer.WriteNumber(nameof(FogMaxOpacity), FogMaxOpacity);
+                writer.WriteNumber(nameof(FogDrawFogOverSky), FogDrawFogOverSky);
+            }
 
             if (FormatVersion >= CampaignInfoFormatVersion.v2)
             {

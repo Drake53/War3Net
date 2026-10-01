@@ -18,6 +18,12 @@
             WeatherType = reader.ReadInt32<WeatherType>();
             AmbientSound = reader.ReadChars();
             Color = reader.ReadColorBgra();
+
+            if (formatVersion >= MapRegionsFormatVersion.v7)
+            {
+                CameraBlocker = reader.ReadInt32();
+                AlphaTileMinimapColor = reader.ReadColorBgra();
+            }
         }
 
         internal void WriteTo(BinaryWriter writer, MapRegionsFormatVersion formatVersion)
@@ -31,6 +37,12 @@
             writer.Write((int)WeatherType);
             writer.WriteString(AmbientSound);
             writer.Write(Color.ToBgra());
+
+            if (formatVersion >= MapRegionsFormatVersion.v7)
+            {
+                writer.Write(CameraBlocker);
+                writer.Write(AlphaTileMinimapColor.ToBgra());
+            }
         }
     }
 }

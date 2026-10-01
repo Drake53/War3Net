@@ -260,5 +260,70 @@ namespace War3Net.Build.Environment
         /// Dalaran Ruins - Square Tiles Cliff ('CJsq').
         /// </summary>
         J_SquareTiles = ('C' << 0) | ('J' << 8) | ('s' << 16) | ('q' << 24),
+
+        /// ========================== \\\
+        /// <see cref="Tileset.Misc"/> \\\
+        /// ========================== \\\
+
+        /// <summary>
+        /// Misc - Alpha Tile Cliff ('CMap').
+        /// </summary>
+        M_AlphaTile = ('C' << 0) | ('M' << 8) | ('a' << 16) | ('p' << 24),
+
+        /// =============================== \\\
+        /// <see cref="Tileset.Undercity"/> \\\
+        /// =============================== \\\
+
+        /// <summary>
+        /// Undercity - Dirt Cliff ('Cudi').
+        /// </summary>
+        u_Dirt = ('C' << 0) | ('u' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Undercity - Brick Cliff ('Cusq').
+        /// </summary>
+        u_Brick = ('C' << 0) | ('u' << 8) | ('s' << 16) | ('q' << 24),
+
+        /// ====================================== \\\
+        /// <see cref="Tileset.LordaeronCapital"/> \\\
+        /// ====================================== \\\
+
+        /// <summary>
+        /// Lordaeron Capital - Brick Tiles Cliff ('Cedi').
+        /// </summary>
+        e_BrickTiles = ('C' << 0) | ('e' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital - Round Tiles Cliff ('Ced2').
+        /// </summary>
+        e_RoundTiles = ('C' << 0) | ('e' << 8) | ('d' << 16) | ('2' << 24),
+
+        /// ==================================== \\\
+        /// <see cref="Tileset.CityscapeRuins"/> \\\
+        /// ==================================== \\\
+
+        /// <summary>
+        /// Cityscape Ruins - Dirt Cliff ('CPdi').
+        /// </summary>
+        P_Dirt = ('C' << 0) | ('P' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Cityscape Ruins - Square Tiles Cliff ('CPsq').
+        /// </summary>
+        P_SquareTiles = ('C' << 0) | ('P' << 8) | ('s' << 16) | ('q' << 24),
+
+        /// =========================================== \\\
+        /// <see cref="Tileset.LordaeronCapitalRuins"/> \\\
+        /// =========================================== \\\
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Brick Tiles Cliff ('CRdi').
+        /// </summary>
+        R_BrickTiles = ('C' << 0) | ('R' << 8) | ('d' << 16) | ('i' << 24),
+
+        /// <summary>
+        /// Lordaeron Capital Ruins - Round Tiles Cliff ('CRd2').
+        /// </summary>
+        R_RoundTiles = ('C' << 0) | ('R' << 8) | ('d' << 16) | ('2' << 24),
     }
 }

@@ -5,12 +5,15 @@
         private class CameraFieldName
         {
             internal const string AngleOfAttack = "CAMERA_FIELD_ANGLE_OF_ATTACK";
+            internal const string DofDistance = "CAMERA_FIELD_DEPTH_OF_FIELD_DISTANCE";
+            internal const string DofScale = "CAMERA_FIELD_DEPTH_OF_FIELD_SCALE";
             internal const string FarZ = "CAMERA_FIELD_FARZ";
             internal const string FieldOfView = "CAMERA_FIELD_FIELD_OF_VIEW";
             internal const string LocalPitch = "CAMERA_FIELD_LOCAL_PITCH";
             internal const string LocalRoll = "CAMERA_FIELD_LOCAL_ROLL";
             internal const string LocalYaw = "CAMERA_FIELD_LOCAL_YAW";
             internal const string NearZ = "CAMERA_FIELD_NEARZ";
+            internal const string PosAbsoluteZ = "CAMERA_FIELD_ZABSOLUTE";
             internal const string Roll = "CAMERA_FIELD_ROLL";
             internal const string Rotation = "CAMERA_FIELD_ROTATION";
             internal const string TargetDistance = "CAMERA_FIELD_TARGET_DISTANCE";

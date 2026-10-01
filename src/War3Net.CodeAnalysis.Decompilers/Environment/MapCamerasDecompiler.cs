@@ -102,6 +102,15 @@
                                 case "CAMERA_FIELD_LOCAL_ROLL":
                                     camera.LocalRoll = value;
                                     break;
+                                case "CAMERA_FIELD_DEPTH_OF_FIELD_DISTANCE":
+                                    camera.DofDistance = value;
+                                    break;
+                                case "CAMERA_FIELD_DEPTH_OF_FIELD_SCALE":
+                                    camera.DofScale = value;
+                                    break;
+                                case "CAMERA_FIELD_ZABSOLUTE":
+                                    camera.PosAbsoluteZ = value;
+                                    break;
                             }
                         }
                         else
@@ -121,6 +130,21 @@
                             cameras.TryGetValue(cameraVariableName, out var camera))
                         {
                             camera.TargetPosition = new(x, y);
+                        }
+                        else
+                        {
+                            mapCameras = null;
+                            return false;
+                        }
+                    }
+                    else if (string.Equals(callStatement.IdentifierName.Token.Text, "BlzCameraSetupSetCameraType", StringComparison.Ordinal))
+                    {
+                        if (callStatement.ArgumentList.ArgumentList.Items.Length == 2 &&
+                            callStatement.ArgumentList.ArgumentList.Items[0].TryGetIdentifierNameValue(out var cameraVariableName) &&
+                            callStatement.ArgumentList.ArgumentList.Items[1].TryGetIntegerExpressionValue(out var cameraType) &&
+                            cameras.TryGetValue(cameraVariableName, out var camera))
+                        {
+                            camera.CameraType = cameraType;
                         }
                         else
                         {

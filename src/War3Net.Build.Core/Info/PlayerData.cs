@@ -27,6 +27,9 @@
 
         public PlayerRace Race { get; set; }
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        public PlayerRaceHud RaceHud { get; set; }
+
         public PlayerFlags Flags { get; set; }
 
         public string Name { get; set; }
