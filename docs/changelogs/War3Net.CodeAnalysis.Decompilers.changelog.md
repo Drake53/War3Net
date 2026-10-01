@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 _No unreleased changes._
 
+## [v6.1.0] - 2026-10-01
+
+### Added
+
+- Added support for patch 3.0.0.
+
+### Changed
+
+- Updated `War3Net.Build.Core` from v6.0.3 to v6.1.0.
+
 ## [v6.0.3] - 2026-07-04
 
 ### Added
@@ -182,7 +192,8 @@ _No functional changes; package readme and metadata updated for nuget.org presen
   - `TryDecompileMapImportedFiles` regenerates `war3map.imp` from an MPQ archive.
 - Added `TriggerDataContext`, which exposes lookup dictionaries for the types, params, calls, conditions, and actions of a `TriggerData` object.
 
-[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.1.0...HEAD
+[v6.1.0]: https://github.com/Drake53/War3Net/releases/tag/v6.1.0
 [v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/Drake53/War3Net/releases/tag/v2026.3.1
 [v6.0.1]: https://github.com/Drake53/War3Net/releases/tag/v2026.2.1
