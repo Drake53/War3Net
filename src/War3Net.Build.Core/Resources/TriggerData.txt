@@ -26,6 +26,7 @@ TC_CINEMATIC=WESTRING_TRIGCAT_CINEMATIC,ReplaceableTextures\WorldEditUI\Actions-
 TC_CONVERSION=WESTRING_TRIGCAT_CONVERSION,ReplaceableTextures\WorldEditUI\Actions-AI
 TC_TIMER=WESTRING_TRIGCAT_TIMER,ReplaceableTextures\WorldEditUI\Events-Time
 TC_DESTRUCT=WESTRING_TRIGCAT_DESTRUCT,ReplaceableTextures\WorldEditUI\Actions-Destructibles
+TC_DOODAD=WESTRING_TRIGCAT_DOODAD,ReplaceableTextures\WorldEditUI\Actions-Destructibles
 TC_DIALOG=WESTRING_TRIGCAT_DIALOG,ReplaceableTextures\WorldEditUI\Actions-Dialog
 TC_ENVIRONMENT=WESTRING_TRIGCAT_ENVIRONMENT,ReplaceableTextures\WorldEditUI\Actions-Environment
 TC_EVENTRESPONSE=WESTRING_TRIGCAT_EVENTRESPONSE,ReplaceableTextures\WorldEditUI\Actions-Nothing
@@ -46,6 +47,7 @@ TC_PLAYER=WESTRING_TRIGCAT_PLAYER,ReplaceableTextures\WorldEditUI\Actions-Player
 TC_PLAYERGROUP=WESTRING_TRIGCAT_PLAYERGROUP,ReplaceableTextures\WorldEditUI\Actions-PlayerGroup
 TC_QUEST=WESTRING_TRIGCAT_QUEST,ReplaceableTextures\WorldEditUI\Actions-Quest
 TC_REGION=WESTRING_TRIGCAT_REGION,ReplaceableTextures\WorldEditUI\Actions-Region
+TC_LOCATION=WESTRING_TRIGCAT_LOCATION,ReplaceableTextures\WorldEditUI\Actions-Region
 TC_UNITSEL=WESTRING_TRIGCAT_UNITSEL,ReplaceableTextures\WorldEditUI\Actions-UnitSelection
 TC_SOUND=WESTRING_TRIGCAT_SOUND,ReplaceableTextures\WorldEditUI\Actions-Sound
 TC_SPECIALEFFECT=WESTRING_TRIGCAT_SPECIALEFFECT,ReplaceableTextures\WorldEditUI\Actions-Animation
@@ -185,6 +187,7 @@ keyeventtype=1,0,0,WESTRING_TRIGTYPE_keyeventtype,integer
 keyeventkey=1,0,0,WESTRING_TRIGTYPE_keyeventkey,integer
 mouseeventtype=1,0,0,WESTRING_TRIGTYPE_mouseeventtype,integer
 mousebuttontype=1,1,1,WESTRING_TRIGTYPE_mousebuttontype,integer
+oskeytype=1,0,0,WESTRING_TRIGTYPE_oskeyeventkey,integer
 animtype=1,1,1,WESTRING_TRIGTYPE_animtype,integer
 subanimtype=1,1,1,WESTRING_TRIGTYPE_subanimtype,integer
 colorchangeoption=0,0,0,WESTRING_TRIGTYPE_colorchangeoption,boolean
@@ -197,6 +200,7 @@ cameraorientationoption=0,0,0,WESTRING_TRIGTYPE_cameraorientationoption,boolean
 invulnerableoption=0,0,0,WESTRING_TRIGTYPE_invulnerableoption,boolean
 availabilityoption=0,0,0,WESTRING_TRIGTYPE_availabilityoption,boolean
 showhideoption=0,0,0,WESTRING_TRIGTYPE_showhideoption,boolean
+hideshowoption=0,0,0,WESTRING_TRIGTYPE_showhideoption,boolean
 minimizeoption=1,0,0,WESTRING_TRIGTYPE_minimizeoption,boolean
 skymodelstring=0,0,0,WESTRING_TRIGTYPE_skymodelstring,string,Model
 cinefiltertexture=0,0,0,WESTRING_TRIGTYPE_cinefiltertexture,string,Image
@@ -208,6 +212,8 @@ beforeafteroption=0,0,0,WESTRING_TRIGTYPE_beforeafteroption,boolean
 onoffoption=0,0,0,WESTRING_TRIGTYPE_onoffoption,boolean
 enabledisableoption=0,0,0,WESTRING_TRIGTYPE_enabledisableoption,boolean
 enableddisabledoption=0,0,0,WESTRING_TRIGTYPE_enableddisabledoption,boolean
+disableenableoption=0,0,0,WESTRING_TRIGTYPE_enabledisableoption,boolean
+disabledenabledoption=0,0,0,WESTRING_TRIGTYPE_enableddisabledoption,boolean
 rescuableoption=0,0,0,WESTRING_TRIGTYPE_rescuableoption,boolean
 allowdontoption=0,0,0,WESTRING_TRIGTYPE_allowdontoption,boolean
 fadedontoption=0,0,0,WESTRING_TRIGTYPE_fadedontoption,boolean
@@ -277,6 +283,11 @@ minimappingstyle=1,0,0,WESTRING_TRIGTYPE_minimappingstyle,integer
 campaignpingstyle=1,0,0,WESTRING_TRIGTYPE_campaignpingstyle,integer
 corpsetype=1,0,0,WESTRING_TRIGTYPE_corpsetype,integer
 stringcaseoption=1,0,0,WESTRING_TRIGTYPE_stringcaseoption,boolean
+loadoutslot=1,0,0,WESTRING_TRIGTYPE_loadoutslot,integer
+equipmenttype=1,1,1,WESTRING_TRIGTYPE_equipmenttype,integer
+itemtag=1,1,1,WESTRING_TRIGTYPE_itemtag,integer
+dncmodelstring=0,0,0,WESTRING_TRIGTYPE_dncmodelstring,string,Model
+abilityuiyesnooption=0,0,0,WESTRING_TRIGTYPE_abilityuiyesnooption,boolean
 
 // Instanced Objects Operation Types
 abilityintegerfield=0,0,1,WESTRING_TRIGTYPE_abilityintegerfield,integer
@@ -509,6 +520,7 @@ ItemTypeArtifact=1,itemtype,ITEM_TYPE_ARTIFACT,WESTRING_ITEMTYPE_ARTIFACT
 ItemTypePurchasable=1,itemtype,ITEM_TYPE_PURCHASABLE,WESTRING_ITEMTYPE_PURCHASABLE
 ItemTypeCampaign=1,itemtype,ITEM_TYPE_CAMPAIGN,WESTRING_ITEMTYPE_CAMPAIGN
 ItemTypeMiscellaneous=1,itemtype,ITEM_TYPE_MISCELLANEOUS,WESTRING_ITEMTYPE_MISCELLANEOUS
+ItemTypeEquipment=1,itemtype,ITEM_TYPE_EQUIPMENT,WESTRING_ITEMTYPE_EQUIPMENT
 ItemTypeUnknown=1,itemtype,ITEM_TYPE_UNKNOWN,WESTRING_ITEMTYPE_UNKNOWN
 
 // Units
@@ -625,6 +637,40 @@ ElevatorWallTypeNorth=1,elevatorwalltype,bj_ELEVATOR_WALL_TYPE_NORTH,WESTRING_EL
 ElevatorWallTypeSouth=1,elevatorwalltype,bj_ELEVATOR_WALL_TYPE_SOUTH,WESTRING_ELEVATORWALLTYPE_SOUTH
 ElevatorWallTypeWest=1,elevatorwalltype,bj_ELEVATOR_WALL_TYPE_WEST,WESTRING_ELEVATORWALLTYPE_WEST
 
+// Equipment types
+EquipmentTypeAny=1,equipmenttype,EQUIPMENT_TYPE_ANY,WESTRING_EQUIPMENTTYPE_ANY
+EquipmentTypeNone=1,equipmenttype,EQUIPMENT_TYPE_NONE,WESTRING_EQUIPMENTTYPE_NONE
+EquipmentTypeHead=1,equipmenttype,EQUIPMENT_TYPE_HEAD,WESTRING_EQUIPMENTTYPE_HEAD
+EquipmentTypeChest=1,equipmenttype,EQUIPMENT_TYPE_CHEST,WESTRING_EQUIPMENTTYPE_CHEST
+EquipmentTypeGloves=1,equipmenttype,EQUIPMENT_TYPE_GLOVES,WESTRING_EQUIPMENTTYPE_GLOVES
+EquipmentTypeBoots=1,equipmenttype,EQUIPMENT_TYPE_BOOTS,WESTRING_EQUIPMENTTYPE_BOOTS
+EquipmentTypeRing=1,equipmenttype,EQUIPMENT_TYPE_RING,WESTRING_EQUIPMENTTYPE_RING
+EquipmentTypePrimary=1,equipmenttype,EQUIPMENT_TYPE_PRIMARY,WESTRING_EQUIPMENTTYPE_PRIMARY
+EquipmentTypeOffhand=1,equipmenttype,EQUIPMENT_TYPE_OFFHAND,WESTRING_EQUIPMENTTYPE_OFFHAND
+EquipmentTypeTrinket=1,equipmenttype,EQUIPMENT_TYPE_TRINKET,WESTRING_EQUIPMENTTYPE_TRINKET
+
+// Equipment loadout slots
+EquipmentLoadoutSlotHead=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_HEAD,WESTRING_EQUIPMENTTYPE_HEAD
+EquipmentLoadoutSlotChest=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_CHEST,WESTRING_EQUIPMENTTYPE_CHEST
+EquipmentLoadoutSlotGloves=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_GLOVES,WESTRING_EQUIPMENTTYPE_GLOVES
+EquipmentLoadoutSlotBoots=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_BOOTS,WESTRING_EQUIPMENTTYPE_BOOTS
+EquipmentLoadoutSlotRing=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_RING,WESTRING_EQUIPMENTTYPE_RING
+EquipmentLoadoutSlotNone=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_RINGALT,WESTRING_EQUIPMENTTYPE_RINGALT
+EquipmentLoadoutSlotPrimary=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_PRIMARY,WESTRING_EQUIPMENTTYPE_PRIMARY
+EquipmentLoadoutSlotOffhand=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_OFFHAND,WESTRING_EQUIPMENTTYPE_OFFHAND
+EquipmentLoadoutSlotTrinket=1,loadoutslot,EQUIPMENT_LOADOUT_SLOT_TRINKET,WESTRING_EQUIPMENTTYPE_TRINKET
+
+// Item tags
+ItemTagAny=1,itemtag,ITEMTAG_TYPE_ANY,WESTRING_ITEMTAGS_ANY
+ItemTagUndefined=1,itemtag,ITEMTAG_TYPE_UNDEFINED,WESTRING_ITEMTAGS_UNDEFINED
+ItemTagDroppable=1,itemtag,ITEMTAG_TYPE_DROPPABLE,WESTRING_ITEMTAGS_DROPPABLE
+ItemTagQuestreward=1,itemtag,ITEMTAG_TYPE_QUESTREWARD,WESTRING_ITEMTAGS_QUESTREWARD
+ItemTagBossdrop=1,itemtag,ITEMTAG_TYPE_BOSSDROP,WESTRING_ITEMTAGS_BOSSDROP
+ItemTagSecret=1,itemtag,ITEMTAG_TYPE_SECRET,WESTRING_ITEMTAGS_SECRET
+ItemTagPuzzle=1,itemtag,ITEMTAG_TYPE_PUZZLE,WESTRING_ITEMTAGS_PUZZLE
+ItemTagWorld=1,itemtag,ITEMTAG_TYPE_WORLD,WESTRING_ITEMTAGS_WORLD
+ItemTagShop=1,itemtag,ITEMTAG_TYPE_SHOP,WESTRING_ITEMTAGS_SHOP
+
 // Usage options
 UseSkipOptionUse=0,useskipoption,true,WESTRING_USESKIPOPTION_USE
 UseSkipOptionSkip=0,useskipoption,false,WESTRING_USESKIPOPTION_SKIP
@@ -711,6 +757,8 @@ PlayerUnitEventResearch_Finish=0,playerunitevent,EVENT_PLAYER_UNIT_RESEARCH_FINI
 PlayerUnitEventIssued_Unit_Order=0,playerunitevent,EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER,WESTRING_PUEVENT_ISSUEDUNITORDER
 PlayerUnitEventIssued_Point_Order=0,playerunitevent,EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER,WESTRING_PUEVENT_ISSUEDPOINTORDER
 PlayerUnitEventIssued_Order=0,playerunitevent,EVENT_PLAYER_UNIT_ISSUED_ORDER,WESTRING_PUEVENT_ISSUEDORDER
+PlayerUnitEventEquipItem=1,playerunitevent,EVENT_PLAYER_UNIT_EQUIP_ITEM,WESTRING_PUEVENT_EQUIPITEM
+PlayerUnitEventUnequipItem=1,playerunitevent,EVENT_PLAYER_UNIT_UNEQUIP_ITEM,WESTRING_PUEVENT_UNEQUIPITEM
 
 // Unit events
 UnitEventDeath=0,unitevent,EVENT_UNIT_DEATH,WESTRING_UEVENT_DEATH
@@ -755,6 +803,8 @@ UnitEventResearchFinish=0,unitevent,EVENT_UNIT_RESEARCH_FINISH,WESTRING_UEVENT_R
 UnitEventIssueUnitOrder=0,unitevent,EVENT_UNIT_ISSUED_TARGET_ORDER,WESTRING_UEVENT_ISSUEUNITORDER
 UnitEventIssuePointOrder=0,unitevent,EVENT_UNIT_ISSUED_POINT_ORDER,WESTRING_UEVENT_ISSUEPOINTORDER
 UnitEventIssueOrder=0,unitevent,EVENT_UNIT_ISSUED_ORDER,WESTRING_UEVENT_ISSUEORDER
+UnitEventEquipItem=1,unitevent,EVENT_UNIT_EQUIP_ITEM,WESTRING_UEVENT_EQUIPITEM
+UnitEventUnequipItem=1,unitevent,EVENT_UNIT_UNEQUIP_ITEM,WESTRING_UEVENT_UNEQUIPITEM
 
 // Unit states (read-only)
 UnitStateLife=0,unitstate,UNIT_STATE_LIFE,WESTRING_USTATE_LIFE
@@ -771,6 +821,93 @@ KeyEventKeyLeft=1,keyeventkey,bj_KEYEVENTKEY_LEFT,WESTRING_KEYEVENTKEY_LEFT
 KeyEventKeyRight=1,keyeventkey,bj_KEYEVENTKEY_RIGHT,WESTRING_KEYEVENTKEY_RIGHT
 KeyEventKeyDown=1,keyeventkey,bj_KEYEVENTKEY_DOWN,WESTRING_KEYEVENTKEY_DOWN
 KeyEventKeyUp=1,keyeventkey,bj_KEYEVENTKEY_UP,WESTRING_KEYEVENTKEY_UP
+
+// Oskey event Keys
+OskeyTypeA=1,oskeytype,OSKEY_A,WESTRING_KEYEVENTKEY_A
+OskeyTypeB=1,oskeytype,OSKEY_B,WESTRING_KEYEVENTKEY_B
+OskeyTypeC=1,oskeytype,OSKEY_C,WESTRING_KEYEVENTKEY_C
+OskeyTypeD=1,oskeytype,OSKEY_D,WESTRING_KEYEVENTKEY_D
+OskeyTypeE=1,oskeytype,OSKEY_E,WESTRING_KEYEVENTKEY_E
+OskeyTypeF=1,oskeytype,OSKEY_F,WESTRING_KEYEVENTKEY_F
+OskeyTypeG=1,oskeytype,OSKEY_G,WESTRING_KEYEVENTKEY_G
+OskeyTypeH=1,oskeytype,OSKEY_H,WESTRING_KEYEVENTKEY_H
+OskeyTypeI=1,oskeytype,OSKEY_I,WESTRING_KEYEVENTKEY_I
+OskeyTypeJ=1,oskeytype,OSKEY_J,WESTRING_KEYEVENTKEY_J
+OskeyTypeK=1,oskeytype,OSKEY_K,WESTRING_KEYEVENTKEY_K
+OskeyTypeL=1,oskeytype,OSKEY_L,WESTRING_KEYEVENTKEY_L
+OskeyTypeM=1,oskeytype,OSKEY_M,WESTRING_KEYEVENTKEY_M
+OskeyTypeN=1,oskeytype,OSKEY_N,WESTRING_KEYEVENTKEY_N
+OskeyTypeO=1,oskeytype,OSKEY_O,WESTRING_KEYEVENTKEY_O
+OskeyTypeP=1,oskeytype,OSKEY_P,WESTRING_KEYEVENTKEY_P
+OskeyTypeQ=1,oskeytype,OSKEY_Q,WESTRING_KEYEVENTKEY_Q
+OskeyTypeR=1,oskeytype,OSKEY_R,WESTRING_KEYEVENTKEY_R
+OskeyTypeS=1,oskeytype,OSKEY_S,WESTRING_KEYEVENTKEY_S
+OskeyTypeT=1,oskeytype,OSKEY_T,WESTRING_KEYEVENTKEY_T
+OskeyTypeU=1,oskeytype,OSKEY_U,WESTRING_KEYEVENTKEY_U
+OskeyTypeV=1,oskeytype,OSKEY_V,WESTRING_KEYEVENTKEY_V
+OskeyTypeW=1,oskeytype,OSKEY_W,WESTRING_KEYEVENTKEY_W
+OskeyTypeX=1,oskeytype,OSKEY_X,WESTRING_KEYEVENTKEY_X
+OskeyTypeY=1,oskeytype,OSKEY_Y,WESTRING_KEYEVENTKEY_Y
+OskeyTypeZ=1,oskeytype,OSKEY_Z,WESTRING_KEYEVENTKEY_Z
+
+OskeyType0=1,oskeytype,OSKEY_0,WESTRING_KEYEVENTKEY_0
+OskeyType1=1,oskeytype,OSKEY_1,WESTRING_KEYEVENTKEY_1
+OskeyType2=1,oskeytype,OSKEY_2,WESTRING_KEYEVENTKEY_2
+OskeyType3=1,oskeytype,OSKEY_3,WESTRING_KEYEVENTKEY_3
+OskeyType4=1,oskeytype,OSKEY_4,WESTRING_KEYEVENTKEY_4
+OskeyType5=1,oskeytype,OSKEY_5,WESTRING_KEYEVENTKEY_5
+OskeyType6=1,oskeytype,OSKEY_6,WESTRING_KEYEVENTKEY_6
+OskeyType7=1,oskeytype,OSKEY_7,WESTRING_KEYEVENTKEY_7
+OskeyType8=1,oskeytype,OSKEY_8,WESTRING_KEYEVENTKEY_8
+OskeyType9=1,oskeytype,OSKEY_9,WESTRING_KEYEVENTKEY_9
+
+OskeyTypeNumPad0=1,oskeytype,OSKEY_NUMPAD0,WESTRING_HOTKEY_NUMPAD_0
+OskeyTypeNumPad1=1,oskeytype,OSKEY_NUMPAD1,WESTRING_HOTKEY_NUMPAD_1
+OskeyTypeNumPad2=1,oskeytype,OSKEY_NUMPAD2,WESTRING_HOTKEY_NUMPAD_2
+OskeyTypeNumPad3=1,oskeytype,OSKEY_NUMPAD3,WESTRING_HOTKEY_NUMPAD_3
+OskeyTypeNumPad4=1,oskeytype,OSKEY_NUMPAD4,WESTRING_HOTKEY_NUMPAD_4
+OskeyTypeNumPad5=1,oskeytype,OSKEY_NUMPAD5,WESTRING_HOTKEY_NUMPAD_5
+OskeyTypeNumPad6=1,oskeytype,OSKEY_NUMPAD6,WESTRING_HOTKEY_NUMPAD_6
+OskeyTypeNumPad7=1,oskeytype,OSKEY_NUMPAD7,WESTRING_HOTKEY_NUMPAD_7
+OskeyTypeNumPad8=1,oskeytype,OSKEY_NUMPAD8,WESTRING_HOTKEY_NUMPAD_8
+OskeyTypeNumPad9=1,oskeytype,OSKEY_NUMPAD9,WESTRING_HOTKEY_NUMPAD_9
+OskeyTypeNumPadMultiply=1,oskeytype,OSKEY_MULTIPLY,WESTRING_HOTKEY_NUMPAD_MULTIPLY
+OskeyTypeNumPadDivide=1,oskeytype,OSKEY_DIVIDE,WESTRING_HOTKEY_NUMPAD_DIVIDE
+OskeyTypeNumPadPlus=1,oskeytype,OSKEY_ADD,WESTRING_HOTKEY_NUMPAD_PLUS
+OskeyTypeNumPadMinus=1,oskeytype,OSKEY_SUBTRACT,WESTRING_HOTKEY_NUMPAD_MINUS
+OskeyTypeNumPadDecimal=1,oskeytype,OSKEY_DECIMAL,WESTRING_HOTKEY_NUMPAD_DECIMAL
+
+OskeyTypeSpace=1,oskeytype,OSKEY_SPACE,WESTRING_HOTKEY_SPACE
+OskeyTypeCapslock=1,oskeytype,OSKEY_CAPSLOCK,WESTRING_HOTKEY_CAPSLOCK
+OskeyTypeEnter=1,oskeytype,OSKEY_RETURN,WESTRING_HOTKEY_ENTER
+OskeyTypeEscape=1,oskeytype,OSKEY_ESCAPE,WESTRING_HOTKEY_ESCAPE
+OskeyTypeBackspace=1,oskeytype,OSKEY_BACKSPACE,WESTRING_HOTKEY_BACKSPACE
+OskeyTypeTab=1,oskeytype,OSKEY_TAB,WESTRING_HOTKEY_TAB
+
+OskeyTypeTilde=1,oskeytype,OSKEY_OEM_3,WESTRING_HOTKEY_TILDE
+OskeyTypeMinus=1,oskeytype,OSKEY_OEM_MINUS,WESTRING_HOTKEY_MINUS
+OskeyTypePlus=1,oskeytype,OSKEY_OEM_PLUS,WESTRING_HOTKEY_PLUS
+OskeyTypeOpenBracket=1,oskeytype,OSKEY_OEM_4,WESTRING_HOTKEY_BRACKET_OPEN
+OskeyTypeCloseBracket=1,oskeytype,OSKEY_OEM_6,WESTRING_HOTKEY_BRACKET_CLOSE
+OskeyTypeBackSlash=1,oskeytype,OSKEY_OEM_5,WESTRING_HOTKEY_BACKSLASH
+OskeyTypeSemicolon=1,oskeytype,OSKEY_OEM_1,WESTRING_HOTKEY_SEMICOLON
+OskeyTypeQuote=1,oskeytype,OSKEY_OEM_7,WESTRING_HOTKEY_QUOTE
+OskeyTypeComma=1,oskeytype,OSKEY_OEM_COMMA,WESTRING_HOTKEY_COMMA
+OskeyTypePeriod=1,oskeytype,OSKEY_OEM_PERIOD,WESTRING_HOTKEY_PERIOD
+OskeyTypeSlash=1,oskeytype,OSKEY_OEM_2,WESTRING_HOTKEY_SLASH
+
+OskeyTypeF1=1,oskeytype,OSKEY_F1,WESTRING_KEYEVENTKEY_F1
+OskeyTypeF2=1,oskeytype,OSKEY_F2,WESTRING_KEYEVENTKEY_F2
+OskeyTypeF3=1,oskeytype,OSKEY_F3,WESTRING_KEYEVENTKEY_F3
+OskeyTypeF4=1,oskeytype,OSKEY_F4,WESTRING_KEYEVENTKEY_F4
+OskeyTypeF5=1,oskeytype,OSKEY_F5,WESTRING_KEYEVENTKEY_F5
+OskeyTypeF6=1,oskeytype,OSKEY_F6,WESTRING_KEYEVENTKEY_F6
+OskeyTypeF7=1,oskeytype,OSKEY_F7,WESTRING_KEYEVENTKEY_F7
+OskeyTypeF8=1,oskeytype,OSKEY_F8,WESTRING_KEYEVENTKEY_F8
+OskeyTypeF9=1,oskeytype,OSKEY_F9,WESTRING_KEYEVENTKEY_F9
+OskeyTypeF10=1,oskeytype,OSKEY_F10,WESTRING_KEYEVENTKEY_F10
+OskeyTypeF11=1,oskeytype,OSKEY_F11,WESTRING_KEYEVENTKEY_F11
+OskeyTypeF12=1,oskeytype,OSKEY_F12,WESTRING_KEYEVENTKEY_F12
 
 // Mouse Event Types
 MouseEventTypeDown=1,mouseeventtype,bj_MOUSEEVENTTYPE_DOWN,WESTRING_MOUSEEVENTTYPE_DOWN
@@ -1635,6 +1772,8 @@ UnitBFHideMinimapDisplay=0,unitbooleanfield,UNIT_BF_HIDE_MINIMAP_DISPLAY,WESTRIN
 UnitBFScaleProjectiles=0,unitbooleanfield,UNIT_BF_SCALE_PROJECTILES,WESTRING_UNITBF_SCALEPROJECTILES
 UnitBFSelectionCircleOnWater=0,unitbooleanfield,UNIT_BF_SELECTION_CIRCLE_ON_WATER,WESTRING_UNITBF_SELECTIONCIRCLEONWATER
 UnitBFHasWaterShadow=0,unitbooleanfield,UNIT_BF_HAS_WATER_SHADOW,WESTRING_UNITBF_HASWATERSHADOW
+UnitBFShowAirToGround=0,unitbooleanfield,UNIT_BF_SHOW_AIR_TO_GROUND,WESTRING_UNITBF_SHOWAIRTOGROUND
+UnitBFForceDisplayHP=0,unitbooleanfield,UNIT_BF_FORCE_DISPLAY_HP,WESTRING_UNITBF_FORCEDISPLAYHP
 
 // Unit String Field
 UnitSFName=0,unitstringfield,UNIT_SF_NAME,WESTRING_UNITSF_NAME
@@ -1958,6 +2097,9 @@ CameraFieldZOffset=0,camerafield,CAMERA_FIELD_ZOFFSET,WESTRING_CAMERA_ZOFFSET
 CameraFieldLocalPitch=0,camerafield,CAMERA_FIELD_LOCAL_PITCH,WESTRING_CAMERA_LOCAL_PITCH
 CameraFieldLocalYaw=0,camerafield,CAMERA_FIELD_LOCAL_YAW,WESTRING_CAMERA_LOCAL_YAW
 CameraFieldLocalRoll=0,camerafield,CAMERA_FIELD_LOCAL_ROLL,WESTRING_CAMERA_LOCAL_ROLL
+CameraFieldDOFDistance=0,camerafield,CAMERA_FIELD_DEPTH_OF_FIELD_DISTANCE,WESTRING_CAMVAL_DOF_DISTANCE
+CameraFieldDOFScale=0,camerafield,CAMERA_FIELD_DEPTH_OF_FIELD_SCALE,WESTRING_CAMVAL_DOF_SCALE
+CameraFieldZAbsolute=0,camerafield,CAMERA_FIELD_ZABSOLUTE,WESTRING_CAMVAL_ZABSOLUTE
 
 // Animation rarity controls
 RarityControlFrequent=0,raritycontrol,RARITY_FREQUENT,WESTRING_RARITY_FREQUENT
@@ -2009,6 +2151,9 @@ FogStateVisible=0,fogstate,FOG_OF_WAR_VISIBLE,WESTRING_FOGSTATE_VISIBLE
 FogStyleLinear=0,fogstyle,0,WESTRING_FOGSTYLE_LINEAR
 FogStyleExp1=0,fogstyle,1,WESTRING_FOGSTYLE_EXP1
 FogStyleExp2=0,fogstyle,2,WESTRING_FOGSTYLE_EXP2
+FogStyleVolumetric=0,fogstyle,3,WESTRING_FOGSTYLE_VOLUMETRIC
+FogStyleNewExp1=0,fogstyle,4,WESTRING_FOGSTYLE_NEWEXP1
+FogStyleNewExp2=0,fogstyle,5,WESTRING_FOGSTYLE_NEWEXP2
 
 // Timed-life buff codes
 TimedLifeBuffCodeAnimateDead=1,timedlifebuffcode,'BUan',WESTRING_TIMEDLIFEBUFFCODE_ANIMATEDEAD
@@ -2096,9 +2241,17 @@ AvailabilityOptionUnavailable=0,availabilityoption,false,WESTRING_AVAILABILITY_U
 ShowHideHide=0,showhideoption,false,WESTRING_SHOWHIDE_HIDE
 ShowHideShow=0,showhideoption,true,WESTRING_SHOWHIDE_SHOW
 
+// HideShow option
+HideShowHide=0,hideshowoption,true,WESTRING_SHOWHIDE_HIDE
+HideShowShow=0,hideshowoption,false,WESTRING_SHOWHIDE_SHOW
+
 // Minimize option
 Minimize=1,minimizeoption,true,WESTRING_MINIMIZEOPTION_MINIMIZE
 Maximize=1,minimizeoption,false,WESTRING_MINIMIZEOPTION_MAXIMIZE
+
+// AbilityUIYesNo option
+AbilityUIYesNoYes=0,abilityuiyesnooption,true,WESTRING_ABILITYUIYESNO_YES
+AbilityUIYesNoNo=0,abilityuiyesnooption,false,WESTRING_ABILITYUIYESNO_NO
 
 // Sky Model
 SkyModelNone=0,skymodelstring,null,WESTRING_SKYMODEL_NONE
@@ -2125,9 +2278,26 @@ SkyModelSky15=1,skymodelstring,`Environment\\Sky\\PrologueSky\\PrologueSky.mdl`,
 SkyModelSky22=1,skymodelstring,`Environment\\Sky\\VillageSky\\VillageSky.mdl`,WESTRING_SKYMODEL_SKY22
 SkyModelSky21=1,skymodelstring,`Environment\\Sky\\VillageFallSky\\VillageFallSky.mdl`,WESTRING_SKYMODEL_SKY21
 
+// DNC Model
+DNCModelNone=0,dncmodelstring,``,WESTRING_DNCMODEL_NONE
+DNCModelAshenvaleUnit=0,dncmodelstring,`Environment\\DNC\\DNCAshenvale\\DNCAshenvaleUnit\\DNCAshenvaleUnit.mdl`,WESTRING_DNCMODEL_ASHENVALEUNIT
+DNCModelAshenvaleTerrain=0,dncmodelstring,`Environment\\DNC\\DNCAshenvale\\DNCAshenvaleTerrain\\DNCAshenvaleTerrain.mdl`,WESTRING_DNCMODEL_ASHENVALETERRAIN
+DNCModelDalaranUnit=0,dncmodelstring,`Environment\\DNC\\DNCDalaran\\DNCDalaranUnit\\DNCDalaranUnit.mdl`,WESTRING_DNCMODEL_DALARANUNIT
+DNCModelDalaranTerrain=0,dncmodelstring,`Environment\\DNC\\DNCDalaran\\DNCDalaranTerrain\\DNCDalaranTerrain.mdl`,WESTRING_DNCMODEL_DALARANTERRAIN
+DNCModelDungeonUnit=0,dncmodelstring,`Environment\\DNC\\DNCDungeon\\DNCDungeonUnit\\DNCDungeonUnit.mdl`,WESTRING_DNCMODEL_DUNGEONUNIT
+DNCModelDungeonTerrain=0,dncmodelstring,`Environment\\DNC\\DNCDungeon\\DNCDungeonTerrain\\DNCDungeonTerrain.mdl`,WESTRING_DNCMODEL_DUNGEONTERRAIN
+DNCModelFelwoodUnit=0,dncmodelstring,`Environment\\DNC\\DNCFelwood\\DNCFelwoodUnit\\DNCFelwoodUnit.mdl`,WESTRING_DNCMODEL_FELWOODUNIT
+DNCModelFelwoodTerrain=0,dncmodelstring,`Environment\\DNC\\DNCFelwood\\DNCFelwoodTerrain\\DNCFelwoodTerrain.mdl`,WESTRING_DNCMODEL_FELWOODTERRAIN
+DNCModelLordaeronUnit=0,dncmodelstring,`Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl`,WESTRING_DNCMODEL_LORDAERONUNIT
+DNCModelLordaeronTerrain=0,dncmodelstring,`Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl`,WESTRING_DNCMODEL_LORDAERONTERRAIN
+DNCModelUndergroundUnit=0,dncmodelstring,`Environment\\DNC\\DNCUnderground\\DNCUndergroundUnit\\DNCUndergroundUnit.mdl`,WESTRING_DNCMODEL_UNDERGROUNDUNIT
+DNCModelUndergroundTerrain=0,dncmodelstring,`Environment\\DNC\\DNCUnderground\\DNCUndergroundTerrain\\DNCUndergroundTerrain.mdl`,WESTRING_DNCMODEL_UNDERGROUNDTERRAIN
+
+
 // Cinematic filter textures
 CineFilterTextureWhite=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\\White_mask.blp`,WESTRING_CINEFILTERTEX_WHITE
 CineFilterTextureBlack=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\\Black_mask.blp`,WESTRING_CINEFILTERTEX_BLACK
+CineFilterTextureLightGray=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\LightGray_Mask.blp`,WESTRING_CINEFILTERTEX_LIGHTGRAY
 CineFilterTextureHaze=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\\HazeFilter_mask.blp`,WESTRING_CINEFILTERTEX_HAZE
 CineFilterTextureGroundFog=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\\GroundFog_mask.blp`,WESTRING_CINEFILTERTEX_GROUNDFOG
 CineFilterTextureHazeAndFog=0,cinefiltertexture,`ReplaceableTextures\\CameraMasks\\HazeAndFogFilter_Mask.blp`,WESTRING_CINEFILTERTEX_HAZEANDFOG
@@ -2182,6 +2352,29 @@ MusicThemeUndead3=0,musictheme,`Undead3`,WESTRING_MUSICTHEME_UNDEAD3
 MusicThemeUndeadX1=1,musictheme,`UndeadX1`,WESTRING_MUSICTHEME_UNDEADX1
 MusicThemeDefeatUndead=0,musictheme,`UndeadDefeat`,WESTRING_MUSICTHEME_DEFEAT_UNDEAD
 MusicThemeVictoryUndead=0,musictheme,`UndeadVictory`,WESTRING_MUSICTHEME_VICTORY_UNDEAD
+MusicThemeForsaken1=0,musictheme,`Forsaken1`,WESTRING_MUSICTHEME_FORSAKEN1
+MusicThemeForsaken1Calm=0,musictheme,`Forsaken1Calm`,WESTRING_MUSICTHEME_FORSAKEN1CALM
+MusicThemeForsaken2=0,musictheme,`Forsaken2`,WESTRING_MUSICTHEME_FORSAKEN2
+MusicThemeForsaken2SFX=0,musictheme,`Forsaken2SFX`,WESTRING_MUSICTHEME_FORSAKEN2SFX
+MusicThemeForsaken3=0,musictheme,`Forsaken3`,WESTRING_MUSICTHEME_FORSAKEN3
+MusicThemeRace1=0,musictheme,`Race1`,WESTRING_MUSICTHEME_RACE1
+MusicThemeRace2=0,musictheme,`Race2`,WESTRING_MUSICTHEME_RACE2
+MusicThemeRace3=0,musictheme,`Race3`,WESTRING_MUSICTHEME_RACE3
+MusicThemeHolyWarriorsOathB=0,musictheme,`HolyWarriorsOathB`,WESTRING_MUSICTHEME_HOLYWARRIORSOATHB
+MusicThemeHolyWarriorsOathD=0,musictheme,`HolyWarriorsOathD`,WESTRING_MUSICTHEME_HOLYWARRIORSOATHD
+MusicThemeCrimsonForest=0,musictheme,`CrimsonForest`,WESTRING_MUSICTHEME_CRIMSONFOREST
+MusicThemeBattleIntenseA=0,musictheme,`Battle_Intense_A`,WESTRING_MUSICTHEME_BATTLEINTENSEA
+MusicThemeBattleIntenseB=0,musictheme,`Battle_Intense_B`,WESTRING_MUSICTHEME_BATTLEINTENSEB
+MusicThemeBattleIntenseC=0,musictheme,`Battle_Intense_C`,WESTRING_MUSICTHEME_BATTLEINTENSEC
+MusicThemeBattleA=0,musictheme,`Battle_A`,WESTRING_MUSICTHEME_BATTLEA
+MusicThemeBattleB=0,musictheme,`Battle_B`,WESTRING_MUSICTHEME_BATTLEB
+MusicThemeAllianceBattleMarch=0,musictheme,`AllianceBattleMarch`,WESTRING_MUSICTHEME_ALLIANCEBATTLEMARCH
+MusicThemeWestPlaguelands=0,musictheme,`WestPlaguelands`,WESTRING_MUSICTHEME_WESTPLAGUELANDS
+MusicThemeUndercity=0,musictheme,`Undercity`,WESTRING_MUSICTHEME_UNDERCITY
+MusicThemeCombat1=0,musictheme,`Combat1`,WESTRING_MUSICTHEME_COMBAT1
+MusicThemeCombat2=0,musictheme,`Combat2`,WESTRING_MUSICTHEME_COMBAT2
+MusicThemeCombat3=0,musictheme,`Combat3`,WESTRING_MUSICTHEME_COMBAT3
+
 
 // Daytime Ambient Themes
 AmbientThemeDayA=0,ambientthemeday,`AshenvaleDay`,WESTRING_AMBIENTTHEMEDAY_A
@@ -2264,6 +2457,14 @@ EnableDisableDisable=0,enabledisableoption,false,WESTRING_ENABLEDISABLE_DISABLE
 // EnabledDisabled option
 EnabledDisabledEnabled=0,enableddisabledoption,true,WESTRING_ENABLEDDISABLED_ENABLED
 EnabledDisabledDisabled=0,enableddisabledoption,false,WESTRING_ENABLEDDISABLED_DISABLED
+
+// DisableEnable option
+DisableEnableEnable=0,disableenableoption,false,WESTRING_ENABLEDISABLE_ENABLE
+DisableEnableDisable=0,disableenableoption,true,WESTRING_ENABLEDISABLE_DISABLE
+
+// DisabledEnabled option
+DisabledEnabledEnabled=0,disabledenabledoption,false,WESTRING_ENABLEDDISABLED_ENABLED
+DisabledEnabledDisabled=0,disabledenabledoption,true,WESTRING_ENABLEDDISABLED_DISABLED
 
 // Rescuable option
 RescuableOptionRescuable=0,rescuableoption,true,WESTRING_RESCUABLEOPTION_RESCUABLE
@@ -2512,6 +2713,17 @@ MissionIndexXO00=1,missionindex,bj_MISSION_INDEX_XO00,WESTRING_MISSION_INDEX_XO0
 MissionIndexXO01=1,missionindex,bj_MISSION_INDEX_XO01,WESTRING_MISSION_INDEX_XO01
 MissionIndexXO02=1,missionindex,bj_MISSION_INDEX_XO02,WESTRING_MISSION_INDEX_XO02
 MissionIndexXO03=1,missionindex,bj_MISSION_INDEX_XO03,WESTRING_MISSION_INDEX_XO03
+//Rebirth Human
+MissionIndexRH00=1,missionindex,bj_MISSION_INDEX_RH00,WESTRING_MISSION_INDEX_RH00
+MissionIndexRH01=1,missionindex,bj_MISSION_INDEX_RH01,WESTRING_MISSION_INDEX_RH01
+MissionIndexRH02=1,missionindex,bj_MISSION_INDEX_RH02,WESTRING_MISSION_INDEX_RH02
+MissionIndexRH03=1,missionindex,bj_MISSION_INDEX_RH03,WESTRING_MISSION_INDEX_RH03
+MissionIndexRH04=1,missionindex,bj_MISSION_INDEX_RH04,WESTRING_MISSION_INDEX_RH04
+//Rebirth Undead
+MissionIndexRU00=1,missionindex,bj_MISSION_INDEX_RU00,WESTRING_MISSION_INDEX_RU00
+MissionIndexRU01=1,missionindex,bj_MISSION_INDEX_RU01,WESTRING_MISSION_INDEX_RU01
+MissionIndexRU02=1,missionindex,bj_MISSION_INDEX_RU02,WESTRING_MISSION_INDEX_RU02
+MissionIndexRU03=1,missionindex,bj_MISSION_INDEX_RU03,WESTRING_MISSION_INDEX_RU03
 
 // Campaign Index
 CampaignIndexT=0,campaignindex,bj_CAMPAIGN_INDEX_T,WESTRING_CAMPAIGN_INDEX_T
@@ -2523,6 +2735,8 @@ CampaignIndexXN=1,campaignindex,bj_CAMPAIGN_INDEX_XN,WESTRING_CAMPAIGN_INDEX_XN
 CampaignIndexXH=1,campaignindex,bj_CAMPAIGN_INDEX_XH,WESTRING_CAMPAIGN_INDEX_XH
 CampaignIndexXU=1,campaignindex,bj_CAMPAIGN_INDEX_XU,WESTRING_CAMPAIGN_INDEX_XU
 CampaignIndexXO=1,campaignindex,bj_CAMPAIGN_INDEX_XO,WESTRING_CAMPAIGN_INDEX_XO
+CampaignIndexRH=1,campaignindex,bj_CAMPAIGN_INDEX_RH,WESTRING_CAMPAIGN_INDEX_RH
+CampaignIndexRU=1,campaignindex,bj_CAMPAIGN_INDEX_RU,WESTRING_CAMPAIGN_INDEX_RU
 
 // Cinematic Index
 CinematicIndexTOP=0,cinematicindex,bj_CINEMATICINDEX_TOP,WESTRING_CINEMATICTYPE_TOP
@@ -2533,6 +2747,8 @@ CinematicIndexOED=0,cinematicindex,bj_CINEMATICINDEX_OED,WESTRING_CINEMATICTYPE_
 CinematicIndexNED=0,cinematicindex,bj_CINEMATICINDEX_NED,WESTRING_CINEMATICTYPE_NED
 CinematicIndexXOP=1,cinematicindex,bj_CINEMATICINDEX_XOP,WESTRING_CINEMATICTYPE_XOP
 CinematicIndexXED=1,cinematicindex,bj_CINEMATICINDEX_XED,WESTRING_CINEMATICTYPE_XED
+CinematicIndexHFO=1,cinematicindex,bj_CINEMATICINDEX_HFO,WESTRING_CINEMATICTYPE_HFO
+CinematicIndexUFE=1,cinematicindex,bj_CINEMATICINDEX_UFE,WESTRING_CINEMATICTYPE_UFE
 
 // Trigger Unit-Targeted Unit Orders
 // Common
@@ -2636,6 +2852,10 @@ UnitOrderFingerOfDeath=0,unitorderutarg,`fingerofdeath`,WESTRING_UNITORDERUTARG_
 UnitOrderDarkConversion=0,unitorderutarg,`darkconversion`,WESTRING_UNITORDERUTARG_DARKCONVERSION
 UnitOrderSoulPreservation=0,unitorderutarg,`soulpreservation`,WESTRING_UNITORDERUTARG_SOULPRESERVATION
 UnitOrderDarkConversionFast=0,unitorderutarg,`darkconversion`,WESTRING_UNITORDERUTARG_DARKCONVERSIONFAST
+UnitOrderApprehend=0,unitorderutarg,`apprehend`,WESTRING_UNITORDERUTARG_APPREHEND
+UnitOrderSoulLantern=0,unitorderutarg,`soullantern`,WESTRING_UNITORDERUTARG_SOULLANTERN
+UnitOrderHeroicSlash=1,unitorderutarg,`heroicslash`,WESTRING_UNITORDERUTARG_HEROICSLASH
+UnitOrderMindControl=1,unitorderutarg,`mindcontrol`,WESTRING_UNITORDERUTARG_MINDCONTROL
 
 // Trigger Point-Targeted Unit Orders
 // Common
@@ -2691,6 +2911,16 @@ UnitOrderRainOfChaos=0,unitorderptarg,`rainoffire`,WESTRING_UNITORDERPTARG_RAINO
 UnitOrderRainOfFire=0,unitorderptarg,`rainoffire`,WESTRING_UNITORDERPTARG_RAINOFFIRE
 UnitOrderInferno=0,unitorderptarg,`inferno`,WESTRING_UNITORDERPTARG_INFERNO
 UnitOrderDarkSummoningOld=0,unitorderptarg,`darksummoning`,WESTRING_UNITORDERPTARG_DARKSUMMONINGOLD
+UnitOrderSweepingStrike=1,unitorderptarg,`sweepingstrike`,WESTRING_UNITORDERPTARG_SWEEPINGSTRIKE
+UnitOrderValiantCharge=1,unitorderptarg,`valiantcharge`,WESTRING_UNITORDERPTARG_VALIANTCHARGE
+UnitOrderBatteringRam=1,unitorderptarg,`batteringram`,WESTRING_UNITORDERPTARG_BATTERINGRAM
+UnitOrderHolyWrath=1,unitorderptarg,`holywrath`,WESTRING_UNITORDERPTARG_HOLYWRATH
+UnitOrderApprehendAOE=1,unitorderptarg,`apprehendaoe`,WESTRING_UNITORDERPTARG_APPREHENDAOE
+UnitOrderRighteousFury=1,unitorderptarg,`righteousfury`,WESTRING_UNITORDERPTARG_RIGHTEOUSFURY
+UnitOrderLightsMercy=1,unitorderptarg,`lightsmercy`,WESTRING_UNITORDERPTARG_LIGHTSMERCY
+UnitOrderWitheringFire=1,unitorderptarg,`witheringfire`,WESTRING_UNITORDERPTARG_WITHERINGFIRE
+UnitOrderRaiseTheBanner=1,unitorderptarg,`raisethebanner`,WESTRING_UNITORDERPTARG_RAISETHEBANNER
+UnitOrderRelentlessCleave=1,unitorderptarg,`relentlesscleave`,WESTRING_UNITORDERPTARG_RELENTLESSCLEAVE
 
 // Trigger Destructible-Targeted Unit Orders
 // Common
@@ -2748,6 +2978,7 @@ UnitOrderAvatar=0,unitordernotarg,`avatar`,WESTRING_UNITORDERNOTARG_AVATAR
 UnitOrderDivineShield=0,unitordernotarg,`divineshield`,WESTRING_UNITORDERNOTARG_DIVINESHIELD
 UnitOrderUnDivineShield=0,unitordernotarg,`undivineshield`,WESTRING_UNITORDERNOTARG_UNDIVINESHIELD
 UnitOrderResurrection=0,unitordernotarg,`resurrection`,WESTRING_UNITORDERNOTARG_RESURRECTION
+UnitOrderChallengingCall=1,unitordernotarg,`challengingcall`,WESTRING_UNITORDERNOTARG_CHALLENGINGCALL
 // Orc
 UnitOrderOrcBuild=1,unitordernotarg,`orcbuild`,WESTRING_UNITORDERNOTARG_ORCBUILD
 UnitOrderBattleStations=0,unitordernotarg,`battlestations`,WESTRING_UNITORDERNOTARG_BATTLESTATIONS
@@ -2877,6 +3108,23 @@ UnitOrderMedivhUnRavenForm=0,unitordernotarg,`unravenform`,WESTRING_UNITORDERNOT
 UnitOrderRexxarBattleRoar=1,unitordernotarg,`battleroar`,WESTRING_UNITORDERNOTARG_REXXARBATTLEROAR
 UnitOrderColdArrows=0,unitordernotarg,`coldarrows`,WESTRING_UNITORDERNOTARG_COLDARROWS
 UnitOrderUnColdArrows=0,unitordernotarg,`uncoldarrows`,WESTRING_UNITORDERNOTARG_UNCOLDARROWS
+UnitOrderChallengingCall=1,unitordernotarg,`challengingcall`,WESTRING_UNITORDERNOTARG_CHALLENGINGCALL
+UnitOrderWarcry=1,unitordernotarg,`warcry`,WESTRING_UNITORDERNOTARG_WARCRY
+UnitOrderUnyieldingGuard=1,unitordernotarg,`unyieldingguard`,WESTRING_UNITORDERNOTARG_UNYIELDINGGUARD
+UnitOrderGrimConviction=1,unitordernotarg,`grimconviction`,WESTRING_UNITORDERNOTARG_GRIMCONVICTION
+UnitOrderHeroicSlash=1,unitordernotarg,`heroicslash`,WESTRING_UNITORDERNOTARG_HEROICSLASH
+UnitOrderInspireCourage=1,unitordernotarg,`inspirecourage`,WESTRING_UNITORDERNOTARG_INSPIRECOURAGE
+UnitOrderConsecration=1,unitordernotarg,`consecration`,WESTRING_UNITORDERNOTARG_CONSECRATION
+UnitOrderCleansingFire=1,unitordernotarg,`cleansingfire`,WESTRING_UNITORDERNOTARG_CLEANSINGFIRE
+UnitOrderSurgeOfLight=1,unitordernotarg,`surgeoflight`,WESTRING_UNITORDERNOTARG_SURGEOFLIGHT
+UnitOrderHeadsplitter=1,unitordernotarg,`headsplitter`,WESTRING_UNITORDERNOTARG_HEADSPLITTER
+UnitOrderHeroicChallenge=1,unitordernotarg,`heroicchallenge`,WESTRING_UNITORDERNOTARG_HEROICCHALLENGE
+UnitOrderGuidingHand=1,unitordernotarg,`guidinghand`,WESTRING_UNITORDERNOTARG_GUIDINGHAND
+UnitOrderUnGuidingHand=1,unitordernotarg,`unguidinghand`,WESTRING_UNITORDERNOTARG_UNGUIDINGHAND
+UnitOrderUnSoulLantern=1,unitordernotarg,`unsoullantern`,WESTRING_UNITORDERNOTARG_UNSOULLANTERN
+UnitOrderAvatarOfLight=1,unitordernotarg,`avataroflight`,WESTRING_UNITORDERNOTARG_AVATAROFLIGHT
+UnitOrderBansheesCall=1,unitordernotarg,`bansheescall`,WESTRING_UNITORDERNOTARG_BANSHEESCALL
+UnitOrderUnyieldingGuardUndead=1,unitordernotarg,`unyieldingguardundead`,WESTRING_UNITORDERNOTARG_UNYIELDINGGUARDUNDEAD
 
 UnitOrderAttackUnitEx=0,unitcommonorderEx,`attack`,WESTRING_UNITORDERUTARG_ATTACK
 UnitOrderMoveEx=0,unitcommonorderEx,`move`,WESTRING_UNITORDERPTARG_MOVE
@@ -2979,6 +3227,7 @@ UnitOrderFlareEx=0,unitorderEx,`flare`,WESTRING_unitorderEx_FLARE
 UnitOrderCloudOfFogEx=1,unitorderEx,`cloudoffog`,WESTRING_unitorderEx_CLOUDOFFOG
 UnitOrderBlizzardEx=0,unitorderEx,`blizzard`,WESTRING_unitorderEx_BLIZZARD
 UnitOrderFlameStrikeEx=1,unitorderEx,`flamestrike`,WESTRING_unitorderEx_FLAMESTRIKE
+UnitOrderSweepingStrikeEx=1,unitorderEx,`sweepingstrike`,WESTRING_unitorderEx_SWEEPINGSTRIKE
 // Orc
 UnitOrderSentryWardEx=0,unitorderEx,`evileye`,WESTRING_unitorderEx_SENTRYWARD
 UnitOrderStasisTrapEx=0,unitorderEx,`stasistrap`,WESTRING_unitorderEx_STASISTRAP
@@ -3179,6 +3428,8 @@ UnitOrderMedivhUnRavenFormEx=0,unitorderEx,`unravenform`,WESTRING_unitorderEx_ME
 UnitOrderRexxarBattleRoarEx=1,unitorderEx,`battleroar`,WESTRING_unitorderEx_REXXARBATTLEROAR
 UnitOrderColdArrowsEx=0,unitorderEx,`coldarrows`,WESTRING_unitorderEx_COLDARROWS
 UnitOrderUnColdArrowsEx=0,unitorderEx,`uncoldarrows`,WESTRING_unitorderEx_UNCOLDARROWS
+UnitOrderChallengingCallEx=1,unitorderEx,`challengingcall`,WESTRING_unitorderEx_CHALLENGINGCALL
+
 
 // Hero Skills
 // Human Archmage
@@ -3230,7 +3481,7 @@ HeroSkillLocustSwarm=1,heroskillcode,'AUls',WESTRING_HEROSKILL_LOCUSTSWARM
 HeroSkillDeathCoil=0,heroskillcode,'AUdc',WESTRING_HEROSKILL_DEATHCOIL
 HeroSkillDeathPact=0,heroskillcode,'AUdp',WESTRING_HEROSKILL_DEATHPACT
 HeroSkillUnholyAura=0,heroskillcode,'AUau',WESTRING_HEROSKILL_UNHOLYAURA
-HeroSkillAnimateDead=0,heroskillcode,'AUan',WESTRING_HEROSKILL_ANIMATEDEAD
+HeroSkillAnimateDead=0,heroskillcode,'AUa2',WESTRING_HEROSKILL_ANIMATEDEAD
 // Undead Dread Lord
 HeroSkillCarrionSwarm=0,heroskillcode,'AUcs',WESTRING_HEROSKILL_CARRIONSWARM
 HeroSkillSleep=0,heroskillcode,'AUsl',WESTRING_HEROSKILL_SLEEP
@@ -3368,11 +3619,48 @@ HeroSkillInfernal=0,heroskillcode,'ANin',WESTRING_HEROSKILL_INFERNAL
 // Special Miscellaneous
 HeroSkillMalganisSleepFast=0,heroskillcode,'SNdc',WESTRING_HEROSKILL_DARKCONVERSIONFAST
 HeroSkillDarkSummoningOld=0,heroskillcode,'AUds',WESTRING_HEROSKILL_DARKSUMMONINGOLD
+// Special Garek
+HeroSkillGarekChallengingCall=1,heroskillcode,'Atau',WESTRING_HEROSKILL_CHALLENGINGCALL
+HeroSkillGarekSweepingStrike=1,heroskillcode,'AHsw',WESTRING_HEROSKILL_SWEEPINGSTRIKE
+HeroSkillGarekValiantCharge=1,heroskillcode,'AHch',WESTRING_HEROSKILL_VALIANTCHARGE
+HeroSkillGarekWarcry=1,heroskillcode,'AHwc',WESTRING_HEROSKILL_WARCRY
+HeroSkillGarekUnyieldingGuard=1,heroskillcode,'AHbd',WESTRING_HEROSKILL_UNYIELDINGGUARD
+// Special UGarek
+HeroSkillGarekGrimConviction=1,heroskillcode,'AUvg',WESTRING_HEROSKILL_GRIMCONVICTION
+HeroSkillGarekBatteringRam=1,heroskillcode,'AUbr',WESTRING_HEROSKILL_BATTERINGRAM
+// Special LGarek
+HeroSkillGarekHolyWrath=1,heroskillcode,'AHpb',WESTRING_HEROSKILL_HOLYWRATH
+// Special Landen
+HeroSkillLandenHeroicSlash=1,heroskillcode,'AHhs',WESTRING_HEROSKILL_HEROICSLASH
+HeroSkillLandenApprehendAoE=1,heroskillcode,'AHap',WESTRING_HEROSKILL_APPREHENDAOE
+HeroSkillLandenApprehend=1,heroskillcode,'AHen',WESTRING_HEROSKILL_APPREHEND
+HeroSkillLandenInspireCourage=1,heroskillcode,'AHic',WESTRING_HEROSKILL_INSPIRECOURAGE
+// Special Forsaken PAladin
+HeroSkillConsecration=1,heroskillcode,'AHcr',WESTRING_HEROSKILL_CONSECRATION
+HeroSkillRighteousFury=1,heroskillcode,'ANcp',WESTRING_HEROSKILL_RIGHTEOUSFURY
+HeroSkillCleansingFire=1,heroskillcode,'AHcl',WESTRING_HEROSKILL_CLEANSINGFIRE
+// Special Ilastar
+HeroSkillIlastarLightsMercy=1,heroskillcode,'AHsf',WESTRING_HEROSKILL_LIGHTSMERCY
+HeroSkillIlastarMindControl=1,heroskillcode,'AHmc',WESTRING_HEROSKILL_MINDCONTROL
+HeroSkillIlastarSurgeOfLight=1,heroskillcode,'AHsl',WESTRING_HEROSKILL_SURGEOFLIGHT
+HeroSkillIlastarSacredAura=1,heroskillcode,'AHas',WESTRING_HEROSKILL_SACREDAURA
+// Special Anya
+HeroSkillWitheringFire=1,heroskillcode,'AUwf',WESTRING_HEROSKILL_WITHERINGFIRE
+HeroSkillSoulLantern=1,heroskillcode,'AUla',WESTRING_HEROSKILL_SOULLANTERN
+HeroSkillDeathseekerBow=1,heroskillcode,'AUdb',WESTRING_HEROSKILL_DEATHSEEKERBOW
+// Special Leonid
+HeroSkillLeonidHeadsplitter=1,heroskillcode,'AHhr',WESTRING_HEROSKILL_HEADSPLITTER
+HeroSkillLeonidHeroicChallenge=1,heroskillcode,'AHhc',WESTRING_HEROSKILL_HEROICCHALLENGE
+HeroSkillLeonidGuidingHand=1,heroskillcode,'AHgh',WESTRING_HEROSKILL_GUIDINGHAND
+HeroSkillLeonidGrit=1,heroskillcode,'AHgr',WESTRING_HEROSKILL_GRIT
 
 // Weather Effects
 WeatherAshenvaleHeavyRain=0,weathereffectcode,'RAhr',WESTRING_WEATHER_ASHENVALEHEAVYRAIN
 WeatherAshenvaleLightRain=0,weathereffectcode,'RAlr',WESTRING_WEATHER_ASHENVALELIGHTRAIN
-WeatherDalaranShield=0,weathereffectcode,'MEds',WESTRING_WEATHER_DALARANSHIELD
+WeatherAshenvaleHeavyRainSplash=0,weathereffectcode,'RAhs',WESTRING_WEATHER_ASHENVALEHEAVYRAINSPLASH
+WeatherAshenvaleLightRainSplash=0,weathereffectcode,'RAls',WESTRING_WEATHER_ASHENVALELIGHTRAINSPLASH
+WeatherBreeze=0,weathereffectcode,'VWbr',WESTRING_WEATHER_BREEZE
+WeatherBubbles=0,weathereffectcode,'VWbb',WESTRING_WEATHER_BUBBLES
 WeatherDungeonHeavyBlueFog=0,weathereffectcode,'FDbh',WESTRING_WEATHER_DUNGEONHEAVYBLUEFOG
 WeatherDungeonLightBlueFog=0,weathereffectcode,'FDbl',WESTRING_WEATHER_DUNGEONBLUEFOG
 WeatherDungeonHeavyGreenFog=0,weathereffectcode,'FDgh',WESTRING_WEATHER_DUNGEONHEAVYGREENFOG
@@ -3381,16 +3669,40 @@ WeatherDungeonHeavyRedFog=0,weathereffectcode,'FDrh',WESTRING_WEATHER_DUNGEONHEA
 WeatherDungeonLightRedFog=0,weathereffectcode,'FDrl',WESTRING_WEATHER_DUNGEONREDFOG
 WeatherDungeonHeavyWhiteFog=0,weathereffectcode,'FDwh',WESTRING_WEATHER_DUNGEONHEAVYWHITEFOG
 WeatherDungeonLightWhiteFog=0,weathereffectcode,'FDwl',WESTRING_WEATHER_DUNGEONWHITEFOG
+WeatherEmberRainBlue=0,weathereffectcode,'VWeb',WESTRING_WEATHER_EMBERRAINBLUE
+WeatherEmberRainGreen=0,weathereffectcode,'VWee',WESTRING_WEATHER_EMBERRAINGREEN
+WeatherEmberRainGold=0,weathereffectcode,'VWeg',WESTRING_WEATHER_EMBERRAINGOLD
+WeatherEmberRainOrange=0,weathereffectcode,'VWeo',WESTRING_WEATHER_EMBERRAINORANGE
+WeatherEmberRainPurple=0,weathereffectcode,'VWep',WESTRING_WEATHER_EMBERRAINPURPLE
+WeatherEnergyFieldBlue=0,weathereffectcode,'MEbs',WESTRING_WEATHER_ENERGYFIELDBLUE
+WeatherEnergyFieldGreen=0,weathereffectcode,'MEgs',WESTRING_WEATHER_ENERGYFIELDGREEN
+WeatherEnergyFieldHoly=0,weathereffectcode,'MEhs',WESTRING_WEATHER_ENERGYFIELDHOLY
+WeatherDalaranShield=0,weathereffectcode,'MEds',WESTRING_WEATHER_DALARANSHIELD
+WeatherEnergyFieldRed=0,weathereffectcode,'MErs',WESTRING_WEATHER_ENERGYFIELDRED
+WeatherLeavesSummer=0,weathereffectcode,'VWls',WESTRING_WEATHER_LEAVESSUMMER
+WeatherLeavesAutumn=0,weathereffectcode,'VWla',WESTRING_WEATHER_LEAVESAUTUMN
 WeatherLordaeronHeavyRain=0,weathereffectcode,'RLhr',WESTRING_WEATHER_LORDAERONHEAVYRAIN
 WeatherLordaeronLightRain=0,weathereffectcode,'RLlr',WESTRING_WEATHER_LORDAERONLIGHTRAIN
+WeatherLordaeronHeavyRainSplash=0,weathereffectcode,'RLhs',WESTRING_WEATHER_LORDAERONHEAVYRAINSPLASH
+WeatherLordaeronLightRainSplash=0,weathereffectcode,'RLls',WESTRING_WEATHER_LORDAERONLIGHTRAINSPLASH
 WeatherNorthrendBlizzard=0,weathereffectcode,'SNbs',WESTRING_WEATHER_NORTHRENDBLIZZARD
 WeatherNorthrendHeavySnow=0,weathereffectcode,'SNhs',WESTRING_WEATHER_NORTHRENDHEAVYSNOW
 WeatherNorthrendLightSnow=0,weathereffectcode,'SNls',WESTRING_WEATHER_NORTHRENDLIGHTSNOW
 WeatherOutlandWind=1,weathereffectcode,'WOcw',WESTRING_WEATHER_OUTLANDWIND
 WeatherOutlandWindLight=1,weathereffectcode,'WOlw',WESTRING_WEATHER_OUTLANDWINDLIGHT
+WeatherPlague=0,weathereffectcode,'VWpl',WESTRING_WEATHER_PLAGUE
+WeatherPlagueLite=0,weathereffectcode,'VWpp',WESTRING_WEATHER_PLAGUELITE
 WeatherRaysOfLight=0,weathereffectcode,'LRaa',WESTRING_WEATHER_RAYSOFLIGHT
 WeatherRaysOfMoonlight=0,weathereffectcode,'LRma',WESTRING_WEATHER_RAYSOFMOONLIGHT
+WeatherRainAcid=0,weathereffectcode,'VWra',WESTRING_WEATHER_RAINACID
+WeatherRainAle=0,weathereffectcode,'VWrc',WESTRING_WEATHER_RAINALE
+WeatherRainBlood=0,weathereffectcode,'VWrb',WESTRING_WEATHER_RAINBLOOD
+WeatherRainLight=0,weathereffectcode,'VWrl',WESTRING_WEATHER_RAINLIGHT
+WeatherRainOil=0,weathereffectcode,'VWro',WESTRING_WEATHER_RAINOIL
+WeatherRainPurple=0,weathereffectcode,'VWrp',WESTRING_WEATHER_RAINPURPLE
+WeatherRainSmudge=0,weathereffectcode,'VWrs',WESTRING_WEATHER_RAINSMUDGE
 WeatherHeavyWind=0,weathereffectcode,'WNcw',WESTRING_WEATHER_WIND
+WeatherRainSnowflakes=0,weathereffectcode,'VWsf',WESTRING_WEATHER_SNOWFLAKES
 
 // Tile IDs
 TerrainTypeLdrt=1,terraintype,'Ldrt',WESTRING_TERRAINTYPE_Ldrt
@@ -3570,6 +3882,53 @@ TerrainTypecVc2=1,terraintype,'cVc2',WESTRING_TERRAINTYPE_cVc2
 TerrainTypecVc1=1,terraintype,'cVc1',WESTRING_TERRAINTYPE_cVc1
 TerrainTypecQc2=1,terraintype,'cQc2',WESTRING_TERRAINTYPE_cQc2
 TerrainTypecQc1=1,terraintype,'cQc1',WESTRING_TERRAINTYPE_cQc1
+TerrainTypeMaph=1,terraintype,'Maph',WESTRING_TERRAINTYPE_Maph
+TerrainTypeMcha=1,terraintype,'Mcha',WESTRING_TERRAINTYPE_Mcha
+TerrainTypeMsco=1,terraintype,'Msco',WESTRING_TERRAINTYPE_Msco
+TerrainTypeeC13=1,terraintype,'eC13',WESTRING_TERRAINTYPE_eC13
+TerrainTypeeCt3=1,terraintype,'eCt3',WESTRING_TERRAINTYPE_eCt3
+TerrainTypeeC12=1,terraintype,'eC12',WESTRING_TERRAINTYPE_eC12
+TerrainTypeeCt2=1,terraintype,'eCt2',WESTRING_TERRAINTYPE_eCt2
+TerrainTypeeCt4=1,terraintype,'eCt4',WESTRING_TERRAINTYPE_eCt4
+TerrainTypeeCt5=1,terraintype,'eCt5',WESTRING_TERRAINTYPE_eCt5
+TerrainTypeeCt6=1,terraintype,'eCt6',WESTRING_TERRAINTYPE_eCt6
+TerrainTypeeCt7=1,terraintype,'eCt7',WESTRING_TERRAINTYPE_eCt7
+TerrainTypeeCt1=1,terraintype,'eCt1',WESTRING_TERRAINTYPE_eCt1
+TerrainTypeeCt8=1,terraintype,'eCt8',WESTRING_TERRAINTYPE_eCt8
+TerrainTypeeCt9=1,terraintype,'eCt9',WESTRING_TERRAINTYPE_eCt9
+TerrainTypeeCt0=1,terraintype,'eCt0',WESTRING_TERRAINTYPE_eCt0
+TerrainTypeeC11=1,terraintype,'eC11',WESTRING_TERRAINTYPE_eC11
+TerrainTypeuCc1=1,terraintype,'uCc1',WESTRING_TERRAINTYPE_uCc1
+TerrainTypeuCc3=1,terraintype,'uCc3',WESTRING_TERRAINTYPE_uCc3
+TerrainTypeuCc2=1,terraintype,'uCc2',WESTRING_TERRAINTYPE_uCc2
+TerrainTypeuCc4=1,terraintype,'uCc4',WESTRING_TERRAINTYPE_uCc4
+TerrainTypeuCc5=1,terraintype,'uCc5',WESTRING_TERRAINTYPE_uCc5
+TerrainTypeuCc6=1,terraintype,'uCc6',WESTRING_TERRAINTYPE_uCc6
+TerrainTypeuCc7=1,terraintype,'uCc7',WESTRING_TERRAINTYPE_uCc7
+TerrainTypeuCc8=1,terraintype,'uCc8',WESTRING_TERRAINTYPE_uCc8
+TerrainTypeuCc9=1,terraintype,'uCc9',WESTRING_TERRAINTYPE_uCc9
+TerrainTypePdrt=1,terraintype,'Pdrt',WESTRING_TERRAINTYPE_Pdrt
+TerrainTypePdtr=1,terraintype,'Pdtr',WESTRING_TERRAINTYPE_Pdtr
+TerrainTypePblm=1,terraintype,'Pblm',WESTRING_TERRAINTYPE_Pblm
+TerrainTypePbtl=1,terraintype,'Pbtl',WESTRING_TERRAINTYPE_Pbtl
+TerrainTypePsqd=1,terraintype,'Psqd',WESTRING_TERRAINTYPE_Psqd
+TerrainTypePrtl=1,terraintype,'Prtl',WESTRING_TERRAINTYPE_Prtl
+TerrainTypePgsb=1,terraintype,'Pgsb',WESTRING_TERRAINTYPE_Pgsb
+TerrainTypePhdg=1,terraintype,'Phdg',WESTRING_TERRAINTYPE_Phdg
+TerrainTypePwmb=1,terraintype,'Pwmb',WESTRING_TERRAINTYPE_Pwmb
+TerrainTypeRC13=1,terraintype,'RC13',WESTRING_TERRAINTYPE_RC13
+TerrainTypeRCt3=1,terraintype,'RCt3',WESTRING_TERRAINTYPE_RCt3
+TerrainTypeRC12=1,terraintype,'RC12',WESTRING_TERRAINTYPE_RC12
+TerrainTypeRCt2=1,terraintype,'RCt2',WESTRING_TERRAINTYPE_RCt2
+TerrainTypeRCt4=1,terraintype,'RCt4',WESTRING_TERRAINTYPE_RCt4
+TerrainTypeRCt5=1,terraintype,'RCt5',WESTRING_TERRAINTYPE_RCt5
+TerrainTypeRCt6=1,terraintype,'RCt6',WESTRING_TERRAINTYPE_RCt6
+TerrainTypeRCt7=1,terraintype,'RCt7',WESTRING_TERRAINTYPE_RCt7
+TerrainTypeRCt1=1,terraintype,'RCt1',WESTRING_TERRAINTYPE_RCt1
+TerrainTypeRCt8=1,terraintype,'RCt8',WESTRING_TERRAINTYPE_RCt8
+TerrainTypeRCt9=1,terraintype,'RCt9',WESTRING_TERRAINTYPE_RCt9
+TerrainTypeRCt0=1,terraintype,'RCt0',WESTRING_TERRAINTYPE_RCt0
+TerrainTypeRC11=1,terraintype,'RC11',WESTRING_TERRAINTYPE_RC11
 
 //  Terrain Shapes
 TerrainShapeCircle=1,terrainshape,0,WESTRING_TERRAINSHAPE_CIRCLE
@@ -3590,6 +3949,7 @@ LightningTypeLEAS=1,lightningtype,`LEAS`,WESTRING_LIGHTNINGTYPE_LEAS
 LightningTypeMBUR=1,lightningtype,`MBUR`,WESTRING_LIGHTNINGTYPE_MBUR
 LightningTypeMFPB=1,lightningtype,`MFPB`,WESTRING_LIGHTNINGTYPE_MFPB
 LightningTypeSPLK=1,lightningtype,`SPLK`,WESTRING_LIGHTNINGTYPE_SPLK
+LightningTypePOSS=1,lightningtype,`POSS`,WESTRING_LIGHTNINGTYPE_POSS
 
 //  Image types
 ImageTypeShadow=1,imagetype,0,WESTRING_IMAGETYPE_SHADOW
@@ -3925,7 +4285,7 @@ _OperatorCompareBoolean_AIDefaults=true,OperatorEqualENE,true
 OperatorCompareAbilityId=1,abilcode,EqualNotEqualOperator,abilcode
 _OperatorCompareAbilityId_DisplayName="Ability Comparison"
 _OperatorCompareAbilityId_Parameters=~Value," ",~Operator," ",~Value
-_OperatorCompareAbilityId_Defaults=GetSpellAbilityId,OperatorEqualENE,AUan
+_OperatorCompareAbilityId_Defaults=GetSpellAbilityId,OperatorEqualENE,AUa2
 _OperatorCompareAbilityId_Category=TC_CONDITION
 
 OperatorCompareBuffId=1,buffcode,EqualNotEqualOperator,buffcode
@@ -3995,6 +4355,18 @@ _OperatorCompareItemCode_DisplayName="Item-Type Comparison"
 _OperatorCompareItemCode_Parameters=~Value," ",~Operator," ",~Value
 _OperatorCompareItemCode_Defaults=GetItemTypeId,OperatorEqualENE,texp
 _OperatorCompareItemCode_Category=TC_CONDITION
+
+OperatorCompareItemEquipmentType=1,equipmenttype,EqualNotEqualOperator,equipmenttype
+_OperatorCompareItemEquipmentType_DisplayName="Equipment-Type Comparison"
+_OperatorCompareItemEquipmentType_Parameters=~Value," ",~Operator," ",~Value
+_OperatorCompareItemEquipmentType_Defaults=GetItemEquipmentType,OperatorEqualENE,EquipmentTypeNone
+_OperatorCompareItemEquipmentType_Category=TC_CONDITION
+
+OperatorCompareItemTag=1,itemtag,EqualNotEqualOperator,itemtag
+_OperatorCompareItemTag_DisplayName="Tag Comparison"
+_OperatorCompareItemTag_Parameters=~Value," ",~Operator," ",~Value
+_OperatorCompareItemTag_Defaults=GetItemTag,OperatorEqualENE,ItemTagUndefined
+_OperatorCompareItemTag_Category=TC_CONDITION
 
 OperatorCompareMouseButton=1,mousebuttontype,EqualNotEqualOperator,mousebuttontype
 _OperatorCompareMouseButton_DisplayName="Mouse Button Type Comparison"
@@ -4145,18 +4517,6 @@ _CustomScriptCode_DisplayName="Custom Script"
 _CustomScriptCode_Parameters="Custom script:   ",~Script Code
 _CustomScriptCode_Defaults=_
 _CustomScriptCode_Category=TC_CUSTOM
-
-SetDialogueTextKey=0,sound,string
-_SetDialogueTextKey_DisplayName="Set Dialogue Text ID"
-_SetDialogueTextKey_Parameters="Set Dialogue Text ID For Sound ",~Sound," Dialogue Text ID ",~Text,"
-_SetDialogueTextKey_Defaults=_
-_SetDialogueTextKey_Category=TC_CINEMATIC
-
-SetDialogueSpeakerNameKey=0,sound,string
-_SetDialogueSpeakerNameKey_DisplayName="Set Speaker Name Text ID"
-_SetDialogueSpeakerNameKey_Parameters="Set Speaker Name Text ID For Sound ",~Sound," Speaker Name Text ID ",~Name,"
-_SetDialogueSpeakerNameKey_Defaults=_
-_SetDialogueSpeakerNameKey_Category=TC_CINEMATIC
 
 TriggerSleepAction=0,real
 _TriggerSleepAction_DisplayName="Wait"
@@ -4325,6 +4685,18 @@ _ResetUnitAnimation_Parameters="Reset ",~Unit,"'s animation"
 _ResetUnitAnimation_Defaults=_
 _ResetUnitAnimation_Category=TC_ANIMATION
 
+BlzGetUnitAnimationDuration=0,unit,animationname
+_BlzGetUnitAnimationDuration_DisplayName="Get Unit Animation Duration"
+_BlzGetUnitAnimationDuration_Parameters="Get the duration of ",~Unit,"'s ",~Animation Name," animation"
+_BlzGetUnitAnimationDuration_Defaults=_,"stand"
+_BlzGetUnitAnimationDuration_Category=TC_ANIMATION
+
+BlzGetUnitAnimationDurationByIndex=0,unit,integer
+_BlzGetUnitAnimationDurationByIndex_DisplayName="Get Unit Animation Duration By Index"
+_BlzGetUnitAnimationDurationByIndex_Parameters="Get the duration of ",~Unit,"'s ",~Integer,"th animation"
+_BlzGetUnitAnimationDurationByIndex_Defaults=_,0
+_BlzGetUnitAnimationDurationByIndex_Category=TC_ANIMATION
+
 AddUnitAnimationPropertiesBJ=0,addremoveoption,animationname,unit
 _AddUnitAnimationPropertiesBJ_DisplayName="Add/Remove Unit Animation Tag"
 _AddUnitAnimationPropertiesBJ_Parameters=~Add/Remove," the ",~Tag," animation tag to ",~Unit
@@ -4419,6 +4791,18 @@ _SetDoodadAnimationBJ_Parameters="Play the ",~Animation Name," animation for all
 _SetDoodadAnimationBJ_Defaults="death",_,128,GetRectCenter
 _SetDoodadAnimationBJ_Category=TC_ANIMATION
 
+// Doodad actions
+SetDoodadColorRectBJ=0,playercolor,doodadcode,rect
+_SetDoodadColorRectBJ_DisplayName="Set Doodads Team Color In Region"
+_SetDoodadColorRectBJ_Parameters="Set to team color ",~Color," all doodads of type ",~Doodad Type," within ",~Rect,"."
+_SetDoodadColorRectBJ_Defaults=Color00,_,GetPlayableMapRect
+_SetDoodadColorRectBJ_Category=TC_DOODAD
+
+SetDoodadColorBJ=0,playercolor,doodadcode,real,location
+_SetDoodadColorBJ_DisplayName="Set Doodads Team Color In Circle"
+_SetDoodadColorBJ_Parameters="Set to team color ",~Color," all doodads of type ",~Doodad Type," within ",~Radius," of ",~Point,"."
+_SetDoodadColorBJ_Defaults=Color00,_,128,GetRectCenter
+_SetDoodadColorBJ_Category=TC_DOODAD
 
 // Camera actions
 CameraSetupApplyForPlayer=0,cameraapplyoption,camerasetup,player,real
@@ -4462,6 +4846,12 @@ _SetCameraFieldForPlayer_Parameters="Set ",~Player,"'s camera ",~Field," to ",~V
 _SetCameraFieldForPlayer_Defaults=Player00,CameraFieldTargetDistance,CameraSetupGetFieldSwap,0
 _SetCameraFieldForPlayer_Limits=_,_,_,_,_,_,0,_
 _SetCameraFieldForPlayer_Category=TC_CAMERA
+
+SetCameraFieldControlledByInputForPlayer=0,player,camerafield,onoffoption
+_SetCameraFieldControlledByInputForPlayer_DisplayName="Set Camera Field Controlled By Input"
+_SetCameraFieldControlledByInputForPlayer_Parameters="Set ",~Player,"'s camera ",~Field," to update when any input is received to ",~On-Off
+_SetCameraFieldControlledByInputForPlayer_Defaults=Player00,CameraFieldTargetDistance,OnOffOff
+_SetCameraFieldControlledByInputForPlayer_Category=TC_CAMERA
 
 RotateCameraAroundLocBJ=1,real,location,player,real
 _RotateCameraAroundLocBJ_DisplayName="Rotate Camera Around Point"
@@ -4583,18 +4973,36 @@ _BlzCameraSetupGetLabel_Parameters="Get the label of ",~Camera Object,"
 _BlzCameraSetupGetLabel_Defaults=_
 _BlzCameraSetupGetLabel_Category=TC_CAMERA
 
+SetCameraBlockerForPlayerBJ=0,rect,onoffoption,player
+_SetCameraBlockerForPlayerBJ_DisplayName="Turn Camera Blocker On/Off for Player"
+_SetCameraBlockerForPlayerBJ_Parameters="Set camera blocker ",~Region," to ",~OnOff," for ",~Player
+_SetCameraBlockerForPlayerBJ_Defaults=_,OnOffOn,Player00
+_SetCameraBlockerForPlayerBJ_Category=TC_CAMERA
+
 // Cinematic actions
+SetDialogueTextKey=0,sound,string
+_SetDialogueTextKey_DisplayName="Set Dialogue Text"
+_SetDialogueTextKey_Parameters="Set dialogue text for sound ",~Sound," to string ",~Text,"
+_SetDialogueTextKey_Defaults=_,"Text"
+_SetDialogueTextKey_Category=TC_CINEMATIC
+
+SetDialogueSpeakerNameKey=0,sound,string
+_SetDialogueSpeakerNameKey_DisplayName="Set Dialogue Speaker Name"
+_SetDialogueSpeakerNameKey_Parameters="Set dialogue speaker name for sound ",~Sound," to string ",~Name,"
+_SetDialogueSpeakerNameKey_Defaults=_,"Speaker"
+_SetDialogueSpeakerNameKey_Category=TC_CINEMATIC
+
 PlayDialogueFromSpeakerEx=0,force,unit,unitcode,sound,addsettooption,real,waitdontoption
-_PlayDialogueFromSpeakerEx_DisplayName="Play Dialogue from Speaker"
-_PlayDialogueFromSpeakerEx_Parameters="Play Dialogue to ",~Player Group," from ",~Unit," with type ",~Unit-Type,". Play ",~Sound,".  Modify duration: ",~Method," ",~Time," seconds and ",~Wait/Don't Wait
-_PlayDialogueFromSpeakerEx_Defaults=_,_,_,_,AddSetToAdd,0,WaitDontWait
+_PlayDialogueFromSpeakerEx_DisplayName="Play Dialogue From Speaker"
+_PlayDialogueFromSpeakerEx_Parameters="Play dialogue to ",~Player Group," from ",~Unit," with type ",~Unit-Type,". Play ",~Sound,".  Modify duration: ",~Method," ",~Time," seconds and ",~Wait/Don't Wait
+_PlayDialogueFromSpeakerEx_Defaults=GetPlayersAll,_,_,_,AddSetToAdd,0,WaitDontWait
 _PlayDialogueFromSpeakerEx_Category=TC_CINEMATIC
 
 //function PlayDialogueFromSpeakerTypeEx takes force toForce, player fromPlayer, integer speakerType, location loc, sound soundHandle, integer timeType, real timeVal, boolean wait returns nothing
 PlayDialogueFromSpeakerTypeEx=0,force,player,unitcode,location,sound,addsettooption,real,waitdontoption
-_PlayDialogueFromSpeakerTypeEx_DisplayName="Play Dialogue from Unit-Type"
-_PlayDialogueFromSpeakerTypeEx_Parameters="Play Dialogue to ",~Player Group," from ",~Player," ",~Unit-Type," to the user interface at location ",~Point,". Play ",~Sound,".  Modify duration: ",~Method," ",~Time," seconds and ",~Wait/Don't Wait
-_PlayDialogueFromSpeakerTypeEx_Defaults=_,_,_,_,_,AddSetToAdd,0,WaitDontWait
+_PlayDialogueFromSpeakerTypeEx_DisplayName="Play Dialogue From Unit-Type"
+_PlayDialogueFromSpeakerTypeEx_Parameters="Play dialogue to ",~Player Group," from ",~Player," ",~Unit-Type," to the user interface at location ",~Point,". Play ",~Sound,".  Modify duration: ",~Method," ",~Time," seconds and ",~Wait/Don't Wait
+_PlayDialogueFromSpeakerTypeEx_Defaults=GetPlayersAll,_,_,_,_,AddSetToAdd,0,WaitDontWait
 _PlayDialogueFromSpeakerTypeEx_Category=TC_CINEMATIC
 
 BlzEnableTargetIndicator=0,boolean
@@ -4692,34 +5100,40 @@ _CreateMinimapIconBJ_Parameters="Create Minimap Icon at (",~X,", ",~Y,") of colo
 _CreateMinimapIconBJ_Defaults=_,_,255,255,255,_,_
 _CreateMinimapIconBJ_Category=TC_CINEMATIC
 
+BlzPlayModelCinematicGameAtPosition=0,modelfile,real,real,real,real
+_BlzPlayModelCinematicGameAtPosition_DisplayName="Play Model Cinematic At Position and Return to Game"
+_BlzPlayModelCinematicGameAtPosition_Parameters="Play Model Cinematic ",~MDL Filename," PosX ",~PosX," PosY ",~PosY, PosZ ",~PosZ, Rotation ",~RotZ
+_BlzPlayModelCinematicGameAtPosition_Defaults="cinematic.mdl", 0, 0, 0, 0
+_BlzPlayModelCinematicGameAtPosition_Category=TC_CINEMATIC
+
 CampaignMinimapIconUnitBJ=1,unit,campaignpingstyle
-_CampaignMinimapIconUnitBJ_DisplayName="Create Campaign Quest Ping On Unit"
-_CampaignMinimapIconUnitBJ_Parameters="Create Campaign Quest Icon on ",~Unit," using ",~Style," style
+_CampaignMinimapIconUnitBJ_DisplayName="Create Minimap Icon On Unit"
+_CampaignMinimapIconUnitBJ_Parameters="Create campaign quest minimap icon on ",~Unit," using ",~Style," style."
 _CampaignMinimapIconUnitBJ_Defaults=GetTriggerUnit,CampaignPingStyleBonus
 _CampaignMinimapIconUnitBJ_Category=TC_QUEST
 
 CampaignMinimapIconLocBJ=1,location,campaignpingstyle
-_CampaignMinimapIconLocBJ_DisplayName="Create Campaign Quest Ping At Point"
-_CampaignMinimapIconLocBJ_Parameters="Create Campaign Quest Icon at ",~Location," using ",~Style," style
+_CampaignMinimapIconLocBJ_DisplayName="Create Minimap Icon At Point"
+_CampaignMinimapIconLocBJ_Parameters="Create campaign quest minimap icon at ",~Location," using ",~Style," style."
 _CampaignMinimapIconLocBJ_Defaults=_,CampaignPingStyleBonus
 _CampaignMinimapIconLocBJ_Category=TC_QUEST
 
 DestroyMinimapIcon=0,minimapicon
 _DestroyMinimapIcon_DisplayName="Destroy Minimap Icon"
-_DestroyMinimapIcon_Parameters="Destroy Minimap Icon for ",~Minimap Icon
+_DestroyMinimapIcon_Parameters="Destroy campaign quest minimap icon ",~Minimap Icon
 _DestroyMinimapIcon_Defaults=
 _DestroyMinimapIcon_Category=TC_QUEST
 
-SetMinimapIconVisible=1,minimapicon,boolean
+SetMinimapIconVisible=1,minimapicon,onoffoption
 _SetMinimapIconVisible_DisplayName="Set Minimap Icon Visible"
-_SetMinimapIconVisible_Parameters="Set Minimap Icon Visible for ",~Minimap Icon," to "~Visible
-_SetMinimapIconVisible_Defaults=_true
+_SetMinimapIconVisible_Parameters="Set campaign quest minimap icon visibility for ",~Minimap Icon," to "~On/Off
+_SetMinimapIconVisible_Defaults=_,OnOffOn
 _SetMinimapIconVisible_Category=TC_QUEST
 
-SetMinimapIconOrphanDestroy=1,minimapicon,boolean
+SetMinimapIconOrphanDestroy=1,minimapicon,onoffoption
 _SetMinimapIconOrphanDestroy_DisplayName="Set Minimap Icon Self Destroy"
-_SetMinimapIconOrphanDestroy_Parameters="Set Minimap Icon ",~Minimap Icon," self destroy when attached unit is dead to "~type
-_SetMinimapIconOrphanDestroy_Defaults=_true
+_SetMinimapIconOrphanDestroy_Parameters="Set campaign quest minimap icon ",~Minimap Icon," self destroy when attached unit is dead to "~On/Off
+_SetMinimapIconOrphanDestroy_Defaults=_,OnOffOn
 _SetMinimapIconOrphanDestroy_Category=TC_QUEST
 
 DestructableAddIndicatorBJ=0,destructable,real,real,real,real
@@ -4904,6 +5318,12 @@ _SetDestructableMaxLifeBJ_Defaults=GetLastCreatedDestructable,100
 _SetDestructableMaxLifeBJ_Limits=_,_,0,_
 _SetDestructableMaxLifeBJ_Category=TC_DESTRUCT
 
+SetDestructableColor=0,destructable,playercolor
+_SetDestructableColor_DisplayName="Change Color"
+_SetDestructableColor_Parameters="Change color of ",~Destructable," to ",~Color
+_SetDestructableColor_Defaults=GetLastCreatedDestructable,Color00
+_SetDestructableColor_Category=TC_DESTRUCT
+
 ModifyGateBJ=0,gateoperation,destructable
 _ModifyGateBJ_DisplayName="Open/Close/Destroy Gate"
 _ModifyGateBJ_Parameters=~Open/Close/Destroy," ",~Gate
@@ -5073,6 +5493,88 @@ _SetWaterBaseColorBJ_Defaults=100,100,100,0
 _SetWaterBaseColorBJ_Limits=0,100,0,100,0,100,0,100
 _SetWaterBaseColorBJ_Category=TC_ENVIRONMENT
 
+SetHDWaterParamsExBJ=1,real,real,real,onoffoption,integer,integer,integer,integer,integer,integer,integer,integer
+_SetHDWaterParamsExBJ_DisplayName="Set HD Water Parameters"
+_SetHDWaterParamsExBJ_Parameters="Change HD water parameters override color to (",~Red,"%, ",~Green,"%, ",~Blue,"%) with override ",~Override,". Change waves vertex displacement to ",~Waves-Vertex-Displacement,", minimum opacity to ",~Min-Opacity,", maximum opacity to ",~Max-Opacity,", reflectivity to ",~Reflectivity,", emissivity to ",~Emissivity,", edge softness to ",~Edge-Softness,", waves normal map strength to ",~Wave-Normal-Map-Strength," and environment map reflectivity to to ",~Environment-Map-Reflectivity,".
+_SetHDWaterParamsExBJ_Defaults=100,100,100,OnOffOn,20,0,100,10,0,50,100,100
+_SetHDWaterParamsExBJ_Limits=0,100,0,100,0,100,_,_,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100
+_SetHDWaterParamsExBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterColorBJ=1,real,real,real
+_BlzSetHDWaterColorBJ_DisplayName="Change HD Water Color Override"
+_BlzSetHDWaterColorBJ_Parameters="Change HD water override color to (",~Red,"%, ",~Green,"%, ",~Blue,"%)."
+_BlzSetHDWaterColorBJ_Defaults=100,100,100
+_BlzSetHDWaterColorBJ_Limits=0,100,0,100,0,100
+_BlzSetHDWaterColorBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterColorOverrideBJ=1
+_BlzSetHDWaterColorOverrideBJ_DisplayName="Enable HD Water Color Override"
+_BlzSetHDWaterColorOverrideBJ_Parameters="Enable HD water color override."
+_BlzSetHDWaterColorOverrideBJ_Defaults=
+_BlzSetHDWaterColorOverrideBJ_Category=TC_ENVIRONMENT
+
+BlzClearHDWaterColorOverrideBJ=1
+_BlzClearHDWaterColorOverrideBJ_DisplayName="Disable HD Water Color Override"
+_BlzClearHDWaterColorOverrideBJ_Parameters="Disable HD water color override."
+_BlzClearHDWaterColorOverrideBJ_Defaults=
+_BlzClearHDWaterColorOverrideBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterVertexDisplacementBJ=1,integer
+_BlzSetHDWaterVertexDisplacementBJ_DisplayName="Change HD Water Waves Vertex Displacement"
+_BlzSetHDWaterVertexDisplacementBJ_Parameters="Change HD water waves vertex displacement to ",~Waves-Vertex-Displacement,".
+_BlzSetHDWaterVertexDisplacementBJ_Defaults=20
+_BlzSetHDWaterVertexDisplacementBJ_Limits=0,100
+_BlzSetHDWaterVertexDisplacementBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterMinOpacityBJ=1,integer
+_BlzSetHDWaterMinOpacityBJ_DisplayName="Change HD Water Minimum Opacity"
+_BlzSetHDWaterMinOpacityBJ_Parameters="Change HD water minimum opacity to ",~Min-Opacity,".
+_BlzSetHDWaterMinOpacityBJ_Defaults0
+_BlzSetHDWaterMinOpacityBJ_Limits=0,100
+_BlzSetHDWaterMinOpacityBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterMaxOpacityBJ=1,integer
+_BlzSetHDWaterMaxOpacityBJ_DisplayName="Change HD Water Maximum Opacity"
+_BlzSetHDWaterMaxOpacityBJ_Parameters="Change HD water maximum opacity to ",~Max-Opacity,".
+_BlzSetHDWaterMaxOpacityBJ_Defaults=100
+_BlzSetHDWaterMaxOpacityBJ_Limits=0,100
+_BlzSetHDWaterMaxOpacityBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterReflectivityBJ=1,integer
+_BlzSetHDWaterReflectivityBJ_DisplayName="Change HD Water Reflectivity"
+_BlzSetHDWaterReflectivityBJ_Parameters="Change HD water reflectivity to ",~Reflectivity,".
+_BlzSetHDWaterReflectivityBJ_Defaults=10
+_BlzSetHDWaterReflectivityBJ_Limits=0,100
+_BlzSetHDWaterReflectivityBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterEmissivityBJ=1,integer
+_BlzSetHDWaterEmissivityBJ_DisplayName="Change HD Water Emissivity"
+_BlzSetHDWaterEmissivityBJ_Parameters="Change HD water emissivity to ",~Emissivity,".
+_BlzSetHDWaterEmissivityBJ_Defaults=0
+_BlzSetHDWaterEmissivityBJ_Limits=0,100
+_BlzSetHDWaterEmissivityBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterEdgeSoftnessBJ=1,integer
+_BlzSetHDWaterEdgeSoftnessBJ_DisplayName="Change HD Water Edge Softness"
+_BlzSetHDWaterEdgeSoftnessBJ_Parameters="Change HD water edge sofness to ",~Edge-Softness,".
+_BlzSetHDWaterEdgeSoftnessBJ_Defaults=50
+_BlzSetHDWaterEdgeSoftnessBJ_Limits=0,100
+_BlzSetHDWaterEdgeSoftnessBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterWaveStrengthBJ=1,integer
+_BlzSetHDWaterWaveStrengthBJ_DisplayName="Change HD Water Wave Normal Map Strength"
+_BlzSetHDWaterWaveStrengthBJ_Parameters="Change HD water waves normal map strength to ",~Waves-Normal-Map-Strength,".
+_BlzSetHDWaterWaveStrengthBJ_Defaults=100
+_BlzSetHDWaterWaveStrengthBJ_Limits=0,100
+_BlzSetHDWaterWaveStrengthBJ_Category=TC_ENVIRONMENT
+
+BlzSetHDWaterEnvMapStrengthBJ=1,integer
+_BlzSetHDWaterEnvMapStrengthBJ_DisplayName="Change HD Water Environment Map Reflectivity"
+_BlzSetHDWaterEnvMapStrengthBJ_Parameters="Change HD water environment map reflectivity to ",~Environment-Map-Reflectivity,".
+_BlzSetHDWaterEnvMapStrengthBJ_Defaults=100
+_BlzSetHDWaterEnvMapStrengthBJ_Limits=0,100
+_BlzSetHDWaterEnvMapStrengthBJ_Category=TC_ENVIRONMENT
+
 SetSkyModel=0,skymodelstring
 _SetSkyModel_DisplayName="Set Sky"
 _SetSkyModel_Parameters="Set sky to ",~Sky
@@ -5081,14 +5583,91 @@ _SetSkyModel_Category=TC_ENVIRONMENT
 
 SetTerrainFogExBJ=0,fogstyle,real,real,real,real,real,real
 _SetTerrainFogExBJ_DisplayName="Set Fog"
-_SetTerrainFogExBJ_Parameters="Set fog to style ",~Style,", z-start ",~Z-Start,", z-end ",~Z-End,", density ",~Density," and color (",~Red,"%, ",~Green,"%, ",~Blue,"%)"
+_SetTerrainFogExBJ_Parameters="Set fog to style ",~Style,", z-start ",~Z-Start,", z-end ",~Z-End,", density ",~Density," and color (",~Red,"%, ",~Green,"%, ",~Blue,"%)."
 _SetTerrainFogExBJ_Defaults=FogStyleLinear,1000,8000,0,100,100,100
 _SetTerrainFogExBJ_Limits=_,_,0,_,0,_,0,_,0,100,0,100,0,100
 _SetTerrainFogExBJ_Category=TC_ENVIRONMENT
 
+BlzSetTerrainFogStyleBJ=0,fogstyle
+_BlzSetTerrainFogStyleBJ_DisplayName="Set Fog Style"
+_BlzSetTerrainFogStyleBJ_Parameters="Set fog style to ",~Style,"."
+_BlzSetTerrainFogStyleBJ_Defaults=FogStyleLinear
+_BlzSetTerrainFogStyleBJ_Limits=_,_
+_BlzSetTerrainFogStyleBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogZStartBJ=0,real
+_BlzSetTerrainFogZStartBJ_DisplayName="Set Fog Z-Start"
+_BlzSetTerrainFogZStartBJ_Parameters="Set fog z-start to ",~Z-Start,"."
+_BlzSetTerrainFogZStartBJ_Defaults=1000
+_BlzSetTerrainFogZStartBJ_Limits=0,_
+_BlzSetTerrainFogZStartBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogZEndBJ=0,real
+_BlzSetTerrainFogZEndBJ_DisplayName="Set Fog Z-End"
+_BlzSetTerrainFogZEndBJ_Parameters="Set fog z-end to ",~Z-End,"."
+_BlzSetTerrainFogZEndBJ_Defaults=8000
+_BlzSetTerrainFogZEndBJ_Limits=0,_
+_BlzSetTerrainFogZEndBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogDensityBJ=0,real
+_BlzSetTerrainFogDensityBJ_DisplayName="Set Fog Density"
+_BlzSetTerrainFogDensityBJ_Parameters="Set fog density to ",~Density,"."
+_BlzSetTerrainFogDensityBJ_Defaults=0
+_BlzSetTerrainFogDensityBJ_Limits=0,_
+_BlzSetTerrainFogDensityBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogHeightStartBJ=0,real
+_BlzSetTerrainFogHeightStartBJ_DisplayName="Set Fog Height-Start"
+_BlzSetTerrainFogHeightStartBJ_Parameters="Set fog height-start to ",~Height-Start,"."
+_BlzSetTerrainFogHeightStartBJ_Defaults=0
+_BlzSetTerrainFogHeightStartBJ_Limits=0,_
+_BlzSetTerrainFogHeightStartBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogHeightEndBJ=0,real
+_BlzSetTerrainFogHeightEndBJ_DisplayName="Set Fog Height-End"
+_BlzSetTerrainFogHeightEndBJ_Parameters="Set fog height-end to ",~Height-End,"."
+_BlzSetTerrainFogHeightEndBJ_Defaults=0
+_BlzSetTerrainFogHeightEndBJ_Limits=0,_
+_BlzSetTerrainFogHeightEndBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogLinearStartBJ=0,real
+_BlzSetTerrainFogLinearStartBJ_DisplayName="Set Fog Linear-Start"
+_BlzSetTerrainFogLinearStartBJ_Parameters="Set fog linear-start to ",~Linear-Start,"."
+_BlzSetTerrainFogLinearStartBJ_Defaults=10000
+_BlzSetTerrainFogLinearStartBJ_Limits=0,_
+_BlzSetTerrainFogLinearStartBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogLinearEndBJ=0,real
+_BlzSetTerrainFogLinearEndBJ_DisplayName="Set Fog Linear-End"
+_BlzSetTerrainFogLinearEndBJ_Parameters="Set fog linear-end to ",~Linear-End,"."
+_BlzSetTerrainFogLinearEndBJ_Defaults=10000
+_BlzSetTerrainFogLinearEndBJ_Limits=0,_
+_BlzSetTerrainFogLinearEndBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogMaxLinearDensityBJ=0,real
+_BlzSetTerrainFogMaxLinearDensityBJ_DisplayName="Set Fog Max Opacity"
+_BlzSetTerrainFogMaxLinearDensityBJ_Parameters="Set fog linear density to ",~Linear-Density,"."
+_BlzSetTerrainFogMaxLinearDensityBJ_Defaults=0
+_BlzSetTerrainFogMaxLinearDensityBJ_Limits=0,_
+_BlzSetTerrainFogMaxLinearDensityBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogDrawOverSkyBJ=0,onoffoption
+_BlzSetTerrainFogDrawOverSkyBJ_DisplayName="Set Fog Draw Over Sky"
+_BlzSetTerrainFogDrawOverSkyBJ_Parameters="Set fog draw over sky to ",~Draw-Over-Sky,"."
+_BlzSetTerrainFogDrawOverSkyBJ_Defaults=OnOffOff
+_BlzSetTerrainFogDrawOverSkyBJ_Limits=_,_
+_BlzSetTerrainFogDrawOverSkyBJ_Category=TC_ENVIRONMENT
+
+BlzSetTerrainFogColorBJ=0,real,real,real
+_BlzSetTerrainFogColorBJ_DisplayName="Set Fog Color"
+_BlzSetTerrainFogColorBJ_Parameters="Set fog color to (",~Red,"%, ",~Green,"%, ",~Blue,"%)."
+_BlzSetTerrainFogColorBJ_Defaults=100,100,100
+_BlzSetTerrainFogColorBJ_Limits=0,100,0,100,0,100
+_BlzSetTerrainFogColorBJ_Category=TC_ENVIRONMENT
+
 ResetTerrainFogBJ=0,nothing
 _ResetTerrainFogBJ_DisplayName="Reset Fog"
-_ResetTerrainFogBJ_Parameters="Reset fog to default values"
+_ResetTerrainFogBJ_Parameters="Reset fog to default values."
 _ResetTerrainFogBJ_Defaults=
 _ResetTerrainFogBJ_Category=TC_ENVIRONMENT
 
@@ -5104,6 +5683,12 @@ _SetBlightRadiusLocBJ_Parameters=~Create/Remove," Blight for ",~Player," from ",
 _SetBlightRadiusLocBJ_Defaults=CreateRemoveCreate,Player00,GetRectCenter,512
 _SetBlightRadiusLocBJ_Limits=_,_,_,_,_,_,0,_
 _SetBlightRadiusLocBJ_Category=TC_ENVIRONMENT
+
+SetDayNightModels=0,dncmodelstring,dncmodelstring
+_SetDayNightModels_DisplayName="Set DNC Light Models"
+_SetDayNightModels_Parameters="Set day-night cycle light models to ",~Terrain-Model," for terrain and ",~Units-Model," for units.
+_SetDayNightModels_Defaults=DNCModelLordaeronTerrain,DNCModelLordaeronUnit
+_SetDayNightModels_Category=TC_ENVIRONMENT
 
 // Text Tag actions
 CreateTextTagLocBJ=1,StringExt,location,real,real,real,real,real,real
@@ -5315,8 +5900,9 @@ _SetMaxCheckpointSaves_Category=TC_GAME
 SaveGameCheckPoint=1,anyfile,boolean
 _SaveGameCheckPoint_DisplayName="Create Save Checkpoint"
 _SaveGameCheckPoint_Parameters="Create checkpoint with name ",~Filename," (",~Show/Hide," checkpoint message)"
-_SaveGameCheckPoint_Defaults="Checkpoint.w3z"
+_SaveGameCheckPoint_Defaults="Checkpoint.w3z",false
 _SaveGameCheckPoint_Category=TC_GAME
+_SaveGameCheckPoint_ScriptName=SaveGameCheckpoint
 
 SaveGameCheckPointBJ=0,anyfile,showhideoption
 _SaveGameCheckPointBJ_DisplayName="Create Save Checkpoint"
@@ -5469,6 +6055,7 @@ BlzStartRecording=0,integer
 _BlzStartRecording_DisplayName="Start Recording"
 _BlzStartRecording_Parameters="Start Recording with FPS: ",~Value
 _BlzStartRecording_Defaults=30
+_BlzStartRecording_Limits=0,_
 _BlzStartRecording_Category=TC_GAME
 
 BlzEndRecording=0
@@ -5477,10 +6064,10 @@ _BlzEndRecording_Parameters="End Recording"
 _BlzEndRecording_Category=TC_GAME
 
 // Machinima API
-BlzHideCinematicPanels=0,boolean
-_BlzHideCinematicPanels_DisplayName="Hide Cinematic Panels"
-_BlzHideCinematicPanels_Parameters="Hide Cinematic Panels ",~Value
-_BlzHideCinematicPanels_Defaults=false
+BlzHideCinematicPanels=0,hideshowoption
+_BlzHideCinematicPanels_DisplayName="Show/Hide Cinematic Panels"
+_BlzHideCinematicPanels_Parameters="",~Show/Hide," Cinematic Panels"
+_BlzHideCinematicPanels_Defaults=HideShowHide
 _BlzHideCinematicPanels_Category=TC_CINEMATIC
 
 // Game Cache actions
@@ -5943,6 +6530,32 @@ _UnitRemoveItemFromSlotSwapped_Defaults=1,_
 _UnitRemoveItemFromSlotSwapped_Limits=1,6,_,_
 _UnitRemoveItemFromSlotSwapped_Category=TC_HERO
 
+UnitUnequipItem=0,unit,item
+_UnitUnequipItem_DisplayName="Unequip Item From Hero"
+_UnitUnequipItem_Parameters="From ",~Hero," unequip ",~Item,"."
+_UnitUnequipItem_Defaults=_,_
+_UnitUnequipItem_Category=TC_HERO
+_UnitUnequipItem_ScriptName=UnitUnequipItemSwapped
+
+UnitUnequipItemFromSlot=0,unit,loadoutslot
+_UnitUnequipItemFromSlot_DisplayName="Unequip Item From Hero Loadout Slot"
+_UnitUnequipItemFromSlot_Parameters="From ",~Hero," unequip loadout slot ",~LoadoutSlot,"."
+_UnitUnequipItemFromSlot_Defaults=_,_
+_UnitUnequipItemFromSlot_Category=TC_HERO
+_UnitUnequipItemFromSlot_ScriptName=UnitUnequipItemFromSlotSwapped
+
+UnitEquipItemSwapped=0,item,unit
+_UnitEquipItemSwapped_DisplayName="Equip Item To Hero"
+_UnitEquipItemSwapped_Parameters="Equip ",~Item," to ",~Hero,"."
+_UnitEquipItemSwapped_Defaults=_,_
+_UnitEquipItemSwapped_Category=TC_HERO
+
+UnitEquipItemByIdSwapped=0,itemcode,unit
+_UnitEquipItemByIdSwapped_DisplayName="Create Equipment For Hero"
+_UnitEquipItemByIdSwapped_Parameters="Create ",~Item-Type," and give it to ",~Hero
+_UnitEquipItemByIdSwapped_Defaults=texp,GetTriggerUnit
+_UnitEquipItemByIdSwapped_Category=TC_HERO
+
 UnitUseItemTarget=0,unit,item,unit
 _UnitUseItemTarget_DisplayName="Use Item On A Unit"
 _UnitUseItemTarget_Parameters="Order ",~Hero," to use ",~Item," on ",~Unit
@@ -5967,6 +6580,29 @@ _UnitUseItem_Parameters="Order ",~Hero," to use ",~Item
 _UnitUseItem_Defaults=_,GetLastCreatedItem
 _UnitUseItem_Category=TC_HERO
 
+AllowHeroGlowOnUnitBJ=1,unit
+_AllowHeroGlowOnUnitBJ_DisplayName="Show Glow"
+_AllowHeroGlowOnUnitBJ_Parameters="Show ",~Unit," hero glow popcorn particle effect"
+_AllowHeroGlowOnUnitBJ_Defaults=GetLastCreatedUnit
+_AllowHeroGlowOnUnitBJ_Category=TC_HERO
+
+DisallowHeroGlowOnUnitBJ=1,unit
+_DisallowHeroGlowOnUnitBJ_DisplayName="Hide Glow"
+_DisallowHeroGlowOnUnitBJ_Parameters="Hide ",~Unit," hero glow popcorn particle effect"
+_DisallowHeroGlowOnUnitBJ_Defaults=GetLastCreatedUnit
+_DisallowHeroGlowOnUnitBJ_Category=TC_HERO
+
+AllowHeroGlowOnAllUnitsBJ=1,
+_AllowHeroGlowOnAllUnitsBJ_DisplayName="Show Glow On All Units"
+_AllowHeroGlowOnAllUnitsBJ_Parameters="Show hero glow popcorn particle effect on all units"
+_AllowHeroGlowOnAllUnitsBJ_Defaults=
+_AllowHeroGlowOnAllUnitsBJ_Category=TC_HERO
+
+DisallowHeroGlowOnAllUnitsBJ=1,
+_DisallowHeroGlowOnAllUnitsBJ_DisplayName="Hide Glow On All Units"
+_DisallowHeroGlowOnAllUnitsBJ_Parameters="Hide hero glow popcorn particle effect on all units"
+_DisallowHeroGlowOnAllUnitsBJ_Defaults=
+_DisallowHeroGlowOnAllUnitsBJ_Category=TC_HERO
 
 // Item actions
 CreateItemLoc=0,itemcode,location
@@ -5992,6 +6628,12 @@ _SetItemPositionLoc_DisplayName="Move (Instantly)"
 _SetItemPositionLoc_Parameters="Move ",~Item," to ",~Point
 _SetItemPositionLoc_Defaults=GetLastCreatedItem,GetRectCenter
 _SetItemPositionLoc_Category=TC_ITEM
+
+SetItemColor=0,item,playercolor
+_SetItemColor_DisplayName="Change Color"
+_SetItemColor_Parameters="Change color of ",~Item," to ",~Color
+_SetItemColor_Defaults=GetLastCreatedItem,Color00
+_SetItemColor_Category=TC_ITEM
 
 SetItemLifeBJ=0,item,real
 _SetItemLifeBJ_DisplayName="Set Life"
@@ -6720,6 +7362,11 @@ _SetForceAllianceStateBJ_Parameters="Make ",~Player," treat ",~Player," as an ",
 _SetForceAllianceStateBJ_Defaults=GetPlayersAll,GetPlayersAll,AllianceSettingAlliedVision
 _SetForceAllianceStateBJ_Category=TC_PLAYERGROUP
 
+DestroyForce=0,force
+_DestroyForce_DisplayName="Destroy"
+_DestroyForce_Parameters="Destroy ",~Player Group,"."
+_DestroyForce_Defaults=_
+_DestroyForce_Category=TC_PLAYERGROUP
 
 // Quest actions
 QuestMessageBJ=0,force,questmessagetype,StringExt
@@ -6827,6 +7474,19 @@ _MoveRectToLoc_Parameters="Center ",~Region," on ",~Point
 _MoveRectToLoc_Defaults=_,GetRectCenter
 _MoveRectToLoc_Category=TC_REGION
 
+RemoveRect=0,rect
+_RemoveRect_DisplayName="Remove"
+_RemoveRect_Parameters="Remove ",~Region,"."
+_RemoveRect_Defaults=_,
+_RemoveRect_Category=TC_REGION
+
+// Location actions
+
+RemoveLocation=0,location
+_RemoveLocation_DisplayName="Remove"
+_RemoveLocation_Parameters="Remove ",~Point,"."
+_RemoveLocation_Defaults=_
+_RemoveLocation_Category=TC_LOCATION
 
 // Selection actions
 ClearSelectionForPlayer=1,player
@@ -7120,6 +7780,26 @@ _VolumeGroupResetBJ_Parameters="Reset all volume channels to 100%"
 _VolumeGroupResetBJ_Defaults=
 _VolumeGroupResetBJ_Category=TC_SOUND
 
+SetSoundFacialAnimationLabelAction=0,sound,string
+_SetSoundFacialAnimationLabelAction_DisplayName="Set Dialogue Facial Animation Label"
+_SetSoundFacialAnimationLabelAction_Parameters="Set for dialogue sound ",~Sound," facial animation label ",~String,"."
+_SetSoundFacialAnimationLabelAction_Defaults=_,_
+_SetSoundFacialAnimationLabelAction_Category=TC_SOUND
+_SetSoundFacialAnimationLabelAction_ScriptName=SetSoundFacialAnimationLabel
+
+SetSoundFacialAnimationGroupLabelAction=0,sound,string
+_SetSoundFacialAnimationGroupLabelAction_DisplayName="Set Dialogue Facial Animation Group Label"
+_SetSoundFacialAnimationGroupLabelAction_Parameters="Set for dialogue sound ",~Sound," facial animation group label ",~String,"."
+_SetSoundFacialAnimationGroupLabelAction_Defaults=_,"BaseSD"
+_SetSoundFacialAnimationGroupLabelAction_Category=TC_SOUND
+_SetSoundFacialAnimationGroupLabelAction_ScriptName=SetSoundFacialAnimationGroupLabel
+
+SetSoundFacialAnimationSetFilepathAction=0,sound,string
+_SetSoundFacialAnimationSetFilepathAction_DisplayName="Set Dialogue Facial Animation Filepath"
+_SetSoundFacialAnimationSetFilepathAction_Parameters="Set for dialogue sound ",~Sound," facial animation filepath ",~String,"."
+_SetSoundFacialAnimationSetFilepathv_Defaults=_,_
+_SetSoundFacialAnimationSetFilepathAction_Category=TC_SOUND
+_SetSoundFacialAnimationSetFilepathAction_ScriptName=SetSoundFacialAnimationGroupLabel
 
 // Special Effect actions
 AddSpecialEffectLocBJ=0,location,modelfile
@@ -7139,6 +7819,12 @@ _DestroyEffectBJ_DisplayName="Destroy Special Effect"
 _DestroyEffectBJ_Parameters="Destroy ",~Special Effect
 _DestroyEffectBJ_Defaults=GetLastCreatedEffectBJ
 _DestroyEffectBJ_Category=TC_SPECIALEFFECT
+
+DestroyEffectAfterTimeBJ=0,effect,real
+_DestroyEffectAfterTimeBJ_DisplayName="Destroy Special Effect After Time" 
+_DestroyEffectAfterTimeBJ_Parameters="Destroy ",~Special Effect," after ",~Time," seconds."
+_DestroyEffectAfterTimeBJ_Defaults=GetLastCreatedEffectBJ,2
+_DestroyEffectAfterTimeBJ_Category=TC_SPECIALEFFECT
 
 
 // Trigger actions
@@ -7165,6 +7851,18 @@ _TriggerExecute_DisplayName="Run (Ignoring Conditions)"
 _TriggerExecute_Parameters="Run ",~Trigger," (ignoring conditions)"
 _TriggerExecute_Defaults=_
 _TriggerExecute_Category=TC_TRIGGER
+
+BlzTriggerIsRunning=0,trigger
+_BlzTriggerIsRunning_DisplayName="Is Trigger Running"
+_BlzTriggerIsRunning_Parameters="Is ",~Trigger," currently running"
+_BlzTriggerIsRunning_Defaults=_
+_BlzTriggerIsRunning_Category=TC_TRIGGER
+
+BlzTriggerInterrupt=0,trigger
+_BlzTriggerInterrupt_DisplayName="Interrupt Trigger"
+_BlzTriggerInterrupt_Parameters="Interrupt all currently running instances of ",~Trigger
+_BlzTriggerInterrupt_Defaults=_
+_BlzTriggerInterrupt_Category=TC_TRIGGER
 
 QueuedTriggerAddBJ=0,trigger,checkingignoringoption
 _QueuedTriggerAddBJ_DisplayName="Add To Trigger Queue"
@@ -7196,6 +7894,7 @@ _AddTriggerEvent_DisplayName="Add New Event"
 _AddTriggerEvent_Parameters="Add to ",~Trigger," the event ",~Event
 _AddTriggerEvent_Defaults=GetTriggeringTrigger,_
 _AddTriggerEvent_Category=TC_TRIGGER
+
 
 // Unit actions
 CreateNUnitsAtLoc=0,integer,unitcode,player,location,real
@@ -7447,25 +8146,25 @@ _BlzSetAbilityActivatedPosY_Category=TC_ABILITY
 
 BlzSetEventDamage=0,real
 _BlzSetEventDamage_DisplayName="Set Damage of Unit Damaged Event"
-_BlzSetEventDamage_Parameters="Set Damage of Unit Damaged Event to ",~Value
+_BlzSetEventDamage_Parameters="Set damage dealt to damaged unit to ",~Value
 _BlzSetEventDamage_Defaults=0.0
 _BlzSetEventDamage_Category=TC_EVENTRESPONSE
 
 BlzSetEventAttackType=0,attacktype
 _BlzSetEventAttackType_DisplayName="Set Attack Type of Unit Damaged Event"
-_BlzSetEventAttackType_Parameters="Set Attack Type of Unit Damaged Event to ",~Value
+_BlzSetEventAttackType_Parameters="Set attack type of damage dealt to damage unit to ",~Value
 _BlzSetEventAttackType_Defaults=_
 _BlzSetEventAttackType_Category=TC_EVENTRESPONSE
 
 BlzSetEventDamageType=0,damagetype
 _BlzSetEventDamageType_DisplayName="Set Damage Type of Unit Damaged Event"
-_BlzSetEventDamageType_Parameters="Set Damage Type of Unit Damaged Event to ",~Value
+_BlzSetEventDamageType_Parameters="Set damage type of damage dealt to damage unit to ",~Value
 _BlzSetEventDamageType_Defaults=_
 _BlzSetEventDamageType_Category=TC_EVENTRESPONSE
 
 BlzSetEventWeaponType=0,weapontype
 _BlzSetEventWeaponType_DisplayName="Set Weapon Type of Unit Damaged Event"
-_BlzSetEventWeaponType_Parameters="Set Weapon Type of Unit Damaged Event to ",~Value
+_BlzSetEventWeaponType_Parameters="Set weapon type of damage dealt to damage unit to ",~Value
 _BlzSetEventWeaponType_Defaults=_
 _BlzSetEventWeaponType_Category=TC_EVENTRESPONSE
 
@@ -7539,17 +8238,29 @@ _BlzSetUnitSkin_Category=TC_UNIT
 //_BlzSetDestructableSkin_Limits=_,_,_,_
 //_BlzSetDestructableSkin_Category=TC_UNIT
 
-BlzUnitHideAbility=0,unit,abilcode,boolean
-_BlzUnitHideAbility_DisplayName="Hide Ability"
-_BlzUnitHideAbility_Parameters="For ",~Unit,", Ability ",~Value,", Hide ability: ",~Value
-_BlzUnitHideAbility_Defaults=GetTriggerUnit,_,true
+BlzUnitHideAbility=0,unit,abilcode,hideshowoption
+_BlzUnitHideAbility_DisplayName="Hide/Show Ability"
+_BlzUnitHideAbility_Parameters="Set for ",~Unit," the ability ",~Ability," UI to: ",~Hide/Show
+_BlzUnitHideAbility_Defaults=GetTriggerUnit,_,HideShowHide
 _BlzUnitHideAbility_Category=TC_UNIT
 
-BlzUnitDisableAbility=0,unit,abilcode,boolean,boolean
-_BlzUnitDisableAbility_DisplayName="Disable Ability"
-_BlzUnitDisableAbility_Parameters="For ",~Unit,", Ability ",~Value,", Disable ability: ",~Value,", Hide UI: ",~Value
-_BlzUnitDisableAbility_Defaults=GetTriggerUnit,_,true,true
+BlzUnitDisableAbility=0,unit,abilcode,disabledenabledoption,abilityuiyesnooption
+_BlzUnitDisableAbility_DisplayName="Enable/Disable Ability"
+_BlzUnitDisableAbility_Parameters="Set for ",~Unit," the ability ",~Ability," to ",~Disabled/Enabled," and its UI to: ",~Affect-UI/Don't-Affect-UI
+_BlzUnitDisableAbility_Defaults=GetTriggerUnit,_,DisabledEnabledDisabled,AbilityUIYesNoYes
 _BlzUnitDisableAbility_Category=TC_UNIT
+
+BlzUnitEnableAuras=0,unit,enableddisabledoption,abilityuiyesnooption
+_BlzUnitEnableAuras_DisplayName="Enable/Disable Aura Abilities"
+_BlzUnitEnableAuras_Parameters="Set ",~Unit," aura abilities to ",~Enabled/Disabled," and its UI to: ",~Affect-UI/Don't-Affect-UI
+_BlzUnitEnableAuras_Defaults=GetTriggerUnit,EnabledDisabledDisabled,AbilityUIYesNoYes
+_BlzUnitEnableAuras_Category=TC_UNIT
+
+BlzAllUnitsEnableAurasBJ=0,enableddisabledoption,abilityuiyesnooption
+_BlzAllUnitsEnableAurasBJ_DisplayName="Enable/Disable Aura Abilities For All Units"
+_BlzAllUnitsEnableAurasBJ_Parameters="Set all units aura abilities to ",~Enabled/Disabled," and their UIs to ",~Affect-UI/Don't-Affect-UI
+_BlzAllUnitsEnableAurasBJ_Defaults=EnabledDisabledDisabled,AbilityUIYesNoYes
+_BlzAllUnitsEnableAurasBJ_Category=TC_UNIT
 
 BlzUnitCancelTimedLife=0,unit
 _BlzUnitCancelTimedLife_DisplayName="Cancel Timed Life"
@@ -7569,6 +8280,30 @@ _BlzSetUnitAbilityCooldown_Parameters="For Unit ",~Unit,", Set cooldown of abili
 _BlzSetUnitAbilityCooldown_Defaults=GetTriggerUnit,_,0,5.00
 _BlzSetUnitAbilityCooldown_Limits=_,_,_,_,0,_,0.00,_
 _BlzSetUnitAbilityCooldown_Category=TC_UNIT
+
+BlzSetUnitAbilityCooldownRemaining=0,unit,abilcode,real
+_BlzSetUnitAbilityCooldownRemaining_DisplayName="Set Ability Cooldown Remaining"
+_BlzSetUnitAbilityCooldownRemaining_Parameters="For Unit ",~Unit,", Set cooldown remaining of ability ",~Value,", to ",~Value
+_BlzSetUnitAbilityCooldownRemaining_Defaults=GetTriggerUnit,_,0.00
+_BlzSetUnitAbilityCooldownRemaining_Category=TC_UNIT
+
+BlzSetUnitAbilityCooldownPercent=0,unit,abilcode,real
+_BlzSetUnitAbilityCooldownPercent_DisplayName="Set Ability Cooldown Percent"
+_BlzSetUnitAbilityCooldownPercent_Parameters="For Unit ",~Unit,", Set cooldown percent of ability ",~Value,", to ",~Value
+_BlzSetUnitAbilityCooldownPercent_Defaults=GetTriggerUnit,_,1.00
+_BlzSetUnitAbilityCooldownPercent_Category=TC_UNIT
+
+BlzAdjustUnitAbilityCooldownRemaining=0,unit,abilcode,real
+_BlzAdjustUnitAbilityCooldownRemaining_DisplayName="Adjust Ability Cooldown Remaining"
+_BlzAdjustUnitAbilityCooldownRemaining_Parameters="For Unit ",~Unit,", adjust the cooldown remaining of ability ",~Value,", by ",~Value
+_BlzAdjustUnitAbilityCooldownRemaining_Defaults=GetTriggerUnit,_,0.00
+_BlzAdjustUnitAbilityCooldownRemaining_Category=TC_UNIT
+
+BlzAdjustUnitAbilityCooldownPercent=0,unit,abilcode,real
+_BlzAdjustUnitAbilityCooldownPercent_DisplayName="Adjust Ability Cooldown Percent"
+_BlzAdjustUnitAbilityCooldownPercent_Parameters="For Unit ",~Unit,", adjust the cooldown percent of ability ",~Value,", by ",~Value
+_BlzAdjustUnitAbilityCooldownPercent_Defaults=GetTriggerUnit,_,0.50
+_BlzAdjustUnitAbilityCooldownPercent_Category=TC_UNIT
 
 BlzSetUnitAbilityManaCost=0,unit,abilcode,integer,integer
 _BlzSetUnitAbilityManaCost_DisplayName="Set Ability Mana Cost"
@@ -7604,6 +8339,12 @@ _BlzSetUnitAttackCooldown_Parameters="Set Attack Interval of ",~Unit," to ",~Val
 _BlzSetUnitAttackCooldown_Defaults=GetTriggerUnit,2.00,1
 _BlzSetUnitAttackCooldown_Limits=_,_,0.001,_,1,2
 _BlzSetUnitAttackCooldown_Category=TC_UNIT
+
+BlzResetUnitAttack=0,unit,integer
+_BlzResetUnitAttack_DisplayName="Reset Attack"
+_BlzResetUnitAttack_Parameters="Resets attack timers of ",~Unit," for weapon index: ",~Value
+_BlzResetUnitAttack_Defaults=GetTriggerUnit,1
+_BlzResetUnitAttack_Category=TC_UNIT
 
 BlzSetUnitName=0,unit,string
 _BlzSetUnitName_DisplayName="Set Name"
@@ -7918,6 +8659,25 @@ _BlzPlaySpecialEffect_DisplayName="Play Special Effect Animation"
 _BlzPlaySpecialEffect_Parameters="Play Special Effect: ",~Effect,", Animation: ",~Value
 _BlzPlaySpecialEffect_Defaults=GetLastCreatedEffectBJ,AnimTypeBirth
 _BlzPlaySpecialEffect_Category=TC_SPECIALEFFECT
+
+BlzSetSpecialEffectAnimation=0,effect,animationname
+_BlzSetSpecialEffectAnimation_DisplayName="Set Special Effect Animation Name"
+_BlzSetSpecialEffectAnimation_Parameters="Play Special Effect: ",~Effect,", Animation Name: ",~Animation-Name
+_BlzSetSpecialEffectAnimation_Defaults=GetLastCreatedEffectBJ,"birth"
+_BlzSetSpecialEffectAnimation_Category=TC_SPECIALEFFECT
+
+BlzQueueSpecialEffectAnimation=0,effect,animationname
+_BlzQueueSpecialEffectAnimation_DisplayName="Queue Special Effect Animation Name"
+_BlzQueueSpecialEffectAnimation_Parameters="Queue Special Effect: ",~Effect,", Animation Name: ",~Animation-Name
+_BlzQueueSpecialEffectAnimation_Defaults=GetLastCreatedEffectBJ,"birth"
+_BlzQueueSpecialEffectAnimation_Category=TC_SPECIALEFFECT
+
+BlzSetSpecialEffectAnimationBlendTime=0,effect,real
+_BlzSetSpecialEffectAnimationBlendTime_DisplayName="Set Special Effect Animation Blend Time"
+_BlzSetSpecialEffectAnimationBlendTime_Parameters="Set Animation Blend Time of ",~Effect," to: ",~Value
+_SetSpecialEffectAnimationBlendTime_Defaults=GetLastCreatedEffectBJ,_
+_SetSpecialEffectAnimationBlendTime_Limits=_,_,_,0,_
+_SetSpecialEffectAnimationBlendTime_Category=TC_SPECIALEFFECT
 
 // Temporarily disable [with time scale] function in GUI
 // BlzPlaySpecialEffectWithTimeScale=0,effect,animtype,real
@@ -8291,14 +9051,14 @@ _SetUnitAbilityLevelSwapped_Category=TC_UNIT
 // Specially handled by the editor
 ForGroupMultiple=0,group
 _ForGroupMultiple_DisplayName="Pick Every Unit In Unit Group And Do Multiple Actions"
-_ForGroupMultiple_Parameters="Pick every unit in ",~Unit Group," and do (Actions)"
+_ForGroupMultiple_Parameters="Pick every unit in ",~Unit Group," and do (Actions)."
 _ForGroupMultiple_Defaults=GetUnitsInRectAll
 _ForGroupMultiple_Category=TC_UNITGROUP
 _ForGroupMultiple_ScriptName=ForGroupBJ
 
 ForGroup=0,group,code
 _ForGroup_DisplayName="Pick Every Unit In Unit Group And Do Action"
-_ForGroup_Parameters="Pick every unit in ",~Unit Group," and do ",~Action
+_ForGroup_Parameters="Pick every unit in ",~Unit Group," and do ",~Action,"."
 _ForGroup_Defaults=GetUnitsInRectAll,DoNothing
 _ForGroup_Category=TC_UNITGROUP
 _ForGroup_ScriptName=ForGroupBJ
@@ -8311,7 +9071,7 @@ _GroupAddUnitSimple_Category=TC_UNITGROUP
 
 GroupAddGroup=0,group,group
 _GroupAddGroup_DisplayName="Add Unit Group"
-_GroupAddGroup_Parameters="Add all units of ",~Unit Group," to ",~Unit Group
+_GroupAddGroup_Parameters="Add all units of ",~Unit Group," to ",~Unit Group,"."
 _GroupAddGroup_Defaults=_,_
 _GroupAddGroup_Category=TC_UNITGROUP
 
@@ -8372,6 +9132,23 @@ _GroupTrainOrderByIdBJ_Parameters="Order ",~Unit Group," to train a ",~Unit-Type
 _GroupTrainOrderByIdBJ_Defaults=GetUnitsInRectAll,hfoo
 _GroupTrainOrderByIdBJ_Category=TC_UNITGROUP
 
+DestroyGroup=0,group
+_DestroyGroup_DisplayName="Destroy"
+_DestroyGroup_Parameters="Destroy ",~Unit Group,"."
+_DestroyGroup_Defaults=_
+_DestroyGroup_Category=TC_UNITGROUP
+
+SetWantDestroyGroupBJ=0 
+_SetWantDestroyGroupBJ_DisplayName="Set Destroy Next"
+_SetWantDestroyGroupBJ_Parameters="Destroy the next group that is referenced in specific action/functions."
+_SetWantDestroyGroupBJ_Defaults=
+_SetWantDestroyGroupBJ_Category=TC_UNITGROUP
+
+ClearWantDestroyGroupBJ=0 
+_ClearWantDestroyGroupBJ_DisplayName="Clear Destroy Next"
+_ClearWantDestroyGroupBJ_Parameters="Clears the behaviour set by Set Destroy Next action."
+_ClearWantDestroyGroupBJ_Defaults=
+_ClearWantDestroyGroupBJ_Category=TC_UNITGROUP
 
 // Ubersplat actions
 CreateUbersplatBJ=1,location,ubersplattype,real,real,real,real,enabledisableoption,enabledisableoption
@@ -8505,26 +9282,23 @@ _ParseTags_Category=TC_ABILITY
 
 // returns boolean
 SetSoundFacialAnimationLabel=0,1,boolean,sound,string
-_SetSoundFacialAnimationLabel_DisplayName="Set Facial Animation Label"
-_SetSoundFacialAnimationLabel_Parameters="Load ",~Sound," of ",~String," from "
-_SetSoundFacialAnimationLabel_Defaults=
+_SetSoundFacialAnimationLabel_DisplayName="Is Dialogue Facial Animation Label Set"
+_SetSoundFacialAnimationLabel_Parameters="Has dialogue sound ",~Sound," the string ",~String," set as facial animation label."
+_SetSoundFacialAnimationLabel_Defaults=_,_
 _SetSoundFacialAnimationLabel_Category=TC_SOUND
 
-// returns boolean
 SetSoundFacialAnimationGroupLabel=0,1,boolean,sound,string
-_SetSoundFacialAnimationGroupLabel_DisplayName="Set Facial Animation Label"
-_SetSoundFacialAnimationGroupLabel_Parameters="Load ",~Sound," of ",~String," from "
-_SetSoundFacialAnimationGroupLabel_Defaults=
+_SetSoundFacialAnimationGroupLabel_DisplayName="Is Dialogue Facial Animation Group Label Set"
+_SetSoundFacialAnimationGroupLabel_Parameters="Has dialogue sound ",~Sound," the string ",~String," set as facial animation group label."
+_SetSoundFacialAnimationGroupLabel_Defaults=_,"BaseSD"
 _SetSoundFacialAnimationGroupLabel_Category=TC_SOUND
 
-//returns boolean
 SetSoundFacialAnimationSetFilepath=0,1,boolean,sound,string
-_SetSoundFacialAnimationSetFilepath_DisplayName="Set Facial Animation Label"
-_SetSoundFacialAnimationSetFilepath_Parameters="Load ",~Sound," of ",~String," from "
-_SetSoundFacialAnimationSetFilepath_Defaults=
+_SetSoundFacialAnimationSetFilepath_DisplayName="Is Dialogue Facial Animation Filepath Set"
+_SetSoundFacialAnimationSetFilepath_Parameters="Has dialogue sound ",~Sound," the string ",~String," set as facial animation filepath."
+_SetSoundFacialAnimationSetFilepath_Defaults=_,_
 _SetSoundFacialAnimationSetFilepath_Category=TC_SOUND
 
-// returns boolean
 BlzIsTargetIndicatorEnabled=0,1,boolean
 _BlzIsTargetIndicatorEnabled_DisplayName="Target Indicator Is Enabled"
 _BlzIsTargetIndicatorEnabled_Parameters="Target Indicator Is Enabled"
@@ -8566,6 +9340,12 @@ _IsTerrainPathableBJ_DisplayName="Terrain Pathing Is Off"
 _IsTerrainPathableBJ_Parameters="Terrain pathing at ",~Location," of type ",~Pathing Type," is off"
 _IsTerrainPathableBJ_Defaults=GetRectCenter,PathingTypeWalkability
 _IsTerrainPathableBJ_Category=TC_ENVIRONMENT
+
+BlzIsTerrainPathableEx=1,1,boolean,location,pathingtype
+_BlzIsTerrainPathableEx_DisplayName="Terrain Pathing Is Off (Units And Destructible)"
+_BlzIsTerrainPathableEx_Parameters="Terrain pathing at ",~Location," of type ",~Pathing Type," is off considering units and destructibles"
+_BlzIsTerrainPathableEx_Defaults=GetRectCenter,PathingTypeWalkability
+_BlzIsTerrainPathableEx_Category=TC_ENVIRONMENT
 
 IsMapFlagSet=0,1,boolean,mapflag
 _IsMapFlagSet_DisplayName="Map Flag Set"
@@ -9191,11 +9971,59 @@ _UnitHasItem_Parameters=~Hero," has ",~Item
 _UnitHasItem_Defaults=GetTriggerUnit,GetLastCreatedItem
 _UnitHasItem_Category=TC_HERO
 
+UnitHasItemBagged=0,1,boolean,unit,item
+_UnitHasItemBagged_DisplayName="Hero Has Item Bagged"
+_UnitHasItemBagged_Parameters=~Hero," has ",~Item," bagged"
+_UnitHasItemBagged_Defaults=GetTriggerUnit,GetLastCreatedItem
+_UnitHasItemBagged_Category=TC_HERO
+
 UnitHasItemOfTypeBJ=0,1,boolean,unit,itemcode
 _UnitHasItemOfTypeBJ_DisplayName="Hero Has Item Of Type"
 _UnitHasItemOfTypeBJ_Parameters=~Hero," has an item of type ",~Item-Type
 _UnitHasItemOfTypeBJ_Defaults=GetTriggerUnit,texp
 _UnitHasItemOfTypeBJ_Category=TC_HERO
+
+UnitHasItemOfTypeBaggedBJ=0,1,boolean,unit,itemcode
+_UnitHasItemOfTypeBaggedBJ_DisplayName="Hero Has Item Of Type Bagged"
+_UnitHasItemOfTypeBaggedBJ_Parameters=~Hero," has an item of type ",~Item-Type," bagged"
+_UnitHasItemOfTypeBaggedBJ_Defaults=GetTriggerUnit,texp
+_UnitHasItemOfTypeBaggedBJ_Category=TC_HERO
+
+UnitHasItemEquipped=0,1,boolean,unit,item
+_UnitHasItemEquipped_DisplayName="Hero Has Item Equipped"
+_UnitHasItemEquipped_Parameters=~Hero," has equipped ",~Item
+_UnitHasItemEquipped_Defaults=GetTriggerUnit,GetLastCreatedItem
+_UnitHasItemEquipped_Category=TC_HERO
+
+UnitHasItemOfTypeEquippedBJ=0,1,boolean,unit,itemcode
+_UnitHasItemOfTypeEquippedBJ_DisplayName="Hero Has Item Of Type Equipped"
+_UnitHasItemOfTypeEquippedBJ_Parameters=~Hero," has an item of type ",~Item-Type," equipped"
+_UnitHasItemOfTypeEquippedBJ_Defaults=GetTriggerUnit,texp
+_UnitHasItemOfTypeEquippedBJ_Category=TC_HERO
+
+UnitHasLoadoutSlotEmpty=0,1,boolean,unit,loadoutslot
+_UnitHasLoadoutSlotEmpty_DisplayName="Hero Has Loadout Slot Available"
+_UnitHasLoadoutSlotEmpty_Parameters=~Hero," has slot ",~Loadout-Slot," available"
+_UnitHasLoadoutSlotEmpty_Defaults=GetTriggerUnit,texp
+_UnitHasLoadoutSlotEmpty_Category=TC_HERO
+
+UnitHasAnyItemEquiped=0,1,boolean,unit
+_UnitHasAnyItemEquiped_DisplayName="Hero Has Any Item Equiped"
+_UnitHasAnyItemEquiped_Parameters=~Hero," has an item equiped"
+_UnitHasAnyItemEquiped_Defaults=GetTriggerUnit
+_UnitHasAnyItemEquiped_Category=TC_HERO
+
+UnitHasItemEquipmentOfType=0,1,boolean,unit,equipmenttype
+_UnitHasItemEquipmentOfType_DisplayName="Hero Has Equipment Type Equipped"
+_UnitHasItemEquipmentOfType_Parameters=~Hero," has an item of type ",~Equipment-Type," equiped"
+_UnitHasItemEquipmentOfType_Defaults=GetTriggerUnit,_
+_UnitHasItemEquipmentOfType_Category=TC_HERO
+
+UnitCanEquipItemOfEquipmentType=0,1,boolean,unit,equipmenttype
+_UnitCanEquipItemOfEquipmentType_DisplayName="Hero Has Equipment Type Available"
+_UnitCanEquipItemOfEquipmentType_Parameters=~Hero," has equipment type ",~Equipment-Type," available"
+_UnitCanEquipItemOfEquipmentType_Defaults=GetTriggerUnit,_
+_UnitCanEquipItemOfEquipmentType_Category=TC_HERO
 
 IsSuspendedXP=0,0,boolean,unit
 _IsSuspendedXP_DisplayName="Experience Is Disabled For Hero"
@@ -9238,6 +10066,18 @@ _IsItemInvulnerable_DisplayName="Item Is Invulnerable"
 _IsItemInvulnerable_Parameters=~Item," is invulnerable"
 _IsItemInvulnerable_Defaults=GetLastCreatedItem
 _IsItemInvulnerable_Category=TC_ITEM
+
+IsItemEquipped=0,0,boolean,item
+_IsItemEquipped_DisplayName="Item Is Equipped"
+_IsItemEquipped_Parameters=~Item," is Equipped"
+_IsItemEquipped_Defaults=GetLastCreatedItem
+_IsItemEquipped_Category=TC_ITEM
+
+IsItemInBag=0,0,boolean,item
+_IsItemInBag_DisplayName="Item is In Bag"
+_IsItemInBag_Parameters=~Item," is in bag"
+_IsItemInBag_Defaults=GetLastCreatedItem
+_IsItemInBag_Category=TC_ITEM
 
 LeaderboardHasPlayerItemBJ=0,0,boolean,leaderboard,player
 _LeaderboardHasPlayerItemBJ_DisplayName="Leaderboard Contains Player"
@@ -9293,6 +10133,24 @@ _IsPlayerInForce_Parameters=~Player," is in ",~Player Group,"."
 _IsPlayerInForce_Defaults=Player00,GetPlayersAll
 _IsPlayerInForce_Category=TC_PLAYER
 
+IsMouseButtonPressedBJ=0,1,boolean,mousebuttontype
+_IsMouseButtonPressedBJ_DisplayName="Is Mouse Button Pressed Async"
+_IsMouseButtonPressedBJ_Parameters="",~Value,  Is Pressed
+_IsMouseButtonPressedBJ_Defaults=
+_IsMouseButtonPressedBJ_Category=TC_PLAYER
+
+IsMetaKeyPressedBJ=0,1,boolean,integer
+_IsMetaKeyPressedBJ_DisplayName="Is Meta Key Pressed Async"
+_IsMetaKeyPressedBJ_Parameters="",~Value,  Is Pressed
+_IsMetaKeyPressedBJ_Defaults=
+_IsMetaKeyPressedBJ_Category=TC_PLAYER
+
+IsKeyPressedBJ=0,1,boolean,oskeytype
+_IsKeyPressedBJ_DisplayName="Is Key Pressed Async"
+_IsKeyPressedBJ_Parameters="",~Value,  Is Pressed
+_IsKeyPressedBJ_Defaults=
+_IsKeyPressedBJ_Category=TC_PLAYER
+
 IsQuestItemCompleted=0,0,boolean,questitem
 _IsQuestItemCompleted_DisplayName="Quest Requirement Is Completed"
 _IsQuestItemCompleted_Parameters=~Quest Requirement," is completed"
@@ -9340,6 +10198,12 @@ _IsTriggerEnabled_DisplayName="Trigger Is On"
 _IsTriggerEnabled_Parameters=~Trigger," is on"
 _IsTriggerEnabled_Defaults=GetTriggeringTrigger
 _IsTriggerEnabled_Category=TC_TRIGGER
+
+BlzTriggerIsRunning=0,1,boolean,trigger
+_BlzTriggerIsRunning_DisplayName="Is Trigger Running"
+_BlzTriggerIsRunning_Parameters="Check if ",~Trigger," is currently running"
+_BlzTriggerIsRunning_Defaults=_
+_BlzTriggerIsRunning_Category=TC_TRIGGER
 
 TriggerEvaluate=0,1,boolean,trigger
 _TriggerEvaluate_DisplayName="Evaluate Trigger Conditions"
@@ -9475,7 +10339,7 @@ _UnitHasBuffBJ_Category=TC_UNIT
 
 IsUnitGroupEmptyBJ=0,1,boolean,group
 _IsUnitGroupEmptyBJ_DisplayName="Unit Group Is Empty"
-_IsUnitGroupEmptyBJ_Parameters=~Unit Group," is empty"
+_IsUnitGroupEmptyBJ_Parameters=~Unit Group," is empty."
 _IsUnitGroupEmptyBJ_Defaults=_
 _IsUnitGroupEmptyBJ_Category=TC_UNITGROUP
 
@@ -9487,9 +10351,15 @@ _IsUnitGroupInRectBJ_Category=TC_UNITGROUP
 
 IsUnitGroupDeadBJ=0,1,boolean,group
 _IsUnitGroupDeadBJ_DisplayName="Units Of Unit Group Are Dead"
-_IsUnitGroupDeadBJ_Parameters="All units of ",~Unit Group," are dead"
+_IsUnitGroupDeadBJ_Parameters="All units of ",~Unit Group," are dead."
 _IsUnitGroupDeadBJ_Defaults=_
 _IsUnitGroupDeadBJ_Category=TC_UNITGROUP
+
+GetWantDestroyGroupBJ=0,1,boolean
+_GetWantDestroyGroupBJ_DisplayName="Set Destroy Next Is Set."
+_GetWantDestroyGroupBJ_Parameters="Set Destroy Next is set."
+_GetWantDestroyGroupBJ_Defaults=
+_GetWantDestroyGroupBJ_Category=TC_UNITGROUP
 
 IsFogEnabled=0,1,boolean
 _IsFogEnabled_DisplayName="Fog Of War Enabled"
@@ -9850,7 +10720,7 @@ _BlzGetTriggerPlayerMouseButton_Category=TC_PLAYER
 
 CountUnitsInGroup=0,1,integer,group
 _CountUnitsInGroup_DisplayName="Count Units In Unit Group"
-_CountUnitsInGroup_Parameters="Number of units in ",~Unit Group
+_CountUnitsInGroup_Parameters="Number of units in ",~Unit Group,"."
 _CountUnitsInGroup_Defaults=GetUnitsInRectAll
 _CountUnitsInGroup_Category=TC_UNIT
 
@@ -9925,6 +10795,24 @@ _UnitInventorySizeBJ_DisplayName="Size of Inventory"
 _UnitInventorySizeBJ_Parameters="Size of inventory for ",~Unit
 _UnitInventorySizeBJ_Defaults=GetTriggerUnit
 _UnitInventorySizeBJ_Category=TC_UNIT
+
+UnitEquipmentCount=1,1,integer,unit
+_UnitEquipmentCount_DisplayName="Count Items Equipped"
+_UnitEquipmentCount_Parameters="Number of items equipped by ",~Unit
+_UnitEquipmentCount_Defaults=GetTriggerUnit
+_UnitEquipmentCount_Category=TC_UNIT
+
+UnitExtendedInventoryCount=1,1,integer,unit
+_UnitExtendedInventoryCount_DisplayName="Count Items In Bag"
+_UnitExtendedInventoryCount_Parameters="Number of items carried in bag by ",~Unit
+_UnitExtendedInventoryCount_Defaults=GetTriggerUnit
+_UnitExtendedInventoryCount_Category=TC_UNIT
+
+UnitExtendedInventorySizeBJ=1,1,integer,unit
+_UnitExtendedInventorySizeBJ_DisplayName="Size of Bag"
+_UnitExtendedInventorySizeBJ_Parameters="Size of bag for ",~Unit
+_UnitExtendedInventorySizeBJ_Defaults=GetTriggerUnit
+_UnitExtendedInventorySizeBJ_Category=TC_UNIT
 
 UnitCountBuffsExBJ=1,1,integer,buffpolarity,buffresist,unit,includeoption,includeoption
 _UnitCountBuffsExBJ_DisplayName="Count Buffs By Type"
@@ -10614,9 +11502,15 @@ _BlzGetUnitAbilityCooldown_Category=TC_UNIT
 
 BlzGetUnitAbilityCooldownRemaining=0,1,real,unit,abilcode
 _BlzGetUnitAbilityCooldownRemaining_DisplayName="Ability Cooldown Remaining"
-_BlzGetUnitAbilityCooldownRemaining_Parameters="Ability Cooldown Remaining of ",~Unit," for ability ",~Value,".","."
+_BlzGetUnitAbilityCooldownRemaining_Parameters="Ability Cooldown Remaining of ",~Unit," for ability ",~Value,"."
 _BlzGetUnitAbilityCooldownRemaining_Defaults=GetTriggerUnit,_
 _BlzGetUnitAbilityCooldownRemaining_Category=TC_UNIT
+
+BlzGetUnitAbilityCooldownPercent=0,1,real,unit,abilcode
+_BlzGetUnitAbilityCooldownPercent_DisplayName="Ability Cooldown Percent"
+_BlzGetUnitAbilityCooldownPercent_Parameters="Ability Cooldown Percent of ",~Unit," for ability ",~Value,"."
+_BlzGetUnitAbilityCooldownPercent_Defaults=GetTriggerUnit,_
+_BlzGetUnitAbilityCooldownPercent_Category=TC_UNIT
 
 BlzGetUnitCollisionSize=0,1,real,unit
 _BlzGetUnitCollisionSize_DisplayName="Collision Size"
@@ -10679,6 +11573,18 @@ _BlzGetUnitWeaponRealField_DisplayName="Get Unit Weapon Real Field"
 _BlzGetUnitWeaponRealField_Parameters="Unit: ",~Unit,"'s Weapon Real Field: ",~RealField," at Index:",~Index
 _BlzGetUnitWeaponRealField_Defaults=GetTriggerUnit,_,0
 _BlzGetUnitWeaponRealField_Category=TC_UNIT
+
+BlzGetUnitAnimationDuration=0,1,real,unit,animationname
+_BlzGetUnitAnimationDuration_DisplayName="Get Unit Animation Duration"
+_BlzGetUnitAnimationDuration_Parameters="Get the duration of ",~Unit,"'s ",~Animation Name," animation"
+_BlzGetUnitAnimationDuration_Defaults=GetTriggerUnit,"stand"
+_BlzGetUnitAnimationDuration_Category=TC_ANIMATION
+
+BlzGetUnitAnimationDurationByIndex=0,1,real,unit,integer
+_BlzGetUnitAnimationDurationByIndex_DisplayName="Get Unit Animation Duration By Index"
+_BlzGetUnitAnimationDurationByIndex_Parameters="Get the duration of ",~Unit,"'s ",~Integer,"th animation"
+_BlzGetUnitAnimationDurationByIndex_Defaults=GetTriggerUnit,0
+_BlzGetUnitAnimationDurationByIndex_Category=TC_ANIMATION
 
 BlzGetItemRealField=0,1,real,item,itemrealfield
 _BlzGetItemRealField_DisplayName="Get Item Real Field"
@@ -11139,7 +12045,7 @@ _GetFilterUnit_Category=TC_NOTHING
 
 GroupPickRandomUnit=0,0,unit,group
 _GroupPickRandomUnit_DisplayName="Random Unit From Unit Group"
-_GroupPickRandomUnit_Parameters="Random unit from ",~Unit Group
+_GroupPickRandomUnit_Parameters="Random unit from ",~Unit Group,"."
 _GroupPickRandomUnit_Defaults=_
 _GroupPickRandomUnit_Category=TC_NOTHING
 
@@ -11484,6 +12390,18 @@ _GetLastRemovedItem_Parameters="Last dropped item"
 _GetLastRemovedItem_Defaults=
 _GetLastRemovedItem_Category=TC_LAST
 
+GetLastEquippedItem=0,0,item
+_GetLastEquippedItem_DisplayName="Last Equipped Item"
+_GetLastEquippedItem_Parameters="Last equipped item"
+_GetLastEquippedItem_Defaults=
+_GetLastEquippedItem_Category=TC_LAST
+
+GetLastUnequippedItem=0,0,item
+_GetLastUnequippedItem_DisplayName="Last Unequipped Item"
+_GetLastUnequippedItem_Parameters="Last unequipped item"
+_GetLastUnequippedItem_Defaults=
+_GetLastUnequippedItem_Category=TC_LAST
+
 RandomItemInRectSimpleBJ=1,0,item,rect
 _RandomItemInRectSimpleBJ_DisplayName="Random Item In Region"
 _RandomItemInRectSimpleBJ_Parameters="Random item in ",~Region
@@ -11515,11 +12433,48 @@ _UnitItemInSlotBJ_Defaults=_,1
 _UnitItemInSlotBJ_Limits=_,_,1,6
 _UnitItemInSlotBJ_Category=TC_NOTHING
 
+UnitItemInBagSlotBJ=0,0,item,unit,integer
+_UnitItemInBagSlotBJ_DisplayName="Item In Bag Slot By Hero"
+_UnitItemInBagSlotBJ_Parameters="Item bagged by ",~Hero," in bag slot ",~Index
+_UnitItemInBagSlotBJ_Defaults=_,1
+_UnitItemInBagSlotBJ_Limits=_,_,1,30
+_UnitItemInBagSlotBJ_Category=TC_NOTHING
+
+UnitItemInEquipmentSlotBJ=0,2,item,unit,loadoutslot
+_UnitItemInEquipmentSlotBJ_DisplayName="Item Equipped By Hero"
+_UnitItemInEquipmentSlotBJ_Parameters="Item equipped by ",~Hero," in ",~Slot
+_UnitItemInEquipmentSlotBJ_Defaults=_,_
+_UnitItemInEquipmentSlotBJ_Category=TC_NOTHING
+
 GetItemOfTypeFromUnitBJ=0,0,item,unit,itemcode
 _GetItemOfTypeFromUnitBJ_DisplayName="Item Carried By Hero Of Type"
 _GetItemOfTypeFromUnitBJ_Parameters="Item carried by ",~Hero," of type ",~Item-Type
 _GetItemOfTypeFromUnitBJ_Defaults=_,texp
 _GetItemOfTypeFromUnitBJ_Category=TC_NOTHING
+
+GetItemOfTypeFromUnitBagBJ=0,0,item,unit,itemcode
+_GetItemOfTypeFromUnitBagBJ_DisplayName="Item In Bag Slot By Hero Of Item Type"
+_GetItemOfTypeFromUnitBagBJ_Parameters="Item bagged by ",~Hero," of type ",~Item-Type
+_GetItemOfTypeFromUnitBagBJ_Defaults=_,texp
+_GetItemOfTypeFromUnitBagBJ_Category=TC_NOTHING
+
+GetItemOfEquipmentTypeFromUnitBagBJ=0,0,item,unit,equipmenttype
+_GetItemOfEquipmentTypeFromUnitBagBJ_DisplayName="Item In Bag Slot By Hero Of Equipment Type"
+_GetItemOfEquipmentTypeFromUnitBagBJ_Parameters="Item bagged by ",~Hero," of equipment type ",~Equipment-Type
+_GetItemOfEquipmentTypeFromUnitBagBJ_Defaults=_,texp
+_GetItemOfEquipmentTypeFromUnitBagBJ_Category=TC_NOTHING
+
+GetItemEquippedByHeroOfTypeBJ=0,2,item,unit,itemcode
+_GetItemEquippedByHeroOfTypeBJ_DisplayName="Item Equipped By Hero of Type"
+_GetItemEquippedByHeroOfTypeBJ_Parameters="Item equipped by ",~Hero," of type ",~Item-Type
+_GetItemEquippedByHeroOfTypeBJ_Defaults=_,_
+_GetItemEquippedByHeroOfTypeBJ_Category=TC_NOTHING
+
+GetItemEquippedByHeroOfEquipmentTypeBJ=0,2,item,unit,equipmenttype
+_GetItemEquippedByHeroOfEquipmentTypeBJ_DisplayName="Item Equipped By Hero of Equipment Type"
+_GetItemEquippedByHeroOfEquipmentTypeBJ_Parameters="Item equipped by ",~Hero," of equipment type ",~Equipment-Type
+_GetItemEquippedByHeroOfEquipmentTypeBJ_Defaults=_,_
+_GetItemEquippedByHeroOfEquipmentTypeBJ_Category=TC_NOTHING
 
 GetManipulatedItem=0,0,item
 _GetManipulatedItem_DisplayName="Item Being Manipulated"
@@ -11532,6 +12487,18 @@ _GetSoldItem_DisplayName="Sold Item"
 _GetSoldItem_Parameters="Sold Item"
 _GetSoldItem_Defaults=
 _GetSoldItem_Category=TC_EVENTRESPONSE
+
+GetEquippedItem=1,0,item
+_GetEquippedItem_DisplayName="Item Being Equipped"
+_GetEquippedItem_Parameters="Item Being Equipped"
+_GetEquippedItem_Defaults=
+_GetEquippedItem_Category=TC_EVENTRESPONSE
+
+GetUnequippedItem=1,0,item
+_GetUnequippedItem_DisplayName="Item Being Unequipped"
+_GetUnequippedItem_Parameters="Item Being Unequipped"
+_GetUnequippedItem_Defaults=
+_GetUnequippedItem_Category=TC_EVENTRESPONSE
 
 GetOrderTargetItem=0,0,item
 _GetOrderTargetItem_DisplayName="Target Item Of Issued Order"
@@ -11584,6 +12551,19 @@ _GetItemType_Parameters="Item-class of ",~Item
 _GetItemType_Defaults=GetLastCreatedItem
 _GetItemType_Category=TC_NOTHING
 
+// returns equipmenttype
+GetItemEquipmentType=1,1,equipmenttype,item
+_GetItemEquipmentType_DisplayName="Equipment-Type Of Item"
+_GetItemEquipmentType_Parameters="Equipment-Type of ",~Item
+_GetItemEquipmentType_Defaults=GetLastCreatedItem
+_GetItemEquipmentType_Category=TC_NOTHING
+
+// returns itemtag
+GetItemTag=1,1,itemtag,item
+_GetItemTag_DisplayName="Item-Tag Of Item"
+_GetItemTag_Parameters="Item-Tag of ",~Item
+_GetItemTag_Defaults=GetLastCreatedItem
+_GetItemTag_Category=TC_NOTHING
 
 // returns itemcode
 GetItemTypeId=0,1,itemcode,item
@@ -11606,6 +12586,12 @@ _ChooseRandomItemExBJ_Defaults=1,ItemTypeAny
 _ChooseRandomItemExBJ_Limits=-1,8,_,_
 _ChooseRandomItemExBJ_Category=TC_NOTHING
 
+ChooseRandomItemExWithFilterBJ=1,1,itemcode,integer,itemtype,equipmenttype,itemtag
+_ChooseRandomItemExWithFilterBJ_DisplayName="Random Item-Type Of Class With Filter"
+_ChooseRandomItemExWithFilterBJ_Parameters="Random level ",~Level,".",~Class,",",~EquipmentType,",",~ItemTag," item-type"
+_ChooseRandomItemExWithFilterBJ_Defaults=1,ItemTypeAny,EquipmentTypeAny,ItemTagAny
+_ChooseRandomItemExWithFilterBJ_Limits=-1,8,_,_,_,_,_,_
+_ChooseRandomItemExWithFilterBJ_Category=TC_NOTHING
 
 // returns techcode
 GetResearched=0,1,techcode
@@ -12055,14 +13041,12 @@ _PlayerGetLeaderboardBJ_Parameters="Leaderboard of ",~Player
 _PlayerGetLeaderboardBJ_Defaults=Player00
 _PlayerGetLeaderboardBJ_Category=TC_NOTHING
 
-
 // returns multiboard
 GetLastCreatedMultiboard=1,0,multiboard
 _GetLastCreatedMultiboard_DisplayName="Last Created Multiboard"
 _GetLastCreatedMultiboard_Parameters="Last created multiboard"
 _GetLastCreatedMultiboard_Defaults=
 _GetLastCreatedMultiboard_Category=TC_LAST
-
 
 // returns timer
 GetLastCreatedTimerBJ=0,0,timer
@@ -12077,14 +13061,12 @@ _GetExpiredTimer_Parameters="Expiring timer"
 _GetExpiredTimer_Defaults=
 _GetExpiredTimer_Category=TC_EVENTRESPONSE
 
-
 // returns timerdialog
 GetLastCreatedTimerDialogBJ=0,0,timerdialog
 _GetLastCreatedTimerDialogBJ_DisplayName="Last Created Timer Window"
 _GetLastCreatedTimerDialogBJ_Parameters="Last created timer window"
 _GetLastCreatedTimerDialogBJ_Defaults=
 _GetLastCreatedTimerDialogBJ_Category=TC_LAST
-
 
 // returns gamecache
 GetLastCreatedGameCacheBJ=0,0,gamecache
@@ -12100,13 +13082,90 @@ _GetLastCreatedHashtableBJ_Parameters="Last created hashtable"
 _GetLastCreatedHashtableBJ_Defaults=
 _GetLastCreatedHashtableBJ_Category=TC_LAST
 
-
 // returns texttag
 GetLastCreatedTextTag=1,0,texttag
 _GetLastCreatedTextTag_DisplayName="Last Created Floating Text"
 _GetLastCreatedTextTag_Parameters="Last created floating text"
 _GetLastCreatedTextTag_Defaults=
 _GetLastCreatedTextTag_Category=TC_LAST
+
+BlzGetDoodadX=1,0,real,integer
+_BlzGetDoodadX_DisplayName="Get Doodad Position X"
+_BlzGetDoodadX_Parameters="Get the X position for doodad ",~IntegerField`"."
+_BlzGetDoodadX_Defaults=0
+_BlzGetDoodadX_Category=TC_DOODAD
+
+BlzGetDoodadY=1,0,real,integer
+_BlzGetDoodadY_DisplayName="Get Doodad Position Y"
+_BlzGetDoodadY_Parameters="Get the Y position for doodad ",~IntegerField`"."
+_BlzGetDoodadY_Defaults=0
+_BlzGetDoodadY_Category=TC_DOODAD
+
+BlzGetDoodadZ=1,0,real,integer
+_BlzGetDoodadZ_DisplayName="Get Doodad Position Z"
+_BlzGetDoodadZ_Parameters="Get the Z position for doodad ",~IntegerField`"."
+_BlzGetDoodadZ_Defaults=0
+_BlzGetDoodadZ_Category=TC_DOODAD
+
+BlzGetDoodadScaleX=1,0,real,integer
+_BlzGetDoodadScaleX_DisplayName="Get Doodad Scale X"
+_BlzGetDoodadScaleX_Parameters="Get the X axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleX_Defaults=0
+_BlzGetDoodadScaleX_Category=TC_DOODAD
+
+BlzGetDoodadScaleY=1,0,real,integer
+_BlzGetDoodadScaleY_DisplayName="Get Doodad Scale Y"
+_BlzGetDoodadScaleY_Parameters="Get the Y axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleY_Defaults=0
+_BlzGetDoodadScaleY_Category=TC_DOODAD
+
+BlzGetDoodadScaleZ=1,0,real,integer
+_BlzGetDoodadScaleZ_DisplayName="Get Doodad Scale Z"
+_BlzGetDoodadScaleZ_Parameters="Get the Z axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleZ_Defaults=0
+_BlzGetDoodadScaleZ_Category=TC_DOODAD
+
+BlzGetDoodadIsUsingModelAxes=1,0,boolean,integer
+_BlzGetDoodadIsUsingModelAxes_DisplayName="Get Doodad Is Using Model Axes"
+_BlzGetDoodadIsUsingModelAxes_Parameters="Get whether or not model axes are being used for doodad ",~IntegerField`"."
+_BlzGetDoodadIsUsingModelAxes_Defaults=0
+_BlzGetDoodadIsUsingModelAxes_Category=TC_DOODAD
+
+BlzGetDoodadYaw=1,0,real,integer
+_BlzGetDoodadYaw_DisplayName="Get Doodad Yaw (Rotation)"
+_BlzGetDoodadYaw_Parameters="Get the yaw (rotation) for doodad ",~IntegerField`"."
+_BlzGetDoodadYaw_Defaults=0
+_BlzGetDoodadYaw_Category=TC_DOODAD
+
+BlzGetDoodadPitch=1,0,real,integer
+_BlzGetDoodadPitch_DisplayName="Get Doodad Pitch"
+_BlzGetDoodadPitch_Parameters="Get the pitch for doodad ",~IntegerField`"."
+_BlzGetDoodadPitch_Defaults=0
+_BlzGetDoodadPitch_Category=TC_DOODAD
+
+BlzGetDoodadRoll=1,0,real,integer
+_BlzGetDoodadRoll_DisplayName="Get Doodad Roll"
+_BlzGetDoodadRoll_Parameters="Get the roll for doodad ",~IntegerField`"."
+_BlzGetDoodadRoll_Defaults=0
+_BlzGetDoodadRoll_Category=TC_DOODAD
+
+BlzGetDoodadVariation=1,0,integer,integer
+_BlzGetDoodadVariation_DisplayName="Get Doodad Variation"
+_BlzGetDoodadVariation_Parameters="Get the variation for doodad ",~IntegerField`"."
+_BlzGetDoodadVariation_Defaults=0
+_BlzGetDoodadVariation_Category=TC_DOODAD
+
+BlzGetDoodadId=1,0,integer,integer
+_BlzGetDoodadId_DisplayName="Get Doodad Id"
+_BlzGetDoodadId_Parameters="Get the doodad id for doodad ",~IntegerField`"."
+_BlzGetDoodadId_Defaults=0
+_BlzGetDoodadId_Category=TC_DOODAD
+
+BlzGetNumDoodads=1,0,integer
+_BlzGetNumDoodads_DisplayName="Get Num Doodads"
+_BlzGetNumDoodads_Parameters="Get the total number of doodads in the map."
+_BlzGetNumDoodads_Defaults=
+_BlzGetNumDoodads_Category=TC_DOODAD
 
 
 //***************************************************************************
