@@ -1,4 +1,4 @@
-namespace War3Net.Build.Widget
+﻿namespace War3Net.Build.Widget
 {
     /// <summary>Introduced in patch 3.0.0.</summary>
     public sealed partial class DoodadLightData
