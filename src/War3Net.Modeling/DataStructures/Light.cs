@@ -22,6 +22,11 @@
 
         public float AmbientIntensity { get; set; }
 
+        /// <summary>
+        /// Gets or sets the light's shadow intensity (format version 1200+ only).
+        /// </summary>
+        public float ShadowIntensity { get; set; }
+
         public AnimationChannel<uint>? AttenuationStarts { get; set; }
 
         public AnimationChannel<uint>? AttenuationEnds { get; set; }
