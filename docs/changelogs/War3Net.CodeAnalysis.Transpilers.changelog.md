@@ -6,9 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [v6.1.1] - 2026-10-10
+
 ### Added
 
 - Added .NET 10.0 target framework; the package now targets both .NET 6.0 and .NET 10.0.
+
+### Changed
+
+- Updated `War3Net.CSharpLua` from v2.0.3 to v2.0.4.
 
 ## [v6.0.2] - 2026-03-01
 
@@ -223,7 +231,8 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 - `JassToCSharpTranspiler` provides `Transpile` extension methods that convert individual JASS syntax nodes into Roslyn syntax nodes, with `TranspileToEnumHandler` and `CommonEnumTypesProvider` converting `common.j` handle types into C# enums.
 - `JassToLuaTranspiler` provides `TranspileToLua` extension methods that convert JASS syntax nodes into `CSharpLua.LuaAst` nodes, with `TranspileStringConcatenationHandler` handling JASS' `+` operator on strings.
 
-[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.1.1...HEAD
+[v6.1.1]: https://github.com/Drake53/War3Net/releases/tag/v6.1.1
 [v6.0.2]: https://github.com/Drake53/War3Net/releases/tag/v2026.3.1
 [v6.0.1]: https://github.com/Drake53/War3Net/releases/tag/v2026.2.1
 [v6.0.0]: https://github.com/Drake53/War3Net/releases/tag/v2026.1.25
