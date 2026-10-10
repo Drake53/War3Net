@@ -135,6 +135,9 @@ namespace War3Net.Build.Info
         /// <summary>Introduced in patch 2.0.3.</summary>
         v6116 = 6116,
 
+        /// <summary>Introduced in patch 3.0.0.</summary>
+        v7000 = 7000,
+
         // ===== \\
         // Other \\
         // ===== \\
@@ -162,5 +165,17 @@ namespace War3Net.Build.Info
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         v6113 = 6113,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v6117 = 6117,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v6127 = 6127,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v6131 = 6131,
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        v6140 = 6140,
     }
 }
