@@ -1,0 +1,215 @@
+3111: [duplicate-key] Duplicate key 'UnitOrderChallengingCall' in [TriggerParams] with an identical value, first declared on line 2981
+3115: [duplicate-key] Duplicate key 'UnitOrderHeroicSlash' in [TriggerParams], first declared on line 2857
+4036: [defaults-count] Defaults of 'TriggerRegisterCommandEvent' has 1 value(s) but the function has 2 argument(s)
+4057: [missing-field] 'TriggerRegisterCommonCommandEventBJ' has no DisplayName
+4057: [missing-field] 'TriggerRegisterCommonCommandEventBJ' has no Parameters
+4253: [duplicate-key] Duplicate key '_TriggerRegisterUnitInRangeSimple_Defaults' in [TriggerEvents], first declared on line 4252
+4253: [duplicate-field] Field 'Defaults' of 'TriggerRegisterUnitInRangeSimple' already declared on line 4252
+4550: [unknown-type] 'SetVariable' has unknown argument type 'Null'
+4580: [unbalanced-quotes] Value of '_ForLoopAMultiple_DisplayName' has an unbalanced double quote
+4580: [invalid-display-name] DisplayName of 'ForLoopAMultiple' is not a quoted string
+4587: [unbalanced-quotes] Value of '_ForLoopBMultiple_DisplayName' has an unbalanced double quote
+4587: [invalid-display-name] DisplayName of 'ForLoopBMultiple' is not a quoted string
+4594: [unbalanced-quotes] Value of '_ForLoopVarMultiple_DisplayName' has an unbalanced double quote
+4594: [invalid-display-name] DisplayName of 'ForLoopVarMultiple' is not a quoted string
+4972: [unbalanced-quotes] Value of '_BlzCameraSetupGetLabel_Parameters' has an unbalanced double quote
+4972: [invalid-parameters] Parameters of 'BlzCameraSetupGetLabel': unterminated string starting at column 36
+4985: [unbalanced-quotes] Value of '_SetDialogueTextKey_Parameters' has an unbalanced double quote
+4985: [invalid-parameters] Parameters of 'SetDialogueTextKey': unterminated string starting at column 59
+4991: [unbalanced-quotes] Value of '_SetDialogueSpeakerNameKey_Parameters' has an unbalanced double quote
+4991: [invalid-parameters] Parameters of 'SetDialogueSpeakerNameKey': unterminated string starting at column 67
+5073: [invalid-parameters] Parameters of 'PingMinimapLocForForceEx': expected ',' at column 113 but found '~'
+5105: [invalid-parameters] Parameters of 'BlzPlayModelCinematicGameAtPosition': unquoted text ' PosZ "' at column 69
+5105: [invalid-parameters] Parameters of 'BlzPlayModelCinematicGameAtPosition': unquoted text ' Rotation "' at column 83
+5124: [defaults-count] Defaults of 'DestroyMinimapIcon' has 0 value(s) but the function has 1 argument(s)
+5129: [invalid-parameters] Parameters of 'SetMinimapIconVisible': expected ',' at column 71 but found '~'
+5135: [invalid-parameters] Parameters of 'SetMinimapIconOrphanDestroy': expected ',' at column 96 but found '~'
+5498: [unbalanced-quotes] Value of '_SetHDWaterParamsExBJ_Parameters' has an unbalanced double quote
+5498: [invalid-parameters] Parameters of 'SetHDWaterParamsExBJ': unterminated string starting at column 488
+5510: [invalid-arguments] 'BlzSetHDWaterColorOverrideBJ' declares no argument types, use 'nothing' for functions without arguments
+5516: [invalid-arguments] 'BlzClearHDWaterColorOverrideBJ' declares no argument types, use 'nothing' for functions without arguments
+5524: [unbalanced-quotes] Value of '_BlzSetHDWaterVertexDisplacementBJ_Parameters' has an unbalanced double quote
+5524: [invalid-parameters] Parameters of 'BlzSetHDWaterVertexDisplacementBJ': unterminated string starting at column 76
+5529: [missing-field] 'BlzSetHDWaterMinOpacityBJ' has 1 argument(s) but no Defaults
+5531: [unbalanced-quotes] Value of '_BlzSetHDWaterMinOpacityBJ_Parameters' has an unbalanced double quote
+5531: [invalid-parameters] Parameters of 'BlzSetHDWaterMinOpacityBJ': unterminated string starting at column 52
+5532: [syntax] Line is not a comment, section heading, or key=value pair: _BlzSetHDWaterMinOpacityBJ_Defaults0
+5538: [unbalanced-quotes] Value of '_BlzSetHDWaterMaxOpacityBJ_Parameters' has an unbalanced double quote
+5538: [invalid-parameters] Parameters of 'BlzSetHDWaterMaxOpacityBJ': unterminated string starting at column 52
+5545: [unbalanced-quotes] Value of '_BlzSetHDWaterReflectivityBJ_Parameters' has an unbalanced double quote
+5545: [invalid-parameters] Parameters of 'BlzSetHDWaterReflectivityBJ': unterminated string starting at column 50
+5552: [unbalanced-quotes] Value of '_BlzSetHDWaterEmissivityBJ_Parameters' has an unbalanced double quote
+5552: [invalid-parameters] Parameters of 'BlzSetHDWaterEmissivityBJ': unterminated string starting at column 46
+5559: [unbalanced-quotes] Value of '_BlzSetHDWaterEdgeSoftnessBJ_Parameters' has an unbalanced double quote
+5559: [invalid-parameters] Parameters of 'BlzSetHDWaterEdgeSoftnessBJ': unterminated string starting at column 51
+5566: [unbalanced-quotes] Value of '_BlzSetHDWaterWaveStrengthBJ_Parameters' has an unbalanced double quote
+5566: [invalid-parameters] Parameters of 'BlzSetHDWaterWaveStrengthBJ': unterminated string starting at column 76
+5573: [unbalanced-quotes] Value of '_BlzSetHDWaterEnvMapStrengthBJ_Parameters' has an unbalanced double quote
+5573: [invalid-parameters] Parameters of 'BlzSetHDWaterEnvMapStrengthBJ': unterminated string starting at column 82
+5689: [unbalanced-quotes] Value of '_SetDayNightModels_Parameters' has an unbalanced double quote
+5689: [invalid-parameters] Parameters of 'SetDayNightModels': unterminated string starting at column 88
+5843: [duplicate-key] Duplicate key '_SetTimeOfDayScalePercentBJ_Defaults' in [TriggerActions], first declared on line 5842
+5843: [duplicate-field] Field 'Defaults' of 'SetTimeOfDayScalePercentBJ' already declared on line 5842
+6038: [defaults-count] Defaults of 'Preloader' has 0 value(s) but the function has 1 argument(s)
+6061: [invalid-arguments] 'BlzEndRecording' declares no argument types, use 'nothing' for functions without arguments
+6117: [invalid-arguments] 'InitHashtableBJ' declares no argument types, use 'nothing' for functions without arguments
+6595: [invalid-arguments] 'AllowHeroGlowOnAllUnitsBJ' has an empty argument type
+6597: [parameter-count] Parameters of 'AllowHeroGlowOnAllUnitsBJ' has 0 placeholder(s) but the function has 1 argument(s)
+6598: [defaults-count] Defaults of 'AllowHeroGlowOnAllUnitsBJ' has 0 value(s) but the function has 1 argument(s)
+6601: [invalid-arguments] 'DisallowHeroGlowOnAllUnitsBJ' has an empty argument type
+6603: [parameter-count] Parameters of 'DisallowHeroGlowOnAllUnitsBJ' has 0 placeholder(s) but the function has 1 argument(s)
+6604: [defaults-count] Defaults of 'DisallowHeroGlowOnAllUnitsBJ' has 0 value(s) but the function has 1 argument(s)
+7289: [defaults-count] Defaults of 'CreateCommandButtonEffectBJ' has 0 value(s) but the function has 2 argument(s)
+7295: [defaults-count] Defaults of 'CreateTrainCommandButtonEffectBJ' has 0 value(s) but the function has 1 argument(s)
+7301: [defaults-count] Defaults of 'CreateBuildCommandButtonEffectBJ' has 0 value(s) but the function has 1 argument(s)
+7307: [defaults-count] Defaults of 'CreateUpgradeCommandButtonEffectBJ' has 0 value(s) but the function has 1 argument(s)
+7313: [defaults-count] Defaults of 'CreateLearnCommandButtonEffectBJ' has 0 value(s) but the function has 1 argument(s)
+7316: [missing-field] 'CreateCommonCommandButtonEffectBJ' has no DisplayName
+7316: [missing-field] 'CreateCommonCommandButtonEffectBJ' has no Parameters
+7317: [defaults-count] Defaults of 'CreateCommonCommandButtonEffectBJ' has 0 value(s) but the function has 1 argument(s)
+7323: [defaults-count] Defaults of 'DestroyCommandButtonEffect' has 0 value(s) but the function has 1 argument(s)
+7480: [defaults-count] Defaults of 'RemoveRect' has 2 value(s) but the function has 1 argument(s)
+7480: [invalid-defaults] Defaults of 'RemoveRect' has an empty value at position 2, use '_' for no default
+7583: [defaults-count] Defaults of 'PlaySoundFromOffsetBJ' has 4 value(s) but the function has 3 argument(s)
+7584: [limits-count] Limits of 'PlaySoundFromOffsetBJ' has 8 value(s) but expects 6 (minimum and maximum per argument)
+7797: [missing-field] 'SetSoundFacialAnimationSetFilepathAction' has 2 argument(s) but no Defaults
+7800: [orphan-field] '_SetSoundFacialAnimationSetFilepathv_Defaults' does not belong to any function in [TriggerActions]
+7824: [whitespace] Trailing whitespace
+8041: [duplicate-key] Duplicate key '_SetUnitLifeBJ_Defaults' in [TriggerActions], first declared on line 8040
+8041: [duplicate-field] Field 'Defaults' of 'SetUnitLifeBJ' already declared on line 8040
+8059: [invalid-parameters] Parameters of 'BlzStartUnitAbilityCooldown': unquoted text ' " over "' at column 57
+8060: [defaults-count] Defaults of 'BlzStartUnitAbilityCooldown' has 2 value(s) but the function has 3 argument(s)
+8367: [unknown-type] 'BlzSetAbilityIntegerFieldBJ' has unknown argument type 'intger'
+8397: [duplicate-key] Duplicate key '_BlzSetAbilityIntegerLevelFieldBJ_Defaults' in [TriggerActions], first declared on line 8396
+8397: [duplicate-field] Field 'Defaults' of 'BlzSetAbilityIntegerLevelFieldBJ' already declared on line 8396
+8432: [limits-count] Limits of 'BlzSetAbilityRealLevelArrayFieldBJ' has 8 value(s) but expects 10 (minimum and maximum per argument)
+8439: [limits-count] Limits of 'BlzSetAbilityStringLevelArrayFieldBJ' has 8 value(s) but expects 10 (minimum and maximum per argument)
+8675: [missing-field] 'BlzSetSpecialEffectAnimationBlendTime' has no Category
+8675: [missing-field] 'BlzSetSpecialEffectAnimationBlendTime' has 2 argument(s) but no Defaults
+8678: [orphan-field] '_SetSpecialEffectAnimationBlendTime_Defaults' does not belong to any function in [TriggerActions]
+8679: [orphan-field] '_SetSpecialEffectAnimationBlendTime_Limits' does not belong to any function in [TriggerActions]
+8680: [orphan-field] '_SetSpecialEffectAnimationBlendTime_Category' does not belong to any function in [TriggerActions]
+8878: [defaults-count] Defaults of 'BlzSetUnitFacingEx' has 3 value(s) but the function has 2 argument(s)
+8879: [limits-count] Limits of 'BlzSetUnitFacingEx' has 6 value(s) but expects 4 (minimum and maximum per argument)
+9141: [whitespace] Trailing whitespace
+9141: [invalid-arguments] 'SetWantDestroyGroupBJ' declares no argument types, use 'nothing' for functions without arguments
+9147: [whitespace] Trailing whitespace
+9147: [invalid-arguments] 'ClearWantDestroyGroupBJ' declares no argument types, use 'nothing' for functions without arguments
+9154: [missing-field] 'CreateUbersplatBJ' has no Category
+9154: [missing-field] 'CreateUbersplatBJ' has 8 argument(s) but no Defaults
+9157: [orphan-field] '_CreateUberSplatBJ_Defaults' does not match the casing of the preceding function 'CreateUbersplatBJ'
+9158: [orphan-field] '_CreateUberSplatBJ_Category' does not match the casing of the preceding function 'CreateUbersplatBJ'
+9232: [duplicate-key] Duplicate key '_CreateFogModifierRadiusLocBJ_Defaults' in [TriggerActions], first declared on line 9231
+9232: [duplicate-field] Field 'Defaults' of 'CreateFogModifierRadiusLocBJ' already declared on line 9231
+9280: [defaults-count] Defaults of 'ParseTags' has 0 value(s) but the function has 1 argument(s)
+9378: [defaults-count] Defaults of 'GetLocalizedString' has 0 value(s) but the function has 1 argument(s)
+9416: [invalid-parameters] Parameters of 'BlzGetAbilityBooleanField': expected ',' at column 42 but found '~'
+9418: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityBooleanField' in [TriggerCalls] (did you mean 'Category'?)
+9425: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityBooleanLevelField' in [TriggerCalls] (did you mean 'Category'?)
+9432: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityBooleanLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9438: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityBooleanField' in [TriggerCalls] (did you mean 'Category'?)
+9440: [unknown-type] 'BlzSetAbilityIntegerField' has unknown argument type 'intger'
+9445: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityIntegerField' in [TriggerCalls] (did you mean 'Category'?)
+9451: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityRealField' in [TriggerCalls] (did you mean 'Category'?)
+9457: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityStringField' in [TriggerCalls] (did you mean 'Category'?)
+9464: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityBooleanLevelField' in [TriggerCalls] (did you mean 'Category'?)
+9470: [duplicate-key] Duplicate key '_BlzSetAbilityIntegerLevelField_Defaults' in [TriggerCalls], first declared on line 9469
+9470: [duplicate-field] Field 'Defaults' of 'BlzSetAbilityIntegerLevelField' already declared on line 9469
+9471: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityIntegerLevelField' in [TriggerCalls] (did you mean 'Category'?)
+9478: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityRealLevelField' in [TriggerCalls] (did you mean 'Category'?)
+9485: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityStringLevelField' in [TriggerCalls] (did you mean 'Category'?)
+9492: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityBooleanLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9499: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityIntegerLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9505: [limits-count] Limits of 'BlzSetAbilityRealLevelArrayField' has 8 value(s) but expects 10 (minimum and maximum per argument)
+9506: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityRealLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9512: [limits-count] Limits of 'BlzSetAbilityStringLevelArrayField' has 8 value(s) but expects 10 (minimum and maximum per argument)
+9513: [unknown-field] Unknown field 'CATEGORY' for 'BlzSetAbilityStringLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9520: [unknown-field] Unknown field 'CATEGORY' for 'BlzAddAbilityBooleanLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9527: [unknown-field] Unknown field 'CATEGORY' for 'BlzAddAbilityIntegerLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9534: [unknown-field] Unknown field 'CATEGORY' for 'BlzAddAbilityRealLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9541: [unknown-field] Unknown field 'CATEGORY' for 'BlzAddAbilityStringLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9548: [unknown-field] Unknown field 'CATEGORY' for 'BlzRemoveAbilityBooleanLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9555: [unknown-field] Unknown field 'CATEGORY' for 'BlzRemoveAbilityIntegerLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9562: [unknown-field] Unknown field 'CATEGORY' for 'BlzRemoveAbilityRealLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9569: [unknown-field] Unknown field 'CATEGORY' for 'BlzRemoveAbilityStringLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+9677: [defaults-count] Defaults of 'GetHandleIdBJ' has 0 value(s) but the function has 1 argument(s)
+9683: [defaults-count] Defaults of 'StringHashBJ' has 0 value(s) but the function has 1 argument(s)
+10138: [invalid-parameters] Parameters of 'IsMouseButtonPressedBJ': unquoted text '  Is Pressed' at column 11
+10139: [defaults-count] Defaults of 'IsMouseButtonPressedBJ' has 0 value(s) but the function has 1 argument(s)
+10144: [invalid-parameters] Parameters of 'IsMetaKeyPressedBJ': unquoted text '  Is Pressed' at column 11
+10145: [defaults-count] Defaults of 'IsMetaKeyPressedBJ' has 0 value(s) but the function has 1 argument(s)
+10150: [invalid-parameters] Parameters of 'IsKeyPressedBJ': unquoted text '  Is Pressed' at column 11
+10151: [defaults-count] Defaults of 'IsKeyPressedBJ' has 0 value(s) but the function has 1 argument(s)
+10349: [defaults-count] Defaults of 'IsUnitGroupInRectBJ' has 1 value(s) but the function has 2 argument(s)
+10887: [invalid-parameters] Parameters of 'BlzGetAbilityIntegerField': expected ',' at column 42 but found '~'
+10889: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityIntegerField' in [TriggerCalls] (did you mean 'Category'?)
+10896: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityIntegerLevelField' in [TriggerCalls] (did you mean 'Category'?)
+10903: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityIntegerLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+11472: [unbalanced-quotes] Value of '_GetUnitDefaultFlyHeight_DisplayName' has an unbalanced double quote
+11472: [invalid-display-name] DisplayName of 'GetUnitDefaultFlyHeight' is not a quoted string
+11515: [missing-field] 'BlzGetUnitCollisionSize' has no Category
+11519: [orphan-field] '_BlzGetUnitCollisionSize' does not belong to any function in [TriggerCalls]
+11547: [invalid-parameters] Parameters of 'BlzGetAbilityRealField': expected ',' at column 39 but found '~'
+11549: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityRealField' in [TriggerCalls] (did you mean 'Category'?)
+11555: [unknown-field] Unknown field 'Limites' for 'BlzGetAbilityRealLevelField' in [TriggerCalls] (did you mean 'Limits'?)
+11556: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityRealLevelField' in [TriggerCalls] (did you mean 'Category'?)
+11563: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityRealLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+11754: [limits-count] Limits of 'BlzGetAbilityActivatedIcon' has 3 value(s) but expects 2 (minimum and maximum per argument)
+11754: [invalid-limits] Limits of 'BlzGetAbilityActivatedIcon' has invalid value '', expected a number or '_'
+11825: [invalid-parameters] Parameters of 'BlzGetAbilityStringField': expected ',' at column 41 but found '~'
+11826: [defaults-count] Defaults of 'BlzGetAbilityStringField' has 0 value(s) but the function has 2 argument(s)
+11827: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityStringField' in [TriggerCalls] (did you mean 'Category'?)
+11834: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityStringLevelField' in [TriggerCalls] (did you mean 'Category'?)
+11841: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetAbilityStringLevelArrayField' in [TriggerCalls] (did you mean 'Category'?)
+11985: [unbalanced-quotes] Value of '_OffsetRectBJ_DisplayName' has an unbalanced double quote
+11985: [invalid-display-name] DisplayName of 'OffsetRectBJ' is not a quoted string
+12443: [invalid-flag] 'UnitItemInEquipmentSlotBJ' has an invalid usable-in-events flag '2', expected 0 or 1
+12467: [invalid-flag] 'GetItemEquippedByHeroOfTypeBJ' has an invalid usable-in-events flag '2', expected 0 or 1
+12473: [invalid-flag] 'GetItemEquippedByHeroOfEquipmentTypeBJ' has an invalid usable-in-events flag '2', expected 0 or 1
+12615: [defaults-count] Defaults of 'BlzGetUnitAbility' has 3 value(s) but the function has 2 argument(s)
+12616: [unknown-field] Unknown field 'CATEGORY' for 'BlzGetUnitAbility' in [TriggerCalls] (did you mean 'Category'?)
+12693: [limits-count] Limits of 'LeaderboardGetIndexedPlayerBJ' has 2 value(s) but expects 4 (minimum and maximum per argument)
+13094: [unbalanced-quotes] Value of '_BlzGetDoodadX_Parameters' has an unbalanced backtick
+13094: [invalid-parameters] Parameters of 'BlzGetDoodadX': placeholder '~IntegerField`"."' contains a quote or backtick
+13100: [unbalanced-quotes] Value of '_BlzGetDoodadY_Parameters' has an unbalanced backtick
+13100: [invalid-parameters] Parameters of 'BlzGetDoodadY': placeholder '~IntegerField`"."' contains a quote or backtick
+13106: [unbalanced-quotes] Value of '_BlzGetDoodadZ_Parameters' has an unbalanced backtick
+13106: [invalid-parameters] Parameters of 'BlzGetDoodadZ': placeholder '~IntegerField`"."' contains a quote or backtick
+13112: [unbalanced-quotes] Value of '_BlzGetDoodadScaleX_Parameters' has an unbalanced backtick
+13112: [invalid-parameters] Parameters of 'BlzGetDoodadScaleX': placeholder '~IntegerField`"."' contains a quote or backtick
+13118: [unbalanced-quotes] Value of '_BlzGetDoodadScaleY_Parameters' has an unbalanced backtick
+13118: [invalid-parameters] Parameters of 'BlzGetDoodadScaleY': placeholder '~IntegerField`"."' contains a quote or backtick
+13124: [unbalanced-quotes] Value of '_BlzGetDoodadScaleZ_Parameters' has an unbalanced backtick
+13124: [invalid-parameters] Parameters of 'BlzGetDoodadScaleZ': placeholder '~IntegerField`"."' contains a quote or backtick
+13130: [unbalanced-quotes] Value of '_BlzGetDoodadIsUsingModelAxes_Parameters' has an unbalanced backtick
+13130: [invalid-parameters] Parameters of 'BlzGetDoodadIsUsingModelAxes': placeholder '~IntegerField`"."' contains a quote or backtick
+13136: [unbalanced-quotes] Value of '_BlzGetDoodadYaw_Parameters' has an unbalanced backtick
+13136: [invalid-parameters] Parameters of 'BlzGetDoodadYaw': placeholder '~IntegerField`"."' contains a quote or backtick
+13142: [unbalanced-quotes] Value of '_BlzGetDoodadPitch_Parameters' has an unbalanced backtick
+13142: [invalid-parameters] Parameters of 'BlzGetDoodadPitch': placeholder '~IntegerField`"."' contains a quote or backtick
+13148: [unbalanced-quotes] Value of '_BlzGetDoodadRoll_Parameters' has an unbalanced backtick
+13148: [invalid-parameters] Parameters of 'BlzGetDoodadRoll': placeholder '~IntegerField`"."' contains a quote or backtick
+13154: [unbalanced-quotes] Value of '_BlzGetDoodadVariation_Parameters' has an unbalanced backtick
+13154: [invalid-parameters] Parameters of 'BlzGetDoodadVariation': placeholder '~IntegerField`"."' contains a quote or backtick
+13160: [unbalanced-quotes] Value of '_BlzGetDoodadId_Parameters' has an unbalanced backtick
+13160: [invalid-parameters] Parameters of 'BlzGetDoodadId': placeholder '~IntegerField`"."' contains a quote or backtick
+
+    38  invalid-parameters
+    34  unknown-field
+    30  unbalanced-quotes
+    26  defaults-count
+    11  missing-field
+     8  duplicate-key
+     8  invalid-arguments
+     8  limits-count
+     7  orphan-field
+     6  duplicate-field
+     5  invalid-display-name
+     3  invalid-flag
+     3  unknown-type
+     3  whitespace
+     2  parameter-count
+     1  invalid-defaults
+     1  invalid-limits
+     1  syntax
+   195  total
