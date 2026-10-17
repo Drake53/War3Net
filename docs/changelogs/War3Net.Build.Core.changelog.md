@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 _No unreleased changes._
 
+## [v6.1.2] - 2026-10-17
+
+### Fixed
+
+- Repaired the embedded `TriggerData.txt` file.
+
 ## [v6.1.1] - 2026-10-10
 
 ### Fixed
@@ -501,7 +507,8 @@ _No functional changes; package readme and metadata updated for nuget.org presen
 
 - Initial release. Useful files were moved out of the `War3Net.Build` package into this new package, to reduce dependencies.
 
-[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.1.1...HEAD
+[Unreleased]: https://github.com/Drake53/War3Net/compare/v6.1.2...HEAD
+[v6.1.2]: https://github.com/Drake53/War3Net/releases/tag/v6.1.2
 [v6.1.1]: https://github.com/Drake53/War3Net/releases/tag/v6.1.1
 [v6.1.0]: https://github.com/Drake53/War3Net/releases/tag/v6.1.0
 [v6.0.3]: https://github.com/Drake53/War3Net/releases/tag/v6.0.3
