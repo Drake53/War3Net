@@ -4,6 +4,12 @@
     public class TriggerDataTests
     {
         [TestMethod]
+        public void TestParseEmbeddedTriggerData()
+        {
+            _ = TriggerData.Default;
+        }
+
+        [TestMethod]
         [DynamicData(nameof(GetTestData), DynamicDataSourceType.Method)]
         public void TestParseTriggerData(string triggerDataPath)
         {
