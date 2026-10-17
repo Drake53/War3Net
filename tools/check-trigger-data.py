@@ -30,6 +30,7 @@ FUNCTION_SECTION_FIELDS = {
 REQUIRED_FUNCTION_FIELDS = ["DisplayName", "Parameters", "Category"]
 
 NOTHING_TYPE = "nothing"
+EDITOR_ARGUMENT_TYPES = ("Null",)
 
 INTEGER_PATTERN = re.compile(r"^-?\d+$")
 NUMBER_PATTERN = re.compile(r"^-?(\d+(\.\d*)?|\.\d+)$")
@@ -378,7 +379,7 @@ class TriggerDataChecker:
         for argument_type in argument_types:
             if argument_type == "":
                 self.report(entry.line_number, "invalid-arguments", f"'{entry.key}' has an empty argument type")
-            elif argument_type != NOTHING_TYPE and argument_type not in type_names:
+            elif argument_type != NOTHING_TYPE and argument_type not in EDITOR_ARGUMENT_TYPES and argument_type not in type_names:
                 self.report(entry.line_number, "unknown-type", f"'{entry.key}' has unknown argument type '{argument_type}'")
         argument_count = len([argument_type for argument_type in argument_types if argument_type != NOTHING_TYPE])
 

@@ -3108,11 +3108,9 @@ UnitOrderMedivhUnRavenForm=0,unitordernotarg,`unravenform`,WESTRING_UNITORDERNOT
 UnitOrderRexxarBattleRoar=1,unitordernotarg,`battleroar`,WESTRING_UNITORDERNOTARG_REXXARBATTLEROAR
 UnitOrderColdArrows=0,unitordernotarg,`coldarrows`,WESTRING_UNITORDERNOTARG_COLDARROWS
 UnitOrderUnColdArrows=0,unitordernotarg,`uncoldarrows`,WESTRING_UNITORDERNOTARG_UNCOLDARROWS
-UnitOrderChallengingCall=1,unitordernotarg,`challengingcall`,WESTRING_UNITORDERNOTARG_CHALLENGINGCALL
 UnitOrderWarcry=1,unitordernotarg,`warcry`,WESTRING_UNITORDERNOTARG_WARCRY
 UnitOrderUnyieldingGuard=1,unitordernotarg,`unyieldingguard`,WESTRING_UNITORDERNOTARG_UNYIELDINGGUARD
 UnitOrderGrimConviction=1,unitordernotarg,`grimconviction`,WESTRING_UNITORDERNOTARG_GRIMCONVICTION
-UnitOrderHeroicSlash=1,unitordernotarg,`heroicslash`,WESTRING_UNITORDERNOTARG_HEROICSLASH
 UnitOrderInspireCourage=1,unitordernotarg,`inspirecourage`,WESTRING_UNITORDERNOTARG_INSPIRECOURAGE
 UnitOrderConsecration=1,unitordernotarg,`consecration`,WESTRING_UNITORDERNOTARG_CONSECRATION
 UnitOrderCleansingFire=1,unitordernotarg,`cleansingfire`,WESTRING_UNITORDERNOTARG_CLEANSINGFIRE
@@ -4033,7 +4031,7 @@ _MapInitializationEvent_Category=TC_NOTHING
 TriggerRegisterCommandEvent=1,abilcode,unitorderEx
 _TriggerRegisterCommandEvent_DisplayName="Ability Button Pressed"
 _TriggerRegisterCommandEvent_Parameters="Button for ability ",~AbilityCode," and order ",~Order," pressed."
-_TriggerRegisterCommandEvent_Defaults=_
+_TriggerRegisterCommandEvent_Defaults=_,_
 _TriggerRegisterCommandEvent_Category=TC_GAME
 
 TriggerRegisterBuildCommandEventBJ=1,unitcode
@@ -4055,6 +4053,8 @@ _TriggerRegisterUpgradeCommandEventBJ_Defaults=_
 _TriggerRegisterUpgradeCommandEventBJ_Category=TC_GAME
 
 TriggerRegisterCommonCommandEventBJ=1,unitcommonorderEx
+_TriggerRegisterCommonCommandEventBJ_DisplayName="Common Button Pressed"
+_TriggerRegisterCommonCommandEventBJ_Parameters="Button for common order ",~Order," pressed."
 _TriggerRegisterCommonCommandEventBJ_Defaults=_
 _TriggerRegisterCommonCommandEventBJ_Category=TC_GAME
 
@@ -4250,7 +4250,6 @@ TriggerRegisterUnitInRangeSimple=0,real,unit
 _TriggerRegisterUnitInRangeSimple_DisplayName="Unit Within Range"
 _TriggerRegisterUnitInRangeSimple_Parameters="A unit comes within ",~Range," of ",~Unit
 _TriggerRegisterUnitInRangeSimple_Defaults=256,_
-_TriggerRegisterUnitInRangeSimple_Defaults=0,_,_,_
 _TriggerRegisterUnitInRangeSimple_Category=TC_UNIT
 
 TriggerRegisterUnitLifeEvent=0,unit,limitop,real
@@ -4577,21 +4576,21 @@ _IfThenElse_Category=TC_LOGIC
 
 // Specially handled by the editor
 ForLoopAMultiple=1,integer,integer
-_ForLoopAMultiple_DisplayName="For Each Integer A, Do Multiple Actions
+_ForLoopAMultiple_DisplayName="For Each Integer A, Do Multiple Actions"
 _ForLoopAMultiple_Parameters="For each (Integer A) from ",~Start," to ",~End,", do (Actions)"
 _ForLoopAMultiple_Defaults=1,10
 _ForLoopAMultiple_Category=TC_FORLOOP
 
 // Specially handled by the editor
 ForLoopBMultiple=1,integer,integer
-_ForLoopBMultiple_DisplayName="For Each Integer B, Do Multiple Actions
+_ForLoopBMultiple_DisplayName="For Each Integer B, Do Multiple Actions"
 _ForLoopBMultiple_Parameters="For each (Integer B) from ",~Start," to ",~End,", do (Actions)"
 _ForLoopBMultiple_Defaults=1,10
 _ForLoopBMultiple_Category=TC_FORLOOP
 
 // Specially handled by the editor
 ForLoopVarMultiple=1,integervar,integer,integer
-_ForLoopVarMultiple_DisplayName="For Each Integer Variable, Do Multiple Actions
+_ForLoopVarMultiple_DisplayName="For Each Integer Variable, Do Multiple Actions"
 _ForLoopVarMultiple_Parameters="For each (Integer ",~Variable,") from ",~Start," to ",~End,", do (Actions)"
 _ForLoopVarMultiple_Defaults=_,1,10
 _ForLoopVarMultiple_Category=TC_FORLOOP
@@ -4969,7 +4968,7 @@ _BlzCameraSetupSetLabel_Category=TC_CAMERA
 
 BlzCameraSetupGetLabel=0,camerasetup
 _BlzCameraSetupGetLabel_DisplayName="Get Camera Label"
-_BlzCameraSetupGetLabel_Parameters="Get the label of ",~Camera Object,"
+_BlzCameraSetupGetLabel_Parameters="Get the label of ",~Camera Object
 _BlzCameraSetupGetLabel_Defaults=_
 _BlzCameraSetupGetLabel_Category=TC_CAMERA
 
@@ -4982,13 +4981,13 @@ _SetCameraBlockerForPlayerBJ_Category=TC_CAMERA
 // Cinematic actions
 SetDialogueTextKey=0,sound,string
 _SetDialogueTextKey_DisplayName="Set Dialogue Text"
-_SetDialogueTextKey_Parameters="Set dialogue text for sound ",~Sound," to string ",~Text,"
+_SetDialogueTextKey_Parameters="Set dialogue text for sound ",~Sound," to string ",~Text
 _SetDialogueTextKey_Defaults=_,"Text"
 _SetDialogueTextKey_Category=TC_CINEMATIC
 
 SetDialogueSpeakerNameKey=0,sound,string
 _SetDialogueSpeakerNameKey_DisplayName="Set Dialogue Speaker Name"
-_SetDialogueSpeakerNameKey_Parameters="Set dialogue speaker name for sound ",~Sound," to string ",~Name,"
+_SetDialogueSpeakerNameKey_Parameters="Set dialogue speaker name for sound ",~Sound," to string ",~Name
 _SetDialogueSpeakerNameKey_Defaults=_,"Speaker"
 _SetDialogueSpeakerNameKey_Category=TC_CINEMATIC
 
@@ -5070,7 +5069,7 @@ _PingMinimapLocForForce_Category=TC_CINEMATIC
 
 PingMinimapLocForForceEx=1,force,location,real,minimappingstyle,real,real,real
 _PingMinimapLocForForceEx_DisplayName="Ping Minimap With Color"
-_PingMinimapLocForForceEx_Parameters="Ping minimap for ",~Player Group," at ",~Point," for ",~Duration," seconds, using a ",~Style," ping of color ("~Red,"%, ",~Green,"%, ",~Blue,"%)"
+_PingMinimapLocForForceEx_Parameters="Ping minimap for ",~Player Group," at ",~Point," for ",~Duration," seconds, using a ",~Style," ping of color (",~Red,"%, ",~Green,"%, ",~Blue,"%)"
 _PingMinimapLocForForceEx_Defaults=GetPlayersAll,GetRectCenter,1,MinimapPingStyleSimple,100,100,100
 _PingMinimapLocForForceEx_Limits=_,_,_,_,0,_,_,_,0,100,0,100,0,100
 _PingMinimapLocForForceEx_Category=TC_CINEMATIC
@@ -5102,7 +5101,7 @@ _CreateMinimapIconBJ_Category=TC_CINEMATIC
 
 BlzPlayModelCinematicGameAtPosition=0,modelfile,real,real,real,real
 _BlzPlayModelCinematicGameAtPosition_DisplayName="Play Model Cinematic At Position and Return to Game"
-_BlzPlayModelCinematicGameAtPosition_Parameters="Play Model Cinematic ",~MDL Filename," PosX ",~PosX," PosY ",~PosY, PosZ ",~PosZ, Rotation ",~RotZ
+_BlzPlayModelCinematicGameAtPosition_Parameters="Play Model Cinematic ",~MDL Filename," PosX ",~PosX," PosY ",~PosY," PosZ ",~PosZ," Rotation ",~RotZ
 _BlzPlayModelCinematicGameAtPosition_Defaults="cinematic.mdl", 0, 0, 0, 0
 _BlzPlayModelCinematicGameAtPosition_Category=TC_CINEMATIC
 
@@ -5121,18 +5120,18 @@ _CampaignMinimapIconLocBJ_Category=TC_QUEST
 DestroyMinimapIcon=0,minimapicon
 _DestroyMinimapIcon_DisplayName="Destroy Minimap Icon"
 _DestroyMinimapIcon_Parameters="Destroy campaign quest minimap icon ",~Minimap Icon
-_DestroyMinimapIcon_Defaults=
+_DestroyMinimapIcon_Defaults=_
 _DestroyMinimapIcon_Category=TC_QUEST
 
 SetMinimapIconVisible=1,minimapicon,onoffoption
 _SetMinimapIconVisible_DisplayName="Set Minimap Icon Visible"
-_SetMinimapIconVisible_Parameters="Set campaign quest minimap icon visibility for ",~Minimap Icon," to "~On/Off
+_SetMinimapIconVisible_Parameters="Set campaign quest minimap icon visibility for ",~Minimap Icon," to ",~On/Off
 _SetMinimapIconVisible_Defaults=_,OnOffOn
 _SetMinimapIconVisible_Category=TC_QUEST
 
 SetMinimapIconOrphanDestroy=1,minimapicon,onoffoption
 _SetMinimapIconOrphanDestroy_DisplayName="Set Minimap Icon Self Destroy"
-_SetMinimapIconOrphanDestroy_Parameters="Set campaign quest minimap icon ",~Minimap Icon," self destroy when attached unit is dead to "~On/Off
+_SetMinimapIconOrphanDestroy_Parameters="Set campaign quest minimap icon ",~Minimap Icon," self destroy when attached unit is dead to ",~On/Off
 _SetMinimapIconOrphanDestroy_Defaults=_,OnOffOn
 _SetMinimapIconOrphanDestroy_Category=TC_QUEST
 
@@ -5495,7 +5494,7 @@ _SetWaterBaseColorBJ_Category=TC_ENVIRONMENT
 
 SetHDWaterParamsExBJ=1,real,real,real,onoffoption,integer,integer,integer,integer,integer,integer,integer,integer
 _SetHDWaterParamsExBJ_DisplayName="Set HD Water Parameters"
-_SetHDWaterParamsExBJ_Parameters="Change HD water parameters override color to (",~Red,"%, ",~Green,"%, ",~Blue,"%) with override ",~Override,". Change waves vertex displacement to ",~Waves-Vertex-Displacement,", minimum opacity to ",~Min-Opacity,", maximum opacity to ",~Max-Opacity,", reflectivity to ",~Reflectivity,", emissivity to ",~Emissivity,", edge softness to ",~Edge-Softness,", waves normal map strength to ",~Wave-Normal-Map-Strength," and environment map reflectivity to to ",~Environment-Map-Reflectivity,".
+_SetHDWaterParamsExBJ_Parameters="Change HD water parameters override color to (",~Red,"%, ",~Green,"%, ",~Blue,"%) with override ",~Override,". Change waves vertex displacement to ",~Waves-Vertex-Displacement,", minimum opacity to ",~Min-Opacity,", maximum opacity to ",~Max-Opacity,", reflectivity to ",~Reflectivity,", emissivity to ",~Emissivity,", edge softness to ",~Edge-Softness,", waves normal map strength to ",~Wave-Normal-Map-Strength," and environment map reflectivity to to ",~Environment-Map-Reflectivity,"."
 _SetHDWaterParamsExBJ_Defaults=100,100,100,OnOffOn,20,0,100,10,0,50,100,100
 _SetHDWaterParamsExBJ_Limits=0,100,0,100,0,100,_,_,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100
 _SetHDWaterParamsExBJ_Category=TC_ENVIRONMENT
@@ -5507,13 +5506,13 @@ _BlzSetHDWaterColorBJ_Defaults=100,100,100
 _BlzSetHDWaterColorBJ_Limits=0,100,0,100,0,100
 _BlzSetHDWaterColorBJ_Category=TC_ENVIRONMENT
 
-BlzSetHDWaterColorOverrideBJ=1
+BlzSetHDWaterColorOverrideBJ=1,nothing
 _BlzSetHDWaterColorOverrideBJ_DisplayName="Enable HD Water Color Override"
 _BlzSetHDWaterColorOverrideBJ_Parameters="Enable HD water color override."
 _BlzSetHDWaterColorOverrideBJ_Defaults=
 _BlzSetHDWaterColorOverrideBJ_Category=TC_ENVIRONMENT
 
-BlzClearHDWaterColorOverrideBJ=1
+BlzClearHDWaterColorOverrideBJ=1,nothing
 _BlzClearHDWaterColorOverrideBJ_DisplayName="Disable HD Water Color Override"
 _BlzClearHDWaterColorOverrideBJ_Parameters="Disable HD water color override."
 _BlzClearHDWaterColorOverrideBJ_Defaults=
@@ -5521,56 +5520,56 @@ _BlzClearHDWaterColorOverrideBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterVertexDisplacementBJ=1,integer
 _BlzSetHDWaterVertexDisplacementBJ_DisplayName="Change HD Water Waves Vertex Displacement"
-_BlzSetHDWaterVertexDisplacementBJ_Parameters="Change HD water waves vertex displacement to ",~Waves-Vertex-Displacement,".
+_BlzSetHDWaterVertexDisplacementBJ_Parameters="Change HD water waves vertex displacement to ",~Waves-Vertex-Displacement,"."
 _BlzSetHDWaterVertexDisplacementBJ_Defaults=20
 _BlzSetHDWaterVertexDisplacementBJ_Limits=0,100
 _BlzSetHDWaterVertexDisplacementBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterMinOpacityBJ=1,integer
 _BlzSetHDWaterMinOpacityBJ_DisplayName="Change HD Water Minimum Opacity"
-_BlzSetHDWaterMinOpacityBJ_Parameters="Change HD water minimum opacity to ",~Min-Opacity,".
-_BlzSetHDWaterMinOpacityBJ_Defaults0
+_BlzSetHDWaterMinOpacityBJ_Parameters="Change HD water minimum opacity to ",~Min-Opacity,"."
+_BlzSetHDWaterMinOpacityBJ_Defaults=0
 _BlzSetHDWaterMinOpacityBJ_Limits=0,100
 _BlzSetHDWaterMinOpacityBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterMaxOpacityBJ=1,integer
 _BlzSetHDWaterMaxOpacityBJ_DisplayName="Change HD Water Maximum Opacity"
-_BlzSetHDWaterMaxOpacityBJ_Parameters="Change HD water maximum opacity to ",~Max-Opacity,".
+_BlzSetHDWaterMaxOpacityBJ_Parameters="Change HD water maximum opacity to ",~Max-Opacity,"."
 _BlzSetHDWaterMaxOpacityBJ_Defaults=100
 _BlzSetHDWaterMaxOpacityBJ_Limits=0,100
 _BlzSetHDWaterMaxOpacityBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterReflectivityBJ=1,integer
 _BlzSetHDWaterReflectivityBJ_DisplayName="Change HD Water Reflectivity"
-_BlzSetHDWaterReflectivityBJ_Parameters="Change HD water reflectivity to ",~Reflectivity,".
+_BlzSetHDWaterReflectivityBJ_Parameters="Change HD water reflectivity to ",~Reflectivity,"."
 _BlzSetHDWaterReflectivityBJ_Defaults=10
 _BlzSetHDWaterReflectivityBJ_Limits=0,100
 _BlzSetHDWaterReflectivityBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterEmissivityBJ=1,integer
 _BlzSetHDWaterEmissivityBJ_DisplayName="Change HD Water Emissivity"
-_BlzSetHDWaterEmissivityBJ_Parameters="Change HD water emissivity to ",~Emissivity,".
+_BlzSetHDWaterEmissivityBJ_Parameters="Change HD water emissivity to ",~Emissivity,"."
 _BlzSetHDWaterEmissivityBJ_Defaults=0
 _BlzSetHDWaterEmissivityBJ_Limits=0,100
 _BlzSetHDWaterEmissivityBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterEdgeSoftnessBJ=1,integer
 _BlzSetHDWaterEdgeSoftnessBJ_DisplayName="Change HD Water Edge Softness"
-_BlzSetHDWaterEdgeSoftnessBJ_Parameters="Change HD water edge sofness to ",~Edge-Softness,".
+_BlzSetHDWaterEdgeSoftnessBJ_Parameters="Change HD water edge sofness to ",~Edge-Softness,"."
 _BlzSetHDWaterEdgeSoftnessBJ_Defaults=50
 _BlzSetHDWaterEdgeSoftnessBJ_Limits=0,100
 _BlzSetHDWaterEdgeSoftnessBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterWaveStrengthBJ=1,integer
 _BlzSetHDWaterWaveStrengthBJ_DisplayName="Change HD Water Wave Normal Map Strength"
-_BlzSetHDWaterWaveStrengthBJ_Parameters="Change HD water waves normal map strength to ",~Waves-Normal-Map-Strength,".
+_BlzSetHDWaterWaveStrengthBJ_Parameters="Change HD water waves normal map strength to ",~Waves-Normal-Map-Strength,"."
 _BlzSetHDWaterWaveStrengthBJ_Defaults=100
 _BlzSetHDWaterWaveStrengthBJ_Limits=0,100
 _BlzSetHDWaterWaveStrengthBJ_Category=TC_ENVIRONMENT
 
 BlzSetHDWaterEnvMapStrengthBJ=1,integer
 _BlzSetHDWaterEnvMapStrengthBJ_DisplayName="Change HD Water Environment Map Reflectivity"
-_BlzSetHDWaterEnvMapStrengthBJ_Parameters="Change HD water environment map reflectivity to ",~Environment-Map-Reflectivity,".
+_BlzSetHDWaterEnvMapStrengthBJ_Parameters="Change HD water environment map reflectivity to ",~Environment-Map-Reflectivity,"."
 _BlzSetHDWaterEnvMapStrengthBJ_Defaults=100
 _BlzSetHDWaterEnvMapStrengthBJ_Limits=0,100
 _BlzSetHDWaterEnvMapStrengthBJ_Category=TC_ENVIRONMENT
@@ -5686,7 +5685,7 @@ _SetBlightRadiusLocBJ_Category=TC_ENVIRONMENT
 
 SetDayNightModels=0,dncmodelstring,dncmodelstring
 _SetDayNightModels_DisplayName="Set DNC Light Models"
-_SetDayNightModels_Parameters="Set day-night cycle light models to ",~Terrain-Model," for terrain and ",~Units-Model," for units.
+_SetDayNightModels_Parameters="Set day-night cycle light models to ",~Terrain-Model," for terrain and ",~Units-Model," for units."
 _SetDayNightModels_Defaults=DNCModelLordaeronTerrain,DNCModelLordaeronUnit
 _SetDayNightModels_Category=TC_ENVIRONMENT
 
@@ -5840,7 +5839,6 @@ SetTimeOfDayScalePercentBJ=0,real
 _SetTimeOfDayScalePercentBJ_DisplayName="Set Time Of Day Speed"
 _SetTimeOfDayScalePercentBJ_Parameters="Set time of day speed to ",~Percent,"% of the default speed"
 _SetTimeOfDayScalePercentBJ_Defaults=100
-_SetTimeOfDayScalePercentBJ_Defaults=0,_
 _SetTimeOfDayScalePercentBJ_Category=TC_GAME
 
 UseTimeOfDayBJ=0,onoffoption
@@ -6035,7 +6033,7 @@ _PreloadEnd_Category=TC_GAME
 Preloader=0,preloadfile
 _Preloader_DisplayName="Preload Batch"
 _Preloader_Parameters="Preload all files listed in ",~Filename,"."
-_Preloader_Defaults=
+_Preloader_Defaults=_
 _Preloader_Category=TC_GAME
 
 // Recording related API
@@ -6058,7 +6056,7 @@ _BlzStartRecording_Defaults=30
 _BlzStartRecording_Limits=0,_
 _BlzStartRecording_Category=TC_GAME
 
-BlzEndRecording=0
+BlzEndRecording=0,nothing
 _BlzEndRecording_DisplayName="End Recording"
 _BlzEndRecording_Parameters="End Recording"
 _BlzEndRecording_Category=TC_GAME
@@ -6114,7 +6112,7 @@ _StoreStringBJ_Defaults=_,_,"Category",GetLastCreatedGameCacheBJ
 _StoreStringBJ_Category=TC_GAMECACHE
 
 // Hashtable actions
-InitHashtableBJ=0
+InitHashtableBJ=0,nothing
 _InitHashtableBJ_DisplayName="Create Hashtable"
 _InitHashtableBJ_Parameters="Create a hashtable"
 _InitHashtableBJ_Defaults=
@@ -6592,13 +6590,13 @@ _DisallowHeroGlowOnUnitBJ_Parameters="Hide ",~Unit," hero glow popcorn particle 
 _DisallowHeroGlowOnUnitBJ_Defaults=GetLastCreatedUnit
 _DisallowHeroGlowOnUnitBJ_Category=TC_HERO
 
-AllowHeroGlowOnAllUnitsBJ=1,
+AllowHeroGlowOnAllUnitsBJ=1,nothing
 _AllowHeroGlowOnAllUnitsBJ_DisplayName="Show Glow On All Units"
 _AllowHeroGlowOnAllUnitsBJ_Parameters="Show hero glow popcorn particle effect on all units"
 _AllowHeroGlowOnAllUnitsBJ_Defaults=
 _AllowHeroGlowOnAllUnitsBJ_Category=TC_HERO
 
-DisallowHeroGlowOnAllUnitsBJ=1,
+DisallowHeroGlowOnAllUnitsBJ=1,nothing
 _DisallowHeroGlowOnAllUnitsBJ_DisplayName="Hide Glow On All Units"
 _DisallowHeroGlowOnAllUnitsBJ_Parameters="Hide hero glow popcorn particle effect on all units"
 _DisallowHeroGlowOnAllUnitsBJ_Defaults=
@@ -7286,41 +7284,43 @@ _SetPlayerName_Category=TC_PLAYER
 CreateCommandButtonEffectBJ=1,abilcode,unitorderEx
 _CreateCommandButtonEffectBJ_DisplayName="Create Ability Button Effect"
 _CreateCommandButtonEffectBJ_Parameters="Create Ability Button Effect for ",~Ability," and ",~OrderID
-_CreateCommandButtonEffectBJ_Defaults=
+_CreateCommandButtonEffectBJ_Defaults=_,_
 _CreateCommandButtonEffectBJ_Category=TC_GAME
 
 CreateTrainCommandButtonEffectBJ=1,unitcode
 _CreateTrainCommandButtonEffectBJ_DisplayName="Create Train Button Effect"
 _CreateTrainCommandButtonEffectBJ_Parameters="Create Train Button Effect for ",~unitcode
-_CreateTrainCommandButtonEffectBJ_Defaults=
+_CreateTrainCommandButtonEffectBJ_Defaults=_
 _CreateTrainCommandButtonEffectBJ_Category=TC_GAME
 
 CreateBuildCommandButtonEffectBJ=1,unitcode
 _CreateBuildCommandButtonEffectBJ_DisplayName="Create Build Button Effect"
 _CreateBuildCommandButtonEffectBJ_Parameters="Create Build Button Effect for ",~unitcode
-_CreateBuildCommandButtonEffectBJ_Defaults=
+_CreateBuildCommandButtonEffectBJ_Defaults=_
 _CreateBuildCommandButtonEffectBJ_Category=TC_GAME
 
 CreateUpgradeCommandButtonEffectBJ=1,techcode
 _CreateUpgradeCommandButtonEffectBJ_DisplayName="Create Research Button Effect"
 _CreateUpgradeCommandButtonEffectBJ_Parameters="Create Research Button Effect for ",~techcode
-_CreateUpgradeCommandButtonEffectBJ_Defaults=
+_CreateUpgradeCommandButtonEffectBJ_Defaults=_
 _CreateUpgradeCommandButtonEffectBJ_Category=TC_GAME
 
 CreateLearnCommandButtonEffectBJ=1,heroskillcode
 _CreateLearnCommandButtonEffectBJ_DisplayName="Create Learn Button Effect"
 _CreateLearnCommandButtonEffectBJ_Parameters="Create Learn Button Effect for ",~skill
-_CreateLearnCommandButtonEffectBJ_Defaults=
+_CreateLearnCommandButtonEffectBJ_Defaults=_
 _CreateLearnCommandButtonEffectBJ_Category=TC_GAME
 
 CreateCommonCommandButtonEffectBJ=1,unitcommonorderEx
-_CreateCommonCommandButtonEffectBJ_Defaults=
+_CreateCommonCommandButtonEffectBJ_DisplayName="Create Common Button Effect"
+_CreateCommonCommandButtonEffectBJ_Parameters="Create Common Button Effect for ",~Order
+_CreateCommonCommandButtonEffectBJ_Defaults=_
 _CreateCommonCommandButtonEffectBJ_Category=TC_GAME
 
 DestroyCommandButtonEffect=1,commandbuttoneffect
 _DestroyCommandButtonEffect_DisplayName="Destroy Button Effect"
 _DestroyCommandButtonEffect_Parameters="Destroy Button Effect ",~button effect
-_DestroyCommandButtonEffect_Defaults=
+_DestroyCommandButtonEffect_Defaults=_
 _DestroyCommandButtonEffect_Category=TC_GAME
 
 // Player Group actions
@@ -7477,7 +7477,7 @@ _MoveRectToLoc_Category=TC_REGION
 RemoveRect=0,rect
 _RemoveRect_DisplayName="Remove"
 _RemoveRect_Parameters="Remove ",~Region,"."
-_RemoveRect_Defaults=_,
+_RemoveRect_Defaults=_
 _RemoveRect_Category=TC_REGION
 
 // Location actions
@@ -7580,8 +7580,8 @@ _PlaySoundOnUnitBJ_Category=TC_SOUND
 PlaySoundFromOffsetBJ=1,sound,real,real
 _PlaySoundFromOffsetBJ_DisplayName="Play Sound From Offset"
 _PlaySoundFromOffsetBJ_Parameters="Play ",~Sound," at ",~Volume,"% volume, skipping the first ",~Offset," seconds"
-_PlaySoundFromOffsetBJ_Defaults=_,100,0,0
-_PlaySoundFromOffsetBJ_Limits=_,_,0,100,0,_,0,_
+_PlaySoundFromOffsetBJ_Defaults=_,100,0
+_PlaySoundFromOffsetBJ_Limits=_,_,0,100,0,_
 _PlaySoundFromOffsetBJ_Category=TC_SOUND
 
 StopSoundBJ=0,sound,fadedontoption
@@ -7797,7 +7797,7 @@ _SetSoundFacialAnimationGroupLabelAction_ScriptName=SetSoundFacialAnimationGroup
 SetSoundFacialAnimationSetFilepathAction=0,sound,string
 _SetSoundFacialAnimationSetFilepathAction_DisplayName="Set Dialogue Facial Animation Filepath"
 _SetSoundFacialAnimationSetFilepathAction_Parameters="Set for dialogue sound ",~Sound," facial animation filepath ",~String,"."
-_SetSoundFacialAnimationSetFilepathv_Defaults=_,_
+_SetSoundFacialAnimationSetFilepathAction_Defaults=_,_
 _SetSoundFacialAnimationSetFilepathAction_Category=TC_SOUND
 _SetSoundFacialAnimationSetFilepathAction_ScriptName=SetSoundFacialAnimationGroupLabel
 
@@ -7821,7 +7821,7 @@ _DestroyEffectBJ_Defaults=GetLastCreatedEffectBJ
 _DestroyEffectBJ_Category=TC_SPECIALEFFECT
 
 DestroyEffectAfterTimeBJ=0,effect,real
-_DestroyEffectAfterTimeBJ_DisplayName="Destroy Special Effect After Time" 
+_DestroyEffectAfterTimeBJ_DisplayName="Destroy Special Effect After Time"
 _DestroyEffectAfterTimeBJ_Parameters="Destroy ",~Special Effect," after ",~Time," seconds."
 _DestroyEffectAfterTimeBJ_Defaults=GetLastCreatedEffectBJ,2
 _DestroyEffectAfterTimeBJ_Category=TC_SPECIALEFFECT
@@ -8038,7 +8038,6 @@ SetUnitLifeBJ=0,unit,real
 _SetUnitLifeBJ_DisplayName="Set Life (To Value)"
 _SetUnitLifeBJ_Parameters="Set life of ",~Unit," to ",~Value
 _SetUnitLifeBJ_Defaults=GetTriggerUnit,GetUnitStateSwap
-_SetUnitLifeBJ_Defaults=_,_,0,_
 _SetUnitLifeBJ_Category=TC_UNIT
 
 SetUnitManaBJ=0,unit,real
@@ -8056,8 +8055,8 @@ _BlzEndUnitAbilityCooldown_Category=TC_UNIT
 
 BlzStartUnitAbilityCooldown=0,unit,abilcode,real
 _BlzStartUnitAbilityCooldown_DisplayName="Start Unit Ability Cooldown"
-_BlzStartUnitAbilityCooldown_Parameters="For Unit ",~Unit,", start cooldown of ability ",~Value, " over ",~Time," seconds."
-_BlzStartUnitAbilityCooldown_Defaults=_,_
+_BlzStartUnitAbilityCooldown_Parameters="For Unit ",~Unit,", start cooldown of ability ",~Value," over ",~Time," seconds."
+_BlzStartUnitAbilityCooldown_Defaults=_,_,_
 _BlzStartUnitAbilityCooldown_Category=TC_UNIT
 
 BlzSetAbilityTooltip=0,abilcode,string,integer
@@ -8364,7 +8363,7 @@ _BlzSetAbilityBooleanFieldBJ_Parameters="Set Ability: ",~Ability,"'s Boolean Fie
 _BlzSetAbilityBooleanFieldBJ_Defaults=_,_,true
 _BlzSetAbilityBooleanFieldBJ_Category=TC_ABILITY
 
-BlzSetAbilityIntegerFieldBJ=0,ability,abilityintegerfield,intger
+BlzSetAbilityIntegerFieldBJ=0,ability,abilityintegerfield,integer
 _BlzSetAbilityIntegerFieldBJ_DisplayName="Set Ability Integer Field"
 _BlzSetAbilityIntegerFieldBJ_Parameters="Set Ability: ",~Ability,"'s Integer Field: ",~IntegerField," to ",~Value
 _BlzSetAbilityIntegerFieldBJ_Defaults=_,_,0
@@ -8394,7 +8393,6 @@ BlzSetAbilityIntegerLevelFieldBJ=0,ability,abilityintegerlevelfield,integer,inte
 _BlzSetAbilityIntegerLevelFieldBJ_DisplayName="Set Ability Integer Level Field"
 _BlzSetAbilityIntegerLevelFieldBJ_Parameters="Set Ability: ",~Ability,"'s Integer Level Field: ",~IntegerLevelField," of Level: ",~Level," to ",~Value
 _BlzSetAbilityIntegerLevelFieldBJ_Defaults=_,_,0,50
-_BlzSetAbilityIntegerLevelFieldBJ_Defaults=_,_,_,_,0,_,0,_
 _BlzSetAbilityIntegerLevelFieldBJ_Category=TC_ABILITY
 
 BlzSetAbilityRealLevelFieldBJ=0,ability,abilityreallevelfield,integer,real
@@ -8429,14 +8427,14 @@ BlzSetAbilityRealLevelArrayFieldBJ=0,ability,abilityreallevelarrayfield,integer,
 _BlzSetAbilityRealLevelArrayFieldBJ_DisplayName="Set Ability Real Level Array Field"
 _BlzSetAbilityRealLevelArrayFieldBJ_Parameters="Set Ability: ",~Ability,"'s Real Level Array Field: ",~RealLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityRealLevelArrayFieldBJ_Defaults=_,_,0,0,0
-_BlzSetAbilityRealLevelArrayFieldBJ_Limits=_,_,0,_,0,_,_,_
+_BlzSetAbilityRealLevelArrayFieldBJ_Limits=_,_,_,_,0,_,0,_,_,_
 _BlzSetAbilityRealLevelArrayFieldBJ_Category=TC_ABILITY
 
 BlzSetAbilityStringLevelArrayFieldBJ=0,ability,abilitystringlevelarrayfield,integer,integer,string
 _BlzSetAbilityStringLevelArrayFieldBJ_DisplayName="Set Ability String Level Array Field"
 _BlzSetAbilityStringLevelArrayFieldBJ_Parameters="Set Ability: ",~Ability,"'s String Level Array Field: ",~StringLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityStringLevelArrayFieldBJ_Defaults=_,_,0,0,_
-_BlzSetAbilityStringLevelArrayFieldBJ_Limits=_,_,0,_,0,_,_,_
+_BlzSetAbilityStringLevelArrayFieldBJ_Limits=_,_,_,_,0,_,0,_,_,_
 _BlzSetAbilityStringLevelArrayFieldBJ_Category=TC_ABILITY
 
 BlzAddAbilityBooleanLevelArrayFieldBJ=0,ability,abilitybooleanlevelarrayfield,integer,boolean
@@ -8675,9 +8673,9 @@ _BlzQueueSpecialEffectAnimation_Category=TC_SPECIALEFFECT
 BlzSetSpecialEffectAnimationBlendTime=0,effect,real
 _BlzSetSpecialEffectAnimationBlendTime_DisplayName="Set Special Effect Animation Blend Time"
 _BlzSetSpecialEffectAnimationBlendTime_Parameters="Set Animation Blend Time of ",~Effect," to: ",~Value
-_SetSpecialEffectAnimationBlendTime_Defaults=GetLastCreatedEffectBJ,_
-_SetSpecialEffectAnimationBlendTime_Limits=_,_,_,0,_
-_SetSpecialEffectAnimationBlendTime_Category=TC_SPECIALEFFECT
+_BlzSetSpecialEffectAnimationBlendTime_Defaults=GetLastCreatedEffectBJ,_
+_BlzSetSpecialEffectAnimationBlendTime_Limits=_,_,0,_
+_BlzSetSpecialEffectAnimationBlendTime_Category=TC_SPECIALEFFECT
 
 // Temporarily disable [with time scale] function in GUI
 // BlzPlaySpecialEffectWithTimeScale=0,effect,animtype,real
@@ -8875,8 +8873,8 @@ _SetUnitFacingTimed_Category=TC_UNIT
 BlzSetUnitFacingEx=0,unit,real
 _BlzSetUnitFacingEx_DisplayName="Make Unit Face Angle Immediately"
 _BlzSetUnitFacingEx_Parameters="Make ",~Unit," face ",~Angle
-_BlzSetUnitFacingEx_Defaults=_,RealUnitFacing,0
-_BlzSetUnitFacingEx_Limits=_,_,_,_,0,_
+_BlzSetUnitFacingEx_Defaults=_,RealUnitFacing
+_BlzSetUnitFacingEx_Limits=_,_,_,_
 _BlzSetUnitFacingEx_Category=TC_UNIT
 
 SetUnitMoveSpeed=0,unit,real
@@ -9138,13 +9136,13 @@ _DestroyGroup_Parameters="Destroy ",~Unit Group,"."
 _DestroyGroup_Defaults=_
 _DestroyGroup_Category=TC_UNITGROUP
 
-SetWantDestroyGroupBJ=0 
+SetWantDestroyGroupBJ=0,nothing
 _SetWantDestroyGroupBJ_DisplayName="Set Destroy Next"
 _SetWantDestroyGroupBJ_Parameters="Destroy the next group that is referenced in specific action/functions."
 _SetWantDestroyGroupBJ_Defaults=
 _SetWantDestroyGroupBJ_Category=TC_UNITGROUP
 
-ClearWantDestroyGroupBJ=0 
+ClearWantDestroyGroupBJ=0,nothing
 _ClearWantDestroyGroupBJ_DisplayName="Clear Destroy Next"
 _ClearWantDestroyGroupBJ_Parameters="Clears the behaviour set by Set Destroy Next action."
 _ClearWantDestroyGroupBJ_Defaults=
@@ -9154,8 +9152,8 @@ _ClearWantDestroyGroupBJ_Category=TC_UNITGROUP
 CreateUbersplatBJ=1,location,ubersplattype,real,real,real,real,enabledisableoption,enabledisableoption
 _CreateUbersplatBJ_DisplayName="Create"
 _CreateUbersplatBJ_Parameters="Create ubersplat at ",~Location," of type ",~Type," with color (",~Red,"%, ",~Green,"%, ",~Blue,"%) and ",~Transparency,"% transparency (",~Enable/Disable," paused state, ",~Enble/Disable," skipping birth time)"
-_CreateUberSplatBJ_Defaults=GetRectCenter,UbersplatTypeNGOL,100,100,100,0,EnableDisableDisable,EnableDisableDisable
-_CreateUberSplatBJ_Category=TC_UBERSPLAT
+_CreateUbersplatBJ_Defaults=GetRectCenter,UbersplatTypeNGOL,100,100,100,0,EnableDisableDisable,EnableDisableDisable
+_CreateUbersplatBJ_Category=TC_UBERSPLAT
 
 DestroyUbersplat=1,ubersplat
 _DestroyUbersplat_DisplayName="Destroy"
@@ -9229,7 +9227,6 @@ CreateFogModifierRadiusLocBJ=0,enableddisabledoption,player,fogstate,location,re
 _CreateFogModifierRadiusLocBJ_DisplayName="Create Visibility Modifier Circle"
 _CreateFogModifierRadiusLocBJ_Parameters="Create an initially ",~Enabled/Disabled," visibility modifier for ",~Player," emitting ",~Visibility State," from ",~Point," to a radius of ",~Radius,"."
 _CreateFogModifierRadiusLocBJ_Defaults=EnabledDisabledEnabled,Player00,FogStateVisible,GetRectCenter,512
-_CreateFogModifierRadiusLocBJ_Defaults=_,_,_,_,_,_,_,_,0,_
 _CreateFogModifierRadiusLocBJ_Category=TC_VISIBILITY
 
 FogModifierStart=0,fogmodifier
@@ -9277,7 +9274,7 @@ _DestroyFogModifier_Category=TC_VISIBILITY
 ParseTags=1,1,string,string
 _ParseTags_DisplayName="Parse String with Tags"
 _ParseTags_Parameters="Parse ",~String
-_ParseTags_Defaults=
+_ParseTags_Defaults=_
 _ParseTags_Category=TC_ABILITY
 
 // returns boolean
@@ -9375,7 +9372,7 @@ _SaveGameExists_Category=TC_GAME
 GetLocalizedString=1,1,string,string
 _GetLocalizedString_DisplayName="Get Localized String"
 _GetLocalizedString_Parameters="Localize(",~String,")"
-_GetLocalizedString_Defaults=
+_GetLocalizedString_Defaults=_
 _GetLocalizedString_Category=TC_GAME
 
 GetStoredBooleanBJ=0,0,boolean,string,string,gamecache
@@ -9413,160 +9410,159 @@ _BlzIsLastInstanceObjectFunctionSuccessful_Category=TC_LAST
 
 BlzGetAbilityBooleanField=0,1,boolean,ability,abilitybooleanfield
 _BlzGetAbilityBooleanField_DisplayName="Ability Boolean Field"
-_BlzGetAbilityBooleanField_Parameters="Ability: ",~Ability,"'s Boolean Field: "~BooleanField
+_BlzGetAbilityBooleanField_Parameters="Ability: ",~Ability,"'s Boolean Field: ",~BooleanField
 _BlzGetAbilityBooleanField_Defaults=_,_
-_BlzGetAbilityBooleanField_CATEGORY=TC_ABILITY
+_BlzGetAbilityBooleanField_Category=TC_ABILITY
 
 BlzGetAbilityBooleanLevelField=0,1,boolean,ability,abilitybooleanlevelfield,integer
 _BlzGetAbilityBooleanLevelField_DisplayName="Ability Boolean Level Field"
 _BlzGetAbilityBooleanLevelField_Parameters="Ability: ",~Ability,"'s Boolean Level Field ",~BooleanLevelField,", of Level: ",~Level
 _BlzGetAbilityBooleanLevelField_Defaults=_,_,0
 _BlzGetAbilityBooleanLevelField_Limits=_,_,_,_,0,_
-_BlzGetAbilityBooleanLevelField_CATEGORY=TC_ABILITY
+_BlzGetAbilityBooleanLevelField_Category=TC_ABILITY
 
 BlzGetAbilityBooleanLevelArrayField=0,1,boolean,ability,abilitybooleanlevelarrayfield,integer,integer
 _BlzGetAbilityBooleanLevelArrayField_DisplayName="Ability Boolean Level Array Field"
 _BlzGetAbilityBooleanLevelArrayField_Parameters="Ability: ",~Ability,"'s Boolean Level Array Field: ",~BooleanLevelArrayField," of Level: ",~Level," and Index: ",~Index
 _BlzGetAbilityBooleanLevelArrayField_Defaults=_,_,0,0
 _BlzGetAbilityBooleanLevelArrayField_Limits=_,_,_,_,0,_,0,_
-_BlzGetAbilityBooleanLevelArrayField_CATEGORY=TC_ABILITY
+_BlzGetAbilityBooleanLevelArrayField_Category=TC_ABILITY
 
 BlzSetAbilityBooleanField=0,1,boolean,ability,abilitybooleanfield,boolean
 _BlzSetAbilityBooleanField_DisplayName="Set Ability Boolean Field"
 _BlzSetAbilityBooleanField_Parameters="Set Ability: ",~Ability,"'s Boolean Field: ",~BooleanField," to ",~Value
 _BlzSetAbilityBooleanField_Defaults=_,_,true
-_BlzSetAbilityBooleanField_CATEGORY=TC_ABILITY
+_BlzSetAbilityBooleanField_Category=TC_ABILITY
 
-BlzSetAbilityIntegerField=0,1,boolean,ability,abilityintegerfield,intger
+BlzSetAbilityIntegerField=0,1,boolean,ability,abilityintegerfield,integer
 _BlzSetAbilityIntegerField_DisplayName="Set Ability Integer Field"
 _BlzSetAbilityIntegerField_Parameters="Set Ability: ",~Ability,"'s Integer Field: ",~IntegerField," to ",~Value
 _BlzSetAbilityIntegerField_Defaults=_,_,0
 _BlzSetAbilityIntegerField_Limits=_,_,_,_,0,_
-_BlzSetAbilityIntegerField_CATEGORY=TC_ABILITY
+_BlzSetAbilityIntegerField_Category=TC_ABILITY
 
 BlzSetAbilityRealField=0,1,boolean,ability,abilityrealfield,real
 _BlzSetAbilityRealField_DisplayName="Set Ability Real Field"
 _BlzSetAbilityRealField_Parameters="Set Ability: ",~Ability,"'s Real Field: ",~RealField," to ",~Value
 _BlzSetAbilityRealField_Defaults=_,_,0
-_BlzSetAbilityRealField_CATEGORY=TC_ABILITY
+_BlzSetAbilityRealField_Category=TC_ABILITY
 
 BlzSetAbilityStringField=0,1,boolean,ability,abilitystringfield,string
 _BlzSetAbilityStringField_DisplayName="Set Ability String Field"
 _BlzSetAbilityStringField_Parameters="Set Ability: ",~Ability,"'s String Field: ",~StringField," to ",~Value
 _BlzSetAbilityStringField_Defaults=_,_,_
-_BlzSetAbilityStringField_CATEGORY=TC_ABILITY
+_BlzSetAbilityStringField_Category=TC_ABILITY
 
 BlzSetAbilityBooleanLevelField=0,1,boolean,ability,abilitybooleanlevelfield,integer,boolean
 _BlzSetAbilityBooleanLevelField_DisplayName="Set Ability Boolean Level Field"
 _BlzSetAbilityBooleanLevelField_Parameters="Set Ability: ",~Ability,"'s Boolean Level Field: ",~BooleanLevelField," of Level: ",~Level," to ",~Value
 _BlzSetAbilityBooleanLevelField_Defaults=_,_,0,true
 _BlzSetAbilityBooleanLevelField_Limits=_,_,_,_,0,_,_,_
-_BlzSetAbilityBooleanLevelField_CATEGORY=TC_ABILITY
+_BlzSetAbilityBooleanLevelField_Category=TC_ABILITY
 
 BlzSetAbilityIntegerLevelField=0,1,boolean,ability,abilityintegerlevelfield,integer,integer
 _BlzSetAbilityIntegerLevelField_DisplayName="Set Ability Integer Level Field"
 _BlzSetAbilityIntegerLevelField_Parameters="Set Ability: ",~Ability,"'s Integer Level Field: ",~IntegerLevelField," of Level: ",~Level," to ",~Value
 _BlzSetAbilityIntegerLevelField_Defaults=_,_,0,50
-_BlzSetAbilityIntegerLevelField_Defaults=_,_,_,_,0,_,0,_
-_BlzSetAbilityIntegerLevelField_CATEGORY=TC_ABILITY
+_BlzSetAbilityIntegerLevelField_Category=TC_ABILITY
 
 BlzSetAbilityRealLevelField=0,1,boolean,ability,abilityreallevelfield,integer,real
 _BlzSetAbilityRealLevelField_DisplayName="Set Ability Real Level Field"
 _BlzSetAbilityRealLevelField_Parameters="Set Ability: ",~Ability,"'s Real Level Field: ",~RealLevelField," of Level: ",~Level," to ",~Value
 _BlzSetAbilityRealLevelField_Defaults=_,_,0,10
 _BlzSetAbilityRealLevelField_Limits=_,_,_,_,0,_,0,_
-_BlzSetAbilityRealLevelField_CATEGORY=TC_ABILITY
+_BlzSetAbilityRealLevelField_Category=TC_ABILITY
 
 BlzSetAbilityStringLevelField=0,1,boolean,ability,abilitystringlevelfield,integer,string
 _BlzSetAbilityStringLevelField_DisplayName="Set Ability String Level Field"
 _BlzSetAbilityStringLevelField_Parameters="Set Ability: ",~Ability,"'s String Level Field: ",~StringLevelField," of Level: ",~Level," to ",~Value
 _BlzSetAbilityStringLevelField_Defaults=_,_,0,_
 _BlzSetAbilityStringLevelField_Limits=_,_,_,_,0,_,_,_
-_BlzSetAbilityStringLevelField_CATEGORY=TC_ABILITY
+_BlzSetAbilityStringLevelField_Category=TC_ABILITY
 
 BlzSetAbilityBooleanLevelArrayField=0,1,boolean,ability,abilitybooleanlevelarrayfield,integer,integer,boolean
 _BlzSetAbilityBooleanLevelArrayField_DisplayName="Set Ability Boolean Level Array Field"
 _BlzSetAbilityBooleanLevelArrayField_Parameters="Set Ability: ",~Ability,"'s Boolean Level Array Field: ",~BooleanLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityBooleanLevelArrayField_Defaults=_,_,0,0,true
 _BlzSetAbilityBooleanLevelArrayField_Limits=_,_,_,_,0,_,0,_,_,_
-_BlzSetAbilityBooleanLevelArrayField_CATEGORY=TC_ABILITY
+_BlzSetAbilityBooleanLevelArrayField_Category=TC_ABILITY
 
 BlzSetAbilityIntegerLevelArrayField=0,1,boolean,ability,abilityintegerlevelarrayfield,integer,integer,integer
 _BlzSetAbilityIntegerLevelArrayField_DisplayName="Set Ability Integer Level Array Field"
 _BlzSetAbilityIntegerLevelArrayField_Parameters="Set Ability: ",~Ability,"'s Integer Level Array Field: ",~IntegerLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityIntegerLevelArrayField_Defaults=_,_,0,0,'Brej'
 _BlzSetAbilityIntegerLevelArrayField_Limits=_,_,_,_,0,_,0,_,_,_
-_BlzSetAbilityIntegerLevelArrayField_CATEGORY=TC_ABILITY
+_BlzSetAbilityIntegerLevelArrayField_Category=TC_ABILITY
 
 BlzSetAbilityRealLevelArrayField=0,1,boolean,ability,abilityreallevelarrayfield,integer,integer,real
 _BlzSetAbilityRealLevelArrayField_DisplayName="Set Ability Real Level Array Field"
 _BlzSetAbilityRealLevelArrayField_Parameters="Set Ability: ",~Ability,"'s Real Level Array Field: ",~RealLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityRealLevelArrayField_Defaults=_,_,0,0,0
-_BlzSetAbilityRealLevelArrayField_Limits=_,_,0,_,0,_,_,_
-_BlzSetAbilityRealLevelArrayField_CATEGORY=TC_ABILITY
+_BlzSetAbilityRealLevelArrayField_Limits=_,_,_,_,0,_,0,_,_,_
+_BlzSetAbilityRealLevelArrayField_Category=TC_ABILITY
 
 BlzSetAbilityStringLevelArrayField=0,1,boolean,ability,abilitystringlevelarrayfield,integer,integer,string
 _BlzSetAbilityStringLevelArrayField_DisplayName="Set Ability String Level Array Field"
 _BlzSetAbilityStringLevelArrayField_Parameters="Set Ability: ",~Ability,"'s String Level Array Field: ",~StringLevelArrayField," of Level: ",~Level," and Index: ",~Index," to ",~Value
 _BlzSetAbilityStringLevelArrayField_Defaults=_,_,0,0,_
-_BlzSetAbilityStringLevelArrayField_Limits=_,_,0,_,0,_,_,_
-_BlzSetAbilityStringLevelArrayField_CATEGORY=TC_ABILITY
+_BlzSetAbilityStringLevelArrayField_Limits=_,_,_,_,0,_,0,_,_,_
+_BlzSetAbilityStringLevelArrayField_Category=TC_ABILITY
 
 BlzAddAbilityBooleanLevelArrayField=0,1,boolean,ability,abilitybooleanlevelarrayfield,integer,boolean
 _BlzAddAbilityBooleanLevelArrayField_DisplayName="Ability Boolean Level Array Field - Add Element"
 _BlzAddAbilityBooleanLevelArrayField_Parameters="For Ability: ",~Ability,"'s Boolean Level Array Field: ",~BooleanLevelArrayField," of Level: ",~Level,", Add Value: ",~Value
 _BlzAddAbilityBooleanLevelArrayField_Defaults=_,_,0,true
 _BlzAddAbilityBooleanLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzAddAbilityBooleanLevelArrayField_CATEGORY=TC_ABILITY
+_BlzAddAbilityBooleanLevelArrayField_Category=TC_ABILITY
 
 BlzAddAbilityIntegerLevelArrayField=0,1,boolean,ability,abilityintegerlevelarrayfield,integer,integer
 _BlzAddAbilityIntegerLevelArrayField_DisplayName="Ability Integer Level Array Field - Add Element"
 _BlzAddAbilityIntegerLevelArrayField_Parameters="For Ability: ",~Ability,"'s Integer Level Array Field: ",~IntegerLevelArrayField," of Level: ",~Level,", Add Value: ",~Value
 _BlzAddAbilityIntegerLevelArrayField_Defaults=_,_,0,0
 _BlzAddAbilityIntegerLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzAddAbilityIntegerLevelArrayField_CATEGORY=TC_ABILITY
+_BlzAddAbilityIntegerLevelArrayField_Category=TC_ABILITY
 
 BlzAddAbilityRealLevelArrayField=0,1,boolean,ability,abilityreallevelarrayfield,integer,real
 _BlzAddAbilityRealLevelArrayField_DisplayName="Ability Real Level Array Field - Add Element"
 _BlzAddAbilityRealLevelArrayField_Parameters="For Ability: ",~Ability,"'s Real Level Array Field: ",~RealLevelArrayField," of Level: ",~Level,", Add Value: ",~Value
 _BlzAddAbilityRealLevelArrayField_Defaults=_,_,0,0
 _BlzAddAbilityRealLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzAddAbilityRealLevelArrayField_CATEGORY=TC_ABILITY
+_BlzAddAbilityRealLevelArrayField_Category=TC_ABILITY
 
 BlzAddAbilityStringLevelArrayField=0,1,boolean,ability,abilitystringlevelarrayfield,integer,string
 _BlzAddAbilityStringLevelArrayField_DisplayName="Ability String Level Array Field - Add Element"
 _BlzAddAbilityStringLevelArrayField_Parameters="For Ability: ",~Ability,"'s String Level Array Field: ",~StringLevelArrayField," of Level: ",~Level,", Add Value: ",~Value
 _BlzAddAbilityStringLevelArrayField_Defaults=_,_,0,_
 _BlzAddAbilityStringLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzAddAbilityStringLevelArrayField_CATEGORY=TC_ABILITY
+_BlzAddAbilityStringLevelArrayField_Category=TC_ABILITY
 
 BlzRemoveAbilityBooleanLevelArrayField=0,1,boolean,ability,abilitybooleanlevelarrayfield,integer,boolean
 _BlzRemoveAbilityBooleanLevelArrayField_DisplayName="Ability Boolean Level Array Field - Remove Element"
 _BlzRemoveAbilityBooleanLevelArrayField_Parameters="For Ability: ",~Ability,"'s Boolean Level Array Field: ",~BooleanLevelArrayField," of Level: ",~Level,", Remove Value: ",~Value
 _BlzRemoveAbilityBooleanLevelArrayField_Defaults=_,_,0,true
 _BlzRemoveAbilityBooleanLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzRemoveAbilityBooleanLevelArrayField_CATEGORY=TC_ABILITY
+_BlzRemoveAbilityBooleanLevelArrayField_Category=TC_ABILITY
 
 BlzRemoveAbilityIntegerLevelArrayField=0,1,boolean,ability,abilityintegerlevelarrayfield,integer,integer
 _BlzRemoveAbilityIntegerLevelArrayField_DisplayName="Ability Integer Level Array Field - Remove Element"
 _BlzRemoveAbilityIntegerLevelArrayField_Parameters="For Ability: ",~Ability,"'s Integer Level Array Field: ",~IntegerLevelArrayField," of Level: ",~Level,", Remove Value: ",~Value
 _BlzRemoveAbilityIntegerLevelArrayField_Defaults=_,_,0,'Brej'
 _BlzRemoveAbilityIntegerLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzRemoveAbilityIntegerLevelArrayField_CATEGORY=TC_ABILITY
+_BlzRemoveAbilityIntegerLevelArrayField_Category=TC_ABILITY
 
 BlzRemoveAbilityRealLevelArrayField=0,1,boolean,ability,abilityreallevelarrayfield,integer,real
 _BlzRemoveAbilityRealLevelArrayField_DisplayName="Ability Real Level Array Field - Remove Element"
 _BlzRemoveAbilityRealLevelArrayField_Parameters="For Ability: ",~Ability,"'s Real Level Array Field: ",~RealLevelArrayField," of Level: ",~Level,", Remove Value: ",~Value
 _BlzRemoveAbilityRealLevelArrayField_Defaults=_,_,0,0
 _BlzRemoveAbilityRealLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzRemoveAbilityRealLevelArrayField_CATEGORY=TC_ABILITY
+_BlzRemoveAbilityRealLevelArrayField_Category=TC_ABILITY
 
 BlzRemoveAbilityStringLevelArrayField=0,1,boolean,ability,abilitystringlevelarrayfield,integer,string
 _BlzRemoveAbilityStringLevelArrayField_DisplayName="Ability String Level Array Field - Remove Element"
 _BlzRemoveAbilityStringLevelArrayField_Parameters="For Ability: ",~Ability,"'s String Level Array Field: ",~StringLevelArrayField," of Level: ",~Level,", Remove Value: ",~Value
 _BlzRemoveAbilityStringLevelArrayField_Defaults=_,_,0,_
 _BlzRemoveAbilityStringLevelArrayField_Limits=_,_,_,_,0,_,_,_
-_BlzRemoveAbilityStringLevelArrayField_CATEGORY=TC_ABILITY
+_BlzRemoveAbilityStringLevelArrayField_Category=TC_ABILITY
 
 BlzItemAddAbility=0,1,boolean,item,abilcode
 _BlzItemAddAbility_DisplayName="Item Add Ability"
@@ -9674,13 +9670,13 @@ _BlzSetUnitWeaponStringField_Category=TC_UNIT
 GetHandleIdBJ=1,1,integer,handle
 _GetHandleIdBJ_DisplayName="Get Handle ID"
 _GetHandleIdBJ_Parameters="Key ",~Handle,"."
-_GetHandleIdBJ_Defaults=
+_GetHandleIdBJ_Defaults=_
 _GetHandleIdBJ_Category=TC_HASHTABLE
 
 StringHashBJ=1,1,integer,string
 _StringHashBJ_DisplayName="Get String ID"
 _StringHashBJ_Parameters="Key ",~String,"."
-_StringHashBJ_Defaults=
+_StringHashBJ_Defaults=_
 _StringHashBJ_Category=TC_HASHTABLE
 
 LoadIntegerBJ=0,0,integer,integer,integer,hashtable
@@ -10135,20 +10131,20 @@ _IsPlayerInForce_Category=TC_PLAYER
 
 IsMouseButtonPressedBJ=0,1,boolean,mousebuttontype
 _IsMouseButtonPressedBJ_DisplayName="Is Mouse Button Pressed Async"
-_IsMouseButtonPressedBJ_Parameters="",~Value,  Is Pressed
-_IsMouseButtonPressedBJ_Defaults=
+_IsMouseButtonPressedBJ_Parameters="",~Value," Is Pressed"
+_IsMouseButtonPressedBJ_Defaults=_
 _IsMouseButtonPressedBJ_Category=TC_PLAYER
 
 IsMetaKeyPressedBJ=0,1,boolean,integer
 _IsMetaKeyPressedBJ_DisplayName="Is Meta Key Pressed Async"
-_IsMetaKeyPressedBJ_Parameters="",~Value,  Is Pressed
-_IsMetaKeyPressedBJ_Defaults=
+_IsMetaKeyPressedBJ_Parameters="",~Value," Is Pressed"
+_IsMetaKeyPressedBJ_Defaults=_
 _IsMetaKeyPressedBJ_Category=TC_PLAYER
 
 IsKeyPressedBJ=0,1,boolean,oskeytype
 _IsKeyPressedBJ_DisplayName="Is Key Pressed Async"
-_IsKeyPressedBJ_Parameters="",~Value,  Is Pressed
-_IsKeyPressedBJ_Defaults=
+_IsKeyPressedBJ_Parameters="",~Value," Is Pressed"
+_IsKeyPressedBJ_Defaults=_
 _IsKeyPressedBJ_Category=TC_PLAYER
 
 IsQuestItemCompleted=0,0,boolean,questitem
@@ -10346,7 +10342,7 @@ _IsUnitGroupEmptyBJ_Category=TC_UNITGROUP
 IsUnitGroupInRectBJ=0,1,boolean,group,rect
 _IsUnitGroupInRectBJ_DisplayName="Units Of Unit Group Are In Region"
 _IsUnitGroupInRectBJ_Parameters="All units of ",~Unit Group," are in ",~Region
-_IsUnitGroupInRectBJ_Defaults=_
+_IsUnitGroupInRectBJ_Defaults=_,_
 _IsUnitGroupInRectBJ_Category=TC_UNITGROUP
 
 IsUnitGroupDeadBJ=0,1,boolean,group
@@ -10884,23 +10880,23 @@ _BlzGetUnitAbilityManaCost_Category=TC_UNIT
 
 BlzGetAbilityIntegerField=0,1,integer,ability,abilityintegerfield
 _BlzGetAbilityIntegerField_DisplayName="Ability Integer Field"
-_BlzGetAbilityIntegerField_Parameters="Ability: ",~Ability,"'s Integer Field: "~IntegerField
+_BlzGetAbilityIntegerField_Parameters="Ability: ",~Ability,"'s Integer Field: ",~IntegerField
 _BlzGetAbilityIntegerField_Defaults=_,_
-_BlzGetAbilityIntegerField_CATEGORY=TC_ABILITY
+_BlzGetAbilityIntegerField_Category=TC_ABILITY
 
 BlzGetAbilityIntegerLevelField=0,1,integer,ability,abilityintegerlevelfield,integer
 _BlzGetAbilityIntegerLevelField_DisplayName="Ability Integer Level Field"
 _BlzGetAbilityIntegerLevelField_Parameters="Ability: ",~Ability,"'s Integer Level Field ",~IntegerLevelField,", of Level: ",~Level
 _BlzGetAbilityIntegerLevelField_Defaults=_,_,0
 _BlzGetAbilityIntegerLevelField_Limits=_,_,_,_,0,_
-_BlzGetAbilityIntegerLevelField_CATEGORY=TC_ABILITY
+_BlzGetAbilityIntegerLevelField_Category=TC_ABILITY
 
 BlzGetAbilityIntegerLevelArrayField=0,1,integer,ability,abilityintegerlevelarrayfield,integer,integer
 _BlzGetAbilityIntegerLevelArrayField_DisplayName="Ability Integer Level Array Field"
 _BlzGetAbilityIntegerLevelArrayField_Parameters="Ability: ",~Ability,"'s Integer Level Array Field: ",~IntegerLevelArrayField," of Level: ",~Level," and Index: ",~Index
 _BlzGetAbilityIntegerLevelArrayField_Defaults=_,_,0,0
 _BlzGetAbilityIntegerLevelArrayField_Limits=_,_,_,_,0,_,0,_
-_BlzGetAbilityIntegerLevelArrayField_CATEGORY=TC_ABILITY
+_BlzGetAbilityIntegerLevelArrayField_Category=TC_ABILITY
 
 BlzGetUnitIntegerField=0,1,integer,unit,unitintegerfield
 _BlzGetUnitIntegerField_DisplayName="Get Unit Integer Field"
@@ -11469,7 +11465,7 @@ _GetUnitFlyHeight_Defaults=GetTriggerUnit
 _GetUnitFlyHeight_Category=TC_UNIT
 
 GetUnitDefaultFlyHeight=0,1,real,unit
-_GetUnitDefaultFlyHeight_DisplayName="Flying Height (Default)
+_GetUnitDefaultFlyHeight_DisplayName="Flying Height (Default)"
 _GetUnitDefaultFlyHeight_Parameters="Default flying height of ",~Unit
 _GetUnitDefaultFlyHeight_Defaults=GetTriggerUnit
 _GetUnitDefaultFlyHeight_Category=TC_UNIT
@@ -11516,7 +11512,7 @@ BlzGetUnitCollisionSize=0,1,real,unit
 _BlzGetUnitCollisionSize_DisplayName="Collision Size"
 _BlzGetUnitCollisionSize_Parameters="Collision Size of ",~Unit
 _BlzGetUnitCollisionSize_Defaults=GetTriggerUnit
-_BlzGetUnitCollisionSize=TC_UNIT
+_BlzGetUnitCollisionSize_Category=TC_UNIT
 
 BlzGetLocalUnitZ=0,1,real,unit
 _BlzGetLocalUnitZ_DisplayName="Position - Z"
@@ -11544,23 +11540,23 @@ _BlzGetLocalSpecialEffectZ_Category=TC_SPECIALEFFECT
 
 BlzGetAbilityRealField=0,1,real,ability,abilityrealfield
 _BlzGetAbilityRealField_DisplayName="Ability Real Field"
-_BlzGetAbilityRealField_Parameters="Ability: ",~Ability,"'s Real Field: "~RealField
+_BlzGetAbilityRealField_Parameters="Ability: ",~Ability,"'s Real Field: ",~RealField
 _BlzGetAbilityRealField_Defaults=_,_
-_BlzGetAbilityRealField_CATEGORY=TC_ABILITY
+_BlzGetAbilityRealField_Category=TC_ABILITY
 
 BlzGetAbilityRealLevelField=0,1,real,ability,abilityreallevelfield,integer
 _BlzGetAbilityRealLevelField_DisplayName="Ability Real Level Field"
 _BlzGetAbilityRealLevelField_Parameters="Ability: ",~Ability,"'s Real Level Field ",~RealLevelField,", of Level: ",~Level
 _BlzGetAbilityRealLevelField_Defaults=_,_,0
-_BlzGetAbilityRealLevelField_Limites=_,_,_,_,0,_
-_BlzGetAbilityRealLevelField_CATEGORY=TC_ABILITY
+_BlzGetAbilityRealLevelField_Limits=_,_,_,_,0,_
+_BlzGetAbilityRealLevelField_Category=TC_ABILITY
 
 BlzGetAbilityRealLevelArrayField=0,1,real,ability,abilityreallevelarrayfield,integer,integer
 _BlzGetAbilityRealLevelArrayField_DisplayName="Ability Real Level Array Field"
 _BlzGetAbilityRealLevelArrayField_Parameters="Ability: ",~Ability,"'s Real Level Array Field: ",~RealLevelArrayField," of Level: ",~Level," and Index: ",~Index
 _BlzGetAbilityRealLevelArrayField_Defaults=_,_,0,0
 _BlzGetAbilityRealLevelArrayField_Limits=_,_,_,_,0,_,0,_
-_BlzGetAbilityRealLevelArrayField_CATEGORY=TC_ABILITY
+_BlzGetAbilityRealLevelArrayField_Category=TC_ABILITY
 
 BlzGetUnitRealField=0,1,real,unit,unitrealfield
 _BlzGetUnitRealField_DisplayName="Get Unit Real Field"
@@ -11751,7 +11747,7 @@ BlzGetAbilityActivatedIcon=1,1,imagefile,abilcode
 _BlzGetAbilityActivatedIcon_DisplayName="Ability Icon - Auto-Casting Activated"
 _BlzGetAbilityActivatedIcon_Parameters="Icon (Auto-Casting Activated) of ",~Ability
 _BlzGetAbilityActivatedIcon_Defaults=_
-_BlzGetAbilityActivatedIcon_Limits=_,_,
+_BlzGetAbilityActivatedIcon_Limits=_,_
 _BlzGetAbilityActivatedIcon_Category=TC_ABILITY
 
 GetStoredStringBJ=1,0,string,string,string,gamecache
@@ -11822,23 +11818,23 @@ _GetUnitName_Category=TC_UNIT
 
 BlzGetAbilityStringField=0,1,string,ability,abilitystringfield
 _BlzGetAbilityStringField_DisplayName="Ability String Field"
-_BlzGetAbilityStringField_Parameters="Ability: ",~Ability,"'s String Field: "~StringField
-_BlzGetAbilityStringField_Defaults=
-_BlzGetAbilityStringField_CATEGORY=TC_ABILITY
+_BlzGetAbilityStringField_Parameters="Ability: ",~Ability,"'s String Field: ",~StringField
+_BlzGetAbilityStringField_Defaults=_,_
+_BlzGetAbilityStringField_Category=TC_ABILITY
 
 BlzGetAbilityStringLevelField=0,1,string,ability,abilitystringfield,integer
 _BlzGetAbilityStringLevelField_DisplayName="Ability String Level Field"
 _BlzGetAbilityStringLevelField_Parameters="Ability: ",~Ability,"'s String Level Field ",~StringLevelField,", of Level: ",~Level
 _BlzGetAbilityStringLevelField_Defaults=_,_,0
 _BlzGetAbilityStringLevelField_Limits=_,_,_,_,0,_
-_BlzGetAbilityStringLevelField_CATEGORY=TC_ABILITY
+_BlzGetAbilityStringLevelField_Category=TC_ABILITY
 
 BlzGetAbilityStringLevelArrayField=0,1,string,ability,abilitystringfield,integer,integer
 _BlzGetAbilityStringLevelArrayField_DisplayName="Ability String Level Array Field"
 _BlzGetAbilityStringLevelArrayField_Parameters="Ability: ",~Ability,"'s String Level Array Field: ",~StringLevelArrayField," of Level: ",~Level," and Index: ",~Index
 _BlzGetAbilityStringLevelArrayField_Defaults=_,_,0,0
 _BlzGetAbilityStringLevelArrayField_Limits=_,_,_,_,0,_,0,_
-_BlzGetAbilityStringLevelArrayField_CATEGORY=TC_ABILITY
+_BlzGetAbilityStringLevelArrayField_Category=TC_ABILITY
 
 BlzGetUnitStringField=0,1,string,unit,unitstringfield
 _BlzGetUnitStringField_DisplayName="Get Unit String Field"
@@ -11982,7 +11978,7 @@ _GetEntireMapRect_Defaults=
 _GetEntireMapRect_Category=TC_NOTHING
 
 OffsetRectBJ=0,0,rect,rect,real,real
-_OffsetRectBJ_DisplayName="Region With Offset
+_OffsetRectBJ_DisplayName="Region With Offset"
 _OffsetRectBJ_Parameters=~Region," offset by (",~X,", ",~Y,")","."
 _OffsetRectBJ_Defaults=_,0,0
 _OffsetRectBJ_Category=TC_NOTHING
@@ -12440,7 +12436,7 @@ _UnitItemInBagSlotBJ_Defaults=_,1
 _UnitItemInBagSlotBJ_Limits=_,_,1,30
 _UnitItemInBagSlotBJ_Category=TC_NOTHING
 
-UnitItemInEquipmentSlotBJ=0,2,item,unit,loadoutslot
+UnitItemInEquipmentSlotBJ=0,1,item,unit,loadoutslot
 _UnitItemInEquipmentSlotBJ_DisplayName="Item Equipped By Hero"
 _UnitItemInEquipmentSlotBJ_Parameters="Item equipped by ",~Hero," in ",~Slot
 _UnitItemInEquipmentSlotBJ_Defaults=_,_
@@ -12464,13 +12460,13 @@ _GetItemOfEquipmentTypeFromUnitBagBJ_Parameters="Item bagged by ",~Hero," of equ
 _GetItemOfEquipmentTypeFromUnitBagBJ_Defaults=_,texp
 _GetItemOfEquipmentTypeFromUnitBagBJ_Category=TC_NOTHING
 
-GetItemEquippedByHeroOfTypeBJ=0,2,item,unit,itemcode
+GetItemEquippedByHeroOfTypeBJ=0,1,item,unit,itemcode
 _GetItemEquippedByHeroOfTypeBJ_DisplayName="Item Equipped By Hero of Type"
 _GetItemEquippedByHeroOfTypeBJ_Parameters="Item equipped by ",~Hero," of type ",~Item-Type
 _GetItemEquippedByHeroOfTypeBJ_Defaults=_,_
 _GetItemEquippedByHeroOfTypeBJ_Category=TC_NOTHING
 
-GetItemEquippedByHeroOfEquipmentTypeBJ=0,2,item,unit,equipmenttype
+GetItemEquippedByHeroOfEquipmentTypeBJ=0,1,item,unit,equipmenttype
 _GetItemEquippedByHeroOfEquipmentTypeBJ_DisplayName="Item Equipped By Hero of Equipment Type"
 _GetItemEquippedByHeroOfEquipmentTypeBJ_Parameters="Item equipped by ",~Hero," of equipment type ",~Equipment-Type
 _GetItemEquippedByHeroOfEquipmentTypeBJ_Defaults=_,_
@@ -12612,8 +12608,8 @@ _GetSpellAbilityId_Category=TC_EVENTRESPONSE
 BlzGetUnitAbility=0,1,ability,unit,abilcode
 _BlzGetUnitAbility_DisplayName="Get Unit Ability"
 _BlzGetUnitAbility_Parameters="Unit: ",~Unit,"'s Ability with Ability Code: ",~AbilityCode
-_BlzGetUnitAbility_Defaults=_,GetTriggerUnit,_
-_BlzGetUnitAbility_CATEGORY=TC_UNIT
+_BlzGetUnitAbility_Defaults=GetTriggerUnit,_
+_BlzGetUnitAbility_Category=TC_UNIT
 
 BlzGetItemAbilityByIndex=0,1,ability,item,integer
 _BlzGetItemAbilityByIndex_DisplayName="Get Item Ability By Index"
@@ -12690,7 +12686,7 @@ LeaderboardGetIndexedPlayerBJ=1,0,player,integer,leaderboard
 _LeaderboardGetIndexedPlayerBJ_DisplayName="Player In Position"
 _LeaderboardGetIndexedPlayerBJ_Parameters="Player in position ",~Position," of ",~Leaderboard,"."
 _LeaderboardGetIndexedPlayerBJ_Defaults=1,GetLastCreatedLeaderboard
-_LeaderboardGetIndexedPlayerBJ_Limits=1,28
+_LeaderboardGetIndexedPlayerBJ_Limits=1,28,_,_
 _LeaderboardGetIndexedPlayerBJ_Category=TC_LEADERBOARD
 
 
@@ -13091,73 +13087,73 @@ _GetLastCreatedTextTag_Category=TC_LAST
 
 BlzGetDoodadX=1,0,real,integer
 _BlzGetDoodadX_DisplayName="Get Doodad Position X"
-_BlzGetDoodadX_Parameters="Get the X position for doodad ",~IntegerField`"."
+_BlzGetDoodadX_Parameters="Get the X position for doodad ",~IntegerField,"."
 _BlzGetDoodadX_Defaults=0
 _BlzGetDoodadX_Category=TC_DOODAD
 
 BlzGetDoodadY=1,0,real,integer
 _BlzGetDoodadY_DisplayName="Get Doodad Position Y"
-_BlzGetDoodadY_Parameters="Get the Y position for doodad ",~IntegerField`"."
+_BlzGetDoodadY_Parameters="Get the Y position for doodad ",~IntegerField,"."
 _BlzGetDoodadY_Defaults=0
 _BlzGetDoodadY_Category=TC_DOODAD
 
 BlzGetDoodadZ=1,0,real,integer
 _BlzGetDoodadZ_DisplayName="Get Doodad Position Z"
-_BlzGetDoodadZ_Parameters="Get the Z position for doodad ",~IntegerField`"."
+_BlzGetDoodadZ_Parameters="Get the Z position for doodad ",~IntegerField,"."
 _BlzGetDoodadZ_Defaults=0
 _BlzGetDoodadZ_Category=TC_DOODAD
 
 BlzGetDoodadScaleX=1,0,real,integer
 _BlzGetDoodadScaleX_DisplayName="Get Doodad Scale X"
-_BlzGetDoodadScaleX_Parameters="Get the X axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleX_Parameters="Get the X axis scale for doodad ",~IntegerField,"."
 _BlzGetDoodadScaleX_Defaults=0
 _BlzGetDoodadScaleX_Category=TC_DOODAD
 
 BlzGetDoodadScaleY=1,0,real,integer
 _BlzGetDoodadScaleY_DisplayName="Get Doodad Scale Y"
-_BlzGetDoodadScaleY_Parameters="Get the Y axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleY_Parameters="Get the Y axis scale for doodad ",~IntegerField,"."
 _BlzGetDoodadScaleY_Defaults=0
 _BlzGetDoodadScaleY_Category=TC_DOODAD
 
 BlzGetDoodadScaleZ=1,0,real,integer
 _BlzGetDoodadScaleZ_DisplayName="Get Doodad Scale Z"
-_BlzGetDoodadScaleZ_Parameters="Get the Z axis scale for doodad ",~IntegerField`"."
+_BlzGetDoodadScaleZ_Parameters="Get the Z axis scale for doodad ",~IntegerField,"."
 _BlzGetDoodadScaleZ_Defaults=0
 _BlzGetDoodadScaleZ_Category=TC_DOODAD
 
 BlzGetDoodadIsUsingModelAxes=1,0,boolean,integer
 _BlzGetDoodadIsUsingModelAxes_DisplayName="Get Doodad Is Using Model Axes"
-_BlzGetDoodadIsUsingModelAxes_Parameters="Get whether or not model axes are being used for doodad ",~IntegerField`"."
+_BlzGetDoodadIsUsingModelAxes_Parameters="Get whether or not model axes are being used for doodad ",~IntegerField,"."
 _BlzGetDoodadIsUsingModelAxes_Defaults=0
 _BlzGetDoodadIsUsingModelAxes_Category=TC_DOODAD
 
 BlzGetDoodadYaw=1,0,real,integer
 _BlzGetDoodadYaw_DisplayName="Get Doodad Yaw (Rotation)"
-_BlzGetDoodadYaw_Parameters="Get the yaw (rotation) for doodad ",~IntegerField`"."
+_BlzGetDoodadYaw_Parameters="Get the yaw (rotation) for doodad ",~IntegerField,"."
 _BlzGetDoodadYaw_Defaults=0
 _BlzGetDoodadYaw_Category=TC_DOODAD
 
 BlzGetDoodadPitch=1,0,real,integer
 _BlzGetDoodadPitch_DisplayName="Get Doodad Pitch"
-_BlzGetDoodadPitch_Parameters="Get the pitch for doodad ",~IntegerField`"."
+_BlzGetDoodadPitch_Parameters="Get the pitch for doodad ",~IntegerField,"."
 _BlzGetDoodadPitch_Defaults=0
 _BlzGetDoodadPitch_Category=TC_DOODAD
 
 BlzGetDoodadRoll=1,0,real,integer
 _BlzGetDoodadRoll_DisplayName="Get Doodad Roll"
-_BlzGetDoodadRoll_Parameters="Get the roll for doodad ",~IntegerField`"."
+_BlzGetDoodadRoll_Parameters="Get the roll for doodad ",~IntegerField,"."
 _BlzGetDoodadRoll_Defaults=0
 _BlzGetDoodadRoll_Category=TC_DOODAD
 
 BlzGetDoodadVariation=1,0,integer,integer
 _BlzGetDoodadVariation_DisplayName="Get Doodad Variation"
-_BlzGetDoodadVariation_Parameters="Get the variation for doodad ",~IntegerField`"."
+_BlzGetDoodadVariation_Parameters="Get the variation for doodad ",~IntegerField,"."
 _BlzGetDoodadVariation_Defaults=0
 _BlzGetDoodadVariation_Category=TC_DOODAD
 
 BlzGetDoodadId=1,0,integer,integer
 _BlzGetDoodadId_DisplayName="Get Doodad Id"
-_BlzGetDoodadId_Parameters="Get the doodad id for doodad ",~IntegerField`"."
+_BlzGetDoodadId_Parameters="Get the doodad id for doodad ",~IntegerField,"."
 _BlzGetDoodadId_Defaults=0
 _BlzGetDoodadId_Category=TC_DOODAD
 
