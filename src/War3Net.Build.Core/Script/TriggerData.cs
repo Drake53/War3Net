@@ -118,6 +118,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var values = split[1].Split(',', 3);
@@ -155,6 +160,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var values = split[1].Split(',', 7);
@@ -196,6 +206,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var values = split[1].Split(',', 2);
@@ -232,6 +247,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var values = split[1].Split(',', 4);
@@ -243,7 +263,8 @@
                     values[2],
                     values[3]);
 
-                builder.Add(key, triggerParam);
+                // Blizzard's TriggerData.txt contains duplicate keys (e.g. UnitOrderChallengingCall), so last one wins.
+                builder[key] = triggerParam;
             }
         }
 
@@ -277,13 +298,19 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
                 var key = split[0];
 
                 if (key.StartsWith('_'))
                 {
                     if (triggerEventBuilder is null || !key.StartsWith($"_{triggerEventBuilder.FunctionName}_", StringComparison.Ordinal))
                     {
-                        throw new InvalidDataException(line);
+                        // Skip properties that don't belong to the current function, e.g. "_SetSoundFacialAnimationSetFilepathv_Defaults" in Blizzard's TriggerData.txt.
+                        continue;
                     }
 
                     switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
@@ -344,13 +371,19 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
                 var key = split[0];
 
                 if (key.StartsWith('_'))
                 {
                     if (triggerConditionBuilder is null || !key.StartsWith($"_{triggerConditionBuilder.FunctionName}_", StringComparison.Ordinal))
                     {
-                        throw new InvalidDataException(line);
+                        // Skip properties that don't belong to the current function, e.g. "_SetSoundFacialAnimationSetFilepathv_Defaults" in Blizzard's TriggerData.txt.
+                        continue;
                     }
 
                     switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
@@ -412,13 +445,19 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
                 var key = split[0];
 
                 if (key.StartsWith('_'))
                 {
                     if (triggerActionBuilder is null || !key.StartsWith($"_{triggerActionBuilder.FunctionName}_", StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new InvalidDataException(line);
+                        // Skip properties that don't belong to the current function, e.g. "_SetSoundFacialAnimationSetFilepathv_Defaults" in Blizzard's TriggerData.txt.
+                        continue;
                     }
 
                     switch (key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries)[1])
@@ -491,7 +530,8 @@
                 {
                     if (triggerCallBuilder is null || !key.StartsWith($"_{triggerCallBuilder.FunctionName}", StringComparison.Ordinal))
                     {
-                        throw new InvalidDataException(line);
+                        // Skip properties that don't belong to the current function, e.g. "_SetSoundFacialAnimationSetFilepathv_Defaults" in Blizzard's TriggerData.txt.
+                        continue;
                     }
 
                     var keys = key.Split('_', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -528,7 +568,7 @@
                     triggerCallBuilder = new TriggerCall.Builder(
                         key,
                         int.Parse(values[0], CultureInfo.InvariantCulture),
-                        int.Parse(values[1], CultureInfo.InvariantCulture).ToBool(),
+                        int.Parse(values[1], CultureInfo.InvariantCulture) != 0, // Some entries use 2 (e.g. UnitItemInEquipmentSlotBJ).
                         values[2],
                         values[3..].ToImmutableArray());
                 }
@@ -558,6 +598,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var value = split[1];
@@ -604,6 +649,11 @@
                 }
 
                 var split = line.Split('=', 2);
+                if (split.Length != 2)
+                {
+                    // Skip malformed lines, e.g. "_BlzSetHDWaterMinOpacityBJ_Defaults0" in Blizzard's TriggerData.txt.
+                    continue;
+                }
 
                 var key = split[0];
                 var value = split[1];
