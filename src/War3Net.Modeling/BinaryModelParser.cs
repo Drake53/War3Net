@@ -14,6 +14,12 @@
         private static readonly Dictionary<int, OptionalModelProperty> _ribbonEmitterProperties = GetRibbonEmitterProperties().ToDictionary(property => property.Tag);
         private static readonly Dictionary<int, OptionalModelProperty> _cameraProperties = GetCameraProperties().ToDictionary(property => property.Tag);
 
+        // Format version of the model currently being parsed (from the VERS chunk), used to
+        // read version-specific fields (e.g. light shadow intensity in format version 1200+).
+        // ThreadStatic so concurrent parses don't interfere with each other.
+        [ThreadStatic]
+        private static int _parseVersion;
+
         public static bool IsBinaryModel(Stream input)
         {
             if (input is null)
@@ -47,6 +53,7 @@
             }
 
             var boxedModel = RuntimeHelpers.GetObjectValue(default(Model));
+            _parseVersion = 0;
             while (reader.PeekChar() != -1)
             {
                 var chunkTag = reader.ReadInt32();
@@ -81,6 +88,7 @@
 
             var modelVersion = new ModelVersion();
             modelVersion.FormatVersion = (FormatVersion)reader.ReadUInt32();
+            _parseVersion = (int)modelVersion.FormatVersion;
 
             return modelVersion;
         }
@@ -613,6 +621,13 @@
             light.Intensity = reader.ReadSingle();
             light.AmbientColor = ParseVector3(reader);
             light.AmbientIntensity = reader.ReadSingle();
+
+            // Format version 1200+ (Reforged 2.0) adds a shadow intensity field after the fixed
+            // light header. Skipping it would misread its value as an optional animation tag.
+            if (_parseVersion >= 1200)
+            {
+                light.ShadowIntensity = reader.ReadSingle();
+            }
 
             while (reader.BaseStream.Position < lightEnd)
             {
