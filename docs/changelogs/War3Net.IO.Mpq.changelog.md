@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Fixed
+
+- A hash table entry whose block index is past the block table no longer throws an `ArgumentOutOfRangeException`: `FileExists`, `OpenFile` and `GetMpqFiles` treat it as no file, so `MpqArchiveBuilder` leaves it out.
 
 ## [v6.0.3] - 2026-07-04
 
