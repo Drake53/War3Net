@@ -797,7 +797,7 @@
                 var mpqHash = _hashTable[hashIndex];
                 if (!mpqHash.IsEmpty)
                 {
-                    var mpqEntry = mpqHash.IsValidBlockIndex ? _blockTable[mpqHash.BlockIndex] : null;
+                    var mpqEntry = mpqHash.BlockIndex < _blockTable.Size ? _blockTable[mpqHash.BlockIndex] : null;
                     if (mpqEntry != null)
                     {
                         // var stream = mpqHash.IsDeleted ? null : OpenFile(mpqEntry);
@@ -863,7 +863,7 @@
                 throw new ArgumentException($"The {nameof(MpqHash)} at the given index is empty.", nameof(hashTableIndex));
             }
 
-            if (mpqHash.IsDeleted)
+            if (mpqHash.BlockIndex >= _blockTable.Size)
             {
                 mpqEntry = null;
                 return false;
@@ -951,7 +951,12 @@
                 var hash = _hashTable[i];
                 if (hash.Name == name)
                 {
-                    yield return hash;
+                    // An entry that points at no block, deleted or past the block table, is not a file.
+                    if (hash.BlockIndex < _blockTable.Size)
+                    {
+                        yield return hash;
+                    }
+
                     foundAnyHash = true;
                 }
                 else if (hash.IsEmpty && foundAnyHash)
@@ -965,7 +970,12 @@
                 var hash = _hashTable[i];
                 if (hash.Name == name)
                 {
-                    yield return hash;
+                    // An entry that points at no block, deleted or past the block table, is not a file.
+                    if (hash.BlockIndex < _blockTable.Size)
+                    {
+                        yield return hash;
+                    }
+
                     foundAnyHash = true;
                 }
                 else if (hash.IsEmpty && foundAnyHash)

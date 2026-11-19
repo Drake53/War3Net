@@ -164,6 +164,35 @@
         }
 
         [TestMethod]
+        public void TestHashEntryPastTheBlockTableIsNoFile()
+        {
+            const string fileName = "a.txt";
+            var createOptions = new MpqArchiveCreateOptions { BlockSize = BlockSize, ListFileCreateMode = MpqFileCreateMode.None, AttributesCreateMode = MpqFileCreateMode.None };
+
+            using var stream = new MemoryStream();
+            MpqArchive.Create(stream, new[] { MpqFile.New(new MemoryStream(new byte[] { 1, 2, 3 }), fileName) }, createOptions, leaveOpen: true).Dispose();
+
+            stream.Position = 0;
+            using var archive = MpqArchive.Open(stream);
+
+            // A hash table entry whose block index is past the block table.
+            var mask = archive.HashTable.Mask;
+            var junk = Enumerable.Range(0, 100).Select(i => $"junk{i}.txt").First(name => archive.HashTable[MpqHash.GetIndex(name, mask)].IsEmpty);
+            archive.HashTable[MpqHash.GetIndex(junk, mask)] = new MpqHash(junk, mask, MpqLocale.Neutral, 7);
+
+            Assert.IsFalse(archive.FileExists(junk));
+            Assert.IsFalse(archive.TryOpenFile(junk, out _));
+
+            using var rebuiltStream = new MemoryStream();
+            new MpqArchiveBuilder(archive).SaveTo(rebuiltStream, createOptions, leaveOpen: true);
+
+            rebuiltStream.Position = 0;
+            using var rebuilt = MpqArchive.Open(rebuiltStream);
+            Assert.IsTrue(rebuilt.FileExists(fileName));
+            Assert.IsFalse(rebuilt.FileExists(junk));
+        }
+
+        [TestMethod]
         public void TestDeleteFile()
         {
             var inputArchivePath = TestDataProvider.GetPath("Maps/NewLuaMap.w3m");
