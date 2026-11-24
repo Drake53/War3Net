@@ -10,6 +10,10 @@
         private MpqLocale _locale;
         private MpqCompressionType _compressionType;
 
+        private Stream? _preparedStream;
+        private uint _preparedFileSize;
+        private uint? _preparedCrc32;
+
         internal MpqFile(ulong? hashedName, MpqStream mpqStream, MpqFileFlags flags, MpqLocale locale, bool leaveOpen)
         {
             _name = hashedName;
@@ -240,6 +244,9 @@
         /// <inheritdoc/>
         public void Dispose()
         {
+            _preparedStream?.Dispose();
+            _preparedStream = null;
+
             if (_isStreamOwner)
             {
                 _mpqStream.Dispose();
@@ -266,6 +273,30 @@
             return HashCode.Combine(_name, _locale);
         }
 
+        /// <summary>
+        /// Does the work for <see cref="AddToArchive"/> that does not depend on where the file ends up in the archive (compression and the CRC32 checksum).
+        /// </summary>
+        /// <remarks>
+        /// This method may run concurrently for different <see cref="MpqFile"/>s; <see cref="MpqStream"/> locks its base stream when reading from it.
+        /// </remarks>
+        internal void PrepareForArchive(int blockSize, bool computeCrc32, int maxDegreeOfParallelism)
+        {
+            if (RequiresReencode(blockSize) && _mpqStream.CanRead)
+            {
+                _preparedStream = _mpqStream.Compress(_targetFlags, _compressionType, blockSize, out _preparedFileSize, maxDegreeOfParallelism);
+            }
+
+            if (computeCrc32)
+            {
+                _preparedCrc32 = ComputeCrc32();
+            }
+        }
+
+        internal uint GetCrc32()
+        {
+            return _preparedCrc32 ?? ComputeCrc32();
+        }
+
         internal void AddToArchive(MpqArchive mpqArchive, uint index, out MpqEntry mpqEntry, out MpqHash mpqHash)
         {
             var headerOffset = mpqArchive.HeaderOffset;
@@ -273,7 +304,7 @@
             var relativeFileOffset = absoluteFileOffset - headerOffset;
 
             var mustChangePosition = _targetFlags.IsOffsetEncrypted() && _mpqStream.FilePosition != absoluteFileOffset;
-            if (_targetFlags == _mpqStream.Flags && mpqArchive.BlockSize == _mpqStream.BlockSize && !mustChangePosition)
+            if (!RequiresReencode(mpqArchive.BlockSize) && !mustChangePosition)
             {
                 _mpqStream.CopyBaseStreamTo(mpqArchive.BaseStream);
                 GetTableEntries(mpqArchive, index, relativeFileOffset, _mpqStream.CompressedSize, _mpqStream.FileSize, out mpqEntry, out mpqHash);
@@ -285,10 +316,35 @@
                     throw new InvalidOperationException("Unable to re-encode the mpq file, because its stream cannot be read.");
                 }
 
-                using var newStream = _mpqStream.Transform(_targetFlags, _compressionType, relativeFileOffset, mpqArchive.BlockSize);
+                var compressedStream = _preparedStream;
+                var fileSize = _preparedFileSize;
+                _preparedStream = null;
+                compressedStream ??= _mpqStream.Compress(_targetFlags, _compressionType, mpqArchive.BlockSize, out fileSize);
+
+                using var newStream = MpqStream.Encrypt(compressedStream, fileSize, _targetFlags, _mpqStream.BaseEncryptionSeed, relativeFileOffset, mpqArchive.BlockSize);
                 newStream.CopyTo(mpqArchive.BaseStream);
                 GetTableEntries(mpqArchive, index, relativeFileOffset, (uint)newStream.Length, _mpqStream.FileSize, out mpqEntry, out mpqHash);
             }
+        }
+
+        private bool RequiresReencode(int blockSize)
+        {
+            return _targetFlags != _mpqStream.Flags || blockSize != _mpqStream.BlockSize;
+        }
+
+        private uint ComputeCrc32()
+        {
+            if (!_mpqStream.CanSeek || !_mpqStream.CanRead)
+            {
+                return 0;
+            }
+
+            // Restore the position, in case the stream still needs to be compressed afterwards.
+            var position = _mpqStream.Position;
+            _mpqStream.Position = 0;
+            var crc32 = Crc32Checksum.Compute(_mpqStream);
+            _mpqStream.Position = position;
+            return crc32;
         }
 
         protected abstract void GetTableEntries(MpqArchive mpqArchive, uint index, uint relativeFileOffset, uint compressedSize, uint fileSize, out MpqEntry mpqEntry, out MpqHash mpqHash);

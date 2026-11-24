@@ -5,6 +5,11 @@
     /// </summary>
     public class MpqStream : Stream
     {
+        /// <summary>
+        /// Files smaller than this are compressed one sector at a time, because the overhead of parallelizing them outweighs the gain.
+        /// </summary>
+        private const int ParallelCompressionThreshold = 1024 * 1024;
+
         private readonly Stream _stream;
         private readonly int _blockSize;
         private readonly bool _canRead;
@@ -68,81 +73,111 @@
         /// </summary>
         internal Stream Transform(MpqFileFlags targetFlags, MpqCompressionType compressionType, uint targetFilePosition, int targetBlockSize)
         {
-            using var memoryStream = new MemoryStream();
+            var compressedStream = Compress(targetFlags, compressionType, targetBlockSize, out var fileSize);
+            return Encrypt(compressedStream, fileSize, targetFlags, _baseEncryptionSeed, targetFilePosition, targetBlockSize);
+        }
+
+        /// <summary>
+        /// Performs the part of <see cref="Transform"/> that does not depend on the file's position in the archive.
+        /// </summary>
+        /// <remarks>
+        /// The result must be passed to <see cref="Encrypt"/>, which takes ownership of it.
+        /// </remarks>
+        /// <param name="maxDegreeOfParallelism">
+        /// The maximum number of sectors that are compressed concurrently. Only used for large files that are not <see cref="MpqFileFlags.SingleUnit"/>.
+        /// The output does not depend on this value.
+        /// </param>
+        internal Stream Compress(MpqFileFlags targetFlags, MpqCompressionType compressionType, int targetBlockSize, out uint fileSize, int maxDegreeOfParallelism = 1)
+        {
+            var memoryStream = new MemoryStream();
             CopyTo(memoryStream);
             memoryStream.Position = 0;
-            var fileSize = memoryStream.Length;
+            fileSize = (uint)memoryStream.Length;
 
-            using var compressedStream = GetCompressedStream(memoryStream, targetFlags, compressionType, targetBlockSize);
+            var compressedStream = GetCompressedStream(memoryStream, targetFlags, compressionType, targetBlockSize, maxDegreeOfParallelism);
+            if (!ReferenceEquals(compressedStream, memoryStream))
+            {
+                memoryStream.Dispose();
+            }
+
+            compressedStream.Position = 0;
+            return compressedStream;
+        }
+
+        /// <summary>
+        /// Performs the part of <see cref="Transform"/> that depends on the file's position in the archive, which is only needed when the
+        /// <paramref name="targetFlags"/> contain <see cref="MpqFileFlags.Encrypted"/>. Takes ownership of <paramref name="compressedStream"/>.
+        /// </summary>
+        internal static Stream Encrypt(Stream compressedStream, uint fileSize, MpqFileFlags targetFlags, uint baseEncryptionSeed, uint targetFilePosition, int targetBlockSize)
+        {
+            var blockPosCount = (uint)(((int)fileSize + targetBlockSize - 1) / targetBlockSize) + 1;
+            if (!targetFlags.HasFlag(MpqFileFlags.Encrypted) || blockPosCount <= 1)
+            {
+                compressedStream.Position = 0;
+                return compressedStream;
+            }
+
+            using var ownedCompressedStream = compressedStream;
             var compressedSize = (uint)compressedStream.Length;
 
-            var resultStream = new MemoryStream();
+            var blockPositions = new int[blockPosCount];
+            var singleUnit = targetFlags.HasFlag(MpqFileFlags.SingleUnit);
 
-            var blockPosCount = (uint)(((int)fileSize + targetBlockSize - 1) / targetBlockSize) + 1;
-            if (targetFlags.HasFlag(MpqFileFlags.Encrypted) && blockPosCount > 1)
+            var hasBlockPositions = !singleUnit && ((targetFlags & MpqFileFlags.Compressed) != 0);
+            if (hasBlockPositions)
             {
-                var blockPositions = new int[blockPosCount];
-                var singleUnit = targetFlags.HasFlag(MpqFileFlags.SingleUnit);
-
-                var hasBlockPositions = !singleUnit && ((targetFlags & MpqFileFlags.Compressed) != 0);
-                if (hasBlockPositions)
+                using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
                 {
-                    using (var reader = new BinaryReader(compressedStream, Encoding.UTF8, true))
+                    for (var i = 0; i < blockPosCount; i++)
                     {
-                        for (var i = 0; i < blockPosCount; i++)
-                        {
-                            blockPositions[i] = (int)reader.ReadUInt32();
-                        }
-                    }
-
-                    compressedStream.Seek(0, SeekOrigin.Begin);
-                }
-                else
-                {
-                    if (singleUnit)
-                    {
-                        blockPosCount = 2;
-                    }
-
-                    blockPositions[0] = 0;
-                    for (var blockIndex = 2; blockIndex < blockPosCount; blockIndex++)
-                    {
-                        blockPositions[blockIndex - 1] = targetBlockSize * (blockIndex - 1);
-                    }
-
-                    blockPositions[blockPosCount - 1] = (int)compressedSize;
-                }
-
-                var encryptionSeed = _baseEncryptionSeed;
-                if (targetFlags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
-                {
-                    encryptionSeed = MpqEncryptionUtils.AdjustEncryptionSeed(encryptionSeed, targetFilePosition, (uint)fileSize);
-                }
-
-                var currentOffset = 0;
-                using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
-                {
-                    for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
-                    {
-                        var toWrite = blockPositions[blockIndex] - currentOffset;
-
-                        var data = StormBuffer.EncryptStream(compressedStream, (uint)(encryptionSeed + blockIndex - 1), currentOffset, toWrite);
-                        writer.Write(data);
-
-                        currentOffset += toWrite;
+                        blockPositions[i] = (int)reader.ReadUInt32();
                     }
                 }
+
+                compressedStream.Seek(0, SeekOrigin.Begin);
             }
             else
             {
-                compressedStream.CopyTo(resultStream);
+                if (singleUnit)
+                {
+                    blockPosCount = 2;
+                }
+
+                blockPositions[0] = 0;
+                for (var blockIndex = 2; blockIndex < blockPosCount; blockIndex++)
+                {
+                    blockPositions[blockIndex - 1] = targetBlockSize * (blockIndex - 1);
+                }
+
+                blockPositions[blockPosCount - 1] = (int)compressedSize;
+            }
+
+            var encryptionSeed = baseEncryptionSeed;
+            if (targetFlags.HasFlag(MpqFileFlags.BlockOffsetAdjustedKey))
+            {
+                encryptionSeed = MpqEncryptionUtils.AdjustEncryptionSeed(encryptionSeed, targetFilePosition, fileSize);
+            }
+
+            var resultStream = new MemoryStream();
+            var currentOffset = 0;
+            using (var writer = new BinaryWriter(resultStream, UTF8EncodingProvider.StrictUTF8, true))
+            {
+                for (var blockIndex = hasBlockPositions ? 0 : 1; blockIndex < blockPosCount; blockIndex++)
+                {
+                    var toWrite = blockPositions[blockIndex] - currentOffset;
+
+                    var data = StormBuffer.EncryptStream(compressedStream, (uint)(encryptionSeed + blockIndex - 1), currentOffset, toWrite);
+                    writer.Write(data);
+
+                    currentOffset += toWrite;
+                }
             }
 
             resultStream.Position = 0;
             return resultStream;
         }
 
-        private Stream GetCompressedStream(Stream baseStream, MpqFileFlags targetFlags, MpqCompressionType compressionType, int targetBlockSize)
+        private Stream GetCompressedStream(MemoryStream baseStream, MpqFileFlags targetFlags, MpqCompressionType compressionType, int targetBlockSize, int maxDegreeOfParallelism)
         {
             if ((targetFlags & MpqFileFlags.Compressed) == 0)
             {
@@ -192,12 +227,36 @@
                 blockOffsets[0] = 4 * blockCount;
                 resultStream.Position = blockOffsets[0];
 
-                for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
+                if (maxDegreeOfParallelism > 1 && length >= ParallelCompressionThreshold && baseStream.TryGetBuffer(out var buffer))
                 {
-                    var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(baseStream.Length - baseStream.Position) : (uint)targetBlockSize;
+                    var compressedBlocks = CompressBlocksParallel(buffer, compressionType, targetBlockSize, (int)blockCount - 1, maxDegreeOfParallelism);
+                    for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
+                    {
+                        var compressedBlock = compressedBlocks[blockIndex - 1];
+                        if (compressedBlock is null)
+                        {
+                            // Compression did not reduce the size, so the sector is stored as-is.
+                            var blockOffset = (blockIndex - 1) * targetBlockSize;
+                            resultStream.Write(buffer.Array!, buffer.Offset + blockOffset, Math.Min(targetBlockSize, buffer.Count - blockOffset));
+                        }
+                        else
+                        {
+                            resultStream.WriteByte((byte)compressionType);
+                            resultStream.Write(compressedBlock, 0, compressedBlock.Length);
+                        }
 
-                    TryCompress(bytesToCompress);
-                    blockOffsets[blockIndex] = (uint)resultStream.Position;
+                        blockOffsets[blockIndex] = (uint)resultStream.Position;
+                    }
+                }
+                else
+                {
+                    for (var blockIndex = 1; blockIndex < blockCount; blockIndex++)
+                    {
+                        var bytesToCompress = blockIndex + 1 == blockCount ? (uint)(baseStream.Length - baseStream.Position) : (uint)targetBlockSize;
+
+                        TryCompress(bytesToCompress);
+                        blockOffsets[blockIndex] = (uint)resultStream.Position;
+                    }
                 }
 
                 resultStream.Position = 0;
@@ -212,6 +271,41 @@
 
             resultStream.Position = 0;
             return resultStream;
+        }
+
+        /// <summary>
+        /// Compresses each sector of <paramref name="buffer"/> independently and concurrently.
+        /// </summary>
+        /// <returns>
+        /// For each sector, the compressed data (without the compression type byte), or <see langword="null"/> if compression does not reduce its size.
+        /// The decision is the same as the one made in <see cref="GetCompressedStream"/>, so the output is identical to sequential compression.
+        /// </returns>
+        private static byte[]?[] CompressBlocksParallel(ArraySegment<byte> buffer, MpqCompressionType compressionType, int targetBlockSize, int sectorCount, int maxDegreeOfParallelism)
+        {
+            if (compressionType != MpqCompressionType.ZLib)
+            {
+                throw new NotSupportedException($"Compression type '{compressionType}' is not supported. Currently only ZLib is supported.");
+            }
+
+            var result = new byte[]?[sectorCount];
+            var parallelOptions = new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism };
+
+            System.Threading.Tasks.Parallel.For(0, sectorCount, parallelOptions, sectorIndex =>
+            {
+                var sectorOffset = sectorIndex * targetBlockSize;
+                var bytes = Math.Min(targetBlockSize, buffer.Count - sectorOffset);
+
+                using var sectorStream = new MemoryStream(buffer.Array!, buffer.Offset + sectorOffset, bytes, false);
+                using var compressedStream = (MemoryStream)ZLibCompression.Compress(sectorStream, bytes, true);
+
+                // Add one because CompressionType byte not written yet.
+                if (compressedStream.Length + 1 < bytes)
+                {
+                    result[sectorIndex] = compressedStream.ToArray();
+                }
+            });
+
+            return result;
         }
 
         public MpqFileFlags Flags => _flags;
