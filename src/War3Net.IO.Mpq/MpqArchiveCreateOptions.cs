@@ -43,5 +43,12 @@
         public MpqFileCreateMode? AttributesCreateMode { get; set; }
 
         public AttributesFlags AttributesFlags { get; set; }
+
+        /// <summary>
+        /// The maximum number of files (and sectors within a large file) that are compressed concurrently while the archive is created.
+        /// Files are always written to the archive in the same order, so the output does not depend on this value.
+        /// Set to 1 to do all work on the calling thread. If <see langword="null"/>, <see cref="Environment.ProcessorCount"/> is used.
+        /// </summary>
+        public int? MaxDegreeOfParallelism { get; set; }
     }
 }

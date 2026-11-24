@@ -1,4 +1,6 @@
-﻿namespace War3Net.IO.Mpq
+﻿using System.Threading.Tasks;
+
+namespace War3Net.IO.Mpq
 {
     /// <summary>
     /// Represents a MoPaQ file, that is used to archive files.
@@ -196,6 +198,7 @@
 
                 // var gaps = new List<(long Start, long Length)>();
                 var endOfStream = _baseStream.Position;
+                var computeCrc32 = attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32);
 
                 void InsertMpqFile(MpqFile mpqFile, bool updateEndOfStream, bool allowMultiple = true)
                 {
@@ -211,15 +214,7 @@
                         throw new Exception();
                     }
 
-                    var crc32 = 0U;
-                    if (attributes is not null && attributes.Flags.HasFlag(AttributesFlags.Crc32) && allowMultiple)
-                    {
-                        if (mpqFile.MpqStream.CanSeek && mpqFile.MpqStream.CanRead)
-                        {
-                            mpqFile.MpqStream.Position = 0;
-                            crc32 = Crc32Checksum.Compute(mpqFile.MpqStream);
-                        }
-                    }
+                    var crc32 = computeCrc32 && allowMultiple ? mpqFile.GetCrc32() : 0U;
 
                     for (var i = 0; i < hashTableEntries; i++)
                     {
@@ -280,11 +275,13 @@
                     }
                 }
 
-                foreach (var mpqFile in mpqFiles.Where(mpqFile => !mpqFile.IsFilePositionFixed))
+                // Compression does not depend on a file's position in the archive, so it is done in parallel ahead of the writer.
+                // Only encryption with BlockOffsetAdjustedKey depends on the position, and that is done while writing, in order.
+                var maxDegreeOfParallelism = createOptions.MaxDegreeOfParallelism ?? Environment.ProcessorCount;
+                ForEachPrepared(mpqFiles.Where(mpqFile => !mpqFile.IsFilePositionFixed).ToArray(), computeCrc32, maxDegreeOfParallelism, mpqFile =>
                 {
                     // TODO: insert files into the gaps
                     // need to know compressed size of file first, and if file is also encrypted with blockoffsetadjustedkey, encryption needs to happen after gap selection
-                    // therefore, can't use current AddToArchive method, which does both compression and encryption at same time
 
                     // var availableGaps = gaps.Where(gap => gap.Length >= )
                     var selectedPosition = endOfStream;
@@ -292,7 +289,7 @@
                     _baseStream.Position = selectedPosition;
 
                     InsertMpqFile(mpqFile, !selectedGap);
-                }
+                });
 
                 var signaturePosition = endOfStream + 8;
                 if (signature is not null)
@@ -390,6 +387,67 @@
                     _baseStream.Position = signaturePosition;
                     _baseStream.Write(signatureBytes.Reverse().ToArray());
                 }
+            }
+        }
+
+        /// <summary>
+        /// Calls <paramref name="insert"/> for each file, in order, after <see cref="MpqFile.PrepareForArchive"/> has completed for that file.
+        /// Up to <paramref name="maxDegreeOfParallelism"/> files are prepared concurrently on the thread pool, ahead of the file being inserted.
+        /// Within a large file, sectors are also compressed concurrently, so a single big file does not leave the other cores idle.
+        /// </summary>
+        private void ForEachPrepared(MpqFile[] files, bool computeCrc32, int maxDegreeOfParallelism, Action<MpqFile> insert)
+        {
+            if (maxDegreeOfParallelism <= 1 || files.Length <= 1)
+            {
+                foreach (var file in files)
+                {
+                    file.PrepareForArchive(_blockSize, computeCrc32, maxDegreeOfParallelism);
+                    insert(file);
+                }
+
+                return;
+            }
+
+            var blockSize = _blockSize;
+            var tasks = new Task[files.Length];
+            var started = 0;
+
+            void StartNext()
+            {
+                var file = files[started];
+                tasks[started++] = Task.Run(() => file.PrepareForArchive(blockSize, computeCrc32, maxDegreeOfParallelism));
+            }
+
+            try
+            {
+                while (started < files.Length && started < maxDegreeOfParallelism)
+                {
+                    StartNext();
+                }
+
+                for (var i = 0; i < files.Length; i++)
+                {
+                    tasks[i].GetAwaiter().GetResult();
+                    if (started < files.Length)
+                    {
+                        StartNext();
+                    }
+
+                    insert(files[i]);
+                }
+            }
+            catch
+            {
+                // Make sure no background work is still reading from the files' streams before the exception propagates.
+                try
+                {
+                    Task.WaitAll(tasks.Where(task => task is not null).ToArray());
+                }
+                catch (AggregateException)
+                {
+                }
+
+                throw;
             }
         }
 
